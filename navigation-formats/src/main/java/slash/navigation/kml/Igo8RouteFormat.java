@@ -69,7 +69,7 @@ public class Igo8RouteFormat extends Kml22Format {
         extractTracks(kmlType, startDate, context);
 
         List<KmlRoute> routes = context.getRoutes();
-        context.getRoutes().clear();
+        context.removeRoutes();
         if (routes != null && routes.size() == 1) {
             KmlRoute route = routes.get(0);
             if (route.getName().equals(IGO_ROUTE + "/" + WAYPOINTS)) {
@@ -89,11 +89,13 @@ public class Igo8RouteFormat extends Kml22Format {
         return line;
     }
 
-    private FolderType createWayPoints(KmlRoute route) {
+    private FolderType createWayPoints(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setName(WAYPOINTS);
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
             placemarkType.setName(trimLineFeedsAndCommas(asName(isWriteName() ? position.getComment() : null)));
@@ -105,7 +107,7 @@ public class Igo8RouteFormat extends Kml22Format {
         return folderType;
     }
 
-    protected KmlType createKmlType(KmlRoute route) {
+    protected KmlType createKmlType(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
@@ -114,7 +116,7 @@ public class Igo8RouteFormat extends Kml22Format {
         documentType.setDescription(trimLineFeedsAndCommas(asDescription(route.getDescription())));
         documentType.setOpen(TRUE);
 
-        FolderType folderType = createWayPoints(route);
+        FolderType folderType = createWayPoints(route, startIndex, endIndex);
         documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(folderType));
         return kmlType;
     }

@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.unmodifiableList;
+
 /**
  * Implementation of a {@link ParserContext}.
  *
@@ -49,12 +51,16 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
         this.routes.addAll(routes);
     }
 
+    public void removeRoutes() {
+        this.routes.clear();
+    }
+
     public void addFormat(NavigationFormat<R> format) {
         this.formats.add(format);
     }
 
     public List<R> getRoutes() {
-        return routes;
+        return new ArrayList<R>(routes);
     }
 
     public List<NavigationFormat<R>> getFormats() {

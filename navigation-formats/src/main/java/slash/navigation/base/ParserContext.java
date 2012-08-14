@@ -36,6 +36,8 @@ public interface ParserContext<R extends BaseRoute> {
     void prependRoute(R route);
     void appendRoute(R route);
     void appendRoutes(List<R> routes);
+    void removeRoutes();
+
     List<R> getRoutes();
 
     void addFormat(NavigationFormat<R> format);

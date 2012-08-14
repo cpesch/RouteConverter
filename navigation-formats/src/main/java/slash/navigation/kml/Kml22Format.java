@@ -310,11 +310,13 @@ public class Kml22Format extends KmlFormat {
         return positions;
     }
 
-    private FolderType createWayPoints(KmlRoute route) {
+    private FolderType createWayPoints(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setName(WAYPOINTS);
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
             placemarkType.setName(asName(isWriteName() ? position.getComment() : null));
@@ -348,7 +350,7 @@ public class Kml22Format extends KmlFormat {
         return placemarkType;
     }
 
-    private PlacemarkType createTrack(KmlRoute route) {
+    private PlacemarkType createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         placemarkType.setName(TRACK);
@@ -358,11 +360,14 @@ public class Kml22Format extends KmlFormat {
         if (containTime(route)) {
             slash.navigation.kml.binding22gx.ObjectFactory gxObjectFactory = new slash.navigation.kml.binding22gx.ObjectFactory();
             TrackType trackType = gxObjectFactory.createTrackType();
-            for (KmlPosition position : route.getPositions()) {
+            List<KmlPosition> positions = route.getPositions();
+            for (int i = startIndex; i < endIndex; i++) {
+                KmlPosition position = positions.get(i);
                 String time = position.getTime() != null ? ISO8601.format(position.getTime()) : "";
                 trackType.getWhen().add(time);
             }
-            for (KmlPosition position : route.getPositions()) {
+            for (int i = startIndex; i < endIndex; i++) {
+                KmlPosition position = positions.get(i);
                 trackType.getCoord().add(createCoordinates(position, true));
             }
             placemarkType.setAbstractGeometryGroup(gxObjectFactory.createTrack(trackType));
@@ -370,7 +375,9 @@ public class Kml22Format extends KmlFormat {
             LineStringType lineStringType = objectFactory.createLineStringType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
             List<String> coordinates = lineStringType.getCoordinates();
-            for (KmlPosition position : route.getPositions()) {
+            List<KmlPosition> positions = route.getPositions();
+            for (int i = startIndex; i < endIndex; i++) {
+                KmlPosition position = positions.get(i);
                 coordinates.add(createCoordinates(position, false));
             }
         }
@@ -471,7 +478,7 @@ public class Kml22Format extends KmlFormat {
         return vec2Type;
     }
 
-    private FolderType createSpeed(KmlRoute route) {
+    private FolderType createSpeed(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setName(SPEED);
@@ -484,7 +491,7 @@ public class Kml22Format extends KmlFormat {
         int previousSpeedClass = -1;
         List<String> coordinates = new ArrayList<String>();
         List<KmlPosition> positions = route.getPositions();
-        for (int i = 0; i < positions.size() - 1; i++) {
+        for (int i = startIndex; i < endIndex - 1; i++) {
             KmlPosition nextPosition = positions.get(i + 1);
             Double speed = positions.get(i).calculateSpeed(nextPosition);
             if (speed == null)
@@ -538,7 +545,7 @@ public class Kml22Format extends KmlFormat {
         return speedbar;
     }
 
-    private FolderType createMarks(KmlRoute route) {
+    private FolderType createMarks(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         FolderType marks = objectFactory.createFolderType();
@@ -548,9 +555,10 @@ public class Kml22Format extends KmlFormat {
 
         double currentDistance = 0, previousDistance = 0;
         int currentKilometer = 1;
-        for (int i = 1; i < route.getPositions().size(); i++) {
-            KmlPosition previousPosition = route.getPositions().get(i - 1);
-            KmlPosition currentPosition = route.getPositions().get(i);
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex + 1; i < endIndex; i++) {
+            KmlPosition previousPosition = positions.get(i - 1);
+            KmlPosition currentPosition = positions.get(i);
 
             Double distance = currentPosition.calculateDistance(previousPosition);
             if (distance == null)
@@ -612,7 +620,7 @@ public class Kml22Format extends KmlFormat {
         return styleType;
     }
 
-    protected KmlType createKmlType(KmlRoute route) {
+    protected KmlType createKmlType(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
@@ -627,19 +635,19 @@ public class Kml22Format extends KmlFormat {
             for (StyleType style : createSpeedTrackColors(getSpeedLineWidth()))
                 documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(style));
 
-        FolderType folderType = createWayPoints(route);
+        FolderType folderType = createWayPoints(route, startIndex, endIndex);
         documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(folderType));
 
-        PlacemarkType placemarkTrack = createTrack(route);
+        PlacemarkType placemarkTrack = createTrack(route, startIndex, endIndex);
         documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkTrack));
 
         if (route.getCharacteristics().equals(Track) && isWriteSpeed()) {
-            FolderType speed = createSpeed(route);
+            FolderType speed = createSpeed(route, startIndex, endIndex);
             if (speed != null)
                 documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(speed));
         }
         if (!route.getCharacteristics().equals(Waypoints) && isWriteMarks()) {
-            FolderType marks = createMarks(route);
+            FolderType marks = createMarks(route, startIndex, endIndex);
             documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(marks));
         }
         return kmlType;
@@ -661,7 +669,7 @@ public class Kml22Format extends KmlFormat {
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
-                    FolderType wayPoints = createWayPoints(route);
+                    FolderType wayPoints = createWayPoints(route, 0, route.getPositionCount());
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(wayPoints));
                     break;
                 case Route:
@@ -672,22 +680,22 @@ public class Kml22Format extends KmlFormat {
                     PlacemarkType routePlacemarks = createRoute(route);
                     routeFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(routePlacemarks));
                     if (isWriteMarks())
-                        routeFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route)));
+                        routeFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route, 0, route.getPositionCount())));
                     break;
                 case Track:
                     FolderType trackFolder = objectFactory.createFolderType();
                     trackFolder.setName(createPlacemarkName(TRACK, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(trackFolder));
 
-                    PlacemarkType track = createTrack(route);
+                    PlacemarkType track = createTrack(route, 0, route.getPositionCount());
                     trackFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(track));
                     if (isWriteSpeed()) {
-                        FolderType speed = createSpeed(route);
+                        FolderType speed = createSpeed(route, 0, route.getPositionCount());
                         if (speed != null)
                             trackFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(speed));
                     }
                     if (isWriteMarks())
-                        trackFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route)));
+                        trackFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route, 0, route.getPositionCount())));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
@@ -698,7 +706,7 @@ public class Kml22Format extends KmlFormat {
 
     public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) {
         try {
-            marshal22(createKmlType(route), target);
+            marshal22(createKmlType(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

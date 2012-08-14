@@ -54,6 +54,7 @@ import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Igo8RouteFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
@@ -638,7 +639,8 @@ public abstract class NavigationTestCase extends TestCase {
                     (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
                     (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
-                    targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof KompassFormat ||
+                    targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof Igo8RouteFormat ||
+                    targetFormat instanceof KompassFormat ||
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||

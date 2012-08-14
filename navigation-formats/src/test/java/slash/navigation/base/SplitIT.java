@@ -132,6 +132,16 @@ public class SplitIT {
     }
 
     @Test
+    public void testSplitKml22ReadWriteRoundtrip() throws IOException {
+        splitReadWriteRoundtrip(TEST_PATH + "large22.kml");
+    }
+
+    @Test
+    public void testSplitIgo8RouteReadWriteRoundtrip() throws IOException {
+        splitReadWriteRoundtrip(TEST_PATH + "large-igo8route.kml");
+    }
+
+    @Test
     public void testSplitGarminMapSource5ReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large.mps");
     }
