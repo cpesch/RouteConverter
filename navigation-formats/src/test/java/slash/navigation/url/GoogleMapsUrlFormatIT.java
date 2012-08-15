@@ -42,12 +42,12 @@ public class GoogleMapsUrlFormatIT {
         NavigationFormatParser parser = new NavigationFormatParser();
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        assertEquals(Kml20Format.class, result.getFormat().getClass());
-        assertEquals(2, result.getAllRoutes().size());
+        assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());
+        assertEquals(1, result.getAllRoutes().size());
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        assertEquals(4, route.getPositionCount());
+        assertEquals(9, route.getPositionCount());
         BaseNavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
-        assertEquals("Arrive at: S Tamiami Trail", position.getComment());
+        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getComment());
         assertNotNull(position.getLongitude());
         assertNotNull(position.getLatitude());
     }
