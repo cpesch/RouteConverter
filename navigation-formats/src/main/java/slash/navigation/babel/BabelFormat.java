@@ -156,7 +156,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     log.info("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
                     process.destroy();
                 }
-                log.info("observeProcess finished " + Thread.currentThread()); // TODO
             }
         }, "BabelObserver");
     }
@@ -182,9 +181,8 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             output.close();
                     }
                 } catch (IOException e) {
-                    log.severe("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
+                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
                 }
-                log.info("pumpStream " + streamName + " finished " + Thread.currentThread()); // TODO
             }
         }, "BabelStreamPumper-" + streamName).start();
     }
@@ -204,7 +202,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         InputStream target = process.getInputStream();
         getGpxFormat().read(target, startDate, context);
         observer.interrupt();
-        log.info("readStream finished " + Thread.currentThread()); // TODO
     }
 
     // temp file
