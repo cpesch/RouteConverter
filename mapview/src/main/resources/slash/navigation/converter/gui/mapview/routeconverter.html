@@ -141,7 +141,8 @@
    function callJava(uri) {
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
-           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, true);
+           // needs to be synchronous to avoid that move-position overtakes select-position
+           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, false);
            xmlhttp.send();
        } else {
            callbackQueue.push(uri);
