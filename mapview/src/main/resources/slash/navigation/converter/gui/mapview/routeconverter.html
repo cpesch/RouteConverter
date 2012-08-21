@@ -152,7 +152,7 @@
    function callJavaWithPost(body) {
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
-           xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/generic-post-url/", true);
+           xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/generic-post-url/", false);
            xmlhttp.send(body);
        } else {
            callbackQueue.push(body);
