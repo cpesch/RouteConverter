@@ -119,25 +119,17 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         });
     }
 
-    public void complementTime(final int row, final CompactCalendar time) {
+    public void complementTime(int row, CompactCalendar time) {
         if (time != null)
             return;
 
-        executorService.execute(new Runnable() {
-            public void run() {
-                final CompactCalendar time[] = new CompactCalendar[1];
-                time[0] = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
-                        positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
-                if (time[0] == null) {
-                    time[0] = fromCalendar(Calendar.getInstance(UTC));
-                }
+        // do not put this in executorService since when called in batches, the edit() must happen before the
+        // next time can be complemented
+        CompactCalendar interpolated = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
+                positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
+        if (interpolated == null)
+            interpolated = fromCalendar(Calendar.getInstance(UTC));
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        positionsModel.edit(time[0], row, TIME_COLUMN_INDEX, true, false);
-                    }
-                });
-            }
-        });
+        positionsModel.edit(interpolated, row, TIME_COLUMN_INDEX, true, false);
     }
 }
