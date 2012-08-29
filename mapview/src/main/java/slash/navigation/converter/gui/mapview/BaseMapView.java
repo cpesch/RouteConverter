@@ -45,7 +45,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -427,35 +426,19 @@ public abstract class BaseMapView implements MapView {
                         }
                     }
 
-                    Socket clientSocket = null;
-                    BufferedReader is = null;
-                    OutputStream os = null;
                     try {
-                        clientSocket = callbackListenerServerSocket.accept();
-                        is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
-                        os = clientSocket.getOutputStream();
-                        processStream(is);
-                    } catch (SocketTimeoutException e) {
-                        // intentionally left empty
+                        Socket clientSocket = callbackListenerServerSocket.accept();
+                        BufferedReader is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
+                        OutputStream os = clientSocket.getOutputStream();
+                        processStream(is, os);
                     } catch (IOException e) {
                         synchronized (notificationMutex) {
                             //noinspection ConstantConditions
                             if (running) {
-                                log.severe("Cannot listen at callback listener socket: " + e.getMessage());
+                                log.severe("Cannot accept at callback listener socket: " + e.getMessage());
                             }
                         }
                         break;
-                    } finally {
-                        try {
-                            if (is != null)
-                                is.close();
-                            if (os != null)
-                                os.close();
-                            if (clientSocket != null)
-                                clientSocket.close();
-                        } catch (IOException e) {
-                            log.severe("Cannot close callback listener socket: " + e.getMessage());
-                        }
                     }
                 }
             }
@@ -1218,30 +1201,36 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
+
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks
 
-    private void processStream(BufferedReader reader) {
+    private void processStream(BufferedReader reader, OutputStream outputStream) throws IOException {
         List<String> lines = new ArrayList<String>();
         boolean processingPost = false, processingBody = false;
-        while (true) {
-            try {
-                String line = trim(reader.readLine());
-                if (line == null) {
-                    if (processingPost && !processingBody) {
-                        processingBody = true;
-                        continue;
-                    } else
-                        break;
+        try {
+            while (true) {
+                try {
+                    String line = trim(reader.readLine());
+                    if (line == null) {
+                        if (processingPost && !processingBody) {
+                            processingBody = true;
+                            continue;
+                        } else
+                            break;
+                    }
+                    if (line.startsWith("POST"))
+                        processingPost = true;
+                    lines.add(line);
+                } catch (IOException e) {
+                    log.severe("Cannot read line from callback listener port:" + e.getMessage());
+                    break;
                 }
-                if (line.startsWith("POST"))
-                    processingPost = true;
-                lines.add(line);
-            } catch (IOException e) {
-                log.severe("Cannot read line from callback listener port:" + e.getMessage());
-                break;
             }
+        } finally {
+            reader.close();
+            outputStream.close();
         }
 
         final List<String> theLines = new ArrayList<String>(lines);
