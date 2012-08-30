@@ -45,6 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -431,6 +432,8 @@ public abstract class BaseMapView implements MapView {
                         BufferedReader is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
                         OutputStream os = clientSocket.getOutputStream();
                         processStream(is, os);
+                    } catch (SocketTimeoutException e) {
+                        // intentionally left empty
                     } catch (IOException e) {
                         synchronized (notificationMutex) {
                             //noinspection ConstantConditions
@@ -694,7 +697,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     public BaseNavigationPosition getCenter() {
-        if(isInitialized())
+        if (isInitialized())
             return getCurrentMapCenter();
         else
             return getLastMapCenter();
@@ -1081,7 +1084,7 @@ public abstract class BaseMapView implements MapView {
             ignoreNextZoomCallback = true;
         }
 
-        if(haveToInitializeMapOnFirstStart) {
+        if (haveToInitializeMapOnFirstStart) {
             BaseNavigationPosition center;
             // if there are positions right at the start center on them else take the last known center and zoom
             if (positions.size() > 0) {
