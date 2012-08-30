@@ -428,10 +428,12 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     try {
-                        Socket clientSocket = callbackListenerServerSocket.accept();
-                        BufferedReader is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
-                        OutputStream os = clientSocket.getOutputStream();
-                        processStream(is, os);
+                        final Socket socket = callbackListenerServerSocket.accept();
+                        executor.execute(new Runnable() {
+                            public void run() {
+                                processStream(socket);
+                            }
+                        });
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
@@ -1209,7 +1211,17 @@ public abstract class BaseMapView implements MapView {
 
     // browser callbacks
 
-    private void processStream(BufferedReader reader, OutputStream outputStream) throws IOException {
+    private void processStream(Socket socket) {
+        BufferedReader reader;
+        OutputStream outputStream;
+        try {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
+            outputStream = socket.getOutputStream();
+        } catch (IOException e) {
+            log.severe("Cannot open streams from callback listener port:" + e.getMessage());
+            return;
+        }
+
         List<String> lines = new ArrayList<String>();
         boolean processingPost = false, processingBody = false;
         try {
@@ -1232,25 +1244,29 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         } finally {
-            reader.close();
-            outputStream.close();
+            try {
+                reader.close();
+            } catch (IOException e) {
+                log.severe("Cannot close input stream from callback listener port:" + e.getMessage());
+            }
+
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                log.severe("Cannot close output stream from callback listener port:" + e.getMessage());
+            }
         }
 
-        final List<String> theLines = new ArrayList<String>(lines);
-        executor.execute(new Runnable() {
-            public void run() {
-                StringBuilder buffer = new StringBuilder();
-                for (String line : theLines) {
-                    buffer.append("  ").append(line).append("\n");
-                }
-                log.fine("processing callback: \n" + buffer.toString());
+        StringBuilder buffer = new StringBuilder();
+        for (String line : lines) {
+            buffer.append("  ").append(line).append("\n");
+        }
+        log.fine("processing callback: \n" + buffer.toString());
 
-                if (!isAuthenticated(theLines))
-                    return;
+        if (!isAuthenticated(lines))
+            return;
 
-                processLines(theLines);
-            }
-        });
+        processLines(lines);
     }
 
     private boolean isAuthenticated(List<String> lines) {
