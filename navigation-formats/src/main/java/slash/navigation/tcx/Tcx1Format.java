@@ -48,7 +48,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -340,10 +342,18 @@ public class Tcx1Format extends TcxFormat {
         trainingCenterDatabaseT.setCourses(coursesT);
         CourseFolderT courseFolderT = createCourseFolder(coursesT);
         List<CourseT> courses = courseFolderT.getCourse();
+
+        Set<String> routeNames = new HashSet<String>(routes.size());
         for (int i = 0; i < routes.size(); i++) {
             GpxRoute route = routes.get(i);
+
+            String routeName = asRouteName(route.getName());
             // ensure that route names are unique
-            courses.add(createCourse(route, (i + 1) + ": " + asRouteName(route.getName()), 0, route.getPositionCount()));
+            if(routeNames.contains(routeName))
+                routeName = (i + 1) + ": " + route.getName();
+            routeNames.add(routeName);
+
+            courses.add(createCourse(route, routeName, 0, route.getPositionCount()));
         }
         return trainingCenterDatabaseT;
     }
