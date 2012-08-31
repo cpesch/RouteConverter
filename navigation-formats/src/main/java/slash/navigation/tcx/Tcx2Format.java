@@ -48,7 +48,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.min;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -268,8 +267,7 @@ public class Tcx2Format extends TcxFormat {
 
     private CourseT createCourse(GpxRoute route, String routeName, int startIndex, int endIndex) {
         CourseT courseT = new ObjectFactory().createCourseT();
-        // ensure the course name does not exceed 15 characters
-        courseT.setName(routeName.substring(0, min(routeName.length(), 15)));
+        courseT.setName(routeName);
         courseT.setNotes(GENERATED_BY);
         courseT.getLap().add(createCourseLap(route, startIndex, endIndex));
         courseT.getTrack().add(createTrack(route, startIndex, endIndex));

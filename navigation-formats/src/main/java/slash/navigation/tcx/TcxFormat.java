@@ -70,4 +70,9 @@ public abstract class TcxFormat extends GpxFormat {
         }
         return heartBeatRate;
     }
+
+    public int getMaximumRouteNameLength() {
+        // ensure the course name does not exceed 15 characters
+        return 15;
+    }
 }
