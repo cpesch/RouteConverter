@@ -428,12 +428,8 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     try {
-                        final Socket socket = callbackListenerServerSocket.accept();
-                        executor.execute(new Runnable() {
-                            public void run() {
-                                processStream(socket);
-                            }
-                        });
+                        Socket socket = callbackListenerServerSocket.accept();
+                        processStream(socket);
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
@@ -1228,6 +1224,7 @@ public abstract class BaseMapView implements MapView {
             while (true) {
                 try {
                     String line = trim(reader.readLine());
+                    log.fine("read line " + line);
                     if (line == null) {
                         if (processingPost && !processingBody) {
                             processingBody = true;
@@ -1246,14 +1243,9 @@ public abstract class BaseMapView implements MapView {
         } finally {
             try {
                 reader.close();
-            } catch (IOException e) {
-                log.severe("Cannot close input stream from callback listener port:" + e.getMessage());
-            }
-
-            try {
                 outputStream.close();
             } catch (IOException e) {
-                log.severe("Cannot close output stream from callback listener port:" + e.getMessage());
+                log.severe("Cannot close streams from callback listener port:" + e.getMessage());
             }
         }
 
