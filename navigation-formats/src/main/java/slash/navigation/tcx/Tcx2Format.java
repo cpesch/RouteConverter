@@ -297,12 +297,8 @@ public class Tcx2Format extends TcxFormat {
         for (int i = 0; i < routes.size(); i++) {
             GpxRoute route = routes.get(i);
 
-            String routeName = asRouteName(route.getName());
-            // ensure that route names are unique
-            if(routeNames.contains(routeName))
-                routeName = (i + 1) + ": " + route.getName();
+            String routeName = createUniqueRouteName(route.getName(), routeNames);
             routeNames.add(routeName);
-
             courses.add(createCourse(route, routeName, 0, route.getPositionCount()));
         }
         return trainingCenterDatabaseT;

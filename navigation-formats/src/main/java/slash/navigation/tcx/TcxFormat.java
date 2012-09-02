@@ -26,7 +26,10 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.binding11.WptType;
 
+import java.util.Set;
+
 import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * The base of all Training Center Database formats.
@@ -74,5 +77,16 @@ public abstract class TcxFormat extends GpxFormat {
     public int getMaximumRouteNameLength() {
         // ensure the course name does not exceed 15 characters
         return 15;
+    }
+
+    protected String createUniqueRouteName(String routeName, Set<String> routeNames) {
+        String result = asRouteName(routeName);
+        int index = 2;
+        while(routeNames.contains(result)) {
+            String suffix = " (" + index + ")";
+            result = asRouteName(trim(routeName, getMaximumRouteNameLength() - suffix.length()) + suffix);
+            index++;
+        }
+        return result;
     }
 }
