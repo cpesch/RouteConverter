@@ -28,7 +28,7 @@ public class UrlFormatIT {
     public void readGoogleMapsUrl() throws IOException {
         ParserResult result = parser.read("http://maps.google.de/maps?f=d&saddr=Hamburg%2FUhlenhorst&daddr=Hauptstra%C3%9Fe%2FL160+to:53.588429,10.419159+to:Breitenfelde%2FNeuenlande&hl=de&geocode=%3BFVy1MQMdDoudAA%3B%3B&mra=dpe&mrcr=0&mrsp=2&sz=11&via=1,2&sll=53.582575,10.30528&sspn=0.234798,0.715485&ie=UTF8&z=11");
         assertNotNull(result);
-        assertEquals(2, result.getAllRoutes().size());
+        assertEquals(1, result.getAllRoutes().size());
         assertEquals(Kml20Format.class, result.getFormat().getClass());
     }
 
