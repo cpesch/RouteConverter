@@ -787,7 +787,9 @@ public abstract class BaseMapView implements MapView {
             positions = filterVisiblePositionsExt(positions, 10, false);
 
             log.info("position list size after ext: "+positions.size());
+        }
 
+        if (positions.size() > 50000) {
             positions = filterEveryNthPosition(positions, 50000);
         }
 
