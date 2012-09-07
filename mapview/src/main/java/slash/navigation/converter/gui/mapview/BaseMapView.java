@@ -782,12 +782,14 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() < maximumPositionCount)
             return positions;
 
-        positions = filterVisiblePositionsExt(positions, 10, false);
 
-        log.info("position list size after ext: "+positions.size());
+        if (positions.size() > 50000) {
+            positions = filterVisiblePositionsExt(positions, 10, false);
 
-        if (positions.size() > 50000)
+            log.info("position list size after ext: "+positions.size());
+
             positions = filterEveryNthPosition(positions, 50000);
+        }
 
         // determine significant positions for this zoom level
         positions = filterSignificantPositions(positions);
