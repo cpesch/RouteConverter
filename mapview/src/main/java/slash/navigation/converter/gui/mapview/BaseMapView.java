@@ -784,7 +784,7 @@ public abstract class BaseMapView implements MapView {
 
 
         if (positions.size() > 50000) {
-            positions = filterVisiblePositionsExt(positions, 10, false);
+            positions = filterVisiblePositionsExt(positions, 5, false);
 
             log.info("position list size after ext: "+positions.size());
         }
@@ -873,40 +873,58 @@ public abstract class BaseMapView implements MapView {
         // - je mehr Positionen es gibt, desto näher liegen diese üblicherweise beisammen
         // - wenn 2 Punkte ausserhalb des Bereiches liegen, dann
 
-        final int step = positions.size()/10000;
+        if (true) {
 
-        int pos1 = firstIndex;
+            for (int i=firstIndex; i<=lastIndex; i++) {
 
-        BaseNavigationPosition position1 = positions.get(firstIndex);
-        boolean pos1In = contains(northEast, southWest, position1);
-
-        while (pos1 < lastIndex) {
-
-            int pos2 = pos1 + step;
-            if (pos2 > lastIndex) {
-                pos2 = lastIndex;
-            }
-
-            BaseNavigationPosition position2 = positions.get(pos2);
-            boolean pos2In = contains(northEast, southWest, position2);
-            if (pos1In && pos2In) {
-                result.addAll(positions.subList(pos1, pos2));
-            }
-            else {
-                // die Punkte dazwischen müssen geprüft werden
-                // TODO - den gleichen Algorithmus rekursiv wieder anwenden, ohne dabei die Grenzen neu zu berechnen
-
-                for (int i=pos1; i<pos2; i++) {
-
-                    BaseNavigationPosition position = positions.get(i);
-                    if (contains(northEast, southWest, position)) {
-                        result.add(position);
-                    }
+                BaseNavigationPosition position = positions.get(i);
+                if (contains(northEast, southWest, position)) {
+                    result.add(position);
+                }
+                else {
+                    // TODO Check, ob die Linie zwischen dem Punkt davor den Anzeigebereich schneidet
                 }
             }
+        }
+        else {
 
-            pos1In = pos2In;
-            pos1 = pos2;
+            final int step = positions.size()/10000;
+            // TODO - bei sehr großen Listen muss der Step begrenzt werden
+            // TODO - ansonsten gibts Probleme bei sehr tiefen Zoomlevels
+
+            int pos1 = firstIndex;
+
+            BaseNavigationPosition position1 = positions.get(firstIndex);
+            boolean pos1In = contains(northEast, southWest, position1);
+
+            while (pos1 < lastIndex) {
+
+                int pos2 = pos1 + step;
+                if (pos2 > lastIndex) {
+                    pos2 = lastIndex;
+                }
+
+                BaseNavigationPosition position2 = positions.get(pos2);
+                boolean pos2In = contains(northEast, southWest, position2);
+                if (pos1In && pos2In) {
+                    result.addAll(positions.subList(pos1, pos2));
+                }
+                else {
+                    // die Punkte dazwischen müssen geprüft werden
+                    // TODO - den gleichen Algorithmus rekursiv wieder anwenden, ohne dabei die Grenzen neu zu berechnen
+
+                    for (int i=pos1; i<pos2; i++) {
+
+                        BaseNavigationPosition position = positions.get(i);
+                        if (contains(northEast, southWest, position)) {
+                            result.add(position);
+                        }
+                    }
+                }
+
+                pos1In = pos2In;
+                pos1 = pos2;
+            }
         }
 
         if (includeFirstAndLastPosition)
