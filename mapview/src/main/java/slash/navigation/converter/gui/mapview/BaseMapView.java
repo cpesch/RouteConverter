@@ -90,6 +90,7 @@ import static slash.navigation.rest.Helper.decodeUri;
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.Positions.contains;
+import static slash.navigation.util.Positions.crossArea;
 import static slash.navigation.util.Positions.getSignificantPositions;
 import static slash.navigation.util.Positions.northEast;
 import static slash.navigation.util.Positions.southWest;
@@ -856,12 +857,44 @@ public abstract class BaseMapView implements MapView {
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
 
-        for (int i = firstIndex; i < lastIndex; i += 1) {
+        // Problem: ist eine Position im realen Anzeigebereich (ohne Faktor) und die N�chste ausserhalb des Bereiches mit Faktor,
+        //          dann wird die 2. Position entfernt, was am Ende zu vorzeitig endenden Linien f�hrt oder zu Linien, die "abk�rzen"
+
+        BaseNavigationPosition lastPosition = null;
+        boolean lastInArea = false;
+        boolean lastInserted = false;
+
+        for (int i = firstIndex; i < lastIndex; i++) {
             BaseNavigationPosition position = positions.get(i);
+
             if (contains(northEast, southWest, position)) {
+
+                if (! lastInserted && lastPosition != null) {
+                    result.add(lastPosition);
+                }
+
                 result.add(position);
+                lastInArea = true;
+                lastInserted = true;
             }
+            else {
+                if (lastInArea) {
+                    result.add(position);
+                    lastInserted = true;
+                }
+                else {
+                    if (lastPosition != null && crossArea(northEast, southWest, position, lastPosition)) {
+                        result.add(position);
+                        lastInserted = true;
+                    }
+                }
+
+                lastInArea = false;
+            }
+
+            lastPosition = position;
         }
+
 
         if (includeFirstAndLastPosition)
             result.add(positions.get(positions.size() - 1));
@@ -876,14 +909,19 @@ public abstract class BaseMapView implements MapView {
         long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        result.add(positions.get(0));
+//        result.add(positions.get(0));
 
-        double increment = positions.size() / (double) maximumPositionCount;
-        for (double i = 1; i < positions.size() - 1; i += increment) {
+        double increment = (positions.size() / (double) maximumPositionCount);
+        for (double i = 0; i < positions.size() - 1; i += increment) {
             result.add(positions.get((int) i));
         }
 
-        result.add(positions.get(positions.size() - 1));
+        if (result.size() < maximumPositionCount) {
+            result.add(positions.get(positions.size() - 1));
+        }
+        else {
+            result.set(result.size() - 1, positions.get(positions.size() - 1));
+        }
 
         long end = currentTimeMillis();
         log.info(format("Filtered every %fth position to reduce %d positions to %d in %d milliseconds",
