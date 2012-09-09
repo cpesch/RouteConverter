@@ -179,7 +179,7 @@
    var oldSelectedPositions = new Array();
    var newSelectedPositions = new Array();
 
-   function selectionPosition(latitude, longitude, comment, index) {
+   function selectPosition(latitude, longitude, comment, index) {
        var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
            title:comment, draggable:true, zIndex:1000});
        marker.index_ = index;

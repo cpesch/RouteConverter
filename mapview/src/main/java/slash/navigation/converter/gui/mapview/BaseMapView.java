@@ -1109,7 +1109,7 @@ public abstract class BaseMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
-            buffer.append("selectionPosition(").append(selectedPosition.getLatitude()).append(",").
+            buffer.append("selectPosition(").append(selectedPosition.getLatitude()).append(",").
                     append(selectedPosition.getLongitude()).append(",").
                     append("\"").append(escape(selectedPosition.getComment())).append("\",").
                     append(i).append(");\n");
