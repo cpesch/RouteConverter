@@ -178,6 +178,35 @@ public class Positions {
         return result;
     }
 
+    public static boolean crossArea(BaseNavigationPosition northEastCorner,
+                                    BaseNavigationPosition southWestCorner,
+                                    BaseNavigationPosition position1,
+                                    BaseNavigationPosition position2) {
+
+        if (position1.getLongitude() < southWestCorner.getLongitude()
+                && position2.getLongitude() < southWestCorner.getLongitude()) {
+            return false;
+        }
+
+        if (position1.getLongitude() > northEastCorner.getLongitude()
+                && position2.getLongitude() > northEastCorner.getLongitude()) {
+            return false;
+        }
+
+        if (position1.getLatitude() < southWestCorner.getLatitude()
+                && position2.getLatitude() < southWestCorner.getLatitude()) {
+            return false;
+        }
+
+        if (position1.getLatitude() > northEastCorner.getLatitude()
+                && position2.getLatitude() > northEastCorner.getLatitude()) {
+            return false;
+        }
+
+        // TODO - bei Schrägen müsste man hier nun noch über Winkelfunktionen es genau bestimmen
+        return true;
+    }
+
     public static Wgs84Position asPosition(double longitude, double latitude) {
         return asPosition(longitude, latitude, null);
     }
