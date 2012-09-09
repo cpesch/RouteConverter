@@ -878,7 +878,7 @@ public abstract class BaseMapView implements MapView {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         result.add(positions.get(0));
 
-        double increment = positions.size() / (double) maximumPositionCount - 1 /* first position */ - 1 /* last position */;
+        double increment = positions.size() / (double) (maximumPositionCount - 1 /* first position */ - 1 /* last position */);
         for (double i = 1; i < positions.size() - 1; i += increment) {
             result.add(positions.get((int) i));
         }
