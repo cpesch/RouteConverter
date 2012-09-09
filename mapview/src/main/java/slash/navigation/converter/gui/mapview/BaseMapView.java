@@ -789,6 +789,12 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() < 3)
             return positions;
 
+        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
+            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
+
+        // determine significant positions for this zoom level
+        positions = filterSignificantPositions(positions);
+
         // reduce the number of significant positions by a visibility heuristic
         if (positions.size() > maximumPositionCount) {
             positions = filterVisiblePositions(positions, 2.5, false);
@@ -802,12 +808,6 @@ public abstract class BaseMapView implements MapView {
             visibleNorthWest = null;
             visibleSouthEast = null;
         }
-
-        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
-            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
-
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions);
 
         // reduce the number of visible positions by a JS-stability heuristic
         if (positions.size() > maximumPositionCount)
