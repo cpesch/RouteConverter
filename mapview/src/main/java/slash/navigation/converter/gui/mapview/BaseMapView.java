@@ -46,15 +46,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,6 +82,7 @@ import static slash.navigation.rest.Helper.decodeUri;
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.Positions.contains;
+import static slash.navigation.util.Positions.crossArea;
 import static slash.navigation.util.Positions.getSignificantPositions;
 import static slash.navigation.util.Positions.northEast;
 import static slash.navigation.util.Positions.southWest;
@@ -785,18 +778,78 @@ public abstract class BaseMapView implements MapView {
     private BaseNavigationPosition visibleNorthWest, visibleNorthEast, visibleSouthWest, visibleSouthEast;
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
-        if (positions.size() < 2)
+        log.info("base position list size: "+positions.size());
+
+        if (positions.size() < maximumPositionCount)
             return positions;
 
-        if (positions.size() > 50000)
-            positions = filterEveryNthPosition(positions, 50000);
+        boolean hasReduced = false;
+        List<List<BaseNavigationPosition>> segments = new ArrayList<List<BaseNavigationPosition>>();
+        if (positions.size() > 50000) {
+            segments = filterVisiblePositionsExt(positions, 2.5);
 
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions);
+            hasReduced = true;
+        }
+        else {
+            segments.add(positions);
+        }
+
+        int count = 0;
+        for (List<BaseNavigationPosition> segment : segments) {
+            count += segment.size();
+        }
+
+        if (count > maximumPositionCount) {
+            for (int i=0; i<segments.size(); i++) {
+
+                List<BaseNavigationPosition> segment = segments.get(i);
+                if (segment.size() > 50000) {
+                    segment = filterEveryNthPosition(segment, 50000);
+                }
+
+                // determine significant positions for this zoom level
+                significantPositionCache.clear();
+                segment = filterSignificantPositions(segment);
+
+                if (! hasReduced) {
+                    if (segment.size() > maximumPositionCount) {
+                        segment = filterVisiblePositions(segment, 2.5, false);
+                        hasReduced = true;
+                    }
+                }
+
+                segments.set(i, segment);
+            }
+        }
+
+        // die Segmente "herunterrechnen"
+        int fixCount = 0;
+        count = 0;
+        for (List<BaseNavigationPosition> segment : segments) {
+            fixCount += 2;
+            count += segment.size()-2;
+        }
+        if (count+fixCount > maximumPositionCount) {
+
+            for (int i=0; i<segments.size(); i++) {
+
+                List<BaseNavigationPosition> segment = segments.get(i);
+
+                int segmentMaximumPositionCount = ((maximumPositionCount - fixCount)* (segment.size()-2) / count) +2;
+
+                segment = filterEveryNthPosition(segment, segmentMaximumPositionCount);
+                segments.set(i, segment);
+            }
+        }
+
+        positions = new ArrayList<BaseNavigationPosition>();
+        for (List<BaseNavigationPosition> segment : segments) {
+            positions.addAll(segment);
+        }
+
 
         // reduce the number of significant positions by a visibility heuristic
-        if (positions.size() > maximumPositionCount) {
-            positions = filterVisiblePositions(positions, 2.5, false);
+        if (hasReduced) {
             visibleNorthEast = northEast(positions);
             visibleSouthWest = southWest(positions);
             visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
@@ -808,11 +861,97 @@ public abstract class BaseMapView implements MapView {
             visibleSouthEast = null;
         }
 
+
+        // wenn jetzt immer noch zu viel da ist, nehmen wir nur jeden n-ten Wert
+
         // reduce the number of visible positions by a JS-stability heuristic
-        if (positions.size() > maximumPositionCount)
+        if (positions.size() > maximumPositionCount) {
             positions = filterEveryNthPosition(positions, maximumPositionCount);
+        }
 
         return positions;
+    }
+
+    private List<List<BaseNavigationPosition>> filterVisiblePositionsExt(List<BaseNavigationPosition> positions,
+                                                                   double factor) {
+        long start = currentTimeMillis();
+        List<List<BaseNavigationPosition>> result = new ArrayList<List<BaseNavigationPosition>>();
+
+        BaseNavigationPosition northEast = getNorthEastBounds();
+        BaseNavigationPosition southWest = getSouthWestBounds();
+        if (northEast == null || southWest == null) {
+            // TODO - wann kann das passieren ?
+            // TODO - oder eine leere Liste ??
+            result.add(positions);
+            return result;
+        }
+
+        // heuristic: increase bounds for visible positions to enable dragging the map
+        // at the same zoom level, with a factor of 2 you hardly see the cropping even
+        // with a small map and a big screen (meaning lots of space to drag the map)
+        double width = (northEast.getLongitude() - southWest.getLongitude()) * factor;
+        double height = (southWest.getLatitude() - northEast.getLatitude()) * factor;
+        northEast.setLongitude(northEast.getLongitude() + width);
+        northEast.setLatitude(northEast.getLatitude() - height);
+        southWest.setLongitude(southWest.getLongitude() - width);
+        southWest.setLatitude(southWest.getLatitude() + height);
+
+        // Annahmen:
+        // - die Positionen bilden eine Linie, d.h. sie springen nicht extrem hin und her im Vergleich zur Größe des Gesamt-Track
+        // - je mehr Positionen es gibt, desto näher liegen diese üblicherweise beisammen
+
+
+        BaseNavigationPosition lastPosition = null;
+        boolean lastInArea = false;
+        boolean lastInserted = false;
+
+        int count = 0;
+        List<BaseNavigationPosition> currentSegment = new ArrayList<BaseNavigationPosition>();
+        for (BaseNavigationPosition position : positions) {
+
+            if (contains(northEast, southWest, position)) {
+
+                if (!lastInserted && lastPosition != null) {
+                    currentSegment.add(lastPosition);
+                }
+
+                currentSegment.add(position);
+                lastInArea = true;
+                lastInserted = true;
+            } else {
+                // TODO Check, ob die Linie zwischen dem Punkt davor den Anzeigebereich schneidet
+                if (lastInArea) {
+                    currentSegment.add(position);
+                    lastInserted = true;
+                } else {
+                    if (lastPosition != null && crossArea(northEast, southWest, position, lastPosition)) {
+                        currentSegment.add(position);
+                        lastInserted = true;
+                    } else {
+                        if (!currentSegment.isEmpty()) {
+                            result.add(currentSegment);
+                            count += currentSegment.size();
+                            currentSegment = new ArrayList<BaseNavigationPosition>();
+                        }
+                    }
+                }
+
+                lastInArea = false;
+            }
+
+            lastPosition = position;
+        }
+
+        if (! currentSegment.isEmpty()) {
+            result.add(currentSegment);
+            count+= currentSegment.size();
+        }
+
+
+        long end = currentTimeMillis();
+        log.info(format("Reduced %d positions to %d segments / %d positions in %d milliseconds",
+                positions.size(), result.size(), count, (end - start)));
+        return result;
     }
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int[] indices) {
@@ -856,10 +995,54 @@ public abstract class BaseMapView implements MapView {
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
 
-        for (int i = firstIndex; i < lastIndex; i += 1) {
-            BaseNavigationPosition position = positions.get(i);
-            if (contains(northEast, southWest, position)) {
-                result.add(position);
+        // Problem: ist eine Position im realen Anzeigebereich (ohne Faktor) und die Nächste ausserhalb des Bereiches mit Faktor,
+        //          dann wird die 2. Position entfernt, was am Ende zu vorzeitig endenden Linien führt oder zu Linien, die "abkürzen"
+
+        if (true) {
+
+            BaseNavigationPosition lastPosition = null;
+            boolean lastInArea = false;
+            boolean lastInserted = false;
+
+            for (int i = firstIndex; i < lastIndex; i++) {
+                BaseNavigationPosition position = positions.get(i);
+
+                if (contains(northEast, southWest, position)) {
+
+                    if (! lastInserted && lastPosition != null) {
+                        result.add(lastPosition);
+                    }
+
+                    result.add(position);
+                    lastInArea = true;
+                    lastInserted = true;
+                }
+                else {
+                    if (lastInArea) {
+                        result.add(position);
+                        lastInserted = true;
+                    }
+                    else {
+                        if (lastPosition != null && crossArea(northEast, southWest, position, lastPosition)) {
+                            result.add(position);
+                            lastInserted = true;
+                        }
+                    }
+
+                    lastInArea = false;
+                }
+
+                lastPosition = position;
+            }
+
+        }
+        else {
+            // Originalcode
+            for (int i = firstIndex; i < lastIndex; i++) {
+                BaseNavigationPosition position = positions.get(i);
+                if (contains(northEast, southWest, position)) {
+                    result.add(position);
+                }
             }
         }
 
@@ -876,14 +1059,19 @@ public abstract class BaseMapView implements MapView {
         long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        result.add(positions.get(0));
+//        result.add(positions.get(0));
 
-        double increment = positions.size() / (double) maximumPositionCount;
-        for (double i = 1; i < positions.size() - 1; i += increment) {
+        double increment = (positions.size() / (double) maximumPositionCount);
+        for (double i = 0; i < positions.size() - 1; i += increment) {
             result.add(positions.get((int) i));
         }
 
-        result.add(positions.get(positions.size() - 1));
+        if (result.size() < maximumPositionCount) {
+            result.add(positions.get(positions.size() - 1));
+        }
+        else {
+            result.set(result.size() - 1, positions.get(positions.size() - 1));
+        }
 
         long end = currentTimeMillis();
         log.info(format("Filtered every %fth position to reduce %d positions to %d in %d milliseconds",
@@ -1118,6 +1306,14 @@ public abstract class BaseMapView implements MapView {
         if (center != null && center.hasCoordinates())
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
         buffer.append("removeSelectedPositions();");
+
+        // TODO - sollte hier nicht geprüft werden, ob sich der Anzeigebereich verschoben hat und man ggf. die Kurve neu bestimmen muss
+        synchronized (notificationMutex) {
+            haveToRepaintRouteImmediately = true;
+            routeUpdateReason = "move position from selection";
+            notificationMutex.notifyAll();
+        }
+
         executeScript(buffer.toString());
     }
 
