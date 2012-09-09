@@ -786,18 +786,78 @@ public abstract class BaseMapView implements MapView {
     private BaseNavigationPosition visibleNorthWest, visibleNorthEast, visibleSouthWest, visibleSouthEast;
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
-        if (positions.size() < 2)
+        log.info("base position list size: "+positions.size());
+
+        if (positions.size() < maximumPositionCount)
             return positions;
 
-        if (positions.size() > 50000)
-            positions = filterEveryNthPosition(positions, 50000);
+        boolean hasReduced = false;
+        List<List<BaseNavigationPosition>> segments = new ArrayList<List<BaseNavigationPosition>>();
+        if (positions.size() > 50000) {
+            segments = filterVisiblePositionsExt(positions, 2.5);
 
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions);
+            hasReduced = true;
+        }
+        else {
+            segments.add(positions);
+        }
+
+        int count = 0;
+        for (List<BaseNavigationPosition> segment : segments) {
+            count += segment.size();
+        }
+
+        if (count > maximumPositionCount) {
+            for (int i=0; i<segments.size(); i++) {
+
+                List<BaseNavigationPosition> segment = segments.get(i);
+                if (segment.size() > 50000) {
+                    segment = filterEveryNthPosition(segment, 50000);
+                }
+
+                // determine significant positions for this zoom level
+                significantPositionCache.clear();
+                segment = filterSignificantPositions(segment);
+
+                if (! hasReduced) {
+                    if (segment.size() > maximumPositionCount) {
+                        segment = filterVisiblePositions(segment, 2.5, false);
+                        hasReduced = true;
+                    }
+                }
+
+                segments.set(i, segment);
+            }
+        }
+
+        // die Segmente "herunterrechnen"
+        int fixCount = 0;
+        count = 0;
+        for (List<BaseNavigationPosition> segment : segments) {
+            fixCount += 2;
+            count += segment.size()-2;
+        }
+        if (count+fixCount > maximumPositionCount) {
+
+            for (int i=0; i<segments.size(); i++) {
+
+                List<BaseNavigationPosition> segment = segments.get(i);
+
+                int segmentMaximumPositionCount = ((maximumPositionCount - fixCount)* (segment.size()-2) / count) +2;
+
+                segment = filterEveryNthPosition(segment, segmentMaximumPositionCount);
+                segments.set(i, segment);
+            }
+        }
+
+        positions = new ArrayList<BaseNavigationPosition>();
+        for (List<BaseNavigationPosition> segment : segments) {
+            positions.addAll(segment);
+        }
+
 
         // reduce the number of significant positions by a visibility heuristic
-        if (positions.size() > maximumPositionCount) {
-            positions = filterVisiblePositions(positions, 2.5, false);
+        if (hasReduced) {
             visibleNorthEast = northEast(positions);
             visibleSouthWest = southWest(positions);
             visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
@@ -809,11 +869,96 @@ public abstract class BaseMapView implements MapView {
             visibleSouthEast = null;
         }
 
+
+        // wenn jetzt immer noch zu viel da ist, nehmen wir nur jeden n-ten Wert
+
         // reduce the number of visible positions by a JS-stability heuristic
-        if (positions.size() > maximumPositionCount)
+        if (positions.size() > maximumPositionCount) {
             positions = filterEveryNthPosition(positions, maximumPositionCount);
+        }
 
         return positions;
+    }
+
+    private List<List<BaseNavigationPosition>> filterVisiblePositionsExt(List<BaseNavigationPosition> positions,
+                                                                   double factor) {
+        long start = currentTimeMillis();
+        List<List<BaseNavigationPosition>> result = new ArrayList<List<BaseNavigationPosition>>();
+
+        BaseNavigationPosition northEast = getNorthEastBounds();
+        BaseNavigationPosition southWest = getSouthWestBounds();
+        if (northEast == null || southWest == null) {
+            // TODO - wann kann das passieren ?
+            // TODO - oder eine leere Liste ??
+            result.add(positions);
+            return result;
+        }
+
+        // heuristic: increase bounds for visible positions to enable dragging the map
+        // at the same zoom level, with a factor of 2 you hardly see the cropping even
+        // with a small map and a big screen (meaning lots of space to drag the map)
+        double width = (northEast.getLongitude() - southWest.getLongitude()) * factor;
+        double height = (southWest.getLatitude() - northEast.getLatitude()) * factor;
+        northEast.setLongitude(northEast.getLongitude() + width);
+        northEast.setLatitude(northEast.getLatitude() - height);
+        southWest.setLongitude(southWest.getLongitude() - width);
+        southWest.setLatitude(southWest.getLatitude() + height);
+
+        // Annahmen:
+        // - die Positionen bilden eine Linie, d.h. sie springen nicht extrem hin und her im Vergleich zur Gr��e des Gesamt-Track
+        // - je mehr Positionen es gibt, desto n�her liegen diese �blicherweise beisammen
+
+
+        BaseNavigationPosition lastPosition = null;
+        boolean lastInArea = false;
+        boolean lastInserted = false;
+
+        int count = 0;
+        List<BaseNavigationPosition> currentSegment = new ArrayList<BaseNavigationPosition>();
+        for (BaseNavigationPosition position : positions) {
+
+            if (contains(northEast, southWest, position)) {
+
+                if (!lastInserted && lastPosition != null) {
+                    currentSegment.add(lastPosition);
+                }
+
+                currentSegment.add(position);
+                lastInArea = true;
+                lastInserted = true;
+            } else {
+                if (lastInArea) {
+                    currentSegment.add(position);
+                    lastInserted = true;
+                } else {
+                    if (lastPosition != null && crossArea(northEast, southWest, position, lastPosition)) {
+                        currentSegment.add(position);
+                        lastInserted = true;
+                    } else {
+                        if (!currentSegment.isEmpty()) {
+                            result.add(currentSegment);
+                            count += currentSegment.size();
+                            currentSegment = new ArrayList<BaseNavigationPosition>();
+                        }
+                    }
+                }
+
+                lastInArea = false;
+            }
+
+            lastPosition = position;
+        }
+
+        if (! currentSegment.isEmpty()) {
+            result.add(currentSegment);
+            count+= currentSegment.size();
+        }
+
+
+        long end = currentTimeMillis();
+        log.info(format("Reduced %d positions to %d segments / %d positions in %d milliseconds",
+                positions.size(), result.size(), count, (end - start)));
+        return result;
     }
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int[] indices) {
