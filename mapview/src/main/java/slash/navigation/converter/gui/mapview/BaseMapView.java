@@ -118,6 +118,7 @@ public abstract class BaseMapView implements MapView {
     private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount3", 30 * 8);
     private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength3", 10);
     private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount3", 50 * 10);
+    private static final int MAXIMUM_SIGNIFICANT_POSITION_COUNT = preferences.getInt("maximumSignificantPositionCount3", 50000);
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount3", 5 * 10);
     private static final int[] ZOOM_SCALE = {
             400000000,
@@ -788,12 +789,6 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() < 3)
             return positions;
 
-        if (positions.size() > 50000)
-            positions = filterEveryNthPosition(positions, 50000);
-
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions);
-
         // reduce the number of significant positions by a visibility heuristic
         if (positions.size() > maximumPositionCount) {
             positions = filterVisiblePositions(positions, 2.5, false);
@@ -807,6 +802,12 @@ public abstract class BaseMapView implements MapView {
             visibleNorthWest = null;
             visibleSouthEast = null;
         }
+
+        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
+            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
+
+        // determine significant positions for this zoom level
+        positions = filterSignificantPositions(positions);
 
         // reduce the number of visible positions by a JS-stability heuristic
         if (positions.size() > maximumPositionCount)
