@@ -785,7 +785,7 @@ public abstract class BaseMapView implements MapView {
     private BaseNavigationPosition visibleNorthWest, visibleNorthEast, visibleSouthWest, visibleSouthEast;
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
-        if (positions.size() < 2)
+        if (positions.size() < 3)
             return positions;
 
         if (positions.size() > 50000)
