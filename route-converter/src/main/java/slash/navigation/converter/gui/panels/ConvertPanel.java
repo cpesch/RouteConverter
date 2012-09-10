@@ -173,6 +173,7 @@ import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavo
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -232,20 +233,21 @@ public class ConvertPanel {
                     selectionModel.clearSelection();
                 }
 
+                int maximumRangeLength = selectedPositions.length > 19 ? selectedPositions.length / 100 : selectedPositions.length;
                 new ContinousRange(selectedPositions, new RangeOperation() {
                     public void performOnIndex(int index) {
-                        ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                        selectionModel.addSelectionInterval(index, index);
                     }
 
                     public void performOnRange(int firstIndex, int lastIndex) {
-                        JTableHelper.scrollToPosition(tablePositions, firstIndex);
+                        ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                        selectionModel.addSelectionInterval(firstIndex, lastIndex);
+                        scrollToPosition(tablePositions, firstIndex);
                     }
 
                     public boolean isInterrupted() {
                         return false;
                     }
-                }).performMonotonicallyIncreasing(20);
+                }).performMonotonicallyIncreasing(maximumRangeLength);
             }
         };
 
