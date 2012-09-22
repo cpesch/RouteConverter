@@ -162,7 +162,7 @@ public class UpdateChecker {
         public boolean existsLaterRouteConverterVersion() {
             String latestRouteConverterVersion = getLatestRouteConverterVersion();
             if(latestRouteConverterVersion == null)
-                latestRouteConverterVersion = "?";
+                return false;
             boolean isLatestRouteConverterVersion = new Version(getMyRouteConverterVersion()).isLaterVersionThan(new Version(latestRouteConverterVersion));
             return !isLatestRouteConverterVersion;
         }
