@@ -1602,7 +1602,7 @@ public abstract class BaseMapView implements MapView {
         for (BaseNavigationPosition position : positions) {
             // do not complement comment since this is limited to 2500 calls/day
             positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
-            positionAugmenter.complementTime(index, null);
+            positionAugmenter.complementTime(index, position.getTime());
             index++;
         }
     }
