@@ -25,11 +25,16 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.events.Range;
 import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
@@ -70,23 +75,66 @@ public class AddPositionAction extends FrameAction {
         return formatNumberedPosition(numberPattern, number, description);
     }
 
+    private BaseNavigationPosition insertRow(int row, BaseNavigationPosition position) {
+        positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
+                position.getSpeed(), position.getTime(), getRouteComment());
+        return positionsModel.getPosition(row);
+    }
+
+    private void complementRow(int row, BaseNavigationPosition position) {
+        RouteConverter r = RouteConverter.getInstance();
+        r.complementComment(row, position.getLongitude(), position.getLatitude());
+        r.complementElevation(row, position.getLongitude(), position.getLatitude());
+        r.complementTime(row, position.getTime());
+    }
+
+    private int[] asInt(List<Integer> indices) {
+        int[] result = new int[indices.size()];
+        for (int i = 0; i < indices.size(); i++) {
+            result[i] = indices.get(i);
+        }
+        return result;
+    }
+
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        int[] selectedRows = table.getSelectedRows();
-        int row = selectedRows.length > 0 ? selectedRows[0] : table.getRowCount();
-        int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-        BaseNavigationPosition center = selectedRows.length > 0 ? calculateCenter(row) :
-                positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
-        if (center == null)
-            center = r.getMapCenter();
+        boolean hasInsertedRowInMapCenter = false;
+        List<BaseNavigationPosition> insertedPositions = new ArrayList<BaseNavigationPosition>();
+        int[] rowIndices = Range.revert(table.getSelectedRows());
+        for (int aReverted : rowIndices) {
+            int row = rowIndices.length > 0 ? aReverted : table.getRowCount();
+            int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
 
-        positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(), center.getElevation(),
-                center.getSpeed(), center.getTime(), getRouteComment());
-        positionsSelectionModel.setSelectedPositions(new int[]{insertRow}, true);
+            BaseNavigationPosition center = rowIndices.length > 0 ? calculateCenter(row) :
+                    positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
+            if (center == null) {
+                // only insert row in map center once
+                if (hasInsertedRowInMapCenter)
+                    continue;
+                center = r.getMapCenter();
+                hasInsertedRowInMapCenter = true;
+            }
 
-        r.complementComment(insertRow, center.getLongitude(), center.getLatitude());
-        r.complementElevation(insertRow, center.getLongitude(), center.getLatitude());
-        r.complementTime(insertRow, center.getTime());
+            insertedPositions.add(insertRow(insertRow, center));
+        }
+
+        if (insertedPositions.size() > 0) {
+            List<Integer> insertedRows = new ArrayList<Integer>();
+            for (BaseNavigationPosition position : insertedPositions) {
+                int index = positionsModel.getIndex(position);
+                insertedRows.add(index);
+                complementRow(index, position);
+            }
+
+            final int[] rows = asInt(insertedRows);
+            final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
+            invokeLater(new Runnable() {
+                public void run() {
+                    scrollToPosition(table, insertRow);
+                    positionsSelectionModel.setSelectedPositions(rows, true);
+                }
+            });
+        }
     }
 }
