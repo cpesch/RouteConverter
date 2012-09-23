@@ -20,11 +20,14 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
 
 /**
  * {@link Action} that deletes the selected rows of a {@link JTable}.
@@ -50,10 +53,10 @@ public class DeleteAction extends FrameAction {
             final int removeRow = selectedRows[0] < table.getRowCount() ?
                     selectedRows[0] : table.getRowCount() - 1;
             if (table.getRowCount() > 0) {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
-                        JTableHelper.scrollToPosition(table, removeRow);
-                        JTableHelper.selectPositions(table, removeRow, removeRow);
+                        scrollToPosition(table, removeRow);
+                        selectPositions(table, removeRow, removeRow);
                     }
                 });
             }

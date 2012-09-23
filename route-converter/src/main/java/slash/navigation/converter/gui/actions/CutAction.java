@@ -22,11 +22,14 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
-import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
 
 /**
  * {@link Action} that cuts the selected rows of a {@link JTable}.
@@ -54,10 +57,10 @@ public class CutAction extends FrameAction {
             positionsModel.remove(selectedRows);
             final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
             if (table.getRowCount() > 0) {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
-                        JTableHelper.scrollToPosition(table, removeRow);
-                        JTableHelper.selectPositions(table, removeRow, removeRow);
+                        scrollToPosition(table, removeRow);
+                        selectPositions(table, removeRow, removeRow);
                     }
                 });
             }
