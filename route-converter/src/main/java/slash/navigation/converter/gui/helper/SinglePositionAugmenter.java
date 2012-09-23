@@ -61,6 +61,10 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         this.completePositionService = completePositionService;
     }
 
+    public void interrupt() {
+        executorService.shutdownNow();
+    }
+
     public String createComment(int index) {
         String description = RouteConverter.getBundle().getString("new-position-name");
         return createComment(index, description);

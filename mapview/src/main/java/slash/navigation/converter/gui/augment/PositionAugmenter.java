@@ -34,4 +34,5 @@ public interface PositionAugmenter {
     void complementComment(int row, Double longitude, Double latitude);
     void complementElevation(int row, Double longitude, Double latitude);
     void complementTime(int row, final CompactCalendar time);
+    void interrupt();
 }

@@ -566,6 +566,8 @@ public abstract class BaseMapView implements MapView {
             notificationMutex.notifyAll();
         }
 
+        positionAugmenter.interrupt();
+
         if (selectionUpdater != null) {
             try {
                 selectionUpdater.join(500);
@@ -942,6 +944,7 @@ public abstract class BaseMapView implements MapView {
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
                 significantPositionCache.clear();
+                positionAugmenter.interrupt();
             }
             notificationMutex.notifyAll();
         }
