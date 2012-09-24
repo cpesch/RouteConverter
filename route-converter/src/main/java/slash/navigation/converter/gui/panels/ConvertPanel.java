@@ -768,8 +768,8 @@ public class ConvertPanel {
             recentFormatsModel.addFormat(format);
             log.info(String.format("Saved: %s", targetsAsString));
 
-            if (!exportSelectedRoute) {
-                if (openAfterSave && format.isSupportsReading()) {
+            if (!exportSelectedRoute && format.isSupportsReading()) {
+                if (openAfterSave) {
                     openPositionList(toUrls(files), getReadFormatsWithPreferredFormat(format));
                     log.info(String.format("Open after save: %s", files[0]));
                 }
