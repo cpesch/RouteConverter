@@ -1,49 +1,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>INSERT_ROUTENAME</title>
-    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAzr2EBOXUKnm_jVnk0OJI7xSosDVG8KKPE1-m51RBrvYughuyMxQ-i1QfUnH94QxWIa6N4U6MouMmBA" type="text/javascript"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3.8&sensor=false" type="text/javascript"></script>
     <script type="text/javascript">
 
-        function GetTileUrl_Mapnik(a, b) {
-            return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
+        function addTrack(latlngs) {
+            var polyline = new google.maps.Polyline({path:latlngs, strokeColor:"#0033FF", strokeWeight:2, strokeOpacity:1, clickable:false});
+            polyline.setMap(map);
         }
 
-        function GetTileUrl_TaH(a, b) {
-            return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
-        }
-
-        function GetTileUrl_Cyc(a, b) {
-            return "http://a.andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
-        }
-
-        function isLoaded() {
-            return window.GBrowserIsCompatible;
-        }
-
-        function setMapType(map, mapType) {
-            var types = map.getMapTypes();
-            for (i = 0; i < types.length; i++) {
-                var type = types[i];
-                if (type.getName() == mapType) {
-                    map.setMapType(type);
-                    break;
+        function addRoute(latlngs) {
+            var directionsRequest = {
+                origin: latlngs[0],
+                // TODO waypoints: latlngs,
+                destination: latlngs[latlngs.length - 1],
+                travelMode: google.maps.DirectionsTravelMode.DRIVING,
+                avoidHighways: false,
+                avoidTolls: true
+            };
+            var renderer = new google.maps.DirectionsRenderer({map: map, preserveViewport: true,
+                suppressMarkers: true, hideRouteList: true});
+            new google.maps.DirectionsService().route(directionsRequest, function(result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    renderer.setDirections(result);
+                } else {
+                    setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
                 }
-            }
+            });
         }
 
-        function addTrack(map, latlngs) {
-            map.addOverlay(new GPolyline(latlngs, "#0033FF", 2, 1));
-        }
-
-        function addRoute(map, latlngs) {
-            new GDirections(map, document.getElementById("directions")).loadFromWaypoints(latlngs, { avoidHighways: true, travelMode: G_TRAVEL_MODE_DRIVING, locale: 'en' });
-        }
-
-        function addWaypoints(map, markers) {
+        function addWaypoints(markers) {
             for (var i = 0; i < markers.length; i++) {
-                map.addOverlay(markers[i]);
+                markers[i].setMap(map);
             }
         }
 
@@ -55,84 +45,210 @@
             error.appendChild(element);
         }
 
+        var outdoorActiveServerIndex = 0;
+
+        function getOutdoorActiveServerIndex() {
+            outdoorActiveServerIndex++;
+            if (outdoorActiveServerIndex > 3)
+                outdoorActiveServerIndex = 0;
+            return outdoorActiveServerIndex;
+        }
+
+        var openStreetMapServerIndex = 0;
+
+        function getOpenStreetMapServerIndex() {
+            openStreetMapServerIndex++;
+            if (openStreetMapServerIndex > 2)
+                openStreetMapServerIndex = 0;
+            return String.fromCharCode(openStreetMapServerIndex + 65);
+        }
+
+        var initialized, map, markerIcon;
+
         function initialize() {
-            if (isLoaded()) {
-                try {
-                    if (GBrowserIsCompatible()) {
-                        var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "(CC-by-sa)");
-                        var copyrightCollection = new GCopyrightCollection("&copy; OpenStreetMap");
-                        copyrightCollection.addCopyright(copyright);
-                        var tilelayers_mapnik = new Array();
-                        tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
-                        tilelayers_mapnik[0].getTileUrl = GetTileUrl_Mapnik;
-                        tilelayers_mapnik[0].getOpacity = function () {
-                            return 1.0;
-                        };
-                        var tilelayers_tah = new Array();
-                        tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
-                        tilelayers_tah[0].getTileUrl = GetTileUrl_TaH;
-                        tilelayers_tah[0].getOpacity = function () {
-                            return 1.0;
-                        };
-                        var tilelayers_cyc = new Array();
-                        tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
-                        tilelayers_cyc[0].getTileUrl = GetTileUrl_Cyc;
-                        tilelayers_cyc[0].getOpacity = function () {
-                            return 1.0;
-                        };
-                        mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data" });
-                        tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data" });
-                        cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data" });
+            initialized = false;
 
-                        var markerIcon = new GIcon();
-                        markerIcon.image = "http://maps.google.com/mapfiles/kml/shapes/placemark_circle_maps.png";
-                        markerIcon.iconSize = new GSize(32, 32);
-                        markerIcon.shadowSize = markerIcon.iconSize;
-                        markerIcon.iconAnchor = new GPoint(14, 16);
+            try {
+                var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle",
+                        HIKE_MAPTYPE_ID = "Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols",
+                        OUTDOOR_D_MAPTYPE_ID = "Outdoor D", OUTDOOR_A_MAPTYPE_ID = "Outdoor A",
+                        OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
+                var MAPTYPE_IDS = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
+                    google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
+                    MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID,
+                    OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID];
+                var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
+                var mapOptions = {
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    mapTypeControlOptions: {
+                        mapTypeIds: MAPTYPE_IDS,
+                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                    },
+                    panControl: false,
+                    zoomControlOptions: {
+                        style: google.maps.ZoomControlStyle.LARGE
+                    },
+                    disableDefaultUI: false,
+                    streetViewControl: false,
+                    scaleControl: true,
+                    draggableCursor: 'default',
+                    draggingCursor: 'pointer'
+                };
+                map = new google.maps.Map(document.getElementById("map"), mapOptions);
+                map.mapTypes.set(MAPNIK_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://" + getOpenStreetMapServerIndex() + ".tile.openstreetmap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    maxZoom: 18,
+                    alt: "Mapnik rendering of OpenStreetMap data",
+                    name: MAPNIK_MAPTYPE_ID
+                }));
+                map.mapTypes.set(CYCLE_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://" + getOpenStreetMapServerIndex() + ".tile.opencyclemap.org/cycle/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    maxZoom: 18,
+                    alt: "OpenCycleMap rendering of OpenStreetMap data",
+                    name: CYCLE_MAPTYPE_ID
+                }));
+                map.mapTypes.set(HIKE_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    maxZoom: 18,
+                    alt: "HikeBikeMap rendering of OpenStreetMap data",
+                    name: HIKE_MAPTYPE_ID
+                }));
+                map.mapTypes.set(HIKE_MAPTYPE_SYMBOL_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    maxZoom: 18,
+                    alt: "HikeBikeMap with Symbols rendering of OpenStreetMap data",
+                    name: HIKE_MAPTYPE_SYMBOL_ID
+                }));
+                map.mapTypes.set(OUTDOOR_D_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/portal/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    minZoom: 8,
+                    maxZoom: 17,
+                    alt: "Outdoor Active Summer Map Deutschland",
+                    name: OUTDOOR_D_MAPTYPE_ID
+                }));
+                map.mapTypes.set(OUTDOOR_A_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/austria/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    minZoom: 9,
+                    maxZoom: 17,
+                    alt: "Outdoor Active Summer Map Österreich",
+                    name: OUTDOOR_A_MAPTYPE_ID
+                }));
+                map.mapTypes.set(OUTDOOR_CH_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/ch/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    minZoom: 10,
+                    maxZoom: 17,
+                    alt: "Outdoor Active Summer Map Schweiz",
+                    name: OUTDOOR_CH_MAPTYPE_ID
+                }));
+                map.mapTypes.set(TOPOGRAPHIC_MAPTYPE_ID, new google.maps.ImageMapType({
+                    getTileUrl: function(coordinates, zoom) {
+                        var mapType = zoom > 15 ? "topo" : "map";
+                        return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/portal/" + mapType + "/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    minZoom: 8,
+                    maxZoom: 17,
+                    alt: "Outdoor Active Topographic Map",
+                    name: TOPOGRAPHIC_MAPTYPE_ID
+                }));
 
-                        var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap] });
-                        map.addControl(new GLargeMapControl());
-                        map.addControl(new GMapTypeControl());
-                        map.enableScrollWheelZoom();
+                var hikingSymbolsMapType = new google.maps.ImageMapType({
+                    getTileUrl: function(coord, zoom) {
+                        return "http://tile.lonvia.de/hiking/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    isPng: true,
+                    name: "Hiking Symbols"
+                });
+                var reliefMapType = new google.maps.ImageMapType({
+                    getTileUrl: function(coord, zoom) {
+                        return "http://toolserver.org/~cmarqu/hill/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                    },
+                    tileSize: DEFAULT_TILE_SIZE,
+                    isPng: true,
+                    name: "Relief"
+                });
 
-                        // options: Normal, Satellite, Hybrid, Terrain, Mapnik, T@H, Cycle
-                        setMapType(map, "Normal");
+                var copyrightControl = document.createElement('div');
+                copyrightControl.id = 'copyright-control';
+                copyrightControl.style.fontSize = '10px';
+                copyrightControl.style.fontFamily = 'Arial, sans-serif';
+                copyrightControl.style.margin = '0 2px 4px 0';
+                copyrightControl.style.whitespace = 'nowrap';
+                copyrightControl.index = 1;
+                map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
 
-                        // options: Track, Route, Waypoint list
-                        var route = [INSERT_TRACK];
-                        addRoute(map, route);
-                        var track = [INSERT_ROUTE];
-                        addTrack(map, track);
-                        var waypoints = [INSERT_WAYPOINTS];
-                        addWaypoints(map, waypoints);
-                          
-                        // zoom
-                        var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(INSERT_BOUNDS));
-                        map.setCenter(INSERT_CENTER, zoomLevel);
+                markerIcon = new google.maps.MarkerImage(
+                        "http:///maps.google.com/mapfiles/kml/shapes/placemark_circle_maps.png",
+                        new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
 
+                // options: google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
+                //          MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID, OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID
+                map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+
+                google.maps.event.addListener(map, "maptypeid_changed", function() {
+                    var mapTypeId = map.getMapTypeId();
+                    if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
+                        copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
+                    } else if (mapTypeId == OUTDOOR_D_MAPTYPE_ID || mapTypeId == OUTDOOR_A_MAPTYPE_ID || mapTypeId == OUTDOOR_CH_MAPTYPE_ID || mapTypeId == TOPOGRAPHIC_MAPTYPE_ID) {
+                        copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                     } else {
-                        setError("<p>Sorry, Google Maps is not compatible</p><p>with this browser.</p>");
+                        copyrightControl.innerHTML = '';
                     }
-                } catch (e) {
-                    setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p></div>");
-                }
-            } else {
-                setError("<p>Sorry, could not access Google Maps.</p><p>Please check your Internet connection.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+
+                    if (mapTypeId == HIKE_MAPTYPE_SYMBOL_ID){
+                        map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
+                        map.overlayMapTypes.setAt(1, reliefMapType);
+                    }
+                    else {
+                        map.overlayMapTypes.setAt(0, null);
+                        map.overlayMapTypes.setAt(1, null);
+                    }
+                });
+
+                // options: Track, Route, Waypoint list
+                var route = [INSERT_TRACK];
+                addRoute(route);
+                var track = [INSERT_ROUTE];
+                addTrack(track);
+                var waypoints = [INSERT_WAYPOINTS];
+                addWaypoints(waypoints);
+
+                // zoom
+                map.fitBounds(new google.maps.LatLngBounds(INSERT_SOUTHWEST, INSERT_NORTHEAST));
+                map.setCenter(INSERT_CENTER);
+            } catch (e) {
+                setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
             }
         }
-
-        function unload() {
-            if (isLoaded())
-                GUnload();
-        }
-
     </script>
     <style type="text/css">
         #map { width: 600px; height: 400px }
         #directions { display: none }
     </style>
 </head>
-<body onload="initialize()" onunload="unload()">
+<body onload="initialize()">
 <h1>INSERT_ROUTENAME</h1>
 <div id="error"></div>
 <div id="map"></div>

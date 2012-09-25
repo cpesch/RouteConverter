@@ -48,7 +48,7 @@ import static slash.navigation.util.Positions.southWest;
  */
 
 public class WebPageFormat extends SimpleFormat<Wgs84Route> {
- 
+
     public String getExtension() {
         return ".html";
     }
@@ -62,7 +62,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public boolean isWritingRouteCharacteristics() {
-        return true; 
+        return true;
     }
 
     public int getMaximumPositionCount() {
@@ -83,51 +83,45 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();
-        if(route.getCharacteristics() == Route) {
-            // TODO segment and limit position count
+        if (route.getCharacteristics() == Route) {
             for (Wgs84Position position : positions) {
-                routeBuffer.append("new GLatLng(").append(position.getLatitude()).append(",").
+                routeBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append("),");
             }
         }
 
         StringBuilder trackBuffer = new StringBuilder();
-        if(route.getCharacteristics() == Track) {
-            // TODO segment and limit position count
+        if (route.getCharacteristics() == Track) {
             for (Wgs84Position position : positions) {
-                trackBuffer.append("new GLatLng(").append(position.getLatitude()).append(",").
+                trackBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append("),");
             }
         }
 
         StringBuilder waypointsBuffer = new StringBuilder();
-        if(route.getCharacteristics() == Waypoints) {
-            // TODO segment and limit position count
+        if (route.getCharacteristics() == Waypoints) {
             for (Wgs84Position position : positions) {
-                waypointsBuffer.append("new GMarker(new GLatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("), { title: \")").
-                        append(position.getComment()).append("\", clickable: false, icon: markerIcon }),");
+                waypointsBuffer.append("new google.maps.Marker({position:new google.maps.LatLng(").
+                        append(position.getLatitude()).append(",").append(position.getLongitude()).append("), title: \")").
+                        append(position.getComment()).append("\", clickable:false, icon:markerIcon}),");
             }
         }
-        
-        BaseNavigationPosition northEast = northEast(positions);
+
         BaseNavigationPosition southWest = southWest(positions);
-        StringBuffer boundsBuffer = new StringBuffer().
-                append("new GLatLng(").append(northEast.getLatitude()).append(",").
-                append(northEast.getLongitude()).append("),").
-                append("new GLatLng(").append(southWest.getLatitude()).append(",").
-                append(southWest.getLongitude()).append(")");
+        String southWestBuffer = "new google.maps.LatLng(" + southWest.getLatitude() + "," + southWest.getLongitude() + ")";
+        BaseNavigationPosition northEast = northEast(positions);
+        String northEastBuffer = "new google.maps.LatLng(" + northEast.getLatitude() + "," + northEast.getLongitude() + ")";
+
         BaseNavigationPosition center = center(positions);
-        StringBuffer centerBuffer = new StringBuffer().
-                append("new GLatLng(").append(center.getLatitude()).append(",").
-                append(center.getLongitude()).append(")");
+        String centerBuffer = "new google.maps.LatLng(" + center.getLatitude() + "," + center.getLongitude() + ")";
 
         String output = template.replaceAll("INSERT_ROUTENAME", route.getName()).
                 replaceAll("INSERT_TRACK", routeBuffer.toString()).
                 replaceAll("INSERT_ROUTE", trackBuffer.toString()).
                 replaceAll("INSERT_WAYPOINTS", waypointsBuffer.toString()).
-                replaceAll("INSERT_BOUNDS", boundsBuffer.toString()).
-                replaceAll("INSERT_CENTER", centerBuffer.toString());
+                replaceAll("INSERT_SOUTHWEST", southWestBuffer).
+                replaceAll("INSERT_NORTHEAST", northEastBuffer).
+                replaceAll("INSERT_CENTER", centerBuffer);
         writer.println(output);
     }
 }
