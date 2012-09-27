@@ -568,7 +568,8 @@ public abstract class BaseMapView implements MapView {
             notificationMutex.notifyAll();
         }
 
-        positionAugmenter.interrupt();
+        if (positionAugmenter != null)
+            positionAugmenter.interrupt();
 
         if (selectionUpdater != null) {
             try {
