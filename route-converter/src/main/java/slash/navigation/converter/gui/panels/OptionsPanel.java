@@ -31,8 +31,8 @@ import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
 import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.converter.gui.renderer.UnitListCellRenderer;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.util.NumberPattern;
 import slash.navigation.util.Unit;
 

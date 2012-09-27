@@ -24,14 +24,13 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.System.arraycopy;
-import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.common.type.CompactCalendar.fromCalendar;
 
 /**
  * Provides {@link BaseNavigationPosition} calculation functionality.

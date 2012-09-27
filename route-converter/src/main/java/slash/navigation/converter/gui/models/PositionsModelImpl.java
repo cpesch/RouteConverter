@@ -20,16 +20,16 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.gui.events.ContinousRange;
-import slash.navigation.gui.events.Range;
-import slash.navigation.gui.events.RangeOperation;
 import slash.common.io.Transfer;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.PositionHelper;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.Range;
+import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.util.Unit;
 
 import javax.swing.event.TableModelEvent;

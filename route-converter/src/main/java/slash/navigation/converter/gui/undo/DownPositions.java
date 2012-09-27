@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.gui.events.Range;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.events.Range;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
