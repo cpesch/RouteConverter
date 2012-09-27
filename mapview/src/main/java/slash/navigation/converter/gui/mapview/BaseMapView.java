@@ -74,6 +74,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
+import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
@@ -573,9 +574,7 @@ public abstract class BaseMapView implements MapView {
 
         if (selectionUpdater != null) {
             try {
-                selectionUpdater.join(500);
-                selectionUpdater.interrupt();
-                selectionUpdater.join();
+                safeJoin(selectionUpdater);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -585,9 +584,7 @@ public abstract class BaseMapView implements MapView {
 
         if (positionListUpdater != null) {
             try {
-                positionListUpdater.join(500);
-                positionListUpdater.interrupt();
-                positionListUpdater.join();
+                safeJoin(positionListUpdater);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -607,7 +604,7 @@ public abstract class BaseMapView implements MapView {
 
         if (callbackListener != null) {
             try {
-                callbackListener.join();
+                safeJoin(callbackListener);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -618,7 +615,7 @@ public abstract class BaseMapView implements MapView {
         if (callbackPoller != null) {
             try {
                 if (callbackPoller.isAlive())
-                    callbackPoller.join();
+                    safeJoin(callbackPoller);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -720,8 +717,11 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
+
     protected abstract BaseNavigationPosition getSouthWestBounds();
+
     protected abstract BaseNavigationPosition getCurrentMapCenter();
+
     protected abstract Integer getCurrentZoom();
 
     private BaseNavigationPosition getLastMapCenter() {

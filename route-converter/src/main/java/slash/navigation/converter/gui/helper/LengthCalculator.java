@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -192,7 +193,7 @@ public class LengthCalculator {
 
         if (lengthCalculator != null) {
             try {
-                lengthCalculator.join();
+                safeJoin(lengthCalculator);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
