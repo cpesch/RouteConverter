@@ -88,14 +88,6 @@ public class AddPositionAction extends FrameAction {
         r.complementTime(row, position.getTime());
     }
 
-    private int[] asInt(List<Integer> indices) {
-        int[] result = new int[indices.size()];
-        for (int i = 0; i < indices.size(); i++) {
-            result[i] = indices.get(i);
-        }
-        return result;
-    }
-
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
@@ -127,7 +119,7 @@ public class AddPositionAction extends FrameAction {
                 complementRow(index, position);
             }
 
-            final int[] rows = asInt(insertedRows);
+            final int[] rows = Range.asInt(insertedRows);
             final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
             invokeLater(new Runnable() {
                 public void run() {

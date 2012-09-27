@@ -69,6 +69,7 @@ public class FrameMenu {
         completeMenu.add(createItem("add-postal-address"));
         completeMenu.add(createItem("add-populated-place"));
         completeMenu.add(createItem("add-speed"));
+        completeMenu.add(createItem("add-time"));
         completeMenu.add(createItem("add-number"));
         positionMenu.add(completeMenu);
         positionMenu.addSeparator();

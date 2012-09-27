@@ -84,23 +84,45 @@ public class Positions {
         return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
     }
 
-    public static CompactCalendar interpolateTime(BaseNavigationPosition position, BaseNavigationPosition previous, BaseNavigationPosition beforePrevious) {
-        if (beforePrevious.getTime() == null || previous.getTime() == null)
+    public static CompactCalendar extrapolateTime(BaseNavigationPosition position, BaseNavigationPosition predecessor, BaseNavigationPosition beforePredecessor) {
+        if (predecessor.getTime() == null || beforePredecessor.getTime() == null)
             return null;
 
-        long previousTime = abs(beforePrevious.getTime().getTimeInMillis() - previous.getTime().getTimeInMillis());
-        if (previousTime == 0)
+        Long timeDelta = abs(beforePredecessor.calculateTime(predecessor));
+        if (timeDelta == null)
             return null;
 
-        Double previousDistance = beforePrevious.calculateDistance(previous);
-        if (isEmpty(previousDistance))
+        Double distanceDelta = beforePredecessor.calculateDistance(predecessor);
+        if (isEmpty(distanceDelta))
             return null;
 
-        Double distance = previous.calculateDistance(position);
+        Double distance = predecessor.calculateDistance(position);
         if (isEmpty(distance))
             return null;
 
-        long time = (long) (previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance));
+        long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * (distance / distanceDelta));
+        return CompactCalendar.fromMillis(time);
+    }
+
+    public static CompactCalendar intrapolateTime(BaseNavigationPosition position, BaseNavigationPosition predecessor, BaseNavigationPosition successor) {
+        if (predecessor.getTime() == null || successor.getTime() == null)
+            return null;
+
+        Long timeDelta = abs(predecessor.calculateTime(successor));
+        if (timeDelta == null)
+            return null;
+
+        Double distanceToPredecessor = predecessor.calculateDistance(position);
+        if (isEmpty(distanceToPredecessor))
+            return null;
+
+        Double distanceToSuccessor = position.calculateDistance(successor);
+        if (isEmpty(distanceToSuccessor))
+            return null;
+
+        Double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
+
+        long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
         return CompactCalendar.fromMillis(time);
     }
 

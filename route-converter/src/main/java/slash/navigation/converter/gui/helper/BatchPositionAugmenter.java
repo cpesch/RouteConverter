@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
@@ -30,6 +31,7 @@ import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.util.NumberPattern;
+import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.text.MessageFormat;
@@ -46,6 +48,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
@@ -360,6 +363,63 @@ public class BatchPositionAugmenter {
 
     public void addSpeeds(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
         processSpeeds(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    }
+
+    private BaseNavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
+        while(index-- > 0) {
+            BaseNavigationPosition position = positionsModel.getPosition(index);
+            if(position.getTime() != null)
+                return position;
+        }
+        return null;
+    }
+
+    private BaseNavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
+        while(index++ < positionsModel.getRowCount() - 1) {
+            BaseNavigationPosition position = positionsModel.getPosition(index);
+            if(position.getTime() != null)
+                return position;
+        }
+        return null;
+    }
+
+    private void processTimes(final JTable positionsTable,
+                               final PositionsModel positionsModel,
+                               final int[] rows,
+                               final OverwritePredicate predicate) {
+        executeOperation(positionsTable, positionsModel, rows, false, predicate,
+                new Operation() {
+                    public String getName() {
+                        return "TimePositionAugmenter";
+                    }
+
+                    public int getColumnIndex() {
+                        return TIME_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                        BaseNavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
+                        BaseNavigationPosition successor = findSuccessorWithTime(positionsModel, index);
+                        if (predecessor != null && successor != null) {
+                            CompactCalendar previousTime = position.getTime();
+                            CompactCalendar nextTime = Positions.intrapolateTime(position, predecessor, successor);
+                            boolean changed = nextTime != null && !nextTime.equals(previousTime);
+                            if (changed)
+                                positionsModel.edit(nextTime, index, TIME_COLUMN_INDEX, false, true);
+                            return changed;
+                        }
+                        return false;
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-time-error");
+                    }
+                }
+        );
+    }
+
+    public void addTimes(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        processTimes(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
 

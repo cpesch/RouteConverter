@@ -40,7 +40,7 @@ import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.util.Positions.interpolateTime;
+import static slash.navigation.util.Positions.extrapolateTime;
 import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 /**
@@ -129,7 +129,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
 
         // do not put this in executorService since when called in batches, the edit() must happen before the
         // next time can be complemented
-        CompactCalendar interpolated = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
+        CompactCalendar interpolated = row - 2 >= 0 ? extrapolateTime(positionsModel.getPosition(row),
                 positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
         // since interpolation is just between the previous positions this leads to errors when inserting
         // more than one position for which no time can be interpolated from the previous positions

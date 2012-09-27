@@ -43,6 +43,7 @@ import slash.navigation.converter.gui.actions.AddPositionAction;
 import slash.navigation.converter.gui.actions.AddPositionListAction;
 import slash.navigation.converter.gui.actions.AddPostalAddressToPositionsAction;
 import slash.navigation.converter.gui.actions.AddSpeedToPositionsAction;
+import slash.navigation.converter.gui.actions.AddTimeToPositionsAction;
 import slash.navigation.converter.gui.actions.CopyAction;
 import slash.navigation.converter.gui.actions.CutAction;
 import slash.navigation.converter.gui.actions.DeleteAction;
@@ -381,6 +382,7 @@ public class ConvertPanel {
         actionManager.register("add-postal-address", new AddPostalAddressToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("add-populated-place", new AddPopulatedPlaceToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("add-speed", new AddSpeedToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-time", new AddTimeToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("add-number", new AddNumberToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("split-positionlist", new SplitPositionListAction(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
@@ -944,6 +946,7 @@ public class ConvertPanel {
         actionManager.enable("add-postal-address", existsASelectedPosition);
         actionManager.enable("add-populated-place", existsASelectedPosition);
         actionManager.enable("add-speed", existsASelectedPosition);
+        actionManager.enable("add-time", existsASelectedPosition);
         actionManager.enable("add-number", existsASelectedPosition);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsASelectedPosition);
         actionManager.enable("insert-positions", existsAPosition);

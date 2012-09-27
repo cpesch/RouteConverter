@@ -33,6 +33,13 @@ import static slash.common.io.Transfer.toArray;
  */
 
 public class Range {
+    public static int[] asInt(List<Integer> indices) {
+        int[] result = new int[indices.size()];
+        for (int i = 0; i < indices.size(); i++) {
+            result[i] = indices.get(i);
+        }
+        return result;
+    }
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices) {
         return asContinuousMonotonicallyIncreasingRanges(indices, Integer.MAX_VALUE);
