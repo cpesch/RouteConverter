@@ -123,7 +123,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         });
     }
 
-    public void complementTime(int row, CompactCalendar time) {
+    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) {
         if (time != null)
             return;
 
@@ -131,9 +131,10 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         // next time can be complemented
         CompactCalendar interpolated = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
                 positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
-        if (interpolated == null)
+        // since interpolation is just between the previous positions this leads to errors when inserting
+        // more than one position for which no time can be interpolated from the previous positions
+        if (interpolated == null && allowCurrentTime)
             interpolated = fromCalendar(Calendar.getInstance(UTC));
-
         positionsModel.edit(interpolated, row, TIME_COLUMN_INDEX, true, false);
     }
 }

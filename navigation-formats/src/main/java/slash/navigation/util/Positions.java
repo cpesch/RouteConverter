@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -100,6 +101,12 @@ public class Positions {
         if (isEmpty(distance))
             return null;
 
+        if (position.getTime() != null)
+        System.out.println(" position " + DateFormat.getDateTimeInstance().format(position.getTime().getCalendar().getTime()));
+        if (previous.getTime() != null)
+            System.out.println(" previous " + DateFormat.getDateTimeInstance().format(previous.getTime().getCalendar().getTime()));
+        if (beforePrevious.getTime() != null)
+            System.out.println(" beforePrevious " + DateFormat.getDateTimeInstance().format(beforePrevious.getTime().getCalendar().getTime()));
         long time = (long) (previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance));
         return CompactCalendar.fromMillis(time);
     }

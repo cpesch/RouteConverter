@@ -712,7 +712,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void complementTime(int row, CompactCalendar time) {
-        getPositionAugmenter().complementTime(row, time);
+        getPositionAugmenter().complementTime(row, time, true);
     }
 
     public JTable getPositionsView() {

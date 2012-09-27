@@ -63,6 +63,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
@@ -70,6 +71,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.ceiling;
@@ -193,8 +195,8 @@ public abstract class BaseMapView implements MapView {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                boolean insertOrDelete = e.getType() == INSERT || e.getType() == TableModelEvent.DELETE;
-                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
+                boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
+                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == MAX_VALUE;
                 // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)
@@ -944,7 +946,6 @@ public abstract class BaseMapView implements MapView {
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
                 significantPositionCache.clear();
-                positionAugmenter.interrupt();
             }
             notificationMutex.notifyAll();
         }
@@ -1605,7 +1606,7 @@ public abstract class BaseMapView implements MapView {
         for (BaseNavigationPosition position : positions) {
             // do not complement comment since this is limited to 2500 calls/day
             positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
-            positionAugmenter.complementTime(index, position.getTime());
+            positionAugmenter.complementTime(index, position.getTime(), false);
             index++;
         }
     }
@@ -1616,7 +1617,7 @@ public abstract class BaseMapView implements MapView {
 
         positionAugmenter.complementComment(row, longitude, latitude);
         positionAugmenter.complementElevation(row, longitude, latitude);
-        positionAugmenter.complementTime(row, null);
+        positionAugmenter.complementTime(row, null, true);
     }
 
     private int getAddRow() {
@@ -1663,7 +1664,7 @@ public abstract class BaseMapView implements MapView {
             if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
                 positionsModel.edit(null, index, TIME_COLUMN_INDEX, false, false);
             if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
-                positionAugmenter.complementTime(index, null);
+                positionAugmenter.complementTime(index, null, true);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
