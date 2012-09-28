@@ -1230,7 +1230,7 @@ public abstract class BaseMapView implements MapView {
             while (true) {
                 try {
                     String line = trim(reader.readLine());
-                    log.fine("read line " + line);
+                    // log.fine("read line " + line);
                     if (line == null) {
                         if (processingPost && !processingBody) {
                             processingBody = true;
@@ -1295,7 +1295,7 @@ public abstract class BaseMapView implements MapView {
     void processLines(List<String> lines) {
         boolean hasValidCallbackNumber = false;
         for (String line : lines) {
-            log.fine("processing line " + line);
+            // log.fine("processing line " + line);
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
             if (matcher.matches()) {
                 int callbackNumber = parseInt(matcher.group(2));
