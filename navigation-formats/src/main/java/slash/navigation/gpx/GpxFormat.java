@@ -42,8 +42,9 @@ import static slash.navigation.util.Conversion.msToKmh;
 public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements MultipleRoutesFormat<GpxRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GpxFormat.class);
     static final Pattern TRIPMASTER_REASON_PATTERN = Pattern.compile("(Punkt|Richtung \\d+|Abstand \\d+|Dur. \\d+:\\d+:\\d+|Course \\d+|Dist. \\d+) (-|:) (.+)");
-    private static final Pattern TRIPMASTER_SPEED_PATTERN = Pattern.compile("[^-\\d\\.]*([-\\d\\.]+)\\s*(K|k)m/h\\s*");
+    private static final Pattern TRIPMASTER_SPEED_PATTERN = Pattern.compile("[^-\\d\\.]*([-\\d\\.]+)\\s*(K|k)m/h.*");
     private static final Pattern QSTARTZ_SPEED_PATTERN = Pattern.compile(".*Speed[^-\\d\\.]*([-\\d\\.]+)(K|k)m/h.*Course[^\\d\\.]*([\\d]+).*");
+    private static final Pattern SPORTSTRACKER_SPEED_PATTERN = Pattern.compile(".*Speed\\s*([-\\d\\.]+)\\s*(K|k)m/h.*");
 
     public String getExtension() {
         return ".gpx";
@@ -84,12 +85,15 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
 
     protected Double parseSpeed(String comment) {
         if (comment != null) {
-            Matcher tripMasterPattern = TRIPMASTER_SPEED_PATTERN.matcher(comment);
-            if (tripMasterPattern.matches())
-                return parseDouble(tripMasterPattern.group(1));
-            Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(comment);
-            if (qstartzPattern.matches())
-                return parseDouble(qstartzPattern.group(1));
+            Matcher tripMasterMatcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
+            if (tripMasterMatcher.matches())
+                return parseDouble(tripMasterMatcher.group(1));
+            Matcher qstartzMatcher = QSTARTZ_SPEED_PATTERN.matcher(comment);
+            if (qstartzMatcher.matches())
+                return parseDouble(qstartzMatcher.group(1));
+            Matcher sportsTrackerMatcher = SPORTSTRACKER_SPEED_PATTERN.matcher(comment);
+            if (sportsTrackerMatcher.matches())
+                return parseDouble(sportsTrackerMatcher.group(1));
         }
         return null;
     }

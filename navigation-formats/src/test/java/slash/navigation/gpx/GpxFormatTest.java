@@ -86,6 +86,8 @@ public class GpxFormatTest {
         assertDoubleEquals(9.0, format.parseSpeed("Speed: 9 Km/h "));
         assertDoubleEquals(9.0, format.parseSpeed("Geschwindigkeit: 9 Km/h "));
         assertDoubleEquals(9.0, format.parseSpeed("Lat.=54.144422, Long.=12.098487, Alt.=5.000000m, Speed=9Km/h, Course=270deg."));
+        assertDoubleEquals(9.0, format.parseSpeed("1007; Speed 9.0 km/h Distance 15.41 km"));
+        assertDoubleEquals(9.0, format.parseSpeed("egal Speed 9.0 km/h egal"));
         assertNull(format.parseSpeed("egal"));
     }
 

@@ -208,6 +208,8 @@ public class Gpx11Format extends GpxFormat {
             result = parseSpeed(wptType.getCmt());
         if (result == null)
             result = parseSpeed(wptType.getName());
+        if (result == null)
+            result = parseSpeed(wptType.getDesc());
         return result;
     }
 
