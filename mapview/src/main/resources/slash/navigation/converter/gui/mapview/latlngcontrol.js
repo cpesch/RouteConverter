@@ -66,7 +66,7 @@
 
         // Update control to display latlng and coordinates.
         this.node_.innerHTML = [
-            latLng.toUrlValue(7),
+            latLng.lng().toFixed(7) + ',' + latLng.lat().toFixed(7),
             '<br/>'
         ].join('');
     }
