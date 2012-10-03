@@ -1,5 +1,5 @@
 /**
- * Context Menu for google maps
+ * Context Menu for Google Maps
  */
 (function(window, undefined){
 
@@ -201,4 +201,5 @@
 			return group2.toUpperCase().replace(group1,'');
 		});
 	}
+
 })(window);
