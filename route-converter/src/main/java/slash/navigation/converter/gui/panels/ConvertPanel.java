@@ -394,7 +394,9 @@ public class ConvertPanel {
 
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                actionManager.enable("save", formatAndRoutesModel.isModified() && formatAndRoutesModel.getFormat().isSupportsWriting());
+                actionManager.enable("save", formatAndRoutesModel.isModified() &&
+                        formatAndRoutesModel.getFormat() != null &&
+                        formatAndRoutesModel.getFormat().isSupportsWriting());
             }
         });
 
