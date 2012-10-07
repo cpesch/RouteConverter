@@ -219,9 +219,10 @@ public abstract class BaseNavigationPosition {
      */
     public Double calculateOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB) {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
-            Double distanceAtoD = calculateDistance(pointA);
+            Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
+            Double distanceAtoD = bearingAD.getDistance();
             if (distanceAtoD != null) {
-                double courseAtoD = toRadians(pointA.calculateAngle(this));
+                double courseAtoD = toRadians(bearingAD.getAngle());
                 double courseAtoB = toRadians(pointA.calculateAngle(pointB));
                 return asin(sin(distanceAtoD / EARTH_RADIUS) *
                         sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
