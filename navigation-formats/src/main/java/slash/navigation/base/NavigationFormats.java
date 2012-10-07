@@ -27,6 +27,7 @@ import slash.navigation.babel.CompeGPSDataRouteFormat;
 import slash.navigation.babel.CompeGPSDataTrackFormat;
 import slash.navigation.babel.CompeGPSDataWaypointFormat;
 import slash.navigation.babel.FlightRecorderDataFormat;
+import slash.navigation.babel.GarminFitFormat;
 import slash.navigation.babel.GarminMapSource5Format;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.GarminPcx5Format;
@@ -227,6 +228,7 @@ public final class NavigationFormats {
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
+        addFormat(GarminFitFormat.class);
         addFormat(WintecWbt202TesFormat.class);
 
         addFormat(UrlFormat.class);

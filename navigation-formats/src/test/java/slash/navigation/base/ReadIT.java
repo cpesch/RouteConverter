@@ -123,6 +123,11 @@ public class ReadIT {
     }
 
     @Test
+    public void testGarminFitFilesAreValid() throws IOException {
+        readFiles(".fit");
+    }
+
+    @Test
     public void testGarminFlightPlanFilesAreValid() throws IOException {
         readFiles(".fpl");
     }
