@@ -22,6 +22,7 @@
 
 package slash.common.util;
 
+import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -223,7 +224,7 @@ public class Bearing {
         } while (abs(D - X) > EPS);
 
         FAZ = atan2(TU1, TU2);
-        BAZ = atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + Math.PI;
+        BAZ = atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + PI;
         X = sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
         X = (X - 2.) / X;
         C = 1. - X;

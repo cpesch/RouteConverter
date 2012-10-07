@@ -35,6 +35,7 @@ import static slash.common.TestCase.assertIntArrayEquals;
 import static slash.common.TestCase.assertNotNull;
 import static slash.common.TestCase.assertNull;
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.util.NumberPattern.DESCRIPTION_ONLY;
 import static slash.navigation.util.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
 import static slash.navigation.util.NumberPattern.NUMBER_ONLY;
@@ -397,7 +398,7 @@ public class BcrRouteTest {
         BcrPosition y = new BcrPosition(1153565,7113439, 0, "y");
         BcrPosition z = new BcrPosition(1138352,7089963, 0, "z");
         final int COMPLETE_TIME = 3600 * 1000;
-        z.setTime(CompactCalendar.fromMillis(x.getTime().getTimeInMillis() + COMPLETE_TIME));
+        z.setTime(fromMillis(x.getTime().getTimeInMillis() + COMPLETE_TIME));
 
         List<BcrPosition> positions = route.getPositions();
         positions.clear();

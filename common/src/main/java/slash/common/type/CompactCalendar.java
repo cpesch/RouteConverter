@@ -40,8 +40,17 @@ public class CompactCalendar {
     private final long timeInMillis;
     private final String timeZoneId;
 
+    private CompactCalendar(long timeInMillis, String timeZoneId) {
+        this.timeInMillis = timeInMillis;
+        this.timeZoneId = timeZoneId.equals("UTC") ? "UTC" : timeZoneId.intern();
+    }
+
     public static CompactCalendar fromMillisAndTimeZone(long timeInMillis, String timeZoneId) {
         return new CompactCalendar(timeInMillis, timeZoneId);
+    }
+
+    public static CompactCalendar fromMillis(long timeInMillis) {
+        return fromMillisAndTimeZone(timeInMillis, "UTC");
     }
 
     public static CompactCalendar fromCalendar(Calendar calendar) {
@@ -54,20 +63,8 @@ public class CompactCalendar {
         return fromCalendar(calendar);
     }
 
-
-    public static CompactCalendar fromMillis(long timeInMillis) {
-        Calendar calendar = Calendar.getInstance(UTC);
-        calendar.setTimeInMillis(timeInMillis);
-        return fromCalendar(calendar);
-    }
-
     public static CompactCalendar getInstance(String timeZoneId) {
         return fromCalendar(Calendar.getInstance(TimeZone.getTimeZone(timeZoneId)));
-    }
-
-    private CompactCalendar(long timeInMillis, String timeZoneId) {
-        this.timeInMillis = timeInMillis;
-        this.timeZoneId = timeZoneId.equals("UTC") ? "UTC" : timeZoneId.intern();
     }
 
     public long getTimeInMillis() {

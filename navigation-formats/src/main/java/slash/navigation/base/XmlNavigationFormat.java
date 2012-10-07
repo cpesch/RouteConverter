@@ -30,6 +30,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromMillis;
+
 /**
  * The base of all XML based navigation formats.
  *
@@ -55,8 +58,8 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         if (calendar == null)
             return null;
         GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar();
-        gregorianCalendar.setTimeZone(CompactCalendar.UTC);
-        return CompactCalendar.fromMillis(gregorianCalendar.getTimeInMillis());
+        gregorianCalendar.setTimeZone(UTC);
+        return fromMillis(gregorianCalendar.getTimeInMillis());
     }
 
     private static DatatypeFactory datatypeFactory = null;
@@ -68,11 +71,12 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         return datatypeFactory;
     }
 
+    @SuppressWarnings("MagicConstant")
     public static XMLGregorianCalendar formatTime(CompactCalendar time) {
         if (time == null)
             return null;
         try {
-            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.UTC, Locale.getDefault());
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(UTC, Locale.getDefault());
             gregorianCalendar.clear();
             Calendar calendar = time.getCalendar();
             gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),

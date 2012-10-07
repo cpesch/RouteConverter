@@ -31,6 +31,7 @@ import static java.lang.Math.abs;
 import static java.lang.System.arraycopy;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * Provides {@link BaseNavigationPosition} calculation functionality.
@@ -101,7 +102,7 @@ public class Positions {
             return null;
 
         long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * (distance / distanceDelta));
-        return CompactCalendar.fromMillis(time);
+        return fromMillis(time);
     }
 
     public static CompactCalendar intrapolateTime(BaseNavigationPosition position, BaseNavigationPosition predecessor, BaseNavigationPosition successor) {
@@ -123,7 +124,7 @@ public class Positions {
         Double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
 
         long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
-        return CompactCalendar.fromMillis(time);
+        return fromMillis(time);
     }
 
     public static BaseNavigationPosition center(List<? extends BaseNavigationPosition> positions) {
@@ -135,7 +136,7 @@ public class Positions {
         if (northEast.getTime() != null && southWest.getTime() != null) {
             long millis = northEast.getTime().getTimeInMillis() +
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
-            time = CompactCalendar.fromMillis(millis);
+            time = fromMillis(millis);
         }
         return asPosition(longitude, latitude, time);
     }
