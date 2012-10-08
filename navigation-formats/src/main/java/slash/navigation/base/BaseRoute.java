@@ -44,6 +44,7 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.List;
 
+import static java.lang.Math.max;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -246,7 +247,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public long getTime() {
-        Calendar minimum = null, maximum = null;
+        CompactCalendar minimum = null, maximum = null;
         long totalTimeMilliSeconds = 0;
         List<P> positions = getPositions();
         P previous = null;
@@ -257,7 +258,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     totalTimeMilliSeconds += time;
             }
 
-            Calendar calendar = next.getTime() != null ? next.getTime().getCalendar() : null;
+            CompactCalendar calendar = next.getTime();
             if (calendar == null)
                 continue;
             if (minimum == null || calendar.before(minimum))
@@ -269,7 +270,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
 
         long maxMinusMin = minimum != null ? maximum.getTimeInMillis() - minimum.getTimeInMillis() : 0;
-        return Math.max(maxMinusMin, totalTimeMilliSeconds);
+        return max(maxMinusMin, totalTimeMilliSeconds);
     }
 
     public double getDistance() {

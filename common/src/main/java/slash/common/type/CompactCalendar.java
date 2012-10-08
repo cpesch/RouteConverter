@@ -111,6 +111,18 @@ public class CompactCalendar {
         return result;
     }
 
+    public boolean after(CompactCalendar other) {
+        if (getTimeZoneId().equals(other.getTimeZoneId()))
+            return getTimeInMillis() > other.getTimeInMillis();
+        return getCalendar().after(other.getCalendar());
+    }
+
+    public boolean before(CompactCalendar other) {
+        if (getTimeZoneId().equals(other.getTimeZoneId()))
+            return getTimeInMillis() < other.getTimeInMillis();
+        return getCalendar().before(other.getCalendar());
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

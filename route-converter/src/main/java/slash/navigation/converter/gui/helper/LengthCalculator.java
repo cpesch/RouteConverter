@@ -32,7 +32,6 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -127,7 +126,7 @@ public class LengthCalculator {
 
         double distanceMeters = 0.0;
         long totalTimeMilliSeconds = 0;
-        Calendar minimumTime = null, maximumTime = null;
+        CompactCalendar minimumTime = null, maximumTime = null;
         BaseNavigationPosition previous = null;
         for (int i = 0; i < positionsModel.getRowCount(); i++) {
             BaseNavigationPosition next = positionsModel.getPosition(i);
@@ -142,11 +141,10 @@ public class LengthCalculator {
 
             CompactCalendar time = next.getTime();
             if (time != null) {
-                Calendar calendar = time.getCalendar();
-                if (minimumTime == null || calendar.before(minimumTime))
-                    minimumTime = calendar;
-                if (maximumTime == null || calendar.after(maximumTime))
-                    maximumTime = calendar;
+                if (minimumTime == null || time.before(minimumTime))
+                    minimumTime = time;
+                if (maximumTime == null || time.after(maximumTime))
+                    maximumTime = time;
             }
 
             if (i > 0 && i % 100 == 0)

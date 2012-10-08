@@ -24,13 +24,11 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
-import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.System.arraycopy;
 import static slash.common.io.Transfer.isEmpty;
-import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -143,7 +141,7 @@ public class Positions {
 
     public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
         double minimumLongitude = 180.0, minimumLatitude = 180.0;
-        Calendar minimumTime = null;
+        CompactCalendar minimumTime = null;
         for (BaseNavigationPosition position : positions) {
             Double longitude = position.getLongitude();
             if (longitude == null)
@@ -158,17 +156,15 @@ public class Positions {
             CompactCalendar time = position.getTime();
             if (time == null)
                 continue;
-            Calendar calendar = time.getCalendar();
-            if (minimumTime == null || calendar.before(minimumTime))
-                minimumTime = calendar;
+            if (minimumTime == null || time.before(minimumTime))
+                minimumTime = time;
         }
-        return asPosition(minimumLongitude, minimumLatitude,
-                minimumTime != null ? fromCalendar(minimumTime) : null);
+        return asPosition(minimumLongitude, minimumLatitude, minimumTime);
     }
 
     public static BaseNavigationPosition northEast(List<? extends BaseNavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -180.0;
-        Calendar maximumTime = null;
+        CompactCalendar maximumTime = null;
         for (BaseNavigationPosition position : positions) {
             Double longitude = position.getLongitude();
             if (longitude == null)
@@ -183,12 +179,10 @@ public class Positions {
             CompactCalendar time = position.getTime();
             if (time == null)
                 continue;
-            Calendar calendar = time.getCalendar();
-            if (maximumTime == null || calendar.after(maximumTime))
-                maximumTime = calendar;
+            if (maximumTime == null || time.after(maximumTime))
+                maximumTime = time;
         }
-        return asPosition(maximumLongitude, maximumLatitude,
-                maximumTime != null ? fromCalendar(maximumTime) : null);
+        return asPosition(maximumLongitude, maximumLatitude, maximumTime);
     }
 
     public static boolean contains(BaseNavigationPosition northEastCorner,
