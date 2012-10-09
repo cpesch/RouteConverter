@@ -440,10 +440,9 @@ public abstract class BaseMapView implements MapView {
                         synchronized (notificationMutex) {
                             //noinspection ConstantConditions
                             if (running) {
-                                log.severe("Cannot accept at callback listener socket: " + e.getMessage());
+                                log.severe("Cannot accept callback listener socket: " + e.getMessage());
                             }
                         }
-                        break;
                     }
                 }
             }
@@ -612,10 +611,9 @@ public abstract class BaseMapView implements MapView {
             log.info("CallbackListener stopped after " + (end - start) + " ms");
         }
 
-        if (callbackPoller != null) {
+        if (callbackPoller != null && callbackPoller.isAlive()) {
             try {
-                if (callbackPoller.isAlive())
-                    safeJoin(callbackPoller);
+                safeJoin(callbackPoller);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -1213,21 +1211,14 @@ public abstract class BaseMapView implements MapView {
 
     // browser callbacks
 
-    private void processStream(Socket socket) {
-        BufferedReader reader;
-        OutputStream outputStream;
-        try {
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
-            outputStream = socket.getOutputStream();
-        } catch (IOException e) {
-            log.severe("Cannot open streams from callback listener port:" + e.getMessage());
-            return;
-        }
+    private void processStream(Socket socket) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
+        OutputStream outputStream = socket.getOutputStream();
 
         List<String> lines = new ArrayList<String>();
         boolean processingPost = false, processingBody = false;
         try {
-            while (true) {
+            while (reader.ready()) {
                 try {
                     String line = trim(reader.readLine());
                     // log.fine("read line " + line);
@@ -1247,12 +1238,8 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         } finally {
-            try {
-                reader.close();
-                outputStream.close();
-            } catch (IOException e) {
-                log.severe("Cannot close streams from callback listener port:" + e.getMessage());
-            }
+            reader.close();
+            outputStream.close();
         }
 
         StringBuilder buffer = new StringBuilder();
