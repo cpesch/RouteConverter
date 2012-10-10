@@ -432,8 +432,16 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     try {
-                        Socket socket = callbackListenerServerSocket.accept();
-                        processStream(socket);
+                        final Socket socket = callbackListenerServerSocket.accept();
+                        executor.execute(new Runnable() {
+                            public void run() {
+                                try {
+                                    processStream(socket);
+                                } catch (IOException e) {
+                                    log.severe("Cannot process stream from callback listener socket: " + e.getMessage());
+                                }
+                            }
+                        });
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {

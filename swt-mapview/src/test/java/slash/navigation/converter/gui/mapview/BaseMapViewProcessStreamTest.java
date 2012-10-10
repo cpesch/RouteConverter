@@ -34,7 +34,7 @@ public class BaseMapViewProcessStreamTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
     private final Object LOCK = new Object();
 
-    private void processStream(final String lines) throws InterruptedException {
+    private void processStream(final String lines) throws InterruptedException, IOException {
         final int[] portCallback = new int[1];
         portCallback[0] = -1;
 
@@ -52,7 +52,7 @@ public class BaseMapViewProcessStreamTest {
                     Socket socket = new Socket("localhost", view.getCallbackPort());
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                     writer.write(lines);
-                    writer.flush();
+                    writer.close();
                     socket.close();
                 } catch (IOException e) {
                     assertTrue("Cannot write to socket: " + e.getMessage(), false);
@@ -64,20 +64,20 @@ public class BaseMapViewProcessStreamTest {
             LOCK.wait(1000);
         }
 
-        assertEquals(49632, portCallback[0]);
+        assertEquals(view.getCallbackPort(), portCallback[0]);
     }
 
     @Test
-    public void testGetCallback() throws InterruptedException {
+    public void testGetCallback() throws Exception {
         view.initializeCallbackListener();
-        processStream("GET /0/callback-port/49632 HTTP/1.1\nHost: 127.0.0.1:" + view.getCallbackPort() + "\n");
+        processStream("GET /0/callback-port/" + view.getCallbackPort() + " HTTP/1.1\nHost: 127.0.0.1:" + view.getCallbackPort() + "\n");
         view.dispose();
     }
 
     @Test
-    public void testPostCallback() throws InterruptedException {
+    public void testPostCallback() throws Exception {
         view.initializeCallbackListener();
-        processStream("POST /0/generic-post-url/ HTTP/1.1\nHost: 127.0.0.1:" + view.getCallbackPort() + "\ncallback-port/49632");
+        processStream("POST /0/generic-post-url/ HTTP/1.1\nHost: 127.0.0.1:" + view.getCallbackPort() + "\ncallback-port/" + view.getCallbackPort());
         view.dispose();
     }
 }
