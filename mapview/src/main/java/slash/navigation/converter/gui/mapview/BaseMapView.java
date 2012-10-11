@@ -1226,7 +1226,7 @@ public abstract class BaseMapView implements MapView {
         List<String> lines = new ArrayList<String>();
         boolean processingPost = false, processingBody = false;
         try {
-            while (reader.ready()) {
+            while (true) {
                 try {
                     String line = trim(reader.readLine());
                     // log.fine("read line " + line);
