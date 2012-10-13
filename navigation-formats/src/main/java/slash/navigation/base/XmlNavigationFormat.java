@@ -57,8 +57,7 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
     public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;
-        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar();
-        gregorianCalendar.setTimeZone(UTC);
+        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
         return fromMillis(gregorianCalendar.getTimeInMillis());
     }
 
