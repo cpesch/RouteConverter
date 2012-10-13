@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.profileview;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.ChartEntity;
@@ -63,7 +62,7 @@ public class ProfileView implements PositionsSelectionModel {
     private static final String X_GRID_PREFERENCE = "xGrid";
     private static final String Y_GRID_PREFERENCE = "yGrid";
 
-    private ChartPanel chartPanel;
+    private LazyToolTipChartPanel chartPanel;
     private XYPlot plot;
     private PositionsModel positionsModel;
     private ProfileModel profileModel;
@@ -77,7 +76,7 @@ public class ProfileView implements PositionsSelectionModel {
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
-        chartPanel = new ChartPanel(chart, false, true, true, true, true);
+        chartPanel = new LazyToolTipChartPanel(chart, false, true, true, true, true);
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseClicked(ChartMouseEvent e) {
                 ChartEntity entity = e.getEntity();
@@ -120,6 +119,8 @@ public class ProfileView implements PositionsSelectionModel {
         valueAxis.setLowerMargin(0.0);
         valueAxis.setUpperMargin(0.0);
         valueAxis.setLabelFont(font);
+
+        plot.getRenderer().setBaseToolTipGenerator(null);
         return plot;
     }
 
@@ -146,7 +147,7 @@ public class ProfileView implements PositionsSelectionModel {
         String yAxisKey = profileMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
-        plot.getRenderer().setBaseToolTipGenerator(new StandardXYToolTipGenerator(
+        chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
                 "{2} " + yAxisUnit + " @ {1} " + unit.getDistanceName(),
                 getIntegerInstance(), getIntegerInstance()));
     }
