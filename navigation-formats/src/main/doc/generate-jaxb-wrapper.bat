@@ -11,7 +11,7 @@ bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConver
 
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding20 c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml20.xsd
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding21 c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml21.xsd
-bin\xjc -verbose -d generated -p slash.navigation.kml.binding22beta c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml22beta.xsd -b c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml22beta.xjb
+bin\xjc -verbose -d generated c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml22beta.xsd -b c:\p4\RouteConverter\navigation-formats\src\main\doc\kml\kml22beta.xjb
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding3 c:\p4\RouteConverter\navigation-formats\src\main\doc\gopal\gopal3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding5 c:\p4\RouteConverter\navigation-formats\src\main\doc\gopal\gopal5.xsd
 bin\xjc -verbose -dtd -d generated -p slash.navigation.viamichelin.binding c:\p4\RouteConverter\navigation-formats\src\main\doc\viamichelin\export.dtd

@@ -4,6 +4,9 @@
     xmlns:kml="http://earth.google.com/kml/2.2"
     version="2.0">
     <jaxb:bindings schemaLocation="kml22beta.xsd" node="/xsd:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="slash.navigation.kml.binding22beta"/>
+        </jaxb:schemaBindings>
         <jaxb:bindings node="//xsd:element[@name='scale']">
             <jaxb:class name="scaleElement"/>
             <jaxb:property name="scaleElement"/>
