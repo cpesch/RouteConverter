@@ -103,10 +103,11 @@ public class NavigationFormatParser {
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
 
+                log.fine(format("Trying to read with %s", format));
                 try {
                     format.read(buffer, startDate, context);
                 } catch (Exception e) {
-                    log.fine(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
+                    log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {

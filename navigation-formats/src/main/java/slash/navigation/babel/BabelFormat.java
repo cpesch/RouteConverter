@@ -151,9 +151,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 }
                 try {
                     int exitValue = process.exitValue();
-                    log.info("gpsbabel process terminated with exit value " + exitValue);
+                    log.fine("gpsbabel process terminated with exit value " + exitValue);
                 } catch (IllegalThreadStateException itse) {
-                    log.info("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
+                    log.warning("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
                     process.destroy();
                 }
             }
