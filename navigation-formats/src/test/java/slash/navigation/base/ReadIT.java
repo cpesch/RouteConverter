@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import org.junit.AfterClass;
 import org.junit.Test;
+import slash.navigation.babel.GarminPoiDbFormat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +35,8 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;
+import static slash.common.TestCase.assertEquals;
+import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
@@ -393,6 +396,7 @@ public class ReadIT {
 
     public static final String UNRECOGNIZED_PATH = ROUTE_PATH + "unrecognized\\";
     public static final String FALSE_DETECTS_PATH = ROUTE_PATH + "falsedetects\\";
+    public static final String FALSE_XCSVS_PATH = ROUTE_PATH + "falsexcsvs\\";
 
     @Test
     public void testDontReadUnrecognizedFiles() throws IOException {
@@ -415,7 +419,20 @@ public class ReadIT {
             public void test(File file) throws IOException {
                 ParserResult result = parser.read(file);
                 assertNotNull(result);
-                assertTrue("Cannot read route from " + file + " as " + result.getFormat(), result.isSuccessful());
+                assertTrue("Cannot read route from " + file, result.isSuccessful());
+                assertNotEquals("Can only read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+            }
+        });
+    }
+
+    @Test
+    public void testReadFalseXcsvsFiles() throws IOException {
+        dontReadFiles(FALSE_XCSVS_PATH, new TestFileCallback() {
+            public void test(File file) throws IOException {
+                ParserResult result = parser.read(file);
+                assertNotNull(result);
+                assertTrue("Cannot read route from " + file, result.isSuccessful());
+                assertEquals("Cannot read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
             }
         });
     }

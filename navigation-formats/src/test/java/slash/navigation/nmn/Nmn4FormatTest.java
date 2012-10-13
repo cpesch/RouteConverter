@@ -20,11 +20,17 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
-public class Nmn4FormatTest extends NavigationTestCase {
-    Nmn4Format format = new Nmn4Format();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class Nmn4FormatTest {
+    private Nmn4Format format = new Nmn4Format();
+
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|"));
         assertTrue(format.isPosition("-|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|"));
@@ -36,10 +42,11 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("-|-|16|-|-|bei D 22929,Köthel; Kr Hzgt Lauenburg,,0,|-|-|-|-|-|10.51239|53.61192|-|-|"));
     }
 
+    @Test
     public void testParsePositionWithStreet() {
         NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|", null);
-        assertEquals(7.00905, position.getLongitude());
-        assertEquals(51.44329, position.getLatitude());
+        assertDoubleEquals(7.00905, position.getLongitude());
+        assertDoubleEquals(51.44329, position.getLatitude());
         assertEquals("45128 Südviertel, Hohenzollernstrasse/L451", position.getComment());
         assertEquals("45128", position.getZip());
         assertEquals("Südviertel", position.getCity());
@@ -47,10 +54,11 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertNull(position.getNumber());
     }
 
+    @Test
     public void testParseUppercaseComment() {
         NmnPosition position = format.parsePosition("-|-|-|45128|SODVIERTEL|45128|HOHENZOLLERNSTRASSE|-|-|-|7.00905|51.44329|-|", null);
-        assertEquals(7.00905, position.getLongitude());
-        assertEquals(51.44329, position.getLatitude());
+        assertDoubleEquals(7.00905, position.getLongitude());
+        assertDoubleEquals(51.44329, position.getLatitude());
         assertEquals("45128 Sodviertel, Hohenzollernstrasse", position.getComment());
         assertEquals("45128", position.getZip());
         assertEquals("Sodviertel", position.getCity());
@@ -58,16 +66,18 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertNull(position.getNumber());
     }
 
+    @Test
     public void testParseNegativePosition() {
         NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|-7.00905|-51.44329|-|", null);
-        assertEquals(-7.00905, position.getLongitude());
-        assertEquals(-51.44329, position.getLatitude());
+        assertDoubleEquals(-7.00905, position.getLongitude());
+        assertDoubleEquals(-51.44329, position.getLatitude());
     }
 
+    @Test
     public void testParseGPSBabelPosition() {
         NmnPosition position = format.parsePosition("-|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|", null);
-        assertEquals(10.46348, position.getLongitude());
-        assertEquals(53.64352, position.getLatitude());
+        assertDoubleEquals(10.46348, position.getLongitude());
+        assertDoubleEquals(53.64352, position.getLatitude());
         assertEquals("Linau", position.getComment());
         assertNull(position.getZip());
         assertEquals("Linau", position.getCity());
@@ -75,10 +85,11 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertNull(position.getNumber());
     }
 
+    @Test
     public void testParseMN42Position() {
         NmnPosition position = format.parsePosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|", null);
-        assertEquals(7.05143, position.getLongitude());
-        assertEquals(51.59682, position.getLatitude());
+        assertDoubleEquals(7.05143, position.getLongitude());
+        assertDoubleEquals(51.59682, position.getLatitude());
         assertEquals("45896 Gelsenkirchen, Polsumer Straße", position.getComment());
         assertEquals("45896", position.getZip());
         assertEquals("Gelsenkirchen", position.getCity());

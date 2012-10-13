@@ -20,16 +20,21 @@
 
 package slash.navigation.nmn;
 
+import org.junit.Test;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Nmn6FormatIT extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+
+public class Nmn6FormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
 
+    @Test
     public void testIsNmn6FavoritesWithValidPositionsOnly() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38-stripped.rte");
         ParserResult result = parser.read(source);
@@ -37,6 +42,7 @@ public class Nmn6FormatIT extends NavigationTestCase {
         assertEquals(Nmn6Format.class, result.getFormat().getClass());
     }
 
+    @Test
     public void testIsNmn6WithFirstValidLineButNotPosition() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38.rte");
         ParserResult result = parser.read(source);

@@ -31,7 +31,11 @@ public abstract class TestCase extends junit.framework.TestCase {
     private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);
 
     public static void assertNotEquals(Object expected, Object was) {
-        assertTrue("expected:<" + expected + "> but was:<" + was + ">", !expected.equals(was));
+        assertNotEquals("expected:<" + expected + "> but was:<" + was + ">", expected, was);
+    }
+
+    public static void assertNotEquals(String message, Object expected, Object was) {
+        assertTrue(message, !expected.equals(was));
     }
 
     public static void assertDoubleEquals(double expected, double was) {
@@ -96,6 +100,7 @@ public abstract class TestCase extends junit.framework.TestCase {
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond, TimeZone timeZone) {
         Calendar result = Calendar.getInstance(timeZone);
+        //noinspection MagicConstant
         result.set(year, month - 1, day, hour, minute, second);
         result.set(Calendar.MILLISECOND, millisecond);
         return CompactCalendar.fromCalendar(result);

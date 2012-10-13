@@ -20,12 +20,18 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-public class Nmn6FavoritesFormatTest extends NavigationTestCase {
-    Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class Nmn6FavoritesFormatTest {
+    private Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();
+
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("[P HALLENEU CINEMAXX||][0][10]|11.92417,51.47978|06122|11.92417|51.47978[8]|NEUSTÄDTER PASSAGE|06122|11.92678|51.48087[7]|NEUSTADT|[6]|HALLE (SAALE)|06108|11.97546|51.48129[3]|HALLE (SAALE)|[2]|Sachsen-Anhalt||4366[0]|Deutschland||4"));
         assertTrue(format.isPosition("[P SCHIERKE||][0][15]|AM THÄLCHEN|38879|10.66664|51.76459|633,0|1[14]|Alle Kategorien||196658,0[13]|Parken||3,0[6]|SCHIERKE|38879|10.65527|51.76586[3]|WERNIGERODE|[2]|Sachsen-Anhalt||4366[0]|Deutschland||4"));
@@ -43,10 +49,11 @@ public class Nmn6FavoritesFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("[Hygiene4You||][0][10]|15.43511,47.07848||15.43511|47.07848[8]|Wickenburggasse|8010|15.43655|47.07876[6]|Graz|8010|15.44273|47.06833[3]|Graz|[2]|Steiermark||1030[0]|Ästerreich||4"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("[P HALLENEU CINEMAXX||][0][10]|11.92517,51.47558|06122|11.92417|51.47978[8]|NEUSTAEDTER PASSAGE|06122|11.92978|51.48097[7]|NEUSTADT|[6]|HALLE (SAALE)|06108|11.99546|51.49129[3]|HALLE (SAALE)|[2]|Sachsen-Anhalt||4366[0]|Deutschland||4", null);
-        assertEquals(11.92417, position.getLongitude());
-        assertEquals(51.47978, position.getLatitude());
+        assertDoubleEquals(11.92417, position.getLongitude());
+        assertDoubleEquals(51.47978, position.getLatitude());
         assertEquals("P Halleneu Cinemaxx, Neustaedter Passage", position.getComment());
     }
 }

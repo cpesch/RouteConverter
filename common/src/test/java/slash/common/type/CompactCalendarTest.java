@@ -29,17 +29,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertCalendarEquals;
 import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 public class CompactCalendarTest {
 
     @Test
-    public void fromMillis() {
+    public void testFromMillis() {
         Calendar calendar = Calendar.getInstance(UTC);
         calendar.setTimeInMillis(1000);
         assertEquals(1000, calendar.getTimeInMillis());
         assertEquals(UTC, calendar.getTimeZone());
 
-        CompactCalendar compactCalendar = CompactCalendar.fromMillis(1000);
+        CompactCalendar compactCalendar = fromMillis(1000);
 
         assertEquals(compactCalendar.getCalendar().getTimeInMillis(), 1000);
         assertCalendarEquals(calendar, compactCalendar.getCalendar());
@@ -47,9 +48,9 @@ public class CompactCalendarTest {
     }
 
     @Test
-    public void beforeAndAfter() {
-        CompactCalendar early = CompactCalendar.fromMillis(1000);
-        CompactCalendar late = CompactCalendar.fromMillis(2000);
+    public void testBeforeAndAfter() {
+        CompactCalendar early = fromMillis(1000);
+        CompactCalendar late = fromMillis(2000);
 
         assertTrue(early.before(late));
         assertFalse(late.before(early));

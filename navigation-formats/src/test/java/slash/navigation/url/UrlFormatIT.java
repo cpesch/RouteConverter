@@ -29,7 +29,8 @@ public class UrlFormatIT {
         ParserResult result = parser.read("http://maps.google.de/maps?f=d&saddr=Hamburg%2FUhlenhorst&daddr=Hauptstra%C3%9Fe%2FL160+to:53.588429,10.419159+to:Breitenfelde%2FNeuenlande&hl=de&geocode=%3BFVy1MQMdDoudAA%3B%3B&mra=dpe&mrcr=0&mrsp=2&sz=11&via=1,2&sll=53.582575,10.30528&sspn=0.234798,0.715485&ie=UTF8&z=11");
         assertNotNull(result);
         assertEquals(1, result.getAllRoutes().size());
-        assertEquals(Kml20Format.class, result.getFormat().getClass());
+        assertEquals(4, result.getTheRoute().getPositionCount());
+        assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());
     }
 
     @Test
@@ -37,6 +38,7 @@ public class UrlFormatIT {
         ParserResult result = parser.read(new File(TEST_PATH + "from-gpx.url"));
         assertNotNull(result);
         assertEquals(4, result.getAllRoutes().size());
+        assertEquals(3, result.getTheRoute().getPositionCount());
         assertEquals(Gpx11Format.class, result.getFormat().getClass());
     }
 }

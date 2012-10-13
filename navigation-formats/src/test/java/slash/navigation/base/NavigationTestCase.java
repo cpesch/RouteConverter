@@ -22,8 +22,8 @@ package slash.navigation.base;
 
 import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
-import slash.common.type.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.common.type.CompactCalendar;
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.CompeGPSDataFormat;
@@ -79,7 +79,6 @@ import slash.navigation.simple.ColumbusV900Format;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
-import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
@@ -93,6 +92,7 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tour.TourFormat;
+import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -107,11 +107,11 @@ import java.util.logging.Logger;
 import static java.io.File.separator;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
-import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -222,7 +222,7 @@ public abstract class NavigationTestCase extends TestCase {
     private static String getTrainingCenterRouteName(BaseRoute route) {
         String name = route.getName();
         name = name.replaceAll("\\d+: ", "");
-        return name.substring(0, min(15 - 3, name.length()));
+        return name.substring(0, min(15 - 4 /* Suffix length */, name.length()));
     }
 
     @SuppressWarnings("unchecked")

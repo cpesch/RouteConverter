@@ -20,12 +20,19 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-public class Nmn6FormatTest extends NavigationTestCase {
-    Nmn6Format format = new Nmn6Format();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class Nmn6FormatTest {
+    private Nmn6Format format = new Nmn6Format();
+
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("[|][0][10]|||8.8128300|49.0006140[0]||"));
         assertTrue(format.isPosition("[|][1][11]|||8.8128300|49.0006140[0]||"));
@@ -39,6 +46,7 @@ public class Nmn6FormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("[|][0][10]||8.8128300|49.0006140[0]||"));
     }
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("[||][2]"));
         assertTrue(format.isValidLine("[15:29:65; {6'} Schlosswiese 1-3, Ratzeburg|][0][10]|||10.03200|53.56949"));
@@ -49,50 +57,56 @@ public class Nmn6FormatTest extends NavigationTestCase {
         assertFalse(format.isValidLine("[]"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("[|][0][10]|||8.8128300|49.0006140[0]||", null);
-        assertEquals(8.8128300, position.getLongitude());
-        assertEquals(49.0006140, position.getLatitude());
+        assertDoubleEquals(8.8128300, position.getLongitude());
+        assertDoubleEquals(49.0006140, position.getLatitude());
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("[|][0][10]|||-8.8128300|-49.0006140[0]||", null);
-        assertEquals(-8.8128300, position.getLongitude());
-        assertEquals(-49.0006140, position.getLatitude());
+        assertDoubleEquals(-8.8128300, position.getLongitude());
+        assertDoubleEquals(-49.0006140, position.getLatitude());
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseITNConvPosition() {
         Wgs84Position position = format.parsePosition("[D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949", null);
-        assertEquals(10.03200, position.getLongitude());
-        assertEquals(53.56949, position.getLatitude());
+        assertDoubleEquals(10.03200, position.getLongitude());
+        assertDoubleEquals(53.56949, position.getLatitude());
         assertEquals("D 22081,Hamburg/Uhlenhorst,Finkenau,0,", position.getComment());
     }
 
+    @Test
     public void testParseWrittenFormat() {
         Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub|][0][10]|||7.74957|50.09721", null);
-        assertEquals(7.74957, position.getLongitude());
-        assertEquals(50.09721, position.getLatitude());
+        assertDoubleEquals(7.74957, position.getLongitude());
+        assertDoubleEquals(50.09721, position.getLatitude());
         assertEquals("Rheinuferstr. bei Kaub", position.getComment());
     }
 
+    @Test
     public void testParseNavigonFormat() {
         Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
-        assertEquals(7.74957, position.getLongitude());
-        assertEquals(50.09721, position.getLatitude());
+        assertDoubleEquals(7.74957, position.getLongitude());
+        assertDoubleEquals(50.09721, position.getLatitude());
         assertEquals("Rheinuferstr. bei Kaub", position.getComment());
 
         Wgs84Position position2 = format.parsePosition("[||][0][10]|B42|56348|7.65285|50.17757[6]|KESTERT|56348|7.64715|50.18503[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
-        assertEquals(7.65285, position2.getLongitude());
-        assertEquals(50.17757, position2.getLatitude());
+        assertDoubleEquals(7.65285, position2.getLongitude());
+        assertDoubleEquals(50.17757, position2.getLatitude());
         assertNull(position2.getComment());
     }
 
+    @Test
     public void testParsePOIonDeviceFormat() {
         Wgs84Position position = format.parsePosition("[||][0][10]|B42|56112|7.62424|50.29042[7]|OBERLAHNSTEIN|[6]|LAHNSTEIN|56112|7.60183|50.31752[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
-        assertEquals(7.62424, position.getLongitude());
-        assertEquals(50.29042, position.getLatitude());
+        assertDoubleEquals(7.62424, position.getLongitude());
+        assertDoubleEquals(50.29042, position.getLatitude());
         assertNull(position.getComment());
     }
 }

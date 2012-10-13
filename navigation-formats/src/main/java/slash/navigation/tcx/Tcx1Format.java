@@ -52,7 +52,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -345,9 +344,7 @@ public class Tcx1Format extends TcxFormat {
         List<CourseT> courses = courseFolderT.getCourse();
 
         Set<String> routeNames = new HashSet<String>(routes.size());
-        for (int i = 0; i < routes.size(); i++) {
-            GpxRoute route = routes.get(i);
-
+        for (GpxRoute route : routes) {
             String routeName = createUniqueRouteName(route.getName(), routeNames);
             routeNames.add(routeName);
             courses.add(createCourse(route, routeName, 0, route.getPositionCount()));

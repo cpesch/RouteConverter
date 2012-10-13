@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn5FormatTest {
-    Nmn5Format format = new Nmn5Format();
+    private Nmn5Format format = new Nmn5Format();
 
     @Test
     public void testIsPosition() {
