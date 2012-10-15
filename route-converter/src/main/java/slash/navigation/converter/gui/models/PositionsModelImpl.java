@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
@@ -102,10 +103,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
     }
 
+    private double[] distanceCache = null;
+
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case DISTANCE_COLUMN_INDEX:
-                return getRoute().getDistance(0, rowIndex);
+                if (distanceCache == null)
+                    distanceCache = getRoute().getDistancesFromStart(0, getRowCount() - 1);
+                return distanceCache[rowIndex];
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
@@ -248,7 +253,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(rowIndex, Arrays.asList(position));
+        add(rowIndex, asList(position));
     }
 
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
@@ -291,10 +296,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             public void performOnIndex(int index) {
                 getRoute().remove(index);
             }
+
             public void performOnRange(int firstIndex, int lastIndex) {
                 if (fireEvent)
                     fireTableRowsDeleted(firstIndex, lastIndex);
             }
+
             public boolean isInterrupted() {
                 return false;
             }
@@ -359,6 +366,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             getRoute().up(getRowCount() - rows.length + i, rows[i]);
         }
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
+    }
+
+    public void fireTableChanged(TableModelEvent e) {
+        distanceCache = null;
+        super.fireTableChanged(e);
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
