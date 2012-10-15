@@ -155,6 +155,7 @@ public abstract class Application {
         String helpSetUrl = bundle.getString("help-set");
         if (helpSetUrl != null)
             ctx.setHelpBrokerUrl(helpSetUrl);
+        ctx.setHelpBrokerClassLoader(applicationClass.getClassLoader());
         return application;
     }
 

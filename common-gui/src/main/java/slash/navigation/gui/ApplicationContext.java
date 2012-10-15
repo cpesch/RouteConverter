@@ -42,6 +42,7 @@ public class ApplicationContext {
     private UndoManager undoManager = new UndoManager();
     private JMenuBar menuBar = null;
     private String helpBrokerUrl = null;
+    private ClassLoader helpBrokerClassLoader = null;
     private HelpBroker broker = null;
 
     public ResourceBundle getBundle() {
@@ -70,8 +71,8 @@ public class ApplicationContext {
 
     public HelpBroker getHelpBroker() throws HelpSetException {
         if (broker == null) {
-            URL url = HelpSet.findHelpSet(null, helpBrokerUrl);
-            HelpSet helpSet = new HelpSet(null, url);
+            URL url = HelpSet.findHelpSet(helpBrokerClassLoader, helpBrokerUrl);
+            HelpSet helpSet = new HelpSet(helpBrokerClassLoader, url);
             broker = helpSet.createHelpBroker();
         }
         return broker;
@@ -79,5 +80,9 @@ public class ApplicationContext {
 
     public void setHelpBrokerUrl(String helpBrokerUrl) {
         this.helpBrokerUrl = helpBrokerUrl;
+    }
+
+    public void setHelpBrokerClassLoader(ClassLoader helpBrokerClassLoader) {
+        this.helpBrokerClassLoader = helpBrokerClassLoader;
     }
 }
