@@ -910,6 +910,9 @@ public class ConvertPanel {
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
+        actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
+        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
+        actionManager.enable("print-elevation-profile", existsAPosition);
     }
 
     private int[] selectedPositionIndices = null;
