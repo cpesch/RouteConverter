@@ -47,7 +47,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +63,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
@@ -123,27 +123,27 @@ public abstract class BaseMapView implements MapView {
     private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount3", 50 * 10);
     private static final int MAXIMUM_SIGNIFICANT_POSITION_COUNT = preferences.getInt("maximumSignificantPositionCount3", 50000);
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount3", 5 * 10);
-    private static final int[] ZOOM_SCALE = {
-            400000000,
-            200000000,
-            100000000,
-            50000000,
-            25000000,
-            12500000,
-            6400000,
-            3200000,
-            1600000,
-            800000,
-            400000,
-            200000,
-            100000,
-            50000,
-            25000,
-            12500,
-            6400,
-            3200
+    private static final double[] THRESHOLD_PER_ZOOM = {
+            120000,
+             70000,
+             40000,
+             20000,
+             10000,    // level 4
+              2700,
+              2100,
+              1500,
+               800,    // level 8
+               500,
+               225,
+               125,
+                75,
+                50,
+                20,
+                10,
+                 4,
+                 1      // level 17
     };
-    private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = 16;
+    private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = THRESHOLD_PER_ZOOM.length;
 
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
@@ -151,6 +151,8 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
     private BaseNavigationPosition center;
+    private final Map<Integer, List<BaseNavigationPosition>> reducedPositions = new HashMap<Integer, List<BaseNavigationPosition>>(THRESHOLD_PER_ZOOM.length);
+    private int lastZoom = -1;
 
     private ServerSocket callbackListenerServerSocket;
     private Thread positionListUpdater, selectionUpdater, callbackListener, callbackPoller;
@@ -164,8 +166,6 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
     private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOM_SCALE.length);
-    private int lastZoom = -1;
     private PositionAugmenter positionAugmenter;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -752,41 +752,24 @@ public abstract class BaseMapView implements MapView {
 
     // reduction of positions
 
-    private BitSet calculateSignificantPositionsForZoom(List<BaseNavigationPosition> positions, int zoom) {
-        BitSet significant = significantPositionCache.get(zoom);
-        if (significant == null) {
-            significant = new BitSet(positions.size());
-
-            if (zoom <= MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
-                double threshold = ZOOM_SCALE[zoom] / 2500.0;
-                long start = currentTimeMillis();
-                int[] significantPositions = getSignificantPositions(positions, threshold);
-                long end = currentTimeMillis();
-                log.info("zoom " + zoom + " < " + MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION +
-                        ": threshold " + threshold + ", significant positions " + significantPositions.length +
-                        ", calculated in " + (end - start) + " milliseconds");
-                for (int significantPosition : significantPositions)
-                    significant.set(significantPosition);
-            } else {
-                // on all zoom about MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION
-                // use all positions since the calculation is too expensive
-                log.info("zoom " + zoom + " use all " + positions.size() + " positions");
-                significant.set(0, positions.size(), true);
-            }
-            significantPositionCache.put(zoom, significant);
-        }
-        return significant;
-    }
-
-    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
+    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, int zoom) {
         long start = currentTimeMillis();
 
-        int zoom = getZoom();
-        BitSet pointStatus = calculateSignificantPositionsForZoom(positions, zoom);
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        for (int i = 0; i < positions.size(); i++)
-            if (pointStatus.get(i))
-                result.add(positions.get(i));
+        if (zoom <= MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
+            double threshold = THRESHOLD_PER_ZOOM[zoom];
+            int[] significantPositions = getSignificantPositions(positions, threshold);
+            for (int significantPosition : significantPositions) {
+                result.add(positions.get(significantPosition));
+            }
+            log.info(format("zoom %d smaller than %d: for threshold %f use %d significant positions",
+                    zoom, MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION, threshold, significantPositions.length));
+        } else {
+            // on all zoom about MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION
+            // use all positions since the calculation is too expensive
+            result.addAll(positions);
+            log.info("zoom " + zoom + " large: use all " + positions.size() + " positions");
+        }
 
         long end = currentTimeMillis();
         log.info(format("Filtered significant positions to reduce %d positions to %d in %d milliseconds",
@@ -800,15 +783,19 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() < 3)
             return positions;
 
-        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
-            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
+        int zoom = getZoom();
+        List<BaseNavigationPosition> result = reducedPositions.get(zoom);
+        if(result == null) {
+            result = reducePositions(positions, zoom, maximumPositionCount);
+            reducedPositions.put(zoom, result);
+        }
+        return result;
+    }
 
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions);
-
-        // reduce the number of significant positions by a visibility heuristic
+    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int zoom, int maximumPositionCount) {
+        // reduce the number of positions to those that are visible
         if (positions.size() > maximumPositionCount) {
-            positions = filterVisiblePositions(positions, 2.5, false);
+            positions = filterVisiblePositions(positions, 3.0, false);
             visibleNorthEast = northEast(positions);
             visibleSouthWest = southWest(positions);
             visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
@@ -820,7 +807,14 @@ public abstract class BaseMapView implements MapView {
             visibleSouthEast = null;
         }
 
-        // reduce the number of visible positions by a JS-stability heuristic
+        // reduce the number of positions by selecting every Nth to limit significance computation time
+        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
+            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
+
+        // determine significant positions for this zoom level
+        positions = filterSignificantPositions(positions, zoom);
+
+        // reduce the number of positions to ensure browser stability
         if (positions.size() > maximumPositionCount)
             positions = filterEveryNthPosition(positions, maximumPositionCount);
 
@@ -843,7 +837,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
-                                                                double factor, boolean includeFirstAndLastPosition) {
+                                                                double threshold, boolean includeFirstAndLastPosition) {
         long start = currentTimeMillis();
 
         BaseNavigationPosition northEast = getNorthEastBounds();
@@ -851,23 +845,20 @@ public abstract class BaseMapView implements MapView {
         if (northEast == null || southWest == null)
             return positions;
 
-        // heuristic: increase bounds for visible positions to enable dragging the map
-        // at the same zoom level, with a factor of 2 you hardly see the cropping even
-        // with a small map and a big screen (meaning lots of space to drag the map)
-        double width = (northEast.getLongitude() - southWest.getLongitude()) * factor;
-        double height = (southWest.getLatitude() - northEast.getLatitude()) * factor;
+        double width = abs(northEast.getLongitude() - southWest.getLongitude()) * threshold;
+        double height = abs(southWest.getLatitude() - northEast.getLatitude()) * threshold;
         northEast.setLongitude(northEast.getLongitude() + width);
-        northEast.setLatitude(northEast.getLatitude() - height);
+        northEast.setLatitude(northEast.getLatitude() + height);
         southWest.setLongitude(southWest.getLongitude() - width);
-        southWest.setLatitude(southWest.getLatitude() + height);
+        southWest.setLatitude(southWest.getLatitude() - height);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
 
         if (includeFirstAndLastPosition)
             result.add(positions.get(0));
+
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
-
         for (int i = firstIndex; i < lastIndex; i += 1) {
             BaseNavigationPosition position = positions.get(i);
             if (contains(northEast, southWest, position)) {
@@ -879,8 +870,8 @@ public abstract class BaseMapView implements MapView {
             result.add(positions.get(positions.size() - 1));
 
         long end = currentTimeMillis();
-        log.info(format("Filtered visible positions to reduce %d positions to %d in %d milliseconds",
-                positions.size(), result.size(), (end - start)));
+        log.info(format("Filtered visible positions with a threshold of %f to reduce %d positions to %d in %d milliseconds",
+                threshold, positions.size(), result.size(), (end - start)));
         return result;
     }
 
@@ -952,7 +943,7 @@ public abstract class BaseMapView implements MapView {
                 routeUpdateReason = "replace route";
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
-                significantPositionCache.clear();
+                reducedPositions.clear();
             }
             notificationMutex.notifyAll();
         }
@@ -963,7 +954,7 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "update route but don't recenter";
-            significantPositionCache.clear();
+            reducedPositions.clear();
             notificationMutex.notifyAll();
         }
     }
@@ -1670,7 +1661,7 @@ public abstract class BaseMapView implements MapView {
             size = positions.size() - 1;
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
-            significantPositionCache.clear();
+            reducedPositions.clear();
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
