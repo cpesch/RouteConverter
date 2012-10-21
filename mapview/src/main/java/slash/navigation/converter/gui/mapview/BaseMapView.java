@@ -144,6 +144,7 @@ public abstract class BaseMapView implements MapView {
                  1      // level 17
     };
     private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = THRESHOLD_PER_ZOOM.length;
+    private static final double VISIBLE_POSITION_AREA_FACTOR = 3.0;
 
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
@@ -756,7 +757,7 @@ public abstract class BaseMapView implements MapView {
         long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        if (zoom <= MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
+        if (zoom < MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
             double threshold = THRESHOLD_PER_ZOOM[zoom];
             int[] significantPositions = getSignificantPositions(positions, threshold);
             for (int significantPosition : significantPositions) {
@@ -795,7 +796,7 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int zoom, int maximumPositionCount) {
         // reduce the number of positions to those that are visible
         if (positions.size() > maximumPositionCount) {
-            positions = filterVisiblePositions(positions, 3.0, false);
+            positions = filterVisiblePositions(positions, VISIBLE_POSITION_AREA_FACTOR, false);
             visibleNorthEast = northEast(positions);
             visibleSouthWest = southWest(positions);
             visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
