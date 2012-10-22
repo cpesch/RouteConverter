@@ -82,6 +82,7 @@ import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
@@ -812,8 +813,10 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
             positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
 
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions, zoom);
+        // determine significant positions for routes and tracks for this zoom level
+        if (positionsModel.getRoute().getCharacteristics().equals(Route) ||
+                positionsModel.getRoute().getCharacteristics().equals(Track))
+            positions = filterSignificantPositions(positions, zoom);
 
         // reduce the number of positions to ensure browser stability
         if (positions.size() > maximumPositionCount)
