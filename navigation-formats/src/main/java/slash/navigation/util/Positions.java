@@ -25,7 +25,6 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
 import static java.lang.System.arraycopy;
@@ -186,7 +185,6 @@ public class Positions {
         return asPosition(maximumLongitude, maximumLatitude, maximumTime);
     }
 
-    protected static final Logger log = Logger.getLogger(Positions.class.getName());
     public static boolean contains(BaseNavigationPosition northEastCorner,
                                    BaseNavigationPosition southWestCorner,
                                    BaseNavigationPosition position) {
