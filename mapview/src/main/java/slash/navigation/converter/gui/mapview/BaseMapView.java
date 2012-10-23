@@ -219,6 +219,7 @@ public abstract class BaseMapView implements MapView {
                 if (e.getType() == UPDATE &&
                         (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
                                 e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS)) {
                     for (int selectedPositionIndex : selectedPositionIndices) {
                         if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
