@@ -30,6 +30,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.completer.CompletePositionService;
@@ -659,7 +660,7 @@ public class RouteConverter extends SingleFrameApplication {
     public void selectPositions(int[] selectedPositions, int centerPosition) {
         if (isMapViewAvailable()) {
             if (centerPosition >= 0 && centerPosition < getPositionsModel().getRowCount()) {
-                BaseNavigationPosition center = getPositionsModel().getPosition(centerPosition);
+                NavigationPosition center = getPositionsModel().getPosition(centerPosition);
                 mapView.setCenter(center);
             }
             mapView.setSelectedPositions(selectedPositions, true);
@@ -741,7 +742,7 @@ public class RouteConverter extends SingleFrameApplication {
         return mapView != null && mapView.isInitialized();
     }
 
-    public BaseNavigationPosition getMapCenter() {
+    public NavigationPosition getMapCenter() {
         return mapView != null ? mapView.getCenter() : new Wgs84Position(-41.0, 41.0, null, null, null, null);
     }
 

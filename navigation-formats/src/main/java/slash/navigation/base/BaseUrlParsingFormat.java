@@ -39,7 +39,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 

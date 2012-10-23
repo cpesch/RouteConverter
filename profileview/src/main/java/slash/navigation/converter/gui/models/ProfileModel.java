@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.models;
 
 import org.jfree.data.xy.XYSeries;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.util.Unit;
 
@@ -92,7 +92,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    private Double formatValue(BaseNavigationPosition position) {
+    private Double formatValue(NavigationPosition position) {
         switch(profileMode) {
             case Elevation:
                 return formatElevation(position.getElevation());

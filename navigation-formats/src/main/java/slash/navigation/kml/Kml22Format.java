@@ -22,7 +22,7 @@ package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -387,7 +387,7 @@ public class Kml22Format extends KmlFormat {
 
     private boolean containTime(KmlRoute route) {
         int foundTime = 0;
-        for (BaseNavigationPosition position : route.getPositions()) {
+        for (NavigationPosition position : route.getPositions()) {
             if (position.getTime() != null)
                 foundTime++;
         }

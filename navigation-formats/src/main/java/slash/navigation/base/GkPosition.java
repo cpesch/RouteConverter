@@ -21,7 +21,9 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.util.Conversion;
+
+import static slash.navigation.util.Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
+import static slash.navigation.util.Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
 
 /**
  * Represents a Gauss Krueger position in a route.
@@ -32,11 +34,16 @@ import slash.navigation.util.Conversion;
 public class GkPosition extends BaseNavigationPosition {
     private double right, height;
     private String comment;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
 
     public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         if (longitude != null && latitude != null) {
-            double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, latitude);
+            double[] gk = wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, latitude);
             setRight(gk[0]);
             setHeight(gk[1]);
         }
@@ -44,12 +51,60 @@ public class GkPosition extends BaseNavigationPosition {
     }
 
     public GkPosition(double right, double height, String comment) {
-        super(null, null, null);
         this.right = right;
         this.height = height;
         setComment(comment);
     }
 
+    public Double getLongitude() {
+        return gaussKruegerRightHeightToWgs84LongitudeLatitude(right, height)[0];
+    }
+
+    public void setLongitude(Double longitude) {
+        double[] gk = wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, getLatitude());
+        setRight(gk[0]);
+    }
+
+    public Double getLatitude() {
+        return gaussKruegerRightHeightToWgs84LongitudeLatitude(right, height)[1];
+    }
+
+    public void setLatitude(Double latitude) {
+        double[] gk = wgs84LongitudeLatitudeToGaussKruegerRightHeight(getLongitude(), latitude);
+        setHeight(gk[1]);
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
 
     public Double getRight() {
         return right;
@@ -67,38 +122,9 @@ public class GkPosition extends BaseNavigationPosition {
         this.height = height;
     }
 
-
-    public Double getLongitude() {
-        return Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(right, height)[0];
-    }
-
-    public void setLongitude(Double longitude) {
-        double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, getLatitude());
-        setRight(gk[0]);
-    }
-
-    public Double getLatitude() {
-        return Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(right, height)[1];
-    }
-
-    public void setLatitude(Double latitude) {
-        double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(getLongitude(), latitude);
-        setHeight(gk[1]);
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-
     public GkPosition asGkPosition() {
         return this;
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

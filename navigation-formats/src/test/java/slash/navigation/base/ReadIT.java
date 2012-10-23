@@ -77,8 +77,8 @@ public class ReadIT {
                 assertNotNull(result.getAllRoutes());
                 assertTrue(result.getAllRoutes().size() > 0);
                 for (BaseRoute route : result.getAllRoutes()) {
-                    List<BaseNavigationPosition> positions = route.getPositions();
-                    for (BaseNavigationPosition position : positions) {
+                    List<NavigationPosition> positions = route.getPositions();
+                    for (NavigationPosition position : positions) {
                         comments.add(position.getComment());
                     }
                 }

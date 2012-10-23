@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helper;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.util.Unit;
 
@@ -55,7 +56,7 @@ public class PositionHelper {
     private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static String currentTimeZone = "";
 
-    public static String extractComment(BaseNavigationPosition position) {
+    public static String extractComment(NavigationPosition position) {
         return position.getComment();
     }
 
@@ -80,7 +81,7 @@ public class PositionHelper {
         return format("%d %s", round(distanceInUnit), unit.getElevationName());
     }
 
-    public static String extractElevation(BaseNavigationPosition position) {
+    public static String extractElevation(NavigationPosition position) {
         return formatElevation(position.getElevation());
     }
 
@@ -108,7 +109,7 @@ public class PositionHelper {
             return format("%d %s", round(speedInUnit), unit.getSpeedName());
     }
 
-    public static String extractSpeed(BaseNavigationPosition position) {
+    public static String extractSpeed(NavigationPosition position) {
         return formatSpeed(position.getSpeed());
     }
 
@@ -117,7 +118,7 @@ public class PositionHelper {
         return getTimeFormat(timeZonePreference).format(time.getTime());
     }
 
-    public static String extractTime(BaseNavigationPosition position) {
+    public static String extractTime(NavigationPosition position) {
         CompactCalendar time = position.getTime();
         return time != null ? formatTime(time) : "";
     }

@@ -118,8 +118,6 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return preferences.getInt("maximumRouteNameLength", 64);
     }
 
-    public abstract <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
-
     public int hashCode() {
         return getClass().getName().hashCode();
     }

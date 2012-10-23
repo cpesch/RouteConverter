@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -87,13 +88,13 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
-        BaseNavigationPosition first = positions.get(0);
+        NavigationPosition first = positions.get(0);
         return new Wgs84Position(first.getLongitude(), first.getLatitude(), null, null, null, "Start:" + first.getComment());
     }
 

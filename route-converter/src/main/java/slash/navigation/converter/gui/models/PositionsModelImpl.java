@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
@@ -86,7 +87,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public String getStringAt(int rowIndex, int columnIndex) {
-        BaseNavigationPosition position = getPosition(rowIndex);
+        NavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
                 return extractComment(position);
@@ -120,30 +121,30 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return getPosition(rowIndex);
     }
 
-    public BaseNavigationPosition getPosition(int rowIndex) {
+    public NavigationPosition getPosition(int rowIndex) {
         return getRoute().getPosition(rowIndex);
     }
 
     @SuppressWarnings({"unchecked"})
-    public int getIndex(BaseNavigationPosition position) {
-        return getRoute().getIndex(position);
+    public int getIndex(NavigationPosition position) {
+        return getRoute().getIndex((BaseNavigationPosition) position);
     }
 
-    public List<BaseNavigationPosition> getPositions(int[] rowIndices) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(rowIndices.length);
+    public List<NavigationPosition> getPositions(int[] rowIndices) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(rowIndices.length);
         for (int rowIndex : rowIndices)
             result.add(getPosition(rowIndex));
         return result;
     }
 
-    public List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(lastIndex - firstIndex);
+    public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(lastIndex - firstIndex);
         for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
     }
 
-    public int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
+    public int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner) {
         return getRoute().getContainedPositions(northEastCorner, southWestCorner);
     }
 
@@ -194,7 +195,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private void editCell(int rowIndex, int columnIndex, Object value) {
-        BaseNavigationPosition position = getPosition(rowIndex);
+        NavigationPosition position = getPosition(rowIndex);
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
@@ -268,9 +269,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         add(rowIndex, asList(position));
     }
 
+    @SuppressWarnings("unchecked")
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        return asFormatForPositions(route.getPositions(), targetFormat);
+        return asFormatForPositions((List)route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {

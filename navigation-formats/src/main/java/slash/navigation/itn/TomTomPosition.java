@@ -40,16 +40,20 @@ public class TomTomPosition extends BaseNavigationPosition {
     private Integer longitude, latitude;
     private String city, reason;
     private Double heading;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
 
     public TomTomPosition(Integer longitude, Integer latitude, String comment) {
-        super(null, null, null);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
     }
 
     public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         setLongitude(longitude);
         setLatitude(latitude);
         setComment(comment);
@@ -59,16 +63,6 @@ public class TomTomPosition extends BaseNavigationPosition {
         if (getTime() == null || time != null)
             setTime(time);
     }
-
-
-    private static Integer asInt(Double aDouble) {
-        return aDouble != null ? (int) (aDouble * INTEGER_FACTOR) : null;
-    }
-
-    private static Double asDouble(Integer anInteger) {
-        return anInteger != null ? anInteger / INTEGER_FACTOR : null;
-    }
-
 
     public Double getLongitude() {
         return asDouble(getLongitudeAsInt());
@@ -99,6 +93,38 @@ public class TomTomPosition extends BaseNavigationPosition {
         parseComment(this, comment);
     }
 
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
+
+
+    private static Integer asInt(Double aDouble) {
+        return aDouble != null ? (int) (aDouble * INTEGER_FACTOR) : null;
+    }
+
+    private static Double asDouble(Integer anInteger) {
+        return anInteger != null ? anInteger / INTEGER_FACTOR : null;
+    }
 
     public Integer getLongitudeAsInt() {
         return longitude;

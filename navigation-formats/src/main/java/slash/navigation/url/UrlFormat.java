@@ -20,8 +20,8 @@
 
 package slash.navigation.url;
 
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseUrlFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Route;
@@ -69,7 +69,7 @@ public class UrlFormat extends BaseUrlFormat {
         throw new UnsupportedOperationException();
     }
 
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         throw new UnsupportedOperationException();
     }
 

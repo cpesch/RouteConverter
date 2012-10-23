@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -39,13 +39,13 @@ import java.util.List;
 class RemovePositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
     private List<Integer> rowList = new ArrayList<Integer>();
-    private List<List<BaseNavigationPosition>> positionsList = new ArrayList<List<BaseNavigationPosition>>();
+    private List<List<NavigationPosition>> positionsList = new ArrayList<List<NavigationPosition>>();
 
     public RemovePositions(UndoPositionsModel positionsModel) {
         this.positionsModel = positionsModel;
     }
 
-    public void add(int row, List<BaseNavigationPosition> positions) {
+    public void add(int row, List<NavigationPosition> positions) {
         rowList.add(0, row);
         positionsList.add(0, positions);
     }
@@ -62,7 +62,7 @@ class RemovePositions extends AbstractUndoableEdit {
         super.undo();
         for (int i = 0; i < rowList.size(); i++) {
             int row = rowList.get(i);
-            List<BaseNavigationPosition> positions = positionsList.get(i);
+            List<NavigationPosition> positions = positionsList.get(i);
             positionsModel.add(row, positions, true, false);
         }
     }
@@ -71,7 +71,7 @@ class RemovePositions extends AbstractUndoableEdit {
         super.redo();
         for (int i = rowList.size() - 1; i >= 0; i--) {
             int row = rowList.get(i);
-            List<BaseNavigationPosition> positions = positionsList.get(i);
+            List<NavigationPosition> positions = positionsList.get(i);
             positionsModel.remove(row, row + positions.size(), true, false);
         }
     }

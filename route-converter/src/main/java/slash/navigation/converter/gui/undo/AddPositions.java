@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -38,9 +38,9 @@ import java.util.List;
 class AddPositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
     private int row;
-    private List<BaseNavigationPosition> positions;
+    private List<NavigationPosition> positions;
 
-    public AddPositions(UndoPositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
+    public AddPositions(UndoPositionsModel positionsModel, int row, List<NavigationPosition> positions) {
         this.positionsModel = positionsModel;
         this.row = row;
         this.positions = positions;

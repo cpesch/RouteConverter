@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -53,8 +53,8 @@ public interface MapView extends PositionsSelectionModel {
     void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
     void setAvoidTolls(boolean avoidTolls);
-    BaseNavigationPosition getCenter();
-    void setCenter(BaseNavigationPosition center);
+    NavigationPosition getCenter();
+    void setCenter(NavigationPosition center);
     void print(String title, boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);

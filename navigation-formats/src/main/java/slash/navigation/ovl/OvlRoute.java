@@ -128,7 +128,6 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
     private final OvlSection symbol, overlay, mapLage;
     private List<Wgs84Position> positions;
 
-
     public OvlRoute(OvlFormat format, RouteCharacteristics characteristics, String name,
                     OvlSection symbol, OvlSection overlay, OvlSection mapLage,
                     List<Wgs84Position> positions) {
@@ -149,7 +148,6 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
     OvlSection getSymbol() {
         return symbol;
     }
-
 
     OvlSection getOverlay() {
         return overlay;

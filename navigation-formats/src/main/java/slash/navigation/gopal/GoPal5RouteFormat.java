@@ -21,7 +21,7 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding5.ObjectFactory;
@@ -60,7 +60,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> GoPal5Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> GoPal5Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GoPal5Route(name, (List<GoPalPosition>) positions);
     }
 

@@ -21,9 +21,9 @@
 package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -87,7 +87,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -293,7 +293,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
-        BaseNavigationPosition center = center(route.getPositions());
+        NavigationPosition center = center(route.getPositions());
         writeMissingAttribute(route.getMapLage(), writer, "CenterLat", formatPositionAsString(center.getLatitude()));
         writeMissingAttribute(route.getMapLage(), writer, "CenterLong", formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);

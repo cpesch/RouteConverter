@@ -21,8 +21,8 @@
 package slash.navigation.tour;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -90,7 +90,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TourRoute(name, (List<TourPosition>) positions);
     }
 

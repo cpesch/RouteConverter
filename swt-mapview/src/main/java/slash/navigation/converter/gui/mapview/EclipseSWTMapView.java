@@ -29,7 +29,7 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
 import slash.common.io.TokenResolver;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 import java.awt.*;
@@ -287,15 +287,15 @@ public class EclipseSWTMapView extends BaseMapView {
 
     // bounds and center
 
-    protected BaseNavigationPosition getNorthEastBounds() {
+    protected NavigationPosition getNorthEastBounds() {
         return extractLatLng("return getNorthEastBounds();");
     }
 
-    protected BaseNavigationPosition getSouthWestBounds() {
+    protected NavigationPosition getSouthWestBounds() {
         return extractLatLng("return getSouthWestBounds();");
     }
 
-    protected BaseNavigationPosition getCurrentMapCenter() {
+    protected NavigationPosition getCurrentMapCenter() {
         return extractLatLng("return getCenter();");
     }
 

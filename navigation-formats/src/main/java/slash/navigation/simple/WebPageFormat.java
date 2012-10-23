@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -70,7 +70,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -107,12 +107,12 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        BaseNavigationPosition southWest = southWest(positions);
+        NavigationPosition southWest = southWest(positions);
         String southWestBuffer = "new google.maps.LatLng(" + southWest.getLatitude() + "," + southWest.getLongitude() + ")";
-        BaseNavigationPosition northEast = northEast(positions);
+        NavigationPosition northEast = northEast(positions);
         String northEastBuffer = "new google.maps.LatLng(" + northEast.getLatitude() + "," + northEast.getLongitude() + ")";
 
-        BaseNavigationPosition center = center(positions);
+        NavigationPosition center = center(positions);
         String centerBuffer = "new google.maps.LatLng(" + center.getLatitude() + "," + center.getLongitude() + ")";
 
         String output = template.replaceAll("INSERT_ROUTENAME", route.getName()).

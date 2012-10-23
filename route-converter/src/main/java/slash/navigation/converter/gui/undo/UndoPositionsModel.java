@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
 import slash.navigation.gui.events.ContinousRange;
@@ -34,9 +35,9 @@ import slash.navigation.gui.undo.UndoManager;
 import javax.swing.event.TableModelListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -120,23 +121,23 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.setRoute(route);
     }
 
-    public BaseNavigationPosition getPosition(int rowIndex) {
+    public NavigationPosition getPosition(int rowIndex) {
         return delegate.getPosition(rowIndex);
     }
 
-    public int getIndex(BaseNavigationPosition position) {
+    public int getIndex(NavigationPosition position) {
         return delegate.getIndex(position);
     }
 
-    public List<BaseNavigationPosition> getPositions(int[] rowIndices) {
+    public List<NavigationPosition> getPositions(int[] rowIndices) {
         return delegate.getPositions(rowIndices);
     }
 
-    public List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex) {
+    public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
-    public int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
+    public int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner) {
         return delegate.getContainedPositions(northEastCorner, southWestCorner);
     }
 
@@ -156,7 +157,7 @@ public class UndoPositionsModel implements PositionsModel {
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(rowIndex, Arrays.asList(position));
+        add(rowIndex, asList(position));
 
     }
 
@@ -166,14 +167,14 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void add(int rowIndex, List<BaseNavigationPosition> positions) {
-        add(rowIndex, positions, true, true);
+        add(rowIndex, new ArrayList<NavigationPosition>(positions), true, true);
     }
 
     @SuppressWarnings("unchecked")
-    void add(int row, List<BaseNavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
+    void add(int row, List<NavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
         for (int i = positions.size() - 1; i >= 0; i--) {
-            BaseNavigationPosition position = positions.get(i);
-            getRoute().add(row, position);
+            NavigationPosition position = positions.get(i);
+            getRoute().add(row, (BaseNavigationPosition) position);
         }
         if (fireEvent)
             delegate.fireTableRowsInserted(row, row - 1 + positions.size());
@@ -198,7 +199,7 @@ public class UndoPositionsModel implements PositionsModel {
         final RemovePositions edit = new RemovePositions(this);
 
         new ContinousRange(rows, new RangeOperation() {
-            private List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
+            private List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
 
             public void performOnIndex(int index) {
                 removed.add(0, getRoute().remove(index));
@@ -207,7 +208,7 @@ public class UndoPositionsModel implements PositionsModel {
                 if (fireEvent)
                     delegate.fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
-                    edit.add(firstIndex, new ArrayList<BaseNavigationPosition>(removed));
+                    edit.add(firstIndex, removed);
                 removed.clear();
             }
             public boolean isInterrupted() {

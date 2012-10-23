@@ -174,8 +174,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
     }
 
-    public int[] getContainedPositions(BaseNavigationPosition northEastCorner,
-                                       BaseNavigationPosition southWestCorner) {
+    public int[] getContainedPositions(NavigationPosition northEastCorner,
+                                       NavigationPosition southWestCorner) {
         List<Integer> result = new ArrayList<Integer>();
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); i++) {
@@ -280,9 +280,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double getDistance(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();
-        BaseNavigationPosition previous = null;
+        NavigationPosition previous = null;
         for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
+            NavigationPosition next = positions.get(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
                 if (distance != null)
@@ -298,9 +298,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         int index = 0;
         double distance = 0.0;
-        BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+        NavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
         while (index <= endIndex) {
-            BaseNavigationPosition next = positions.get(index);
+            NavigationPosition next = positions.get(index);
             if (previous != null) {
                 Double delta = previous.calculateDistance(next);
                 if (delta != null)
@@ -323,9 +323,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             int index = 0;
             double distance = 0.0;
             List<P> positions = getPositions();
-            BaseNavigationPosition previous = positions.get(0);
+            NavigationPosition previous = positions.get(0);
             while (index <= endIndex) {
-                BaseNavigationPosition next = positions.get(index);
+                NavigationPosition next = positions.get(index);
                 if (previous != null) {
                     Double delta = previous.calculateDistance(next);
                     if (delta != null)
@@ -344,9 +344,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double getElevationAscend(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();
-        BaseNavigationPosition previous = null;
+        NavigationPosition previous = null;
         for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
+            NavigationPosition next = positions.get(i);
             if (previous != null) {
                 Double elevation = previous.calculateElevation(next);
                 if (elevation != null && elevation > 0)
@@ -360,9 +360,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double getElevationDescend(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();
-        BaseNavigationPosition previous = null;
+        NavigationPosition previous = null;
         for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
+            NavigationPosition next = positions.get(i);
             if (previous != null) {
                 Double elevation = previous.calculateElevation(next);
                 if (elevation != null && elevation < 0)

@@ -24,7 +24,7 @@ import slash.common.io.Externalization;
 import slash.common.system.Platform;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
@@ -120,7 +120,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GpxRoute(new Gpx10Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
 

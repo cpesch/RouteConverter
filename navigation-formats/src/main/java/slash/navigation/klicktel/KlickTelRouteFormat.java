@@ -21,7 +21,7 @@
 package slash.navigation.klicktel;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -70,7 +70,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> KlickTelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> KlickTelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KlickTelRoute(name, (List<Wgs84Position>) positions);
     }
 

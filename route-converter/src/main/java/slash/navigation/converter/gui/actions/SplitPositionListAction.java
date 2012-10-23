@@ -24,6 +24,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
@@ -65,7 +66,7 @@ public class SplitPositionListAction extends FrameAction {
                 if (fromIndex == 0 && toIndex == 0)
                     break;
 
-                List<BaseNavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
+                List<NavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
                 positionsModel.remove(fromIndex, toIndex);
                 NavigationFormat format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})

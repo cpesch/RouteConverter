@@ -25,6 +25,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
@@ -77,7 +78,7 @@ public class TomTomRouteFormatIT {
     private static final char EURO = '\u20ac';
 
     static void checkUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        BaseNavigationPosition first = route.getPositions().get(0);
+        NavigationPosition first = route.getPositions().get(0);
         assertEquals("abc" + UMLAUTS_ae_oe_ue_sz + EURO, first.getComment());
     }
 
@@ -104,11 +105,11 @@ public class TomTomRouteFormatIT {
     private static final String LUEBECK = "L\u00fcbeck";
 
     static void checkPlaceNamesWithUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        BaseNavigationPosition first = route.getPositions().get(0);
+        NavigationPosition first = route.getPositions().get(0);
         assertEquals(SCHEESSEL, first.getComment());
-        BaseNavigationPosition second = route.getPositions().get(1);
+        NavigationPosition second = route.getPositions().get(1);
         assertEquals(MOELLN, second.getComment());
-        BaseNavigationPosition third = route.getPositions().get(2);
+        NavigationPosition third = route.getPositions().get(2);
         assertEquals(LUEBECK, third.getComment());
     }
 

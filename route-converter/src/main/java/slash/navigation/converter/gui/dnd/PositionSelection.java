@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
@@ -49,17 +50,17 @@ public class PositionSelection implements Transferable {
     public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
     public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
 
-    private final List<BaseNavigationPosition> positions;
+    private final List<NavigationPosition> positions;
     private final BaseNavigationFormat format;
     private final String string;
 
-    public PositionSelection(List<BaseNavigationPosition> positions, BaseNavigationFormat format) {
+    public PositionSelection(List<NavigationPosition> positions, BaseNavigationFormat format) {
         this.positions = positions;
         this.format = format;
         this.string = createStringFor(positions);
     }
 
-    private String createStringFor(List<BaseNavigationPosition> sourcePositions) {
+    private String createStringFor(List<NavigationPosition> sourcePositions) {
         NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         try {
@@ -74,7 +75,7 @@ public class PositionSelection implements Transferable {
         return writer.toString();
     }
 
-    public List<BaseNavigationPosition> getPositions() {
+    public List<NavigationPosition> getPositions() {
         return positions;
     }
 

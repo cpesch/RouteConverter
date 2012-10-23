@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -56,13 +57,13 @@ public class AddPositionAction extends FrameAction {
         this.positionsSelectionModel = positionsSelectionModel;
     }
 
-    private BaseNavigationPosition calculateCenter(int row) {
-        BaseNavigationPosition position = positionsModel.getPosition(row);
+    private NavigationPosition calculateCenter(int row) {
+        NavigationPosition position = positionsModel.getPosition(row);
         // if there is only one position or it is the first row, choose the map center
         if (row >= positionsModel.getRowCount() - 1)
             return null;
         // otherwise center between given positions
-        BaseNavigationPosition second = positionsModel.getPosition(row + 1);
+        NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
         return center(asList(second, position));
@@ -75,13 +76,13 @@ public class AddPositionAction extends FrameAction {
         return formatNumberedPosition(numberPattern, number, description);
     }
 
-    private BaseNavigationPosition insertRow(int row, BaseNavigationPosition position) {
+    private NavigationPosition insertRow(int row, NavigationPosition position) {
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
                 position.getSpeed(), position.getTime(), getRouteComment());
         return positionsModel.getPosition(row);
     }
 
-    private void complementRow(int row, BaseNavigationPosition position) {
+    private void complementRow(int row, NavigationPosition position) {
         RouteConverter r = RouteConverter.getInstance();
         r.complementComment(row, position.getLongitude(), position.getLatitude());
         r.complementElevation(row, position.getLongitude(), position.getLatitude());
@@ -92,13 +93,13 @@ public class AddPositionAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         boolean hasInsertedRowInMapCenter = false;
-        List<BaseNavigationPosition> insertedPositions = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
         int[] rowIndices = Range.revert(table.getSelectedRows());
         for (int aReverted : rowIndices) {
             int row = rowIndices.length > 0 ? aReverted : table.getRowCount();
             int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
 
-            BaseNavigationPosition center = rowIndices.length > 0 ? calculateCenter(row) :
+            NavigationPosition center = rowIndices.length > 0 ? calculateCenter(row) :
                     positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
             if (center == null) {
                 // only insert row in map center once
@@ -113,7 +114,7 @@ public class AddPositionAction extends FrameAction {
 
         if (insertedPositions.size() > 0) {
             List<Integer> insertedRows = new ArrayList<Integer>();
-            for (BaseNavigationPosition position : insertedPositions) {
+            for (NavigationPosition position : insertedPositions) {
                 int index = positionsModel.getIndex(position);
                 insertedRows.add(index);
                 complementRow(index, position);

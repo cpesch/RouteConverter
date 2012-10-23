@@ -341,7 +341,7 @@ public final class NavigationFormats {
         return buffer.toString();
     }
 
-    /* package local for tests */static BaseNavigationPosition asFormat(BaseNavigationPosition position, NavigationFormat format) throws IOException {
+    /* package local for tests */static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat format) throws IOException {
         BaseNavigationPosition result;
         String formatName = getFormatName(format);
         formatName = formatName.replace("Format", "Position");
@@ -355,9 +355,9 @@ public final class NavigationFormats {
         return result;
     }
 
-    public static List<BaseNavigationPosition> asFormatForPositions(List<BaseNavigationPosition> positions, NavigationFormat format) throws IOException {
+    public static List<BaseNavigationPosition> asFormatForPositions(List<NavigationPosition> positions, NavigationFormat format) throws IOException {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(positions.size());
-        for (BaseNavigationPosition position : positions) {
+        for (NavigationPosition position : positions) {
             result.add(asFormat(position, format));
         }
         return result;

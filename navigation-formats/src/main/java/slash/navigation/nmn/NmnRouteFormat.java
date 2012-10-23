@@ -21,7 +21,7 @@
 package slash.navigation.nmn;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -72,7 +72,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -215,7 +215,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 log.fine("Unknown 13-16: seen " + unknown + ", not expected 0 or 1");
             }
 
-            List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+            List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
             int readedPositions = 0;
             //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
             //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.

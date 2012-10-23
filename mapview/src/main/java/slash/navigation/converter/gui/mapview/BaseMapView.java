@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -149,12 +150,12 @@ public abstract class BaseMapView implements MapView {
     private static final double VISIBLE_POSITION_AREA_FACTOR = 3.0;
 
     private PositionsModel positionsModel;
-    private List<BaseNavigationPosition> positions;
+    private List<NavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
-    private List<BaseNavigationPosition> lastSelectedPositions;
+    private List<NavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
-    private BaseNavigationPosition center;
-    private final Map<Integer, List<BaseNavigationPosition>> reducedPositions = new HashMap<Integer, List<BaseNavigationPosition>>(THRESHOLD_PER_ZOOM.length);
+    private NavigationPosition center;
+    private final Map<Integer, List<NavigationPosition>> reducedPositions = new HashMap<Integer, List<NavigationPosition>>(THRESHOLD_PER_ZOOM.length);
     private int lastZoom = -1;
 
     private ServerSocket callbackListenerServerSocket;
@@ -283,7 +284,7 @@ public abstract class BaseMapView implements MapView {
                 long lastTime = 0;
                 boolean recenter;
                 while (true) {
-                    List<BaseNavigationPosition> copiedPositions;
+                    List<NavigationPosition> copiedPositions;
                     synchronized (notificationMutex) {
                         try {
                             notificationMutex.wait(1000);
@@ -338,7 +339,7 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     setCenterOfMap(copiedPositions, recenter);
-                    List<BaseNavigationPosition> render = reducePositions(copiedPositions, getMaximumPositionCount());
+                    List<NavigationPosition> render = reducePositions(copiedPositions, getMaximumPositionCount());
                     switch (positionsModel.getRoute().getCharacteristics()) {
                         case Route:
                             addDirectionsToMap(render);
@@ -362,7 +363,7 @@ public abstract class BaseMapView implements MapView {
                 long lastTime = 0;
                 while (true) {
                     int[] copiedSelectedPositionIndices;
-                    List<BaseNavigationPosition> copiedPositions;
+                    List<NavigationPosition> copiedPositions;
                     boolean recenter;
                     synchronized (notificationMutex) {
                         try {
@@ -396,8 +397,8 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
-                    List<BaseNavigationPosition> render = reducePositions(copiedPositions, copiedSelectedPositionIndices);
-                    BaseNavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
+                    List<NavigationPosition> render = reducePositions(copiedPositions, copiedSelectedPositionIndices);
+                    NavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
                     selectPositions(render, recenter ? centerPosition : null);
                     log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
                     lastTime = currentTimeMillis();
@@ -707,14 +708,14 @@ public abstract class BaseMapView implements MapView {
             update(false);
     }
 
-    public BaseNavigationPosition getCenter() {
+    public NavigationPosition getCenter() {
         if (isInitialized())
             return getCurrentMapCenter();
         else
             return getLastMapCenter();
     }
 
-    public void setCenter(BaseNavigationPosition center) {
+    public void setCenter(NavigationPosition center) {
         this.center = center;
     }
 
@@ -726,21 +727,21 @@ public abstract class BaseMapView implements MapView {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
     }
 
-    protected abstract BaseNavigationPosition getNorthEastBounds();
+    protected abstract NavigationPosition getNorthEastBounds();
 
-    protected abstract BaseNavigationPosition getSouthWestBounds();
+    protected abstract NavigationPosition getSouthWestBounds();
 
-    protected abstract BaseNavigationPosition getCurrentMapCenter();
+    protected abstract NavigationPosition getCurrentMapCenter();
 
     protected abstract Integer getCurrentZoom();
 
-    private BaseNavigationPosition getLastMapCenter() {
+    private NavigationPosition getLastMapCenter() {
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         return new Wgs84Position(longitude, latitude, null, null, null, null);
     }
 
-    protected BaseNavigationPosition extractLatLng(String script) {
+    protected NavigationPosition extractLatLng(String script) {
         String result = executeScriptWithResult(script);
         if (result == null)
             return null;
@@ -756,10 +757,10 @@ public abstract class BaseMapView implements MapView {
 
     // reduction of positions
 
-    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, int zoom) {
+    private List<NavigationPosition> filterSignificantPositions(List<NavigationPosition> positions, int zoom) {
         long start = currentTimeMillis();
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         if (zoom < MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
             double threshold = THRESHOLD_PER_ZOOM[zoom];
             int[] significantPositions = getSignificantPositions(positions, threshold);
@@ -781,14 +782,14 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private BaseNavigationPosition visibleNorthEast, visibleSouthWest;
+    private NavigationPosition visibleNorthEast, visibleSouthWest;
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
+    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int maximumPositionCount) {
         if (positions.size() < 3)
             return positions;
 
         int zoom = getZoom();
-        List<BaseNavigationPosition> result = reducedPositions.get(zoom);
+        List<NavigationPosition> result = reducedPositions.get(zoom);
         if(result == null) {
             result = reducePositions(positions, zoom, maximumPositionCount);
             reducedPositions.put(zoom, result);
@@ -796,7 +797,7 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int zoom, int maximumPositionCount) {
+    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, int maximumPositionCount) {
         // reduce the number of positions to those that are visible
         if (positions.size() > maximumPositionCount) {
             double visiblePositionAreaFactor = max(VISIBLE_POSITION_AREA_FACTOR * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * VISIBLE_POSITION_AREA_FACTOR;
@@ -824,7 +825,7 @@ public abstract class BaseMapView implements MapView {
         return positions;
     }
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int[] indices) {
+    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int[] indices) {
         // reduce selected positions if they're not selected
         positions = filterSelectedPositions(positions, indices);
 
@@ -839,12 +840,12 @@ public abstract class BaseMapView implements MapView {
         return positions;
     }
 
-    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
+    private List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions,
                                                                 double threshold, boolean includeFirstAndLastPosition) {
         long start = currentTimeMillis();
 
-        BaseNavigationPosition northEast = getNorthEastBounds();
-        BaseNavigationPosition southWest = getSouthWestBounds();
+        NavigationPosition northEast = getNorthEastBounds();
+        NavigationPosition southWest = getSouthWestBounds();
         if (northEast == null || southWest == null)
             return positions;
 
@@ -855,7 +856,7 @@ public abstract class BaseMapView implements MapView {
         southWest.setLongitude(southWest.getLongitude() - width);
         southWest.setLatitude(southWest.getLatitude() - height);
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
 
         if (includeFirstAndLastPosition)
             result.add(positions.get(0));
@@ -863,7 +864,7 @@ public abstract class BaseMapView implements MapView {
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
         for (int i = firstIndex; i < lastIndex; i += 1) {
-            BaseNavigationPosition position = positions.get(i);
+            NavigationPosition position = positions.get(i);
             if (contains(northEast, southWest, position)) {
                 result.add(position);
             }
@@ -878,10 +879,10 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
+    private List<NavigationPosition> filterEveryNthPosition(List<NavigationPosition> positions, int maximumPositionCount) {
         long start = currentTimeMillis();
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         result.add(positions.get(0));
 
         double increment = positions.size() / (double) (maximumPositionCount - 1 /* first position */ - 1 /* last position */);
@@ -897,10 +898,10 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> filterSelectedPositions(List<BaseNavigationPosition> positions, int[] selectedIndices) {
+    private List<NavigationPosition> filterSelectedPositions(List<NavigationPosition> positions, int[] selectedIndices) {
         long start = currentTimeMillis();
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         for (int selectedIndex : selectedIndices) {
             if (selectedIndex >= positions.size())
                 continue;
@@ -913,13 +914,13 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> filterPositionsWithoutCoordinates(List<BaseNavigationPosition> positions) {
+    private List<NavigationPosition> filterPositionsWithoutCoordinates(List<NavigationPosition> positions) {
         long start = currentTimeMillis();
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         // copy to avoid ConcurrentModificationException
-        positions = new ArrayList<BaseNavigationPosition>(positions);
-        for (BaseNavigationPosition position : positions) {
+        positions = new ArrayList<NavigationPosition>(positions);
+        for (NavigationPosition position : positions) {
             if (position.hasCoordinates())
                 result.add(position);
         }
@@ -978,7 +979,7 @@ public abstract class BaseMapView implements MapView {
         executeScript("removeDirections();");
     }
 
-    private void addDirectionsToMap(List<BaseNavigationPosition> positions) {
+    private void addDirectionsToMap(List<NavigationPosition> positions) {
         executeScript("resetDirections();");
 
         // avoid throwing javascript exceptions if there is nothing to direct
@@ -997,7 +998,7 @@ public abstract class BaseMapView implements MapView {
             int start = Math.max(0, j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH - 1);
             int end = min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH) - 1;
             for (int i = start + 1; i < end; i++) {
-                BaseNavigationPosition position = positions.get(i);
+                NavigationPosition position = positions.get(i);
                 buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")}");
                 if (i < end - 1)
@@ -1005,8 +1006,8 @@ public abstract class BaseMapView implements MapView {
             }
             buffer.append("];\n");
 
-            BaseNavigationPosition origin = positions.get(start);
-            BaseNavigationPosition destination = positions.get(end);
+            NavigationPosition origin = positions.get(start);
+            NavigationPosition destination = positions.get(end);
             buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).
                     append(",").append(origin.getLongitude()).append("), ");
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
@@ -1030,7 +1031,7 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
+    private void addPolylinesToMap(final List<NavigationPosition> positions) {
         // display markers if there is no polyline to show
         if (positions.size() < 2) {
             addMarkersToMap(positions);
@@ -1045,7 +1046,7 @@ public abstract class BaseMapView implements MapView {
             buffer.append("var latlngs = [");
             int maximum = min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
             for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++) {
-                BaseNavigationPosition position = positions.get(i);
+                NavigationPosition position = positions.get(i);
                 buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")");
                 if (i < maximum - 1)
@@ -1059,13 +1060,13 @@ public abstract class BaseMapView implements MapView {
         removeDirections();
     }
 
-    private void addMarkersToMap(List<BaseNavigationPosition> positions) {
+    private void addMarkersToMap(List<NavigationPosition> positions) {
         int markersCount = ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuilder buffer = new StringBuilder();
             int maximum = min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
-                BaseNavigationPosition position = positions.get(i);
+                NavigationPosition position = positions.get(i);
                 buffer.append("addMarker(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(",").
                         append("\"").append(escape(position.getComment())).append("\");\n");
@@ -1076,20 +1077,20 @@ public abstract class BaseMapView implements MapView {
         removeDirections();
     }
 
-    private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
+    private void setCenterOfMap(List<NavigationPosition> positions, boolean recenter) {
         StringBuilder buffer = new StringBuilder();
 
         boolean fitBoundsToPositions = positions.size() > 0 && recenter;
         if (fitBoundsToPositions) {
-            BaseNavigationPosition northEast = northEast(positions);
-            BaseNavigationPosition southWest = southWest(positions);
+            NavigationPosition northEast = northEast(positions);
+            NavigationPosition southWest = southWest(positions);
             buffer.append("fitBounds(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(",").
                     append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(");\n");
             ignoreNextZoomCallback = true;
         }
 
         if (haveToInitializeMapOnFirstStart) {
-            BaseNavigationPosition center;
+            NavigationPosition center;
             // if there are positions right at the start center on them else take the last known center and zoom
             if (positions.size() > 0) {
                 center = center(positions);
@@ -1109,12 +1110,12 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void selectPositions(List<BaseNavigationPosition> selectedPositions, BaseNavigationPosition center) {
-        lastSelectedPositions = new ArrayList<BaseNavigationPosition>(selectedPositions);
+    private void selectPositions(List<NavigationPosition> selectedPositions, NavigationPosition center) {
+        lastSelectedPositions = new ArrayList<NavigationPosition>(selectedPositions);
 
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
-            BaseNavigationPosition selectedPosition = selectedPositions.get(i);
+            NavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("selectPosition(").append(selectedPosition.getLatitude()).append(",").
                     append(selectedPosition.getLongitude()).append(",").
                     append("\"").append(escape(selectedPosition.getComment())).append("\",").
@@ -1127,17 +1128,17 @@ public abstract class BaseMapView implements MapView {
         executeScript(buffer.toString());
     }
 
-    private final Map<Integer, List<BaseNavigationPosition>> insertWaypointsQueue = new HashMap<Integer, List<BaseNavigationPosition>>();
+    private final Map<Integer, List<NavigationPosition>> insertWaypointsQueue = new HashMap<Integer, List<NavigationPosition>>();
 
     private void insertWaypoints(final String mode, int[] startPositions) {
-        final Map<Integer, List<BaseNavigationPosition>> addToQueue = new HashMap<Integer, List<BaseNavigationPosition>>();
+        final Map<Integer, List<NavigationPosition>> addToQueue = new HashMap<Integer, List<NavigationPosition>>();
         Random random = new Random();
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
                 // skip the very last position without successor
                 if (i == positions.size() - 1 || i == startPositions.length - 1)
                     continue;
-                List<BaseNavigationPosition> successorPredecessor = new ArrayList<BaseNavigationPosition>();
+                List<NavigationPosition> successorPredecessor = new ArrayList<NavigationPosition>();
                 successorPredecessor.add(positions.get(startPositions[i]));
                 successorPredecessor.add(positions.get(startPositions[i] + 1));
                 addToQueue.put(random.nextInt(), successorPredecessor);
@@ -1151,9 +1152,9 @@ public abstract class BaseMapView implements MapView {
         executor.execute(new Runnable() {
             public void run() {
                 for (Integer key : addToQueue.keySet()) {
-                    List<BaseNavigationPosition> successorPredecessor = addToQueue.get(key);
-                    BaseNavigationPosition from = successorPredecessor.get(0);
-                    BaseNavigationPosition to = successorPredecessor.get(1);
+                    List<NavigationPosition> successorPredecessor = addToQueue.get(key);
+                    NavigationPosition from = successorPredecessor.get(0);
+                    NavigationPosition to = successorPredecessor.get(1);
                     StringBuilder buffer = new StringBuilder();
                     buffer.append(mode).append("({");
                     buffer.append("origin: new google.maps.LatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("), ");
@@ -1448,7 +1449,7 @@ public abstract class BaseMapView implements MapView {
             Integer key = parseInt(insertWaypointsMatcher.group(2));
             List<String> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
 
-            List<BaseNavigationPosition> successorPredecessor;
+            List<NavigationPosition> successorPredecessor;
             synchronized (insertWaypointsQueue) {
                 successorPredecessor = insertWaypointsQueue.remove(key);
             }
@@ -1456,8 +1457,8 @@ public abstract class BaseMapView implements MapView {
             if (coordinates.size() < 5 || successorPredecessor == null)
                 return true;
 
-            BaseNavigationPosition before = successorPredecessor.get(0);
-            BaseNavigationPosition after = successorPredecessor.get(1);
+            NavigationPosition before = successorPredecessor.get(0);
+            NavigationPosition after = successorPredecessor.get(1);
             final int row;
             synchronized (notificationMutex) {
                 row = positions.indexOf(before) + 1;
@@ -1480,8 +1481,8 @@ public abstract class BaseMapView implements MapView {
         preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, longitude);
 
         if (visibleNorthEast != null && visibleSouthWest != null) {
-            BaseNavigationPosition mapNorthEast = getNorthEastBounds();
-            BaseNavigationPosition mapSouthWest = getSouthWestBounds();
+            NavigationPosition mapNorthEast = getNorthEastBounds();
+            NavigationPosition mapSouthWest = getSouthWestBounds();
 
             // TODO remove logging later
             log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) +   "\n" +
@@ -1532,7 +1533,7 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private boolean isDuplicate(BaseNavigationPosition position, BaseNavigationPosition insert) {
+    private boolean isDuplicate(NavigationPosition position, NavigationPosition insert) {
         if (position == null)
             return false;
         Double distance = position.calculateDistance(insert);
@@ -1581,8 +1582,8 @@ public abstract class BaseMapView implements MapView {
     }
 
     @SuppressWarnings("unchecked")
-    private BaseRoute parseRoute(List<String> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
-        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<BaseNavigationPosition>());
+    private BaseRoute parseRoute(List<String> coordinates, NavigationPosition before, NavigationPosition after) {
+        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<NavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
         int positionInsertionCount = coordinates.size() / 5;
@@ -1618,9 +1619,9 @@ public abstract class BaseMapView implements MapView {
 
     @SuppressWarnings({"unchecked"})
     private void complementPositions(int row, BaseRoute route) {
-        List<BaseNavigationPosition> positions = route.getPositions();
+        List<NavigationPosition> positions = route.getPositions();
         int index = row;
-        for (BaseNavigationPosition position : positions) {
+        for (NavigationPosition position : positions) {
             // do not complement comment since this is limited to 2500 calls/day
             positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
             positionAugmenter.complementTime(index, position.getTime(), false);
@@ -1638,7 +1639,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private int getAddRow() {
-        BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+        NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
         // quite crude logic to be as robust as possible on failures
         if (position == null && positionsModel.getRowCount() > 0)
             position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
@@ -1646,7 +1647,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private int getMoveRow(int index) {
-        BaseNavigationPosition position = lastSelectedPositions.get(index);
+        NavigationPosition position = lastSelectedPositions.get(index);
         final int row;
         synchronized (notificationMutex) {
             row = positions.indexOf(position);
@@ -1655,7 +1656,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void movePosition(int row, Double longitude, Double latitude) {
-        BaseNavigationPosition reference = positionsModel.getPosition(row);
+        NavigationPosition reference = positionsModel.getPosition(row);
         Double diffLongitude = reference != null ? longitude - reference.getLongitude() : 0.0;
         Double diffLatitude = reference != null ? latitude - reference.getLatitude() : 0.0;
 
@@ -1664,7 +1665,7 @@ public abstract class BaseMapView implements MapView {
             if (index < minimum)
                 minimum = index;
 
-            BaseNavigationPosition position = positionsModel.getPosition(index);
+            NavigationPosition position = positionsModel.getPosition(index);
             if (position == null)
                 continue;
 
@@ -1704,7 +1705,7 @@ public abstract class BaseMapView implements MapView {
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
     }
 
-    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner, boolean replaceSelection) {
+    private void selectPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner, boolean replaceSelection) {
         int[] rows = positionsModel.getContainedPositions(northEastCorner, southWestCorner);
         if (rows.length > 0) {
             positionsSelectionModel.setSelectedPositions(rows, replaceSelection);

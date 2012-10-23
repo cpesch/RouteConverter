@@ -21,7 +21,7 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -38,10 +38,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -83,7 +83,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 

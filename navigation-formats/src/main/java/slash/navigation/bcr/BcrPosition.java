@@ -32,6 +32,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.util.Conversion.bcrAltitudeToElevationMeters;
+import static slash.navigation.util.Conversion.elevationMetersToBcrAltitude;
 
 /**
  * Represents a position in a Map&Guide Tourenplaner Route (.bcr) file.
@@ -70,12 +72,12 @@ public class BcrPosition extends MercatorPosition {
     }
 
     private static long asAltitude(Double elevation) {
-        return elevation != null ? Conversion.elevationMetersToBcrAltitude(elevation) : NO_ALTITUDE_DEFINED;
+        return elevation != null ? elevationMetersToBcrAltitude(elevation) : NO_ALTITUDE_DEFINED;
     }
 
 
     public Double getElevation() {
-        return altitude != NO_ALTITUDE_DEFINED ? Conversion.bcrAltitudeToElevationMeters(getAltitude()) : null;
+        return altitude != NO_ALTITUDE_DEFINED ? bcrAltitudeToElevationMeters(getAltitude()) : null;
     }
 
     public void setElevation(Double elevation) {

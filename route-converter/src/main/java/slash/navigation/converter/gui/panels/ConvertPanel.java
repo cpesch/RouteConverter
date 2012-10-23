@@ -24,13 +24,13 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatParserListener;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserCallback;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
@@ -1324,7 +1324,7 @@ public class ConvertPanel {
                     convertPanel.getTransferHandler().canImport(support);
         }
 
-        private int[] toRows(List<BaseNavigationPosition> positions) {
+        private int[] toRows(List<NavigationPosition> positions) {
             int[] result = new int[positions.size()];
             for (int i = 0; i < result.length; i++) {
                 result[i] = getPositionsModel().getIndex(positions.get(i));

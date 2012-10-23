@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -50,9 +50,9 @@ public class CopyAction extends FrameAction {
         this.clipboardInteractor = clipboardInteractor;
     }
 
-    private List<BaseNavigationPosition> copy(List<BaseNavigationPosition> positions) throws IOException {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        for (BaseNavigationPosition position : positions) {
+    private List<NavigationPosition> copy(List<NavigationPosition> positions) throws IOException {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        for (NavigationPosition position : positions) {
             // TODO should copy extra properties, too
             result.add(new GpxPosition(position.getLongitude(), position.getLatitude(), position.getElevation(),
                     position.getSpeed(), position.getTime(), position.getComment()));

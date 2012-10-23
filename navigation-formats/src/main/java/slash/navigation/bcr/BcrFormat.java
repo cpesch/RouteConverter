@@ -21,8 +21,8 @@
 package slash.navigation.bcr;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -86,7 +86,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> BcrRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> BcrRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 

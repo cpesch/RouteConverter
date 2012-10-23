@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
@@ -127,9 +127,9 @@ public class LengthCalculator {
         double distanceMeters = 0.0;
         long totalTimeMilliSeconds = 0;
         CompactCalendar minimumTime = null, maximumTime = null;
-        BaseNavigationPosition previous = null;
+        NavigationPosition previous = null;
         for (int i = 0; i < positionsModel.getRowCount(); i++) {
-            BaseNavigationPosition next = positionsModel.getPosition(i);
+            NavigationPosition next = positionsModel.getPosition(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
                 if (distance != null)

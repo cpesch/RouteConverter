@@ -21,7 +21,7 @@
 package slash.navigation.nmea;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 
 import java.io.PrintWriter;
@@ -176,7 +176,7 @@ public class NmeaFormat extends BaseNmeaFormat {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmeaRoute(this, characteristics, (List<NmeaPosition>) positions);
     }
 

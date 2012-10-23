@@ -21,7 +21,7 @@
 package slash.navigation.viamichelin;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -75,7 +75,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> ViaMichelinRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> ViaMichelinRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new ViaMichelinRoute(name, (List<Wgs84Position>) positions);
     }
 

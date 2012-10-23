@@ -24,7 +24,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
-import slash.navigation.util.RouteComments;
+
+import static slash.navigation.util.RouteComments.parseComment;
 
 /**
  * Represents a WGS84 position in a route.
@@ -36,9 +37,14 @@ public class Wgs84Position extends BaseNavigationPosition {
     protected Double longitude, latitude, heading, hdop, vdop, pdop;
     protected String comment;
     protected Integer satellites;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
 
     public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
@@ -69,8 +75,33 @@ public class Wgs84Position extends BaseNavigationPosition {
         if (comment == null)
             return;
 
-        RouteComments.parseComment(this, comment);
+        parseComment(this, comment);
     }
+
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
+
 
     public Double getHeading() {
         return heading;

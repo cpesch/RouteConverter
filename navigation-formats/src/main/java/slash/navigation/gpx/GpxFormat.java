@@ -20,8 +20,8 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;
 
@@ -63,7 +63,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GpxRoute(this, characteristics, name, null, (List<GpxPosition>) positions);
     }
 

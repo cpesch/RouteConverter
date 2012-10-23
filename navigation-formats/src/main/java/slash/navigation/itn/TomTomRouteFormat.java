@@ -21,7 +21,7 @@
 package slash.navigation.itn;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
@@ -87,7 +87,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> TomTomRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> TomTomRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TomTomRoute(characteristics, name, (List<TomTomPosition>) positions);
     }
 

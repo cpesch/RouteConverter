@@ -22,6 +22,7 @@ package slash.navigation.util;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.List;
@@ -40,14 +41,14 @@ import static slash.common.type.CompactCalendar.fromMillis;
 public class Positions {
     private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
 
-    private static int[] douglasPeuckerSimplify(List<? extends BaseNavigationPosition> positions, int from, int to, double threshold) {
+    private static int[] douglasPeuckerSimplify(List<? extends NavigationPosition> positions, int from, int to, double threshold) {
         // find the point with the maximum distance
-        BaseNavigationPosition pointA = positions.get(from);
-        BaseNavigationPosition pointB = positions.get(to);
+        NavigationPosition pointA = positions.get(from);
+        NavigationPosition pointB = positions.get(to);
         int maximumDistanceIndex = -1;
         double maximumDistance = 0.0;
         for (int i = from + 1; i < to; i++) {
-            BaseNavigationPosition position = positions.get(i);
+            NavigationPosition position = positions.get(i);
             if (position.hasCoordinates()) {
                 double distance = abs(position.calculateOrthogonalDistance(pointA, pointB));
                 if (distance > maximumDistance) {
@@ -79,11 +80,11 @@ public class Positions {
      * @param threshold determines the threshold for significance in meter
      * @return an array of indices to the original list of positions with the significant positions
      */
-    public static int[] getSignificantPositions(List<? extends BaseNavigationPosition> positions, double threshold) {
+    public static int[] getSignificantPositions(List<? extends NavigationPosition> positions, double threshold) {
         return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
     }
 
-    public static CompactCalendar extrapolateTime(BaseNavigationPosition position, BaseNavigationPosition predecessor, BaseNavigationPosition beforePredecessor) {
+    public static CompactCalendar extrapolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition beforePredecessor) {
         if (predecessor.getTime() == null || beforePredecessor.getTime() == null)
             return null;
 
@@ -103,7 +104,7 @@ public class Positions {
         return fromMillis(time);
     }
 
-    public static CompactCalendar intrapolateTime(BaseNavigationPosition position, BaseNavigationPosition predecessor, BaseNavigationPosition successor) {
+    public static CompactCalendar intrapolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition successor) {
         if (predecessor.getTime() == null || successor.getTime() == null)
             return null;
 
@@ -125,9 +126,9 @@ public class Positions {
         return fromMillis(time);
     }
 
-    public static BaseNavigationPosition center(List<? extends BaseNavigationPosition> positions) {
-        BaseNavigationPosition northEast = northEast(positions);
-        BaseNavigationPosition southWest = southWest(positions);
+    public static NavigationPosition center(List<? extends NavigationPosition> positions) {
+        NavigationPosition northEast = northEast(positions);
+        NavigationPosition southWest = southWest(positions);
         double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         CompactCalendar time = null;
@@ -139,10 +140,10 @@ public class Positions {
         return asPosition(longitude, latitude, time);
     }
 
-    public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
+    public static NavigationPosition southWest(List<? extends NavigationPosition> positions) {
         double minimumLongitude = 180.0, minimumLatitude = 180.0;
         CompactCalendar minimumTime = null;
-        for (BaseNavigationPosition position : positions) {
+        for (NavigationPosition position : positions) {
             Double longitude = position.getLongitude();
             if (longitude == null)
                 continue;
@@ -162,10 +163,10 @@ public class Positions {
         return asPosition(minimumLongitude, minimumLatitude, minimumTime);
     }
 
-    public static BaseNavigationPosition northEast(List<? extends BaseNavigationPosition> positions) {
+    public static NavigationPosition northEast(List<? extends NavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -180.0;
         CompactCalendar maximumTime = null;
-        for (BaseNavigationPosition position : positions) {
+        for (NavigationPosition position : positions) {
             Double longitude = position.getLongitude();
             if (longitude == null)
                 continue;
@@ -185,9 +186,9 @@ public class Positions {
         return asPosition(maximumLongitude, maximumLatitude, maximumTime);
     }
 
-    public static boolean contains(BaseNavigationPosition northEastCorner,
-                                   BaseNavigationPosition southWestCorner,
-                                   BaseNavigationPosition position) {
+    public static boolean contains(NavigationPosition northEastCorner,
+                                   NavigationPosition southWestCorner,
+                                   NavigationPosition position) {
         boolean result = position.getLongitude() > southWestCorner.getLongitude();
         result = result && (position.getLongitude() < northEastCorner.getLongitude());
         result = result && (position.getLatitude() > southWestCorner.getLatitude());

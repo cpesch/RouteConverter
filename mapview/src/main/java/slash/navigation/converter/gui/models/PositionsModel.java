@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 
 import javax.swing.table.TableModel;
 import java.io.IOException;
@@ -40,12 +41,12 @@ public interface PositionsModel extends TableModel {
     void setRoute(BaseRoute route);
 
     String getStringAt(int rowIndex, int columnIndex);
-    BaseNavigationPosition getPosition(int rowIndex);
-    int getIndex(BaseNavigationPosition position);
-    List<BaseNavigationPosition> getPositions(int[] rowIndices);
-    List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex);
+    NavigationPosition getPosition(int rowIndex);
+    int getIndex(NavigationPosition position);
+    List<NavigationPosition> getPositions(int[] rowIndices);
+    List<NavigationPosition> getPositions(int firstIndex, int lastIndex);
 
-    int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner);
+    int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner);
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);

@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -33,13 +33,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseLong;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -76,7 +76,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 

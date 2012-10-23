@@ -22,6 +22,7 @@ package slash.navigation.wbt;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -79,7 +80,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     protected abstract int getHeaderSize();
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -157,8 +158,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
         List<Wgs84Route> result = new ArrayList<Wgs84Route>();
 
-        List<BaseNavigationPosition> trackPoints = null;
-        List<BaseNavigationPosition> pushPoints = null;
+        List<NavigationPosition> trackPoints = null;
+        List<NavigationPosition> pushPoints = null;
         int trackPointNo = 1;
         int pushPointNo = 1;
 
@@ -175,20 +176,20 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
             if ((trackFlag & 1) == 1) {
                 // new track
-                trackPoints = new ArrayList<BaseNavigationPosition>();
+                trackPoints = new ArrayList<NavigationPosition>();
                 Wgs84Route track = createRoute(Track, null, trackPoints);
                 result.add(track);
                 trackPointNo = 1;
 
                 // trackname = time of first point
-                BaseNavigationPosition newPoint = createWaypoint(time, latitude, longitude, altitude, 0, true);
+                NavigationPosition newPoint = createWaypoint(time, latitude, longitude, altitude, 0, true);
                 track.setName(TRACK_NAME_DATE_FORMAT.format(newPoint.getTime().getTime()));
             }
 
             if ((trackFlag & 2) == 2) {
                 // track pushpoint
                 if (pushPoints == null) {
-                    pushPoints = new ArrayList<BaseNavigationPosition>();
+                    pushPoints = new ArrayList<NavigationPosition>();
                     Wgs84Route points = createRoute(Waypoints, "Pushpoints", pushPoints);
                     result.add(points);
                 }

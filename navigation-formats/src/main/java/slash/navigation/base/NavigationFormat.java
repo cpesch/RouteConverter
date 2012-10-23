@@ -44,7 +44,7 @@ public interface NavigationFormat<R extends BaseRoute> {
     boolean isSupportsMultipleRoutes();
     boolean isWritingRouteCharacteristics();
 
-    <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
+    <P extends NavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
     void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception;
     void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException;

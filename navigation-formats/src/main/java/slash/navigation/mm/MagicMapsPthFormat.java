@@ -21,8 +21,8 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.GkPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -63,7 +63,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> MagicMapsPthRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> MagicMapsPthRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 

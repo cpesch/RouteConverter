@@ -61,8 +61,8 @@ public abstract class ConvertBase {
         assertTrue(result.getAllRoutes().size() > 0);
 
         // check append
-        BaseNavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);
-        BaseNavigationPosition targetPosition = asFormat(sourcePosition, targetFormat);
+        NavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);
+        NavigationPosition targetPosition = asFormat(sourcePosition, targetFormat);
         assertNotNull(targetPosition);
 
         convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, result.getTheRoute());

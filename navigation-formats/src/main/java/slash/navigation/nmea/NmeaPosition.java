@@ -42,31 +42,26 @@ public class NmeaPosition extends BaseNavigationPosition {
     private String northOrSouth /*latitude*/, eastOrWest /*longitude*/;
     private String comment;
     protected Integer satellites;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
 
     public NmeaPosition(Double longitude, String eastOrWest, Double latitude, String northOrSouth, Double elevation, Double speed, Double heading, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+        this(null, null, elevation, speed, time, comment);
         this.longitude = longitude;
         this.eastOrWest = eastOrWest;
         this.latitude = latitude;
         this.northOrSouth = northOrSouth;
         this.heading = heading;
-        this.comment = comment;
     }
 
     public NmeaPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         setLongitude(longitude);
         setLatitude(latitude);
         this.comment = comment;
-    }
-
-    private static Double toDegrees(Double ddmm2, String direction) {
-        if (ddmm2 == null)
-            return null;
-        double decimal = ddmm2degrees(ddmm2);
-        direction = trim(direction);
-        boolean southOrWest = "S".equals(direction) || "W".equals(direction);
-        return southOrWest ? -decimal : decimal;
     }
 
     public Double getLongitude() {
@@ -99,6 +94,48 @@ public class NmeaPosition extends BaseNavigationPosition {
         }
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
+
+
+    private static Double toDegrees(Double ddmm2, String direction) {
+        if (ddmm2 == null)
+            return null;
+        double decimal = ddmm2degrees(ddmm2);
+        direction = trim(direction);
+        boolean southOrWest = "S".equals(direction) || "W".equals(direction);
+        return southOrWest ? -decimal : decimal;
+    }
+
     public Double getLongitudeAsDdmm() {
         return longitude;
     }
@@ -113,14 +150,6 @@ public class NmeaPosition extends BaseNavigationPosition {
 
     public String getEastOrWest() {
         return eastOrWest;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public Double getHeading() {

@@ -23,6 +23,7 @@ package slash.navigation.nmn;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 
@@ -51,13 +52,13 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> NmnRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> NmnRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmnRoute(this, characteristics, null, (List<NmnPosition>) positions);
     }
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
-        BaseNavigationPosition first = positions.get(0);
+        NavigationPosition first = positions.get(0);
         return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
                 first.getLatitude() + DUPLICATE_OFFSET, (Double)null, null, null, "Start:" + first.getComment());
     }

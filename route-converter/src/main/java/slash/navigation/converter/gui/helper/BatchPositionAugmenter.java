@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -81,17 +81,17 @@ public class BatchPositionAugmenter {
 
 
     private interface OverwritePredicate {
-        boolean shouldOverwrite(BaseNavigationPosition position);
+        boolean shouldOverwrite(NavigationPosition position);
     }
 
     private static final OverwritePredicate TAUTOLOGY_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
+        public boolean shouldOverwrite(NavigationPosition position) {
             return true;
         }
     };
 
     private static final OverwritePredicate COORDINATE_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
+        public boolean shouldOverwrite(NavigationPosition position) {
             return position.hasCoordinates();
         }
     };
@@ -100,7 +100,7 @@ public class BatchPositionAugmenter {
     private interface Operation {
         String getName();
         int getColumnIndex();
-        boolean run(int index, BaseNavigationPosition position) throws Exception;
+        boolean run(int index, NavigationPosition position) throws Exception;
         String getErrorMessage();
     }
 
@@ -127,7 +127,7 @@ public class BatchPositionAugmenter {
                         private int count = 1;
 
                         public void performOnIndex(final int index) {
-                            BaseNavigationPosition position = positionsModel.getPosition(index);
+                            NavigationPosition position = positionsModel.getPosition(index);
                             if (predicate.shouldOverwrite(position)) {
                                 try {
                                     // ignoring the result since the performance boost of the continous
@@ -203,7 +203,7 @@ public class BatchPositionAugmenter {
                         return ALL_COLUMNS; // LONGITUDE_COLUMN_INDEX + LATITUDE_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) throws Exception {
                         GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                         if (coordinates != null) {
                             positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
@@ -238,7 +238,7 @@ public class BatchPositionAugmenter {
                         return ELEVATION_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) throws Exception {
                         Double previousElevation = position.getElevation();
                         Double nextElevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
                         boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
@@ -275,7 +275,7 @@ public class BatchPositionAugmenter {
                         return DESCRIPTION_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) throws Exception {
                         String comment = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
                             positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
@@ -310,7 +310,7 @@ public class BatchPositionAugmenter {
                         return DESCRIPTION_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) throws Exception {
                         String comment = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
                             positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
@@ -343,8 +343,8 @@ public class BatchPositionAugmenter {
                         return SPEED_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        BaseNavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
+                    public boolean run(int index, NavigationPosition position) throws Exception {
+                        NavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
                         if (predecessor != null) {
                             Double previousSpeed = position.getSpeed();
                             Double nextSpeed = position.calculateSpeed(predecessor);
@@ -367,18 +367,18 @@ public class BatchPositionAugmenter {
         processSpeeds(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
-    private BaseNavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
+    private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
         while(index-- > 0) {
-            BaseNavigationPosition position = positionsModel.getPosition(index);
+            NavigationPosition position = positionsModel.getPosition(index);
             if(position.getTime() != null)
                 return position;
         }
         return null;
     }
 
-    private BaseNavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
+    private NavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
         while(index++ < positionsModel.getRowCount() - 1) {
-            BaseNavigationPosition position = positionsModel.getPosition(index);
+            NavigationPosition position = positionsModel.getPosition(index);
             if(position.getTime() != null)
                 return position;
         }
@@ -399,9 +399,9 @@ public class BatchPositionAugmenter {
                         return TIME_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        BaseNavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
-                        BaseNavigationPosition successor = findSuccessorWithTime(positionsModel, index);
+                    public boolean run(int index, NavigationPosition position) throws Exception {
+                        NavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
+                        NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
                         if (predecessor != null && successor != null) {
                             CompactCalendar previousTime = position.getTime();
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
@@ -441,7 +441,7 @@ public class BatchPositionAugmenter {
                         return DESCRIPTION_COLUMN_INDEX;
                     }
 
-                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) throws Exception {
                         String previousComment = position.getComment();
                         String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextComment != null && !nextComment.equals(previousComment);

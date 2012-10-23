@@ -25,6 +25,7 @@ import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.itn.TomTomPosition;
 
@@ -64,7 +65,7 @@ public abstract class RouteComments {
         return result;
     }
 
-    public static String createRouteName(List<? extends BaseNavigationPosition> positions) {
+    public static String createRouteName(List<? extends NavigationPosition> positions) {
         if (positions.size() > 0)
             return positions.get(0).getComment() + " to " + positions.get(positions.size() - 1).getComment();
         else
@@ -98,9 +99,9 @@ public abstract class RouteComments {
         return POSITION + " " + (index + 1);
     }
 
-    public static void commentPositions(List<? extends BaseNavigationPosition> positions) {
+    public static void commentPositions(List<? extends NavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
-            BaseNavigationPosition position = positions.get(i);
+            NavigationPosition position = positions.get(i);
             String original = position.getComment();
             String modified = getPositionComment(position, i);
             if (original == null || !original.equals(modified))
@@ -108,7 +109,7 @@ public abstract class RouteComments {
         }
     }
 
-    private static String getPositionComment(BaseNavigationPosition position, int index) {
+    private static String getPositionComment(NavigationPosition position, int index) {
         if (position.getComment() == null || "(null)".equals(position.getComment())) {
             return getPositionComment(index);
         } else {
@@ -124,7 +125,7 @@ public abstract class RouteComments {
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\s*(\\d*)(.*)");
 
-    public static String getNumberedPosition(BaseNavigationPosition position, int index,
+    public static String getNumberedPosition(NavigationPosition position, int index,
                                              int digitCount, NumberPattern numberPattern) {
         String number = formatIntAsString((index + 1), digitCount);
         String comment = getPositionComment(position, index);
@@ -240,7 +241,7 @@ public abstract class RouteComments {
     private static class LongitudeAndLatitude {
         public final double longitude, latitude;
 
-        public LongitudeAndLatitude(BaseNavigationPosition position) {
+        public LongitudeAndLatitude(NavigationPosition position) {
             this.longitude = position.getLongitude();
             this.latitude = position.getLatitude();
         }
@@ -376,7 +377,7 @@ public abstract class RouteComments {
         return !isEmpty(aDouble) ? aDouble : null;
     }
 
-    public static void parseComment(BaseNavigationPosition position, String comment) {
+    public static void parseComment(NavigationPosition position, String comment) {
         Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(2)));

@@ -23,6 +23,7 @@ package slash.navigation.kml;
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
@@ -84,7 +85,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
@@ -211,7 +212,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     private static final Pattern QSTARTZ_DATE_AND_SPEED_PATTERN = Pattern.compile(".*Date:\\s*(\\d{4}/\\d{2}/\\d{2}).*Time:\\s*(\\d{2}:\\d{2}:\\d{2}).*Speed:\\s*([\\d\\.]+)\\s*.*", Pattern.DOTALL);
 
-    void parseTime(BaseNavigationPosition position, String description, CompactCalendar startDate) {
+    void parseTime(NavigationPosition position, String description, CompactCalendar startDate) {
         if (description != null) {
             Matcher tavelLogMatcher = TAVELLOG_DATE_PATTERN.matcher(description);
             if (tavelLogMatcher.matches()) {
