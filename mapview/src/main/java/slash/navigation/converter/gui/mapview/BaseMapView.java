@@ -1668,17 +1668,17 @@ public abstract class BaseMapView implements MapView {
                 continue;
 
             if (index != row) {
-                positionsModel.edit(position.getLongitude() + diffLongitude, index, LONGITUDE_COLUMN_INDEX, false, true);
-                positionsModel.edit(position.getLatitude() + diffLatitude, index, LATITUDE_COLUMN_INDEX, false, true);
+                positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, position.getLongitude() + diffLongitude,
+                        LATITUDE_COLUMN_INDEX, position.getLatitude() + diffLatitude, false, true);
             } else {
-                positionsModel.edit(longitude, index, LONGITUDE_COLUMN_INDEX, false, true);
-                positionsModel.edit(latitude, index, LATITUDE_COLUMN_INDEX, false, true);
+                positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, longitude,
+                        LATITUDE_COLUMN_INDEX, latitude, false, true);
             }
 
             if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
-                positionsModel.edit(null, index, ELEVATION_COLUMN_INDEX, false, false);
+                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
             if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
-                positionsModel.edit(null, index, TIME_COLUMN_INDEX, false, false);
+                positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
                 positionAugmenter.complementTime(index, null, true);
         }

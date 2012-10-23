@@ -80,21 +80,22 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        edit(aValue, rowIndex, columnIndex, true, true);
+        edit(rowIndex, columnIndex, aValue, -1, null, true, true);
     }
 
     public String getStringAt(int rowIndex, int columnIndex) {
         return delegate.getStringAt(rowIndex, columnIndex);
     }
 
-    public void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo) {
+    public void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
-        Object previousValue = trackUndo ? trim(getStringAt(rowIndex, columnIndex)) : null;
-        delegate.edit(aValue, rowIndex, columnIndex, fireEvent, trackUndo);
+        Object previousFirstValue = trackUndo ? trim(getStringAt(rowIndex, firstColumnIndex)) : null;
+        Object previousSecondValue = trackUndo && secondColumnIndex != -1 ? trim(getStringAt(rowIndex, secondColumnIndex)) : null;
+        delegate.edit(rowIndex, firstColumnIndex, firstValue, secondColumnIndex, secondValue, fireEvent, trackUndo);
         if (trackUndo)
-            undoManager.addEdit(new EditPosition(this, rowIndex, columnIndex, previousValue, aValue));
+            undoManager.addEdit(new EditPosition(this, rowIndex, firstColumnIndex, previousFirstValue, firstValue, secondColumnIndex, previousSecondValue, secondValue));
     }
 
     public void addTableModelListener(TableModelListener l) {

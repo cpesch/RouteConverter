@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
@@ -173,47 +174,58 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        edit(aValue, rowIndex, columnIndex, true, true);
+        edit(rowIndex, columnIndex, aValue, -1, null, true, true);
     }
 
-    public void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo) {
+    public void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
+        editCell(rowIndex, firstColumnIndex, firstValue);
+        if (secondColumnIndex != -1)
+            editCell(rowIndex, secondColumnIndex, secondValue);
+
+        if (fireEvent) {
+            if (secondColumnIndex != -1)
+                fireTableRowsUpdated(rowIndex, rowIndex);
+            else
+                fireTableRowsUpdated(rowIndex, rowIndex, firstColumnIndex);
+        }
+    }
+
+    private void editCell(int rowIndex, int columnIndex, Object value) {
         BaseNavigationPosition position = getPosition(rowIndex);
-        String string = aValue != null ? trim(aValue.toString()) : null;
+        String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
                 position.setComment(string);
                 break;
             case TIME_COLUMN_INDEX:
-                position.setTime(parseTime(aValue, string));
+                position.setTime(parseTime(value, string));
                 break;
             case LONGITUDE_COLUMN_INDEX:
-                Double longitude = parseDouble(aValue, string, null);
+                Double longitude = parseDouble(value, string, null);
                 if (longitude != null)
                     position.setLongitude(longitude);
                 break;
             case LATITUDE_COLUMN_INDEX:
-                Double latitude = parseDouble(aValue, string, null);
+                Double latitude = parseDouble(value, string, null);
                 if (latitude != null)
                     position.setLatitude(latitude);
                 break;
             case ELEVATION_COLUMN_INDEX:
-                Double elevation = parseElevation(aValue, string);
+                Double elevation = parseElevation(value, string);
                 if (elevation != null)
                     position.setElevation(elevation);
                 break;
             case SPEED_COLUMN_INDEX:
-                Double speed = parseSpeed(aValue, string);
+                Double speed = parseSpeed(value, string);
                 if (speed != null)
                     position.setSpeed(speed);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
-        if (fireEvent)
-            fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
@@ -374,6 +386,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, TableModelEvent.UPDATE));
+        fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
     }
 }

@@ -90,7 +90,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             if (!isEmpty(elevation[0])) {
-                                positionsModel.edit(elevation[0], row, ELEVATION_COLUMN_INDEX, true, false);
+                                positionsModel.edit(row, ELEVATION_COLUMN_INDEX, elevation[0], -1, null, true, false);
                             }
                         }
                     });
@@ -114,7 +114,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                         public void run() {
                             if (comment[0] != null) {
                                 String description = createComment(row + 1, comment[0]);
-                                positionsModel.edit(description, row, DESCRIPTION_COLUMN_INDEX, true, false);
+                                positionsModel.edit(row, DESCRIPTION_COLUMN_INDEX, description, -1, null, true, false);
                             }
                         }
                     });
@@ -135,6 +135,6 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         // more than one position for which no time can be interpolated from the previous positions
         if (interpolated == null && allowCurrentTime)
             interpolated = fromCalendar(Calendar.getInstance(UTC));
-        positionsModel.edit(interpolated, row, TIME_COLUMN_INDEX, true, false);
+        positionsModel.edit(row, TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
     }
 }

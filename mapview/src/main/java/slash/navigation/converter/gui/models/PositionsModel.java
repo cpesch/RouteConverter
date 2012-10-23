@@ -54,7 +54,7 @@ public interface PositionsModel extends TableModel {
     void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
     void add(int rowIndex, List<BaseNavigationPosition> positions);
 
-    void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo);
+    void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue, boolean fireEvent, boolean trackUndo);
 
     void remove(int firstIndex, int lastIndex);
     void remove(int[] rowIndices);

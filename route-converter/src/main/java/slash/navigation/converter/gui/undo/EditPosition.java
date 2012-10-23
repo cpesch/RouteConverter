@@ -35,16 +35,20 @@ import javax.swing.undo.UndoableEdit;
 
 class EditPosition extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
-    private int row, column;
-    private Object previousValue, nextValue;
+    private int row, firstColumn, secondColumn;
+    private Object previousFirstValue, nextFirstValue, previousSecondValue, nextSecondValue;
 
-    public EditPosition(UndoPositionsModel positionsModel, int row, int column,
-                        Object previousValue, Object nextValue) {
+    public EditPosition(UndoPositionsModel positionsModel, int row,
+                        int firstColumn, Object previousFirstValue, Object nextFirstValue,
+                        int secondColumn, Object previousSecondValue, Object nextSecondValue) {
         this.positionsModel = positionsModel;
         this.row = row;
-        this.column = column;
-        this.previousValue = previousValue;
-        this.nextValue = nextValue;
+        this.firstColumn = firstColumn;
+        this.previousFirstValue = previousFirstValue;
+        this.nextFirstValue = nextFirstValue;
+        this.secondColumn = secondColumn;
+        this.previousSecondValue = previousSecondValue;
+        this.nextSecondValue = nextSecondValue;
     }
 
     public String getUndoPresentationName() {
@@ -57,11 +61,11 @@ class EditPosition extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.edit(previousValue, row, column, true, false);
+        positionsModel.edit(row, firstColumn, previousFirstValue, secondColumn, previousSecondValue, true, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.edit(nextValue, row, column, true, false);
+        positionsModel.edit(row, firstColumn, nextFirstValue, secondColumn, nextSecondValue, true, false);
     }
 }

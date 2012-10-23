@@ -31,7 +31,6 @@ import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.util.NumberPattern;
-import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.text.MessageFormat;
@@ -51,6 +50,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.util.Positions.intrapolateTime;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 /**
@@ -206,8 +206,8 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                         if (coordinates != null) {
-                            positionsModel.edit(coordinates.getLongitude(), index, LONGITUDE_COLUMN_INDEX, false, true);
-                            positionsModel.edit(coordinates.getLatitude(), index, LATITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
+                                    LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), false, true);
                         }
                         return coordinates != null;
                     }
@@ -239,10 +239,12 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        Double elevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
-                        if (elevation != null)
-                            positionsModel.edit(elevation, index, ELEVATION_COLUMN_INDEX, false, true);
-                        return elevation != null;
+                        Double previousElevation = position.getElevation();
+                        Double nextElevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
+                        if (changed)
+                            positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, false, true);
+                        return changed;
                     }
 
                     public String getErrorMessage() {
@@ -276,7 +278,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.edit(comment, index, DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
                         return comment != null;
                     }
 
@@ -311,7 +313,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.edit(comment, index, DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
                         return comment != null;
                     }
 
@@ -348,7 +350,7 @@ public class BatchPositionAugmenter {
                             Double nextSpeed = position.calculateSpeed(predecessor);
                             boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.edit(nextSpeed, index, SPEED_COLUMN_INDEX, false, true);
+                                positionsModel.edit(index, SPEED_COLUMN_INDEX, nextSpeed, -1, null, false, true);
                             return changed;
                         }
                         return false;
@@ -402,10 +404,10 @@ public class BatchPositionAugmenter {
                         BaseNavigationPosition successor = findSuccessorWithTime(positionsModel, index);
                         if (predecessor != null && successor != null) {
                             CompactCalendar previousTime = position.getTime();
-                            CompactCalendar nextTime = Positions.intrapolateTime(position, predecessor, successor);
+                            CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
                             boolean changed = nextTime != null && !nextTime.equals(previousTime);
                             if (changed)
-                                positionsModel.edit(nextTime, index, TIME_COLUMN_INDEX, false, true);
+                                positionsModel.edit(index, TIME_COLUMN_INDEX, nextTime, -1, null, false, true);
                             return changed;
                         }
                         return false;
@@ -444,7 +446,7 @@ public class BatchPositionAugmenter {
                         String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextComment != null && !nextComment.equals(previousComment);
                         if (changed)
-                            positionsModel.edit(nextComment, index, DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextComment, -1, null, false, true);
                         return changed;
                     }
 
