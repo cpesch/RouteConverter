@@ -64,6 +64,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
@@ -779,7 +780,7 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private BaseNavigationPosition visibleNorthWest, visibleNorthEast, visibleSouthWest, visibleSouthEast;
+    private BaseNavigationPosition visibleNorthEast, visibleSouthWest;
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
         if (positions.size() < 3)
@@ -797,16 +798,13 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int zoom, int maximumPositionCount) {
         // reduce the number of positions to those that are visible
         if (positions.size() > maximumPositionCount) {
-            positions = filterVisiblePositions(positions, VISIBLE_POSITION_AREA_FACTOR, false);
+            double visiblePositionAreaFactor = max(VISIBLE_POSITION_AREA_FACTOR * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * VISIBLE_POSITION_AREA_FACTOR;
+            positions = filterVisiblePositions(positions, visiblePositionAreaFactor, false);
             visibleNorthEast = northEast(positions);
             visibleSouthWest = southWest(positions);
-            visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
-            visibleSouthEast = asPosition(visibleNorthEast.getLongitude(), visibleSouthWest.getLatitude());
         } else {
             visibleNorthEast = null;
             visibleSouthWest = null;
-            visibleNorthWest = null;
-            visibleSouthEast = null;
         }
 
         // reduce the number of positions by selecting every Nth to limit significance computation time
@@ -945,9 +943,9 @@ public abstract class BaseMapView implements MapView {
             if (haveToReplaceRoute) {
                 this.haveToReplaceRoute = true;
                 routeUpdateReason = "replace route";
+                reducedPositions.clear();
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
-                reducedPositions.clear();
             }
             notificationMutex.notifyAll();
         }
@@ -1449,17 +1447,35 @@ public abstract class BaseMapView implements MapView {
         if (centerChangedMatcher.matches()) {
             preferences.putDouble(CENTER_LATITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(1)));
             preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(2)));
-            if (visibleNorthEast != null && visibleSouthWest != null && visibleNorthWest != null && visibleSouthEast != null) {
+            log.fine("center " + getLastMapCenter());
+            if (visibleNorthEast != null && visibleSouthWest != null) {
                 BaseNavigationPosition mapNorthEast = getNorthEastBounds();
                 BaseNavigationPosition mapSouthWest = getSouthWestBounds();
 
-                if (contains(mapNorthEast, mapSouthWest, visibleNorthEast) ||
-                        contains(mapNorthEast, mapSouthWest, visibleNorthWest) ||
-                        contains(mapNorthEast, mapSouthWest, visibleSouthEast) ||
-                        contains(mapNorthEast, mapSouthWest, visibleSouthWest)) {
+                // TODO remove logging later
+                log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) +   "\n" +
+                        "  Pos Lon < NE Lon " + (mapNorthEast.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
+                        "  Pos Lon > SW Lon " + (mapNorthEast.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
+                        "  " + visibleSouthWest.getLongitude() + " < " + mapNorthEast.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
+                        "  Pos Lat < NE Lat " + (mapNorthEast.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
+                        "  Pos Lat > SW Lat " + (mapNorthEast.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
+                        "  " + visibleSouthWest.getLatitude() + " < " + mapNorthEast.getLatitude() + " < " + visibleNorthEast.getLatitude());
+                log.fine("visible contains Map SW " + contains(visibleNorthEast, visibleSouthWest, mapSouthWest) + "\n" +
+                        "  Pos Lon < NE Lon " + (mapSouthWest.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
+                        "  Pos Lon > SW Lon " + (mapSouthWest.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
+                        "  " + visibleSouthWest.getLongitude() + " < " + mapSouthWest.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
+                        "  Pos Lat < NE Lat " + (mapSouthWest.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
+                        "  Pos Lat > SW Lat " + (mapSouthWest.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
+                        "  " + visibleSouthWest.getLatitude() + " < " + mapSouthWest.getLatitude() + " < " + visibleNorthEast.getLatitude());
+
+                if (!contains(visibleNorthEast, visibleSouthWest, mapNorthEast) ||
+                        !contains(visibleNorthEast, visibleSouthWest, mapSouthWest)) {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
                         routeUpdateReason = "repaint not visible positions";
+                        reducedPositions.remove(getZoom());
+                        visibleNorthEast = null;
+                        visibleSouthWest = null;
                         notificationMutex.notifyAll();
                     }
                 }
