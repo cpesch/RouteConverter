@@ -1423,63 +1423,15 @@ public abstract class BaseMapView implements MapView {
         Matcher zoomChangedMatcher = ZOOM_CHANGED_PATTERN.matcher(callback);
         if (zoomChangedMatcher.matches()) {
             Integer zoom = parseInt(zoomChangedMatcher.group(1));
-            setZoom(zoom);
-
-            synchronized (notificationMutex) {
-                // since setCenter() leads to a callback and thus paints the track twice
-                if (ignoreNextZoomCallback)
-                    ignoreNextZoomCallback = false;
-                else {
-                    haveToRepaintRouteImmediately = true;
-                    // if enabled, recenter map to selected positions after zooming
-                    if (recenterAfterZooming)
-                        haveToRecenterMap = true;
-                    haveToRepaintSelectionImmediately = true;
-                    selectionUpdateReason = "zoomed from " + lastZoom + " to " + zoom;
-                    lastZoom = zoom;
-                    notificationMutex.notifyAll();
-                }
-            }
+            zoomChanged(zoom);
             return true;
         }
 
         Matcher centerChangedMatcher = CENTER_CHANGED_PATTERN.matcher(callback);
         if (centerChangedMatcher.matches()) {
-            preferences.putDouble(CENTER_LATITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(1)));
-            preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(2)));
-            log.fine("center " + getLastMapCenter());
-            if (visibleNorthEast != null && visibleSouthWest != null) {
-                BaseNavigationPosition mapNorthEast = getNorthEastBounds();
-                BaseNavigationPosition mapSouthWest = getSouthWestBounds();
-
-                // TODO remove logging later
-                log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) +   "\n" +
-                        "  Pos Lon < NE Lon " + (mapNorthEast.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
-                        "  Pos Lon > SW Lon " + (mapNorthEast.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
-                        "  " + visibleSouthWest.getLongitude() + " < " + mapNorthEast.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
-                        "  Pos Lat < NE Lat " + (mapNorthEast.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
-                        "  Pos Lat > SW Lat " + (mapNorthEast.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
-                        "  " + visibleSouthWest.getLatitude() + " < " + mapNorthEast.getLatitude() + " < " + visibleNorthEast.getLatitude());
-                log.fine("visible contains Map SW " + contains(visibleNorthEast, visibleSouthWest, mapSouthWest) + "\n" +
-                        "  Pos Lon < NE Lon " + (mapSouthWest.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
-                        "  Pos Lon > SW Lon " + (mapSouthWest.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
-                        "  " + visibleSouthWest.getLongitude() + " < " + mapSouthWest.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
-                        "  Pos Lat < NE Lat " + (mapSouthWest.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
-                        "  Pos Lat > SW Lat " + (mapSouthWest.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
-                        "  " + visibleSouthWest.getLatitude() + " < " + mapSouthWest.getLatitude() + " < " + visibleNorthEast.getLatitude());
-
-                if (!contains(visibleNorthEast, visibleSouthWest, mapNorthEast) ||
-                        !contains(visibleNorthEast, visibleSouthWest, mapSouthWest)) {
-                    synchronized (notificationMutex) {
-                        haveToRepaintRouteImmediately = true;
-                        routeUpdateReason = "repaint not visible positions";
-                        reducedPositions.remove(getZoom());
-                        visibleNorthEast = null;
-                        visibleSouthWest = null;
-                        notificationMutex.notifyAll();
-                    }
-                }
-            }
+            Double latitude = parseDouble(centerChangedMatcher.group(1));
+            Double longitude = parseDouble(centerChangedMatcher.group(2));
+            centerChanged(longitude, latitude);
             return true;
         }
 
@@ -1520,6 +1472,63 @@ public abstract class BaseMapView implements MapView {
             return false;
         }
         return false;
+    }
+
+    private void centerChanged(Double longitude, Double latitude) {
+        preferences.putDouble(CENTER_LATITUDE_PREFERENCE, latitude);
+        preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, longitude);
+
+        if (visibleNorthEast != null && visibleSouthWest != null) {
+            BaseNavigationPosition mapNorthEast = getNorthEastBounds();
+            BaseNavigationPosition mapSouthWest = getSouthWestBounds();
+
+            // TODO remove logging later
+            log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) +   "\n" +
+                    "  Pos Lon < NE Lon " + (mapNorthEast.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
+                    "  Pos Lon > SW Lon " + (mapNorthEast.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
+                    "  " + visibleSouthWest.getLongitude() + " < " + mapNorthEast.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
+                    "  Pos Lat < NE Lat " + (mapNorthEast.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
+                    "  Pos Lat > SW Lat " + (mapNorthEast.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
+                    "  " + visibleSouthWest.getLatitude() + " < " + mapNorthEast.getLatitude() + " < " + visibleNorthEast.getLatitude());
+            log.fine("visible contains Map SW " + contains(visibleNorthEast, visibleSouthWest, mapSouthWest) + "\n" +
+                    "  Pos Lon < NE Lon " + (mapSouthWest.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
+                    "  Pos Lon > SW Lon " + (mapSouthWest.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
+                    "  " + visibleSouthWest.getLongitude() + " < " + mapSouthWest.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
+                    "  Pos Lat < NE Lat " + (mapSouthWest.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
+                    "  Pos Lat > SW Lat " + (mapSouthWest.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
+                    "  " + visibleSouthWest.getLatitude() + " < " + mapSouthWest.getLatitude() + " < " + visibleNorthEast.getLatitude());
+
+            if (!contains(visibleNorthEast, visibleSouthWest, mapNorthEast) ||
+                    !contains(visibleNorthEast, visibleSouthWest, mapSouthWest)) {
+                synchronized (notificationMutex) {
+                    haveToRepaintRouteImmediately = true;
+                    routeUpdateReason = "repaint not visible positions";
+                    reducedPositions.remove(getZoom());
+                    visibleNorthEast = null;
+                    visibleSouthWest = null;
+                    notificationMutex.notifyAll();
+                }
+            }
+        }
+    }
+
+    private void zoomChanged(Integer zoom) {
+        setZoom(zoom);
+        synchronized (notificationMutex) {
+            // since setCenter() leads to a callback and thus paints the track twice
+            if (ignoreNextZoomCallback)
+                ignoreNextZoomCallback = false;
+            else {
+                haveToRepaintRouteImmediately = true;
+                // if enabled, recenter map to selected positions after zooming
+                if (recenterAfterZooming)
+                    haveToRecenterMap = true;
+                haveToRepaintSelectionImmediately = true;
+                selectionUpdateReason = "zoomed from " + lastZoom + " to " + zoom;
+                lastZoom = zoom;
+                notificationMutex.notifyAll();
+            }
+        }
     }
 
     private boolean isDuplicate(BaseNavigationPosition position, BaseNavigationPosition insert) {
