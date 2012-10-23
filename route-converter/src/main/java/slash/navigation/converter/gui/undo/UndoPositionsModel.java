@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static slash.common.io.Transfer.trim;
+
 /**
  * Implements a undo/redo-supporting {@link PositionsModel} for the positions of a {@link BaseRoute}.
  *
@@ -89,7 +91,7 @@ public class UndoPositionsModel implements PositionsModel {
         if (rowIndex == getRowCount())
             return;
 
-        Object previousValue = trackUndo ? getStringAt(rowIndex, columnIndex) : null;
+        Object previousValue = trackUndo ? trim(getStringAt(rowIndex, columnIndex)) : null;
         delegate.edit(aValue, rowIndex, columnIndex, fireEvent, trackUndo);
         if (trackUndo)
             undoManager.addEdit(new EditPosition(this, rowIndex, columnIndex, previousValue, aValue));
