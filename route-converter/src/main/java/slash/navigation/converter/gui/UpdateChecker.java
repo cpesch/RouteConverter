@@ -25,7 +25,6 @@ import slash.navigation.feedback.domain.RouteFeedback;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -33,6 +32,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
+import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
@@ -41,6 +41,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
 
 /**
@@ -95,20 +96,26 @@ public class UpdateChecker {
         return result;
     }
 
-    private void offerUpdate(Window window, UpdateResult result) {
+    private void offerRouteConverterUpdate(Window window, UpdateResult result) {
         int confirm = showConfirmDialog(window,
-                MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.getMyRouteConverterVersion(), result.getLatestRouteConverterVersion()),
+                format(RouteConverter.getBundle().getString("confirm-routeconverter-update"), result.getMyRouteConverterVersion(), result.getLatestRouteConverterVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
             startBrowserForUpdateCheck(window, result.getMyRouteConverterVersion(), getStartTime());
     }
 
     private void noUpdateAvailable(Window window) {
-        showMessageDialog(window,
-                RouteConverter.getBundle().getString("no-update-available"),
+        showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available")),
                 RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 
+    private void offerJavaUpdate(Window window, UpdateResult result) {
+        int confirm = showConfirmDialog(window,
+                format(RouteConverter.getBundle().getString("confirm-java-update"), result.getMyJavaVersion(), result.getLatestJavaVersion()),
+                RouteConverter.getTitle(), YES_NO_OPTION);
+        if (confirm == YES_OPTION)
+            startBrowserForJava(window);
+    }
 
     public void implicitCheck(final Window window) {
         if (!RouteConverter.getInstance().isAutomaticUpdateCheck())
@@ -120,7 +127,14 @@ public class UpdateChecker {
                 if (result.existsLaterRouteConverterVersion()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            offerUpdate(window, result);
+                            offerRouteConverterUpdate(window, result);
+                        }
+                    });
+
+                } else if (result.existsLaterJavaVersion()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            offerJavaUpdate(window, result);
                         }
                     });
                 }
@@ -130,11 +144,13 @@ public class UpdateChecker {
 
     public void explicitCheck(Window window) {
         UpdateResult result = check();
-        if (!result.existsLaterRouteConverterVersion())
+        if (result.existsLaterRouteConverterVersion())
+            offerRouteConverterUpdate(window, result);
+        else
             noUpdateAvailable(window);
-        else {
-            offerUpdate(window, result);
-        }
+
+        if (result.existsLaterJavaVersion())
+            offerJavaUpdate(window, result);
     }
 
     static class UpdateResult {
@@ -144,7 +160,7 @@ public class UpdateChecker {
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
-        private Map<String, String> parameters = new HashMap<String,String>();
+        private Map<String, String> parameters = new HashMap<String, String>();
 
         public UpdateResult(String myRouteConverterVersion, String myJavaVersion) {
             this.myRouteConverterVersion = myRouteConverterVersion;
@@ -161,7 +177,7 @@ public class UpdateChecker {
 
         public boolean existsLaterRouteConverterVersion() {
             String latestRouteConverterVersion = getLatestRouteConverterVersion();
-            if(latestRouteConverterVersion == null)
+            if (latestRouteConverterVersion == null)
                 return false;
             boolean isLatestRouteConverterVersion = new Version(getMyRouteConverterVersion()).isLaterVersionThan(new Version(latestRouteConverterVersion));
             return !isLatestRouteConverterVersion;
@@ -171,16 +187,12 @@ public class UpdateChecker {
             return myJavaVersion;
         }
 
-        public String getLatestJava6Version() {
-            return getValue(JAVA6_VERSION_KEY);
-        }
-
-        public String getLatestJava7Version() {
-            return getValue(JAVA7_VERSION_KEY);
+        public String getLatestJavaVersion() {
+            return getValue(new Version(myJavaVersion).isLaterVersionThan(new Version("1.7.0")) ? JAVA7_VERSION_KEY : JAVA6_VERSION_KEY);
         }
 
         public boolean existsLaterJavaVersion() {
-            String latestJavaVersion = new Version(myJavaVersion).isLaterVersionThan(new Version("1.7.0")) ? getLatestJava7Version() : getLatestJava6Version();
+            String latestJavaVersion = getLatestJavaVersion();
             return myJavaVersion.compareTo(latestJavaVersion) < 0;
         }
 

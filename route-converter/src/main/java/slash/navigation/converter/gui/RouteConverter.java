@@ -28,7 +28,6 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
@@ -111,8 +110,16 @@ import java.util.prefs.Preferences;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.Arrays.asList;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.US;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static slash.common.io.Files.printArrayToDialogString;
@@ -131,6 +138,11 @@ import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponen
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
 import static slash.navigation.converter.gui.profileview.ProfileMode.Speed;
+import static slash.navigation.gui.helpers.UIHelper.CROATIA;
+import static slash.navigation.gui.helpers.UIHelper.CZECH;
+import static slash.navigation.gui.helpers.UIHelper.SERBIA;
+import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
+import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
@@ -229,12 +241,13 @@ public class RouteConverter extends SingleFrameApplication {
         log.info("Started " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         show();
-        checkJreVersion();
+        checkForTooOldJreVersion();
+        checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
         parseArgs(args);
     }
 
-    private void checkJreVersion() {
+    private void checkForTooOldJreVersion() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
         if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
@@ -244,7 +257,20 @@ public class RouteConverter extends SingleFrameApplication {
                     startBrowserForJava(frame);
                 }
             });
-            showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+            showMessageDialog(frame, label, frame.getTitle(), WARNING_MESSAGE);
+        }
+    }
+
+    private void checkForMissingTranslator() {
+        List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, SERBIA, SLOVAKIA, SPAIN, US);
+        if (!activeTranslators.contains(Locale.getDefault())) {
+            JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), Locale.getDefault().getLanguage()));
+            labelTranslatorMissing.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    startMail(frame);
+                }
+            });
+            showMessageDialog(frame, labelTranslatorMissing, frame.getTitle(), QUESTION_MESSAGE);
         }
     }
 
@@ -602,7 +628,7 @@ public class RouteConverter extends SingleFrameApplication {
                 log.severe("Unsupported format: " + path);
                 showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)),
-                        frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+                        frame.getTitle(), WARNING_MESSAGE);
             }
         });
     }
@@ -613,7 +639,7 @@ public class RouteConverter extends SingleFrameApplication {
                 log.severe("File not found: " + path);
                 showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)),
-                        frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+                        frame.getTitle(), WARNING_MESSAGE);
             }
         });
     }
