@@ -793,6 +793,9 @@ public abstract class BaseMapView implements MapView {
             result = reducePositions(positions, zoom, maximumPositionCount);
             reducedPositions.put(zoom, result);
         }
+        else {
+            log.info("######### Use cached positions !!");
+        }
         return result;
     }
 
@@ -944,6 +947,7 @@ public abstract class BaseMapView implements MapView {
                 this.haveToReplaceRoute = true;
                 routeUpdateReason = "replace route";
                 reducedPositions.clear();
+                log.info("######### Position-Cache cleared !!");
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
             }
@@ -957,6 +961,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "update route but don't recenter";
             reducedPositions.clear();
+            log.info("######### Position-Cache cleared !!");
             notificationMutex.notifyAll();
         }
     }
@@ -1504,6 +1509,8 @@ public abstract class BaseMapView implements MapView {
                     haveToRepaintRouteImmediately = true;
                     routeUpdateReason = "repaint not visible positions";
                     reducedPositions.remove(getZoom());
+                    reducedPositions.clear();
+                    log.info("######### Cache cleared - zoom: "+getZoom()+" !!");
                     visibleNorthEast = null;
                     visibleSouthWest = null;
                     notificationMutex.notifyAll();
@@ -1691,6 +1698,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
             reducedPositions.clear();
+            log.info("######### Position-Cache cleared !!");
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
