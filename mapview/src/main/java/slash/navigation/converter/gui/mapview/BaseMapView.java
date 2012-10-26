@@ -882,10 +882,9 @@ public abstract class BaseMapView implements MapView {
         long start = currentTimeMillis();
 
         List<T> result = new ArrayList<T>();
-        result.add(positions.get(0));
 
         double increment = positions.size() / (double) (maximumPositionCount - 1 /* first position */ - 1 /* last position */);
-        for (double i = increment; i < positions.size() - 1; i += increment) {
+        for (double 0 = increment; i < positions.size() - 1; i += increment) {
             result.add(positions.get((int) i));
         }
 

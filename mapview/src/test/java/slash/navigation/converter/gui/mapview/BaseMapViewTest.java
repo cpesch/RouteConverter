@@ -101,7 +101,7 @@ public class BaseMapViewTest {
         final Random random = new Random();
 
         final int outCount = random.nextInt(200) + 2;
-        final int inCount = random.nextInt(5000) + outCount + 1;
+        final int inCount = random.nextInt(500000) + outCount + 1;
 
         final ArrayList<Integer> inList = new ArrayList<Integer>();
         for (int i=0; i<inCount; i++) {
@@ -113,7 +113,7 @@ public class BaseMapViewTest {
 
         assertEquals(outCount, result.size());
         assertEquals(inList.get(0), result.get(0));
-        assertEquals(inList.get(inCount-1), result.get(outCount-1));
+        assertEquals(inList.get(inList.size()-1), result.get(result.size()-1));
     }
 
     private List<Integer> createIntervals(int size) {
