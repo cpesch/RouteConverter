@@ -860,16 +860,43 @@ public abstract class BaseMapView implements MapView {
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
 
-        if (includeFirstAndLastPosition)
+        // Flag, ob die vorherige Position im Anzeigebereich war oder nicht
+        boolean lastPositionIn = false;
+        // die vorherige Position
+        BaseNavigationPosition lastPosition = null;
+
+        if (includeFirstAndLastPosition) {
             result.add(positions.get(0));
+
+            lastPosition = positions.get(0);
+            lastPositionIn = contains(northEast, southWest, lastPosition);
+        }
 
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
         for (int i = firstIndex; i < lastIndex; i += 1) {
             BaseNavigationPosition position = positions.get(i);
-            if (contains(northEast, southWest, position)) {
+            final boolean posIn = contains(northEast, southWest, position);
+            if (posIn) {
+
+                // wenn die vorherige Position nicht im Bereich lag, dann klinken wir sie jetzt ein
+                // --> ansonsten fehlt evtl. der Übergang aus dem sichtbaren Bereich in den nicht sichtbaren Bereich
+                if (! lastPositionIn && lastPosition != null) {
+                    result.add(lastPosition);
+                }
+
                 result.add(position);
             }
+            else {
+                // wenn die letzte Position noch drin war, dann klinken wir auch diese Position noch ein
+                // --> ansonsten fehlt evtl. der Übergang aus dem sichtbaren Bereich in den nicht sichtbaren Bereich
+                if (lastPositionIn) {
+                    result.add(position);
+                }
+            }
+
+            lastPositionIn = posIn;
+            lastPosition = position;
         }
 
         if (includeFirstAndLastPosition)
@@ -1510,7 +1537,7 @@ public abstract class BaseMapView implements MapView {
                     routeUpdateReason = "repaint not visible positions";
                     reducedPositions.remove(getZoom());
                     reducedPositions.clear();
-                    log.info("######### Cache cleared - zoom: "+getZoom()+" !!");
+                    log.info("######### Cache cleared - zoom: " + getZoom() + " !!");
                     visibleNorthEast = null;
                     visibleSouthWest = null;
                     notificationMutex.notifyAll();
