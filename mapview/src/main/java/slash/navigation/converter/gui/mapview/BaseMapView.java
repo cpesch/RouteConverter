@@ -793,6 +793,9 @@ public abstract class BaseMapView implements MapView {
             result = reducePositions(positions, zoom, maximumPositionCount);
             reducedPositions.put(zoom, result);
         }
+        else {
+            log.info("######### Use cached positions !!");
+        }
         return result;
     }
 
@@ -857,16 +860,43 @@ public abstract class BaseMapView implements MapView {
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
 
-        if (includeFirstAndLastPosition)
+        // Flag, ob die vorherige Position im Anzeigebereich war oder nicht
+        boolean lastPositionIn = false;
+        // die vorherige Position
+        BaseNavigationPosition lastPosition = null;
+
+        if (includeFirstAndLastPosition) {
             result.add(positions.get(0));
+
+            lastPosition = positions.get(0);
+            lastPositionIn = contains(northEast, southWest, lastPosition);
+        }
 
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
         for (int i = firstIndex; i < lastIndex; i += 1) {
             BaseNavigationPosition position = positions.get(i);
-            if (contains(northEast, southWest, position)) {
+            final boolean posIn = contains(northEast, southWest, position);
+            if (posIn) {
+
+                // wenn die vorherige Position nicht im Bereich lag, dann klinken wir sie jetzt ein
+                // --> ansonsten fehlt evtl. der Übergang aus dem sichtbaren Bereich in den nicht sichtbaren Bereich
+                if (! lastPositionIn && lastPosition != null) {
+                    result.add(lastPosition);
+                }
+
                 result.add(position);
             }
+            else {
+                // wenn die letzte Position noch drin war, dann klinken wir auch diese Position noch ein
+                // --> ansonsten fehlt evtl. der Übergang aus dem sichtbaren Bereich in den nicht sichtbaren Bereich
+                if (lastPositionIn) {
+                    result.add(position);
+                }
+            }
+
+            lastPositionIn = posIn;
+            lastPosition = position;
         }
 
         if (includeFirstAndLastPosition)
@@ -878,14 +908,13 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
+    <T> List<T> filterEveryNthPosition(List<T> positions, int maximumPositionCount) {
         long start = currentTimeMillis();
 
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        result.add(positions.get(0));
+        List<T> result = new ArrayList<T>();
 
-        double increment = positions.size() / (double) (maximumPositionCount - 1 /* first position */ - 1 /* last position */);
-        for (double i = increment; i < positions.size() - 1; i += increment) {
+        double increment = positions.size() / (double) maximumPositionCount;
+        for (double i = 0.; (i < positions.size() - 1) && (result.size() < maximumPositionCount-1); i += increment) {
             result.add(positions.get((int) i));
         }
 
@@ -945,6 +974,7 @@ public abstract class BaseMapView implements MapView {
                 this.haveToReplaceRoute = true;
                 routeUpdateReason = "replace route";
                 reducedPositions.clear();
+                log.info("######### Position-Cache cleared !!");
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
             }
@@ -958,6 +988,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "update route but don't recenter";
             reducedPositions.clear();
+            log.info("######### Position-Cache cleared !!");
             notificationMutex.notifyAll();
         }
     }
@@ -1505,6 +1536,8 @@ public abstract class BaseMapView implements MapView {
                     haveToRepaintRouteImmediately = true;
                     routeUpdateReason = "repaint not visible positions";
                     reducedPositions.remove(getZoom());
+                    reducedPositions.clear();
+                    log.info("######### Cache cleared - zoom: " + getZoom() + " !!");
                     visibleNorthEast = null;
                     visibleSouthWest = null;
                     notificationMutex.notifyAll();
@@ -1692,6 +1725,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
             reducedPositions.clear();
+            log.info("######### Position-Cache cleared !!");
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
