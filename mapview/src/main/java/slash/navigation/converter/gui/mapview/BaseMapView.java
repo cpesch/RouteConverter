@@ -128,23 +128,23 @@ public abstract class BaseMapView implements MapView {
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount3", 5 * 10);
     private static final double[] THRESHOLD_PER_ZOOM = {
             120000,
-             70000,
-             40000,
-             20000,
-             10000,    // level 4
-              2700,
-              2100,
-              1500,
-               800,    // level 8
-               500,
-               225,
-               125,
-                75,
-                50,
-                20,
-                10,
-                 4,
-                 1      // level 17
+            70000,
+            40000,
+            20000,
+            10000,    // level 4
+            2700,
+            2100,
+            1500,
+            800,    // level 8
+            500,
+            225,
+            125,
+            75,
+            50,
+            20,
+            10,
+            4,
+            1      // level 17
     };
     private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = THRESHOLD_PER_ZOOM.length;
     private static final double VISIBLE_POSITION_AREA_FACTOR = 3.0;
@@ -728,7 +728,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract NavigationPosition getNorthEastBounds();
-
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
@@ -790,7 +789,7 @@ public abstract class BaseMapView implements MapView {
 
         int zoom = getZoom();
         List<NavigationPosition> result = reducedPositions.get(zoom);
-        if(result == null) {
+        if (result == null) {
             result = reducePositions(positions, zoom, maximumPositionCount);
             reducedPositions.put(zoom, result);
         }
@@ -840,8 +839,8 @@ public abstract class BaseMapView implements MapView {
         return positions;
     }
 
-    private List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions,
-                                                                double threshold, boolean includeFirstAndLastPosition) {
+    List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions,
+                                                    double threshold, boolean includeFirstAndLastPosition) {
         long start = currentTimeMillis();
 
         NavigationPosition northEast = getNorthEastBounds();
@@ -863,11 +862,28 @@ public abstract class BaseMapView implements MapView {
 
         int firstIndex = includeFirstAndLastPosition ? 1 : 0;
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
+
+        NavigationPosition previousPosition = positions.get(firstIndex);
+        boolean previousPositionVisible = contains(northEast, southWest, previousPosition);
+
         for (int i = firstIndex; i < lastIndex; i += 1) {
             NavigationPosition position = positions.get(i);
-            if (contains(northEast, southWest, position)) {
+            boolean visible = contains(northEast, southWest, position);
+            if (visible) {
+                // if the previous position was not visible but the current position is visible:
+                // add the previous position to render transition from non-visible to visible area
+                if (!previousPositionVisible && previousPosition != null)
+                    result.add(previousPosition);
                 result.add(position);
+            } else {
+                // if the previous position was visible but the current position is not visible:
+                // add the current position to render transition from visible to non-visible area
+                if (previousPositionVisible)
+                    result.add(position);
             }
+
+            previousPositionVisible = visible;
+            previousPosition = position;
         }
 
         if (includeFirstAndLastPosition)
@@ -1485,7 +1501,7 @@ public abstract class BaseMapView implements MapView {
             NavigationPosition mapSouthWest = getSouthWestBounds();
 
             // TODO remove logging later
-            log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) +   "\n" +
+            log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) + "\n" +
                     "  Pos Lon < NE Lon " + (mapNorthEast.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
                     "  Pos Lon > SW Lon " + (mapNorthEast.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
                     "  " + visibleSouthWest.getLongitude() + " < " + mapNorthEast.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
