@@ -1505,7 +1505,7 @@ public abstract class BaseMapView implements MapView {
                 synchronized (notificationMutex) {
                     haveToRepaintRouteImmediately = true;
                     routeUpdateReason = "repaint not visible positions";
-                    reducedPositions.remove(getZoom());
+                    reducedPositions.clear();
                     visibleNorthEast = null;
                     visibleSouthWest = null;
                     notificationMutex.notifyAll();
