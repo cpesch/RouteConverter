@@ -895,16 +895,15 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<NavigationPosition> filterEveryNthPosition(List<NavigationPosition> positions, int maximumPositionCount) {
+    List<NavigationPosition> filterEveryNthPosition(List<NavigationPosition> positions, int maximumPositionCount) {
         long start = currentTimeMillis();
 
         List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         result.add(positions.get(0));
 
-        double increment = positions.size() / (double) (maximumPositionCount - 1 /* first position */ - 1 /* last position */);
-        for (double i = increment; i < positions.size() - 1; i += increment) {
+        double increment = (positions.size() - 1) / (double) (maximumPositionCount - 1);
+        for (double i = (increment + 1.0); i < positions.size() - 1; i += increment)
             result.add(positions.get((int) i));
-        }
 
         result.add(positions.get(positions.size() - 1));
 
