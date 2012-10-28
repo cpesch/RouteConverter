@@ -80,7 +80,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract String getName();
-
     public abstract void setName(String name);
 
     public abstract List<String> getDescription();
