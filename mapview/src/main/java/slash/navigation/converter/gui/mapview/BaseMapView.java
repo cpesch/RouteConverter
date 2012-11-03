@@ -84,7 +84,6 @@ import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
@@ -797,8 +796,8 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, int maximumPositionCount) {
-        // reduce the number of positions to those that are visible
-        if (positions.size() > maximumPositionCount) {
+        // reduce the number of positions to those that are visible for tracks and waypoint lists
+        if (positions.size() > maximumPositionCount && !positionsModel.getRoute().getCharacteristics().equals(Route)) {
             double visiblePositionAreaFactor = max(VISIBLE_POSITION_AREA_FACTOR * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * VISIBLE_POSITION_AREA_FACTOR;
             positions = filterVisiblePositions(positions, visiblePositionAreaFactor, false);
             visibleNorthEast = northEast(positions);
@@ -813,8 +812,7 @@ public abstract class BaseMapView implements MapView {
             positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
 
         // determine significant positions for routes and tracks for this zoom level
-        if (positionsModel.getRoute().getCharacteristics().equals(Route) ||
-                positionsModel.getRoute().getCharacteristics().equals(Track))
+        if (!positionsModel.getRoute().getCharacteristics().equals(Waypoints))
             positions = filterSignificantPositions(positions, zoom);
 
         // reduce the number of positions to ensure browser stability
@@ -1498,22 +1496,6 @@ public abstract class BaseMapView implements MapView {
         if (visibleNorthEast != null && visibleSouthWest != null) {
             NavigationPosition mapNorthEast = getNorthEastBounds();
             NavigationPosition mapSouthWest = getSouthWestBounds();
-
-            // TODO remove logging later
-            log.fine("visible contains Map NE " + contains(visibleNorthEast, visibleSouthWest, mapNorthEast) + "\n" +
-                    "  Pos Lon < NE Lon " + (mapNorthEast.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
-                    "  Pos Lon > SW Lon " + (mapNorthEast.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
-                    "  " + visibleSouthWest.getLongitude() + " < " + mapNorthEast.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
-                    "  Pos Lat < NE Lat " + (mapNorthEast.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
-                    "  Pos Lat > SW Lat " + (mapNorthEast.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
-                    "  " + visibleSouthWest.getLatitude() + " < " + mapNorthEast.getLatitude() + " < " + visibleNorthEast.getLatitude());
-            log.fine("visible contains Map SW " + contains(visibleNorthEast, visibleSouthWest, mapSouthWest) + "\n" +
-                    "  Pos Lon < NE Lon " + (mapSouthWest.getLongitude() < visibleNorthEast.getLongitude()) + "\n" +
-                    "  Pos Lon > SW Lon " + (mapSouthWest.getLongitude() > visibleSouthWest.getLongitude()) + "\n" +
-                    "  " + visibleSouthWest.getLongitude() + " < " + mapSouthWest.getLongitude() + " < " + visibleNorthEast.getLongitude() + "\n" +
-                    "  Pos Lat < NE Lat " + (mapSouthWest.getLatitude() < visibleNorthEast.getLatitude()) + "\n" +
-                    "  Pos Lat > SW Lat " + (mapSouthWest.getLatitude() > visibleSouthWest.getLatitude()) + "\n" +
-                    "  " + visibleSouthWest.getLatitude() + " < " + mapSouthWest.getLatitude() + " < " + visibleNorthEast.getLatitude());
 
             if (!contains(visibleNorthEast, visibleSouthWest, mapNorthEast) ||
                     !contains(visibleNorthEast, visibleSouthWest, mapSouthWest)) {
