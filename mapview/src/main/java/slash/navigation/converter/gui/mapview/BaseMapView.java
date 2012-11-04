@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -64,10 +65,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
@@ -94,8 +92,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
 import static slash.navigation.rest.Helper.decodeUri;
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.Positions.contains;
-import static slash.navigation.util.Positions.getSignificantPositions;
 import static slash.navigation.util.Positions.northEast;
 import static slash.navigation.util.Positions.southWest;
 
@@ -117,44 +113,12 @@ public abstract class BaseMapView implements MapView {
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
 
-    private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength3", 35);
-    private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount3", 50 * 35);
-    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength3", 8);
-    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount3", 30 * 8);
-    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength3", 10);
-    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount3", 50 * 10);
-    private static final int MAXIMUM_SIGNIFICANT_POSITION_COUNT = preferences.getInt("maximumSignificantPositionCount3", 50000);
-    private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount3", 5 * 10);
-    private static final double[] THRESHOLD_PER_ZOOM = {
-            120000,
-            70000,
-            40000,
-            20000,
-            10000,    // level 4
-            2700,
-            2100,
-            1500,
-            800,    // level 8
-            500,
-            225,
-            125,
-            75,
-            50,
-            20,
-            10,
-            4,
-            1      // level 17
-    };
-    private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = THRESHOLD_PER_ZOOM.length;
-    private static final double VISIBLE_POSITION_AREA_FACTOR = 3.0;
-
     private PositionsModel positionsModel;
     private List<NavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
     private List<NavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
     private NavigationPosition center;
-    private final Map<Integer, List<NavigationPosition>> reducedPositions = new HashMap<Integer, List<NavigationPosition>>(THRESHOLD_PER_ZOOM.length);
     private int lastZoom = -1;
 
     private ServerSocket callbackListenerServerSocket;
@@ -170,6 +134,7 @@ public abstract class BaseMapView implements MapView {
     private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private PositionAugmenter positionAugmenter;
+    private PositionReducer positionReducer;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     // initialization
@@ -242,6 +207,19 @@ public abstract class BaseMapView implements MapView {
                 if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
                     return;
                 updateRouteButDontRecenter();
+            }
+        });
+        positionReducer = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() {
+                return BaseMapView.this.getZoom();
+            }
+
+            public NavigationPosition getNorthEastBounds() {
+                return BaseMapView.this.getNorthEastBounds();
+            }
+
+            public NavigationPosition getSouthWestBounds() {
+                return BaseMapView.this.getSouthWestBounds();
             }
         });
     }
@@ -328,7 +306,7 @@ public abstract class BaseMapView implements MapView {
                                     " haveToUpdateRoute:" + haveToUpdateRoute +
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
-                            copiedPositions = filterPositionsWithoutCoordinates(positions);
+                            copiedPositions = new ArrayList<NavigationPosition>(positions);
                             recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
@@ -338,8 +316,9 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     setCenterOfMap(copiedPositions, recenter);
-                    List<NavigationPosition> render = reducePositions(copiedPositions, getMaximumPositionCount());
-                    switch (positionsModel.getRoute().getCharacteristics()) {
+                    RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
+                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics);
+                    switch (characteristics) {
                         case Route:
                             addDirectionsToMap(render);
                             break;
@@ -350,7 +329,7 @@ public abstract class BaseMapView implements MapView {
                             addPolylinesToMap(render);
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
-                            positionsModel.getRoute().getCharacteristics() + ", recentering: " + recenter);
+                            characteristics + ", recentering: " + recenter);
                     lastTime = currentTimeMillis();
                 }
             }
@@ -391,12 +370,12 @@ public abstract class BaseMapView implements MapView {
                             haveToRepaintSelection = false;
                             copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                            copiedPositions = filterPositionsWithoutCoordinates(positions);
+                            copiedPositions = new ArrayList<NavigationPosition>(positions);
                         } else
                             continue;
                     }
 
-                    List<NavigationPosition> render = reducePositions(copiedPositions, copiedSelectedPositionIndices);
+                    List<NavigationPosition> render = positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices);
                     NavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
                     selectPositions(render, recenter ? centerPosition : null);
                     log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
@@ -640,17 +619,6 @@ public abstract class BaseMapView implements MapView {
 
     // getter and setter
 
-    private int getMaximumPositionCount() {
-        switch (positionsModel.getRoute().getCharacteristics()) {
-            case Route:
-                return MAXIMUM_DIRECTIONS_POSITION_COUNT;
-            case Waypoints:
-                return MAXIMUM_MARKER_POSITION_COUNT;
-            default:
-                return MAXIMUM_POLYLINE_POSITION_COUNT;
-        }
-    }
-
     protected boolean isVisible() {
         return getComponent().getWidth() > 0;
     }
@@ -753,197 +721,6 @@ public abstract class BaseMapView implements MapView {
         return asPosition(parseDouble(longitude), parseDouble(latitude));
     }
 
-    // reduction of positions
-
-    private List<NavigationPosition> filterSignificantPositions(List<NavigationPosition> positions, int zoom) {
-        long start = currentTimeMillis();
-
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
-        if (zoom < MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
-            double threshold = THRESHOLD_PER_ZOOM[zoom];
-            int[] significantPositions = getSignificantPositions(positions, threshold);
-            for (int significantPosition : significantPositions) {
-                result.add(positions.get(significantPosition));
-            }
-            log.info(format("zoom %d smaller than %d: for threshold %f use %d significant positions",
-                    zoom, MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION, threshold, significantPositions.length));
-        } else {
-            // on all zoom about MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION
-            // use all positions since the calculation is too expensive
-            result.addAll(positions);
-            log.info("zoom " + zoom + " large: use all " + positions.size() + " positions");
-        }
-
-        long end = currentTimeMillis();
-        log.info(format("Filtered significant positions to reduce %d positions to %d in %d milliseconds",
-                positions.size(), result.size(), (end - start)));
-        return result;
-    }
-
-    private NavigationPosition visibleNorthEast, visibleSouthWest;
-
-    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int maximumPositionCount) {
-        if (positions.size() < 3)
-            return positions;
-
-        int zoom = getZoom();
-        List<NavigationPosition> result = reducedPositions.get(zoom);
-        if (result == null) {
-            result = reducePositions(positions, zoom, maximumPositionCount);
-            reducedPositions.put(zoom, result);
-        }
-        return result;
-    }
-
-    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, int maximumPositionCount) {
-        // reduce the number of positions to those that are visible for tracks and waypoint lists
-        if (positions.size() > maximumPositionCount && !positionsModel.getRoute().getCharacteristics().equals(Route)) {
-            double visiblePositionAreaFactor = max(VISIBLE_POSITION_AREA_FACTOR * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * VISIBLE_POSITION_AREA_FACTOR;
-            positions = filterVisiblePositions(positions, visiblePositionAreaFactor, false);
-            visibleNorthEast = northEast(positions);
-            visibleSouthWest = southWest(positions);
-        } else {
-            visibleNorthEast = null;
-            visibleSouthWest = null;
-        }
-
-        // reduce the number of positions by selecting every Nth to limit significance computation time
-        if (positions.size() > MAXIMUM_SIGNIFICANT_POSITION_COUNT)
-            positions = filterEveryNthPosition(positions, MAXIMUM_SIGNIFICANT_POSITION_COUNT);
-
-        // determine significant positions for routes and tracks for this zoom level
-        if (!positionsModel.getRoute().getCharacteristics().equals(Waypoints))
-            positions = filterSignificantPositions(positions, zoom);
-
-        // reduce the number of positions to ensure browser stability
-        if (positions.size() > maximumPositionCount)
-            positions = filterEveryNthPosition(positions, maximumPositionCount);
-
-        return positions;
-    }
-
-    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int[] indices) {
-        // reduce selected positions if they're not selected
-        positions = filterSelectedPositions(positions, indices);
-
-        // reduce the number of selected positions by a visibility heuristic
-        if (positions.size() > MAXIMUM_SELECTION_COUNT)
-            positions = filterVisiblePositions(positions, 1.25, true);
-
-        // reduce the number of visible positions by a JS-stability heuristic
-        if (positions.size() > MAXIMUM_SELECTION_COUNT)
-            positions = filterEveryNthPosition(positions, MAXIMUM_SELECTION_COUNT);
-
-        return positions;
-    }
-
-    List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions,
-                                                    double threshold, boolean includeFirstAndLastPosition) {
-        long start = currentTimeMillis();
-
-        NavigationPosition northEast = getNorthEastBounds();
-        NavigationPosition southWest = getSouthWestBounds();
-        if (northEast == null || southWest == null)
-            return positions;
-
-        double width = abs(northEast.getLongitude() - southWest.getLongitude()) * threshold;
-        double height = abs(southWest.getLatitude() - northEast.getLatitude()) * threshold;
-        northEast.setLongitude(northEast.getLongitude() + width);
-        northEast.setLatitude(northEast.getLatitude() + height);
-        southWest.setLongitude(southWest.getLongitude() - width);
-        southWest.setLatitude(southWest.getLatitude() - height);
-
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
-
-        if (includeFirstAndLastPosition)
-            result.add(positions.get(0));
-
-        int firstIndex = includeFirstAndLastPosition ? 1 : 0;
-        int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
-
-        NavigationPosition previousPosition = positions.get(firstIndex);
-        boolean previousPositionVisible = contains(northEast, southWest, previousPosition);
-
-        for (int i = firstIndex; i < lastIndex; i += 1) {
-            NavigationPosition position = positions.get(i);
-            boolean visible = contains(northEast, southWest, position);
-            if (visible) {
-                // if the previous position was not visible but the current position is visible:
-                // add the previous position to render transition from non-visible to visible area
-                if (!previousPositionVisible && previousPosition != null)
-                    result.add(previousPosition);
-                result.add(position);
-            } else {
-                // if the previous position was visible but the current position is not visible:
-                // add the current position to render transition from visible to non-visible area
-                if (previousPositionVisible)
-                    result.add(position);
-            }
-
-            previousPositionVisible = visible;
-            previousPosition = position;
-        }
-
-        if (includeFirstAndLastPosition)
-            result.add(positions.get(positions.size() - 1));
-
-        long end = currentTimeMillis();
-        log.info(format("Filtered visible positions with a threshold of %f to reduce %d positions to %d in %d milliseconds",
-                threshold, positions.size(), result.size(), (end - start)));
-        return result;
-    }
-
-    List<NavigationPosition> filterEveryNthPosition(List<NavigationPosition> positions, int maximumPositionCount) {
-        long start = currentTimeMillis();
-
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
-        result.add(positions.get(0));
-
-        double increment = (positions.size() - 1) / (double) (maximumPositionCount - 1);
-        for (double i = (increment + 1.0); i < positions.size() - 1; i += increment)
-            result.add(positions.get((int) i));
-
-        result.add(positions.get(positions.size() - 1));
-
-        long end = currentTimeMillis();
-        log.info(format("Filtered every %fth position to reduce %d positions to %d in %d milliseconds",
-                increment, positions.size(), result.size(), (end - start)));
-        return result;
-    }
-
-    private List<NavigationPosition> filterSelectedPositions(List<NavigationPosition> positions, int[] selectedIndices) {
-        long start = currentTimeMillis();
-
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
-        for (int selectedIndex : selectedIndices) {
-            if (selectedIndex >= positions.size())
-                continue;
-            result.add(positions.get(selectedIndex));
-        }
-
-        long end = currentTimeMillis();
-        log.info(format("Filtered selected positions to reduce %d positions to %d in %d milliseconds",
-                selectedIndices.length, result.size(), (end - start)));
-        return result;
-    }
-
-    private List<NavigationPosition> filterPositionsWithoutCoordinates(List<NavigationPosition> positions) {
-        long start = currentTimeMillis();
-
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
-        // copy to avoid ConcurrentModificationException
-        positions = new ArrayList<NavigationPosition>(positions);
-        for (NavigationPosition position : positions) {
-            if (position.hasCoordinates())
-                result.add(position);
-        }
-
-        long end = currentTimeMillis();
-        log.info(format("Filtered positions without coordinates to reduce %d positions to %d in %d milliseconds",
-                positions.size(), result.size(), (end - start)));
-        return result;
-    }
-
     // draw on map
 
     @SuppressWarnings({"unchecked"})
@@ -958,7 +735,7 @@ public abstract class BaseMapView implements MapView {
             if (haveToReplaceRoute) {
                 this.haveToReplaceRoute = true;
                 routeUpdateReason = "replace route";
-                reducedPositions.clear();
+                positionReducer.clear();
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
             }
@@ -971,7 +748,7 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "update route but don't recenter";
-            reducedPositions.clear();
+            positionReducer.clear();
             notificationMutex.notifyAll();
         }
     }
@@ -1003,13 +780,14 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
-        int directionsCount = ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
+        int maximumRouteSegmentLength = preferences.getInt("maximumRouteSegmentLength", 8);
+        int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
             StringBuilder buffer = new StringBuilder();
             buffer.append("var latlngs").append(j).append(" = [");
 
-            int start = Math.max(0, j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH - 1);
-            int end = min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH) - 1;
+            int start = Math.max(0, j * maximumRouteSegmentLength - 1);
+            int end = min(positions.size(), (j + 1) * maximumRouteSegmentLength) - 1;
             for (int i = start + 1; i < end; i++) {
                 NavigationPosition position = positions.get(i);
                 buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
@@ -1053,12 +831,13 @@ public abstract class BaseMapView implements MapView {
 
         String color = preferences.get("trackLineColor", "0033FF");
         int width = preferences.getInt("trackLineWidth", 2);
-        int polylinesCount = ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
+        int maximumPolylineSegmentLength = preferences.getInt("maximumTrackSegmentLength", 35);
+        int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder buffer = new StringBuilder();
             buffer.append("var latlngs = [");
-            int maximum = min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
-            for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++) {
+            int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength + 1);
+            for (int i = j * maximumPolylineSegmentLength; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
                 buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")");
@@ -1074,11 +853,12 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addMarkersToMap(List<NavigationPosition> positions) {
-        int markersCount = ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
+        int maximumMarkerSegmentLength = preferences.getInt("maximumWaypointSegmentLength", 10);
+        int markersCount = ceiling(positions.size(), maximumMarkerSegmentLength, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuilder buffer = new StringBuilder();
-            int maximum = min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
-            for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
+            int maximum = min(positions.size(), (j + 1) * maximumMarkerSegmentLength);
+            for (int i = j * maximumMarkerSegmentLength; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
                 buffer.append("addMarker(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(",").
@@ -1493,18 +1273,15 @@ public abstract class BaseMapView implements MapView {
         preferences.putDouble(CENTER_LATITUDE_PREFERENCE, latitude);
         preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, longitude);
 
-        if (visibleNorthEast != null && visibleSouthWest != null) {
+        if (positionReducer.hasFilteredVisibleArea()) {
             NavigationPosition mapNorthEast = getNorthEastBounds();
             NavigationPosition mapSouthWest = getSouthWestBounds();
 
-            if (!contains(visibleNorthEast, visibleSouthWest, mapNorthEast) ||
-                    !contains(visibleNorthEast, visibleSouthWest, mapSouthWest)) {
+            if (!positionReducer.isWithinVisibleArea(mapNorthEast, mapSouthWest)) {
                 synchronized (notificationMutex) {
                     haveToRepaintRouteImmediately = true;
                     routeUpdateReason = "repaint not visible positions";
-                    reducedPositions.clear();
-                    visibleNorthEast = null;
-                    visibleSouthWest = null;
+                    positionReducer.clear();
                     notificationMutex.notifyAll();
                 }
             }
@@ -1689,7 +1466,7 @@ public abstract class BaseMapView implements MapView {
             size = positions.size() - 1;
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
-            reducedPositions.clear();
+            positionReducer.clear();
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
