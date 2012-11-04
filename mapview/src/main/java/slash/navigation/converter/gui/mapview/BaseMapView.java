@@ -899,7 +899,9 @@ public abstract class BaseMapView implements MapView {
 
         if (fitBoundsToPositions) {
             // need to update zoom since fitBounds() changes the zoom level without firing a notification
-            setZoom(getCurrentZoom());
+            Integer zoom = getCurrentZoom();
+            if (zoom != null)
+                setZoom(zoom);
         }
     }
 

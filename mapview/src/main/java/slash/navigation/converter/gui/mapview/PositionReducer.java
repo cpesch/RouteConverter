@@ -120,8 +120,9 @@ class PositionReducer {
 
     public boolean isWithinVisibleArea(NavigationPosition northEastCorner,
                                        NavigationPosition southWestCorner) {
-        return contains(visibleNorthEast, visibleSouthWest, northEastCorner) &&
-                contains(visibleNorthEast, visibleSouthWest, southWestCorner);
+        return !hasFilteredVisibleArea() ||
+                contains(visibleNorthEast, visibleSouthWest, northEastCorner) &&
+                        contains(visibleNorthEast, visibleSouthWest, southWestCorner);
     }
 
     public void clear() {
