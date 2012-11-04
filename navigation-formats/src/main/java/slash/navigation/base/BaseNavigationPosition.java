@@ -146,7 +146,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
-    public Wgs84Position asGoogleMapsPosition() {
+    public Wgs84Position asGoogleMapsUrlPosition() {
         return asWgs84Position();
     }
 
