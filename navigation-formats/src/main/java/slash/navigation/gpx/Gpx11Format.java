@@ -55,6 +55,7 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**
@@ -345,9 +346,11 @@ public class Gpx11Format extends GpxFormat {
         return wptType;
     }
 
-    private List<WptType> createWayPoints(GpxRoute route) {
+    private List<WptType> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
         List<WptType> wptTypes = new ArrayList<WptType>();
-        for (GpxPosition position : route.getPositions()) {
+        List<GpxPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            GpxPosition position = positions.get(i);
             WptType wptType = createWptType(position);
             if (wptType != null)
                 wptTypes.add(wptType);
@@ -355,7 +358,7 @@ public class Gpx11Format extends GpxFormat {
         return wptTypes;
     }
 
-    private List<RteType> createRoute(GpxRoute route) {
+    private List<RteType> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<RteType> rteTypes = new ArrayList<RteType>();
         RteType rteType = route.getOrigin(RteType.class);
@@ -368,7 +371,9 @@ public class Gpx11Format extends GpxFormat {
             rteType.setDesc(asDescription(route.getDescription()));
         }
         rteTypes.add(rteType);
-        for (GpxPosition position : route.getPositions()) {
+        List<GpxPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            GpxPosition position = positions.get(i);
             WptType wptType = createWptType(position);
             if (wptType != null)
                 rteType.getRtept().add(wptType);
@@ -376,7 +381,7 @@ public class Gpx11Format extends GpxFormat {
         return rteTypes;
     }
 
-    private List<TrkType> createTrack(GpxRoute route) {
+    private List<TrkType> createTrack(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<TrkType> trkTypes = new ArrayList<TrkType>();
         TrkType trkType = route.getOrigin(TrkType.class);
@@ -390,7 +395,9 @@ public class Gpx11Format extends GpxFormat {
         }
         trkTypes.add(trkType);
         TrksegType trksegType = objectFactory.createTrksegType();
-        for (GpxPosition position : route.getPositions()) {
+        List<GpxPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            GpxPosition position = positions.get(i);
             WptType wptType = createWptType(position);
             if (wptType != null)
                 trksegType.getTrkpt().add(wptType);
@@ -423,7 +430,7 @@ public class Gpx11Format extends GpxFormat {
         return metadataType;
     }
 
-    private GpxType createGpxType(GpxRoute route) {
+    private GpxType createGpxType(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         GpxType gpxType = recycleGpxType(route);
@@ -435,9 +442,9 @@ public class Gpx11Format extends GpxFormat {
         if (route.getCharacteristics().equals(Waypoints))
             gpxType.setMetadata(createMetaData(route, gpxType));
 
-        gpxType.getWpt().addAll(createWayPoints(route));
-        gpxType.getRte().addAll(createRoute(route));
-        gpxType.getTrk().addAll(createTrack(route));
+        gpxType.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
+        gpxType.getRte().addAll(createRoute(route, startIndex, endIndex));
+        gpxType.getTrk().addAll(createTrack(route, startIndex, endIndex));
         return gpxType;
     }
 
@@ -459,13 +466,13 @@ public class Gpx11Format extends GpxFormat {
             switch (route.getCharacteristics()) {
                 case Waypoints:
                     gpxType.setMetadata(createMetaData(route, gpxType));
-                    gpxType.getWpt().addAll(createWayPoints(route));
+                    gpxType.getWpt().addAll(createWayPoints(route, 0, route.getPositionCount()));
                     break;
                 case Route:
-                    gpxType.getRte().addAll(createRoute(route));
+                    gpxType.getRte().addAll(createRoute(route, 0, route.getPositionCount()));
                     break;
                 case Track:
-                    gpxType.getTrk().addAll(createTrack(route));
+                    gpxType.getTrk().addAll(createTrack(route, 0, route.getPositionCount()));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
@@ -476,7 +483,7 @@ public class Gpx11Format extends GpxFormat {
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
         try {
-            GpxUtil.marshal11(createGpxType(route), target);
+            marshal11(createGpxType(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
@@ -484,7 +491,7 @@ public class Gpx11Format extends GpxFormat {
 
     public void write(List<GpxRoute> routes, OutputStream target) {
         try {
-            GpxUtil.marshal11(createGpxType(routes), target);
+            marshal11(createGpxType(routes), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
