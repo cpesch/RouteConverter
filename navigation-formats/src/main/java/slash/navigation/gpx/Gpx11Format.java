@@ -409,6 +409,20 @@ public class Gpx11Format extends GpxFormat {
         return gpxType;
     }
 
+    private MetadataType createMetaData(GpxRoute route, GpxType gpxType) {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        MetadataType metadataType = gpxType.getMetadata();
+        if (metadataType == null)
+            metadataType = objectFactory.createMetadataType();
+
+        if (isWriteName()) {
+            metadataType.setName(asRouteName(route.getName()));
+            metadataType.setDesc(asDescription(route.getDescription()));
+        }
+        return metadataType;
+    }
+
     private GpxType createGpxType(GpxRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
 
@@ -418,15 +432,8 @@ public class Gpx11Format extends GpxFormat {
         gpxType.setCreator(GENERATED_BY);
         gpxType.setVersion(VERSION);
 
-        MetadataType metadataType = gpxType.getMetadata();
-        if (metadataType == null) {
-            metadataType = objectFactory.createMetadataType();
-            gpxType.setMetadata(metadataType);
-        }
-        if (isWriteName()) {
-            metadataType.setName(asRouteName(route.getName()));
-            metadataType.setDesc(asDescription(route.getDescription()));
-        }
+        if (route.getCharacteristics().equals(Waypoints))
+            gpxType.setMetadata(createMetaData(route, gpxType));
 
         gpxType.getWpt().addAll(createWayPoints(route));
         gpxType.getRte().addAll(createRoute(route));
@@ -436,6 +443,7 @@ public class Gpx11Format extends GpxFormat {
 
     private GpxType createGpxType(List<GpxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
+
         GpxType gpxType = null;
         for (GpxRoute route : routes) {
             gpxType = recycleGpxType(route);
@@ -450,6 +458,7 @@ public class Gpx11Format extends GpxFormat {
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
+                    gpxType.setMetadata(createMetaData(route, gpxType));
                     gpxType.getWpt().addAll(createWayPoints(route));
                     break;
                 case Route:

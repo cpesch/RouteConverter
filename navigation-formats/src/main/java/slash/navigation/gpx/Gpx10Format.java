@@ -47,6 +47,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
 import static slash.navigation.util.Conversion.kmhToMs;
 
@@ -323,25 +324,31 @@ public class Gpx10Format extends GpxFormat {
         return gpx;
     }
 
+    private void createMetaData(GpxRoute route, Gpx gpx) {
+        if (isWriteName()) {
+            gpx.setName(asRouteName(route.getName()));
+            gpx.setDesc(asDescription(route.getDescription()));
+        }
+    }
+
     private Gpx createGpx(GpxRoute route, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
         Gpx gpx = recycleGpx(route);
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = new ObjectFactory().createGpx();
         gpx.setCreator(GENERATED_BY);
         gpx.setVersion(VERSION);
-        gpx.setName(asRouteName(route.getName()));
-        gpx.setDesc(asDescription(route.getDescription()));
 
         for (RouteCharacteristics characteristic : characteristics) {
             switch (characteristic) {
-                case Waypoints:
-                    gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
-                    break;
                 case Route:
                     gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
                     break;
                 case Track:
                     gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
+                    break;
+                case Waypoints:
+                    createMetaData(route, gpx);
+                    gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + characteristic);
@@ -366,6 +373,7 @@ public class Gpx10Format extends GpxFormat {
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
+                    createMetaData(route, gpx);
                     gpx.getWpt().addAll(createWayPoints(route, 0, route.getPositionCount()));
                     break;
                 case Route:
@@ -387,7 +395,7 @@ public class Gpx10Format extends GpxFormat {
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
         try {
-            GpxUtil.marshal10(createGpx(route, startIndex, endIndex, characteristics), target);
+            marshal10(createGpx(route, startIndex, endIndex, characteristics), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
@@ -395,7 +403,7 @@ public class Gpx10Format extends GpxFormat {
 
     public void write(List<GpxRoute> routes, OutputStream target) {
         try {
-            GpxUtil.marshal10(createGpx(routes), target);
+            marshal10(createGpx(routes), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
