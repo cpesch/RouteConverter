@@ -193,7 +193,7 @@ public class UpdateChecker {
 
         public boolean existsLaterJavaVersion() {
             String latestJavaVersion = getLatestJavaVersion();
-            return myJavaVersion.compareTo(latestJavaVersion) < 0;
+            return latestJavaVersion != null && myJavaVersion.compareTo(latestJavaVersion) < 0;
         }
 
         String getValue(String key) {

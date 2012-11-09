@@ -104,6 +104,7 @@ import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -753,6 +754,8 @@ public class ConvertPanel {
         String targetsAsString = printArrayToDialogString(files);
         startWaitCursor(r.getFrame().getRootPane());
         try {
+            if (!checkFormat(format))
+                return;
             if (format.isSupportsMultipleRoutes()) {
                 List<BaseRoute> routes = exportSelectedRoute ? asList(route) : formatAndRoutesModel.getRoutes();
                 new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, files[0]);
@@ -796,19 +799,27 @@ public class ConvertPanel {
         }
     }
 
-    private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
-        if (!hasFeature("fpl-g1000")) {
+    private static boolean checkFormat(NavigationFormat format) {
+        return !((format instanceof GarminFlightPlanFormat && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
+                (format instanceof GoRiderGpsFormat && !checkForFeature("rt-gorider", "Write GoRider GPS")));
+    }
+
+    private static boolean checkForFeature(String featureName, String featureDescription) {
+        if (!hasFeature(featureName)) {
             final RouteConverter r = RouteConverter.getInstance();
-            JLabel labelFeatureError = new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), "Write Garmin Flight Plan"));
+            JLabel labelFeatureError = new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), featureDescription));
             labelFeatureError.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
                     startMail(r.getFrame());
                 }
             });
             showMessageDialog(r.getFrame(), labelFeatureError, r.getFrame().getTitle(), ERROR_MESSAGE);
-            return;
+            return false;
         }
+        return true;
+    }
 
+    private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(garminFlightPlanRoute);
         dialog.pack();
         dialog.restoreLocation();
