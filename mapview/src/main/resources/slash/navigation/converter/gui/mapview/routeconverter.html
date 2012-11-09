@@ -672,7 +672,10 @@
                });
                addDebug("3. created menu: " + menu);
            } catch (e) {
-               setError("<p>Sorry, could not initialize ContextMenu.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize context menu.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            try {
@@ -687,7 +690,10 @@
                    latLngControl.updatePosition(event.latLng);
                });
            } catch (e) {
-               setError("<p>Sorry, could not initialize LatLngControl.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize GPS coordinate display.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            google.maps.event.addListener(map, "zoom_changed", function() {
@@ -732,11 +738,15 @@
                    addDebug("6. created Microsoft XMLHttpRequest");
                    initialized = true;
                } else {
-                   setError("<p>Sorry, could not find XMLHttpRequest or Microsoft.XMLHTTP.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+                   setError("<h1>Could find XMLHttpRequest or Microsoft.XMLHTTP.</h1>" +
+                           "<p><a href='javascript:self.location.reload()'>Retry</a></p>");
                }
            }
            catch (e) {
-               setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize AJAX callbacks.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            try {
@@ -757,10 +767,23 @@
                    });
                }
            } catch (e) {
-               setError("<p>Sorry, could not disable ctrl-f.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not disable ctrl-f.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
        } catch (e) {
-           setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+           setError("<h1>Could not initialize map.</h1>" +
+                   "<h2>Possible solutions:</h2>" +
+                   "<ol>" +
+                   "<li>Your machine is not connected to the Internet. Check the connection.</li>" +
+                   "<li>A personal firewall or proxy blocks the access for RouteConverter. Allow access for RouteConverter.</li>" +
+                   "<li>Windows: The Internet Explorer browser fails or is not configured properly. Check the FAQ for help.</li>" +
+                   "<li>Something blocks the access to ${mapserver}. Remove the block.</li>" +
+                   "</ol>" +
+                   "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                   "<h2>Details</h2>" +
+                   "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
        }
    }
 </script>
