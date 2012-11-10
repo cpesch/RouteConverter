@@ -39,6 +39,9 @@ import static java.lang.Math.abs;
 import static java.lang.Math.asin;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.common.util.Bearing.calculateBearing;
 
@@ -58,9 +61,9 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         if (getTime() != null && startDate != null) {
             Calendar calendar = getTime().getCalendar();
             Calendar startDateCalendar = startDate.getCalendar();
-            calendar.set(Calendar.YEAR, startDateCalendar.get(Calendar.YEAR));
-            calendar.set(Calendar.MONTH, startDateCalendar.get(Calendar.MONTH));
-            calendar.set(Calendar.DAY_OF_MONTH, startDateCalendar.get(Calendar.DAY_OF_MONTH));
+            calendar.set(YEAR, startDateCalendar.get(YEAR));
+            calendar.set(MONTH, startDateCalendar.get(MONTH));
+            calendar.set(DAY_OF_MONTH, startDateCalendar.get(DAY_OF_MONTH));
             setTime(CompactCalendar.fromCalendar(calendar));
         }
     }
@@ -126,6 +129,30 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
 
+    public GpxPosition asBrokenGpxPosition() {
+        return asGpxPosition();
+    }
+
+    public KmlPosition asBrokenKmlPosition() {
+        return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmlLittleEndianPosition() {
+        return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmzPosition() {
+        return asKmzPosition();
+    }
+
+    public KmlPosition asBrokenKmzLittleEndianPosition() {
+        return asKmzPosition();
+    }
+
     public Wgs84Position asColumbusVStandardPosition() {
         return asWgs84Position();
     }
@@ -136,6 +163,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
+    }
+
+    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
+        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
     }
 
     public GkPosition asGkPosition() {
@@ -166,10 +197,6 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
-    public GpxPosition asBrokenGpxPosition() {
-        return asGpxPosition();
-    }
-
     public GpxPosition asGpxPosition() {
         return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
@@ -186,36 +213,12 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
-    public KmlPosition asBrokenKmlPosition() {
-        return asKmlPosition();
-    }
-
-    public KmlPosition asBrokenKmlLittleEndianPosition() {
-        return asKmlPosition();
-    }
-
-    public KmlPosition asBrokenKmlBetaPosition() {
-        return asKmlPosition();
-    }
-
     public KmlPosition asKmlPosition() {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public KmlPosition asKmlBetaPosition() {
         return asKmlPosition();
-    }
-
-    public KmlPosition asBrokenKmzPosition() {
-        return asKmzPosition();
-    }
-
-    public KmlPosition asBrokenKmzLittleEndianPosition() {
-        return asKmzPosition();
-    }
-
-    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
     }
 
     public KmlPosition asKmzPosition() {
@@ -228,10 +231,6 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public Wgs84Position asKompassPosition() {
         return asWgs84Position();
-    }
-
-    public BcrPosition asMTPPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public NmeaPosition asMagellanExploristPosition() {
@@ -252,6 +251,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public GkPosition asMagicMapsPthPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+    }
+
+    public BcrPosition asMTPPosition() {
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asNavigatingPoiWarnerPosition() {

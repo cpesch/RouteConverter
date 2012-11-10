@@ -400,6 +400,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asCoPilot8Format();
     public abstract SimpleRoute asCoPilot9Format();
 
+    public abstract GarminFlightPlanRoute asGarminFlightPlanFormat();
+
     public abstract SimpleRoute asGlopusFormat();
 
     public abstract SimpleRoute asGoogleMapsUrlFormat();
@@ -412,17 +414,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asGpsTunerFormat();
 
-    public abstract SimpleRoute asGroundTrackFormat();
-
-    public abstract GarminFlightPlanRoute asGarminFlightPlanFormat();
-
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();
 
-    public abstract GpxRoute asTcx1Format();
-    public abstract GpxRoute asTcx2Format();
-
-    public abstract GpxRoute asNokiaLandmarkExchangeFormat();
+    public abstract SimpleRoute asGroundTrackFormat();
 
     public abstract SimpleRoute asHaicomLoggerFormat();
 
@@ -446,12 +441,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asKompassFormat();
 
+    public abstract NmeaRoute asMagellanExploristFormat();
+    public abstract NmeaRoute asMagellanRouteFormat();
+
     public abstract SimpleRoute asMagicMaps2GoFormat();
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
-
-    public abstract NmeaRoute asMagellanExploristFormat();
-    public abstract NmeaRoute asMagellanRouteFormat();
 
     public abstract BcrRoute asMTP0607Format();
     public abstract BcrRoute asMTP0809Format();
@@ -469,6 +464,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asNmnRouteFormat();
     public abstract SimpleRoute asNmnUrlFormat();
 
+    public abstract GpxRoute asNokiaLandmarkExchangeFormat();
+
     public abstract SimpleRoute asOpelNaviFormat();
 
     public abstract OvlRoute asOvlFormat();
@@ -480,11 +477,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asSygicAsciiFormat();
     public abstract SimpleRoute asSygicUnicodeFormat();
 
-    public abstract SimpleRoute asWebPageFormat();
-
-    public abstract SimpleRoute asWintecWbt201Tk1Format();
-    public abstract SimpleRoute asWintecWbt201Tk2Format();
-    public abstract SimpleRoute asWintecWbt202TesFormat();
+    public abstract GpxRoute asTcx1Format();
+    public abstract GpxRoute asTcx2Format();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
     public abstract TomTomRoute asTomTom8RouteFormat();
@@ -492,4 +486,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract TourRoute asTourFormat();
 
     public abstract ViaMichelinRoute asViaMichelinFormat();
+
+    public abstract SimpleRoute asWebPageFormat();
+
+    public abstract SimpleRoute asWintecWbt201Tk1Format();
+    public abstract SimpleRoute asWintecWbt201Tk2Format();
+    public abstract SimpleRoute asWintecWbt202TesFormat();
 }
