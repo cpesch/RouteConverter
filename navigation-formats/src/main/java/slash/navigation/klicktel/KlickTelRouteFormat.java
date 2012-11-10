@@ -57,10 +57,6 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return "klickTel Routenplaner 2009 (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return false;
     }

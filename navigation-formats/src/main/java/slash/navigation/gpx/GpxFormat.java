@@ -50,10 +50,6 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return ".gpx";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return true;
     }

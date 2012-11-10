@@ -62,10 +62,6 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return false;
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isWritingRouteCharacteristics() {
         return false;
     }

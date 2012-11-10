@@ -42,6 +42,10 @@ import static slash.common.type.CompactCalendar.fromMillis;
 public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
     public static final String HEADER_LINE = "<!-- " + GENERATED_BY + " -->\n";
 
+    public int getMaximumPositionCount() {
+        return UNLIMITED_MAXIMUM_POSITION_COUNT;
+    }
+
     protected String asDescription(List<String> strings) {
         StringBuilder buffer = new StringBuilder();
         if (strings != null) {

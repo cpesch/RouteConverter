@@ -53,10 +53,6 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return ".kmz";
     }
 
-    public int getMaximumPositionCount() {
-        return delegate.getMaximumPositionCount();
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return delegate.isSupportsMultipleRoutes();
     }

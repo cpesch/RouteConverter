@@ -72,10 +72,6 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return ".kml";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
