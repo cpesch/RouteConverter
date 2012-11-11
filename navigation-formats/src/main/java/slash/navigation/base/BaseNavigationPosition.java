@@ -68,7 +68,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         }
     }
 
-    public Double calculateDistance(NavigationPosition other) {
+    public <P extends NavigationPosition> Double calculateDistance(P other) {
         return other.hasCoordinates() ? calculateDistance(other.getLongitude(), other.getLatitude()) : null;
     }
 
