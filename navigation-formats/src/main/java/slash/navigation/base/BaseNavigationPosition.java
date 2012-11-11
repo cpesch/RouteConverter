@@ -128,39 +128,47 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return null;
     }
 
-
+    @SuppressWarnings("UnusedDeclaration")
     public GpxPosition asBrokenGpxPosition() {
         return asGpxPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlLittleEndianPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlBetaPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmzPosition() {
         return asKmzPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmzLittleEndianPosition() {
         return asKmzPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asColumbusVStandardPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asColumbusVProfessionalPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
     }
@@ -173,10 +181,12 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asGlopusPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asGoogleMapsUrlPosition() {
         return asWgs84Position();
     }
@@ -185,14 +195,17 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asGoPalTrackPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asGoRiderGpsPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asGpsTunerPosition() {
         return asWgs84Position();
     }
@@ -201,14 +214,17 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asHaicomLoggerPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asIbluePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asKlickTelRoutePosition() {
         return asWgs84Position();
     }
@@ -217,38 +233,47 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asKmlBetaPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asKmzPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asKmzBetaPosition() {
         return asKmzPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asKompassPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NmeaPosition asMagellanExploristPosition() {
         return asNmeaPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NmeaPosition asMagellanRoutePosition() {
         return asNmeaPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asMagicMapsIktPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asMagicMapsGoPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public GkPosition asMagicMapsPthPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
@@ -257,6 +282,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asNavigatingPoiWarnerPosition() {
         return asWgs84Position();
     }
@@ -265,6 +291,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NmnPosition asNmnFavoritesPosition() {
         return asNmnPosition();
     }
@@ -273,30 +300,37 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asNokiaLandmarkExchangePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asOpelNaviPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asOvlPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asQstarzQPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asRoutePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asSygicUnicodePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public GpxPosition asTcxPosition() {
         return asGpxPosition();
     }
@@ -313,10 +347,12 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTkPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTesPosition() {
         return asWgs84Position();
     }

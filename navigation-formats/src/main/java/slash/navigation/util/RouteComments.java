@@ -20,8 +20,8 @@
 
 package slash.navigation.util;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;

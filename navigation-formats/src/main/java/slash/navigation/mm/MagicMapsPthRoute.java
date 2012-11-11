@@ -46,7 +46,6 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         this(new MagicMapsPthFormat(), characteristics, positions);
     }
 
-
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
         for (GkPosition position : positions) {

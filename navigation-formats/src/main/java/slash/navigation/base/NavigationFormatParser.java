@@ -20,8 +20,8 @@
 
 package slash.navigation.base;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.copilot.CoPilotFormat;
@@ -50,9 +50,9 @@ import java.util.logging.Logger;
 
 import static java.io.File.separatorChar;
 import static java.lang.String.format;
+import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;

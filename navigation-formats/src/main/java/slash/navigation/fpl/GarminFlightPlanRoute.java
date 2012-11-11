@@ -32,14 +32,9 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
-import slash.navigation.copilot.CoPilot6Format;
-import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.copilot.CoPilot8Format;
-import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
@@ -64,7 +59,6 @@ import slash.navigation.kml.Kmz21Format;
 import slash.navigation.kml.Kmz22BetaFormat;
 import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
-import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
@@ -73,7 +67,6 @@ import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6FavoritesFormat;
@@ -82,35 +75,12 @@ import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.nmn.NmnRouteFormat;
-import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
-import slash.navigation.simple.GlopusFormat;
-import slash.navigation.simple.GoRiderGpsFormat;
-import slash.navigation.simple.GpsTunerFormat;
-import slash.navigation.simple.GroundTrackFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Iblue747Format;
-import slash.navigation.simple.KienzleGpsFormat;
-import slash.navigation.simple.KompassFormat;
-import slash.navigation.simple.NavilinkFormat;
-import slash.navigation.simple.OpelNaviFormat;
-import slash.navigation.simple.QstarzQ1000Format;
-import slash.navigation.simple.Route66Format;
-import slash.navigation.simple.SygicAsciiFormat;
-import slash.navigation.simple.SygicUnicodeFormat;
-import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.wbt.WintecWbt201Tk1Format;
-import slash.navigation.wbt.WintecWbt201Tk2Format;
-import slash.navigation.wbt.WintecWbt202TesFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,44 +134,12 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return new GarminFlightPlanPosition(longitude, latitude, elevation, comment);
     }
 
-    private SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
-    }
-
-    public SimpleRoute asColumbusV900StandardFormat() {
-        return asSimpleFormat(new ColumbusV900StandardFormat());
-    }
-
-    public SimpleRoute asColumbusV900ProfessionalFormat() {
-        return asSimpleFormat(new ColumbusV900ProfessionalFormat());
-    }
-
-    public SimpleRoute asCoPilot6Format() {
-        return asSimpleFormat(new CoPilot6Format());
-    }
-
-    public SimpleRoute asCoPilot7Format() {
-        return asSimpleFormat(new CoPilot7Format());
-    }
-
-    public SimpleRoute asCoPilot8Format() {
-        return asSimpleFormat(new CoPilot8Format());
-    }
-
-    public SimpleRoute asCoPilot9Format() {
-        return asSimpleFormat(new CoPilot9Format());
-    }
-
-    public SimpleRoute asGlopusFormat() {
-        return asSimpleFormat(new GlopusFormat());
-    }
-
-    public SimpleRoute asGoogleMapsUrlFormat() {
-        return asSimpleFormat(new GoogleMapsUrlFormat());
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
@@ -218,22 +156,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPal5Route(getName(), gopalPositions);
-    }
-
-    public SimpleRoute asGoPalTrackFormat() {
-        return asSimpleFormat(new GoPalTrackFormat());
-    }
-
-    public SimpleRoute asGoRiderGpsFormat() {
-        return asSimpleFormat(new GoRiderGpsFormat());
-    }
-
-    public SimpleRoute asGpsTunerFormat() {
-        return asSimpleFormat(new GpsTunerFormat());
-    }
-
-    public SimpleRoute asGroundTrackFormat() {
-        return asSimpleFormat(new GroundTrackFormat());
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
@@ -266,18 +188,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    public SimpleRoute asHaicomLoggerFormat() {
-        return asSimpleFormat(new HaicomLoggerFormat());
-    }
-
-    public SimpleRoute asIblue747Format() {
-        return asSimpleFormat(new Iblue747Format());
-    }
-
-    public SimpleRoute asKienzleGpsFormat() {
-        return asSimpleFormat(new KienzleGpsFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -332,14 +242,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return asKmlFormat(new Kmz22Format());
     }
 
-    public SimpleRoute asKompassFormat() {
-        return asSimpleFormat(new KompassFormat());
-    }
-
-    public SimpleRoute asMagicMaps2GoFormat() {
-        return asSimpleFormat(new MagicMaps2GoFormat());
-    }
-
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
@@ -392,14 +294,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return asBcrFormat(new MTP0809Format());
     }
 
-    public SimpleRoute asNavigatingPoiWarnerFormat() {
-        return asSimpleFormat(new NavigatingPoiWarnerFormat());
-    }
-
-    public SimpleRoute asNavilinkFormat() {
-        return asSimpleFormat(new NavilinkFormat());
-    }
-
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
         for (GarminFlightPlanPosition position : positions) {
@@ -428,56 +322,12 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return asNmnFormat(new Nmn7Format());
     }
 
-    public SimpleRoute asNmnRouteFormat() {
-        return asSimpleFormat(new NmnRouteFormat());
-    }
-
-    public SimpleRoute asNmnUrlFormat() {
-        return asSimpleFormat(new NmnUrlFormat());
-    }
-
-    public SimpleRoute asOpelNaviFormat() {
-        return asSimpleFormat(new OpelNaviFormat());
-    }
-
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    public SimpleRoute asQstarzQ1000Format() {
-        return asSimpleFormat(new QstarzQ1000Format());
-    }
-
-    public SimpleRoute asRoute66Format() {
-        return asSimpleFormat(new Route66Format());
-    }
-
-    public SimpleRoute asSygicAsciiFormat() {
-        return asSimpleFormat(new SygicAsciiFormat());
-    }
-
-    public SimpleRoute asSygicUnicodeFormat() {
-        return asSimpleFormat(new SygicUnicodeFormat());
-    }
-
-    public SimpleRoute asWebPageFormat() {
-        return asSimpleFormat(new WebPageFormat());
-    }
-
-    public SimpleRoute asWintecWbt201Tk1Format() {
-        return asSimpleFormat(new WintecWbt201Tk1Format());
-    }
-
-    public SimpleRoute asWintecWbt201Tk2Format() {
-        return asSimpleFormat(new WintecWbt201Tk2Format());
-    }
-
-    public SimpleRoute asWintecWbt202TesFormat() {
-        return asSimpleFormat(new WintecWbt202TesFormat());
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
