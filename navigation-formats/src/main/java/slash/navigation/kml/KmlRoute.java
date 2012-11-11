@@ -164,63 +164,9 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return new KlickTelRoute(getName(), wgs84Positions);
     }
 
-    private KmlRoute asKmlFormat(BaseKmlFormat format) {
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>(getPositions());
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
-    }
-
-    public KmlRoute asKml20Format() {
-        if (getFormat() instanceof Kml20Format)
-            return this;
-        return asKmlFormat(new Kml20Format());
-    }
-
-    public KmlRoute asKml21Format() {
-        if (getFormat() instanceof Kml21Format)
-            return this;
-        return asKmlFormat(new Kml21Format());
-    }
-
-    public KmlRoute asKml22BetaFormat() {
-        if (getFormat() instanceof Kml22BetaFormat)
-            return this;
-        return asKmlFormat(new Kml22BetaFormat());
-    }
-
-    public KmlRoute asKml22Format() {
-        if (getFormat() instanceof Kml22Format)
-            return this;
-        return asKmlFormat(new Kml22Format());
-    }
-
-    public KmlRoute asIgo8RouteFormat() {
-        if (getFormat() instanceof Igo8RouteFormat)
-            return this;
-        return asKmlFormat(new Igo8RouteFormat());
-    }
-
-    public KmlRoute asKmz20Format() {
-        if (getFormat() instanceof Kmz20Format)
-            return this;
-        return asKmlFormat(new Kmz20Format());
-    }
-
-    public KmlRoute asKmz21Format() {
-        if (getFormat() instanceof Kmz21Format)
-            return this;
-        return asKmlFormat(new Kmz21Format());
-    }
-
-    public KmlRoute asKmz22BetaFormat() {
-        if (getFormat() instanceof Kmz22BetaFormat)
-            return this;
-        return asKmlFormat(new Kmz22BetaFormat());
-    }
-
-    public KmlRoute asKmz22Format() {
-        if (getFormat() instanceof Kmz22Format)
-            return this;
-        return asKmlFormat(new Kmz22Format());
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {

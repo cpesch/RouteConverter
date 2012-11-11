@@ -49,17 +49,8 @@ import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.BaseKmlFormat;
-import slash.navigation.kml.Igo8RouteFormat;
-import slash.navigation.kml.Kml20Format;
-import slash.navigation.kml.Kml21Format;
-import slash.navigation.kml.Kml22BetaFormat;
-import slash.navigation.kml.Kml22Format;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.kml.Kmz20Format;
-import slash.navigation.kml.Kmz21Format;
-import slash.navigation.kml.Kmz22BetaFormat;
-import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -210,7 +201,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return new KlickTelRoute(getName(), wgs84Positions);
     }
 
-    private KmlRoute asKmlFormat(BaseKmlFormat format) {
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (Wgs84Position position : positions) {
             kmlPositions.add(position.asKmlPosition());
@@ -218,43 +209,6 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
-    public KmlRoute asKml20Format() {
-        return asKmlFormat(new Kml20Format());
-    }
-
-    public KmlRoute asKml21Format() {
-        return asKmlFormat(new Kml21Format());
-    }
-
-    public KmlRoute asKml22BetaFormat() {
-        return asKmlFormat(new Kml22BetaFormat());
-    }
-
-    public KmlRoute asKml22Format() {
-        return asKmlFormat(new Kml22Format());
-    }
-
-    public KmlRoute asIgo8RouteFormat() {
-        return asKmlFormat(new Igo8RouteFormat());
-    }
-
-    public KmlRoute asKmz20Format() {
-        return asKmlFormat(new Kmz20Format());
-    }
-
-    public KmlRoute asKmz21Format() {
-        return asKmlFormat(new Kmz21Format());
-    }
-
-    public KmlRoute asKmz22BetaFormat() {
-        return asKmlFormat(new Kmz22BetaFormat());
-    }
-
-    public KmlRoute asKmz22Format() {
-        return asKmlFormat(new Kmz22Format());
-    }
-
-    
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (Wgs84Position position : positions) {

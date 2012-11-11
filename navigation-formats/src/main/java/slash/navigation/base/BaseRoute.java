@@ -33,7 +33,17 @@ import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.klicktel.KlickTelRoute;
+import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Igo8RouteFormat;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
 import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -423,6 +433,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+    protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asColumbusV900StandardFormat() {
@@ -530,7 +541,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new Iblue747Format());
     }
 
-    public abstract KmlRoute asIgo8RouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asIgo8RouteFormat() {
+        if (getFormat() instanceof Igo8RouteFormat)
+            return (KmlRoute) this;
+        return asKmlFormat(new Igo8RouteFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asKienzleGpsFormat() {
@@ -541,15 +557,61 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract KlickTelRoute asKlickTelRouteFormat();
 
-    public abstract KmlRoute asKml20Format();
-    public abstract KmlRoute asKml21Format();
-    public abstract KmlRoute asKml22BetaFormat();
-    public abstract KmlRoute asKml22Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKml20Format() {
+        if (getFormat() instanceof Kml20Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kml20Format());
+    }
 
-    public abstract KmlRoute asKmz20Format();
-    public abstract KmlRoute asKmz21Format();
-    public abstract KmlRoute asKmz22BetaFormat();
-    public abstract KmlRoute asKmz22Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKml21Format() {
+        if (getFormat() instanceof Kml21Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kml21Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKml22BetaFormat() {
+        if (getFormat() instanceof Kml22BetaFormat)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kml22BetaFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKml22Format() {
+        if (getFormat() instanceof Kml22Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kml22Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKmz20Format() {
+        if (getFormat() instanceof Kmz20Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kmz20Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKmz21Format() {
+        if (getFormat() instanceof Kmz21Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kmz21Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKmz22BetaFormat() {
+        if (getFormat() instanceof Kmz22BetaFormat)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kmz22BetaFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlRoute asKmz22Format() {
+        if (getFormat() instanceof Kmz22Format)
+            return (KmlRoute) this;
+        return asKmlFormat(new Kmz22Format());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asKompassFormat() {
