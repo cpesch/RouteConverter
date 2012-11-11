@@ -26,7 +26,6 @@ import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
-import slash.navigation.ovl.OvlRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,55 +42,16 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
         super(format, characteristics, name, positions);
     }
 
-    private NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>(getPositions());
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
-    public NmnRoute asNmn4Format() {
-        if (getFormat() instanceof Nmn4Format)
-            return this;
-        return asNmnFormat(new Nmn4Format());
-    }
-
-    public NmnRoute asNmn5Format() {
-        if (getFormat() instanceof Nmn5Format)
-            return this;
-        return asNmnFormat(new Nmn5Format());
-    }
-
-    public NmnRoute asNmn6Format() {
-        if (getFormat() instanceof Nmn6Format)
-            return this;
-        return asNmnFormat(new Nmn6Format());
-    }
-
-    public NmnRoute asNmn6FavoritesFormat() {
-        if (getFormat() instanceof Nmn6FavoritesFormat)
-            return this;
-        return asNmnFormat(new Nmn6FavoritesFormat());
-    }
-
-    public NmnRoute asNmn7Format() {
-        if (getFormat() instanceof Nmn7Format)
-            return this;
-        return asNmnFormat(new Nmn7Format());
-    }
-    
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (NmnPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
         for (NmnPosition position : positions) {
             wgs84positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84positions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        return this;
     }
 
     public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {

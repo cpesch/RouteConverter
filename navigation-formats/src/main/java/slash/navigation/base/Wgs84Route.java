@@ -21,6 +21,9 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,14 @@ public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (Wgs84Position position : positions) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {

@@ -26,6 +26,9 @@ import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,14 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
             wgs84positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84positions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (NmeaPosition position : positions) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {

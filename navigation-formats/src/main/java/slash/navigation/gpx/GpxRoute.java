@@ -56,11 +56,6 @@ import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.nmn.Nmn4Format;
-import slash.navigation.nmn.Nmn5Format;
-import slash.navigation.nmn.Nmn6FavoritesFormat;
-import slash.navigation.nmn.Nmn6Format;
-import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
@@ -266,32 +261,12 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asNmeaFormat(new NmeaFormat());
     }
 
-    private NmnRoute asNmnFormat(NmnFormat format) {
+    protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
         for (GpxPosition position : positions) {
             nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
-    }
-
-    public NmnRoute asNmn4Format() {
-        return asNmnFormat(new Nmn4Format());
-    }
-
-    public NmnRoute asNmn5Format() {
-        return asNmnFormat(new Nmn5Format());
-    }
-
-    public NmnRoute asNmn6Format() {
-        return asNmnFormat(new Nmn6Format());
-    }
-
-    public NmnRoute asNmn6FavoritesFormat() {
-        return asNmnFormat(new Nmn6FavoritesFormat());
-    }
-
-    public NmnRoute asNmn7Format() {
-        return asNmnFormat(new Nmn7Format());
     }
 
     public OvlRoute asOvlFormat() {

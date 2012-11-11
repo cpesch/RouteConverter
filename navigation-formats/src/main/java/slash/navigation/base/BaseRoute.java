@@ -49,6 +49,12 @@ import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnRoute;
 import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
@@ -434,6 +440,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
+    protected abstract NmnRoute asNmnFormat(NmnFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asColumbusV900StandardFormat() {
@@ -652,11 +659,30 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract NmeaRoute asNmeaFormat();
 
-    public abstract NmnRoute asNmn4Format();
-    public abstract NmnRoute asNmn5Format();
-    public abstract NmnRoute asNmn6Format();
-    public abstract NmnRoute asNmn6FavoritesFormat();
-    public abstract NmnRoute asNmn7Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public NmnRoute asNmn4Format() {
+        return asNmnFormat(new Nmn4Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NmnRoute asNmn5Format() {
+        return asNmnFormat(new Nmn5Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NmnRoute asNmn6Format() {
+        return asNmnFormat(new Nmn6Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NmnRoute asNmn6FavoritesFormat() {
+        return asNmnFormat(new Nmn6FavoritesFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NmnRoute asNmn7Format() {
+        return asNmnFormat(new Nmn7Format());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asNmnRouteFormat() {
