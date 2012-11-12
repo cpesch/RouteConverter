@@ -88,7 +88,7 @@ public interface NavigationPosition {
      * @return the distance in meters between this and the other position
      *         or null if the distance cannot be calculated
      */
-    <P extends NavigationPosition> Double calculateDistance(P other);
+    Double calculateDistance(NavigationPosition other);
     Double calculateDistance(double longitude, double latitude);
 
     /**
