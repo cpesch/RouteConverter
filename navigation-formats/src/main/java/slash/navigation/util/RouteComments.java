@@ -377,7 +377,7 @@ public abstract class RouteComments {
         return !isEmpty(aDouble) ? aDouble : null;
     }
 
-    public static void parseComment(NavigationPosition position, String comment) {
+    public static <P extends NavigationPosition> void parseComment(P position, String comment) {
         Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(2)));
