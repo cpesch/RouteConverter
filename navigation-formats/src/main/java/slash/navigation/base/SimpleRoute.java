@@ -56,11 +56,12 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.navigation.util.RouteComments.createRouteName;
 
 /**
  * Represents the simple most route.
@@ -83,7 +84,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
     }
 
     public String getName() {
-        return name != null ? name : RouteComments.createRouteName(positions);
+        return name != null ? name : createRouteName(positions);
     }
 
     public void setName(String name) {

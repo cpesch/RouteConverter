@@ -30,6 +30,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import static java.util.Calendar.DATE;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromMillis;
 
@@ -82,9 +89,9 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
             GregorianCalendar gregorianCalendar = new GregorianCalendar(UTC, Locale.getDefault());
             gregorianCalendar.clear();
             Calendar calendar = time.getCalendar();
-            gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),
-                    calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-            gregorianCalendar.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND));
+            gregorianCalendar.set(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DATE),
+                    calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
+            gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
             return getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             return null;

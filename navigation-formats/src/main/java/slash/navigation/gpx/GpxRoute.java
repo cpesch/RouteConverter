@@ -65,9 +65,9 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -89,7 +89,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         this.name = name;
         this.description = description;
         this.positions = positions;
-        this.origins = Arrays.asList(origins);
+        this.origins = asList(origins);
     }
 
     public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
