@@ -21,7 +21,6 @@
 package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
@@ -79,7 +78,7 @@ public class GpxPosition extends Wgs84Position {
         if (comment == null)
             return;
 
-        parseComment((NavigationPosition)this, comment);
+        parseComment(this, comment);
 
         // TODO move this logic up
         Matcher matcher = TRIPMASTER_REASON_PATTERN.matcher(this.comment);
