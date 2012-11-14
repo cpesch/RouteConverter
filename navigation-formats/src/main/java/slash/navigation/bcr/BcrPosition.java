@@ -22,7 +22,6 @@ package slash.navigation.bcr;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.MercatorPosition;
-import slash.navigation.base.NavigationPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
 
@@ -43,7 +42,7 @@ import static slash.navigation.util.Conversion.elevationMetersToBcrAltitude;
  * @author Christian Pesch
  */
 
-public class BcrPosition extends MercatorPosition implements NavigationPosition {
+public class BcrPosition extends MercatorPosition {
     public static final int NO_ALTITUDE_DEFINED = 999999999;
     static final String STREET_DEFINES_CENTER_SYMBOL = "@";
     static final String STREET_DEFINES_CENTER_NAME = "Zentrum";
