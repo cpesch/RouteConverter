@@ -21,7 +21,10 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -438,9 +441,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
-    protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+    protected abstract BcrRoute asBcrFormat(BcrFormat format);
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
+    protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asColumbusV900StandardFormat() {
@@ -640,8 +644,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
 
-    public abstract BcrRoute asMTP0607Format();
-    public abstract BcrRoute asMTP0809Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public BcrRoute asMTP0607Format() {
+        if (getFormat() instanceof MTP0607Format)
+            return (BcrRoute) this;
+        return asBcrFormat(new MTP0607Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public BcrRoute asMTP0809Format() {
+        if (getFormat() instanceof MTP0809Format)
+            return (BcrRoute) this;
+        return asBcrFormat(new MTP0809Format());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asNavigatingPoiWarnerFormat() {

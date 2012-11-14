@@ -44,6 +44,10 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         super(format, characteristics, positions);
     }
 
+    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        return new NmeaPosition(longitude, latitude, elevation, speed, time, comment);
+    }
+
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
         for (NmeaPosition position : positions) {
@@ -84,9 +88,5 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         if (getFormat() instanceof NmeaFormat)
             return this;
         return asNmeaFormat(new NmeaFormat());
-    }
-
-    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new NmeaPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

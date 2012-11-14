@@ -30,8 +30,6 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.bcr.MTP0607Format;
-import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
@@ -113,12 +111,11 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         positions.add(index, position);
     }
 
-
     public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new TomTomPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-    private BcrRoute asBcrFormat(BcrFormat format) {
+    protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (TomTomPosition tomTomPosition : positions) {
             BcrPosition bcrPosition = tomTomPosition.asMTPPosition();
@@ -129,14 +126,6 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
             bcrPositions.add(bcrPosition);
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    public BcrRoute asMTP0607Format() {
-        return asBcrFormat(new MTP0607Format());
-    }
-
-    public BcrRoute asMTP0809Format() {
-        return asBcrFormat(new MTP0809Format());
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {

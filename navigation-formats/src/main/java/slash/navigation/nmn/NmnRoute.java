@@ -37,9 +37,12 @@ import java.util.List;
  */
 
 public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
-
     public NmnRoute(NmnFormat format, RouteCharacteristics characteristics, String name, List<NmnPosition> positions) {
         super(format, characteristics, name, positions);
+    }
+
+    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        return new NmnPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
@@ -52,9 +55,5 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         return this;
-    }
-
-    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new NmnPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

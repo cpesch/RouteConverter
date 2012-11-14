@@ -89,7 +89,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     private final List<BcrSection> sections;
     private final List<BcrPosition> positions;
 
-
     public BcrRoute(BcrFormat format, List<BcrSection> sections, List<BcrPosition> positions) {
         super(format, Route);
         this.sections = sections;
@@ -106,7 +105,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         setDescription(description);
         findSection(CLIENT_TITLE).put("REQUEST", "TRUE");
     }
-
 
     List<BcrSection> getSections() {
         return sections;
@@ -181,26 +179,13 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         positions.add(index, position);
     }
 
-
     public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new BcrPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-    private BcrRoute asBcrFormat(BcrFormat format) {
+    protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>(getPositions());
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    public BcrRoute asMTP0607Format() {
-        if (getFormat() instanceof MTP0607Format)
-            return this;
-        return asBcrFormat(new MTP0607Format());
-    }
-
-    public BcrRoute asMTP0809Format() {
-        if (getFormat() instanceof MTP0809Format)
-            return this;
-        return asBcrFormat(new MTP0809Format());
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {

@@ -49,6 +49,10 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         this(new MagicMapsPthFormat(), characteristics, positions);
     }
 
+    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        return new GkPosition(longitude, latitude, elevation, speed, time, comment);
+    }
+
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
         for (GkPosition position : positions) {
@@ -67,10 +71,5 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
 
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         return this;
-    }
-
-
-    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new GkPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

@@ -30,8 +30,6 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.bcr.MTP0607Format;
-import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -118,6 +116,14 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     public GarminFlightPlanPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new GarminFlightPlanPosition(longitude, latitude, elevation, comment);
+    }
+
+    protected BcrRoute asBcrFormat(BcrFormat format) {
+        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
+        for (GarminFlightPlanPosition position : positions) {
+            bcrPositions.add(position.asMTPPosition());
+        }
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
@@ -226,22 +232,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     public NmeaRoute asNmeaFormat() {
         return asNmeaFormat(new NmeaFormat());
-    }
-
-    private BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (GarminFlightPlanPosition position : positions) {
-            bcrPositions.add(position.asMTPPosition());
-        }
-        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    public BcrRoute asMTP0607Format() {
-        return asBcrFormat(new MTP0607Format());
-    }
-
-    public BcrRoute asMTP0809Format() {
-        return asBcrFormat(new MTP0809Format());
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {

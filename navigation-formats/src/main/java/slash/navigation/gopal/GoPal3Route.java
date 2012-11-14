@@ -30,8 +30,6 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.bcr.MTP0607Format;
-import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.binding3.Tour;
@@ -125,25 +123,16 @@ public class GoPal3Route extends BaseRoute<GoPalPosition, GoPal3RouteFormat> { /
         positions.add(index, position);
     }
 
-
     public GoPalPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new GoPalPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-    private BcrRoute asBcrFormat(BcrFormat format) {
+    protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (GoPalPosition position : positions) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    public BcrRoute asMTP0607Format() {
-        return asBcrFormat(new MTP0607Format());
-    }
-
-    public BcrRoute asMTP0809Format() {
-        return asBcrFormat(new MTP0809Format());
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {

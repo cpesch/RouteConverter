@@ -35,9 +35,12 @@ import java.util.List;
  */
 
 public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
-
     public Wgs84Route(SimpleFormat format, RouteCharacteristics characteristics, List<Wgs84Position> positions) {
         super(format, characteristics, positions);
+    }
+
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
@@ -54,9 +57,5 @@ public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
             nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
     }
 }
