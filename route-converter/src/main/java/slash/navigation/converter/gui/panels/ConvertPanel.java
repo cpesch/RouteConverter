@@ -105,6 +105,7 @@ import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -556,8 +557,9 @@ public class ConvertPanel {
                     final ParserResult result = parser.read(url, formats);
                     if (result.isSuccessful()) {
                         log.info("Opened: " + path);
-
-                        invokeLater(new Runnable() {
+                        if(!checkReadFormat(result.getFormat()))
+                            return;
+                        SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(result.getFormat(), result.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
@@ -757,7 +759,7 @@ public class ConvertPanel {
         String targetsAsString = printArrayToDialogString(files);
         startWaitCursor(r.getFrame().getRootPane());
         try {
-            if (!checkFormat(format))
+            if (!checkWriteFormat(format))
                 return;
             if (format.isSupportsMultipleRoutes()) {
                 List<BaseRoute> routes = exportSelectedRoute ? asList(route) : formatAndRoutesModel.getRoutes();
@@ -802,7 +804,11 @@ public class ConvertPanel {
         }
     }
 
-    private static boolean checkFormat(NavigationFormat format) {
+    private static boolean checkReadFormat(NavigationFormat format) {
+        return !((format instanceof HaicomLoggerFormat && !checkForFeature("csv-haicom", "Read Haicom Logger")));
+    }
+
+    private static boolean checkWriteFormat(NavigationFormat format) {
         return !((format instanceof GarminFlightPlanFormat && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
                 (format instanceof GoRiderGpsFormat && !checkForFeature("rt-gorider", "Write GoRider GPS")));
     }
