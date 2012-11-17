@@ -557,7 +557,7 @@ public class ConvertPanel {
                     final ParserResult result = parser.read(url, formats);
                     if (result.isSuccessful()) {
                         log.info("Opened: " + path);
-                        if(!checkReadFormat(result.getFormat()))
+                        if (!checkReadFormat(result.getFormat()))
                             return;
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
