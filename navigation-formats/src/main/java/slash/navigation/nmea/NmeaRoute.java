@@ -48,12 +48,12 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         return new NmeaPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
         for (NmeaPosition position : positions) {
-            wgs84positions.add(position.asWgs84Position());
+            nmeaPositions.add(position.asNmeaPosition());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
@@ -64,29 +64,11 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
-    private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
         for (NmeaPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
+            wgs84positions.add(position.asWgs84Position());
         }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    public NmeaRoute asMagellanExploristFormat() {
-        if (getFormat() instanceof MagellanExploristFormat)
-            return this;
-        return asNmeaFormat(new MagellanExploristFormat());
-    }
-
-    public NmeaRoute asMagellanRouteFormat() {
-        if (getFormat() instanceof MagellanRouteFormat)
-            return this;
-        return asNmeaFormat(new MagellanRouteFormat());
-    }
-
-    public NmeaRoute asNmeaFormat() {
-        if (getFormat() instanceof NmeaFormat)
-            return this;
-        return asNmeaFormat(new NmeaFormat());
+        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
     }
 }

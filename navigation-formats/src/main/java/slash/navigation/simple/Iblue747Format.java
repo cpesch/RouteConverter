@@ -109,10 +109,8 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        if(line.startsWith(HEADER_LINE))
-            return true;
         Matcher matcher = LINE_PATTERN.matcher(line);
-        return matcher.matches();
+        return matcher.matches() || line.startsWith(HEADER_LINE);
     }
 
     protected boolean isPosition(String line) {

@@ -50,6 +50,10 @@ import slash.navigation.kml.Kmz22Format;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.nmn.Nmn4Format;
@@ -443,6 +447,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
+    protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
 
@@ -631,8 +636,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new KompassFormat());
     }
 
-    public abstract NmeaRoute asMagellanExploristFormat();
-    public abstract NmeaRoute asMagellanRouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public NmeaRoute asMagellanExploristFormat() {
+        if (getFormat() instanceof MagellanExploristFormat)
+            return (NmeaRoute) this;
+        return asNmeaFormat(new MagellanExploristFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NmeaRoute asMagellanRouteFormat() {
+        if (getFormat() instanceof MagellanRouteFormat)
+            return (NmeaRoute) this;
+        return asNmeaFormat(new MagellanRouteFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asMagicMaps2GoFormat() {
@@ -672,7 +688,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new NavilinkFormat());
     }
 
-    public abstract NmeaRoute asNmeaFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public NmeaRoute asNmeaFormat() {
+        if (getFormat() instanceof NmeaFormat)
+            return (NmeaRoute) this;
+        return asNmeaFormat(new NmeaFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public NmnRoute asNmn4Format() {

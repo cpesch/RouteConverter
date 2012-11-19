@@ -38,12 +38,13 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.UTC;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Reads Kienzle GPS (.txt) files.
  * <p/>
- * Head: Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
+ * Head: Position;X;Y;Empf&auml;nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
  * Format: 118;7.0591660000;50.7527770000;PHE II;;53117;Bonn;Christian-Lassen-Str.;9;17:02;
  *
  * @author Christian Pesch
@@ -51,11 +52,11 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 
 public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR = ';';
-    private static final String HEADER_LINE = "Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos";
+    private static final String HEADER_LINE = "Position;X;Y";
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
     static {
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        TIME_FORMAT.setTimeZone(UTC);
     }
 
     private static final Pattern LINE_PATTERN = Pattern.

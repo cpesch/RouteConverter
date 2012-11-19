@@ -79,7 +79,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return line.startsWith(HEADER) || isPosition(line);
+        return isPosition(line) || line.startsWith(HEADER);
     }
 
     protected boolean isPosition(String line) {

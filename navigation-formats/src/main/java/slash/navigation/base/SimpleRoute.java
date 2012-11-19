@@ -46,9 +46,6 @@ import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.ovl.OvlRoute;
@@ -113,6 +110,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (P position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
@@ -213,26 +218,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (P position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    public NmeaRoute asMagellanExploristFormat() {
-        return asNmeaFormat(new MagellanExploristFormat());
-    }
-
-    public NmeaRoute asMagellanRouteFormat() {
-        return asNmeaFormat(new MagellanRouteFormat());
-    }
-
-    public NmeaRoute asNmeaFormat() {
-        return asNmeaFormat(new NmeaFormat());
     }
 
     public OvlRoute asOvlFormat() {

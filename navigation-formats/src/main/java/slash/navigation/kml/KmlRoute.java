@@ -51,9 +51,6 @@ import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
@@ -205,24 +202,12 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
-    private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
         for (KmlPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    public NmeaRoute asMagellanExploristFormat() {
-        return asNmeaFormat(new MagellanExploristFormat());
-    }
-
-    public NmeaRoute asMagellanRouteFormat() {
-        return asNmeaFormat(new MagellanRouteFormat());
-    }
-
-    public NmeaRoute asNmeaFormat() {
-        return asNmeaFormat(new NmeaFormat());
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
