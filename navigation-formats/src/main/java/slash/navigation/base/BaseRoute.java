@@ -781,7 +781,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract TourRoute asTourFormat();
 
-    public abstract ViaMichelinRoute asViaMichelinFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public ViaMichelinRoute asViaMichelinFormat() {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new ViaMichelinRoute(getName(), wgs84Positions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asWebPageFormat() {

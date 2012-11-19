@@ -63,11 +63,11 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.util.RouteComments;
-import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.navigation.util.RouteComments.createRouteName;
 
 /**
  * A Top50 OVL ASCII (.ovl) route.
@@ -110,7 +110,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
 
     public String getName() {
         String name = symbol.getText();
-        return name != null ? name : RouteComments.createRouteName(positions);
+        return name != null ? name : createRouteName(positions);
     }
 
     public void setName(String name) {
@@ -279,14 +279,6 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
-    }
-
-    public ViaMichelinRoute asViaMichelinFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new ViaMichelinRoute(getName(), wgs84Positions);
     }
 
     public boolean equals(Object o) {

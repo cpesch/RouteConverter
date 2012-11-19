@@ -59,7 +59,6 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -298,14 +297,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
-    }
-
-    public ViaMichelinRoute asViaMichelinFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GpxPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new ViaMichelinRoute(getName(), wgs84Positions);
     }
 
     public boolean equals(Object o) {

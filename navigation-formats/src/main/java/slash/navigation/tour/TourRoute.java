@@ -61,7 +61,6 @@ import slash.navigation.nmn.NmnRoute;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -256,15 +255,6 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     public TourRoute asTourFormat() {
         return this;
     }
-
-    public ViaMichelinRoute asViaMichelinFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TourPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new ViaMichelinRoute(getName(), wgs84Positions);
-    }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;
