@@ -252,10 +252,6 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return new GoPal5Route(getName(), gopalPositions);
     }
 
-    public TourRoute asTourFormat() {
-        return this;
-    }
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

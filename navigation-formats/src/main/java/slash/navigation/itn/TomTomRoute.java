@@ -56,8 +56,6 @@ import slash.navigation.nmn.NmnRoute;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.tour.TourPosition;
-import slash.navigation.tour.TourRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,14 +257,6 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPal5Route(getName(), gopalPositions);
-    }
-
-    public TourRoute asTourFormat() {
-        List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (TomTomPosition position : positions) {
-            tourPositions.add(position.asTourPosition());
-        }
-        return new TourRoute(getName(), tourPositions);
     }
 
     public boolean equals(Object o) {

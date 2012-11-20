@@ -83,9 +83,12 @@ import slash.navigation.simple.Route66Format;
 import slash.navigation.simple.SygicAsciiFormat;
 import slash.navigation.simple.SygicUnicodeFormat;
 import slash.navigation.simple.WebPageFormat;
+import slash.navigation.tour.TourFormat;
+import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.util.Positions;
+import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
@@ -133,6 +136,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract String getName();
+
     public abstract void setName(String name);
 
     public abstract List<String> getDescription();
@@ -199,7 +203,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public void ensureIncreasingTime() {
-        if(getPositionCount() < 2)
+        if (getPositionCount() < 2)
             return;
 
         long completeTime = getTime(); // ms
@@ -208,17 +212,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         List<P> positions = getPositions();
         P first = positions.get(0);
-        if(first.getTime() == null)
+        if (first.getTime() == null)
             first.setTime(fromCalendar(Calendar.getInstance(UTC)));
 
         P previous = first;
         for (int i = 1; i < positions.size(); i++) {
             P next = positions.get(i);
             CompactCalendar time = next.getTime();
-            if(time == null || time.equals(previous.getTime())) {
+            if (time == null || time.equals(previous.getTime())) {
                 Double distance = next.calculateDistance(previous);
                 Long millis = distance != null ? (long) (distance / averageSpeed * 1000) : null;
-                if(millis == null || millis < 1000)
+                if (millis == null || millis < 1000)
                     millis = 1000L;
                 next.setTime(CompactCalendar.fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));
             }
@@ -446,9 +450,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
+
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
+
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
+
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
+
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
@@ -510,6 +518,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract GoPal3Route asGoPal3RouteFormat();
+
     public abstract GoPal5Route asGoPal5RouteFormat();
 
     @SuppressWarnings("UnusedDeclaration")
@@ -534,6 +543,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract GpxRoute asGpx10Format();
+
     public abstract GpxRoute asGpx11Format();
 
     @SuppressWarnings("UnusedDeclaration")
@@ -658,6 +668,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
+
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
 
     @SuppressWarnings("UnusedDeclaration")
@@ -774,15 +785,30 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract GpxRoute asTcx1Format();
+
     public abstract GpxRoute asTcx2Format();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
+
     public abstract TomTomRoute asTomTom8RouteFormat();
 
-    public abstract TourRoute asTourFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public TourRoute asTourFormat() {
+        if (getFormat() instanceof TourFormat)
+            return (TourRoute) this;
+
+        List<TourPosition> tourPositions = new ArrayList<TourPosition>();
+        for (P position : getPositions()) {
+            tourPositions.add(position.asTourPosition());
+        }
+        return new TourRoute(getName(), tourPositions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public ViaMichelinRoute asViaMichelinFormat() {
+        if (getFormat() instanceof ViaMichelinFormat)
+            return (ViaMichelinRoute) this;
+
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (P position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
