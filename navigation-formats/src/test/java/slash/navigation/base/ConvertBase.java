@@ -44,8 +44,8 @@ public abstract class ConvertBase {
 
     @Test
     public static void convertRoundtrip(String testFileName,
-                          BaseNavigationFormat sourceFormat,
-                          BaseNavigationFormat targetFormat) throws IOException {
+                                        BaseNavigationFormat sourceFormat,
+                                        BaseNavigationFormat targetFormat) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser();
 
         assertTrue(sourceFormat.isSupportsReading());

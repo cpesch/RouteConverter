@@ -52,7 +52,6 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -164,6 +163,22 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (GpxPosition position : positions) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
+    }
+
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (GpxPosition position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (GpxPosition position : positions) {
@@ -237,30 +252,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (GpxPosition position : positions) {
-            nmnPositions.add(position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GpxPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GpxPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

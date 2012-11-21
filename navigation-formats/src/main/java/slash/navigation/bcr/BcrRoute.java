@@ -53,7 +53,6 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -284,14 +283,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (BcrPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

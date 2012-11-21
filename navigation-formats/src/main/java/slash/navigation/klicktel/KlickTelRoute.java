@@ -56,7 +56,6 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -156,6 +155,14 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> Wgs84Positions = new ArrayList<Wgs84Position>();
+        for (Wgs84Position position : positions) {
+            Wgs84Positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (Wgs84Position position : positions) {
@@ -218,22 +225,6 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
-            wgs84Positions.add(position.asOvlPosition());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> Wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
-            Wgs84Positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

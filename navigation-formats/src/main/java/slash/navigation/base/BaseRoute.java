@@ -68,6 +68,7 @@ import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnRoute;
 import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
+import slash.navigation.ovl.OvlFormat;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
@@ -754,7 +755,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new OpelNaviFormat());
     }
 
-    public abstract OvlRoute asOvlFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public OvlRoute asOvlFormat() {
+        if (getFormat() instanceof OvlFormat)
+            return (OvlRoute) this;
+
+        List<Wgs84Position> ovlPositions = new ArrayList<Wgs84Position>();
+        for (P position : getPositions()) {
+            ovlPositions.add(position.asOvlPosition());
+        }
+        return new OvlRoute(getCharacteristics(), getName(), ovlPositions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asQstarzQ1000Format() {

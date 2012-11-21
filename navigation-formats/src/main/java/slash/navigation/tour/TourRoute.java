@@ -56,7 +56,6 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -126,6 +125,30 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (TourPosition position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (TourPosition Wgs84Position : positions) {
+            nmnPositions.add(Wgs84Position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
+    }
+
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> tourPositions = new ArrayList<Wgs84Position>();
+        for (TourPosition position : positions) {
+            tourPositions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), tourPositions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (TourPosition position : positions) {
@@ -192,38 +215,6 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (TourPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (TourPosition Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TourPosition position : positions) {
-            wgs84Positions.add(position.asOvlPosition());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> tourPositions = new ArrayList<Wgs84Position>();
-        for (TourPosition position : positions) {
-            tourPositions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), tourPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

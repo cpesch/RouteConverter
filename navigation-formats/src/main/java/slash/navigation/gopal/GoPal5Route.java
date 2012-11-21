@@ -54,7 +54,6 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -217,14 +216,6 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GoPalPosition position : positions) {
-            wgs84Positions.add(position.asOvlPosition());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {

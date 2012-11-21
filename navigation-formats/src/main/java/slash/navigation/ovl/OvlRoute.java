@@ -149,6 +149,22 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (Wgs84Position Wgs84Position : positions) {
+            nmnPositions.add(Wgs84Position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
+    }
+
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        for (Wgs84Position Wgs84Position : this.positions) {
+            positions.add(Wgs84Position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), positions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (Wgs84Position position : positions) {
@@ -223,26 +239,6 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (Wgs84Position Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
-    }
-
-    public OvlRoute asOvlFormat() {
-        return this;
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position Wgs84Position : this.positions) {
-            positions.add(Wgs84Position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

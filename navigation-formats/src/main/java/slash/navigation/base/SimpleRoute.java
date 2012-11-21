@@ -46,7 +46,6 @@ import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -205,14 +204,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    public OvlRoute asOvlFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (P position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
     public boolean equals(Object o) {
