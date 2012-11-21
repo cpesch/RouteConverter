@@ -21,7 +21,6 @@ package slash.navigation.itn;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
@@ -46,7 +45,6 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -212,14 +210,6 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (TomTomPosition position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

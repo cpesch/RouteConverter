@@ -22,7 +22,6 @@ package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.GkPosition;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -47,7 +46,6 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -150,6 +148,14 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> gopalPositions = new ArrayList<Wgs84Position>();
+        for (GoPalPosition position : positions) {
+            gopalPositions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), gopalPositions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (GoPalPosition position : positions) {
@@ -208,22 +214,6 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (GoPalPosition position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> gopalPositions = new ArrayList<Wgs84Position>();
-        for (GoPalPosition position : positions) {
-            gopalPositions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), gopalPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

@@ -22,7 +22,6 @@ package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
@@ -50,7 +49,6 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -149,6 +147,14 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (Wgs84Position position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+    }
+
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
         for (Wgs84Position Wgs84Position : positions) {
@@ -223,22 +229,6 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (Wgs84Position position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (Wgs84Position position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

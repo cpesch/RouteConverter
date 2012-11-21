@@ -42,7 +42,6 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -144,14 +143,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (P position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

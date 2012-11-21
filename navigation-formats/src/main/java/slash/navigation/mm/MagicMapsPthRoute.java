@@ -53,14 +53,6 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         return new GkPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
-        for (GkPosition position : positions) {
-            wgs84positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
-    }
-
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
         for (GkPosition position : positions) {
@@ -69,7 +61,11 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        return this;
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
+        for (GkPosition position : positions) {
+            wgs84positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
     }
 }

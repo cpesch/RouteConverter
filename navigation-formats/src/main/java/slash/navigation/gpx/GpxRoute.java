@@ -22,7 +22,6 @@ package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
@@ -45,7 +44,6 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -163,6 +161,14 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (GpxPosition position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+    }
+
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
         for (GpxPosition position : positions) {
@@ -236,22 +242,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (GpxPosition position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
-    }
-
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (GpxPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

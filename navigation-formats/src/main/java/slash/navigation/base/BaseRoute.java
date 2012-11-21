@@ -52,6 +52,7 @@ import slash.navigation.kml.Kmz22BetaFormat;
 import slash.navigation.kml.Kmz22Format;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
+import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
@@ -670,7 +671,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
 
-    public abstract MagicMapsPthRoute asMagicMapsPthFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public MagicMapsPthRoute asMagicMapsPthFormat() {
+        if (getFormat() instanceof MagicMapsPthFormat)
+            return (MagicMapsPthRoute) this;
+
+        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
+        for (P position : getPositions()) {
+            gkPositions.add(position.asGkPosition());
+        }
+        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public BcrRoute asMTP0607Format() {

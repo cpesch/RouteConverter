@@ -22,7 +22,6 @@ package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.GkPosition;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -207,14 +206,6 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         return this;
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (Wgs84Position position : positions) {
-            gkPositions.add(position.asGkPosition());
-        }
-        return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
