@@ -36,8 +36,6 @@ import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -166,6 +164,14 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        for (GpxPosition position : positions) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
+        }
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
+    }
+
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
         List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
         for (GpxPosition position : positions) {
@@ -271,22 +277,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPal5Route(getName(), gopalPositions);
-    }
-
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (GpxPosition position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
-        }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public boolean equals(Object o) {

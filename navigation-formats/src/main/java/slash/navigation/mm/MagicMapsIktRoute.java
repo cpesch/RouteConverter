@@ -40,8 +40,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -124,20 +122,20 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
+        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        for (Wgs84Position wgs84Position : positions) {
+            kmlPositions.add(wgs84Position.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+    }
+
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (Wgs84Position position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -182,14 +180,6 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (Wgs84Position wgs84Position : positions) {
-            kmlPositions.add(wgs84Position.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {

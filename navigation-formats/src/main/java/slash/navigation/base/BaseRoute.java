@@ -34,7 +34,10 @@ import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRoute;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.Igo8RouteFormat;
@@ -450,14 +453,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
-
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
-
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
-
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
-
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+    protected abstract TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asColumbusV900StandardFormat() {
@@ -788,9 +788,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract GpxRoute asTcx2Format();
 
-    public abstract TomTomRoute asTomTom5RouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public TomTomRoute asTomTom5RouteFormat() {
+        if (getFormat() instanceof TomTom5RouteFormat)
+            return (TomTomRoute) this;
+        return asTomTomRouteFormat(new TomTom5RouteFormat());
+    }
 
-    public abstract TomTomRoute asTomTom8RouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public TomTomRoute asTomTom8RouteFormat() {
+        if (getFormat() instanceof TomTom8RouteFormat)
+            return (TomTomRoute) this;
+        return asTomTomRouteFormat(new TomTom8RouteFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public TourRoute asTourFormat() {

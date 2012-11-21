@@ -123,24 +123,44 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
+        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        for (TomTomPosition tomTomPosition : positions) {
+            kmlPositions.add(tomTomPosition.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+    }
+
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (TomTomPosition position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (TomTomPosition tomTomPosition : positions) {
+            nmnPositions.add(tomTomPosition.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
+    }
+
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> simplePositions = new ArrayList<Wgs84Position>();
+        for (TomTomPosition tomTomPosition : positions) {
+            simplePositions.add(tomTomPosition.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), simplePositions);
+    }
+
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (TomTomPosition position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        if (getFormat() instanceof TomTom5RouteFormat)
-            return this;
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        if (getFormat() instanceof TomTom8RouteFormat)
-            return this;
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -149,14 +169,6 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
-    }
-
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (TomTomPosition tomTomPosition : positions) {
-            kmlPositions.add(tomTomPosition.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
@@ -211,36 +223,12 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (TomTomPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (TomTomPosition tomTomPosition : positions) {
-            nmnPositions.add(tomTomPosition.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> simplePositions = new ArrayList<Wgs84Position>();
-        for (TomTomPosition tomTomPosition : positions) {
-            simplePositions.add(tomTomPosition.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), simplePositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

@@ -33,8 +33,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -109,6 +107,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
+        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        for (P position : positions) {
+            kmlPositions.add(position.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+    }
+
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
         for (P position : positions) {
@@ -117,20 +123,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (P position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -139,14 +137,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
-    }
-
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (P position : positions) {
-            kmlPositions.add(position.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {

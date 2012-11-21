@@ -38,8 +38,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -120,12 +118,44 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
+        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        for (GarminFlightPlanPosition position : positions) {
+            kmlPositions.add(position.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+    }
+
+    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
+        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        for (GarminFlightPlanPosition position : positions) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+    }
+
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (GarminFlightPlanPosition position : positions) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
+    }
+
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+    }
+
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        for (GarminFlightPlanPosition position : positions) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
+        }
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
@@ -184,14 +214,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return new KlickTelRoute(getName(), wgs84Positions);
     }
 
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (GarminFlightPlanPosition position : positions) {
-            kmlPositions.add(position.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
-    }
-
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
@@ -208,44 +230,12 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (GarminFlightPlanPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (GarminFlightPlanPosition position : positions) {
-            nmnPositions.add(position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
-    }
-
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
-    }
-
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (GarminFlightPlanPosition position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
-        }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public boolean equals(Object o) {

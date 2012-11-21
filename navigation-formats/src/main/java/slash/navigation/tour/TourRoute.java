@@ -40,8 +40,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -120,6 +118,22 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
+        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        for (TourPosition position : positions) {
+            kmlPositions.add(position.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+    }
+
+    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        for (TourPosition position : positions) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
+        }
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
+    }
+
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
         List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
         for (TourPosition position : positions) {
@@ -156,36 +170,12 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (TourPosition position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
-        }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
-    }
-
     public KlickTelRoute asKlickTelRouteFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (TourPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
-    }
-
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (TourPosition position : positions) {
-            kmlPositions.add(position.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
