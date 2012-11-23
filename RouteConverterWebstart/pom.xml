@@ -98,22 +98,26 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86</artifactId>
-            <version>3.8M4</version>
+            <version>3.8.1</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
-            <version>3.8M4</version>
+            <version>3.8.1</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86</artifactId>
-            <version>3.8M4</version>
+            <version>3.8.1</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86_64</artifactId>
-            <version>3.8M4</version>
+            <version>3.8.1</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
