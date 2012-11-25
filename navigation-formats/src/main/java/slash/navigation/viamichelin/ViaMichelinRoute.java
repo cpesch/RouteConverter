@@ -29,13 +29,9 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -121,6 +117,14 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return new GoPalRoute(format, getName(), gopalPositions);
     }
 
+    protected GpxRoute asGpxFormat(GpxFormat format) {
+        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        for (Wgs84Position position : positions) {
+            gpxPositions.add(position.asGpxPosition());
+        }
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (Wgs84Position position : positions) {
@@ -159,30 +163,6 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
-        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
-        for (Wgs84Position position : positions) {
-            flightPlanPositions.add(position.asGarminFlightPlanPosition());
-        }
-        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
-    }
-
-    private GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (Wgs84Position position : positions) {
-            gpxPositions.add(position.asGpxPosition());
-        }
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGpx10Format() {
-        return asGpxFormat(new Gpx10Format());
-    }
-
-    public GpxRoute asGpx11Format() {
-        return asGpxFormat(new Gpx11Format());
     }
 
     public GpxRoute asTcx1Format() {

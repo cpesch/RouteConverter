@@ -26,10 +26,8 @@ import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
-import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -183,6 +181,14 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return new GoPalRoute(format, getName(), gopalPositions);
     }
 
+    protected GpxRoute asGpxFormat(GpxFormat format) {
+        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        for (BcrPosition bcrPosition : positions) {
+            gpxPositions.add(bcrPosition.asGpxPosition());
+        }
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (BcrPosition bcrPosition : positions) {
@@ -227,30 +233,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
             tomTomPositions.add(tomTomPosition);
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
-        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
-        for (BcrPosition position : positions) {
-            flightPlanPositions.add(position.asGarminFlightPlanPosition());
-        }
-        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
-    }
-
-    private GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (BcrPosition bcrPosition : positions) {
-            gpxPositions.add(bcrPosition.asGpxPosition());
-        }
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGpx10Format() {
-        return asGpxFormat(new Gpx10Format());
-    }
-
-    public GpxRoute asGpx11Format() {
-        return asGpxFormat(new Gpx11Format());
     }
 
     public GpxRoute asTcx1Format() {

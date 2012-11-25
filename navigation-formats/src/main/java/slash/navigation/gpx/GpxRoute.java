@@ -30,10 +30,8 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
@@ -151,6 +149,11 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new GoPalRoute(format, getName(), gopalPositions);
     }
 
+    protected GpxRoute asGpxFormat(GpxFormat format) {
+        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>(getPositions());
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (GpxPosition position : positions) {
@@ -189,31 +192,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
-        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
-        for (GpxPosition position : positions) {
-            flightPlanPositions.add(position.asGarminFlightPlanPosition());
-        }
-        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
-    }
-
-    private GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>(getPositions());
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGpx10Format() {
-        if (getFormat() instanceof Gpx10Format)
-            return this;
-        return asGpxFormat(new Gpx10Format());
-    }
-
-    public GpxRoute asGpx11Format() {
-        if (getFormat() instanceof Gpx11Format)
-            return this;
-        return asGpxFormat(new Gpx11Format());
     }
 
     public GpxRoute asTcx1Format() {

@@ -29,12 +29,17 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
+import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
@@ -460,6 +465,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
     protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
+    protected abstract GpxRoute asGpxFormat(GpxFormat format);
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
@@ -508,7 +514,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new CoPilot9Format());
     }
 
-    public abstract GarminFlightPlanRoute asGarminFlightPlanFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
+        if (getFormat() instanceof GarminFlightPlanFormat)
+            return (GarminFlightPlanRoute) this;
+
+        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
+        for (P position : getPositions()) {
+            flightPlanPositions.add(position.asGarminFlightPlanPosition());
+        }
+        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asGlopusFormat() {
@@ -559,9 +575,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new GpsTunerFormat());
     }
 
-    public abstract GpxRoute asGpx10Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public GpxRoute asGpx10Format() {
+        if (getFormat() instanceof Gpx10Format)
+            return (GpxRoute) this;
+        return asGpxFormat(new Gpx10Format());
+    }
 
-    public abstract GpxRoute asGpx11Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public GpxRoute asGpx11Format() {
+        if (getFormat() instanceof Gpx11Format)
+            return (GpxRoute) this;
+        return asGpxFormat(new Gpx11Format());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asGroundTrackFormat() {

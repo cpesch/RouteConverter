@@ -30,13 +30,9 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -119,6 +115,14 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return new GoPalRoute(format, getName(), gopalPositions);
     }
 
+    protected GpxRoute asGpxFormat(GpxFormat format) {
+        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        for (KmlPosition kmlPosition : positions) {
+            gpxPositions.add(kmlPosition.asGpxPosition());
+        }
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>(getPositions());
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -154,30 +158,6 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
-        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
-        for (KmlPosition position : positions) {
-            flightPlanPositions.add(position.asGarminFlightPlanPosition());
-        }
-        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
-    }
-
-    private GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (KmlPosition kmlPosition : positions) {
-            gpxPositions.add(kmlPosition.asGpxPosition());
-        }
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGpx10Format() {
-        return asGpxFormat(new Gpx10Format());
-    }
-
-    public GpxRoute asGpx11Format() {
-        return asGpxFormat(new Gpx11Format());
     }
 
     public GpxRoute asTcx1Format() {
