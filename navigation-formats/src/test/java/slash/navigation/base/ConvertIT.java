@@ -1039,6 +1039,7 @@ public class ConvertIT {
     @Test
     public void testConvertViaMichelinToGoPal() throws IOException {
         convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPal3RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPal5RouteFormat());
         convertRoundtrip(TEST_PATH + "from-itinerary.xvm", new ViaMichelinFormat(), new GoPalTrackFormat());
     }
 }

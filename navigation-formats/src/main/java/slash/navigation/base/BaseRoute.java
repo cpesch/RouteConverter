@@ -30,8 +30,10 @@ import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPal3Route;
-import slash.navigation.gopal.GoPal5Route;
+import slash.navigation.gopal.GoPal3RouteFormat;
+import slash.navigation.gopal.GoPal5RouteFormat;
+import slash.navigation.gopal.GoPalRoute;
+import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTom5RouteFormat;
@@ -457,6 +459,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
+    protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
@@ -521,9 +524,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new GoogleMapsUrlFormat());
     }
 
-    public abstract GoPal3Route asGoPal3RouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public GoPalRoute asGoPal3RouteFormat() {
+        if (getFormat() instanceof GoPal3RouteFormat)
+            return (GoPalRoute) this;
+        return asGoPalRouteFormat(new GoPal3RouteFormat());
+    }
 
-    public abstract GoPal5Route asGoPal5RouteFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public GoPalRoute asGoPal5RouteFormat() {
+        if (getFormat() instanceof GoPal5RouteFormat)
+            return (GoPalRoute) this;
+        return asGoPalRouteFormat(new GoPal5RouteFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asGoPalTrackFormat() {
@@ -585,6 +598,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new KienzleGpsFormat());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KlickTelRoute asKlickTelRouteFormat() {
         if (getFormat() instanceof KlickTelRouteFormat)
             return (KlickTelRoute) this;
@@ -595,7 +609,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
         return new KlickTelRoute(getName(), wgs84Positions);
     }
-
 
     @SuppressWarnings("UnusedDeclaration")
     public KmlRoute asKml20Format() {

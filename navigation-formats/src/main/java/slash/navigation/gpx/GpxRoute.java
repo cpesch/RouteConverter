@@ -32,9 +32,9 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPal3Route;
-import slash.navigation.gopal.GoPal5Route;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -143,6 +143,14 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (GpxPosition position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPalRoute(format, getName(), gopalPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (GpxPosition position : positions) {
@@ -224,22 +232,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         if (getFormat() instanceof NokiaLandmarkExchangeFormat)
             return this;
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    public GoPal3Route asGoPal3RouteFormat() {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (GpxPosition position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPal3Route(getName(), gopalPositions);
-    }
-
-    public GoPal5Route asGoPal5RouteFormat() {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (Wgs84Position position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPal5Route(getName(), gopalPositions);
     }
 
     public boolean equals(Object o) {

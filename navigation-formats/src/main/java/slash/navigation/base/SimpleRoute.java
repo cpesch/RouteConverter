@@ -25,9 +25,9 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPal3Route;
-import slash.navigation.gopal.GoPal5Route;
+import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalPosition;
+import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
@@ -103,6 +103,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (P position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPalRoute(format, getName(), gopalPositions);
+    }
+
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (P position : positions) {
@@ -125,22 +133,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GoPal3Route asGoPal3RouteFormat() {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (P position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPal3Route(getName(), gopalPositions);
-    }
-
-    public GoPal5Route asGoPal5RouteFormat() {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (P position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPal5Route(getName(), gopalPositions);
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
