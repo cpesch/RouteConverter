@@ -204,10 +204,6 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
-    public KlickTelRoute asKlickTelRouteFormat() {
-        return this;
-    }
-
     public GoPal3Route asGoPal3RouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
         for (Wgs84Position position : positions) {

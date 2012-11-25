@@ -43,7 +43,6 @@ import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
@@ -147,14 +146,6 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public KlickTelRoute asKlickTelRouteFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (KmlPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {

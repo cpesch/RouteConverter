@@ -39,7 +39,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
@@ -157,14 +156,6 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public KlickTelRoute asKlickTelRouteFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TomTomPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {

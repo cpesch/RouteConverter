@@ -39,6 +39,7 @@ import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
+import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.Igo8RouteFormat;
 import slash.navigation.kml.Kml20Format;
@@ -584,7 +585,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new KienzleGpsFormat());
     }
 
-    public abstract KlickTelRoute asKlickTelRouteFormat();
+    public KlickTelRoute asKlickTelRouteFormat() {
+        if (getFormat() instanceof KlickTelRouteFormat)
+            return (KlickTelRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new KlickTelRoute(getName(), wgs84Positions);
+    }
+
 
     @SuppressWarnings("UnusedDeclaration")
     public KmlRoute asKml20Format() {

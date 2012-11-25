@@ -38,7 +38,6 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
@@ -142,14 +141,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             bcrPositions.add(bcrPosition);
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    public KlickTelRoute asKlickTelRouteFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GpxPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {

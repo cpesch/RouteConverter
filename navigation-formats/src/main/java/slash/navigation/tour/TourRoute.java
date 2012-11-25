@@ -42,7 +42,6 @@ import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
@@ -188,14 +187,6 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    public KlickTelRoute asKlickTelRouteFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TourPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
