@@ -34,11 +34,11 @@ How to develop for RouteConverter
 
 4. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
-   Install IntellijIDEA Community Edition from http://www.jetbrains.com/idea/download/
+   Install Intellij IDEA Community Edition from http://www.jetbrains.com/idea/download/
    Choose "File/Open Project..." and the root pom.xml.
 
    Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
-   Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e
+   Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e/
    Choose "File/Import..." and "General/Maven Projects" and the root directory.
 
    Install NetBeans IDE Java SE from http://netbeans.org/downloads/
