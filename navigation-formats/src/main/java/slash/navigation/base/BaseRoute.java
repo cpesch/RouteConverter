@@ -51,6 +51,7 @@ import slash.navigation.kml.Kmz21Format;
 import slash.navigation.kml.Kmz22BetaFormat;
 import slash.navigation.kml.Kmz22Format;
 import slash.navigation.mm.MagicMaps2GoFormat;
+import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -669,7 +670,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new MagicMaps2GoFormat());
     }
 
-    public abstract MagicMapsIktRoute asMagicMapsIktFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public MagicMapsIktRoute asMagicMapsIktFormat() {
+        if (getFormat() instanceof MagicMapsIktFormat)
+            return (MagicMapsIktRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public MagicMapsPthRoute asMagicMapsPthFormat() {

@@ -45,7 +45,6 @@ import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
-import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -209,14 +208,6 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
-    }
-
-    public MagicMapsIktRoute asMagicMapsIktFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GarminFlightPlanPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
     }
 
     public boolean equals(Object o) {

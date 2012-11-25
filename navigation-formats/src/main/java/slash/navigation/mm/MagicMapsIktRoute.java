@@ -204,10 +204,6 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
-    public MagicMapsIktRoute asMagicMapsIktFormat() {
-        return this;
-    }
-
     public GoPal3Route asGoPal3RouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
         for (Wgs84Position position : positions) {

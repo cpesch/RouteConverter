@@ -45,7 +45,6 @@ import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
-import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -192,14 +191,6 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
 
     public GpxRoute asNokiaLandmarkExchangeFormat() {
         return asGpxFormat(new NokiaLandmarkExchangeFormat());
-    }
-
-    public MagicMapsIktRoute asMagicMapsIktFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (KmlPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
