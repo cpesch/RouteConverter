@@ -63,8 +63,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 
 public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktFormat> {
     private String name;
-    private final List<String> description;
-    private final List<Wgs84Position> positions;
+    private List<String> description;
+    private List<Wgs84Position> positions;
 
     public MagicMapsIktRoute(MagicMapsIktFormat format, String name, List<String> description,
                              List<Wgs84Position> positions) {

@@ -63,7 +63,7 @@ import static slash.navigation.util.RouteComments.createRouteName;
  */
 
 public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
-    private final OvlSection symbol, overlay, mapLage;
+    private OvlSection symbol, overlay, mapLage;
     private List<Wgs84Position> positions;
 
     public OvlRoute(OvlFormat format, RouteCharacteristics characteristics, String name,

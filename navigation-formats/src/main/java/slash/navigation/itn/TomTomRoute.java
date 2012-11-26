@@ -60,7 +60,7 @@ import static slash.navigation.util.RouteComments.createRouteName;
 
 public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     private String name;
-    private final List<TomTomPosition> positions;
+    private List<TomTomPosition> positions;
 
     public TomTomRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<TomTomPosition> positions) {
         super(format, characteristics);
