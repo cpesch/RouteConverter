@@ -47,15 +47,13 @@ import static slash.navigation.util.RouteComments.parseTripmasterHeading;
 
 public class GpxPosition extends Wgs84Position {
     private String reason;
-    private Object origin;
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+        this(longitude, latitude, elevation, speed, time, comment, null);
     }
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment, Object origin) {
-        this(longitude, latitude, elevation, speed, time, comment);
-        this.origin = origin;
+        super(longitude, latitude, elevation, speed, time, comment, origin);
     }
 
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
@@ -105,17 +103,6 @@ public class GpxPosition extends Wgs84Position {
 
     public String getReason() {
         return reason;
-    }
-
-    public/* for tests */ Object getOrigin() {
-        return origin;
-    }
-
-    public <T> T getOrigin(Class<T> resultClass) {
-        if (resultClass.isInstance(origin))
-            return resultClass.cast(origin);
-        else
-            return null;
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {

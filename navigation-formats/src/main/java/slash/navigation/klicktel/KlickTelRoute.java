@@ -42,7 +42,6 @@ import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -186,10 +185,6 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
-    }
-
-    public GpxRoute asNokiaLandmarkExchangeFormat() {
-        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     public boolean equals(Object o) {

@@ -41,7 +41,6 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -69,8 +68,8 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public ViaMichelinRoute(String name, List<Wgs84Position> positions) {
         super(new ViaMichelinFormat(), Route);
+        this.name = name;
         this.positions = positions;
-        setName(name);
     }
 
     public String getName() {
@@ -171,10 +170,6 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
-    }
-
-    public GpxRoute asNokiaLandmarkExchangeFormat() {
-        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     public boolean equals(Object o) {

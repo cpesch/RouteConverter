@@ -40,14 +40,20 @@ public class Wgs84Position extends BaseNavigationPosition {
     private Double elevation;
     private Double speed;
     private CompactCalendar time;
+    private Object origin;
 
     public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        this(longitude, latitude, elevation, speed, time, comment, null);
+    }
+
+    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment, Object origin) {
         setElevation(elevation);
         setSpeed(speed);
         setTime(time);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
+        this.origin = origin;
     }
 
     public Double getLongitude() {
@@ -143,6 +149,16 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.satellites = satellites;
     }
 
+    public/* for tests */ Object getOrigin() {
+        return origin;
+    }
+
+    public <T> T getOrigin(Class<T> resultClass) {
+        if (resultClass.isInstance(origin))
+            return resultClass.cast(origin);
+        else
+            return null;
+    }
 
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();

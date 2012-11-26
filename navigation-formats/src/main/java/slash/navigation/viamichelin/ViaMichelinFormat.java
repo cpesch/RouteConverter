@@ -62,10 +62,6 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return "ViaMichelin (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return false;
     }

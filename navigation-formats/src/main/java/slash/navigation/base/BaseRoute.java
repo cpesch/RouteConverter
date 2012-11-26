@@ -58,6 +58,8 @@ import slash.navigation.kml.Kmz20Format;
 import slash.navigation.kml.Kmz21Format;
 import slash.navigation.kml.Kmz22BetaFormat;
 import slash.navigation.kml.Kmz22Format;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
+import slash.navigation.lmx.NokiaLandmarkExchangeRoute;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
@@ -150,7 +152,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract String getName();
-
     public abstract void setName(String name);
 
     public abstract List<String> getDescription();
@@ -818,7 +819,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new NmnUrlFormat());
     }
 
-    public abstract GpxRoute asNokiaLandmarkExchangeFormat();
+    @SuppressWarnings("UnusedDeclaration")
+    public NokiaLandmarkExchangeRoute asNokiaLandmarkExchangeFormat() {
+        if (getFormat() instanceof NokiaLandmarkExchangeFormat)
+            return (NokiaLandmarkExchangeRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new NokiaLandmarkExchangeRoute(getName(), getDescription(), wgs84Positions);
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asOpelNaviFormat() {

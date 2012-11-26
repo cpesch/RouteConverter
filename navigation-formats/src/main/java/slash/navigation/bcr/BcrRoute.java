@@ -29,8 +29,6 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -40,7 +38,6 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -241,10 +238,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
-    }
-
-    public GpxRoute asNokiaLandmarkExchangeFormat() {
-        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     public boolean equals(Object o) {

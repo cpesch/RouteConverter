@@ -39,7 +39,6 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -204,12 +203,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         if (getFormat() instanceof Tcx2Format)
             return this;
         return asGpxFormat(new Tcx2Format());
-    }
-
-    public GpxRoute asNokiaLandmarkExchangeFormat() {
-        if (getFormat() instanceof NokiaLandmarkExchangeFormat)
-            return this;
-        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     public boolean equals(Object o) {
