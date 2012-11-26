@@ -26,7 +26,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
@@ -163,9 +162,9 @@ public abstract class SingleFrameApplication extends Application {
     void closeFrame() {
         preferences.putInt(X_PREFERENCE, frame.getLocation().x);
         preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
+        log.info("Storing frame location as " + frame.getLocation());
         preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
         preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
-        log.info("Storing frame location as " + frame.getLocation());
         log.info("Storing frame size as " + frame.getSize());
 
         int state = frame.getExtendedState();
@@ -173,8 +172,8 @@ public abstract class SingleFrameApplication extends Application {
         log.info("Storing frame state as " + state);
 
         String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
-        log.info("Storing graphics device as " + deviceId);
         preferences.put(DEVICE_PREFERENCE, deviceId);
+        log.info("Storing graphics device as " + deviceId);
 
         frame.dispose();
     }
