@@ -130,9 +130,8 @@ import static slash.navigation.util.Positions.contains;
 
 public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> {
     private static final String REVERSE_ROUTE_NAME_POSTFIX = " (rev)";
-
-    private final F format;
-    protected RouteCharacteristics characteristics;
+    private F format;
+    private RouteCharacteristics characteristics;
 
     protected BaseRoute(F format, RouteCharacteristics characteristics) {
         this.format = format;

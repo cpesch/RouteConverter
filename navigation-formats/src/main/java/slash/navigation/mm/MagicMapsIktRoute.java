@@ -186,7 +186,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
         return !(description != null ? !description.equals(magicMapsIktRoute.description) : magicMapsIktRoute.description != null) &&
                 !(name != null ? !name.equals(magicMapsIktRoute.name) : magicMapsIktRoute.name != null) &&
-                characteristics.equals(magicMapsIktRoute.characteristics) &&
+                getCharacteristics().equals(magicMapsIktRoute.getCharacteristics()) &&
                 positions.equals(magicMapsIktRoute.positions);
     }
 
@@ -194,7 +194,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         int result;
         result = (name != null ? name.hashCode() : 0);
         result = 29 * result + (description != null ? description.hashCode() : 0);
-        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + getCharacteristics().hashCode();
         result = 29 * result + positions.hashCode();
         return result;
     }

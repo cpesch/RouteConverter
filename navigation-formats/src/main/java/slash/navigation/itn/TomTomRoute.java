@@ -184,14 +184,14 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         TomTomRoute route = (TomTomRoute) o;
 
         return !(name != null ? !name.equals(route.name) : route.name != null) &&
-                characteristics.equals(route.characteristics) &&
+                getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }
 
     public int hashCode() {
         int result;
         result = (name != null ? name.hashCode() : 0);
-        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + getCharacteristics().hashCode();
         result = 29 * result + positions.hashCode();
         return result;
     }

@@ -175,7 +175,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
 
         return !(description != null ? !description.equals(kmlRoute.description) : kmlRoute.description != null) &&
                 !(name != null ? !name.equals(kmlRoute.name) : kmlRoute.name != null) &&
-                characteristics.equals(kmlRoute.characteristics) &&
+                getCharacteristics().equals(kmlRoute.getCharacteristics()) &&
                 positions.equals(kmlRoute.positions);
     }
 
@@ -183,7 +183,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         int result;
         result = (name != null ? name.hashCode() : 0);
         result = 29 * result + (description != null ? description.hashCode() : 0);
-        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + getCharacteristics().hashCode();
         result = 29 * result + positions.hashCode();
         return result;
     }

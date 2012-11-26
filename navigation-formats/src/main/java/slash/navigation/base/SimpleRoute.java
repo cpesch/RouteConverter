@@ -38,6 +38,9 @@ import slash.navigation.kml.KmlRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -52,7 +55,7 @@ import static slash.navigation.util.RouteComments.createRouteName;
  * @author Christian Pesch
  */
 
-public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends SimpleFormat> extends BaseRoute<P, F> {
+public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> extends BaseRoute<P, F> {
     protected String name;
     protected List<P> positions;
 
@@ -130,6 +133,22 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
+    protected NmnRoute asNmnFormat(NmnFormat format) {
+        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        for (P position : positions) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
+    }
+
+    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (P position : positions) {
@@ -153,14 +172,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         SimpleRoute route = (SimpleRoute) o;
 
         return !(name != null ? !name.equals(route.name) : route.name != null) &&
-                characteristics.equals(route.characteristics) &&
+                getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }
 
     public int hashCode() {
         int result;
         result = (name != null ? name.hashCode() : 0);
-        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + getCharacteristics().hashCode();
         result = 29 * result + positions.hashCode();
         return result;
     }

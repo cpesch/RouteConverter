@@ -21,40 +21,11 @@
 package slash.navigation.tour;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
-import slash.navigation.bcr.BcrFormat;
-import slash.navigation.bcr.BcrPosition;
-import slash.navigation.bcr.BcrRoute;
-import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPalRoute;
-import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gpx.GpxFormat;
-import slash.navigation.gpx.GpxPosition;
-import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTomPosition;
-import slash.navigation.itn.TomTomRoute;
-import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.kml.BaseKmlFormat;
-import slash.navigation.kml.KmlPosition;
-import slash.navigation.kml.KmlRoute;
-import slash.navigation.nmea.BaseNmeaFormat;
-import slash.navigation.nmea.NmeaPosition;
-import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.nmn.NmnFormat;
-import slash.navigation.nmn.NmnPosition;
-import slash.navigation.nmn.NmnRoute;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.util.RouteComments.createRouteName;
 
 /**
  * A Falk Navigator (.tour) route.
@@ -62,129 +33,12 @@ import static slash.navigation.util.RouteComments.createRouteName;
  * @author Christian Pesch
  */
 
-public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
-    private String name;
-    private List<TourPosition> positions;
-
+public class TourRoute extends SimpleRoute<TourPosition, TourFormat> {
     public TourRoute(String name, List<TourPosition> positions) {
-        super(new TourFormat(), Waypoints);
-        this.positions = positions;
-        setName(name);
-    }
-
-    public String getName() {
-        return name != null ? name : createRouteName(positions);
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getDescription() {
-        return null;
-    }
-
-    public List<TourPosition> getPositions() {
-        return positions;
-    }
-
-    public int getPositionCount() {
-        return positions.size();
-    }
-
-    public void add(int index, TourPosition position) {
-        positions.add(index, position);
+        super(new TourFormat(), Waypoints, name, positions);
     }
 
     public TourPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new TourPosition(longitude, latitude, elevation, speed, time, comment);
-    }
-
-    protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (TourPosition position : positions) {
-            bcrPositions.add(position.asMTPPosition());
-        }
-        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
-    }
-
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (TourPosition position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPalRoute(format, getName(), gopalPositions);
-    }
-
-    protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (TourPosition position : positions) {
-            gpxPositions.add(position.asGpxPosition());
-        }
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (TourPosition position : positions) {
-            kmlPositions.add(position.asKmlPosition());
-        }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
-    }
-
-    protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (TourPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (TourPosition Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> tourPositions = new ArrayList<Wgs84Position>();
-        for (TourPosition position : positions) {
-            tourPositions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), tourPositions);
-    }
-
-    protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (TourPosition position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
-        }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GpxRoute asTcx1Format() {
-        return asGpxFormat(new Tcx1Format());
-    }
-
-    public GpxRoute asTcx2Format() {
-        return asGpxFormat(new Tcx2Format());
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TourRoute tourRoute = (TourRoute) o;
-
-        return !(name != null ? !name.equals(tourRoute.name) : tourRoute.name != null) &&
-                !(positions != null ? !positions.equals(tourRoute.positions) : tourRoute.positions != null);
-    }
-
-    public int hashCode() {
-        int result = (name != null ? name.hashCode() : 0);
-        result = 31 * result + (positions != null ? positions.hashCode() : 0);
-        return result;
     }
 }

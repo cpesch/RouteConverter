@@ -23,15 +23,8 @@ package slash.navigation.mm;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
-import slash.navigation.nmn.NmnFormat;
-import slash.navigation.nmn.NmnPosition;
-import slash.navigation.nmn.NmnRoute;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,21 +44,5 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
 
     public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new GkPosition(longitude, latitude, elevation, speed, time, comment);
-    }
-
-    protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (GkPosition position : positions) {
-            nmnPositions.add(position.asNmnPosition());
-        }
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
-    }
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
-        for (GkPosition position : positions) {
-            wgs84positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
     }
 }

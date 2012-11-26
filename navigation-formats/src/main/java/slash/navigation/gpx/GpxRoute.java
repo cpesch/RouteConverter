@@ -213,7 +213,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
         return !(description != null ? !description.equals(gpxRoute.description) : gpxRoute.description != null) &&
                 !(name != null ? !name.equals(gpxRoute.name) : gpxRoute.name != null) &&
-                characteristics.equals(gpxRoute.characteristics) &&
+                getCharacteristics().equals(gpxRoute.getCharacteristics()) &&
                 positions.equals(gpxRoute.positions);
     }
 
@@ -221,7 +221,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         int result;
         result = (name != null ? name.hashCode() : 0);
         result = 29 * result + (description != null ? description.hashCode() : 0);
-        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + getCharacteristics().hashCode();
         result = 29 * result + positions.hashCode();
         return result;
     }
