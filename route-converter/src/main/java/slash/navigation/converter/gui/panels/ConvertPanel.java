@@ -150,6 +150,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.calculateConvertFileName;
 import static slash.common.io.Files.createGoPalFileName;
@@ -176,6 +177,8 @@ import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
+import static slash.navigation.gui.events.Range.increment;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -281,7 +284,7 @@ public class ConvertPanel {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().up(selectedRows, 1);
-                    selectPositions(Range.increment(selectedRows, -1));
+                    selectPositions(increment(selectedRows, -1));
                 }
             }
         });
@@ -294,7 +297,7 @@ public class ConvertPanel {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().down(selectedRows, 1);
-                    selectPositions(Range.increment(selectedRows, +1));
+                    selectPositions(increment(selectedRows, +1));
                 }
             }
         });
@@ -428,7 +431,7 @@ public class ConvertPanel {
         convertPanel.setTransferHandler(new PanelDropHandler());
 
         // make sure that Insert works directly after the program start on an empty position list
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 convertPanel.requestFocus();
             }
@@ -532,7 +535,7 @@ public class ConvertPanel {
                 NavigationFormatParser parser = new NavigationFormatParser();
                 NavigationFormatParserListener listener = new NavigationFormatParserListener() {
                     public void reading(final NavigationFormat<BaseRoute> format) {
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 formatAndRoutesModel.setFormat(format);
                             }
@@ -554,7 +557,7 @@ public class ConvertPanel {
                     if (result.isSuccessful()) {
                         log.info("Opened: " + path);
 
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(result.getFormat(), result.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
@@ -571,7 +574,7 @@ public class ConvertPanel {
                         });
 
                     } else {
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 Gpx11Format gpxFormat = new Gpx11Format();
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
@@ -589,9 +592,9 @@ public class ConvertPanel {
                     r.handleOpenError(t, path);
                 } finally {
                     parser.removeNavigationFileParserListener(listener);
-                    SwingUtilities.invokeLater(new Runnable() {
+                    invokeLater(new Runnable() {
                         public void run() {
-                            stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                            stopWaitCursor(r.getFrame().getRootPane());
                         }
                     });
                 }
@@ -1090,7 +1093,7 @@ public class ConvertPanel {
 
     public int[] selectAllButEveryNthPosition(int order) {
         int rowCount = getPositionsModel().getRowCount();
-        int[] indices = Range.allButEveryNthAndFirstAndLast(rowCount, order);
+        int[] indices = allButEveryNthAndFirstAndLast(rowCount, order);
         selectPositions(indices);
         return new int[]{indices.length, rowCount - indices.length};
     }
