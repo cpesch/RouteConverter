@@ -22,11 +22,16 @@ package slash.navigation.tcx;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import slash.navigation.gpx.GpxFormat;
-import slash.navigation.gpx.GpxPosition;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.NavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.gpx.binding11.WptType;
 
+import java.util.List;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
@@ -37,13 +42,27 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public abstract class TcxFormat extends GpxFormat {
+public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements MultipleRoutesFormat<TcxRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TcxFormat.class);
 
     public String getExtension() {
         return ".tcx";
     }
 
-    protected Short getHeartBeatRate(GpxPosition position) {
+    public boolean isSupportsMultipleRoutes() {
+        return true;
+    }
+
+    public boolean isWritingRouteCharacteristics() {
+        return true;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public <P extends NavigationPosition> TcxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new TcxRoute(this, characteristics, name, (List<Wgs84Position>) positions);
+    }
+
+    protected Short getHeartBeatRate(Wgs84Position position) {
         if (position != null) {
             WptType wpt = position.getOrigin(WptType.class);
             if (wpt != null) {
@@ -55,7 +74,7 @@ public abstract class TcxFormat extends GpxFormat {
         return null;
     }
 
-    protected Double getHeartBeatRate(WptType wptType) {
+    private Double getHeartBeatRate(WptType wptType) {
         Double heartBeatRate = null;
         if (wptType.getExtensions() != null) {
             for (Object any : wptType.getExtensions().getAny()) {
@@ -75,14 +94,13 @@ public abstract class TcxFormat extends GpxFormat {
     }
 
     public int getMaximumRouteNameLength() {
-        // ensure the course name does not exceed 15 characters
-        return 15;
+        return preferences.getInt("maximumRouteNameLength", 15);
     }
 
     protected String createUniqueRouteName(String routeName, Set<String> routeNames) {
         String result = asRouteName(routeName);
         int index = 2;
-        while(routeNames.contains(result)) {
+        while (routeNames.contains(result)) {
             String suffix = " (" + index + ")";
             result = asRouteName(trim(routeName, getMaximumRouteNameLength() - suffix.length()) + suffix);
             index++;

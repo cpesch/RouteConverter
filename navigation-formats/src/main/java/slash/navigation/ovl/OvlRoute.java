@@ -48,8 +48,8 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.tcx.TcxFormat;
+import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,20 +180,20 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
+    protected TcxRoute asTcxFormat(TcxFormat format) {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (Wgs84Position position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
+    }
+
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (Wgs84Position position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public GpxRoute asTcx1Format() {
-        return asGpxFormat(new Tcx1Format());
-    }
-
-    public GpxRoute asTcx2Format() {
-        return asGpxFormat(new Tcx2Format());
     }
 
     public boolean equals(Object o) {

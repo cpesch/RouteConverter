@@ -22,8 +22,7 @@ package slash.navigation.tcx;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.gpx.GpxPosition;
-import slash.navigation.gpx.GpxRoute;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding2.ActivityLapT;
 import slash.navigation.tcx.binding2.ActivityListT;
 import slash.navigation.tcx.binding2.ActivityT;
@@ -53,6 +52,7 @@ import java.util.Set;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.tcx.TcxUtil.marshal2;
 
 /**
  * Reads Training Center Database 2 (.tcx) files.
@@ -75,10 +75,10 @@ public class Tcx2Format extends TcxFormat {
         return positionT != null ? positionT.getLatitudeDegrees() : null;
     }
 
-    private List<GpxPosition> processTrack(TrackT trackT) {
-        List<GpxPosition> result = new ArrayList<GpxPosition>();
+    private List<Wgs84Position> processTrack(TrackT trackT) {
+        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
-            result.add(new GpxPosition(convertLongitude(trackpointT.getPosition()),
+            result.add(new Wgs84Position(convertLongitude(trackpointT.getPosition()),
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
@@ -88,56 +88,56 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    private GpxRoute processCoursePoints(CourseT courseT) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+    private TcxRoute processCoursePoints(CourseT courseT) {
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         for (CoursePointT coursePointT : courseT.getCoursePoint()) {
-            positions.add(new GpxPosition(convertLongitude(coursePointT.getPosition()),
+            positions.add(new Wgs84Position(convertLongitude(coursePointT.getPosition()),
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
                     null,
                     parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
-        return positions.size() > 0 ? new GpxRoute(this, Route, courseT.getName(), null, positions) : null;
+        return positions.size() > 0 ? new TcxRoute(this, Route, courseT.getName(), positions) : null;
     }
 
-    private GpxRoute processCourseLap(String name, CourseLapT courseLapT) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
-        positions.add(new GpxPosition(convertLongitude(courseLapT.getBeginPosition()),
+    private TcxRoute processCourseLap(String name, CourseLapT courseLapT) {
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        positions.add(new Wgs84Position(convertLongitude(courseLapT.getBeginPosition()),
                 convertLatitude(courseLapT.getBeginPosition()),
                 courseLapT.getBeginAltitudeMeters(),
                 null,
                 null,
                 "0 seconds"));
-        positions.add(new GpxPosition(convertLongitude(courseLapT.getEndPosition()),
+        positions.add(new Wgs84Position(convertLongitude(courseLapT.getEndPosition()),
                 convertLatitude(courseLapT.getEndPosition()),
                 courseLapT.getEndAltitudeMeters(),
                 null,
                 null,
                 courseLapT.getTotalTimeSeconds() + " seconds"));
-        return new GpxRoute(this, Waypoints, name, null, positions);
+        return new TcxRoute(this, Waypoints, name, positions);
     }
 
 
-    private GpxRoute process(ActivityLapT activityLapT) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+    private TcxRoute process(ActivityLapT activityLapT) {
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         for (TrackT trackT : activityLapT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        return new GpxRoute(this, Track, activityLapT.getNotes(), null, positions);
+        return new TcxRoute(this, Track, activityLapT.getNotes(), positions);
     }
 
-    private List<GpxRoute> process(ActivityT activityT) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+    private List<TcxRoute> process(ActivityT activityT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
         for (ActivityLapT activityLapT : activityT.getLap()) {
             result.add(process(activityLapT));
         }
         return result;
     }
 
-    private List<GpxRoute> process(CourseT courseT) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
-        GpxRoute coursePoints = processCoursePoints(courseT);
+    private List<TcxRoute> process(CourseT courseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        TcxRoute coursePoints = processCoursePoints(courseT);
         if (coursePoints != null)
             result.add(coursePoints);
 
@@ -148,16 +148,16 @@ public class Tcx2Format extends TcxFormat {
                 result.add(processCourseLap(courseT.getName(), courseLapT));
             }
         }
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         for (TrackT trackT : courseT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        result.add(new GpxRoute(this, Track, courseT.getName(), null, positions));
+        result.add(new TcxRoute(this, Track, courseT.getName(), positions));
         return result;
     }
 
-    private List<GpxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+    private List<TcxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
 
         ActivityListT activityListT = trainingCenterDatabaseT.getActivities();
         if (activityListT != null) {
@@ -190,13 +190,13 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<TcxRoute> context) throws Exception {
         TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal2(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }
 
 
-    private HeartRateInBeatsPerMinuteT getHeartBeatRateT(GpxPosition position) {
+    private HeartRateInBeatsPerMinuteT getHeartBeatRateT(Wgs84Position position) {
         Short heartBeatRate = getHeartBeatRate(position);
         if (heartBeatRate != null) {
             HeartRateInBeatsPerMinuteT result = new ObjectFactory().createHeartRateInBeatsPerMinuteT();
@@ -206,7 +206,7 @@ public class Tcx2Format extends TcxFormat {
         return null;
     }
 
-    private PositionT createPosition(GpxPosition position) {
+    private PositionT createPosition(Wgs84Position position) {
         PositionT positionT = new ObjectFactory().createPositionT();
         if (position.getLongitude() != null)
             positionT.setLongitudeDegrees(position.getLongitude());
@@ -215,10 +215,10 @@ public class Tcx2Format extends TcxFormat {
         return positionT;
     }
 
-    private CourseLapT createCourseLap(GpxRoute route, int startIndex, int endIndex) {
+    private CourseLapT createCourseLap(TcxRoute route, int startIndex, int endIndex) {
         CourseLapT courseLapT = new ObjectFactory().createCourseLapT();
-        GpxPosition first = route.getPositionCount() >= startIndex ? route.getPosition(startIndex) : null;
-        GpxPosition last = route.getPositionCount() >= endIndex ? route.getPosition(endIndex - 1) : null;
+        Wgs84Position first = route.getPositionCount() >= startIndex ? route.getPosition(startIndex) : null;
+        Wgs84Position last = route.getPositionCount() >= endIndex ? route.getPosition(endIndex - 1) : null;
         if (last == null)
             last = first;
 
@@ -240,16 +240,16 @@ public class Tcx2Format extends TcxFormat {
         return courseLapT;
     }
 
-    private TrackT createTrack(GpxRoute route, int startIndex, int endIndex) {
+    private TrackT createTrack(TcxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         TrackT trackT = objectFactory.createTrackT();
         List<TrackpointT> trackpoints = trackT.getTrackpoint();
 
-        List<GpxPosition> positions = route.getPositions();
-        GpxPosition previous = null;
+        List<Wgs84Position> positions = route.getPositions();
+        Wgs84Position previous = null;
         double distance = 0.0;
         for (int i = startIndex; i < endIndex; i++) {
-            GpxPosition position = positions.get(i);
+            Wgs84Position position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
             trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRateT(position));
@@ -267,7 +267,7 @@ public class Tcx2Format extends TcxFormat {
         return trackT;
     }
 
-    private CourseT createCourse(GpxRoute route, String routeName, int startIndex, int endIndex) {
+    private CourseT createCourse(TcxRoute route, String routeName, int startIndex, int endIndex) {
         CourseT courseT = new ObjectFactory().createCourseT();
         courseT.setName(routeName);
         courseT.setNotes(GENERATED_BY);
@@ -276,7 +276,7 @@ public class Tcx2Format extends TcxFormat {
         return courseT;
     }
 
-    private TrainingCenterDatabaseT createTrainingCenterDatabase(GpxRoute route, int startIndex, int endIndex) {
+    private TrainingCenterDatabaseT createTrainingCenterDatabase(TcxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
         CourseListT courseListT = objectFactory.createCourseListT();
@@ -286,7 +286,7 @@ public class Tcx2Format extends TcxFormat {
         return trainingCenterDatabaseT;
     }
 
-    private TrainingCenterDatabaseT createTrainingCenterDatabase(List<GpxRoute> routes) {
+    private TrainingCenterDatabaseT createTrainingCenterDatabase(List<TcxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
         TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
         CourseListT courseListT = objectFactory.createCourseListT();
@@ -294,9 +294,7 @@ public class Tcx2Format extends TcxFormat {
         List<CourseT> courses = courseListT.getCourse();
 
         Set<String> routeNames = new HashSet<String>(routes.size());
-        for (int i = 0; i < routes.size(); i++) {
-            GpxRoute route = routes.get(i);
-
+        for (TcxRoute route : routes) {
             String routeName = createUniqueRouteName(route.getName(), routeNames);
             routeNames.add(routeName);
             courses.add(createCourse(route, routeName, 0, route.getPositionCount()));
@@ -304,17 +302,17 @@ public class Tcx2Format extends TcxFormat {
         return trainingCenterDatabaseT;
     }
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(TcxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            TcxUtil.marshal2(createTrainingCenterDatabase(route, startIndex, endIndex), target);
+            marshal2(createTrainingCenterDatabase(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
+    public void write(List<TcxRoute> routes, OutputStream target) throws IOException {
         try {
-            TcxUtil.marshal2(createTrainingCenterDatabase(routes), target);
+            marshal2(createTrainingCenterDatabase(routes), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

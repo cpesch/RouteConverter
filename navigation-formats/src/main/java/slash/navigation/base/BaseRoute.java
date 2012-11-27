@@ -99,6 +99,10 @@ import slash.navigation.simple.Route66Format;
 import slash.navigation.simple.SygicAsciiFormat;
 import slash.navigation.simple.SygicUnicodeFormat;
 import slash.navigation.simple.WebPageFormat;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.tcx.TcxFormat;
+import slash.navigation.tcx.TcxRoute;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
@@ -470,6 +474,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+    protected abstract TcxRoute asTcxFormat(TcxFormat format);
     protected abstract TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
@@ -877,9 +882,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
-    public abstract GpxRoute asTcx1Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public TcxRoute asTcx1Format() {
+        if (getFormat() instanceof Tcx1Format)
+            return (TcxRoute) this;
+        return asTcxFormat(new Tcx1Format());
+    }
 
-    public abstract GpxRoute asTcx2Format();
+    @SuppressWarnings("UnusedDeclaration")
+    public TcxRoute asTcx2Format() {
+        if (getFormat() instanceof Tcx2Format)
+            return (TcxRoute) this;
+        return asTcxFormat(new Tcx2Format());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public TomTomRoute asTomTom5RouteFormat() {
