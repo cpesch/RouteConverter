@@ -215,8 +215,8 @@
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
+        <module>common-navigation</module>
         <module>earthtools</module>
-        <module>profileview</module>
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
@@ -227,6 +227,7 @@
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>position-completer</module>
+        <module>profileview</module>
         <module>rest</module>
         <module>swt-mapview</module>
         <module>route-converter</module>

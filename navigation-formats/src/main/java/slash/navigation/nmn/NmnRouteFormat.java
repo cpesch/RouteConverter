@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Route;
 

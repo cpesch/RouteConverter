@@ -1,10 +1,10 @@
 package slash.navigation.catalog.client;
 
 import org.junit.Test;
+import slash.common.io.Transfer;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.rest.Get;
-import slash.navigation.rest.Helper;
 import slash.navigation.rest.HttpRequest;
 import slash.navigation.rest.Post;
 import slash.navigation.rest.Put;
@@ -37,7 +37,7 @@ public class CategoryIT extends RouteCatalogClientBase {
                                 String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Post request = new Post(CATEGORIES_URL + Helper.encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Post request = new Post(CATEGORIES_URL + Transfer.encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -47,14 +47,14 @@ public class CategoryIT extends RouteCatalogClientBase {
     }
 
     private Get readCategory(String key) throws IOException {
-        return new Get(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX);
+        return new Get(CATEGORIES_URL + Transfer.encodeUri(key) + GPX_URL_POSTFIX);
     }
 
     private Put updateCategory(String key, String name,
                                String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Put request = new Put(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Put request = new Put(CATEGORIES_URL + Transfer.encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }

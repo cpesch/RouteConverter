@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 /**
  * The base of all text based navigation formats.
@@ -52,7 +53,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception {
-        read(source, startDate, DEFAULT_ENCODING, context);
+        read(source, startDate, ISO_LATIN1_ENCODING, context);
     }
 
     protected void read(InputStream source, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
@@ -81,7 +82,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     }
 
     public void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        write(route, target, DEFAULT_ENCODING, startIndex, endIndex);
+        write(route, target, ISO_LATIN1_ENCODING, startIndex, endIndex);
     }
 
     public abstract void write(R route, PrintWriter writer, int startIndex, int endIndex) throws IOException;

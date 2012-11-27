@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.common.BasicPosition;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,7 +48,7 @@ import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
+import static slash.navigation.common.BasicPosition.parsePositions;
 
 /**
  * The base of all Google Earth formats.
@@ -84,7 +84,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    protected KmlPosition asKmlPosition(GoogleMapsPosition position) {
+    protected KmlPosition asKmlPosition(BasicPosition position) {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
     }
 
@@ -96,7 +96,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             buffer.append(' ');
         }
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (GoogleMapsPosition position : parsePositions(buffer.toString()))
+        for (BasicPosition position : parsePositions(buffer.toString()))
             result.add(asKmlPosition(position));
         return result;
     }

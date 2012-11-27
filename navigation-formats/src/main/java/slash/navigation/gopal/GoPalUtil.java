@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.jaxb.JaxbUtils.newContext;
 import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
 import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
@@ -45,7 +46,7 @@ class GoPalUtil {
     private static Marshaller newMarshaller3() {
         Marshaller marshaller = newMarshaller(newContext(slash.navigation.gopal.binding3.ObjectFactory.class));
         try {
-            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);
         } catch (PropertyException e) {
             // intentionally left empty
         }

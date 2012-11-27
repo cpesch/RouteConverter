@@ -34,7 +34,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MTP0809FormatTest {
     private MTP0809Format format = new MTP0809Format();
@@ -45,7 +45,7 @@ public class MTP0809FormatTest {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);

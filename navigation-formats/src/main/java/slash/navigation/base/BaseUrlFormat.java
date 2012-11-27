@@ -26,6 +26,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static slash.common.io.Transfer.UTF8_ENCODING;
+
 /**
  * The base of all URL based navigation formats.
  *

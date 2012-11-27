@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MagellanRouteFormatTest {
     private MagellanRouteFormat format = new MagellanRouteFormat();
@@ -115,7 +115,7 @@ public class MagellanRouteFormatTest {
                         "$PMGNWPL,4816.68827,N,01133.85421,E,0,M,3-rechtsab,,a*50\n"
         );
         ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);

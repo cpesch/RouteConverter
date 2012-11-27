@@ -25,7 +25,7 @@ import slash.common.type.ISO8601;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.common.BasicPosition;
 import slash.navigation.kml.binding22.AbstractContainerType;
 import slash.navigation.kml.binding22.AbstractFeatureType;
 import slash.navigation.kml.binding22.AbstractGeometryType;
@@ -79,7 +79,7 @@ import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.googlemaps.GoogleMapsPosition.parseExtensionPositions;
+import static slash.navigation.common.BasicPosition.parseExtensionPositions;
 import static slash.navigation.kml.KmlUtil.marshal22;
 import static slash.navigation.kml.KmlUtil.unmarshal22;
 
@@ -243,7 +243,7 @@ public class Kml22Format extends KmlFormat {
     private List<KmlPosition> asExtendedKmlPositions(List<String> strings) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
         for (String string : strings) {
-            for (GoogleMapsPosition position : parseExtensionPositions(string)) {
+            for (BasicPosition position : parseExtensionPositions(string)) {
                 result.add(asKmlPosition(position));
             }
         }

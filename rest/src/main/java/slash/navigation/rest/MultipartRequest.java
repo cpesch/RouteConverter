@@ -31,7 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.rest.Helper.encodeUri;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.encodeUri;
 
 /**
  * Wrapper for a HTTP Multipart Request.
@@ -54,7 +55,7 @@ abstract class MultipartRequest extends HttpRequest {
     public void addFile(String name, File value) throws IOException {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
-        parts.add(new FilePart(name, encodeUri(value.getName()), value, "application/octet-stream", "UTF-8"));
+        parts.add(new FilePart(name, encodeUri(value.getName()), value, "application/octet-stream", UTF8_ENCODING));
     }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {

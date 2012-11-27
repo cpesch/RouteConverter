@@ -46,8 +46,8 @@ import java.util.logging.Logger;
 import static slash.common.io.Files.writeToTempFile;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
-import static slash.navigation.rest.Helper.asUtf8;
-import static slash.navigation.rest.Helper.decodeUri;
+import static slash.common.io.Transfer.asUtf8;
+import static slash.common.io.Transfer.decodeUri;
 
 /**
  * Encapsulates REST access to the RemoteCatalog service of RouteConverter.

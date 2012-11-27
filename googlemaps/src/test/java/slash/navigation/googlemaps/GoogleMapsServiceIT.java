@@ -21,6 +21,7 @@ package slash.navigation.googlemaps;
 
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.common.BasicPosition;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,15 +55,15 @@ public class GoogleMapsServiceIT {
 
     @Test
     public void getPositionFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        GoogleMapsPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        BasicPosition expected = new BasicPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        BasicPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
 
     @Test
     public void getPositionsFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        List<GoogleMapsPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        BasicPosition expected = new BasicPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        List<BasicPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(Arrays.asList(expected), actual);
     }
 

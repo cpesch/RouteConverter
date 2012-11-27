@@ -75,7 +75,9 @@ import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
@@ -89,7 +91,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.rest.Helper.decodeUri;
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.Positions.northEast;
@@ -1320,7 +1321,7 @@ public abstract class BaseMapView implements MapView {
         if ("-".equals(string))
             return null;
         try {
-            return trim(new String(string.getBytes(), "UTF-8"));
+            return trim(new String(string.getBytes(), UTF8_ENCODING));
         } catch (UnsupportedEncodingException e) {
             return null;
         }

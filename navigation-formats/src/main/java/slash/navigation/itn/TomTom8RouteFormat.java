@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static slash.common.io.Transfer.UTF8_ENCODING;
+
 /**
  * Reads and writes Tom Tom 8 Route (.itn) files.
  *

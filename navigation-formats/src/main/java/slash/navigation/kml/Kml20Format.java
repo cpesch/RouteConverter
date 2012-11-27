@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.common.BasicPosition;
 import slash.navigation.kml.binding20.Document;
 import slash.navigation.kml.binding20.Folder;
 import slash.navigation.kml.binding20.GeometryCollection;
@@ -52,8 +52,8 @@ import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.googlemaps.GoogleMapsPosition.parsePosition;
-import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
+import static slash.navigation.common.BasicPosition.parsePosition;
+import static slash.navigation.common.BasicPosition.parsePositions;
 import static slash.navigation.kml.KmlUtil.marshal20;
 import static slash.navigation.kml.KmlUtil.unmarshal20;
 
@@ -229,7 +229,7 @@ public class Kml20Format extends KmlFormat {
 
     private List<KmlPosition> extractPositions(LineString lineString) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (GoogleMapsPosition position : parsePositions(lineString.getCoordinates())) {
+        for (BasicPosition position : parsePositions(lineString.getCoordinates())) {
             result.add(asKmlPosition(position));
         }
         return result;

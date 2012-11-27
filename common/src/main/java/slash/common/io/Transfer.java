@@ -20,13 +20,17 @@
 
 package slash.common.io;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Double.NaN;
@@ -46,7 +50,12 @@ import static java.lang.Math.round;
  */
 
 public class Transfer {
-    public static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
+    private static final Logger log = Logger.getLogger(Transfer.class.getName());
+    public static final String ISO_LATIN1_ENCODING = "ISO8859-1";
+    public static final String UTF8_ENCODING = "UTF-8";
+    public static final String UTF16_ENCODING = "UTF-16";
+    public static final String UTF16LE_ENCODING = "UTF-16LE";
 
     private Transfer() {
     }
@@ -312,5 +321,34 @@ public class Transfer {
             result[i] = integers.get(i);
         }
         return result;
+    }
+
+    public static String encodeUri(String uri) {
+        try {
+            String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
+            return encoded.replace("%2F", "/"); // better not .replace("%3A", ":");
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot encode uri " + uri + ": " + e.getMessage());
+            return uri;
+        }
+    }
+
+    public static String decodeUri(String uri) {
+        try {
+            return URLDecoder.decode(uri, UTF8_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot decode uri " + uri + ": " + e.getMessage());
+            return uri;
+        }
+    }
+
+    public static String asUtf8(String string) {
+        try {
+            byte[] bytes = string.getBytes(UTF8_ENCODING);
+            return new String(bytes);
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e.getMessage());
+            return string;
+        }
     }
 }

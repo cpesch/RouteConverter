@@ -20,6 +20,7 @@
 
 package slash.navigation.googlemaps;
 
+import slash.navigation.common.BasicPosition;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -36,7 +37,7 @@ import java.util.prefs.Preferences;
 
 import static slash.common.util.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
-import static slash.navigation.rest.Helper.encodeUri;
+import static slash.common.io.Transfer.encodeUri;
 
 /**
  * Encapsulates REST access to the Google Maps API Geocoding Service.
@@ -107,12 +108,12 @@ public class GoogleMapsService {
         return resultsArray[0].getFormattedAddress();
     }
 
-    public GoogleMapsPosition getPositionFor(String address) throws IOException {
-        List<GoogleMapsPosition> positions = getPositionsFor(address);
+    public BasicPosition getPositionFor(String address) throws IOException {
+        List<BasicPosition> positions = getPositionsFor(address);
         return positions != null && positions.size() > 0 ? positions.get(0) : null;
     }
 
-    public List<GoogleMapsPosition> getPositionsFor(String address) throws IOException {
+    public List<BasicPosition> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
         String result = get.execute();
@@ -134,11 +135,11 @@ public class GoogleMapsService {
         return null;
     }
 
-    private List<GoogleMapsPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
-        List<GoogleMapsPosition> result = new ArrayList<GoogleMapsPosition>(responses.size());
+    private List<BasicPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
+        List<BasicPosition> result = new ArrayList<BasicPosition>(responses.size());
         for (GeocodeResponse.Result response : responses) {
             GeocodeResponse.Result.Geometry.Location location = response.getGeometry().getLocation();
-            result.add(new GoogleMapsPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
+            result.add(new BasicPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
                     0.0d, response.getFormattedAddress()));
         }
         return result;

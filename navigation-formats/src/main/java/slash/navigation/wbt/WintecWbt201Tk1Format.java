@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 /**
  * Reads and writes Wintec WBT-201 (.tk1) files.
@@ -54,7 +55,7 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         buffer.position(0);
         byte[] bytes = new byte[16];
         buffer.get(bytes, 0, 16);
-        String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING);
+        String formatDescriptor = new String(bytes, 0, 15, ISO_LATIN1_ENCODING);
         return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 

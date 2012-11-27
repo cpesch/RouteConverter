@@ -45,6 +45,7 @@ import java.io.Reader;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 class ViaMichelinUtil {
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -58,7 +59,7 @@ class ViaMichelinUtil {
         Marshaller marshaller = JaxbUtils.newMarshaller(JaxbUtils.newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_FRAGMENT, true);
-            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);
         } catch (PropertyException e) {
             // intentionally left empty
         }

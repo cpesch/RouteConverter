@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.util.Conversion.nauticMilesToKilometer;
 
 public class NmeaFormatTest {
@@ -283,7 +283,7 @@ public class NmeaFormatTest {
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
         ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
@@ -308,7 +308,7 @@ public class NmeaFormatTest {
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
         ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
@@ -336,7 +336,7 @@ public class NmeaFormatTest {
         assertEquals(expectedLines, writer.getBuffer().toString());
 
         ParserContext<NmeaRoute> context2 = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, DEFAULT_ENCODING, context2);
+        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, ISO_LATIN1_ENCODING, context2);
         List<NmeaRoute> routes2 = context2.getRoutes();
         assertEquals(1, routes2.size());
         NmeaRoute route2 = routes2.get(0);

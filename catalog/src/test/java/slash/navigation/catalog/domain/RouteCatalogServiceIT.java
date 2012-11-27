@@ -21,7 +21,7 @@ package slash.navigation.catalog.domain;
 
 import org.junit.Test;
 import slash.common.io.Files;
-import slash.navigation.rest.Helper;
+import slash.common.io.Transfer;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
     private File routeCatalogCreateTempFile(String fileName) throws IOException {
         if (fileName == null)
             fileName = "route.file";
-        String decodedName = Helper.decodeUri(fileName);
+        String decodedName = Transfer.decodeUri(fileName);
         String prefix = Files.removeExtension(decodedName);
         if (prefix.length() < 3)
             prefix = "rcc" + prefix;

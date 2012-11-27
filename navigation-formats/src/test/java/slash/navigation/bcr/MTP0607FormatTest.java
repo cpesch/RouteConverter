@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
 
@@ -197,7 +197,7 @@ public class MTP0607FormatTest {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);

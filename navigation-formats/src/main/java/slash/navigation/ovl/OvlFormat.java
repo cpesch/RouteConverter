@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -306,7 +307,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     public void write(List<OvlRoute> routes, OutputStream target) throws IOException {
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, DEFAULT_ENCODING));
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, ISO_LATIN1_ENCODING));
         try {
             int symbols = 0;
             for (OvlRoute route : routes) {

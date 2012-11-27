@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;

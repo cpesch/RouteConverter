@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**

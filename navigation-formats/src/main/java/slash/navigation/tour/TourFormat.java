@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.sort;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.parseLong;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;

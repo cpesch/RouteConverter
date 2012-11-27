@@ -27,6 +27,7 @@ import slash.navigation.kml.binding21.KmlType;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static slash.common.io.Transfer.UTF16LE_ENCODING;
 import static slash.navigation.kml.KmlUtil.unmarshal21;
 
 /**

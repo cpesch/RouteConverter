@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
 import static slash.common.io.Files.writeToTempFile;
-import static slash.navigation.rest.Helper.asUtf8;
+import static slash.common.io.Transfer.asUtf8;
 
 /**
  * Encapsulates REST access to the RouteFeedback service of RouteConverter.

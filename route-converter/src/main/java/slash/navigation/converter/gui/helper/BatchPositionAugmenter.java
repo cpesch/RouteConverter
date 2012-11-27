@@ -22,11 +22,11 @@ package slash.navigation.converter.gui.helper;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BasicPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
@@ -204,7 +204,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
+                        BasicPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                         if (coordinates != null) {
                             positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
                                     LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), false, true);

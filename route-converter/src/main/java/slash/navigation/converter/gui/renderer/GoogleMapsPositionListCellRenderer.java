@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.common.BasicPosition;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,7 @@ import java.awt.*;
 public class GoogleMapsPositionListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        GoogleMapsPosition position = (GoogleMapsPosition) value;
+        BasicPosition position = (BasicPosition) value;
         label.setText(position.getComment() + " @ " + position.getLongitude() + "," + position.getLatitude());
         return label;
     }
