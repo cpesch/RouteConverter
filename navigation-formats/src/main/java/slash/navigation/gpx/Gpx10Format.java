@@ -49,7 +49,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
-import static slash.navigation.util.Conversion.kmhToMs;
+import static slash.navigation.common.Conversion.kmhToMs;
 
 /**
  * Reads and writes GPS Exchange Format 1.0 (.gpx) files.

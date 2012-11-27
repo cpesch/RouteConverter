@@ -50,15 +50,14 @@ import static java.lang.Math.round;
  */
 
 public class Transfer {
+    private Transfer() {}
+
     private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
     public static final String ISO_LATIN1_ENCODING = "ISO8859-1";
     public static final String UTF8_ENCODING = "UTF-8";
     public static final String UTF16_ENCODING = "UTF-16";
     public static final String UTF16LE_ENCODING = "UTF-16LE";
-
-    private Transfer() {
-    }
 
     public static double roundFraction(double number, int fractionCount) {
         double factor = pow(10, fractionCount);

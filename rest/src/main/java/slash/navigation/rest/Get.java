@@ -47,7 +47,6 @@ public class Get extends HttpRequest {
         return header != null ? header.getValue() : null;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public String getAttachmentFileName() {
         String contentDisposition = getContentDisposition();
         if (contentDisposition != null) {

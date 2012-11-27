@@ -28,8 +28,8 @@ import slash.navigation.itn.TomTomPosition;
 
 import static java.lang.Math.abs;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.util.Conversion.ddmm2degrees;
-import static slash.navigation.util.Conversion.degrees2ddmm;
+import static slash.navigation.common.Conversion.ddmm2degrees;
+import static slash.navigation.common.Conversion.degrees2ddmm;
 
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.

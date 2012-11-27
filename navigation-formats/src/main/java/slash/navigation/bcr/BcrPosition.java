@@ -31,8 +31,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.util.Conversion.bcrAltitudeToElevationMeters;
-import static slash.navigation.util.Conversion.elevationMetersToBcrAltitude;
+import static slash.navigation.common.Conversion.bcrAltitudeToElevationMeters;
+import static slash.navigation.common.Conversion.elevationMetersToBcrAltitude;
 
 /**
  * Represents a position in a Map&Guide Tourenplaner Route (.bcr) file.
