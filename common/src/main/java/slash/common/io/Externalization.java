@@ -33,6 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
+import static java.lang.Long.MAX_VALUE;
 import static slash.common.io.InputOutput.copy;
 
 /**
@@ -61,7 +62,7 @@ public class Externalization {
     }
 
     private static long getLastModified(String fileName) throws IOException {
-        long lastModified = Long.MAX_VALUE;
+        long lastModified = MAX_VALUE;
         URL url = Externalization.class.getClassLoader().getResource(fileName);
         if (url != null) {
             URLConnection connection = url.openConnection();

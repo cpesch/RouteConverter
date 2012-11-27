@@ -20,12 +20,13 @@
 
 package slash.common.system;
 
-import slash.common.type.CompactCalendar;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static java.text.DateFormat.LONG;
+import static slash.common.type.CompactCalendar.UTC;
 
 /**
  * Provides Java and RouteConverter versions.
@@ -106,8 +107,8 @@ public class Version {
     public String getDate() {
         if (date != null) {
             try {
-                DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
-                format.setTimeZone(CompactCalendar.UTC);
+                DateFormat format = DateFormat.getDateInstance(LONG);
+                format.setTimeZone(UTC);
                 Date java = BUILD_DATE.parse(date);
                 return format.format(java);
             } catch (ParseException e) {
