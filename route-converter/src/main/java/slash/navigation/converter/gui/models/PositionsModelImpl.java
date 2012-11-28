@@ -31,7 +31,7 @@ import slash.navigation.converter.gui.helper.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.util.Unit;
+import slash.navigation.util.UnitSystem;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
@@ -230,15 +230,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        Double value = parseDouble(objectValue, stringValue, unit.getElevationName());
-        return unit.valueToDefault(value);
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
+        return unitSystem.valueToDefault(value);
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        Double value = parseDouble(objectValue, stringValue, unit.getSpeedName());
-        return unit.valueToDefault(value);
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
+        return unitSystem.valueToDefault(value);
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {

@@ -62,7 +62,7 @@ import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.models.UnitModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.profileview.ProfileMode;
@@ -208,7 +208,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private CompletePositionService completePositionService = new CompletePositionService();
-    private UnitModel unitModel = new UnitModel();
+    private UnitSystemModel unitSystemModel = new UnitSystemModel();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -386,7 +386,7 @@ public class RouteConverter extends SingleFrameApplication {
                 profileView = new ProfileView();
                 profileView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
-                        getUnitModel().getCurrent(),
+                        getUnitSystemModel().getUnitSystem(),
                         getProfileModePreference());
                 elevationPanel.add(profileView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setTransferHandler(new PanelDropHandler());
@@ -399,9 +399,9 @@ public class RouteConverter extends SingleFrameApplication {
                 log.fine("Initialized elevation divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
 
-                getUnitModel().addChangeListener(new ChangeListener() {
+                getUnitSystemModel().addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent e) {
-                        profileView.setUnit(getUnitModel().getCurrent());
+                        profileView.setUnitSystem(getUnitSystemModel().getUnitSystem());
                     }
                 });
             }
@@ -558,8 +558,8 @@ public class RouteConverter extends SingleFrameApplication {
         return routeServiceOperator;
     }
 
-    public UnitModel getUnitModel() {
-        return unitModel;
+    public UnitSystemModel getUnitSystemModel() {
+        return unitSystemModel;
     }
 
     // dialogs for external components

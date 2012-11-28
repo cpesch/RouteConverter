@@ -24,7 +24,7 @@ import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.profileview.ProfileMode;
-import slash.navigation.util.Unit;
+import slash.navigation.util.UnitSystem;
 
 import static java.lang.String.format;
 
@@ -35,12 +35,12 @@ import static java.lang.String.format;
  */
 
 public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
-    private Unit unit;
+    private UnitSystem unitSystem;
     private ProfileMode profileMode;
 
-    public ProfileModel(PositionsModel positions, PatchedXYSeries series, Unit unit, ProfileMode profileMode) {
+    public ProfileModel(PositionsModel positions, PatchedXYSeries series, UnitSystem unitSystem, ProfileMode profileMode) {
         super(positions, series);
-        this.unit = unit;
+        this.unitSystem = unitSystem;
         this.profileMode = profileMode;
     }
 
@@ -104,23 +104,23 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     public double formatDistance(double distance) {
-        return unit.distanceToUnit(distance / 1000.0);
+        return unitSystem.distanceToUnit(distance / 1000.0);
     }
 
     private Double formatElevation(Double elevation) {
-        return unit.valueToUnit(elevation);
+        return unitSystem.valueToUnit(elevation);
     }
 
     private Double formatSpeed(Double speed) {
-        return unit.valueToUnit(speed);
+        return unitSystem.valueToUnit(speed);
     }
 
-    public Unit getUnit() {
-        return unit;
+    public UnitSystem getUnitSystem() {
+        return unitSystem;
     }
 
-    public void setUnit(Unit unit) {
-        this.unit = unit;
+    public void setUnitSystem(UnitSystem unitSystem) {
+        this.unitSystem = unitSystem;
         handleFullUpdate();
     }
 

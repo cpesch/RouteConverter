@@ -324,7 +324,7 @@ public class ConvertPanel {
                 RouteConverter.getInstance().getFrame().setTitle(title);
             }
         });
-        r.getUnitModel().addChangeListener(new ChangeListener() {
+        r.getUnitSystemModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }

@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.util.Unit;
+import slash.navigation.util.UnitSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -63,22 +63,22 @@ public class PositionHelper {
     public static String formatDistance(Double distance) {
         if (distance == null || distance <= 0.0)
             return "";
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInMeters = unit.valueToUnit(distance);
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        double distanceInMeters = unitSystem.valueToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
-            return format("%d %s", round(distanceInMeters), unit.getElevationName());
-        double distanceInKilometers = unit.distanceToUnit(distance / 1000.0);
+            return format("%d %s", round(distanceInMeters), unitSystem.getElevationName());
+        double distanceInKilometers = unitSystem.distanceToUnit(distance / 1000.0);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
-            return format("%s %s", roundFraction(distanceInKilometers, 1), unit.getDistanceName());
-        return format("%d %s", round(distanceInKilometers), unit.getDistanceName());
+            return format("%s %s", roundFraction(distanceInKilometers, 1), unitSystem.getDistanceName());
+        return format("%d %s", round(distanceInKilometers), unitSystem.getDistanceName());
     }
 
     public static String formatElevation(Double elevation) {
         if (elevation == null)
             return "";
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInUnit = unit.valueToUnit(elevation);
-        return format("%d %s", round(distanceInUnit), unit.getElevationName());
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        double distanceInUnit = unitSystem.valueToUnit(elevation);
+        return format("%d %s", round(distanceInUnit), unitSystem.getElevationName());
     }
 
     public static String extractElevation(NavigationPosition position) {
@@ -101,12 +101,12 @@ public class PositionHelper {
     private static String formatSpeed(Double speed) {
         if (speed == null)
             return "";
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        Double speedInUnit = unit.distanceToUnit(speed);
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double speedInUnit = unitSystem.distanceToUnit(speed);
         if (abs(speedInUnit) < 10.0)
-             return format("%s %s", roundFraction(speedInUnit, 1), unit.getSpeedName());
+             return format("%s %s", roundFraction(speedInUnit, 1), unitSystem.getSpeedName());
         else
-            return format("%d %s", round(speedInUnit), unit.getSpeedName());
+            return format("%d %s", round(speedInUnit), unitSystem.getSpeedName());
     }
 
     public static String extractSpeed(NavigationPosition position) {

@@ -20,16 +20,26 @@
  * /
  */
 
-package slash.navigation.util;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.util.UnitSystem;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Transfer of values between {@link UnitSystem} systems.
+ * Renders the {@link UnitSystem} labels of the unitsystem combo box.
  *
  * @author Christian Pesch
  */
-public interface UnitTransfer {
-    Double distanceToUnit(Double distance);
-    Double distanceToDefault(Double distance);
-    Double valueToUnit(Double value);
-    Double valueToDefault(Double value);
+
+public class UnitSystemListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        UnitSystem unitSystem = UnitSystem.class.cast(value);
+        String text = RouteConverter.getBundle().getString("unitsystem-" + unitSystem.name().toLowerCase());
+        label.setText(text);
+        return label;
+    }
 }

@@ -29,12 +29,12 @@ import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
 import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
 import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
-import slash.navigation.converter.gui.renderer.UnitListCellRenderer;
+import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.common.NumberPattern;
-import slash.navigation.util.Unit;
+import slash.navigation.util.UnitSystem;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -77,9 +77,9 @@ import static slash.navigation.common.NumberPattern.DESCRIPTION_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
 import static slash.navigation.common.NumberPattern.NUMBER_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
-import static slash.navigation.util.Unit.METRIC;
-import static slash.navigation.util.Unit.NAUTIC;
-import static slash.navigation.util.Unit.STATUTE;
+import static slash.navigation.util.UnitSystem.METRIC;
+import static slash.navigation.util.UnitSystem.NAUTIC;
+import static slash.navigation.util.UnitSystem.STATUTE;
 
 /**
  * The misc panel of the route converter user interface.
@@ -98,7 +98,7 @@ public class OptionsPanel {
     private JCheckBox checkBoxRecenterAfterZooming;
     private JComboBox comboboxTravelMode;
     private JComboBox comboboxNumberPattern;
-    private JComboBox comboBoxUnit;
+    private JComboBox comboBoxUnitSystem;
     private JComboBox comboBoxTimeZone;
 
     public OptionsPanel() {
@@ -196,19 +196,19 @@ public class OptionsPanel {
         });
         comboboxNumberPattern.setSelectedItem(r.getNumberPatternPreference());
 
-        comboBoxUnit.setModel(new DefaultComboBoxModel(new Object[]{
+        comboBoxUnitSystem.setModel(new DefaultComboBoxModel(new Object[]{
                 METRIC, STATUTE, NAUTIC
         }));
-        comboBoxUnit.setRenderer(new UnitListCellRenderer());
-        comboBoxUnit.addItemListener(new ItemListener() {
+        comboBoxUnitSystem.setRenderer(new UnitSystemListCellRenderer());
+        comboBoxUnitSystem.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                Unit unit = Unit.class.cast(e.getItem());
-                r.getUnitModel().setCurrent(unit);
+                UnitSystem unitSystem = UnitSystem.class.cast(e.getItem());
+                r.getUnitSystemModel().setUnitSystem(unitSystem);
             }
         });
-        comboBoxUnit.setSelectedItem(r.getUnitModel().getCurrent());
+        comboBoxUnitSystem.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
 
         comboBoxTimeZone.setModel(new DefaultComboBoxModel(getTimeZoneIds()));
         comboBoxTimeZone.addItemListener(new ItemListener() {
@@ -360,8 +360,8 @@ public class OptionsPanel {
         final JLabel label13 = new JLabel();
         this.$$$loadLabelText$$$(label13, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-measures-with-system-of-unit"));
         panel7.add(label13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxUnit = new JComboBox();
-        panel7.add(comboBoxUnit, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxUnitSystem = new JComboBox();
+        panel7.add(comboBoxUnitSystem, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label14 = new JLabel();
         this.$$$loadLabelText$$$(label14, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-tolls"));
         panel3.add(label14, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

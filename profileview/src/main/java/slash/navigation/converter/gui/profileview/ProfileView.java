@@ -37,7 +37,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.ProfileModel;
 import slash.navigation.gui.Application;
-import slash.navigation.util.Unit;
+import slash.navigation.util.UnitSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,10 +68,10 @@ public class ProfileView implements PositionsSelectionModel {
     private ProfileModel profileModel;
 
     public void initialize(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel,
-                           Unit unit, ProfileMode profileMode) {
+                           UnitSystem unitSystem, ProfileMode profileMode) {
         this.positionsModel = positionsModel;
         PatchedXYSeries series = new PatchedXYSeries("Profile");
-        this.profileModel = new ProfileModel(positionsModel, series, unit, profileMode);
+        this.profileModel = new ProfileModel(positionsModel, series, unitSystem, profileMode);
         XYSeriesCollection dataset = new XYSeriesCollection(series);
 
         JFreeChart chart = createChart(dataset);
@@ -128,8 +128,8 @@ public class ProfileView implements PositionsSelectionModel {
         return chartPanel;
     }
 
-    public void setUnit(Unit unit) {
-        profileModel.setUnit(unit);
+    public void setUnitSystem(UnitSystem unitSystem) {
+        profileModel.setUnitSystem(unitSystem);
         updateAxis();
     }
 
@@ -139,16 +139,16 @@ public class ProfileView implements PositionsSelectionModel {
     }
 
     private void updateAxis() {
-        Unit unit = profileModel.getUnit();
+        UnitSystem unitSystem = profileModel.getUnitSystem();
         ProfileMode profileMode = profileModel.getProfileMode();
 
-        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unit.getDistanceName()));
-        String yAxisUnit = profileMode.equals(Elevation) ? unit.getElevationName() : unit.getSpeedName();
+        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unitSystem.getDistanceName()));
+        String yAxisUnit = profileMode.equals(Elevation) ? unitSystem.getElevationName() : unitSystem.getSpeedName();
         String yAxisKey = profileMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
-                "{2} " + yAxisUnit + " @ {1} " + unit.getDistanceName(),
+                "{2} " + yAxisUnit + " @ {1} " + unitSystem.getDistanceName(),
                 getIntegerInstance(), getIntegerInstance()));
     }
 
