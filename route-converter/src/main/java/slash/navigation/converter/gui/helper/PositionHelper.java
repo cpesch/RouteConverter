@@ -37,7 +37,7 @@ import static java.lang.Math.round;
 import static java.lang.String.format;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.fromDate;
 

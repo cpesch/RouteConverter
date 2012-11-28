@@ -40,8 +40,8 @@ import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.util.Positions.extrapolateTime;
-import static slash.navigation.util.RouteComments.formatNumberedPosition;
+import static slash.navigation.base.Positions.extrapolateTime;
+import static slash.navigation.base.RouteComments.formatNumberedPosition;
 
 /**
  * Helps to augment a newly created position with elevation, postal address

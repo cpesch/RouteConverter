@@ -20,6 +20,12 @@
 
 package slash.navigation.common;
 
+import slash.common.io.Transfer;
+
+import java.math.BigDecimal;
+import java.util.prefs.Preferences;
+
+import static java.lang.Double.NaN;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan;
 import static java.lang.Math.ceil;
@@ -33,7 +39,9 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.tan;
 import static slash.common.io.Transfer.ceilFraction;
-import static slash.common.io.Transfer.floorFraction;
+import static slash.common.io.Transfer.roundFraction;
+import static slash.navigation.common.UnitConversion.feetToMeters;
+import static slash.navigation.common.UnitConversion.meterToFeets;
 
 /**
  * Provides navigation conversion functionality.
@@ -41,18 +49,15 @@ import static slash.common.io.Transfer.floorFraction;
  * @author Christian Pesch
  */
 
-public class Conversion {
-    private Conversion() {}
+public class NavigationConversion {
+    private NavigationConversion() {}
+
+    private static final Preferences preferences = Preferences.userNodeForPackage(NavigationConversion.class);
 
     /* 6371014 would be a better value, but this seems to be used by
        Map&Guide Tourenplaner when exporting to XML. */
     private static final double EARTH_RADIUS = 6371000.0;
 
-    private static final double METER_OF_A_FEET = 0.3048;
-    private static final double KILOMETER_OF_A_NAUTIC_MILE = 1.8520043;
-    private static final double KILOMETER_OF_A_STATUTE_MILE = 1.609344;
-    private static final double METERS_OF_A_KILOMETER = 1000.0;
-    private static final double SECONDS_OF_AN_HOUR = 3600.0;
     private static final double ALTITUDE_146m = 210945416903L;
     private static final double ELEVATION_146m = 146;
     private static final double ALTITUDE_6m = 210945415755L;
@@ -278,7 +283,6 @@ public class Conversion {
         return new double[]{right, height};
     }
 
-
     public static double bcrAltitudeToElevationMeters(long altitude) {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));
@@ -293,51 +297,66 @@ public class Conversion {
         return (long) floor(altitude);
     }
 
-
-    public static double ddmm2degrees(double ddmm) {
-        double decimal = ddmm / 100.0;
-        int asInt = (int) decimal;
-        double behindDot = floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
-        return asInt + behindDot;
+    private static boolean isReduceDecimalPlaceToReasonablePrecision() {
+        return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
     }
 
-    public static double degrees2ddmm(double decimal) {
-        int asInt = (int) decimal;
-        double behindDot = ceilFraction(decimal - asInt, 7);
-        double behindDdMm = ceilFraction(behindDot * 60.0, 4);
-        return asInt * 100.0 + behindDdMm;
+    public static double formatDouble(Double aDouble, int maximumFractionCount) {
+        if (aDouble == null)
+            return NaN;
+        if (isReduceDecimalPlaceToReasonablePrecision())
+            aDouble = roundFraction(aDouble, maximumFractionCount);
+        return aDouble;
+    }
+
+    public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
+        if (aDouble == null)
+            return null;
+        if (isReduceDecimalPlaceToReasonablePrecision())
+            aDouble = roundFraction(aDouble, maximumFractionCount);
+        return BigDecimal.valueOf(aDouble);
     }
 
 
-    public static double feetToMeters(double feet) {
-        return feet * METER_OF_A_FEET;
+    private static String formatDoubleAsString(Double aDouble, int maximumFractionCount) {
+        if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
+            aDouble = roundFraction(aDouble, maximumFractionCount);
+        return Transfer.formatDoubleAsString(aDouble);
     }
 
-    public static double meterToFeets(double meter) {
-        return meter / METER_OF_A_FEET;
+    public static String formatPositionAsString(Double longitudeOrLatitude) {
+        return formatDoubleAsString(longitudeOrLatitude, 7);
     }
 
-    public static double nauticMilesToKilometer(double miles) {
-        return miles * KILOMETER_OF_A_NAUTIC_MILE;
+    public static String formatElevationAsString(Double elevation) {
+        return formatDoubleAsString(elevation, 2);
     }
 
-    public static double kilometerToNauticMiles(double kilometer) {
-        return kilometer / KILOMETER_OF_A_NAUTIC_MILE;
+    public static String formatAccuracyAsString(Double elevation) {
+        return formatDoubleAsString(elevation, 6);
     }
 
-    public static double statuteMilesToKilometer(double miles) {
-        return miles * KILOMETER_OF_A_STATUTE_MILE;
+    public static String formatHeadingAsString(Double elevation) {
+        return formatDoubleAsString(elevation, 1);
     }
 
-    public static double kilometerToStatuteMiles(double kilometer) {
-        return kilometer / KILOMETER_OF_A_STATUTE_MILE;
+    public static String formatSpeedAsString(Double speed) {
+        return formatDoubleAsString(speed, 2);
     }
 
-    public static double msToKmh(double metersPerSecond) {
-        return metersPerSecond * SECONDS_OF_AN_HOUR / METERS_OF_A_KILOMETER;
+    public static BigDecimal formatPosition(Double longitudeOrLatitude) {
+        return formatBigDecimal(longitudeOrLatitude, 7);
     }
 
-    public static double kmhToMs(double kilometersPerHour) {
-        return kilometersPerHour * METERS_OF_A_KILOMETER / SECONDS_OF_AN_HOUR;
+    public static BigDecimal formatElevation(Double elevation) {
+        return formatBigDecimal(elevation, 1);
+    }
+
+    public static BigDecimal formatHeading(Double heading) {
+        return formatBigDecimal(heading, 1);
+    }
+
+    public static BigDecimal formatSpeed(Double speed) {
+        return formatBigDecimal(speed, 1);
     }
 }

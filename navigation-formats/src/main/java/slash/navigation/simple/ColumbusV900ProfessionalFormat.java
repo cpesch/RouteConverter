@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;

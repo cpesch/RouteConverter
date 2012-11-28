@@ -22,7 +22,7 @@ package slash.navigation.itn;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.util.RouteComments;
+import slash.navigation.base.RouteComments;
 
 import java.io.IOException;
 

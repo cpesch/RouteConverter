@@ -25,7 +25,7 @@ import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
-import slash.navigation.util.RouteComments;
+import slash.navigation.base.RouteComments;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.util.RouteComments.TRIPMASTER_TIME;
+import static slash.navigation.base.RouteComments.TRIPMASTER_TIME;
 
 /**
  * Reads and writes Tom Tom Route (.itn) files.

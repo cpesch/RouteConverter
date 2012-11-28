@@ -22,12 +22,9 @@ package slash.common.io;
 
 import org.junit.Test;
 
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.common.io.Transfer.formatIntAsString;
@@ -104,20 +101,6 @@ public class TransferTest {
         assertDoubleEquals(0.00001, parseDouble("0.00001"));
         assertDoubleEquals(0.00001, parseDouble("0.1E-4"));
         assertDoubleEquals(0.000001, parseDouble("0.1E-5"));
-    }
-
-    @Test
-    public void testFormatDoubleAsBigDecimal() {
-        assertEquals(new BigDecimal("1.0"), formatBigDecimal(1.0, 5));
-        assertEquals(new BigDecimal("1.5"), formatBigDecimal(1.5, 5));
-        assertEquals(new BigDecimal("1.05"), formatBigDecimal(1.05, 5));
-        assertEquals(new BigDecimal("1.005"), formatBigDecimal(1.005, 5));
-        assertEquals(new BigDecimal("1.00004"), formatBigDecimal(1.00004, 5));
-        assertEquals(new BigDecimal("1.00044"), formatBigDecimal(1.00044, 5));
-        assertEquals(new BigDecimal("1.00045"), formatBigDecimal(1.00045, 5));
-        assertEquals(new BigDecimal("1.00005"), formatBigDecimal(1.00005, 5));
-        assertEquals(new BigDecimal("1.000004"), formatBigDecimal(1.000004, 6));
-        assertEquals(new BigDecimal("1.000005"), formatBigDecimal(1.000005, 6));
     }
 
     @Test

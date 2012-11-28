@@ -36,8 +36,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.RouteComments.formatNumberedPosition;
+import static slash.navigation.base.Positions.center;
+import static slash.navigation.base.RouteComments.formatNumberedPosition;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after

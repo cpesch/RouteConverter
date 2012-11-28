@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.common.Conversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
 
 public class NmeaFormatTest {
     private NmeaFormat format = new NmeaFormat();

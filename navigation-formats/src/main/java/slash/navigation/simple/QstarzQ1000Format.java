@@ -39,11 +39,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
-import static slash.common.io.Transfer.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;

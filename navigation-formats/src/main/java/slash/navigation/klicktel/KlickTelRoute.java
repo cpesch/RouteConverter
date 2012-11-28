@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.util.RouteComments.createRouteName;
+import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
  * A klickTel Routenplaner 2009 (.krt) route.

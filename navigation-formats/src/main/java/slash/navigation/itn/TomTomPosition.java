@@ -26,7 +26,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.nmea.NmeaPosition;
 
-import static slash.navigation.util.RouteComments.parseComment;
+import static slash.navigation.base.RouteComments.parseComment;
 
 /**
  * Represents a position in a Tom Tom Route (.itn) file.

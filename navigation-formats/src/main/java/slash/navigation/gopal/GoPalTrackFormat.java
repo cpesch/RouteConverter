@@ -39,11 +39,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatAccuracyAsString;
-import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.formatPositionAsString;
-import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;

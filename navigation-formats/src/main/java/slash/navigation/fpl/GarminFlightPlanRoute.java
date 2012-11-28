@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.util.RouteComments.createRouteName;
+import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
  * A Garmin Flight Plan (.fpl) route.

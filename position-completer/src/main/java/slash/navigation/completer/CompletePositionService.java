@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatElevation;
 
 /**
  * Helps to complement positions with elevation, postal address and populated place information.

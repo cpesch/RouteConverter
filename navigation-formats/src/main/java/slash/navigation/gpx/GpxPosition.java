@@ -36,8 +36,8 @@ import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
-import static slash.navigation.util.RouteComments.parseComment;
-import static slash.navigation.util.RouteComments.parseTripmasterHeading;
+import static slash.navigation.base.RouteComments.parseComment;
+import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 
 /**
  * Represents a position in a GPS Exchange Format (.gpx) file.
@@ -91,8 +91,8 @@ public class GpxPosition extends Wgs84Position {
           else {
             matcher = GpxFormat.TRIPMASTER_DESCRIPTION_PATTERN.matcher(comment);
             if (matcher.matches()) {
-                this.comment = Conversion.trim(matcher.group(1));
-                this.reason = Conversion.trim(matcher.group(2));
+                this.comment = trim(matcher.group(1));
+                this.reason = trim(matcher.group(2));
             }
         } */
     }

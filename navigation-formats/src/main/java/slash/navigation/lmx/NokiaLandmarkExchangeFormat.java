@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.common.io.Transfer.formatFloat;
-import static slash.common.io.Transfer.formatPositionAsDouble;
+import static slash.navigation.common.NavigationConversion.formatDouble;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -137,8 +137,8 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             if (coordinatesType == null)
                 coordinatesType = objectFactory.createCoordinatesType();
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
-            coordinatesType.setLatitude(formatPositionAsDouble(position.getLatitude()));
-            coordinatesType.setLongitude(formatPositionAsDouble(position.getLongitude()));
+            coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
+            coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
             coordinatesType.setTimeStamp(formatTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 

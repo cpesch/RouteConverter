@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;

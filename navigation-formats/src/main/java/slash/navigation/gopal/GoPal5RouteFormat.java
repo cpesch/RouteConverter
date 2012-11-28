@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.formatPosition;
-import static slash.common.io.Transfer.formatSpeed;
+import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeed;
 import static slash.navigation.gopal.GoPalUtil.marshal5;
 import static slash.navigation.gopal.GoPalUtil.unmarshal5;
 

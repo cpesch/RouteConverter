@@ -35,8 +35,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.io.Transfer.formatElevation;
-import static slash.common.io.Transfer.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;

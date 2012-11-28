@@ -22,8 +22,8 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
-import static slash.navigation.common.Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
-import static slash.navigation.common.Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
+import static slash.navigation.common.NavigationConversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
+import static slash.navigation.common.NavigationConversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
 
 /**
  * Represents a Gauss Krueger position in a route.

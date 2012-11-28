@@ -50,7 +50,7 @@ import java.util.List;
 
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 

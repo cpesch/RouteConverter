@@ -29,7 +29,7 @@ import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import static slash.navigation.util.RouteComments.shortenRouteName;
+import static slash.navigation.base.RouteComments.shortenRouteName;
 
 /**
  * Updates a {@link JMenu} with the position lists from {@link PositionsTableColumnModel}.

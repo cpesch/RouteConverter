@@ -36,10 +36,10 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.util.Positions.contains;
-import static slash.navigation.util.Positions.getSignificantPositions;
-import static slash.navigation.util.Positions.northEast;
-import static slash.navigation.util.Positions.southWest;
+import static slash.navigation.base.Positions.contains;
+import static slash.navigation.base.Positions.getSignificantPositions;
+import static slash.navigation.base.Positions.northEast;
+import static slash.navigation.base.Positions.southWest;
 
 /**
  * Helps to reduce the amount of positions for rending routes, tracks, waypoint lists.

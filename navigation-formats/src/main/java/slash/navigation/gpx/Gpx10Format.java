@@ -34,14 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
-import static slash.common.io.Transfer.formatElevation;
-import static slash.common.io.Transfer.formatHeading;
-import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatHeading;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.common.io.Transfer.formatInt;
-import static slash.common.io.Transfer.formatPosition;
-import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -49,7 +49,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
-import static slash.navigation.common.Conversion.kmhToMs;
+import static slash.navigation.common.UnitConversion.kmhToMs;
 
 /**
  * Reads and writes GPS Exchange Format 1.0 (.gpx) files.

@@ -47,7 +47,7 @@ import slash.navigation.tcx.TcxRoute;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.util.RouteComments.createRouteName;
+import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
  * Represents the simple most route.

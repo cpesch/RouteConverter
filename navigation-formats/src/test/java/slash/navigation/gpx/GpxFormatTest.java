@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 
 public class GpxFormatTest {
 

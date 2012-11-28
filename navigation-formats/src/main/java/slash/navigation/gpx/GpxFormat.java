@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.common.Conversion.msToKmh;
+import static slash.navigation.common.UnitConversion.msToKmh;
 
 /**
  * The base of all GPS Exchange formats.

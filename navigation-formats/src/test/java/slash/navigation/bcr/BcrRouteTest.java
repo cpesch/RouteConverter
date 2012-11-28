@@ -22,7 +22,7 @@ package slash.navigation.bcr;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.util.RouteComments;
+import slash.navigation.base.RouteComments;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,7 +40,7 @@ import static slash.navigation.common.NumberPattern.DESCRIPTION_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
 import static slash.navigation.common.NumberPattern.NUMBER_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
-import static slash.navigation.util.RouteComments.getNumberedPosition;
+import static slash.navigation.base.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
     BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());

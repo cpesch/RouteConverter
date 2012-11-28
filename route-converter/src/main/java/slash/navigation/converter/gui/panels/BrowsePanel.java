@@ -102,7 +102,7 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.util.RouteComments.createRouteDescription;
+import static slash.navigation.base.RouteComments.createRouteDescription;
 
 /**
  * The browse panel of the route converter user interface.

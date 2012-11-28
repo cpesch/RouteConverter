@@ -18,14 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.navigation.base;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.util.Positions.asPosition;
-import static slash.navigation.util.Positions.contains;
+import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.Positions.contains;
 
 public class PositionsTest {
     @Test

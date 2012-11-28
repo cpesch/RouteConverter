@@ -31,9 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
-import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -52,7 +50,6 @@ import static java.lang.Math.round;
 public class Transfer {
     private Transfer() {}
 
-    private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
     public static final String ISO_LATIN1_ENCODING = "ISO8859-1";
     public static final String UTF8_ENCODING = "UTF-8";
@@ -130,46 +127,6 @@ public class Transfer {
         return trimmed;
     }
 
-    private static boolean isReduceDecimalPlaceToReasonablePrecision() {
-        return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
-    }
-
-    public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
-        if (aDouble == null)
-            return null;
-        if (isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return BigDecimal.valueOf(aDouble);
-    }
-
-    public static double formatDouble(Double aDouble, int maximumFractionCount) {
-        if (aDouble == null)
-            return NaN;
-        if (isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return aDouble;
-    }
-
-    public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        return formatBigDecimal(longitudeOrLatitude, 7);
-    }
-
-    public static double formatPositionAsDouble(Double longitudeOrLatitude) {
-        return formatDouble(longitudeOrLatitude, 7);
-    }
-
-    public static BigDecimal formatElevation(Double elevation) {
-        return formatBigDecimal(elevation, 1);
-    }
-
-    public static BigDecimal formatHeading(Double heading) {
-        return formatBigDecimal(heading, 1);
-    }
-
-    public static BigDecimal formatSpeed(Double speed) {
-        return formatBigDecimal(speed, 1);
-    }
-
     public static Double formatDouble(BigDecimal aBigDecimal) {
         return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }
@@ -203,32 +160,6 @@ public class Transfer {
         while (buffer.length() - index > exactFractionCount + 1)
             buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
-    }
-
-    public static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
-        if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return formatDoubleAsString(aDouble);
-    }
-
-    public static String formatPositionAsString(Double longitudeOrLatitude) {
-        return formatDoubleAsStringWithMaximumFractionCount(longitudeOrLatitude, 7);
-    }
-
-    public static String formatElevationAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
-    }
-
-    public static String formatAccuracyAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 6);
-    }
-
-    public static String formatHeadingAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 1);
-    }
-
-    public static String formatSpeedAsString(Double speed) {
-        return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
     }
 
     public static String formatIntAsString(Integer anInteger) {

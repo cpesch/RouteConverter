@@ -22,11 +22,11 @@
 
 package slash.navigation.common;
 
-import static slash.navigation.common.Conversion.kilometerToNauticMiles;
-import static slash.navigation.common.Conversion.kilometerToStatuteMiles;
-import static slash.navigation.common.Conversion.meterToFeets;
-import static slash.navigation.common.Conversion.nauticMilesToKilometer;
-import static slash.navigation.common.Conversion.statuteMilesToKilometer;
+import static slash.navigation.common.UnitConversion.kilometerToNauticMiles;
+import static slash.navigation.common.UnitConversion.kilometerToStatuteMiles;
+import static slash.navigation.common.UnitConversion.meterToFeets;
+import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.statuteMilesToKilometer;
 
 /**
  * Enumeration of supported unit systems.

@@ -69,6 +69,7 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
@@ -91,10 +92,10 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.util.Positions.asPosition;
-import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.Positions.northEast;
-import static slash.navigation.util.Positions.southWest;
+import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.Positions.center;
+import static slash.navigation.base.Positions.northEast;
+import static slash.navigation.base.Positions.southWest;
 
 /**
  * Base implementation for a component that displays the positions of a position list on a map.
@@ -490,7 +491,7 @@ public abstract class BaseMapView implements MapView {
             e.printStackTrace();
             final String message = "Probably faulty network setup: " + e.getLocalizedMessage() + ".\nPlease check your network settings.";
             log.severe(message);
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     JOptionPane.showMessageDialog(getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -1134,7 +1135,7 @@ public abstract class BaseMapView implements MapView {
             final int row = parseInt(insertPositionMatcher.group(1)) + 1;
             final Double latitude = parseDouble(insertPositionMatcher.group(2));
             final Double longitude = parseDouble(insertPositionMatcher.group(3));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
                 }
@@ -1147,7 +1148,7 @@ public abstract class BaseMapView implements MapView {
             final int row = getAddRow();
             final Double latitude = parseDouble(addPositionMatcher.group(1));
             final Double longitude = parseDouble(addPositionMatcher.group(2));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
                 }
@@ -1160,7 +1161,7 @@ public abstract class BaseMapView implements MapView {
             final int row = getMoveRow(parseInt(movePositionMatcher.group(1)));
             final Double latitude = parseDouble(movePositionMatcher.group(2));
             final Double longitude = parseDouble(movePositionMatcher.group(3));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     movePosition(row, longitude, latitude);
                 }
@@ -1173,7 +1174,7 @@ public abstract class BaseMapView implements MapView {
             final Double latitude = parseDouble(removePositionMatcher.group(1));
             final Double longitude = parseDouble(removePositionMatcher.group(2));
             final Double threshold = parseDouble(removePositionMatcher.group(3));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     removePosition(longitude, latitude, threshold);
                 }
@@ -1187,7 +1188,7 @@ public abstract class BaseMapView implements MapView {
             final Double longitude = parseDouble(selectPositionMatcher.group(2));
             final Double threshold = parseDouble(selectPositionMatcher.group(3));
             final Boolean replaceSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     selectPosition(longitude, latitude, threshold, replaceSelection);
                 }
@@ -1202,7 +1203,7 @@ public abstract class BaseMapView implements MapView {
             final Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
             final Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
             final Boolean replaceSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
                             asPosition(longitudeSouthWest, latitudeSouthWest), replaceSelection);
@@ -1260,7 +1261,7 @@ public abstract class BaseMapView implements MapView {
                 row = positions.indexOf(before) + 1;
             }
             final BaseRoute route = parseRoute(coordinates, before, after);
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     insertPositions(row, route);
                     complementPositions(row, route);

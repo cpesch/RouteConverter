@@ -107,7 +107,6 @@ import slash.navigation.tour.TourFormat;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.url.GoogleMapsUrlFormat;
-import slash.navigation.util.Positions;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
@@ -124,7 +123,8 @@ import static java.lang.Math.max;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.util.Positions.contains;
+import static slash.navigation.base.Positions.contains;
+import static slash.navigation.base.Positions.getSignificantPositions;
 
 /**
  * The base of all routes formats.
@@ -277,7 +277,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int[] getInsignificantPositions(double threshold) {
-        int[] significantPositions = Positions.getSignificantPositions(getPositions(), threshold);
+        int[] significantPositions = getSignificantPositions(getPositions(), threshold);
         BitSet bitset = new BitSet(getPositionCount());
         for (int significantPosition : significantPositions)
             bitset.set(significantPosition);

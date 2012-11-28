@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static slash.navigation.util.Positions.asPosition;
+import static slash.navigation.base.Positions.asPosition;
 
 public class PositionReducerTest {
     private PositionReducer reducer = new PositionReducer(new PositionReducer.Callback() {

@@ -40,8 +40,8 @@ import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.common.Conversion.kilometerToNauticMiles;
-import static slash.navigation.common.Conversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.kilometerToNauticMiles;
+import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.

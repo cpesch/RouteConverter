@@ -50,8 +50,8 @@ import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.util.Positions.intrapolateTime;
-import static slash.navigation.util.RouteComments.getNumberedPosition;
+import static slash.navigation.base.Positions.intrapolateTime;
+import static slash.navigation.base.RouteComments.getNumberedPosition;
 
 /**
  * Helps to augment a batch of positions with geocoded coordinates, elevation,

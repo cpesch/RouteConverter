@@ -25,7 +25,7 @@ import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
 
-import static slash.navigation.util.RouteComments.parseComment;
+import static slash.navigation.base.RouteComments.parseComment;
 
 /**
  * Represents a WGS84 position in a route.

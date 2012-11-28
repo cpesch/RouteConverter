@@ -43,10 +43,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.util.Positions.center;
+import static slash.navigation.base.Positions.center;
 
 /**
  * Reads and writes Top50 OVL ASCII (.ovl) files.
