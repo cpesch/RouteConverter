@@ -20,7 +20,7 @@
  * /
  */
 
-package slash.navigation.util;
+package slash.navigation.common;
 
 import static slash.navigation.common.Conversion.kilometerToNauticMiles;
 import static slash.navigation.common.Conversion.kilometerToStatuteMiles;

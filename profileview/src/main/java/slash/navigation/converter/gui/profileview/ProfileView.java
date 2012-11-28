@@ -37,7 +37,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.ProfileModel;
 import slash.navigation.gui.Application;
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import javax.swing.*;
 import java.awt.*;

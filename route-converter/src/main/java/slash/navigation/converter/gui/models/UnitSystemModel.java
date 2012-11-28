@@ -22,13 +22,13 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.util.UnitSystem.METRIC;
+import static slash.navigation.common.UnitSystem.METRIC;
 
 /**
  * A model for {@link UnitSystem}.

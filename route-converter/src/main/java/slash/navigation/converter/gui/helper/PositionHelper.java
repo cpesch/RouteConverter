@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;

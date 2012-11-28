@@ -24,7 +24,7 @@ import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.profileview.ProfileMode;
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import static java.lang.String.format;
 

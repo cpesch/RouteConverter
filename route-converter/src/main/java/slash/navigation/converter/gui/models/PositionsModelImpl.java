@@ -31,7 +31,7 @@ import slash.navigation.converter.gui.helper.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;

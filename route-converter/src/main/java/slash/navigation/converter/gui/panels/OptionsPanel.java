@@ -34,7 +34,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.common.NumberPattern;
-import slash.navigation.util.UnitSystem;
+import slash.navigation.common.UnitSystem;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -77,9 +77,9 @@ import static slash.navigation.common.NumberPattern.DESCRIPTION_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
 import static slash.navigation.common.NumberPattern.NUMBER_ONLY;
 import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
-import static slash.navigation.util.UnitSystem.METRIC;
-import static slash.navigation.util.UnitSystem.NAUTIC;
-import static slash.navigation.util.UnitSystem.STATUTE;
+import static slash.navigation.common.UnitSystem.METRIC;
+import static slash.navigation.common.UnitSystem.NAUTIC;
+import static slash.navigation.common.UnitSystem.STATUTE;
 
 /**
  * The misc panel of the route converter user interface.

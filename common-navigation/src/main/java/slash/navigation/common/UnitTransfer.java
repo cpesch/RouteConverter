@@ -20,7 +20,7 @@
  * /
  */
 
-package slash.navigation.util;
+package slash.navigation.common;
 
 /**
  * Transfer of values between {@link UnitSystem} systems.
