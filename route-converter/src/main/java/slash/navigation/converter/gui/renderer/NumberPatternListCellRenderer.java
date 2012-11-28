@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.util.NumberPattern;
+import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.awt.*;

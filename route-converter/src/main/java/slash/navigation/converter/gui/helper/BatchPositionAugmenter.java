@@ -30,7 +30,7 @@ import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.util.NumberPattern;
+import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.text.MessageFormat;
@@ -460,8 +460,6 @@ public class BatchPositionAugmenter {
     public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-
-        processNumbers(positionsTable, positionsModel, selectedRows,
-                digitCount, numberPattern, COORDINATE_PREDICATE);
+        processNumbers(positionsTable, positionsModel, selectedRows, digitCount, numberPattern, COORDINATE_PREDICATE);
     }
 }

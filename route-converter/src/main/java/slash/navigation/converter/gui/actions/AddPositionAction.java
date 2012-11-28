@@ -27,7 +27,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.Range;
-import slash.navigation.util.NumberPattern;
+import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.util.ArrayList;

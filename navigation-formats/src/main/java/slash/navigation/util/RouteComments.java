@@ -27,6 +27,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NumberPattern;
 import slash.navigation.itn.TomTomPosition;
 
 import java.text.DateFormat;

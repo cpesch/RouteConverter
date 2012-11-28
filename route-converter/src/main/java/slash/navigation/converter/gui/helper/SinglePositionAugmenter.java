@@ -25,7 +25,7 @@ import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.util.NumberPattern;
+import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.io.IOException;

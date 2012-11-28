@@ -18,10 +18,10 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.navigation.common;
 
 /**
- * Enumeration of the ways to add numbers to {@link slash.navigation.base.BaseNavigationPosition}s.
+ * Enumeration of the ways to add numbers to the comments of positions.
  *
  * DESCRIPTION_ONLY: Hamburg
  *

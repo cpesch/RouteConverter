@@ -76,7 +76,7 @@ import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.rest.Credentials;
-import slash.navigation.util.NumberPattern;
+import slash.navigation.common.NumberPattern;
 
 import javax.help.CSH;
 import javax.swing.*;
@@ -145,7 +145,7 @@ import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
+import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 
 /**
  * A small graphical user interface for the route conversion.

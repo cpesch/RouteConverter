@@ -36,10 +36,10 @@ import static slash.common.TestCase.assertNotNull;
 import static slash.common.TestCase.assertNull;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.util.NumberPattern.DESCRIPTION_ONLY;
-import static slash.navigation.util.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
-import static slash.navigation.util.NumberPattern.NUMBER_ONLY;
-import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
+import static slash.navigation.common.NumberPattern.DESCRIPTION_ONLY;
+import static slash.navigation.common.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
+import static slash.navigation.common.NumberPattern.NUMBER_ONLY;
+import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
