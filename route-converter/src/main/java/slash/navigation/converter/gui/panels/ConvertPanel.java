@@ -350,7 +350,8 @@ public class ConvertPanel {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(ON);
-        tablePositions.setTransferHandler(new TableDragAndDropHandler());
+        TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());
+        tablePositions.setTransferHandler(dropHandler);
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -429,7 +430,7 @@ public class ConvertPanel {
         comboBoxChoosePositionListCharacteristics.setModel(getCharacteristicsModel());
         comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
-        convertPanel.setTransferHandler(new PanelDropHandler());
+        convertPanel.setTransferHandler(dropHandler);
 
         // make sure that Insert works directly after the program start on an empty position list
         invokeLater(new Runnable() {
@@ -1339,9 +1340,14 @@ public class ConvertPanel {
     }
 
     private class TableDragAndDropHandler extends TransferHandler {
+        private TransferHandler delegate;
+
+        TableDragAndDropHandler(TransferHandler delegate) {
+            this.delegate = delegate;
+        }
+
         public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(positionFlavor) ||
-                    convertPanel.getTransferHandler().canImport(support);
+            return support.isDataFlavorSupported(positionFlavor) || delegate.canImport(support);
         }
 
         private int[] toRows(List<NavigationPosition> positions) {
@@ -1353,12 +1359,12 @@ public class ConvertPanel {
         }
 
         private void moveRows(int[] rows, TransferSupport support) {
-            JTable table = (JTable) support.getComponent();
-            JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation();
-            int index = dropLocation.getRow();
-            int max = table.getModel().getRowCount();
-            if (index < 0 || index > max)
-                index = max;
+            JTable table = getPositionsView();
+            int index = support.getDropLocation() instanceof JTable.DropLocation ?
+                    ((JTable.DropLocation) support.getDropLocation()).getRow() : MAX_VALUE;
+            int rowCount = table.getModel().getRowCount();
+            if (index < 0 || index > rowCount)
+                index = rowCount;
 
             if (rows[0] > index) {
                 getPositionsModel().up(rows, rows[0] - index);
@@ -1389,7 +1395,7 @@ public class ConvertPanel {
             } catch (IOException e) {
                 // intentionally left empty
             }
-            return convertPanel.getTransferHandler().importData(support);
+            return delegate.importData(support);
         }
 
         public int getSourceActions(JComponent comp) {
@@ -1402,5 +1408,4 @@ public class ConvertPanel {
                     getPositionsModel().getRoute().getFormat());
         }
     }
-
 }
