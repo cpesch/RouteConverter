@@ -47,14 +47,14 @@ import static slash.common.io.Transfer.trim;
  */
 public abstract class RouteComments {
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteComments.class);
-    private static final String MAXIMUM_ROUTE_NAME_LENGTH_PREFERENCE = "maximumRouteNameLength";
+    private static final String MAXIMUM_ROUTE_NAME_MENU_TEXT_LENGTH_PREFERENCE = "maximumRouteNameMenuTextLength";
 
     public static String shortenRouteName(BaseRoute route) {
         String result = "?";
         if (route != null) {
             if (route.getName() != null)
                 result = route.getName();
-            int maximumRouteNameLength = preferences.getInt(MAXIMUM_ROUTE_NAME_LENGTH_PREFERENCE, 50);
+            int maximumRouteNameLength = preferences.getInt(MAXIMUM_ROUTE_NAME_MENU_TEXT_LENGTH_PREFERENCE, 45);
             if (result.length() > maximumRouteNameLength)
                 result = result.substring(0, maximumRouteNameLength) + "...";
         }
