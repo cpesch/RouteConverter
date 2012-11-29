@@ -180,6 +180,7 @@ import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.increment;
+import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -1370,8 +1371,8 @@ public class ConvertPanel {
                 getPositionsModel().up(rows, rows[0] - index);
                 JTableHelper.selectPositions(table, index, index + rows.length - 1);
             } else {
-                getPositionsModel().down(Range.revert(rows), index - rows[0] - rows.length);
-                JTableHelper.selectPositions(table, index - rows.length, index - 1);
+                getPositionsModel().down(revert(rows), index - rows[0] - rows.length + 1);
+                JTableHelper.selectPositions(table, index - rows.length + 1, index);
             }
         }
 
