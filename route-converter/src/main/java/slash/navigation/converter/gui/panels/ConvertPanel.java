@@ -203,6 +203,7 @@ public class ConvertPanel {
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
     private LengthCalculator lengthCalculator;
+    private boolean isUpdateing = false;
 
     private JPanel convertPanel;
     private JLabel labelFormat;
@@ -940,6 +941,9 @@ public class ConvertPanel {
     private int[] selectedPositionIndices = null;
 
     private void handlePositionsUpdate() {
+        if (isUpdateing)
+            return;
+        
         int[] selectedRows = tablePositions.getSelectedRows();
         // avoid firing events of the selection hasn't changed
         if (Arrays.equals(this.selectedPositionIndices, selectedRows))
@@ -1079,6 +1083,7 @@ public class ConvertPanel {
 
     private void selectPositions(int[] selectedPositions) {
         clearSelection();
+        tablePositions.getSelectionModel().setValueIsAdjusting(true);
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
@@ -1091,6 +1096,7 @@ public class ConvertPanel {
                 return false;
             }
         }).performMonotonicallyIncreasing();
+        tablePositions.getSelectionModel().setValueIsAdjusting(false);
     }
 
     public int selectPositionsWithinDistanceToPredecessor(int distance) {
