@@ -49,6 +49,7 @@ import static slash.common.io.Transfer.trim;
 public class UndoPositionsModel implements PositionsModel {
     private final PositionsModelImpl delegate = new PositionsModelImpl();
     private final UndoManager undoManager;
+    private boolean isAdjusting = false;
 
     public UndoPositionsModel(UndoManager undoManager) {
         this.undoManager = undoManager;
@@ -205,7 +206,7 @@ public class UndoPositionsModel implements PositionsModel {
                 removed.add(0, getRoute().remove(index));
             }
             public void performOnRange(int firstIndex, int lastIndex) {
-                if (fireEvent)
+                if (fireEvent && ! isAdjusting)
                     delegate.fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, removed);
@@ -276,5 +277,12 @@ public class UndoPositionsModel implements PositionsModel {
 
     void bottomUp(int[] rows) {
         delegate.bottomUp(rows);
+    }
+
+    @Override
+    public void setValueIsAdjusting(boolean valueIsAdjusting) {
+        isAdjusting = valueIsAdjusting;
+        if (! isAdjusting)
+            delegate.fireTableDataChanged();
     }
 }

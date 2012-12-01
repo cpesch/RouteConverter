@@ -1079,6 +1079,7 @@ public class ConvertPanel {
 
     private void selectPositions(int[] selectedPositions) {
         clearSelection();
+        tablePositions.getSelectionModel().setValueIsAdjusting(true);
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
@@ -1091,6 +1092,7 @@ public class ConvertPanel {
                 return false;
             }
         }).performMonotonicallyIncreasing();
+        tablePositions.getSelectionModel().setValueIsAdjusting(false);
     }
 
     public int selectPositionsWithinDistanceToPredecessor(int distance) {

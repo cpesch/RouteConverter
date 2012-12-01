@@ -68,6 +68,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private BaseRoute route;
+    private boolean isAdjusting = false;
 
     public BaseRoute getRoute() {
         return route;
@@ -389,5 +390,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
         fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
+    }
+
+    @Override
+    public void setValueIsAdjusting(boolean valueIsAdjusting) {
+        isAdjusting = valueIsAdjusting;
+        if (!isAdjusting)
+            super.fireTableDataChanged();
     }
 }
