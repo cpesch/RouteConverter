@@ -97,7 +97,6 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.ContinousRange;
-import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;

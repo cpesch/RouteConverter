@@ -26,12 +26,12 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.common.UnitSystem;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
@@ -68,7 +68,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private BaseRoute route;
-    private boolean isAdjusting = false;
 
     public BaseRoute getRoute() {
         return route;
@@ -392,10 +391,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
     }
 
-    @Override
     public void setValueIsAdjusting(boolean valueIsAdjusting) {
-        isAdjusting = valueIsAdjusting;
-        if (!isAdjusting)
+        if (!valueIsAdjusting)
             super.fireTableDataChanged();
     }
 }
