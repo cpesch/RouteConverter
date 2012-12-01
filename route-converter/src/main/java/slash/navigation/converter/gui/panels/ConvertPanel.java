@@ -203,7 +203,6 @@ public class ConvertPanel {
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
     private LengthCalculator lengthCalculator;
-    private boolean isUpdateing = false;
 
     private JPanel convertPanel;
     private JLabel labelFormat;
@@ -941,9 +940,6 @@ public class ConvertPanel {
     private int[] selectedPositionIndices = null;
 
     private void handlePositionsUpdate() {
-        if (isUpdateing)
-            return;
-        
         int[] selectedRows = tablePositions.getSelectedRows();
         // avoid firing events of the selection hasn't changed
         if (Arrays.equals(this.selectedPositionIndices, selectedRows))
