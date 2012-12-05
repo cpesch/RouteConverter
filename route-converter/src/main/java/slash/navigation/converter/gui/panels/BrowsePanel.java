@@ -111,7 +111,7 @@ import static slash.navigation.base.RouteComments.createRouteDescription;
  * @author Christian Pesch
  */
 
-public class BrowsePanel {
+public class BrowsePanel implements PanelInTab {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
@@ -258,6 +258,10 @@ public class BrowsePanel {
         return browsePanel;
     }
 
+    public JComponent getFocusComponent() {
+        return tableRoutes;
+    }
+
     public JButton getDefaultButton() {
         return buttonAddRouteFromFile;
     }
@@ -275,7 +279,7 @@ public class BrowsePanel {
 
     private void handlePositionListUpdate() {
         int[] selectedRows = tableRoutes.getSelectedRows();
-        if(selectedRows.length == 0)
+        if (selectedRows.length == 0)
             return;
         RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
         URL url;

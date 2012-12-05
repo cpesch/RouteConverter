@@ -32,6 +32,7 @@ import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.actions.AboutAction;
 import slash.navigation.converter.gui.actions.CheckForUpdateAction;
@@ -65,6 +66,7 @@ import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
@@ -76,7 +78,6 @@ import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.rest.Credentials;
-import slash.navigation.common.NumberPattern;
 
 import javax.help.CSH;
 import javax.swing.*;
@@ -122,6 +123,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toUrls;
@@ -130,6 +132,7 @@ import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
+import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findItem;
@@ -145,7 +148,6 @@ import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -337,7 +339,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void openFrame() {
         new Thread(new Runnable() {
             public void run() {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         openFrame(contentPane);
                     }
@@ -347,7 +349,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
@@ -381,7 +383,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openProfileView() {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 profileView = new ProfileView();
                 profileView.initialize(getPositionsModel(),
@@ -565,7 +567,7 @@ public class RouteConverter extends SingleFrameApplication {
     // dialogs for external components
 
     public void handleBabelError(final BabelException e) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
@@ -581,7 +583,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         final long limitBefore = getMaximumMemory();
         final long limitAfter = limitBefore * 2;
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter),
@@ -591,7 +593,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void handleOpenError(final Throwable throwable, final String path) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
@@ -607,7 +609,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
@@ -623,7 +625,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void handleUnsupportedFormat(final String path) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 log.severe("Unsupported format: " + path);
                 showMessageDialog(frame,
@@ -634,7 +636,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void handleFileNotFound(final String path) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 log.severe("File not found: " + path);
                 showMessageDialog(frame,
@@ -900,19 +902,19 @@ public class RouteConverter extends SingleFrameApplication {
 
     private class LazyTabInitializer implements ChangeListener {
         private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
-        private Map<Component, Object> initialized = new HashMap<Component, Object>();
+        private Map<Component, PanelInTab> initialized = new HashMap<Component, PanelInTab>();
 
         LazyTabInitializer() {
             lazyInitializers.put(convertPanel, new Runnable() {
                 public void run() {
-                    ConvertPanel panel = new ConvertPanel();
+                    PanelInTab panel = new ConvertPanel();
                     convertPanel.add(panel.getRootComponent());
                     initialized.put(convertPanel, panel);
                 }
             });
             lazyInitializers.put(browsePanel, new Runnable() {
                 public void run() {
-                    BrowsePanel panel = new BrowsePanel();
+                    PanelInTab panel = new BrowsePanel();
                     browsePanel.add(panel.getRootComponent());
                     initialized.put(browsePanel, panel);
                 }
@@ -947,10 +949,14 @@ public class RouteConverter extends SingleFrameApplication {
             Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
             initialize(selected);
 
-            if (isBrowsePanelSelected())
-                frame.getRootPane().setDefaultButton(getBrowsePanel().getDefaultButton());
-            else
-                frame.getRootPane().setDefaultButton(getConvertPanel().getDefaultButton());
+            final PanelInTab panel = isBrowsePanelSelected() ? getBrowsePanel() : getConvertPanel();
+            frame.getRootPane().setDefaultButton(panel.getDefaultButton());
+            invokeLater(new Runnable() {
+                public void run() {
+                    panel.getFocusComponent().grabFocus();
+                    panel.getFocusComponent().requestFocus();
+                }
+            });
         }
     }
 

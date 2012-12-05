@@ -121,7 +121,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -138,9 +137,11 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
+import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -190,7 +191,7 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
  * @author Christian Pesch
  */
 
-public class ConvertPanel {
+public class ConvertPanel implements PanelInTab {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(ConvertPanel.class);
 
@@ -347,7 +348,7 @@ public class ConvertPanel {
             public void run() {
                 actionManager.run("delete");
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(ON);
         TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());
@@ -451,6 +452,10 @@ public class ConvertPanel {
 
     public Component getRootComponent() {
         return convertPanel;
+    }
+
+    public JComponent getFocusComponent() {
+        return tablePositions;
     }
 
     public JButton getDefaultButton() {
