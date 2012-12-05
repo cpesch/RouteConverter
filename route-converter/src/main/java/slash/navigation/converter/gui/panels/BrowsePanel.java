@@ -91,6 +91,7 @@ import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
@@ -199,22 +200,9 @@ public class BrowsePanel {
         tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = tableRoutes.getSelectedRows();
-                if (e.getValueIsAdjusting() || selectedRows.length == 0)
+                if (e.getValueIsAdjusting())
                     return;
-
-                RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
-                URL url;
-                try {
-                    url = route.getRoute().getDataUrl();
-                    if (url == null)
-                        return;
-                } catch (Throwable t) {
-                    getOperator().handleServiceError(t);
-                    return;
-                }
-
-                r.openPositionList(asList(url));
+                handlePositionListUpdate();
             }
         });
         TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
@@ -236,7 +224,7 @@ public class BrowsePanel {
                 // would do it in the AWT EventQueue
                 catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         startWaitCursor(r.getFrame().getRootPane());
                         try {
@@ -283,6 +271,23 @@ public class BrowsePanel {
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+    }
+
+    private void handlePositionListUpdate() {
+        int[] selectedRows = tableRoutes.getSelectedRows();
+        if(selectedRows.length == 0)
+            return;
+        RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
+        URL url;
+        try {
+            url = route.getRoute().getDataUrl();
+            if (url == null)
+                return;
+        } catch (Throwable t) {
+            getOperator().handleServiceError(t);
+            return;
+        }
+        RouteConverter.getInstance().openPositionList(asList(url));
     }
 
     private RoutesTableModel getRoutesListModel() {
