@@ -393,6 +393,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void setValueIsAdjusting(boolean valueIsAdjusting) {
         if (!valueIsAdjusting)
-            super.fireTableDataChanged();
+            // since fireTableDataChanged() leads to recentering due to BaseMapView#update(allRowsChanged)
+            fireTableRowsUpdated(-1, -1);
     }
 }

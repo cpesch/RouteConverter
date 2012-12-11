@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -282,6 +283,7 @@ public class UndoPositionsModel implements PositionsModel {
     public void setValueIsAdjusting(boolean valueIsAdjusting) {
         this.valueIsAdjusting = valueIsAdjusting;
         if (!valueIsAdjusting)
-            delegate.fireTableDataChanged();
+            // since fireTableDataChanged() leads to recentering due to BaseMapView#update(allRowsChanged)
+            fireTableRowsUpdated(-1, -1, ALL_COLUMNS);
     }
 }
