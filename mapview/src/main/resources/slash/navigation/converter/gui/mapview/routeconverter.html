@@ -8,6 +8,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenu.js" type="text/javascript"></script>
     <script src="./keydragzoom.js" type="text/javascript"></script>
+    <script src="./label.js" type="text/javascript"></script>
     <script src="./latlngcontrol.js" type="text/javascript"></script>
     <style type="text/css">
         html { overflow: hidden }
@@ -49,6 +50,22 @@
         }
         .ContextMenu li.separator div {
             border-top: solid 1px #cccccc;
+        }
+        .Label {
+            position: relative;
+            left: 7px;
+            top: -10px;
+            white-space: nowrap;
+            border: 0px;
+            font-family: arial;
+            font-size: 8px;
+            padding: 2px;
+            background-color: #fff;
+            opacity: .75;
+            filter: alpha(opacity = 75);
+            -ms-filter: "alpha(opacity=75)";
+            -khtml-opacity: .75;
+            -moz-opacity: .75;
         }
         #LatLngControl {
             background: #ffc;
@@ -212,7 +229,7 @@
    var markerIcon;
 
    function addMarker(latitude, longitude, comment) {
-       addOverlay(new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
+       addOverlay(new MarkerWithLabel({position:new google.maps.LatLng(latitude, longitude),
            title:comment, clickable:false, icon:markerIcon}));
    }
 
