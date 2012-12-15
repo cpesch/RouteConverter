@@ -27,11 +27,9 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
-import slash.common.io.Externalization;
 import slash.common.io.TokenResolver;
 import slash.navigation.base.NavigationPosition;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -41,6 +39,12 @@ import java.util.logging.Logger;
 import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Math.max;
+import static javax.swing.SwingUtilities.invokeAndWait;
+import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.SwingUtilities.isEventDispatchThread;
+import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.system.Platform.isLinux;
 import static slash.common.system.Platform.isMac;
@@ -103,7 +107,7 @@ public class EclipseSWTMapView extends BaseMapView {
         try {
             final String language = Locale.getDefault().getLanguage().toLowerCase();
             final String country = Locale.getDefault().getCountry().toLowerCase();
-            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
+            File html = extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
                 public String resolveToken(String tokenName) {
                     if (tokenName.equals("language"))
                         return language;
@@ -118,9 +122,9 @@ public class EclipseSWTMapView extends BaseMapView {
             });
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenu.js");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/latlngcontrol.js");
+            extractFile("slash/navigation/converter/gui/mapview/contextmenu.js");
+            extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
+            extractFile("slash/navigation/converter/gui/mapview/latlngcontrol.js");
 
             final String url = html.toURI().toURL().toExternalForm();
             webBrowser.runInSequence(new Runnable() {
@@ -238,7 +242,7 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private boolean isMapInitialized() {
         String result = executeScriptWithResult("return isInitialized();");
-        return Boolean.parseBoolean(result);
+        return parseBoolean(result);
     }
 
     private void initializeAfterLoading() {
@@ -275,8 +279,8 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private void resizeMap() {
         synchronized (notificationMutex) {
-            int width = Math.max(getComponent().getWidth(), 0);
-            int height = Math.max(getComponent().getHeight(), 0);
+            int width = max(getComponent().getWidth(), 0);
+            int height = max(getComponent().getHeight(), 0);
             if (width != lastWidth || height != lastHeight) {
                 executeScript("resize(" + width + "," + height + ");");
             }
@@ -310,8 +314,8 @@ public class EclipseSWTMapView extends BaseMapView {
         if (webBrowser == null || script.length() == 0)
             return;
 
-        if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(new Runnable() {
+        if (!isEventDispatchThread()) {
+            invokeLater(new Runnable() {
                 public void run() {
                     webBrowser.runInSequence(new Runnable() {
                         public void run() {
@@ -337,9 +341,9 @@ public class EclipseSWTMapView extends BaseMapView {
 
         final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
-        if (!SwingUtilities.isEventDispatchThread()) {
+        if (!isEventDispatchThread()) {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
+                invokeAndWait(new Runnable() {
                     public void run() {
                         webBrowser.runInSequence(new Runnable() {
                             public void run() {
