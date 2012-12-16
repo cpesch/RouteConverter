@@ -125,25 +125,8 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>swt-mapview</artifactId>
+            <artifactId>javafx-mapview</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>jna</artifactId>
-            <version>3.2.4</version>
-            <classifier>stripped</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jna</groupId>
-            <artifactId>mac.os_x.x86</artifactId>
-            <version>3.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>eclipse.swt</groupId>
-            <artifactId>cocoa.macosx.x86</artifactId>
-            <version>4.4</version>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>

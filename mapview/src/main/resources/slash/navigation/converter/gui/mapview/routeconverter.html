@@ -143,9 +143,11 @@
    }
 
    function resize(width, height) {
+       try {
        var div = document.getElementById("map");
        div.style.width = width + "px";
        div.style.height = height + "px";
+       } catch(e) {alert(e);}
    }
 
    function panTo(latitude, longitude) {

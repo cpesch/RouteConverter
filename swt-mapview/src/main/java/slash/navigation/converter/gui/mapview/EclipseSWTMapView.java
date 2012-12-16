@@ -350,9 +350,7 @@ public class EclipseSWTMapView extends BaseMapView {
                         });
                     }
                 });
-            } catch (InterruptedException e) {
-                log.severe("Cannot execute script with result: " + e);
-            } catch (InvocationTargetException e) {
+            } catch (InterruptedException | InvocationTargetException e) {
                 log.severe("Cannot execute script with result: " + e);
             }
         } else {

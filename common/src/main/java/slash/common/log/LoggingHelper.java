@@ -73,7 +73,8 @@ public class LoggingHelper {
             System.err.println("Cannot configure file logging");
             e.printStackTrace();
         }
-        logger.setLevel(ALL);
+        // using ALL brings up a colored JavaFX WebView
+        // logger.setLevel(ALL);
         redirectStdOutAndErrToLog();
     }
 
@@ -88,13 +89,13 @@ public class LoggingHelper {
         handler.setFormatter(new SimpleFormatter());
         Logger logger = Logger.getLogger("");
         logger.addHandler(handler);
-        logger.setLevel(ALL);
+        // using ALL brings up a colored JavaFX WebView
+        // logger.setLevel(ALL);
     }
 
     public void logAsDefault() {
         LogManager.getLogManager().reset();
     }
-
 
     public String getLogFileAsString() {
         logAsDefault();
@@ -140,7 +141,6 @@ public class LoggingHelper {
 
         return buffer.toString();
     }
-
 
     private void redirectStdOutAndErrToLog() {
         Logger logger = Logger.getLogger("stdout");
