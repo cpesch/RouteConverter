@@ -70,8 +70,8 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
             compile(BEGIN_OF_LINE +
                     SPACE + "(\\d+)" + SPACE + SEPARATOR +
                     SPACE + "([T])" + SPACE + SEPARATOR +
-                    SPACE + "(\\d{4}/\\d{2}/\\d{2})" + SPACE + SEPARATOR +
-                    SPACE + "(\\d{2}:\\d{2}:\\d{2})" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{4}/\\d{2}/\\d{2})?" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{2}:\\d{2}:\\d{2})?" + SPACE + SEPARATOR +
                     SPACE + "(.+)" + SPACE + SEPARATOR +
 
                     SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR +

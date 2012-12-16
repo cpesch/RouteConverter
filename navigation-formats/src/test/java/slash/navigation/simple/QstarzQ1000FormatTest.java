@@ -39,11 +39,13 @@ public class QstarzQ1000FormatTest {
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,"));
         assertTrue(format.isValidLine("8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,"));
+        assertTrue(format.isValidLine("5,T,,,SPS,33.930556,S,115.100000,E,374.0 m,0.0 km/h,0.0,0(0),81318.76 m,"));
     }
 
     @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,"));
+        assertTrue(format.isPosition("5,T,,,SPS,33.930556,S,115.100000,E,374.0 m,0.0 km/h,0.0,0(0),81318.76 m,"));
 
         assertFalse(format.isPosition("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,"));
     }

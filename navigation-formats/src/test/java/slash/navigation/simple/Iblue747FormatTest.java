@@ -39,11 +39,13 @@ public class Iblue747FormatTest {
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,"));
         assertTrue(format.isValidLine("3656,T,2010/12/09,10:59:05,SPS,28.649061,N,17.896196,W,513.863 M,15.862 km/h,178.240250,34.60 M,"));
+        assertTrue(format.isValidLine("3,T,,,SPS,32.151111,S,115.835556,E,0.0 M,0.0 km/h,0.0,3425.47 M,"));
     }
 
     @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("3656,T,2010/12/09,10:59:05,SPS,28.649061,N,17.896196,W,513.863 M,15.862 km/h,178.240250,34.60 M,"));
+        assertTrue(format.isPosition("3,T,,,SPS,32.151111,S,115.835556,E,0.0 M,0.0 km/h,0.0,3425.47 M,"));
 
         assertFalse(format.isPosition("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,"));
     }
