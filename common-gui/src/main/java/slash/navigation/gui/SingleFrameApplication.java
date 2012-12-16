@@ -20,8 +20,6 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.helpers.UIHelper;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,6 +35,7 @@ import static java.awt.Frame.NORMAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
+import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -77,7 +76,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(UIHelper.loadIcon(iconName).getImage());
+        frame.setIconImage(loadIcon(iconName).getImage());
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
