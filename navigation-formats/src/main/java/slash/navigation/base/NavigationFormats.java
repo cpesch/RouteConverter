@@ -258,13 +258,13 @@ public final class NavigationFormats {
         SUPPORTED_FORMATS.add(format);
     }
 
-    private static List<NavigationFormat> getFormatInstances(boolean restrictToWritableFormats) {
+    private static List<NavigationFormat> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
         List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
         for (Class<? extends NavigationFormat> formatClass : SUPPORTED_FORMATS) {
             try {
                 NavigationFormat format = formatClass.newInstance();
-                if (restrictToWritableFormats && format.isSupportsWriting() ||
-                        !restrictToWritableFormats && format.isSupportsReading())
+                if (includeReadableFormats && format.isSupportsReading() ||
+                        includeWritableFormats && format.isSupportsWriting())
                     formats.add(format);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Cannot instantiate " + formatClass, e);
@@ -274,11 +274,11 @@ public final class NavigationFormats {
     }
 
     public static List<NavigationFormat> getReadFormats() {
-        return getFormatInstances(false);
+        return getFormatInstances(true, false);
     }
 
     public static List<NavigationFormat> getWriteFormats() {
-        return getFormatInstances(true);
+        return getFormatInstances(false, true);
     }
 
     private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
@@ -289,6 +289,10 @@ public final class NavigationFormats {
             }
         });
         return asList(formatsArray);
+    }
+
+    public static List<NavigationFormat> getFormatsSortedByName() {
+        return sortByName(getFormatInstances(true, true));
     }
 
     public static List<NavigationFormat> getReadFormatsSortedByName() {

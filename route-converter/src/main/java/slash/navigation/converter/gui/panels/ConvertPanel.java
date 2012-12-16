@@ -151,6 +151,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.calculateConvertFileName;
@@ -166,6 +167,7 @@ import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormats.getFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
@@ -195,6 +197,12 @@ public class ConvertPanel implements PanelInTab {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(ConvertPanel.class);
 
+    private static final String READ_COUNT_PREFERENCE = "readCount";
+    private static final String READ_FORMAT_PREFERENCE = "readFormat";
+    private static final String READ_PATH_PREFERENCE = "readPath";
+    private static final String WRITE_COUNT_PREFERENCE = "writeCount";
+    private static final String WRITE_FORMAT_PREFERENCE = "writeFormat";
+    private static final String WRITE_PATH_PREFERENCE = "writePath";
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
 
     private UrlDocument urlModel = new UrlDocument();
@@ -227,6 +235,7 @@ public class ConvertPanel implements PanelInTab {
 
     public ConvertPanel() {
         initialize();
+        logFormatUsage();
     }
 
     private void initialize() {
@@ -534,9 +543,9 @@ public class ConvertPanel implements PanelInTab {
 
         final URL url = urls.get(0);
         final String path = createReadablePath(url);
-        r.setOpenPathPreference(path);
+        preferences.put(READ_PATH_PREFERENCE, path);
 
-        startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        startWaitCursor(r.getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
                 NavigationFormatParser parser = new NavigationFormatParser();
@@ -552,7 +561,7 @@ public class ConvertPanel implements PanelInTab {
                 parser.addNavigationFileParserListener(listener);
 
                 try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
+                    invokeAndWait(new Runnable() {
                         public void run() {
                             Gpx11Format gpxFormat = new Gpx11Format();
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
@@ -563,11 +572,13 @@ public class ConvertPanel implements PanelInTab {
                     final ParserResult result = parser.read(url, formats);
                     if (result.isSuccessful()) {
                         log.info("Opened: " + path);
-                        if (!checkReadFormat(result.getFormat()))
+                        final NavigationFormat format = result.getFormat();
+                        countRead(format);
+                        if (!checkReadFormat(format))
                             return;
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
-                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(result.getFormat(), result.getAllRoutes()));
+                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                 urlModel.setString(path);
                                 recentUrlsModel.addUrl(url);
@@ -623,11 +634,12 @@ public class ConvertPanel implements PanelInTab {
                         final ParserResult result = parser.read(url, getReadFormats());
                         if (result.isSuccessful()) {
                             log.info("Appended: " + path);
+                            countRead(result.getFormat());
 
                             final String finalPath = path;
                             final int finalRow = row > 0 ? row : getPositionsModel().getRowCount();
                             // avoid parallelism to ensure the URLs are processed in order
-                            SwingUtilities.invokeAndWait(new Runnable() {
+                            invokeAndWait(new Runnable() {
                                 public void run() {
                                     try {
                                         getPositionsModel().add(finalRow, result.getTheRoute());
@@ -722,7 +734,8 @@ public class ConvertPanel implements PanelInTab {
     private void saveFile(File file, NavigationFormat format,
                           boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
-        r.setSavePathPreference(format, file.getParent());
+        if (file.getParent() != null)
+            preferences.put(WRITE_PATH_PREFERENCE + format.getName(), file.getParent());
 
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
@@ -784,6 +797,7 @@ public class ConvertPanel implements PanelInTab {
             }
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);
+            countWrite(format);
             log.info(String.format("Saved: %s", targetsAsString));
 
             if (!exportSelectedRoute && format.isSupportsReading()) {
@@ -995,7 +1009,7 @@ public class ConvertPanel implements PanelInTab {
     private File createSelectedSource() {
         File source = new File(urlModel.getString());
         source = findExistingPath(source);
-        File path = new File(RouteConverter.getInstance().getOpenPathPreference());
+        File path = new File(preferences.get(READ_PATH_PREFERENCE, ""));
         path = findExistingPath(path);
 
         if (path == null)
@@ -1010,7 +1024,7 @@ public class ConvertPanel implements PanelInTab {
         File target = new File(urlModel.getString());
         target = findExistingPath(target);
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        File path = target != null ? target : new File(RouteConverter.getInstance().getSavePathPreference(format));
+        File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getName(), ""));
         path = findExistingPath(path);
         if (path == null)
             path = new File("");
@@ -1035,22 +1049,46 @@ public class ConvertPanel implements PanelInTab {
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getReadFormatsSortedByName(),
-                RouteConverter.getInstance().getOpenFormatPreference());
+                preferences.get(READ_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
     }
 
     private void setReadFormatFileFilterPreference(NavigationFormat selectedFormat) {
         String preference = selectedFormat != null ? selectedFormat.getClass().getName() : "";
-        RouteConverter.getInstance().setOpenFormatPreference(preference);
+        preferences.put(READ_FORMAT_PREFERENCE, preference);
     }
 
     private void setWriteFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
-                RouteConverter.getInstance().getSaveFormatPreference());
+                preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
     }
 
     private void setWriteFormatFileFilterPreference(NavigationFormat selectedFormat) {
         String preference = selectedFormat.getClass().getName();
-        RouteConverter.getInstance().setSaveFormatPreference(preference);
+        preferences.put(WRITE_FORMAT_PREFERENCE, preference);
+    }
+
+    private void logFormatUsage() {
+        StringBuilder builder = new StringBuilder();
+        for (NavigationFormat format : getFormatsSortedByName()) {
+            int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass(), 0);
+            int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass(), 0);
+            if (reads > 0 || writes > 0)
+                builder.append(String.format("\n%s, reads: %d, writes: %d", format.getName(), reads, writes));
+        }
+        log.info("Format usage:" + builder.toString());
+    }
+
+    private void count(String preferenceName) {
+        int count = preferences.getInt(preferenceName, 0);
+        preferences.putInt(preferenceName, count + 1);
+    }
+
+    private void countRead(NavigationFormat format) {
+        count(READ_COUNT_PREFERENCE + format.getClass());
+    }
+
+    private void countWrite(NavigationFormat format) {
+        count(WRITE_COUNT_PREFERENCE + format.getClass());
     }
 
     // map view related helpers

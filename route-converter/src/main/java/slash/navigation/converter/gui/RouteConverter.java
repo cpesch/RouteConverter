@@ -28,7 +28,6 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -70,7 +69,6 @@ import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -181,10 +179,6 @@ public class RouteConverter extends SingleFrameApplication {
         return version.getOperationSystem() + " (" + version.getBits() + "-bit)";
     }
 
-    private static final String OPEN_PATH_PREFERENCE = "source";
-    private static final String OPEN_FORMAT_PREFERENCE = "sourceFormat";
-    private static final String SAVE_PATH_PREFERENCE = "target";
-    private static final String TARGET_FORMAT_PREFERENCE = "targetFormat";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
@@ -419,45 +413,6 @@ public class RouteConverter extends SingleFrameApplication {
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
-    }
-
-    // Preferences handling
-
-    public Preferences getPreferences() {
-        return preferences;
-    }
-
-    public String getOpenFormatPreference() {
-        return preferences.get(OPEN_FORMAT_PREFERENCE, Gpx11Format.class.getName());
-    }
-
-    public void setOpenFormatPreference(String format) {
-        preferences.put(OPEN_FORMAT_PREFERENCE, format);
-    }
-
-    public String getOpenPathPreference() {
-        return preferences.get(OPEN_PATH_PREFERENCE, "");
-    }
-
-    public void setOpenPathPreference(String file) {
-        preferences.put(OPEN_PATH_PREFERENCE, file);
-    }
-
-    public String getSaveFormatPreference() {
-        return preferences.get(TARGET_FORMAT_PREFERENCE, Gpx11Format.class.getName());
-    }
-
-    public void setSaveFormatPreference(String format) {
-        preferences.put(TARGET_FORMAT_PREFERENCE, format);
-    }
-
-    public String getSavePathPreference(NavigationFormat format) {
-        return preferences.get(SAVE_PATH_PREFERENCE + format.getName(), "");
-    }
-
-    public void setSavePathPreference(NavigationFormat format, String parent) {
-        if (parent != null)
-            preferences.put(SAVE_PATH_PREFERENCE + format.getName(), parent);
     }
 
     boolean isAutomaticUpdateCheck() {

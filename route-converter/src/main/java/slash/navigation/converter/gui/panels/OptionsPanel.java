@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.util.Arrays.sort;
@@ -88,6 +89,8 @@ import static slash.navigation.common.UnitSystem.STATUTE;
  */
 
 public class OptionsPanel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(OptionsPanel.class);
+
     private JPanel miscPanel;
     private JComboBox comboBoxLocale;
     private JTextField textFieldBabelPath;
@@ -142,9 +145,9 @@ public class OptionsPanel {
         });
         textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, preferences, AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
 
-        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, r.getPreferences(), RECENTER_AFTER_ZOOMING_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, preferences, RECENTER_AFTER_ZOOMING_PREFERENCE, false);
         checkBoxRecenterAfterZooming.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setRecenterAfterZooming(checkBoxRecenterAfterZooming.isSelected());
@@ -169,13 +172,13 @@ public class OptionsPanel {
         });
         comboboxTravelMode.setSelectedItem(r.getTravelModePreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, r.getPreferences(), AVOID_HIGHWAYS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, preferences, AVOID_HIGHWAYS_PREFERENCE, true);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, r.getPreferences(), AVOID_TOLLS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, preferences, AVOID_TOLLS_PREFERENCE, true);
         checkBoxAvoidTolls.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidTolls(checkBoxAvoidTolls.isSelected());
@@ -346,8 +349,6 @@ public class OptionsPanel {
         this.$$$loadLabelText$$$(label11, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("number-pattern"));
         panel6.add(label11, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboboxNumberPattern = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        comboboxNumberPattern.setModel(defaultComboBoxModel1);
         panel6.add(comboboxNumberPattern, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -370,8 +371,6 @@ public class OptionsPanel {
         checkBoxAvoidTolls.setText("");
         panel3.add(checkBoxAvoidTolls, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboboxTravelMode = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
-        comboboxTravelMode.setModel(defaultComboBoxModel2);
         panel3.add(comboboxTravelMode, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label15 = new JLabel();
         this.$$$loadLabelText$$$(label15, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-options"));
