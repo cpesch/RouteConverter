@@ -454,7 +454,7 @@ public abstract class BaseMapView implements MapView {
                         }
                     }
 
-                    String callbacks = trim(executeScriptWithResult("return getCallbacks();"));
+                    String callbacks = trim(getCallbacks());
                     if (callbacks != null) {
                         String[] lines = callbacks.split("--");
                         for (String line : lines) {
@@ -701,8 +701,9 @@ public abstract class BaseMapView implements MapView {
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
-
     protected abstract Integer getCurrentZoom();
+
+    protected abstract String getCallbacks();
 
     private NavigationPosition getLastMapCenter() {
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
@@ -1007,7 +1008,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
-
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks

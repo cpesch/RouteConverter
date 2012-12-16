@@ -41,6 +41,7 @@ import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRun
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
@@ -51,7 +52,8 @@ import static slash.common.system.Platform.isMac;
 import static slash.common.system.Platform.isWindows;
 
 /**
- * Implementation for a component that displays the positions of a position list on a map.
+ * Implementation for a component that displays the positions of a position list on a map
+ * using the Eclipse SWT Webbrowser embedding in the DJNative Swing JWebBrowser.
  *
  * @author Christian Pesch
  */
@@ -133,7 +135,7 @@ public class EclipseSWTMapView extends BaseMapView {
                     webBrowser.navigate(url);
                 }
             });
-            log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
+            log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             setInitializationCause(t);
@@ -181,7 +183,7 @@ public class EclipseSWTMapView extends BaseMapView {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
-                            tryToInitialize(startCount++, System.currentTimeMillis());
+                            tryToInitialize(startCount++, currentTimeMillis());
                         }
                     }, "MapViewInitializer").start();
                 }
@@ -214,7 +216,7 @@ public class EclipseSWTMapView extends BaseMapView {
         if (isInitialized()) {
             runBrowserInteractionCallbacksAndTests(start);
         } else {
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             int timeout = count++ * 100;
             if (timeout > 3000)
                 timeout = 3000;
@@ -230,14 +232,14 @@ public class EclipseSWTMapView extends BaseMapView {
     }
 
     private void runBrowserInteractionCallbacksAndTests(long start) {
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
         initializeAfterLoading();
         initializeBrowserInteraction();
         initializeCallbackListener();
         checkLocalhostResolution();
         checkCallback();
-        end = System.currentTimeMillis();
+        end = currentTimeMillis();
         log.fine("Browser interaction is running after " + (end - start) + " ms");
     }
 
@@ -307,6 +309,10 @@ public class EclipseSWTMapView extends BaseMapView {
     protected Integer getCurrentZoom() {
         Double zoom = parseDouble(executeScriptWithResult("return getZoom();"));
         return zoom != null ? zoom.intValue() : null;
+    }
+
+    protected String getCallbacks() {
+        return executeScriptWithResult("return getCallbacks();");
     }
 
     // script execution
