@@ -21,7 +21,6 @@
 package slash.navigation.converter.cmdline;
 
 import java.util.logging.Formatter;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import static java.util.logging.Level.INFO;
