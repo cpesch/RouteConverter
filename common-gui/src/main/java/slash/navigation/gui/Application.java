@@ -35,6 +35,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+
 /**
  * The base of all graphical user interfaces.
  *
@@ -125,7 +129,7 @@ public abstract class Application {
                 }
                 catch (Exception e) {
                     String msg = String.format("Application %s failed to launch", applicationClass);
-                    log.log(Level.SEVERE, msg, e);
+                    log.log(SEVERE, msg, e);
                     throw new Error(msg, e);
                 }
             }
@@ -138,7 +142,7 @@ public abstract class Application {
         try {
             return ResourceBundle.getBundle(clazz.getName());
         } catch (Exception e) {
-            log.log(Level.FINER, "Cannot load bundle for class " + clazz, e);
+            log.log(FINE, "Cannot load bundle for class " + clazz, e);
             return null;
         }
     }
@@ -180,13 +184,13 @@ public abstract class Application {
                     listener.willExit(event);
                 }
                 catch (Exception e) {
-                    log.log(Level.WARNING, "ExitListener.willExit() failed", e);
+                    log.log(WARNING, "ExitListener.willExit() failed", e);
                 }
             }
             shutdown();
         }
         catch (Exception e) {
-            log.log(Level.WARNING, "unexpected error in Application.shutdown()", e);
+            log.log(WARNING, "unexpected error in Application.shutdown()", e);
         }
         finally {
             end();

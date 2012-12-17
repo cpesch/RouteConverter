@@ -24,6 +24,8 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import static java.util.logging.Level.INFO;
+
 /**
  * Formats log messages in a terse style.
  *
@@ -33,7 +35,7 @@ import java.util.logging.LogRecord;
 public class TerseFormatter extends Formatter {
     public String format(LogRecord record) {
         StringBuilder buffer = new StringBuilder();
-        if (record.getLevel().intValue() > Level.INFO.intValue()) 
+        if (record.getLevel().intValue() > INFO.intValue())
             buffer.append("Error: ");
         buffer.append(record.getMessage());
         buffer.append('\n');
