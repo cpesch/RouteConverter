@@ -149,6 +149,8 @@ public class EclipseSWTMapView extends BaseMapView {
         if (webBrowser == null)
             return;
 
+        log.info("Using Eclipse SWT Browser to create map view");
+
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
                 log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
