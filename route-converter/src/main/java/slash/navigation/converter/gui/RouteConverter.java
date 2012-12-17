@@ -106,6 +106,10 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
+import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
@@ -128,6 +132,7 @@ import static slash.common.io.Files.toUrls;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
@@ -212,11 +217,11 @@ public class RouteConverter extends SingleFrameApplication {
     private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
     private MapView mapView;
     private ProfileView profileView;
-    private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+    private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
+            SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
-    private static final GridConstraints ELEVATION_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+    private static final GridConstraints ELEVATION_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
+            SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 300), 0, true);
 
     private LazyTabInitializer tabInitializer;
@@ -246,7 +251,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void checkForTooOldJreVersion() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
-        if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
+        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
             JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
             label.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {

@@ -33,6 +33,7 @@ import static java.awt.Frame.MAXIMIZED_HORIZ;
 import static java.awt.Frame.MAXIMIZED_VERT;
 import static java.awt.Frame.NORMAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import static slash.navigation.gui.helpers.UIHelper.loadIcon;
@@ -144,11 +145,11 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     private int getPreferenceHeight() {
-        return crop("preferencesHeight", preferences.getInt(HEIGHT_PREFERENCE, -1), 0, Integer.MAX_VALUE);
+        return crop("preferencesHeight", preferences.getInt(HEIGHT_PREFERENCE, -1), 0, MAX_VALUE);
     }
 
     private int getPreferenceWidth() {
-        return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, Integer.MAX_VALUE);
+        return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, MAX_VALUE);
     }
 
     static int crop(String name, int position, int minimum, int maximum) {
