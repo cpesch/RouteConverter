@@ -18,11 +18,37 @@
                 <artifactId>native2ascii-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>native2ascii-utf8</id>
                         <goals>
                             <goal>native2ascii</goal>
                         </goals>
                         <configuration>
                             <encoding>UTF8</encoding>
+                            <includes>
+                                <include>**/RouteConverter_ar.properties</include>
+                                <include>**/RouteConverter_cs.properties</include>
+                                <include>**/RouteConverter_hr.properties</include>
+                                <include>**/RouteConverter_sk.properties</include>
+                                <include>**/RouteConverter_sr.properties</include>
+                                <include>**/RouteConverter_zh.properties</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>native2ascii-8859_1</id>
+                        <goals>
+                            <goal>native2ascii</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>8859_1</encoding>
+                            <includes>
+                                <include>**/RouteConverter.properties</include>
+                                <include>**/RouteConverter_de.properties</include>
+                                <include>**/RouteConverter_es.properties</include>
+                                <include>**/RouteConverter_fr.properties</include>
+                                <include>**/RouteConverter_it.properties</include>
+                                <include>**/RouteConverter_nl.properties</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
