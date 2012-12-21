@@ -48,7 +48,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([CGTV])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
