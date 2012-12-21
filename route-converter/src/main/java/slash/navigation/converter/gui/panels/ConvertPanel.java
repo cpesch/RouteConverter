@@ -735,7 +735,7 @@ public class ConvertPanel implements PanelInTab {
                           boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
         if (file.getParent() != null)
-            preferences.put(WRITE_PATH_PREFERENCE + format.getName(), file.getParent());
+            preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getName(), file.getParent());
 
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
@@ -1024,7 +1024,7 @@ public class ConvertPanel implements PanelInTab {
         File target = new File(urlModel.getString());
         target = findExistingPath(target);
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getName(), ""));
+        File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getClass().getName(), ""));
         path = findExistingPath(path);
         if (path == null)
             path = new File("");
@@ -1070,8 +1070,8 @@ public class ConvertPanel implements PanelInTab {
     private void logFormatUsage() {
         StringBuilder builder = new StringBuilder();
         for (NavigationFormat format : getFormatsSortedByName()) {
-            int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass(), 0);
-            int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass(), 0);
+            int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
+            int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0)
                 builder.append(String.format("\n%s, reads: %d, writes: %d", format.getName(), reads, writes));
         }
@@ -1084,11 +1084,11 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void countRead(NavigationFormat format) {
-        count(READ_COUNT_PREFERENCE + format.getClass());
+        count(READ_COUNT_PREFERENCE + format.getClass().getName());
     }
 
     private void countWrite(NavigationFormat format) {
-        count(WRITE_COUNT_PREFERENCE + format.getClass());
+        count(WRITE_COUNT_PREFERENCE + format.getClass().getName());
     }
 
     // map view related helpers
