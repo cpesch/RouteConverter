@@ -93,7 +93,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86_64</artifactId>
-            <version>3.8.1</version>
+            <version>3.8M4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
