@@ -106,6 +106,7 @@ public enum UnitSystem {
         return unitTransfer.distanceToUnit(distance);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Double distanceToDefault(Double distance) {
         return unitTransfer.distanceToDefault(distance);
     }
