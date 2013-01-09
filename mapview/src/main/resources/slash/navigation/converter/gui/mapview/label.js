@@ -518,7 +518,7 @@ function MarkerWithLabel(opt_options) {
     opt_options.labelContent = opt_options.title || "";
     opt_options.labelAnchor = opt_options.labelAnchor || new google.maps.Point(-9, 6);
     opt_options.labelClass = opt_options.labelClass || "Label";
-    opt_options.labelStyle = opt_options.labelStyle || { opacity:0.6 };
+    opt_options.labelStyle = opt_options.labelStyle || {};
     opt_options.labelInBackground = opt_options.labelInBackground || false;
     if (typeof opt_options.labelVisible === "undefined") {
         opt_options.labelVisible = true;
