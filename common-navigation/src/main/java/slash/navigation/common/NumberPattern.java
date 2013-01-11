@@ -23,17 +23,17 @@ package slash.navigation.common;
 /**
  * Enumeration of the ways to add numbers to the comments of positions.
  *
- * DESCRIPTION_ONLY: Hamburg
+ * Description_Only: Hamburg
  *
- * NUMBER_ONLY: 1234
+ * Number_Only: 1234
  *
- * NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION: 1234Hamburg
+ * Number_Directly_Followed_By_Description: 1234Hamburg
  *
- * NUMBER_SPACE_THEN_DESCRIPTION: 1234 Hamburg
+ * Number_Space_Then_Description: 1234 Hamburg
  *
  * @author Christian Pesch
  */
 
 public enum NumberPattern {
-    DESCRIPTION_ONLY, NUMBER_ONLY, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION, NUMBER_SPACE_THEN_DESCRIPTION
+    Description_Only, Number_Only, Number_Directly_Followed_By_Description, Number_Space_Then_Description
 }

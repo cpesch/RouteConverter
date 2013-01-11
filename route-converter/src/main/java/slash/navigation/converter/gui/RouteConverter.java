@@ -135,7 +135,7 @@ import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
-import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
+import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findItem;
@@ -499,7 +499,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public NumberPattern getNumberPatternPreference() {
-        return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, NUMBER_SPACE_THEN_DESCRIPTION.toString()));
+        return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, Number_Space_Then_Description.toString()));
     }
 
     public void setNumberPatternPreference(NumberPattern numberPattern) {

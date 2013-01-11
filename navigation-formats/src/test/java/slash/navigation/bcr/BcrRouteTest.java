@@ -36,10 +36,10 @@ import static slash.common.TestCase.assertNotNull;
 import static slash.common.TestCase.assertNull;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.common.NumberPattern.DESCRIPTION_ONLY;
-import static slash.navigation.common.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
-import static slash.navigation.common.NumberPattern.NUMBER_ONLY;
-import static slash.navigation.common.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
+import static slash.navigation.common.NumberPattern.Description_Only;
+import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
+import static slash.navigation.common.NumberPattern.Number_Only;
+import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
@@ -480,18 +480,18 @@ public class BcrRouteTest {
 
     @Test
     public void getNumberPositions() {
-        assertEquals("Hamburg", getNumberedPosition(new BcrPosition(1, 2, 3, "1234 Hamburg"), 5, 3, DESCRIPTION_ONLY));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_ONLY));
-        assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("Hamburg", getNumberedPosition(new BcrPosition(1, 2, 3, "1234 Hamburg"), 5, 3, Description_Only));
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Only));
+        assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Directly_Followed_By_Description));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Space_Then_Description));
 
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "9 Position 9"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "8Position 9"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position7 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006 aPosition 6a", getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona5a"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006 a", getNumberedPosition(new BcrPosition(1, 2, 3, "04a"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " 3 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, "0002"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "9 Position 9"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "8Position 9"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position7 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 aPosition 6a", getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona5a"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 a", getNumberedPosition(new BcrPosition(1, 2, 3, "04a"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " 3 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, "0002"), 5, 3, Number_Space_Then_Description));
     }
 
     @Test
@@ -503,7 +503,7 @@ public class BcrRouteTest {
 
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 0, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
+            position.setComment(getNumberedPosition(position, i, 0, Number_Directly_Followed_By_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -516,7 +516,7 @@ public class BcrRouteTest {
         // check renumbering, add space
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 0, NUMBER_SPACE_THEN_DESCRIPTION));
+            position.setComment(getNumberedPosition(position, i, 0, Number_Space_Then_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -529,7 +529,7 @@ public class BcrRouteTest {
         // check renumbering, check remove space again but have 2 digits and leading zeros
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 2, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
+            position.setComment(getNumberedPosition(position, i, 2, Number_Directly_Followed_By_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {

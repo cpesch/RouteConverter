@@ -35,7 +35,7 @@ import static slash.navigation.common.UnitConversion.statuteMilesToKilometer;
  */
 
 public enum UnitSystem {
-    METRIC("Km", "m", "Km/h", new UnitTransfer() {
+    Metric("Km", "m", "Km/h", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
             return distance;
         }
@@ -50,7 +50,7 @@ public enum UnitSystem {
         }
     }),
 
-    STATUTE("mi", "ft", "mi/h", new UnitTransfer() {
+    Statute("mi", "ft", "mi/h", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
             return distance != null ? kilometerToStatuteMiles(distance) : null;
         }
@@ -65,7 +65,7 @@ public enum UnitSystem {
         }
     }),
 
-    NAUTIC("nm", "m", "knots", new UnitTransfer() {
+    Nautic("nm", "m", "knots", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
             return distance != null ? kilometerToNauticMiles(distance) : null;
         }
@@ -83,7 +83,7 @@ public enum UnitSystem {
     private String distanceName, elevationName, speedName;
     private UnitTransfer unitTransfer;
 
-    UnitSystem(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
+    private UnitSystem(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
         this.distanceName = distanceName;
         this.elevationName = elevationName;
         this.speedName = speedName;
