@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class HgtFilesIT {
@@ -38,7 +39,9 @@ public class HgtFilesIT {
 
     @Test
     public void testElevationFor() throws IOException {
-        assertEquals(40, files.getElevationFor(11.2, 59.0).intValue());
+        Double elevation = files.getElevationFor(11.2, 59.0);
+        assertNotNull(elevation);
+        assertEquals(40, elevation.intValue());
         assertEquals(190, files.getElevationFor(11.2, 60.0).intValue());
         assertNull(files.getElevationFor(11.2, 61.0));
 
