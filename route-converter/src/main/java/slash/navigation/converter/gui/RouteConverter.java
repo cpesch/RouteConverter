@@ -499,7 +499,11 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public NumberPattern getNumberPatternPreference() {
-        return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, Number_Space_Then_Description.toString()));
+        try {
+            return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, Number_Space_Then_Description.toString()));
+        } catch (IllegalArgumentException e) {
+            return Number_Space_Then_Description;
+        }
     }
 
     public void setNumberPatternPreference(NumberPattern numberPattern) {
