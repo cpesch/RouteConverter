@@ -181,13 +181,13 @@ public class NmeaFormatTest {
 
     @Test
     public void testParseGGA() {
-        NmeaPosition position = format.parsePosition("$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D");
-        assertDoubleEquals(903.4036, position.getLongitudeAsDdmm());
-        assertDoubleEquals(4837.4374, position.getLatitudeAsDdmm());
-        assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getEastOrWest());
+        NmeaPosition position = format.parsePosition("$GPGGA,130441.89,4837.4374,S,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D");
+        assertDoubleEquals(903.4036, position.getLongitudeAsValueAndOrientation().getValue());
+        assertDoubleEquals(4837.4374, position.getLatitudeAsValueAndOrientation().getValue());
+        assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
+        assertEquals("S", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertDoubleEquals(9.0567266, position.getLongitude());
-        assertDoubleEquals(48.6239566, position.getLatitude());
+        assertDoubleEquals(-48.6239566, position.getLatitude());
         assertDoubleEquals(16.76, position.getElevation());
         assertEquals(new Integer(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
@@ -201,10 +201,6 @@ public class NmeaFormatTest {
     @Test
     public void testParseGGAFromSonyLogger() {
         NmeaPosition position = format.parsePosition("$GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F");
-        assertDoubleEquals(10619.4966, position.getLongitudeAsDdmm());
-        assertDoubleEquals(3554.2367, position.getLatitudeAsDdmm());
-        assertEquals("N", position.getNorthOrSouth());
-        assertEquals("W", position.getEastOrWest());
         assertDoubleEquals(-106.3249433, position.getLongitude());
         assertDoubleEquals(35.9039449, position.getLatitude());
         assertDoubleEquals(2300.3, position.getElevation());
@@ -373,8 +369,8 @@ public class NmeaFormatTest {
     @Test
     public void testSetLongitudeAndLatitudeAndElevation() {
         NmeaPosition position = format.parsePosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22");
-        assertDoubleEquals(1001.92, position.getLongitudeAsDdmm());
-        assertDoubleEquals(5334.169, position.getLatitudeAsDdmm());
+        assertDoubleEquals(1001.92, position.getLongitudeAsValueAndOrientation().getValue());
+        assertDoubleEquals(5334.169, position.getLatitudeAsValueAndOrientation().getValue());
         assertDoubleEquals(10.0319999, position.getLongitude());
         assertDoubleEquals(53.5694833, position.getLatitude());
         assertNull(position.getElevation());

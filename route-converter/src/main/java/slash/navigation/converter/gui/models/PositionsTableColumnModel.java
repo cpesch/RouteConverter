@@ -81,8 +81,8 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
-        predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 68, true, new LongitudeColumnTableCellEditor(), headerRenderer);
-        predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 68, true, new LatitudeColumnTableCellEditor(), headerRenderer);
+        predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
+        predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 84, true, new LatitudeColumnTableCellEditor(), headerRenderer);
         predefineColumn(ELEVATION_COLUMN_INDEX, "elevation", getMaxWidth("9999 m", 5), true, new ElevationColumnTableCellEditor(), headerRenderer);
 
         VisibleListener visibleListener = new VisibleListener();

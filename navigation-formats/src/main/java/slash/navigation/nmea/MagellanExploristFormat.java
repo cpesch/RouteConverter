@@ -2,6 +2,7 @@ package slash.navigation.nmea;
 
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -102,10 +103,12 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
-        String longitude = formatLongitude(position.getLongitudeAsDdmm());
-        String westOrEast = position.getEastOrWest();
-        String latitude = formatLatititude(position.getLatitudeAsDdmm());
-        String northOrSouth = position.getNorthOrSouth();
+        ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
+        String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
+        String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
+        ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
+        String latitude = formatLatititude(latitudeAsValueAndOrientation.getValue());
+        String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String comment = escape(position.getComment(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());

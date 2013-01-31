@@ -29,7 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link UnitSystem} labels of the unitsystem combo box.
+ * Renders the {@link UnitSystem} labels of the unit system combo box.
  *
  * @author Christian Pesch
  */

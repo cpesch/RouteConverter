@@ -22,13 +22,15 @@
 
 package slash.navigation.converter.gui.models;
 
+import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.UnitSystem;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.common.UnitSystem.METRIC;
+import static slash.navigation.common.DegreeFormat.Degrees;
+import static slash.navigation.common.UnitSystem.Metric;
 
 /**
  * A model for {@link UnitSystem}.
@@ -38,16 +40,30 @@ import static slash.navigation.common.UnitSystem.METRIC;
 
 public class UnitSystemModel {
     private static final String UNIT_SYSTEM_PREFERENCE = "unitSystem";
+    private static final String DEGREE_FORMAT_PREFERENCE = "degreeFormat";
     private static final Preferences preferences = Preferences.userNodeForPackage(UnitSystemModel.class);
 
     private EventListenerList listenerList = new EventListenerList();
 
     public UnitSystem getUnitSystem() {
-        return UnitSystem.valueOf(preferences.get(UNIT_SYSTEM_PREFERENCE, METRIC.toString()));
+        try {
+            return UnitSystem.valueOf(preferences.get(UNIT_SYSTEM_PREFERENCE, Metric.toString()));
+        } catch (IllegalArgumentException e) {
+            return Metric;
+        }
     }
 
     public void setUnitSystem(UnitSystem unitSystem) {
         preferences.put(UNIT_SYSTEM_PREFERENCE, unitSystem.toString());
+        fireChanged();
+    }
+
+    public DegreeFormat getDegreeFormat() {
+        return DegreeFormat.valueOf(preferences.get(DEGREE_FORMAT_PREFERENCE, Degrees.toString()));
+    }
+
+    public void setDegreeFormat(DegreeFormat degreeFormat) {
+        preferences.put(DEGREE_FORMAT_PREFERENCE, degreeFormat.toString());
         fireChanged();
     }
 

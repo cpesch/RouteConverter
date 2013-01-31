@@ -22,15 +22,16 @@
 
 package slash.navigation.common;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.common.UnitConversion.ddmm2degrees;
-import static slash.navigation.common.UnitConversion.degrees2ddmm;
-import static slash.navigation.common.UnitConversion.feetToMeters;
-import static slash.navigation.common.UnitConversion.kilometerToStatuteMiles;
-import static slash.navigation.common.UnitConversion.kmhToMs;
-import static slash.navigation.common.UnitConversion.msToKmh;
+import static slash.common.TestCase.assertEquals;
+import static slash.navigation.common.Orientation.East;
+import static slash.navigation.common.Orientation.North;
+import static slash.navigation.common.Orientation.South;
+import static slash.navigation.common.Orientation.West;
+import static slash.navigation.common.UnitConversion.*;
 
 public class UnitConversionTest {
     @Test
@@ -50,17 +51,44 @@ public class UnitConversionTest {
     }
 
     @Test
-    public void testDegrees2Ddmm() {
-        assertDoubleEquals(4837.4374, degrees2ddmm(48.6239566));
-        assertDoubleEquals(903.4036, degrees2ddmm(9.0567266));
-
-        assertDoubleEquals(5047.5657, degrees2ddmm(50.79276));
-        assertDoubleEquals(927.1962, degrees2ddmm(9.45327));
+    public void testDegrees2Nmea() {
+        assertEquals(new ValueAndOrientation(4837.4374, North), latitude2nmea(48.6239566));
+        assertEquals(new ValueAndOrientation(903.4036, East), longitude2nmea(9.0567266));
+        assertEquals(new ValueAndOrientation(5047.5656, South), latitude2nmea(-50.79276));
+        assertEquals(new ValueAndOrientation(927.1961, West), longitude2nmea(-9.45327));
     }
 
     @Test
+    public void testNmea2Degrees() {
+        assertDoubleEquals(48.6239566, nmea2degrees(new ValueAndOrientation(4837.4374, East)));
+        assertDoubleEquals(9.0567266, nmea2degrees(new ValueAndOrientation(903.4036, North)));
+        assertDoubleEquals(-50.7927616, nmea2degrees(new ValueAndOrientation(5047.5657, West)));
+        assertDoubleEquals(-9.45327, nmea2degrees(new ValueAndOrientation(927.1962, South)));
+    }
+
+    @Test
+    public void testDegrees2Ddmm() {
+        assertEquals("E 9° 3.343'", longitude2ddmm(9.0557233));
+        assertEquals("N 48° 37.437'", latitude2ddmm(48.6239566));
+    }
+
+    @Test
+    @Ignore // TODO
     public void testDdmm2Degrees() {
-        assertDoubleEquals(48.6239566, ddmm2degrees(4837.4374));
-        assertDoubleEquals(9.0557233, ddmm2degrees(903.3434));
+        assertEquals(9.0557233, ddmm2longitude("E 9° 3.343'"));
+        assertEquals(48.6239566, ddmm2latitude("N 48° 37.437'"));
+    }
+
+    @Test
+    public void testDegrees2Ddmmss() {
+        assertEquals("E 9° 3' 20.6\"", longitude2ddmmss(9.0557233));
+        assertEquals("N 48° 37' 26.2\"", latitude2ddmmss(48.6239566));
+    }
+
+    @Test
+    @Ignore // TODO
+    public void testDdmmss2Degrees() {
+        assertEquals(9.0557233, ddmmss2longitude("E 9° 3' 20.6\""));
+        assertEquals(48.6239566, ddmmss2latitude("N 48° 37' 26.2\""));
     }
 }

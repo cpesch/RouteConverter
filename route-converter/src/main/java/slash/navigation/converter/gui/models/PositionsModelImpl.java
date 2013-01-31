@@ -49,7 +49,8 @@ import static slash.navigation.converter.gui.helper.PositionHelper.extractCommen
 import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractTime;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitudeOrLatitude;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitude;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
@@ -94,9 +95,9 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLongitude());
+                return formatLongitude(position.getLongitude());
             case LATITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLatitude());
+                return formatLatitude(position.getLatitude());
             case ELEVATION_COLUMN_INDEX:
                 return extractElevation(position);
             case SPEED_COLUMN_INDEX:

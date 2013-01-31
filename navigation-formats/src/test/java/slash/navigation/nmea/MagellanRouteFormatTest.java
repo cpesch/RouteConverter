@@ -89,10 +89,10 @@ public class MagellanRouteFormatTest {
     @Test
     public void testParsePMGNWPL() {
         NmeaPosition position = format.parsePosition("$PMGNWPL,4808.98261,N,01135.84141,E,54.5,M,Ifflandstrasse,,a*65");
-        assertDoubleEquals(4808.98261, position.getLatitudeAsDdmm());
-        assertDoubleEquals(1135.84141, position.getLongitudeAsDdmm());
-        assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getEastOrWest());
+        assertDoubleEquals(4808.98261, position.getLatitudeAsValueAndOrientation().getValue());
+        assertDoubleEquals(1135.84141, position.getLongitudeAsValueAndOrientation().getValue());
+        assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
+        assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
         assertDoubleEquals(11.5973568, position.getLongitude());
         assertDoubleEquals(48.1497101, position.getLatitude());
         assertDoubleEquals(54.5, position.getElevation());

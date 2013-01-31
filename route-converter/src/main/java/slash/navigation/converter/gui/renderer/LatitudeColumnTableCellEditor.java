@@ -24,7 +24,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitudeOrLatitude;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatLatitude;
 
 /**
  * Renders the latitude column of the positions table.
@@ -42,6 +42,6 @@ public class LatitudeColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(NavigationPosition position) {
-        return formatLongitudeOrLatitude(position.getLatitude());
+        return formatLatitude(position.getLatitude());
     }
 }

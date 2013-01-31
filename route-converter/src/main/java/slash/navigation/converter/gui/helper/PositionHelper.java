@@ -23,8 +23,9 @@ package slash.navigation.converter.gui.helper;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.UnitSystem;
+import slash.navigation.converter.gui.RouteConverter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,7 +38,6 @@ import static java.lang.Math.round;
 import static java.lang.String.format;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.fromDate;
 
@@ -85,17 +85,18 @@ public class PositionHelper {
         return formatElevation(position.getElevation());
     }
 
-    public static String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
+    public static String formatLongitude(Double longitude) {
+        if (longitude == null)
             return "";
-        String result = formatPositionAsString(longitudeOrLatitude) + " ";
-        if (abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        return degreeFormat.longitudeToDegrees(longitude);
+    }
+
+    public static String formatLatitude(Double latitude) {
+        if (latitude == null)
+            return "";
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        return degreeFormat.latitudeToDegrees(latitude);
     }
 
     private static String formatSpeed(Double speed) {
