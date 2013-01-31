@@ -95,11 +95,14 @@ public class AddPositionAction extends FrameAction {
         boolean hasInsertedRowInMapCenter = false;
         List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
         int[] rowIndices = Range.revert(table.getSelectedRows());
-        for (int aReverted : rowIndices) {
-            int row = rowIndices.length > 0 ? aReverted : table.getRowCount();
+        // append to table if there is nothing selected
+        boolean areRowsSelected = rowIndices.length > 0;
+        if (!areRowsSelected)
+            rowIndices = new int[]{table.getRowCount()};
+        for (int row : rowIndices) {
             int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
 
-            NavigationPosition center = rowIndices.length > 0 ? calculateCenter(row) :
+            NavigationPosition center = areRowsSelected ? calculateCenter(row) :
                     positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
             if (center == null) {
                 // only insert row in map center once
