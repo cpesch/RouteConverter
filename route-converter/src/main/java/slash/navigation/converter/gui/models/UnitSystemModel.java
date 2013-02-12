@@ -59,7 +59,11 @@ public class UnitSystemModel {
     }
 
     public DegreeFormat getDegreeFormat() {
-        return DegreeFormat.valueOf(preferences.get(DEGREE_FORMAT_PREFERENCE, Degrees.toString()));
+        try {
+            return DegreeFormat.valueOf(preferences.get(DEGREE_FORMAT_PREFERENCE, Degrees.toString()));
+        } catch (IllegalArgumentException e) {
+            return Degrees;
+        }
     }
 
     public void setDegreeFormat(DegreeFormat degreeFormat) {
