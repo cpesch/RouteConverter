@@ -363,7 +363,7 @@ public class NavigationFormatParser {
     }
 
     private void postProcessRoute(BaseRoute routeToWrite, NavigationFormat format, boolean duplicateFirstPosition) {
-        if (format instanceof NmnFormat && duplicateFirstPosition)
+        if ((format instanceof NmnFormat || format instanceof CoPilotFormat) && duplicateFirstPosition)
             routeToWrite.remove(0);
     }
 
