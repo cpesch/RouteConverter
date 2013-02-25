@@ -88,6 +88,7 @@ import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
+import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3RouteFormat;
@@ -737,7 +738,7 @@ public class ConvertPanel implements PanelInTab {
         if (file.getParent() != null)
             preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getName(), file.getParent());
 
-        boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
+        boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format) || format instanceof CoPilotFormat;
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {

@@ -301,6 +301,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asNmnUrlPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asNokiaLandmarkExchangePosition() {
         return asWgs84Position();
     }

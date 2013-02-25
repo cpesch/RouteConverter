@@ -49,6 +49,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import static java.io.File.separatorChar;
+import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
@@ -309,7 +310,7 @@ public class NavigationFormatParser {
         int startIndex = 0;
         for (int i = 0; i < targets.length; i++) {
             OutputStream target = targets[i];
-            int endIndex = Math.min(startIndex + writeInOneChunk, positionsToWrite);
+            int endIndex = min(startIndex + writeInOneChunk, positionsToWrite);
             renameRoute(route, routeToWrite, startIndex, endIndex, i, targets);
             format.write(routeToWrite, target, startIndex, endIndex);
             log.info("Wrote position list from " + startIndex + " to " + endIndex);
