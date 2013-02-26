@@ -32,7 +32,6 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.max;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
@@ -140,7 +139,7 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
         List<Wgs84Position> positions = route.getPositions();
         // idea from forum: add start point from previous route section since your not at the
         // last position of the previous segment heading for the first position of the next segment
-        startIndex = max(startIndex - 1, 0);
+        // startIndex = max(startIndex - 1, 0);
         writer.println(createURL(positions, startIndex, endIndex));
         writer.println();
     }
