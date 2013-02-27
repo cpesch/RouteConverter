@@ -83,20 +83,20 @@ public class UnitConversion {
     }
 
 
-    public static String longitude2ddmm(double longitude) {
-        double mm = abs(longitude);
+    private static String coordinate2ddmm(double coordinate, Orientation positive, Orientation negative) {
+        double mm = abs(coordinate);
         double dd = floor(mm);
         mm -= dd;
         mm *= 60.0;
-        return format(ENGLISH, "%s %.0f° %.3f'", longitude >= 0.0 ? "E" : "W", dd, mm);
+        return format(ENGLISH, "%s %.0f° %.3f'", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm);
+    }
+
+    public static String longitude2ddmm(double longitude) {
+        return coordinate2ddmm(longitude, East, West);
     }
 
     public static String latitude2ddmm(double latitude) {
-        double mm = abs(latitude);
-        double dd = floor(mm);
-        mm -= dd;
-        mm *= 60.0;
-        return format(ENGLISH, "%s %.0f° %.3f'", latitude >= 0.0 ? "N" : "S", dd, mm);
+        return coordinate2ddmm(latitude, North, South);
     }
 
     public static double ddmm2longitude(String longitude) {
@@ -107,15 +107,16 @@ public class UnitConversion {
         return -1;
     }
 
-    public static String longitude2ddmmss(double longitude) {
-        double dd = floor(longitude);
+
+    private static String coordinate2ddmmss(double coordinate, Orientation positive, Orientation negative) {
+        double dd = floor(coordinate);
         if (dd < 0)
             dd = dd + 1;
 
-        double fractionAfterDecimal = abs(longitude - dd);
-        double secondsWithoutMinutres = fractionAfterDecimal * 3600.0;
-        double mm = floor(secondsWithoutMinutres / 60.0);
-        double sss = secondsWithoutMinutres - mm * 60.0;
+        double fractionAfterDecimal = abs(coordinate - dd);
+        double secondsWithoutMinutes = fractionAfterDecimal * 3600.0;
+        double mm = floor(secondsWithoutMinutes / 60.0);
+        double sss = secondsWithoutMinutes - mm * 60.0;
 
         if (rint(sss) == 60.0) {
             mm = mm + 1;
@@ -131,34 +132,15 @@ public class UnitConversion {
             mm = 0;
         }
 
-        return format(ENGLISH, "%s %.0f° %.0f' %.1f\"", longitude >= 0.0 ? "E" : "W", abs(dd), mm, sss);
+        return format(ENGLISH, "%s %.0f° %.0f' %.3f\"", coordinate >= 0.0 ? positive.value() : negative.value(), abs(dd), mm, sss);
+    }
+
+    public static String longitude2ddmmss(double longitude) {
+        return coordinate2ddmmss(longitude, East, West);
     }
 
     public static String latitude2ddmmss(double latitude) {
-        double dd = floor(latitude);
-        if (dd < 0)
-            dd = dd + 1;
-
-        double fractionAfterDecimal = abs(latitude - dd);
-        double secondsWithoutMinutres = fractionAfterDecimal * 3600.0;
-        double mm = floor(secondsWithoutMinutres / 60.0);
-        double sss = secondsWithoutMinutres - mm * 60.0;
-
-        if (rint(sss) == 60.0) {
-            mm = mm + 1;
-            sss = 0;
-        }
-
-        if (rint(mm) == 60.0) {
-            if (dd < 0)
-                dd = dd - 1;
-            else // ( dd => 0 )
-                dd = dd + 1;
-
-            mm = 0;
-        }
-
-        return format(ENGLISH, "%s %.0f° %.0f' %.1f\"", latitude >= 0.0 ? "N" : "S", abs(dd), mm, sss);
+        return coordinate2ddmmss(latitude, North, South);
     }
 
     public static double ddmmss2longitude(String longitude) {
