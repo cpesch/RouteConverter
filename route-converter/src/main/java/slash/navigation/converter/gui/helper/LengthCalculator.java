@@ -26,7 +26,6 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.ListDataEvent;
@@ -36,9 +35,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 
 /**
  * Helps to calculate the length of position list of type route and track.
@@ -68,10 +73,10 @@ public class LengthCalculator {
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignored updates on columns not relevant for length calculation
-                if (e.getType() == TableModelEvent.UPDATE &&
-                        !(e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
-                                e.getColumn() == TableModelEvent.ALL_COLUMNS))
+                if (e.getType() == UPDATE &&
+                        !(e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == ALL_COLUMNS))
                     return;
 
                 calculateDistance();
@@ -81,7 +86,7 @@ public class LengthCalculator {
         characteristicsModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
                     return;
                 calculateDistance();
             }
