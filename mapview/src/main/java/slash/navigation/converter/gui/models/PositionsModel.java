@@ -68,5 +68,4 @@ public interface PositionsModel extends TableModel {
     void bottom(int[] rowIndices);
 
     void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);
-    void setValueIsAdjusting(boolean valueIsAdjusting);
 }
