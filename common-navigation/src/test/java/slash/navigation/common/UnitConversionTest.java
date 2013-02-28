@@ -81,8 +81,8 @@ public class UnitConversionTest {
 
     @Test
     public void testDegrees2Ddmmss() {
-        assertEquals("E 9° 3' 20.6\"", longitude2ddmmss(9.0557233));
-        assertEquals("N 48° 37' 26.2\"", latitude2ddmmss(48.6239566));
+        assertEquals("E 9° 3' 20.604\"", longitude2ddmmss(9.0557233));
+        assertEquals("N 48° 37' 26.244\"", latitude2ddmmss(48.6239566));
     }
 
     @Test
