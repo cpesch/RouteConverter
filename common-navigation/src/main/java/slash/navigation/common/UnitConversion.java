@@ -84,10 +84,9 @@ public class UnitConversion {
 
 
     private static String coordinate2ddmm(double coordinate, Orientation positive, Orientation negative) {
-        double mm = abs(coordinate);
-        double dd = floor(mm);
-        mm -= dd;
-        mm *= 60.0;
+        double absolute = abs(coordinate);
+        double dd = floor(absolute);
+        double mm = (absolute - dd) * 60.0;
         return format(ENGLISH, "%s %.0f° %.3f'", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm);
     }
 
@@ -109,30 +108,20 @@ public class UnitConversion {
 
 
     private static String coordinate2ddmmss(double coordinate, Orientation positive, Orientation negative) {
-        double dd = floor(coordinate);
-        if (dd < 0)
-            dd = dd + 1;
-
-        double fractionAfterDecimal = abs(coordinate - dd);
-        double secondsWithoutMinutes = fractionAfterDecimal * 3600.0;
-        double mm = floor(secondsWithoutMinutes / 60.0);
-        double sss = secondsWithoutMinutes - mm * 60.0;
-
+        double absolute = abs(coordinate);
+        double dd = floor(absolute);
+        double minutes = (absolute - dd) * 60.0;
+        double mm = floor(minutes);
+        double sss = (minutes - mm) * 60.0;
         if (rint(sss) == 60.0) {
-            mm = mm + 1;
+            mm++;
             sss = 0;
         }
-
         if (rint(mm) == 60.0) {
-            if (dd < 0)
-                dd = dd - 1;
-            else // ( dd => 0 )
-                dd = dd + 1;
-
+            dd++;
             mm = 0;
         }
-
-        return format(ENGLISH, "%s %.0f° %.0f' %.3f\"", coordinate >= 0.0 ? positive.value() : negative.value(), abs(dd), mm, sss);
+        return format(ENGLISH, "%s %.0f° %.0f' %.3f\"", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm, sss);
     }
 
     public static String longitude2ddmmss(double longitude) {

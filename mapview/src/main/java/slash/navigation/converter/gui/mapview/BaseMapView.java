@@ -30,9 +30,12 @@ import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.TableModelEvent;
@@ -85,6 +88,10 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.Positions.center;
+import static slash.navigation.base.Positions.northEast;
+import static slash.navigation.base.Positions.southWest;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
@@ -93,10 +100,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.base.Positions.center;
-import static slash.navigation.base.Positions.northEast;
-import static slash.navigation.base.Positions.southWest;
 
 /**
  * Base implementation for a component that displays the positions of a position list on a map.
@@ -135,6 +138,7 @@ public abstract class BaseMapView implements MapView {
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
     private TravelMode travelMode;
+    private UnitSystemModel unitSystemModel;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private PositionAugmenter positionAugmenter;
     private PositionReducer positionReducer;
@@ -147,9 +151,10 @@ public abstract class BaseMapView implements MapView {
                            CharacteristicsModel characteristicsModel,
                            PositionAugmenter positionAugmenter,
                            boolean recenterAfterZooming,
-                           TravelMode travelMode, boolean avoidHighways, boolean avoidTolls) {
+                           TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
+                           UnitSystemModel unitSystemModel) {
         initializeBrowser();
-        setModel(positionsModel, positionsSelectionModel, characteristicsModel);
+        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
         this.recenterAfterZooming = recenterAfterZooming;
         this.travelMode = travelMode;
@@ -161,9 +166,11 @@ public abstract class BaseMapView implements MapView {
 
     protected void setModel(PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
-                            CharacteristicsModel characteristicsModel) {
+                            CharacteristicsModel characteristicsModel,
+                            final UnitSystemModel unitSystemModel) {
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
+        this.unitSystemModel = unitSystemModel;
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -210,6 +217,11 @@ public abstract class BaseMapView implements MapView {
                 if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
                     return;
                 updateRouteButDontRecenter();
+            }
+        });
+        unitSystemModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                setDegreeFormat();
             }
         });
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
@@ -676,6 +688,10 @@ public abstract class BaseMapView implements MapView {
         this.avoidTolls = avoidTolls;
         if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
+    }
+
+    protected void setDegreeFormat() {
+        executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
     }
 
     public NavigationPosition getCenter() {

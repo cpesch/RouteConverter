@@ -357,7 +357,8 @@ public class RouteConverter extends SingleFrameApplication {
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         getTravelModePreference(),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
-                        preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true));
+                        preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true),
+                        getUnitSystemModel());
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
@@ -387,7 +388,7 @@ public class RouteConverter extends SingleFrameApplication {
                 profileView = new ProfileView();
                 profileView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
-                        getUnitSystemModel().getUnitSystem(),
+                        getUnitSystemModel(),
                         getProfileModePreference());
                 elevationPanel.add(profileView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setTransferHandler(new PanelDropHandler());
@@ -399,12 +400,6 @@ public class RouteConverter extends SingleFrameApplication {
                 profileSplitPane.setDividerLocation(location);
                 log.fine("Initialized elevation divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
-
-                getUnitSystemModel().addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        profileView.setUnitSystem(getUnitSystemModel().getUnitSystem());
-                    }
-                });
             }
         });
     }

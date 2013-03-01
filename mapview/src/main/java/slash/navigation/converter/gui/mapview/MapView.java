@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 
 import java.awt.*;
 
@@ -40,7 +41,8 @@ public interface MapView extends PositionsSelectionModel {
                     CharacteristicsModel characteristicsModel,
                     PositionAugmenter positionAugmenter,
                     boolean recenterAfterZooming,
-                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls);
+                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
+                    UnitSystemModel unitSystemModel);
     boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
@@ -53,6 +55,7 @@ public interface MapView extends PositionsSelectionModel {
     void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
     void setAvoidTolls(boolean avoidTolls);
+
     NavigationPosition getCenter();
     void setCenter(NavigationPosition center);
     void print(String title, boolean withDirections);

@@ -154,6 +154,10 @@
                new google.maps.LatLng(northEastLatitude, northEastLongitude)));
    }
 
+   function setDegreeFormat(degreeFormat) {
+       latLngControl.setDegreeFormat(degreeFormat);
+   }
+
    var callbackQueue = [];
 
    function getCallbacks() {
@@ -473,7 +477,7 @@
        return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
-   var initialized, map, directionsService, xmlhttp;
+   var initialized, map, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;
@@ -696,7 +700,7 @@
            }
 
            try {
-               var latLngControl = new LatLngControl(map);
+               latLngControl = new LatLngControl(map);
                google.maps.event.addListener(map, 'mouseover', function (event) {
                    latLngControl.set('visible', true);
                });

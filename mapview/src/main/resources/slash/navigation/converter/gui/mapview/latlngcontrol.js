@@ -24,6 +24,8 @@ function LatLngControl(map) {
     // Register an MVC property to indicate whether this custom control
     // is visible or hidden. Initially hide control until mouse is over map.
     this.set('visible', false);
+
+    this.degreeFormat = 'Degrees';
 }
 
 // Extend OverlayView so we can access MapCanvasProjection.
@@ -51,6 +53,34 @@ LatLngControl.prototype.visible_changed = function () {
     this.node_.style.display = this.get('visible') ? '' : 'none';
 };
 
+LatLngControl.prototype.setDegreeFormat = function (degreeFormat) {
+    this.degreeFormat = degreeFormat;
+};
+
+function coordinate2ddmm(coordinate, positive, negative) {
+    var absolute = Math.abs(coordinate);
+    var dd = Math.floor(absolute);
+    var mm = (absolute - dd) * 60;
+    return (coordinate >= 0 ? positive : negative) + " " + dd.toFixed(0) + "&deg; " + mm.toFixed(3) + "'";
+}
+
+function coordinate2ddmmss(coordinate, positive, negative) {
+    var absolute = Math.abs(coordinate);
+    var dd = Math.floor(absolute);
+    var minutes = (absolute - dd) * 60;
+    var mm = Math.floor(minutes);
+    var sss = (minutes - mm) * 60;
+    if (Math.round(sss) == 60.0) {
+        mm++;
+        sss = 0;
+    }
+    if (Math.round(mm) == 60.0) {
+        dd++;
+        mm = 0;
+    }
+    return (coordinate >= 0 ? positive : negative) + " " + dd.toFixed(0) + "&deg; " + mm.toFixed(0) + "' " + sss.toFixed(3) + "&quot;";
+}
+
 /**
  * Specified LatLng value is used to calculate pixel coordinates and
  * update the control display. Container is also repositioned.
@@ -64,10 +94,22 @@ LatLngControl.prototype.updatePosition = function (latLng) {
     this.node_.style.left = point.x + this.ANCHOR_OFFSET_.x + 'px';
     this.node_.style.top = point.y + this.ANCHOR_OFFSET_.y + 'px';
 
+    switch(this.degreeFormat) {
+        case 'Degrees':
+            longitude = latLng.lng().toFixed(7);
+            latitude = latLng.lat().toFixed(7);
+            break;
+        case 'Degrees_Minutes':
+            longitude = coordinate2ddmm(latLng.lng(), 'E', 'W');
+            latitude = coordinate2ddmm(latLng.lat(), 'N', 'S');
+            break;
+        case 'Degrees_Minutes_Seconds':
+            longitude = coordinate2ddmmss(latLng.lng(), 'E', 'W');
+            latitude = coordinate2ddmmss(latLng.lat(), 'N', 'S');
+            break;
+    }
+
     // Update control to display latlng and coordinates.
-    this.node_.innerHTML = [
-        latLng.lng().toFixed(7) + ',' + latLng.lat().toFixed(7),
-        '<br/>'
-    ].join('');
-}
+    this.node_.innerHTML = longitude + ',' + latitude + '<br/>';
+};
 

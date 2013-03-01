@@ -231,7 +231,7 @@ public class OptionsPanel {
                 r.getUnitSystemModel().setDegreeFormat(degreeFormat);
             }
         });
-        comboBoxDegreeFormat.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
+        comboBoxDegreeFormat.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
 
         comboBoxTimeZone.setModel(new DefaultComboBoxModel(getTimeZoneIds()));
         comboBoxTimeZone.addItemListener(new ItemListener() {

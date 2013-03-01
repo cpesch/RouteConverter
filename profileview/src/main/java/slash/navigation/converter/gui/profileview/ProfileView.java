@@ -32,14 +32,17 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.PatchedXYSeries;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.ProfileModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
-import slash.navigation.common.UnitSystem;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -68,11 +71,17 @@ public class ProfileView implements PositionsSelectionModel {
     private ProfileModel profileModel;
 
     public void initialize(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel,
-                           UnitSystem unitSystem, ProfileMode profileMode) {
+                           final UnitSystemModel unitSystemModel, ProfileMode profileMode) {
         this.positionsModel = positionsModel;
         PatchedXYSeries series = new PatchedXYSeries("Profile");
-        this.profileModel = new ProfileModel(positionsModel, series, unitSystem, profileMode);
+        this.profileModel = new ProfileModel(positionsModel, series, unitSystemModel.getUnitSystem(), profileMode);
         XYSeriesCollection dataset = new XYSeriesCollection(series);
+
+        unitSystemModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                setUnitSystem(unitSystemModel.getUnitSystem());
+            }
+        });
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
