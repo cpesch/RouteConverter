@@ -74,6 +74,23 @@ public abstract class RouteComments {
         }
     }
 
+    private static final Pattern ROUTE_PATTERN = Pattern.compile("(.*)(\\d+)(.*)");
+
+    private static String getRouteName(String name, int index) {
+        return name + " (" + index + ")";
+    }
+
+    public static String getRouteName(BaseRoute route, int index) {
+        String routeName = route.getName();
+        Matcher matcher = ROUTE_PATTERN.matcher(routeName);
+        if (matcher.matches()) {
+            String prefix = trim(matcher.group(1));
+            String postfix = trim(matcher.group(3));
+            return (prefix != null ? prefix : "") + index + (postfix != null ? postfix : "");
+        }
+        return getRouteName(routeName, index);
+    }
+
     @SuppressWarnings("unchecked")
     public static String createRouteDescription(BaseRoute route) {
         String name = trim(route.getName());

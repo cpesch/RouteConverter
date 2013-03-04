@@ -33,6 +33,9 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import static java.lang.Math.max;
+import static slash.navigation.base.RouteComments.getRouteName;
+
 /**
  * {@link ActionListener} that splits the position list of a {@link PositionsModel} at
  * the selected rows of a {@link JTable} and adds them as separate position lists to a
@@ -60,9 +63,9 @@ public class SplitPositionListAction extends FrameAction {
 
             for (int i = selectedRows.length - 1; i >= 0; i--) {
                 int fromIndex = selectedRows[i];
-                fromIndex = Math.max(fromIndex, 0);
+                fromIndex = max(fromIndex, 0);
                 int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
-                toIndex = Math.max(toIndex, 0);
+                toIndex = max(toIndex, 0);
                 if (fromIndex == 0 && toIndex == 0)
                     break;
 
@@ -71,11 +74,11 @@ public class SplitPositionListAction extends FrameAction {
                 NavigationFormat format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
-                        format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
+                        format.createRoute(selectedRoute.getCharacteristics(), getRouteName(selectedRoute, routeInsertIndex), positions);
                 formatAndRoutesModel.addPositionList(routeInsertIndex, target);
             }
 
-            final int selectedRow = Math.max(selectedRows[selectedRows.length - 1] - 1, 0);
+            final int selectedRow = max(selectedRows[selectedRows.length - 1] - 1, 0);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);

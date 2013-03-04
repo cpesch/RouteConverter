@@ -22,7 +22,6 @@ package slash.navigation.bcr;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.RouteComments;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,14 +35,16 @@ import static slash.common.TestCase.assertNotNull;
 import static slash.common.TestCase.assertNull;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.base.RouteComments.commentPositions;
+import static slash.navigation.base.RouteComments.getNumberedPosition;
+import static slash.navigation.base.RouteComments.getRouteName;
 import static slash.navigation.common.NumberPattern.Description_Only;
 import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
 import static slash.navigation.common.NumberPattern.Number_Only;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
-import static slash.navigation.base.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
-    BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
+    BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(2, 1, 0, "b");
     BcrPosition c = new BcrPosition(3, 2, 0, "c");
@@ -444,7 +445,7 @@ public class BcrRouteTest {
             assertNull(positions.get(i).getComment());
         }
 
-        RouteComments.commentPositions(positions);
+        commentPositions(positions);
 
         for (int i = 0; i < 10; i++) {
             assertEquals("Position " + (i + 1), positions.get(i).getComment());
@@ -458,7 +459,7 @@ public class BcrRouteTest {
             positions.add(new BcrPosition(i, i, i, null));
         }
 
-        RouteComments.commentPositions(positions);
+        commentPositions(positions);
 
         positions.get(9).setComment("Position 7: Hamburg");
         positions.get(7).setComment("Hamburg (Position 7)");
@@ -469,13 +470,28 @@ public class BcrRouteTest {
         positions.remove(2);
         positions.remove(1);
 
-        RouteComments.commentPositions(positions);
+        commentPositions(positions);
 
         assertEquals("Position 1", positions.get(0).getComment());
         assertEquals("Hamburg", positions.get(1).getComment());
         assertEquals("Position 3", positions.get(2).getComment());
         assertEquals("Hamburg (Position 4)", positions.get(3).getComment());
         assertEquals("Position 5: Hamburg", positions.get(4).getComment());
+    }
+
+    @Test
+    public void testNameRoute() {
+        route.setName("r");
+        assertEquals("r (1)", getRouteName(route, 1));
+
+        route.setName("r (1)");
+        assertEquals("r (2)", getRouteName(route, 2));
+
+        route.setName("r (1) s");
+        assertEquals("r (2) s", getRouteName(route, 2));
+
+        route.setName("r (1)(1)");
+        assertEquals("r (1)(2)", getRouteName(route, 2));
     }
 
     @Test
