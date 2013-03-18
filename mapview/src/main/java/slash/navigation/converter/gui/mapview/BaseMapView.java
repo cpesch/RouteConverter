@@ -836,12 +836,11 @@ public abstract class BaseMapView implements MapView {
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
             buffer.append(lastSegment).append(");\n");
-            if (lastSegment)
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
+            try {
+                sleep(preferences.getInt("routeSegmentTimeout", 500));
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
             executeScript(buffer.toString());
         }
     }
