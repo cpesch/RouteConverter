@@ -706,7 +706,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private int getZoom() {
-        return preferences.getInt(CENTER_ZOOM_PREFERENCE, 1);
+        return preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
     }
 
     private void setZoom(int zoom) {
