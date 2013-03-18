@@ -52,6 +52,7 @@ public interface MapView extends PositionsSelectionModel {
 
     void resize();
     void setRecenterAfterZooming(boolean recenterAfterZooming);
+    void setShowCoordinates(boolean showCoordinates);
     void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
     void setAvoidTolls(boolean avoidTolls);

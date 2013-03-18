@@ -186,6 +186,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
+    public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
@@ -733,6 +734,11 @@ public class RouteConverter extends SingleFrameApplication {
         return mapView != null ? mapView.getCenter() : new Wgs84Position(-41.0, 41.0, null, null, null, null);
     }
 
+    private void setProfileMode(ProfileMode profileMode) {
+        preferences.put(PROFILE_MODE_PREFERENCE, profileMode.toString());
+        profileView.setProfileMode(profileMode);
+    }
+
     public void addMapViewListener(MapViewListener mapViewListener) {
         if (mapView != null)
             mapView.addMapViewListener(mapViewListener);
@@ -744,9 +750,14 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.setTravelMode(travelMode);
     }
 
-    private void setProfileMode(ProfileMode profileMode) {
-        preferences.put(PROFILE_MODE_PREFERENCE, profileMode.toString());
-        profileView.setProfileMode(profileMode);
+    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
+        if (mapView != null)
+            mapView.setRecenterAfterZooming(recenterAfterZooming);
+    }
+
+    public void setShowCoordinates(boolean showCoordinates) {
+        if (mapView != null)
+            mapView.setShowCoordinates(showCoordinates);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
@@ -757,11 +768,6 @@ public class RouteConverter extends SingleFrameApplication {
     public void setAvoidTolls(boolean avoidTolls) {
         if (mapView != null)
             mapView.setAvoidTolls(avoidTolls);
-    }
-
-    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
-        if (mapView != null)
-            mapView.setRecenterAfterZooming(recenterAfterZooming);
     }
 
     // elevation view related helpers

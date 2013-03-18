@@ -672,6 +672,10 @@ public abstract class BaseMapView implements MapView {
         this.recenterAfterZooming = recenterAfterZooming;
     }
 
+    public void setShowCoordinates(boolean showCoordinates) {
+        executeScript("showCoordinates(" + showCoordinates + ");");
+    }
+
     public void setTravelMode(TravelMode travelMode) {
         this.travelMode = travelMode;
         if (positionsModel.getRoute().getCharacteristics() == Route)

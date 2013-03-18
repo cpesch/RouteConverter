@@ -154,6 +154,12 @@
                new google.maps.LatLng(northEastLatitude, northEastLongitude)));
    }
 
+   var _showCoordinates = false;
+
+   function showCoordinates(showCoordinates) {
+       _showCoordinates = showCoordinates;
+   }
+
    function setDegreeFormat(degreeFormat) {
        latLngControl.setDegreeFormat(degreeFormat);
    }
@@ -702,7 +708,7 @@
            try {
                latLngControl = new LatLngControl(map);
                google.maps.event.addListener(map, 'mouseover', function (event) {
-                   latLngControl.set('visible', true);
+                   latLngControl.set('visible', _showCoordinates);
                });
                google.maps.event.addListener(map, 'mouseout', function (event) {
                    latLngControl.set('visible', false);
