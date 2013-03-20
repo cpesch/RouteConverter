@@ -362,6 +362,7 @@
 
                if (lastSegment)
                    removeDirections();
+           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
            } else {
                setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
