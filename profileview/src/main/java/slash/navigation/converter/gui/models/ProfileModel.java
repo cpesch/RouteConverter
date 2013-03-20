@@ -112,7 +112,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     private Double formatSpeed(Double speed) {
-        return unitSystem.valueToUnit(speed);
+        return unitSystem.distanceToUnit(speed);
     }
 
     public UnitSystem getUnitSystem() {
