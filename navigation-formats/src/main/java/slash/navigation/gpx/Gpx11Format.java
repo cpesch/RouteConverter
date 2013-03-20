@@ -78,8 +78,11 @@ public class Gpx11Format extends GpxFormat {
         boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour = gpxType.getCreator() != null &&
                 ("GPSTracker".equals(gpxType.getCreator()) ||
                         "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()) ||
-                        gpxType.getCreator().contains("TrekBuddy") ||
                         gpxType.getCreator().contains("BikeNav"));
+        // Application       Namespace
+        // see above         none :-(
+        // TrekBuddy         rmc, nmea
+        // Bad Elf GPS Pro   badelf
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
             context.appendRoute(wayPointsAsRoute);
@@ -199,7 +202,11 @@ public class Gpx11Format extends GpxFormat {
                     if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // the exceptional case is converted from m/s to Km/h 
-                        if (hasSpeedInMeterPerSecondInsteadOfKilometerPerHour)
+                        if (hasSpeedInMeterPerSecondInsteadOfKilometerPerHour ||
+                                // known applications, see above
+                                element.getPrefix().equals("badelf") ||
+                                element.getPrefix().equals("nmea") ||
+                                element.getPrefix().equals("rmc"))
                             result = asKmh(result);
                     }
                 }
