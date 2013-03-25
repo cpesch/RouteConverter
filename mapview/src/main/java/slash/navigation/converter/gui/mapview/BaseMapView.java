@@ -1318,7 +1318,7 @@ public abstract class BaseMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-            else {
+            else if (positionReducer.hasFilteredVisibleArea()) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
                 if (recenterAfterZooming)
