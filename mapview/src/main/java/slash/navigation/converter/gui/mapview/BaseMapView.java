@@ -143,6 +143,7 @@ public abstract class BaseMapView implements MapView {
     private PositionAugmenter positionAugmenter;
     private PositionReducer positionReducer;
     private ExecutorService executor = Executors.newCachedThreadPool();
+    private int overQueryLimitCount = 0;
 
     // initialization
 
@@ -837,7 +838,7 @@ public abstract class BaseMapView implements MapView {
             boolean lastSegment = (j == directionsCount - 1);
             buffer.append(lastSegment).append(");\n");
             try {
-                sleep(preferences.getInt("routeSegmentTimeout", 500));
+                sleep(preferences.getInt("routeSegmentTimeout", 250));
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -1139,6 +1140,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoom-changed/(.*)$");
     private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
+    private static final Pattern OVER_QUERY_LIMIT_PATTERN = Pattern.compile("^over-query-limit$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
     boolean processCallback(String callback) {
@@ -1258,6 +1260,13 @@ public abstract class BaseMapView implements MapView {
         if (callbackPortMatcher.matches()) {
             int port = parseInt(callbackPortMatcher.group(1));
             fireReceivedCallback(port);
+            return true;
+        }
+
+        Matcher overQueryLimitMatcher = OVER_QUERY_LIMIT_PATTERN.matcher(callback);
+        if (overQueryLimitMatcher.matches()) {
+            overQueryLimitCount++;
+            log.warning("Google Directions API is over query limit, count: " + overQueryLimitCount);
             return true;
         }
 
