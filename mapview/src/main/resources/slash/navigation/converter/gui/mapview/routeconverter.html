@@ -156,7 +156,7 @@
 
    var _showCoordinates = false;
 
-   function showCoordinates(showCoordinates) {
+   function setShowCoordinates(showCoordinates) {
        _showCoordinates = showCoordinates;
    }
 
@@ -238,9 +238,9 @@
 
    var markerIcon;
 
-   function addMarker(latitude, longitude, comment) {
+   function addMarker(latitude, longitude, comment, showWaypointDescription) {
        addOverlay(new MarkerWithLabel({position:new google.maps.LatLng(latitude, longitude),
-           title:comment, clickable:false, icon:markerIcon}));
+           title:comment, clickable:false, icon:markerIcon, labelVisible:showWaypointDescription}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {

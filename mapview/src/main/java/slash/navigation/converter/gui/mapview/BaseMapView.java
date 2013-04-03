@@ -132,7 +132,8 @@ public abstract class BaseMapView implements MapView {
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean running = true, recenterAfterZooming, avoidHighways, avoidTolls,
+    private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls,
+            running = true,
             haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
@@ -152,12 +153,15 @@ public abstract class BaseMapView implements MapView {
                            CharacteristicsModel characteristicsModel,
                            PositionAugmenter positionAugmenter,
                            boolean recenterAfterZooming,
+                           boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
         this.recenterAfterZooming = recenterAfterZooming;
+        this.showCoordinates = showCoordinates;
+        this.showWaypointDescription = showWaypointDescription;
         this.travelMode = travelMode;
         this.avoidHighways = avoidHighways;
         this.avoidTolls = avoidTolls;
@@ -674,7 +678,14 @@ public abstract class BaseMapView implements MapView {
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        executeScript("showCoordinates(" + showCoordinates + ");");
+        this.showCoordinates = showCoordinates;
+        setCoordinates();
+    }
+
+    public void setShowWaypointDescription(boolean showWaypointDescription) {
+        this.showWaypointDescription = showWaypointDescription;
+        if (positionsModel.getRoute().getCharacteristics() == Waypoints)
+            update(false);
     }
 
     public void setTravelMode(TravelMode travelMode) {
@@ -693,6 +704,10 @@ public abstract class BaseMapView implements MapView {
         this.avoidTolls = avoidTolls;
         if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
+    }
+
+    protected void setCoordinates() {
+        executeScript("setShowCoordinates(" + showCoordinates + ");");
     }
 
     protected void setDegreeFormat() {
@@ -886,7 +901,8 @@ public abstract class BaseMapView implements MapView {
                 NavigationPosition position = positions.get(i);
                 buffer.append("addMarker(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(",").
-                        append("\"").append(escape(position.getComment())).append("\");\n");
+                        append("\"").append(escape(position.getComment())).append("\",").
+                        append(showWaypointDescription).append(");\n");
             }
             executeScript(buffer.toString());
         }

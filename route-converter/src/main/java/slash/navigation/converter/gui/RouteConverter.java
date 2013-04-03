@@ -134,7 +134,9 @@ import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
 import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.feature.client.Feature.hasFeature;
 import static slash.feature.client.Feature.initializePreferences;
+import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
@@ -187,6 +189,7 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
+    public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
     public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
@@ -351,11 +354,15 @@ public class RouteConverter extends SingleFrameApplication {
     private void openMapView() {
         invokeLater(new Runnable() {
             public void run() {
+                if (!hasFeature("degree-format"))
+                    getUnitSystemModel().setDegreeFormat(Degrees);
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getPositionAugmenter(),
-                        preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
+                        hasFeature("recenter-after-zooming") && preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
+                        hasFeature("show-coordinates") && preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
+                        hasFeature("show-waypoint-description") && preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
                         getTravelModePreference(),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
                         preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true),
@@ -758,6 +765,11 @@ public class RouteConverter extends SingleFrameApplication {
     public void setShowCoordinates(boolean showCoordinates) {
         if (mapView != null)
             mapView.setShowCoordinates(showCoordinates);
+    }
+
+    public void setShowWaypointDescription(boolean showWaypointDescription) {
+        if (mapView != null)
+            mapView.setShowWaypointDescription(showWaypointDescription);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {

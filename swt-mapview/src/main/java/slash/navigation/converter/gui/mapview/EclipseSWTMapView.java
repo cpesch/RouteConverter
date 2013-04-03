@@ -242,6 +242,7 @@ public class EclipseSWTMapView extends BaseMapView {
         checkLocalhostResolution();
         checkCallback();
         setDegreeFormat();
+        setCoordinates();
         end = currentTimeMillis();
         log.fine("Browser interaction is running after " + (end - start) + " ms");
     }
