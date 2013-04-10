@@ -93,6 +93,7 @@ import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.Positions.northEast;
 import static slash.navigation.base.Positions.southWest;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
@@ -820,7 +821,7 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
-        int maximumRouteSegmentLength = preferences.getInt("maximumRouteSegmentLength", 8);
+        int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
             StringBuilder buffer = new StringBuilder();
@@ -870,7 +871,7 @@ public abstract class BaseMapView implements MapView {
 
         String color = preferences.get("trackLineColor", "0033FF");
         int width = preferences.getInt("trackLineWidth", 2);
-        int maximumPolylineSegmentLength = preferences.getInt("maximumTrackSegmentLength", 35);
+        int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder buffer = new StringBuilder();
@@ -892,7 +893,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addMarkersToMap(List<NavigationPosition> positions) {
-        int maximumMarkerSegmentLength = preferences.getInt("maximumWaypointSegmentLength", 10);
+        int maximumMarkerSegmentLength = positionReducer.getMaximumSegmentLength(Waypoints);
         int markersCount = ceiling(positions.size(), maximumMarkerSegmentLength, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuilder buffer = new StringBuilder();

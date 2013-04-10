@@ -82,7 +82,8 @@ class PositionReducer {
     }
 
     public List<NavigationPosition> reducePositions(List<NavigationPosition> positions, RouteCharacteristics characteristics) {
-        if (positions.size() < 3)
+        // if it's within one segment, don't reduce the positions
+        if (positions.size() <= getMaximumSegmentLength(characteristics))
             return positions;
 
         int zoom = callback.getZoom();
@@ -137,15 +138,27 @@ class PositionReducer {
         NavigationPosition getSouthWestBounds();
     }
 
+    int getMaximumSegmentLength(RouteCharacteristics characteristics) {
+        switch (characteristics) {
+            case Route:
+                return preferences.getInt("maximumRouteSegmentLength", 8);
+            case Track:
+                return preferences.getInt("maximumTrackSegmentLength", 35);
+            case Waypoints:
+                return preferences.getInt("maximumWaypointSegmentLength", 10);
+            default:
+                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+        }
+    }
 
     private int getMaximumPositionCount(RouteCharacteristics characteristics) {
         switch (characteristics) {
             case Route:
-                return preferences.getInt("maximumRoutePositionCount", 30 * 8);
+                return preferences.getInt("maximumRoutePositionCount", 30 * getMaximumSegmentLength(characteristics));
             case Track:
-                return preferences.getInt("maximumTrackPositionCount", 50 * 35);
+                return preferences.getInt("maximumTrackPositionCount", 50 * getMaximumSegmentLength(characteristics));
             case Waypoints:
-                return preferences.getInt("maximumWaypointPositionCount", 50 * 10);
+                return preferences.getInt("maximumWaypointPositionCount", 50 * getMaximumSegmentLength(characteristics));
             default:
                 throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
         }
