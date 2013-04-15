@@ -1,9 +1,0 @@
-#!/bin/sh
-BASEDIR=`dirname $0`
-if `exec java -jar $BASEDIR/Java6Check.jar`; then
-   echo "java version >= 1.6.0"
-   exec java -XstartOnFirstThread -Xmx256m -jar $BASEDIR/RouteConverterMac.jar
-else
-   echo "java version < 1.6"
-   exit 1
-fi                                   
