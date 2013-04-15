@@ -14,20 +14,11 @@
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>src/main/executable-resources/</directory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-            <fileMode>777</fileMode>
-            <lineEnding>lf</lineEnding>
-        </fileSet>
-        <fileSet>
             <directory>target</directory>
             <includes>
                 <include>${project.artifactId}.jar</include>
             </includes>
-            <outputDirectory>/Contents/MacOS</outputDirectory>
+            <outputDirectory>/Contents/Resources/Java</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
