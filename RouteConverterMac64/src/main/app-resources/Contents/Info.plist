@@ -27,7 +27,7 @@
             <key>JVMVersion</key>
             <string>1.6+</string>
             <key>VMOptions</key>
-            <string>-Xmx1024m</string>
+            <string>-XstartOnFirstThread -d64 -Xmx1024m -Xdock:name=RouteConverter -Dapple.laf.useScreenMenuBar=true</string>
             <key>MainClass</key>
             <string>slash.navigation.converter.gui.RouteConverter</string>
             <key>ClassPath</key>
