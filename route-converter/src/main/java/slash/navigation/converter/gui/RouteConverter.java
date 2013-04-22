@@ -352,10 +352,10 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
+        if (!hasFeature("degree-format"))
+            getUnitSystemModel().setDegreeFormat(Degrees);
         invokeLater(new Runnable() {
             public void run() {
-                if (!hasFeature("degree-format"))
-                    getUnitSystemModel().setDegreeFormat(Degrees);
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
