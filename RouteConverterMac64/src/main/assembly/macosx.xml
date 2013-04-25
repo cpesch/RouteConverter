@@ -19,15 +19,15 @@
                 <include>**/*</include>
             </includes>
             <outputDirectory>/</outputDirectory>
-            <fileMode>777</fileMode>
-            <lineEnding>lf</lineEnding>
+            <fileMode>755</fileMode>
+            <lineEnding>keep</lineEnding>
         </fileSet>
         <fileSet>
             <directory>target</directory>
             <includes>
                 <include>${project.artifactId}.jar</include>
             </includes>
-            <outputDirectory>/Contents/MacOS</outputDirectory>
+            <outputDirectory>/Contents/Resources/Java</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

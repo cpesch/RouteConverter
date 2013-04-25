@@ -57,7 +57,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>                     
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
