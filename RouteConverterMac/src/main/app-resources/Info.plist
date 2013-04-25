@@ -2,32 +2,38 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
         <key>CFBundleExecutable</key>
-        <string>RouteConverter</string>
+        <string>JavaApplicationStub</string>
         <key>CFBundleGetInfoString</key>
         <string>RouteConverter for Mac OS X</string>
         <key>CFBundleIconFile</key>
         <string>RouteConverter.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>routeconverter.com</string>
-        <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>slash.navigation.converter.gui.RouteConverter</string>
         <key>CFBundleName</key>
+        <string>RouteConverter</string>
+        <key>CFBundleDisplayName</key>
         <string>RouteConverter</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
-        <key>CFBundleShortVersionString</key>
-        <string>1.0</string>
         <key>CFBundleSignature</key>
         <string>RTCV</string>
+        <key>CFBundleShortVersionString</key>
+        <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</string>
         <key>CFBundleVersion</key>
-        <string>1.0</string>
-        <key>NSPrincipalClass</key>
-        <string>NSApplication</string>
+        <string>${project.version}-${maven.build.number} ${maven.build.timestamp}</string>
         <key>Java</key>
         <dict>
             <key>JVMVersion</key>
             <string>1.6+</string>
+            <key>VMOptions</key>
+            <string>-XstartOnFirstThread -d32 -Xmx512m -Dapple.laf.useScreenMenuBar=true</string>
+            <key>MainClass</key>
+            <string>slash.navigation.converter.gui.RouteConverter</string>
+            <key>ClassPath</key>
+            <string>$JAVAROOT/RouteConverterMac.jar</string>
         </dict>
     </dict>
 </plist>

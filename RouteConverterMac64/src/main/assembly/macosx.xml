@@ -5,21 +5,24 @@
     <formats>
         <format>zip</format>
     </formats>
-    <fileSets>
-        <fileSet>
-            <directory>src/main/app-resources/</directory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>target</directory>
-            <includes>
-                <include>${project.artifactId}.jar</include>
-            </includes>
+    <files>
+        <file>
+            <source>src/main/app-resources/JavaApplicationStub</source>
+            <outputDirectory>/Contents/MacOS/</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/app-resources/RouteConverter.icns</source>
+            <outputDirectory>/Contents/Resources/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/Info.plist</source>
+            <outputDirectory>/Contents/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>target/${project.artifactId}.jar</source>
             <outputDirectory>/Contents/Resources/Java</outputDirectory>
-        </fileSet>
-    </fileSets>
+        </file>
+    </files>
 </assembly>
-

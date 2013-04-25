@@ -21,6 +21,8 @@
 
     <properties>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+        <!-- workaround for http://jira.codehaus.org/browse/MASSEMBLY-603 -->
+        <maven.build.timestamp>${maven.build.timestamp}</maven.build.timestamp>
     </properties>
 
     <build>

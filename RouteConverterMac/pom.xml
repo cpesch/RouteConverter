@@ -42,6 +42,7 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>META-INF/maven/**</exclude>
                                         <exclude>META-INF/*.txt</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
@@ -49,6 +50,19 @@
                                 </filter>
                             </filters>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
