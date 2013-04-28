@@ -75,6 +75,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
+import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.rest.Credentials;
 
 import javax.help.CSH;
@@ -148,6 +149,7 @@ import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
 import static slash.navigation.converter.gui.profileview.ProfileMode.Speed;
 import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
+import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
@@ -267,7 +269,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void checkForMissingTranslator() {
-        List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, SERBIA, SLOVAKIA, SPAIN, US);
+        List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS, SERBIA, SLOVAKIA, SPAIN, US);
         if (!activeTranslators.contains(Locale.getDefault())) {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), Locale.getDefault().getLanguage()));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
