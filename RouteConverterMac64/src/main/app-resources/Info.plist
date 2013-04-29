@@ -23,7 +23,7 @@
         <key>CFBundleShortVersionString</key>
         <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</string>
         <key>CFBundleVersion</key>
-        <string>${project.version}-${maven.build.number} ${maven.build.timestamp}</string>
+        <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
         <key>Java</key>
         <dict>
             <key>JVMVersion</key>

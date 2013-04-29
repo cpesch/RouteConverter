@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>slash.navigation</groupId>
     <artifactId>RouteConverterMac</artifactId>
     <packaging>jar</packaging>
     <name>The RouteConverter UI tool for Mac OS X</name>
@@ -30,7 +29,7 @@
                                         <Specification-Title>${project.name}</Specification-Title>
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Mac32</Implementation-Vendor>
                                         <Download-At>http://www.routeconverter.com</Download-At>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>

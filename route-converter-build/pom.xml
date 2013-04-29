@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>slash.navigation</groupId>
     <artifactId>route-converter-build</artifactId>
     <packaging>pom</packaging>
     <name>The build parent module</name>
@@ -22,7 +21,7 @@
     <properties>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <!-- workaround for http://jira.codehaus.org/browse/MASSEMBLY-603 -->
-        <maven.build.timestamp>${maven.build.timestamp}</maven.build.timestamp>
+        <maven.build.timestamp.clone>${maven.build.timestamp}</maven.build.timestamp.clone>
     </properties>
 
     <build>
