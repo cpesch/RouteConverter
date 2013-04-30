@@ -241,7 +241,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         Double previousElevation = position.getElevation();
                         Double nextElevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
-                        boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
+                        boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
                         if (changed)
                             positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, false, true);
                         return changed;
@@ -348,7 +348,7 @@ public class BatchPositionAugmenter {
                         if (predecessor != null) {
                             Double previousSpeed = position.getSpeed();
                             Double nextSpeed = position.calculateSpeed(predecessor);
-                            boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
+                            boolean changed = nextSpeed == null || !nextSpeed.equals(previousSpeed);
                             if (changed)
                                 positionsModel.edit(index, SPEED_COLUMN_INDEX, nextSpeed, -1, null, false, true);
                             return changed;
@@ -405,7 +405,7 @@ public class BatchPositionAugmenter {
                         if (predecessor != null && successor != null) {
                             CompactCalendar previousTime = position.getTime();
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
-                            boolean changed = nextTime != null && !nextTime.equals(previousTime);
+                            boolean changed = nextTime == null || !nextTime.equals(previousTime);
                             if (changed)
                                 positionsModel.edit(index, TIME_COLUMN_INDEX, nextTime, -1, null, false, true);
                             return changed;
@@ -444,7 +444,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String previousComment = position.getComment();
                         String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
-                        boolean changed = nextComment != null && !nextComment.equals(previousComment);
+                        boolean changed = nextComment == null || !nextComment.equals(previousComment);
                         if (changed)
                             positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextComment, -1, null, false, true);
                         return changed;

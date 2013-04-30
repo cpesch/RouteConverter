@@ -207,23 +207,19 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 break;
             case LONGITUDE_COLUMN_INDEX:
                 Double longitude = parseDouble(value, string, null);
-                if (longitude != null)
-                    position.setLongitude(longitude);
+                position.setLongitude(longitude);
                 break;
             case LATITUDE_COLUMN_INDEX:
                 Double latitude = parseDouble(value, string, null);
-                if (latitude != null)
-                    position.setLatitude(latitude);
+                position.setLatitude(latitude);
                 break;
             case ELEVATION_COLUMN_INDEX:
                 Double elevation = parseElevation(value, string);
-                if (elevation != null)
-                    position.setElevation(elevation);
+                position.setElevation(elevation);
                 break;
             case SPEED_COLUMN_INDEX:
                 Double speed = parseSpeed(value, string);
-                if (speed != null)
-                    position.setSpeed(speed);
+                position.setSpeed(speed);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
