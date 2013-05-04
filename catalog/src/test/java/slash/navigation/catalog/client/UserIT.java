@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 public class UserIT extends RouteCatalogClientBase {
 
-    private Get readUser(String user) throws IOException {
+    private Get readUser(String user) {
         return new Get(USERS_URL + user + GPX_URL_POSTFIX);
     }
 

@@ -175,8 +175,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
                 if (ROOT_ELEMENT.equals(elementName)) {
                     return routes;
-                } else if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
-                    // ignore these
+                } else //noinspection StatementWithEmptyBody
+                    if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
                 } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
                     if (name == null)
                         name = projectName;

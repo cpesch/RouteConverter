@@ -29,7 +29,6 @@ import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class CopyAction extends FrameAction {
         this.clipboardInteractor = clipboardInteractor;
     }
 
-    private List<NavigationPosition> copy(List<NavigationPosition> positions) throws IOException {
+    private List<NavigationPosition> copy(List<NavigationPosition> positions) {
         List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         for (NavigationPosition position : positions) {
             // TODO should copy extra properties, too
@@ -64,11 +63,7 @@ public class CopyAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             BaseNavigationFormat format = positionsModel.getRoute().getFormat();
-            try {
-                clipboardInteractor.putIntoClipboard(new PositionSelection(copy(positionsModel.getPositions(selectedRows)), format));
-            } catch (IOException e) {
-                // intentionally left empty
-            }
+            clipboardInteractor.putIntoClipboard(new PositionSelection(copy(positionsModel.getPositions(selectedRows)), format));
         }
     }
 }

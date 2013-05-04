@@ -49,11 +49,13 @@ public class JTreeHelper {
     public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {
         TreePath[] treePaths = tree.getSelectionPaths();
         List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
-        for (TreePath treePath : treePaths) {
-            Object treeNode = treePath.getLastPathComponent();
-            if (!(treeNode instanceof CategoryTreeNode))
-                continue;
-            treeNodes.add((CategoryTreeNode) treeNode);
+        if (treePaths != null) {
+            for (TreePath treePath : treePaths) {
+                Object treeNode = treePath.getLastPathComponent();
+                if (!(treeNode instanceof CategoryTreeNode))
+                    continue;
+                treeNodes.add((CategoryTreeNode) treeNode);
+            }
         }
         return treeNodes;
     }

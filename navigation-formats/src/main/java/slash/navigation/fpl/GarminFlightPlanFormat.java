@@ -180,7 +180,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     @SuppressWarnings("UnusedParameters")
-    public void write(List<GarminFlightPlanRoute> routes, OutputStream target) throws IOException {
+    public void write(List<GarminFlightPlanRoute> routes, OutputStream target) {
         throw new UnsupportedOperationException();
     }
 }

@@ -77,8 +77,10 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
             if (trim(line) == null)
                 continue;
 
+            //noinspection StatementWithEmptyBody
             if (line.startsWith("#")) {
-            } else if (isNameValue(line)) {
+            } else //noinspection StatementWithEmptyBody
+                if (isNameValue(line)) {
             } else if (isPosition(line)) {
                 GkPosition position = parsePosition(line);
                 positions.add(position);

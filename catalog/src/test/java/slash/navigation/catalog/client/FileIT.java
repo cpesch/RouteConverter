@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FileIT extends RouteCatalogClientBase {
 
-    private Get readFile(int key) throws IOException {
+    private Get readFile(int key) {
         return new Get(FILES_URL + key + "/");
     }
 
@@ -40,7 +40,7 @@ public class FileIT extends RouteCatalogClientBase {
         return updateFile(key, fileName, USERNAME, PASSWORD);
     }
 
-    private Delete deleteFile(int key,  String authenticationUserName, String authenticationPassword) throws IOException {
+    private Delete deleteFile(int key,  String authenticationUserName, String authenticationPassword) {
         return new Delete(FILES_URL + key + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
     }
 

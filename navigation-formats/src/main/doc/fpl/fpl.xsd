@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:tns="http://www8.garmin.com/xmlschemas/FlightPlan/v1" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www8.garmin.com/xmlschemas/FlightPlan/v1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://www8.garmin.com/xmlschemas/FlightPlan/v1"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="flight-plan">
     <xs:complexType>
       <xs:sequence>

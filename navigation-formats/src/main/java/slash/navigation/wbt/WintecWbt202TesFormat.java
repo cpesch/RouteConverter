@@ -91,7 +91,7 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         return true;
     }
 
-    protected List<Wgs84Route> internalRead(ByteBuffer buffer) throws IOException {
+    protected List<Wgs84Route> internalRead(ByteBuffer buffer) {
         return readPositions(buffer, 0, buffer.capacity());
     }
 }

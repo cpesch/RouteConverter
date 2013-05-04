@@ -110,6 +110,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             if (trim(line) == null)
                 continue;
 
+            //noinspection StatementWithEmptyBody
             if (isDataVersion(line) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
             } else if (line.startsWith(START_TRIP)) {
                 routeName = trim(parseValue(line));

@@ -118,8 +118,6 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public abstract class NavigationTestCase extends TestCase {
-    protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());
-
     public static final String ROUTE_PATH = System.getProperty("samples", "routes" + separator + "src") + separator;
     public static final String TEST_PATH = ROUTE_PATH + "test" + separator;
     public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + separator;

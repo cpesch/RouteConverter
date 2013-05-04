@@ -171,7 +171,6 @@ class RestrictedFileSystemView extends FileSystemView {
             if (Thread.currentThread().isInterrupted()) {
                 break;
             }
-            assert names != null;
             f = names[i];
             if (!useFileHiding || !isHiddenFile(f)) {
                 files.addElement(f);

@@ -248,7 +248,7 @@ public class NavigationFormatParser {
         }
     }
 
-    private CompactCalendar getStartDate(File file) throws IOException {
+    private CompactCalendar getStartDate(File file) {
         Calendar startDate = Calendar.getInstance(UTC);
         startDate.setTimeInMillis(file.lastModified());
         return fromCalendar(startDate);

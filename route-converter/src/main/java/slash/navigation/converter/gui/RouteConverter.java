@@ -75,7 +75,6 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
-import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.rest.Credentials;
 
 import javax.help.CSH;

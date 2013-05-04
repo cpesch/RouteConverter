@@ -226,7 +226,7 @@ public abstract class RouteCatalogClientBase {
     }
 
     protected Delete deleteUser(String userName,
-                                String authenticationUserName, String authenticationPassword) throws IOException {
+                                String authenticationUserName, String authenticationPassword) {
         return new Delete(USERS_URL + userName + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
     }
 

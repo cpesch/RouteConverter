@@ -1,4 +1,7 @@
-<xsd:schema xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ax1="http://www.garmin.com/xmlschemas/ActivityExtension/v1" targetNamespace="http://www.garmin.com/xmlschemas/ActivityExtension/v1" elementFormDefault="qualified">
+<xsd:schema xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v1"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.garmin.com/xmlschemas/ActivityExtension/v1"
+            elementFormDefault="qualified">
 	<xsd:element name="ActivityTrackpointExtension" type="ActivityTrackpointExtension_t"/>
 	<xsd:complexType name="ActivityTrackpointExtension_t">
 		<xsd:sequence>

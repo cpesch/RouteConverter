@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 public class RouteIT extends RouteCatalogClientBase {
 
-    private Get readRoute(int key) throws IOException {
+    private Get readRoute(int key) {
         return new Get(ROUTES_URL + key + GPX_URL_POSTFIX);
     }
 

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static slash.common.io.Transfer.encodeUri;
 
 public class CategoryIT extends RouteCatalogClientBase {
 
@@ -37,7 +38,7 @@ public class CategoryIT extends RouteCatalogClientBase {
                                 String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Post request = new Post(CATEGORIES_URL + Transfer.encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Post request = new Post(CATEGORIES_URL + encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -46,15 +47,15 @@ public class CategoryIT extends RouteCatalogClientBase {
         return createCategory(parent, name, USERNAME, PASSWORD);
     }
 
-    private Get readCategory(String key) throws IOException {
-        return new Get(CATEGORIES_URL + Transfer.encodeUri(key) + GPX_URL_POSTFIX);
+    private Get readCategory(String key) {
+        return new Get(CATEGORIES_URL + encodeUri(key) + GPX_URL_POSTFIX);
     }
 
     private Put updateCategory(String key, String name,
                                String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Put request = new Put(CATEGORIES_URL + Transfer.encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Put request = new Put(CATEGORIES_URL + encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }

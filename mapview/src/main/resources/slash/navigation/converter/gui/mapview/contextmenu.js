@@ -12,9 +12,6 @@
 
 	/**
 	 * Create the context menu
-	 *
-	 * @param array opts Array of options.
-	 *
 	 * Note: Menu id needs to be unique, in case of multiple maps and context menus
 	 */
 	function ContextMenu(opts)
@@ -78,10 +75,6 @@
 
 	/**
 	 * Add new items to the context menu
-	 *
-	 * @param string   name     Name of the list item.
-	 * @param function callback Function to run when you click the list item
-	 * @return jQuery           The list item that is created.
 	 */
 	ContextMenu.prototype.addItem = function(name, loc, callback)
 	{
@@ -149,11 +142,11 @@
 			.addClass('separator')
 
 			// .. add a div child
-			.append($(document.createElement('div')))
+			.append($(document.createElement('div')));
 
 		// If loc is a number put the li at that location
 		if ( typeof loc === 'number' )
-			this.theMenu.find('li').eq(loc).before(li)
+			this.theMenu.find('li').eq(loc).before(li);
 
 		// .. else appened it to the end
 		else
@@ -165,10 +158,6 @@
 
 	/**
 	 * Remove a menu list item.
-	 *
-	 * @param string name The string used to create the list item.
-	 * @param number name The index value of the list item.
-	 * @param jQuery name The jQuery object that is returned by addItem() or addSep()
 	 */
 	ContextMenu.prototype.remove = function(item)
 	{
@@ -178,13 +167,13 @@
 
 		// Find all the elements and remove the one at the specified index
 		else if ( typeof item === 'number' )
-			this.theMenu.find('li').eq(item).remove()
+			this.theMenu.find('li').eq(item).remove();
 
 		// Find all the items by the id name and remove them
 		else if ( typeof item === 'string' )
 		{
 			// Find and remove the element
-			this.theMenu.find('#'+item.toCamel()).remove()
+			this.theMenu.find('#'+item.toCamel()).remove();
 		}
 	};
 

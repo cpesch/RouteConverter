@@ -34,6 +34,7 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.List;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -379,6 +380,7 @@ public class NmeaFormatTest {
         position.setElevation(14.342);
         assertDoubleEquals(19.0252216, position.getLongitude());
         assertDoubleEquals(62.963395, position.getLatitude());
+        assertNotNull(position.getElevation());
         assertDoubleEquals(14.342, position.getElevation());
         position.setLongitude(null);
         position.setLatitude(null);
