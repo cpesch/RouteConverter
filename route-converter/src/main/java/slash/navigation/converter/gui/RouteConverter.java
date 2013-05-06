@@ -209,6 +209,8 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
+    private static final String SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE = "showedTooOldJreVersion";
+    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator";
 
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
@@ -256,7 +258,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void checkForTooOldJreVersion() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
+        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion) && !preferences.getBoolean(SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE, false)) {
             JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
             label.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
@@ -264,12 +266,14 @@ public class RouteConverter extends SingleFrameApplication {
                 }
             });
             showMessageDialog(frame, label, frame.getTitle(), WARNING_MESSAGE);
+            preferences.putBoolean(SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE, true);
         }
     }
 
     private void checkForMissingTranslator() {
+        Locale.setDefault(Locale.JAPAN);
         List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS, SERBIA, SLOVAKIA, SPAIN, US);
-        if (!activeTranslators.contains(Locale.getDefault())) {
+        if (!activeTranslators.contains(Locale.getDefault()) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), Locale.getDefault().getLanguage()));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
@@ -277,6 +281,7 @@ public class RouteConverter extends SingleFrameApplication {
                 }
             });
             showMessageDialog(frame, labelTranslatorMissing, frame.getTitle(), QUESTION_MESSAGE);
+            preferences.putBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, true);
         }
     }
 
