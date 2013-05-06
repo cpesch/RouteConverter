@@ -271,7 +271,6 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void checkForMissingTranslator() {
-        Locale.setDefault(Locale.JAPAN);
         List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS, SERBIA, SLOVAKIA, SPAIN, US);
         if (!activeTranslators.contains(Locale.getDefault()) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), Locale.getDefault().getLanguage()));
