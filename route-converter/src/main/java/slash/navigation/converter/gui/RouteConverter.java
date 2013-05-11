@@ -94,6 +94,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -270,10 +271,20 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    private List<String> getLanguagesWithActiveTranslators() {
+        List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS, SERBIA, SLOVAKIA, SPAIN, US);
+        List<String> results = new ArrayList<String>();
+        for (Locale locale : localesOfActiveTranslators) {
+            results.add(locale.getLanguage());
+        }
+        return results;
+    }
+
     private void checkForMissingTranslator() {
-        List<Locale> activeTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS, SERBIA, SLOVAKIA, SPAIN, US);
-        if (!activeTranslators.contains(Locale.getDefault()) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
-            JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), Locale.getDefault().getLanguage()));
+        List<String> activeLanguages = getLanguagesWithActiveTranslators();
+        String language = Locale.getDefault().getLanguage();
+        if (!activeLanguages.contains(language)) {
+            JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), language));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
                     startMail(frame);
