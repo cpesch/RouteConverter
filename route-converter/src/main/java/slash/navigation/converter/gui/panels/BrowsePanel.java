@@ -87,10 +87,15 @@ import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.KeyEvent.VK_END;
+import static java.awt.event.KeyEvent.VK_HOME;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
@@ -98,6 +103,7 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
@@ -196,6 +202,21 @@ public class BrowsePanel implements PanelInTab {
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                actionManager.run("remove-route");
+            }
+        }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                scrollToPosition(tableRoutes, 0);
+            }
+        }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                scrollToPosition(tableRoutes, tableRoutes.getRowCount() - 1);
+            }
+        }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
