@@ -40,6 +40,10 @@ import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
+import static javax.swing.KeyStroke.getKeyStroke;
+
 /**
  * Dialog for inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
  *
@@ -113,7 +117,7 @@ public class InsertPositionsDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
 
         RouteConverter r = RouteConverter.getInstance();
         r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);

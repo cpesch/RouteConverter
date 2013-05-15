@@ -50,6 +50,7 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;
@@ -151,7 +152,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private GarminFlightPlanPosition getPosition() {

@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForTerms;
 
@@ -135,7 +136,7 @@ public class LoginDialog extends SimpleDialog {
             public void run() {
                 cancel();
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void setDefaultButton() {

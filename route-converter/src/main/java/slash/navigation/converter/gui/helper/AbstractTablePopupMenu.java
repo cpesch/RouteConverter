@@ -30,6 +30,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+import static java.awt.event.KeyEvent.VK_CONTEXT_MENU;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
+import static javax.swing.KeyStroke.getKeyStroke;
+
 /**
  * Helps to make popups for tables useable.
  *
@@ -57,7 +61,7 @@ public abstract class AbstractTablePopupMenu {
                 ensureSelection(lastMouseEvent, 1);
                 showPopup(lastMouseEvent);
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }, getKeyStroke(VK_CONTEXT_MENU, 0), WHEN_IN_FOCUSED_WINDOW);
         this.popupMenu = createPopupMenu();
         return popupMenu;
     }

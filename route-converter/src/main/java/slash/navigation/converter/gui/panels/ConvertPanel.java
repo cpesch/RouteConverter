@@ -139,6 +139,8 @@ import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.KeyEvent.VK_END;
+import static java.awt.event.KeyEvent.VK_HOME;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
@@ -152,6 +154,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -358,7 +361,17 @@ public class ConvertPanel implements PanelInTab {
             public void run() {
                 actionManager.run("delete");
             }
-        }, KeyStroke.getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                scrollToPosition(tablePositions, 0);
+            }
+        }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                scrollToPosition(tablePositions, tablePositions.getRowCount() - 1);
+            }
+        }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(ON);
         TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());

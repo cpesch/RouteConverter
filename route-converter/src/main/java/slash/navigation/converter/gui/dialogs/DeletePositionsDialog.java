@@ -45,6 +45,9 @@ import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForDouglasPeucker;
 
 /**
@@ -141,7 +144,7 @@ public class DeletePositionsDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
         distance = new NumberDocument(r.getSelectByDistancePreference());

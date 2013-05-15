@@ -35,6 +35,7 @@ import static java.awt.Frame.NORMAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
@@ -99,7 +100,7 @@ public abstract class SingleFrameApplication extends Application {
             public void actionPerformed(ActionEvent e) {
                 exit(e);
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         frame.pack();
         frame.setLocationRelativeTo(null);

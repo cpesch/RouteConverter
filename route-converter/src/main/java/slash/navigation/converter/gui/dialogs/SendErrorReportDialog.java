@@ -40,8 +40,10 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
  * Dialog for sending error reports
@@ -96,7 +98,7 @@ public class SendErrorReportDialog extends SimpleDialog {
             public void actionPerformed(ActionEvent e) {
                 cancel();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void chooseFilePath() {

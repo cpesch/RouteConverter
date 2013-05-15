@@ -126,6 +126,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.shortenPath;
@@ -1065,9 +1066,9 @@ public class RouteConverter extends SingleFrameApplication {
             }
         };
         frame.getRootPane().registerKeyboardAction(actionListener,
-                KeyStroke.getKeyStroke(VK_HELP, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                getKeyStroke(VK_HELP, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         frame.getRootPane().registerKeyboardAction(actionListener,
-                KeyStroke.getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         new ShowProfileMenu(getContext().getMenuBar(), getProfileModePreference());
         new UndoMenuSynchronizer(getInstance().getContext().getUndoManager(),
