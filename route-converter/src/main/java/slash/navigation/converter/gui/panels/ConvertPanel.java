@@ -137,6 +137,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.awt.event.KeyEvent.VK_END;
@@ -184,6 +185,7 @@ import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.increment;
 import static slash.navigation.gui.events.Range.revert;
@@ -364,14 +366,25 @@ public class ConvertPanel implements PanelInTab {
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                selectAndScrollToPosition(0);
+                selectAndScrollToPosition(tablePositions, 0, 0);
             }
         }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                selectAndScrollToPosition(tablePositions.getRowCount() - 1);
+                selectAndScrollToPosition(tablePositions, 0, tablePositions.getSelectedRow());
+            }
+        }, getKeyStroke(VK_HOME, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                int lastRow = tablePositions.getRowCount() - 1;
+                selectAndScrollToPosition(tablePositions, lastRow, lastRow);
             }
         }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                selectAndScrollToPosition(tablePositions, tablePositions.getRowCount() - 1, tablePositions.getSelectedRow());
+            }
+        }, getKeyStroke(VK_END, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(ON);
         TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());
@@ -1172,11 +1185,6 @@ public class ConvertPanel implements PanelInTab {
 
     public void clearSelection() {
         tablePositions.getSelectionModel().clearSelection();
-    }
-
-    private void selectAndScrollToPosition(final int selectedPosition) {
-        JTableHelper.selectPositions(tablePositions, selectedPosition, selectedPosition);
-        scrollToPosition(tablePositions, selectedPosition);
     }
 
     public void renameRoute(String name) {

@@ -67,6 +67,11 @@ public class JTableHelper {
         });
     }
 
+    public static void selectAndScrollToPosition(JTable table, int index0, int index1) {
+        selectPositions(table, index0, index1);
+        scrollToPosition(table, index0);
+    }
+
     public static boolean isFirstToLastRow(TableModelEvent e) {
         return e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
     }

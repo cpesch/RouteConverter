@@ -87,6 +87,7 @@ import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.awt.event.KeyEvent.VK_END;
 import static java.awt.event.KeyEvent.VK_HOME;
@@ -104,8 +105,7 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
@@ -210,14 +210,25 @@ public class BrowsePanel implements PanelInTab {
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
-                selectAndScrollToPosition(0);
+                selectAndScrollToPosition(tableRoutes, 0, 0);
             }
         }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
-                selectAndScrollToPosition(tableRoutes.getRowCount() - 1);
+                selectAndScrollToPosition(tableRoutes, 0, tableRoutes.getSelectedRow());
+            }
+        }, getKeyStroke(VK_HOME, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                int lastRow = tableRoutes.getRowCount() - 1;
+                selectAndScrollToPosition(tableRoutes, lastRow, lastRow);
             }
         }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                selectAndScrollToPosition(tableRoutes, tableRoutes.getRowCount() - 1, tableRoutes.getSelectedRow());
+            }
+        }, getKeyStroke(VK_END, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -297,11 +308,6 @@ public class BrowsePanel implements PanelInTab {
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
-    }
-
-    private void selectAndScrollToPosition(final int selectedPosition) {
-        selectPositions(tableRoutes, selectedPosition, selectedPosition);
-        scrollToPosition(tableRoutes, selectedPosition);
     }
 
     private void handlePositionListUpdate() {
