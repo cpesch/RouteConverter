@@ -364,12 +364,12 @@ public class ConvertPanel implements PanelInTab {
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                scrollToPosition(tablePositions, 0);
+                selectAndScrollToPosition(0);
             }
         }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                scrollToPosition(tablePositions, tablePositions.getRowCount() - 1);
+                selectAndScrollToPosition(tablePositions.getRowCount() - 1);
             }
         }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
@@ -963,6 +963,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
+        //noinspection ConstantConditions
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
@@ -1044,6 +1045,7 @@ public class ConvertPanel implements PanelInTab {
             path = new File("");
 
         String fileName = path.getName();
+        //noinspection ConstantConditions
         if (format instanceof GoPal3RouteFormat)
             fileName = createGoPalFileName(fileName);
         return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
@@ -1170,6 +1172,11 @@ public class ConvertPanel implements PanelInTab {
 
     public void clearSelection() {
         tablePositions.getSelectionModel().clearSelection();
+    }
+
+    private void selectAndScrollToPosition(final int selectedPosition) {
+        JTableHelper.selectPositions(tablePositions, selectedPosition, selectedPosition);
+        scrollToPosition(tablePositions, selectedPosition);
     }
 
     public void renameRoute(String name) {

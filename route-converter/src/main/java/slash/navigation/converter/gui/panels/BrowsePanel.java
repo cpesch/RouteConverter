@@ -98,18 +98,19 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
+import static slash.navigation.base.RouteComments.createRouteDescription;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.base.RouteComments.createRouteDescription;
 
 /**
  * The browse panel of the route converter user interface.
@@ -209,12 +210,12 @@ public class BrowsePanel implements PanelInTab {
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
-                scrollToPosition(tableRoutes, 0);
+                selectAndScrollToPosition(0);
             }
         }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
-                scrollToPosition(tableRoutes, tableRoutes.getRowCount() - 1);
+                selectAndScrollToPosition(tableRoutes.getRowCount() - 1);
             }
         }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.setDragEnabled(true);
@@ -296,6 +297,11 @@ public class BrowsePanel implements PanelInTab {
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+    }
+
+    private void selectAndScrollToPosition(final int selectedPosition) {
+        selectPositions(tableRoutes, selectedPosition, selectedPosition);
+        scrollToPosition(tableRoutes, selectedPosition);
     }
 
     private void handlePositionListUpdate() {
