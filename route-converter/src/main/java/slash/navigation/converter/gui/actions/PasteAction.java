@@ -40,8 +40,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.dnd.PositionSelection.stringFlavor;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
 
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.
@@ -96,8 +95,7 @@ public class PasteAction extends FrameAction {
         final int lastRow = insertRow - 1 + targetPositions.size();
         invokeLater(new Runnable() {
             public void run() {
-                scrollToPosition(table, lastRow);
-                selectPositions(table, insertRow, lastRow);
+                selectAndScrollToPosition(table, insertRow, lastRow);
             }
         });
     }
