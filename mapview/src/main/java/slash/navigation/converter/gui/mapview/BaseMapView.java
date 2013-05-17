@@ -67,6 +67,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
@@ -1226,7 +1227,7 @@ public abstract class BaseMapView implements MapView {
             final Double latitude = parseDouble(selectPositionMatcher.group(1));
             final Double longitude = parseDouble(selectPositionMatcher.group(2));
             final Double threshold = parseDouble(selectPositionMatcher.group(3));
-            final Boolean replaceSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
+            final Boolean replaceSelection = parseBoolean(selectPositionMatcher.group(4));
             invokeLater(new Runnable() {
                 public void run() {
                     selectPosition(longitude, latitude, threshold, replaceSelection);
@@ -1241,7 +1242,7 @@ public abstract class BaseMapView implements MapView {
             final Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
             final Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
             final Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
-            final Boolean replaceSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
+            final Boolean replaceSelection = parseBoolean(selectPositionsMatcher.group(5));
             invokeLater(new Runnable() {
                 public void run() {
                     selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
