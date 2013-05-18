@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -49,6 +50,7 @@ import static slash.common.io.Transfer.trim;
 public class UndoPositionsModel implements PositionsModel {
     private final PositionsModelImpl delegate = new PositionsModelImpl();
     private final UndoManager undoManager;
+    private boolean valueIsAdjusting = false;
 
     public UndoPositionsModel(UndoManager undoManager) {
         this.undoManager = undoManager;
@@ -205,7 +207,7 @@ public class UndoPositionsModel implements PositionsModel {
                 removed.add(0, getRoute().remove(index));
             }
             public void performOnRange(int firstIndex, int lastIndex) {
-                if (fireEvent)
+                if (fireEvent && !valueIsAdjusting)
                     delegate.fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, removed);
@@ -276,5 +278,12 @@ public class UndoPositionsModel implements PositionsModel {
 
     void bottomUp(int[] rows) {
         delegate.bottomUp(rows);
+    }
+
+    public void setValueIsAdjusting(boolean valueIsAdjusting) {
+        this.valueIsAdjusting = valueIsAdjusting;
+        if (!valueIsAdjusting)
+            // since fireTableDataChanged() leads to recentering due to BaseMapView#update(allRowsChanged)
+            fireTableRowsUpdated(-1, -1, ALL_COLUMNS);
     }
 }

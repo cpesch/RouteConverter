@@ -1150,6 +1150,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void selectPositions(int[] selectedPositions) {
         clearSelection();
+        tablePositions.getSelectionModel().setValueIsAdjusting(true);
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
@@ -1162,6 +1163,7 @@ public class ConvertPanel implements PanelInTab {
                 return false;
             }
         }).performMonotonicallyIncreasing();
+        tablePositions.getSelectionModel().setValueIsAdjusting(false);
     }
 
     public int selectPositionsWithinDistanceToPredecessor(double distance) {
