@@ -284,6 +284,6 @@ public class UndoPositionsModel implements PositionsModel {
         this.valueIsAdjusting = valueIsAdjusting;
         if (!valueIsAdjusting)
             // since fireTableDataChanged() leads to recentering due to BaseMapView#update(allRowsChanged)
-            fireTableRowsUpdated(-1, -1, ALL_COLUMNS);
+            fireTableRowsUpdated(0, Integer.MAX_VALUE, ALL_COLUMNS);
     }
 }
