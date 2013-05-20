@@ -20,8 +20,6 @@
 
 package slash.navigation.babel;
 
-import slash.common.io.Externalization;
-import slash.common.system.Platform;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.NavigationPosition;
@@ -49,7 +47,13 @@ import java.util.prefs.Preferences;
 import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.InputOutput.copy;
+import static slash.common.system.Platform.getArchitecture;
+import static slash.common.system.Platform.getOperationSystem;
+import static slash.common.system.Platform.isLinux;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Platform.isWindows;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -328,28 +332,28 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
 
         // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
+        if (babelFile == null && isWindows()) {
             babelFile = checkIfBabelExists(System.getenv("ProgramFiles") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
+        if (babelFile == null && isWindows()) {
             babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 3. look for "/usr/bin/gpsbabel" in path
-        if (babelFile == null && !Platform.isWindows()) {
+        if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
         }
 
         // 4. extract from classpath into temp directrory and execute there
         if (babelFile == null) {
-            String path = Platform.getOperationSystem() + "/" + Platform.getArchitecture() + "/";
-            if (Platform.isWindows()) {
-                Externalization.extractFile(path + "libexpat.dll");
-                babelFile = Externalization.extractFile(path + "gpsbabel.exe");
-            } else if (Platform.isLinux() || Platform.isMac()) {
-                babelFile = Externalization.extractFile(path + "gpsbabel");
+            String path = getOperationSystem() + "/" + getArchitecture() + "/";
+            if (isWindows()) {
+                extractFile(path + "libexpat.dll");
+                babelFile = extractFile(path + "gpsbabel.exe");
+            } else if (isLinux() || isMac()) {
+                babelFile = extractFile(path + "gpsbabel");
             }
         }
 
@@ -358,7 +362,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private String considerShellScriptForBabel(String babel, String command) throws IOException {
-        if (Platform.isLinux() || Platform.isMac()) {
+        if (isLinux() || isMac()) {
             File shellScript = createShellScript(babel, command);
             command = "/bin/sh " + shellScript.getAbsolutePath();
         }
