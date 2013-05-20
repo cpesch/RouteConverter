@@ -38,8 +38,9 @@ import static slash.common.io.Transfer.trim;
 
 public class BasicPosition {
     private static final String NUMBER = "[[-|+]|\\d|\\.|E]";
+    private static final String SEPARATOR = "[\\s|,]+";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*" + NUMBER + "*\\s*),(\\s*" + NUMBER + "*\\s*)(,\\s*" + NUMBER + "+\\s*)?\\s*");
-    private static final Pattern EXTENSION_POSITION_PATTERN = Pattern.compile("\\s*(" + NUMBER + "+)\\s+(" + NUMBER + "+)\\s+(" + NUMBER + "+)\\s*");
+    private static final Pattern EXTENSION_POSITION_PATTERN = Pattern.compile("\\s*(" + NUMBER + "+)" + SEPARATOR + "(" + NUMBER + "+)" + SEPARATOR + "(" + NUMBER + "+)\\s*");
 
     private Double longitude, latitude, elevation;
     private String location;

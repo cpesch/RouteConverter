@@ -25,11 +25,14 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.BasicPosition.isPosition;
+import static slash.navigation.common.BasicPosition.parseExtensionPositions;
 import static slash.navigation.common.BasicPosition.parsePosition;
+import static slash.navigation.common.BasicPosition.parsePositions;
 
 public class BasicPositionTest {
 
@@ -78,7 +81,7 @@ public class BasicPositionTest {
         assertDoubleEquals(13.383570, position.getLongitude());
         assertDoubleEquals(54.096930, position.getLatitude());
         assertDoubleEquals(0.0, position.getElevation());
-        Assert.assertEquals("comment", position.getComment());
+        assertEquals("comment", position.getComment());
     }
 
     @Test
@@ -93,22 +96,28 @@ public class BasicPositionTest {
     @Test
     public void testParsePositions() {
         List<BasicPosition> expected = Arrays.asList(new BasicPosition(1.1, 2.0, 3.0, null), new BasicPosition(4.0, 5.0, 6.6, null), new BasicPosition(7.0, 8.8, 9.0, null));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2,3 4,5,6.6 7,8.8,9"));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2,3\t4,5,6.6\t7,8.8,9"));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2,3\n4,5,6.6\n7,8.8,9"));
+        assertEquals(expected, parsePositions("1.1,2,3 4,5,6.6 7,8.8,9"));
+        assertEquals(expected, parsePositions("1.1,2,3\t4,5,6.6\t7,8.8,9"));
+        assertEquals(expected, parsePositions("1.1,2,3\n4,5,6.6\n7,8.8,9"));
     }
 
     @Test
     public void testParseGoogleExtensionPositions() {
         List<BasicPosition> expected = Arrays.asList(new BasicPosition(1.1, 2.2, 3.3, null), new BasicPosition(4.4, 5.5, 6.6, null), new BasicPosition(7.7, 8.8, 9.9, null));
-        Assert.assertEquals(expected, BasicPosition.parseExtensionPositions("1.1 2.2 3.3 4.4 5.5 6.6 7.7 8.8 9.9"));
+        assertEquals(expected, parseExtensionPositions("1.1 2.2 3.3 4.4 5.5 6.6 7.7 8.8 9.9"));
+    }
+
+    @Test
+    public void testParseGoogleExtensionPositionsWithColons() {
+        List<BasicPosition> expected = Arrays.asList(new BasicPosition(1.1, 2.2, 3.3, null), new BasicPosition(4.4, 5.5, 6.6, null), new BasicPosition(7.7, 8.8, 9.9, null));
+        assertEquals(expected, parseExtensionPositions("1.1,2.2,3.3 4.4,5.5,6.6,7.7 8.8,9.9"));
     }
 
     @Test
     public void testParsePositionsWithoutElevation() {
         List<BasicPosition> expected = Arrays.asList(new BasicPosition(1.1, 2.0, null, null), new BasicPosition(4.0, 5.0, null, null), new BasicPosition(7.0, 8.8, null, null));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2 4,5 7,8.8"));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2\t4,5\t7,8.8"));
-        Assert.assertEquals(expected, BasicPosition.parsePositions("1.1,2\n4,5\n7,8.8"));
+        assertEquals(expected, parsePositions("1.1,2 4,5 7,8.8"));
+        assertEquals(expected, parsePositions("1.1,2\t4,5\t7,8.8"));
+        assertEquals(expected, parsePositions("1.1,2\n4,5\n7,8.8"));
     }
 }                                                                          
