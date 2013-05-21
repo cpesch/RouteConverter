@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.common.UnitConversion.kmhToMs;
 import static slash.navigation.common.UnitConversion.msToKmh;
 
 /**
@@ -107,6 +108,12 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         if (metersPerSecond == null)
             return null;
         return msToKmh(metersPerSecond);
+    }
+
+    protected Double asMs(Double kilometersPerHour) {
+        if (kilometersPerHour == null)
+            return null;
+        return kmhToMs(kilometersPerHour);
     }
 
     protected boolean isWriteAccuracy() {

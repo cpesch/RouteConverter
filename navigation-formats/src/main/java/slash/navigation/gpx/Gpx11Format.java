@@ -215,6 +215,7 @@ public class Gpx11Format extends GpxFormat {
     private void setSpeed(WptType wptType, Double speed) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        @SuppressWarnings("ConstantConditions")
         List<Object> anys = wptType.getExtensions().getAny();
 
         boolean foundSpeed = false;
@@ -229,7 +230,7 @@ public class Gpx11Format extends GpxFormat {
                     if (foundSpeed || speed == null)
                         iterator.remove();
                     else {
-                        element.setTextContent(formatSpeedAsString(speed));
+                        element.setTextContent(formatSpeedAsString(asMs(speed)));
                         foundSpeed = true;
                     }
                 }
@@ -242,7 +243,7 @@ public class Gpx11Format extends GpxFormat {
                     if (foundSpeed || speed == null)
                         iterator.remove();
                     else {
-                        element.setValue(formatSpeedAsString(speed));
+                        element.setValue(formatSpeedAsString(asMs(speed)));
                         foundSpeed = true;
                     }
                 }
@@ -250,7 +251,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (!foundSpeed && speed != null) {
             slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createSpeed(formatSpeed(speed)));
+            anys.add(tbFactory.createSpeed(formatSpeed(asMs(speed))));
         }
 
         if (anys.size() == 0)
@@ -278,6 +279,7 @@ public class Gpx11Format extends GpxFormat {
     private void setHeading(WptType wptType, Double heading) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        @SuppressWarnings("ConstantConditions")
         List<Object> anys = wptType.getExtensions().getAny();
 
         boolean foundHeading = false;
