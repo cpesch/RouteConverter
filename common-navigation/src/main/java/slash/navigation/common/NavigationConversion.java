@@ -357,6 +357,6 @@ public class NavigationConversion {
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        return formatBigDecimal(speed, 1);
+        return formatBigDecimal(speed, 2);
     }
 }

@@ -99,11 +99,11 @@ public class UnitConversion {
     }
 
     public static double ddmm2longitude(String longitude) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     public static double ddmm2latitude(String latitude) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
 
@@ -133,11 +133,11 @@ public class UnitConversion {
     }
 
     public static double ddmmss2longitude(String longitude) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     public static double ddmmss2latitude(String latitude) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     public static double feetToMeters(double feet) {

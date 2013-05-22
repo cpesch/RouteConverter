@@ -102,7 +102,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.io.File.separator;
 import static java.lang.Math.min;
@@ -760,6 +759,8 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format) {
+                assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
+            } else if (sourceFormat instanceof GarminFitFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));

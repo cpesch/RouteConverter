@@ -109,8 +109,8 @@ public class GeoNamesServiceIT {
         assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
         assertEquals(new PostalCode("AT", "6105", "Leutasch"), service.getNearByPostalCodeFor(11.1603, 47.3694));
         assertEquals(null, service.getNearByPostalCodeFor(0.0, -90.0));
-        assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), service.getNearByPostalCodeFor(0.0, 90.0));
-        assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), service.getNearByPostalCodeFor(90.0, 90.0));
+        assertEquals(null, service.getNearByPostalCodeFor(0.0, 90.0));
+        assertEquals(null, service.getNearByPostalCodeFor(90.0, 90.0));
         assertEquals(null, service.getNearByPostalCodeFor(-90.0, -90.0));
     }
 

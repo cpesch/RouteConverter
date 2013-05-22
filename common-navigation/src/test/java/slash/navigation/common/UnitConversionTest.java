@@ -22,7 +22,6 @@
 
 package slash.navigation.common;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static slash.common.TestCase.assertDoubleEquals;
@@ -31,7 +30,21 @@ import static slash.navigation.common.Orientation.East;
 import static slash.navigation.common.Orientation.North;
 import static slash.navigation.common.Orientation.South;
 import static slash.navigation.common.Orientation.West;
-import static slash.navigation.common.UnitConversion.*;
+import static slash.navigation.common.UnitConversion.ddmm2latitude;
+import static slash.navigation.common.UnitConversion.ddmm2longitude;
+import static slash.navigation.common.UnitConversion.ddmmss2latitude;
+import static slash.navigation.common.UnitConversion.ddmmss2longitude;
+import static slash.navigation.common.UnitConversion.feetToMeters;
+import static slash.navigation.common.UnitConversion.kilometerToStatuteMiles;
+import static slash.navigation.common.UnitConversion.kmhToMs;
+import static slash.navigation.common.UnitConversion.latitude2ddmm;
+import static slash.navigation.common.UnitConversion.latitude2ddmmss;
+import static slash.navigation.common.UnitConversion.latitude2nmea;
+import static slash.navigation.common.UnitConversion.longitude2ddmm;
+import static slash.navigation.common.UnitConversion.longitude2ddmmss;
+import static slash.navigation.common.UnitConversion.longitude2nmea;
+import static slash.navigation.common.UnitConversion.msToKmh;
+import static slash.navigation.common.UnitConversion.nmea2degrees;
 
 public class UnitConversionTest {
     @Test
@@ -73,7 +86,6 @@ public class UnitConversionTest {
     }
 
     @Test
-    @Ignore // TODO
     public void testDdmm2Degrees() {
         assertEquals(9.0557233, ddmm2longitude("E 9° 3.343'"));
         assertEquals(48.6239566, ddmm2latitude("N 48° 37.437'"));
@@ -88,7 +100,6 @@ public class UnitConversionTest {
     }
 
     @Test
-    @Ignore // TODO
     public void testDdmmss2Degrees() {
         assertEquals(9.0557233, ddmmss2longitude("E 9° 3' 20.6\""));
         assertEquals(48.6239566, ddmmss2latitude("N 48° 37' 26.2\""));
