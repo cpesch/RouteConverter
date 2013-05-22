@@ -99,11 +99,11 @@ public class UnitConversion {
     }
 
     public static double ddmm2longitude(String longitude) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();// TODO
     }
 
     public static double ddmm2latitude(String latitude) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();// TODO
     }
 
 
