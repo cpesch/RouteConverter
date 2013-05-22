@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.PositionHelper;
@@ -45,6 +46,10 @@ import static java.util.Arrays.asList;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
+import static slash.navigation.common.UnitConversion.ddmm2latitude;
+import static slash.navigation.common.UnitConversion.ddmm2longitude;
+import static slash.navigation.common.UnitConversion.ddmmss2latitude;
+import static slash.navigation.common.UnitConversion.ddmmss2longitude;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
@@ -206,12 +211,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 position.setTime(parseTime(value, string));
                 break;
             case LONGITUDE_COLUMN_INDEX:
-                Double longitude = parseDouble(value, string, null);
-                position.setLongitude(longitude);
+                position.setLongitude(parseLongitude(value, string));
                 break;
             case LATITUDE_COLUMN_INDEX:
-                Double latitude = parseDouble(value, string, null);
-                position.setLatitude(latitude);
+                position.setLatitude(parseLatitude(value, string));
                 break;
             case ELEVATION_COLUMN_INDEX:
                 Double elevation = parseElevation(value, string);
@@ -226,16 +229,32 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    private Double parseElevation(Object objectValue, String stringValue) {
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
-        return unitSystem.valueToDefault(value);
+    private Double parseLongitude(Object objectValue, String stringValue) {
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        switch (degreeFormat) {
+            case Degrees:
+                return parseDouble(objectValue, stringValue, null);
+            case Degrees_Minutes:
+                return ddmm2longitude(stringValue);
+            case Degrees_Minutes_Seconds:
+                return ddmmss2longitude(stringValue);
+            default:
+                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        }
     }
 
-    private Double parseSpeed(Object objectValue, String stringValue) {
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
-        return unitSystem.valueToDefault(value);
+    private Double parseLatitude(Object objectValue, String stringValue) {
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        switch (degreeFormat) {
+            case Degrees:
+                return parseDouble(objectValue, stringValue, null);
+            case Degrees_Minutes:
+                return ddmm2latitude(stringValue);
+            case Degrees_Minutes_Seconds:
+                return ddmmss2latitude(stringValue);
+            default:
+                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        }
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
@@ -246,6 +265,18 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 stringValue = stringValue.replaceAll(replaceAll, "");
             return Transfer.parseDouble(stringValue);
         }
+    }
+
+    private Double parseElevation(Object objectValue, String stringValue) {
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
+        return unitSystem.valueToDefault(value);
+    }
+
+    private Double parseSpeed(Object objectValue, String stringValue) {
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
+        return unitSystem.valueToDefault(value);
     }
 
     private CompactCalendar parseTime(Object objectValue, String stringValue) {

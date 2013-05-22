@@ -85,10 +85,19 @@ public class UnitConversionTest {
         assertEquals("N 48° 37.437'", latitude2ddmm(48.6239566));
     }
 
-    @Test(expected = UnsupportedOperationException.class)  // TODO
-    public void testDdmm2Degrees() {
-        assertEquals(9.0557233, ddmm2longitude("E 9° 3.343'"));
-        assertEquals(48.6239566, ddmm2latitude("N 48° 37.437'"));
+    @Test
+    public void testDdmm2Longitude() {
+        assertEquals(0.0, ddmm2longitude("  E  0  °  0  '  "));
+        assertEquals(1.0, ddmm2longitude("E 1° 0'"));
+        assertEquals(-1.0, ddmm2longitude("W 1° 0'"));
+        assertEquals(9.0557233, ddmm2longitude("E 9° 3.3434'"));
+    }
+
+    @Test
+    public void testDdmm2Latitude() {
+        assertEquals(1.0, ddmm2latitude("N 1° 0'"));
+        assertEquals(-1.0, ddmm2latitude("S 1° 0'"));
+        assertEquals(48.6239566, ddmm2latitude("N 48° 37.437395'"));
     }
 
     @Test
@@ -99,9 +108,19 @@ public class UnitConversionTest {
         assertEquals("N 0° 0' 0.000\"", latitude2ddmmss(0.0));
     }
 
-    @Test(expected = UnsupportedOperationException.class)  // TODO
-    public void testDdmmss2Degrees() {
-        assertEquals(9.0557233, ddmmss2longitude("E 9° 3' 20.6\""));
-        assertEquals(48.6239566, ddmmss2latitude("N 48° 37' 26.2\""));
+    @Test
+    public void testDdmmss2Longitude() {
+        assertEquals(0.0, ddmmss2longitude("  E  0  °  0  '  0\"  "));
+        assertEquals(1.0, ddmmss2longitude("E 1° 0' 0\""));
+        assertEquals(-1.0, ddmmss2longitude("W 1° 0' 0\""));
+        assertEquals(9.0557233, ddmmss2longitude("E 9° 3' 20.604\""));
+    }
+
+    @Test
+    public void testDdmmss2Latitude() {
+        assertEquals(0.0, ddmmss2latitude("  E  0  °  0  '  0\"  "));
+        assertEquals(1.0, ddmmss2latitude("N 1° 0' 0\""));
+        assertEquals(-1.0, ddmmss2latitude("S 1° 0' 0\""));
+        assertEquals(48.6239566, ddmmss2latitude("N 48° 37' 26.2438\""));
     }
 }

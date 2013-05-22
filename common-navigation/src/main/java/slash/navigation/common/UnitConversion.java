@@ -22,6 +22,9 @@
 
 package slash.navigation.common;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.floor;
 import static java.lang.Math.rint;
@@ -29,6 +32,8 @@ import static java.lang.String.format;
 import static java.util.Locale.ENGLISH;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.floorFraction;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.common.NavigationConversion.formatDouble;
 import static slash.navigation.common.Orientation.East;
 import static slash.navigation.common.Orientation.North;
 import static slash.navigation.common.Orientation.South;
@@ -98,14 +103,32 @@ public class UnitConversion {
         return coordinate2ddmm(latitude, North, South);
     }
 
-    public static double ddmm2longitude(String longitude) {
-        throw new UnsupportedOperationException();// TODO
+    private static final Pattern DDMM_TO_COORDINATE = Pattern.
+            compile("\\s*(\\w)\\s*" +
+                    "([\\d\\.]*)\\s*°\\s*" +
+                    "([\\d\\.]*)\\s*'\\s*");
+
+    private static Double ddmm2coordinate(String coordinateAsDdmm, Orientation negative) {
+        Matcher matcher = DDMM_TO_COORDINATE.matcher(coordinateAsDdmm);
+        if (matcher.matches()) {
+            Orientation orientation = Orientation.fromValue(matcher.group(1));
+            Double degree = parseDouble(matcher.group(2));
+            Double minutes = parseDouble(matcher.group(3));
+            double coordinate = degree + (minutes / 60.0);
+            if(orientation != null && orientation.equals(negative))
+                coordinate = -coordinate;
+            return formatDouble(coordinate, 7);
+        }
+        return null;
+    }
+
+    public static Double ddmm2longitude(String longitude) {
+        return ddmm2coordinate(longitude, West);
     }
 
     public static double ddmm2latitude(String latitude) {
-        throw new UnsupportedOperationException();// TODO
+        return ddmm2coordinate(latitude, South);
     }
-
 
     private static String coordinate2ddmmss(double coordinate, Orientation positive, Orientation negative) {
         double absolute = abs(coordinate);
@@ -132,12 +155,33 @@ public class UnitConversion {
         return coordinate2ddmmss(latitude, North, South);
     }
 
-    public static double ddmmss2longitude(String longitude) {
-        throw new UnsupportedOperationException();
+    private static final Pattern DDMMSS_TO_COORDINATE = Pattern.
+            compile("\\s*(\\w)\\s*" +
+                    "([\\d\\.]*)\\s*°\\s*" +
+                    "([\\d\\.]*)\\s*'\\s*" +
+                    "([\\d\\.]*)\\s*\"\\s*");
+
+    private static Double ddmmss2coordinate(String coordinateAsDdmmss, Orientation negative) {
+        Matcher matcher = DDMMSS_TO_COORDINATE.matcher(coordinateAsDdmmss);
+        if (matcher.matches()) {
+            Orientation orientation = Orientation.fromValue(matcher.group(1));
+            Double degree = parseDouble(matcher.group(2));
+            Double minutes = parseDouble(matcher.group(3));
+            Double seconds = parseDouble(matcher.group(4));
+            double coordinate = degree + (minutes / 60.0) + (seconds / 3600.0);
+            if(orientation != null && orientation.equals(negative))
+                coordinate = -coordinate;
+            return formatDouble(coordinate, 7);
+        }
+        return null;
     }
 
-    public static double ddmmss2latitude(String latitude) {
-        throw new UnsupportedOperationException();
+    public static Double ddmmss2longitude(String longitude) {
+        return ddmmss2coordinate(longitude, West);
+    }
+
+    public static Double ddmmss2latitude(String latitude) {
+        return ddmmss2coordinate(latitude, South);
     }
 
     public static double feetToMeters(double feet) {
