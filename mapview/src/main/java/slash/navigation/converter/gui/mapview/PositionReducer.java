@@ -222,13 +222,13 @@ class PositionReducer {
             for (int significantPosition : significantPositions) {
                 result.add(positions.get(significantPosition));
             }
-            log.info(format("zoom %d smaller than %d: for threshold %f use %d significant positions",
+            log.info(format("Zoom %d smaller than %d: for threshold %f use %d significant positions",
                     zoom, MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION, threshold, significantPositions.length));
         } else {
             // on all zoom about MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION
             // use all positions since the calculation is too expensive
             result.addAll(positions);
-            log.info("zoom " + zoom + " large: use all " + positions.size() + " positions");
+            log.info("Zoom " + zoom + " large: use all " + positions.size() + " positions");
         }
 
         long end = currentTimeMillis();
