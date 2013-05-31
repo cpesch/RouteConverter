@@ -81,7 +81,7 @@ public abstract class RouteCatalogClientBase {
     }
 
     protected String readFileToString(String fileName) throws IOException {
-        return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), "ISO8859-1");
+        return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), "ISO-8859-1");
     }
 
     protected File writeToTempFile(String string) throws IOException {
