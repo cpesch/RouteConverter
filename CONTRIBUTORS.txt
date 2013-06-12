@@ -16,6 +16,7 @@ Ilmari Krebs for contributing code for position selection and zooming on the map
 Javier M.R. (jamaro) for the Spanish translation
 Iorio Ciro for the Italian translation
 Malte Neumann for contributing code for KML, Wintec, Navigon, Douglas-Peucker, Map and much more
+Martin Oberzalek for contribution code for ApeMap
 Matthias Pötzsch for the RouteCatalog and Forum maintenance
 Philippe Vandekerckhove for the Dutch translation
 Pietro Sarkocci for the Czech and Slovakian translation
