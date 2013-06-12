@@ -132,6 +132,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.trim;
+import slash.navigation.simple.ApeMapFormat;
 
 /**
  * Contains a list of all navigation formats.
@@ -205,6 +206,7 @@ public final class NavigationFormats {
         addFormat(OpelNaviFormat.class);
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(NmnRouteFormat.class);
+        addFormat(ApeMapFormat.class);
         addFormat(ZipFormat.class);
 
         // GPSBabel-based formats

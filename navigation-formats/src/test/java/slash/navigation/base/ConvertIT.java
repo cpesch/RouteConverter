@@ -75,6 +75,7 @@ import slash.navigation.nmn.Nmn6Format;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.ApeMapFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
@@ -193,6 +194,11 @@ public class ConvertIT {
     @Test
     public void testConvertiBlue747ToCompeGPSData() throws IOException {
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CompeGPSDataRouteFormat());
+    }
+
+    @Test
+    public void testConvertApeMapToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-apemap.trk", new ApeMapFormat(), new Gpx10Format());
     }
 
     @Test

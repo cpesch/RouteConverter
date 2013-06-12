@@ -125,6 +125,7 @@ import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.Positions.contains;
 import static slash.navigation.base.Positions.getSignificantPositions;
+import slash.navigation.simple.*;
 
 /**
  * The base of all routes formats.
@@ -476,6 +477,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
     protected abstract TcxRoute asTcxFormat(TcxFormat format);
     protected abstract TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format);
+
+    @SuppressWarnings("UnusedDeclaration")
+    public SimpleRoute asApeMapFormat() {
+        if (getFormat() instanceof ApeMapFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new ApeMapFormat());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public SimpleRoute asColumbusV900StandardFormat() {
