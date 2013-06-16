@@ -1164,7 +1164,7 @@ public class ConvertPanel implements PanelInTab {
         }).performMonotonicallyIncreasing();
     }
 
-    public int selectPositionsWithinDistanceToPredecessor(int distance) {
+    public int selectPositionsWithinDistanceToPredecessor(double distance) {
         int[] indices = getPositionsModel().getPositionsWithinDistanceToPredecessor(distance);
         selectPositions(indices);
         return indices.length;
@@ -1177,7 +1177,7 @@ public class ConvertPanel implements PanelInTab {
         return new int[]{indices.length, rowCount - indices.length};
     }
 
-    public int selectInsignificantPositions(int threshold) {
+    public int selectInsignificantPositions(double threshold) {
         int[] indices = getPositionsModel().getInsignificantPositions(threshold);
         selectPositions(indices);
         return indices.length;

@@ -28,7 +28,8 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.models.NumberDocument;
+import slash.navigation.converter.gui.models.DoubleDocument;
+import slash.navigation.converter.gui.models.IntegerDocument;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -37,7 +38,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -69,9 +69,9 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
     private JLabel labelDouglasPeucker;
-    private NumberDocument distance;
-    private NumberDocument order;
-    private NumberDocument significance;
+    private DoubleDocument distance;
+    private IntegerDocument order;
+    private DoubleDocument threshold;
 
     private ListSelectionListener listSelectionListener = new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
@@ -147,12 +147,12 @@ public class DeletePositionsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
-        distance = new NumberDocument(r.getSelectByDistancePreference());
+        distance = new DoubleDocument(r.getSelectByDistancePreference());
         textFieldDistance.setDocument(distance);
-        order = new NumberDocument(r.getSelectByOrderPreference());
+        order = new IntegerDocument(r.getSelectByOrderPreference());
         textFieldOrder.setDocument(order);
-        significance = new NumberDocument(r.getSelectBySignificancePreference());
-        textFieldSignificance.setDocument(significance);
+        threshold = new DoubleDocument(r.getSelectBySignificancePreference());
+        textFieldSignificance.setDocument(threshold);
 
         r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);
         r.getPositionsModel().addTableModelListener(tableModelListener);
@@ -170,7 +170,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectByDistance() {
-        int distance = this.distance.getNumber();
+        double distance = this.distance.getDouble();
         if (distance >= 0) {
             int selectedRowCount = RouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distance);
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount, distance));
@@ -179,7 +179,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectByOrder() {
-        int order = this.order.getNumber();
+        int order = this.order.getInt();
         if (order >= 0) {
             int[] selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
@@ -188,10 +188,10 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectBySignificance() {
-        int significance = this.significance.getNumber();
-        if (significance >= 0) {
-            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(significance);
-            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, significance));
+        double threshold = this.threshold.getDouble();
+        if (threshold >= 0) {
+            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(threshold);
+            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, threshold));
             savePreferences();
         }
     }
@@ -208,9 +208,9 @@ public class DeletePositionsDialog extends SimpleDialog {
 
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();
-        r.setSelectByDistancePreference(distance.getNumber());
-        r.setSelectByOrderPreference(order.getNumber());
-        r.setSelectBySignificancePreference(significance.getNumber());
+        r.setSelectByDistancePreference(distance.getDouble());
+        r.setSelectByOrderPreference(order.getInt());
+        r.setSelectBySignificancePreference(threshold.getDouble());
     }
 
     private void close() {

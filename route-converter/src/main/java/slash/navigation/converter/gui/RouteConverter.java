@@ -75,7 +75,6 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
-import slash.navigation.gui.helpers.UIHelper;
 import slash.navigation.rest.Credentials;
 
 import javax.help.CSH;
@@ -447,12 +446,12 @@ public class RouteConverter extends SingleFrameApplication {
         return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
     }
 
-    public int getSelectByDistancePreference() {
-        return preferences.getInt(SELECT_BY_DISTANCE_PREFERENCE, 1000);
+    public double getSelectByDistancePreference() {
+        return preferences.getDouble(SELECT_BY_DISTANCE_PREFERENCE, 1000);
     }
 
-    public void setSelectByDistancePreference(int selectByDistancePreference) {
-        preferences.putInt(SELECT_BY_DISTANCE_PREFERENCE, selectByDistancePreference);
+    public void setSelectByDistancePreference(double selectByDistancePreference) {
+        preferences.putDouble(SELECT_BY_DISTANCE_PREFERENCE, selectByDistancePreference);
     }
 
     public int getSelectByOrderPreference() {
@@ -463,12 +462,12 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.putInt(SELECT_BY_ORDER_PREFERENCE, selectByOrderPreference);
     }
 
-    public int getSelectBySignificancePreference() {
-        return preferences.getInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, 20);
+    public double getSelectBySignificancePreference() {
+        return preferences.getDouble(SELECT_BY_SIGNIFICANCE_PREFERENCE, 20);
     }
 
-    public void setSelectBySignificancePreference(int selectBySignificancePreference) {
-        preferences.putInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
+    public void setSelectBySignificancePreference(double selectBySignificancePreference) {
+        preferences.putDouble(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
     public String getSearchPositionPreference() {
@@ -735,7 +734,7 @@ public class RouteConverter extends SingleFrameApplication {
         return getConvertPanel().getPositionsView();
     }
 
-    public int selectPositionsWithinDistanceToPredecessor(int distance) {
+    public int selectPositionsWithinDistanceToPredecessor(double distance) {
         return getConvertPanel().selectPositionsWithinDistanceToPredecessor(distance);
     }
 
@@ -743,8 +742,8 @@ public class RouteConverter extends SingleFrameApplication {
         return getConvertPanel().selectAllButEveryNthPosition(order);
     }
 
-    public int selectInsignificantPositions(int significance) {
-        return getConvertPanel().selectInsignificantPositions(significance);
+    public int selectInsignificantPositions(double threshold) {
+        return getConvertPanel().selectInsignificantPositions(threshold);
     }
 
     public void clearSelection() {
