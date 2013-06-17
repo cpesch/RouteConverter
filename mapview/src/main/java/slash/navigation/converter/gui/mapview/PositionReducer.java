@@ -158,7 +158,7 @@ class PositionReducer {
             case Track:
                 return preferences.getInt("maximumTrackPositionCount", 50 * getMaximumSegmentLength(characteristics));
             case Waypoints:
-                return preferences.getInt("maximumWaypointPositionCount", 25 * getMaximumSegmentLength(characteristics));
+                return preferences.getInt("maximumWaypointPositionCount", 10 * getMaximumSegmentLength(characteristics));
             default:
                 throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
         }
