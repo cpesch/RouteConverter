@@ -81,7 +81,7 @@ class PositionReducer {
         this.callback = callback;
     }
 
-    public List<NavigationPosition> reducePositions(List<NavigationPosition> positions, RouteCharacteristics characteristics) {
+    public List<NavigationPosition> reducePositions(List<NavigationPosition> positions, RouteCharacteristics characteristics, boolean showWaypointDescription) {
         // if it's within one segment, don't reduce the positions
         if (positions.size() <= getMaximumSegmentLength(characteristics))
             return positions;
@@ -89,7 +89,7 @@ class PositionReducer {
         int zoom = callback.getZoom();
         List<NavigationPosition> result = reducedPositions.get(zoom);
         if (result == null) {
-            result = reducePositions(positions, zoom, characteristics);
+            result = reducePositions(positions, zoom, characteristics, showWaypointDescription);
             reducedPositions.put(zoom, result);
         }
         return result;
@@ -151,22 +151,22 @@ class PositionReducer {
         }
     }
 
-    private int getMaximumPositionCount(RouteCharacteristics characteristics) {
+    private int getMaximumPositionCount(RouteCharacteristics characteristics, boolean showWaypointDescription) {
         switch (characteristics) {
             case Route:
                 return preferences.getInt("maximumRoutePositionCount", 30 * getMaximumSegmentLength(characteristics));
             case Track:
                 return preferences.getInt("maximumTrackPositionCount", 50 * getMaximumSegmentLength(characteristics));
             case Waypoints:
-                return preferences.getInt("maximumWaypointPositionCount", 50 * getMaximumSegmentLength(characteristics));
+                return preferences.getInt("maximumWaypointPositionCount", (showWaypointDescription ? 5 : 50) * getMaximumSegmentLength(characteristics));
             default:
                 throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
         }
     }
 
-    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, RouteCharacteristics characteristics) {
+    private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, RouteCharacteristics characteristics, boolean showWaypointDescription) {
         List<NavigationPosition> result = filterPositionsWithoutCoordinates(positions);
-        int maximumPositionCount = getMaximumPositionCount(characteristics);
+        int maximumPositionCount = getMaximumPositionCount(characteristics, showWaypointDescription);
 
         // reduce the number of result to those that are visible for tracks and waypoint lists
         if (result.size() > maximumPositionCount && !characteristics.equals(Route)) {

@@ -339,7 +339,7 @@ public abstract class BaseMapView implements MapView {
 
                     setCenterOfMap(copiedPositions, recenter);
                     RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
-                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics);
+                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, showWaypointDescription);
                     switch (characteristics) {
                         case Route:
                             addDirectionsToMap(render);
