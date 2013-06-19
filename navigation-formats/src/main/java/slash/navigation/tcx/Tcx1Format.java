@@ -23,6 +23,7 @@ package slash.navigation.tcx;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NavigationConversion;
 import slash.navigation.tcx.binding1.ActivityLapT;
 import slash.navigation.tcx.binding1.CourseFolderT;
 import slash.navigation.tcx.binding1.CourseLapT;
@@ -83,7 +84,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
-                    parseTime(trackpointT.getTime()),
+                    NavigationConversion.parseTime(trackpointT.getTime()),
                     null,
                     trackpointT));
         }
@@ -97,7 +98,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
                     null,
-                    parseTime(coursePointT.getTime()),
+                    NavigationConversion.parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, name, positions) : null;
@@ -294,7 +295,7 @@ public class Tcx1Format extends TcxFormat {
             trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(formatTime(position.getTime()));
+            trackpointT.setTime(NavigationConversion.formatTime(position.getTime()));
 
             if (previous != null) {
                 distance += previous.calculateDistance(position);

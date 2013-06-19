@@ -26,6 +26,7 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.common.NavigationConversion;
 import slash.navigation.lmx.binding.CoordinatesType;
 import slash.navigation.lmx.binding.LandmarkCollectionType;
 import slash.navigation.lmx.binding.LandmarkType;
@@ -81,7 +82,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
                 coordinates != null ? coordinates.getLatitude() : null,
                 altitude,
                 null,
-                coordinates != null ? parseTime(coordinates.getTimeStamp()) : null,
+                coordinates != null ? NavigationConversion.parseTime(coordinates.getTimeStamp()) : null,
                 landmark.getName(),
                 landmark);
     }
@@ -139,7 +140,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
             coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
             coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
-            coordinatesType.setTimeStamp(formatTime(position.getTime()));
+            coordinatesType.setTimeStamp(NavigationConversion.formatTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 
             landmarkTypeList.add(landmarkType);
