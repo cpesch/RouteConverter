@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
-import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.util.Arrays.sort;
@@ -78,6 +77,7 @@ import static slash.navigation.converter.gui.RouteConverter.AVOID_TOLLS_PREFEREN
 import static slash.navigation.converter.gui.RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.SHOW_COORDINATES_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.SHOW_WAYPOINT_DESCRIPTION_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.getPreferences;
 import static slash.navigation.converter.gui.mapview.TravelMode.Bicycling;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.converter.gui.mapview.TravelMode.Walking;
@@ -97,8 +97,6 @@ import static slash.navigation.gui.helpers.UIHelper.SPAIN;
  */
 
 public class OptionsPanel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(OptionsPanel.class);
-
     private JPanel miscPanel;
     private JComboBox comboBoxLocale;
     private JTextField textFieldBabelPath;
@@ -157,23 +155,23 @@ public class OptionsPanel {
         });
         textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, preferences, AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, getPreferences(), AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
 
-        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, preferences, RECENTER_AFTER_ZOOMING_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, getPreferences(), RECENTER_AFTER_ZOOMING_PREFERENCE, false);
         checkBoxRecenterAfterZooming.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setRecenterAfterZooming(checkBoxRecenterAfterZooming.isSelected());
             }
         });
 
-        new CheckBoxPreferencesSynchronizer(checkBoxShowCoordinates, preferences, SHOW_COORDINATES_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxShowCoordinates, getPreferences(), SHOW_COORDINATES_PREFERENCE, false);
         checkBoxShowCoordinates.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setShowCoordinates(checkBoxShowCoordinates.isSelected());
             }
         });
 
-        new CheckBoxPreferencesSynchronizer(checkBoxShowWaypointDescription, preferences, SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxShowWaypointDescription, getPreferences(), SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
         checkBoxShowWaypointDescription.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setShowWaypointDescription(checkBoxShowWaypointDescription.isSelected());
@@ -198,13 +196,13 @@ public class OptionsPanel {
         });
         comboboxTravelMode.setSelectedItem(r.getTravelModePreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, preferences, AVOID_HIGHWAYS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, getPreferences(), AVOID_HIGHWAYS_PREFERENCE, true);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, preferences, AVOID_TOLLS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, getPreferences(), AVOID_TOLLS_PREFERENCE, true);
         checkBoxAvoidTolls.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidTolls(checkBoxAvoidTolls.isSelected());
