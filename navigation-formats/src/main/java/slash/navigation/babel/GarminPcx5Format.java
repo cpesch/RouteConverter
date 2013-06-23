@@ -46,8 +46,8 @@ public class GarminPcx5Format extends BabelFormat {
         return "pcx";
     }
 
-    protected String getGlobalOptions() {
-        return "-r -w";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-r", "-w"};
     }
 
     public boolean isSupportsMultipleRoutes() {

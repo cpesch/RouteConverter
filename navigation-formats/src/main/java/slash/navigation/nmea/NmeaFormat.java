@@ -329,7 +329,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         return ALTITUDE_AND_SPEED_NUMBER_FORMAT.format(accuracy);
     }
 
-    protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
+    protected void writePosition(NmeaPosition position, PrintWriter writer) {
         ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();

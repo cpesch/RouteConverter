@@ -39,8 +39,8 @@ public class OziExplorerWaypointFormat extends OziExplorerFormat {
         return "OziExplorer Waypoint (*" + getExtension() + ")";
     }
 
-    protected String getGlobalOptions() {
-        return "-w";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-w"};
     }
 
     public boolean isSupportsMultipleRoutes() {

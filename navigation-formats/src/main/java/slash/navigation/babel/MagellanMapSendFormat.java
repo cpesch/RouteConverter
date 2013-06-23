@@ -41,8 +41,8 @@ public class MagellanMapSendFormat extends BabelFormat {
         return "mapsend";
     }
 
-    protected String getGlobalOptions() {
-        return "-r -w";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-r", "-w"};
     }
 
     public boolean isSupportsMultipleRoutes() {

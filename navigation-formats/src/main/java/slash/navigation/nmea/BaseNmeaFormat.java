@@ -301,7 +301,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         writer.println("$" + sentence + "*" + ggaChecksum);
     }
 
-    protected abstract void writePosition(NmeaPosition position, PrintWriter writer, int index);
+    protected abstract void writePosition(NmeaPosition position, PrintWriter writer);
 
     protected void writeHeader(PrintWriter writer) {
     }
@@ -312,7 +312,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         List<NmeaPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             NmeaPosition position = positions.get(i);
-            writePosition(position, writer, i);
+            writePosition(position, writer);
         }
 
         writeFooter(writer);

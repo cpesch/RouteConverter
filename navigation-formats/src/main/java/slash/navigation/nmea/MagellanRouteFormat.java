@@ -164,7 +164,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         List<NmeaPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             NmeaPosition position = positions.get(i);
-            writePosition(position, writer, i);
+            writePosition(position, writer);
         }
 
         String routeName = formatRouteName(asRouteName(route.getName()));
@@ -182,7 +182,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         writer.println(HEADER_LINE);
     }
 
-    protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
+    protected void writePosition(NmeaPosition position, PrintWriter writer) {
         ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();

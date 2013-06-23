@@ -46,8 +46,8 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
         return "alanwpr";
     }
 
-    protected String getGlobalOptions() {
-        return "-r -w";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-r", "-w"};
     }
 
     public int getMaximumPositionCount() {

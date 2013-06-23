@@ -39,8 +39,8 @@ public class OziExplorerTrackFormat extends OziExplorerFormat {
         return "OziExplorer Track (*" + getExtension() + ")";
     }
 
-    protected String getGlobalOptions() {
-        return "-t";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-t"};
     }
 
     public boolean isSupportsMultipleRoutes() {

@@ -39,8 +39,8 @@ public class OziExplorerRouteFormat extends OziExplorerFormat {
         return "OziExplorer Route (*" + getExtension() + ")";
     }
 
-    protected String getGlobalOptions() {
-        return "-r";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-r"};
     }
 
     public boolean isSupportsMultipleRoutes() {

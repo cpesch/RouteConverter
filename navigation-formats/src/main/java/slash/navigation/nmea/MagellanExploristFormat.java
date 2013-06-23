@@ -102,7 +102,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         return ALTITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
+    protected void writePosition(NmeaPosition position, PrintWriter writer) {
         ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
