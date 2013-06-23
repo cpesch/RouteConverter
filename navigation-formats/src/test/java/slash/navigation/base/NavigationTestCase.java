@@ -689,6 +689,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Comment " + index + " does not match", trimSpaces(sourcePosition.getComment()), trimSpaces(targetPosition.getComment()));
             else if (sourceFormat instanceof GarminPcx5Format && targetFormat instanceof MagellanMapSendFormat) {
                 // makes no sense, as the result is "WPT001" from a "D22081..." source
+                assertTrue(true);
             } else if (targetFormat instanceof MagellanMapSendFormat) {
                 String sourceName = getMagellanMapSendPositionComment(sourcePosition);
                 String targetName = getMagellanMapSendPositionComment(targetPosition);
@@ -886,6 +887,7 @@ public abstract class NavigationTestCase extends TestCase {
                                         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat, boolean commentPositionNames) {
         if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
+            assertTrue(true);
         } else if (targetFormat instanceof TomTomPoiFormat) {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions().subList(0, 1), sourceFormat, targetRoute.getPositions().subList(0, 1), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
