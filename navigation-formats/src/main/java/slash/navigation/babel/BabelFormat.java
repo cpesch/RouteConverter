@@ -202,12 +202,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        final Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
+        Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
         InputStream target = process.getInputStream();
         getGpxFormat().read(target, startDate, context);
         observer.interrupt();
+        target.close();
     }
 
     // temp file
@@ -315,12 +316,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + getFormatName());
+            sourceFile = createTempFile("babelreadsource", "." + getFormatName());
             copy(source, new FileOutputStream(sourceFile));
-            targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            targetFile = createTempFile("babelreadtarget", "." + BABEL_INTERFACE_FORMAT_NAME);
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
-                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, context);
+                InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile));
+                getGpxFormat().read(target, startDate, context);
+                target.close();
                 log.fine("Successfully converted " + sourceFile + " to " + targetFile);
             }
         } finally {
@@ -447,9 +450,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            sourceFile = createTempFile("babelwritesource", "." + BABEL_INTERFACE_FORMAT_NAME);
             getGpxFormat().write(route, new FileOutputStream(sourceFile), startIndex, endIndex, getBabelCharacteristics());
-            targetFile = createTempFile("babeltarget", getExtension());
+            targetFile = createTempFile("babelwritetarget", getExtension());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
             if (!successful)
@@ -466,9 +469,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            sourceFile = createTempFile("babelwriteallsource", "." + BABEL_INTERFACE_FORMAT_NAME);
             getGpxFormat().write(routes, new FileOutputStream(sourceFile));
-            targetFile = createTempFile("babeltarget", getExtension());
+            targetFile = createTempFile("babelwritealltarget", getExtension());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());
             if (!successful)
