@@ -52,7 +52,6 @@ import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.SECOND;
 import static java.util.Calendar.YEAR;
-import static javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.UTC;
@@ -404,9 +403,10 @@ public class NavigationConversion {
             gregorianCalendar.set(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DATE),
                     calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
             gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
+            XMLGregorianCalendar result = getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
             if (preferences.getBoolean("reduceTimeToSecondPrecision", false))
-                gregorianCalendar.set(MILLISECOND, FIELD_UNDEFINED);
-            return getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
+                result.setFractionalSecond(null);
+            return result;
         } catch (DatatypeConfigurationException e) {
             return null;
         }
