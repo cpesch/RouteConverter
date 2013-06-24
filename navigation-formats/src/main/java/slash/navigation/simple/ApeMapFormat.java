@@ -58,8 +58,10 @@ public class ApeMapFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     "\\(" + "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" + SEPARATOR + "(" + TIME + ")" + "\\)" +
+                    "(;#CMDNewSegment)*" +
                     "\\s*" +
                     END_OF_LINE);
+
     private static final Pattern START_POSITION_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     "\\(" + "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" + "\\)" +
