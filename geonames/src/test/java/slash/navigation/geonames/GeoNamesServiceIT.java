@@ -104,13 +104,17 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByPostalCodeFor() throws IOException {
-        PostalCode code = service.getNearByPostalCodeFor(9.0, 47.3);
-        assertTrue(new PostalCode("CH", "9622", "Krinau").equals(code) || new PostalCode("CH", "8638", "Goldingen").equals(code));
+        PostalCode code1 = service.getNearByPostalCodeFor(9.0, 47.3);
+        assertTrue(new PostalCode("CH", "9622", "Krinau").equals(code1) || new PostalCode("CH", "8638", "Goldingen").equals(code1));
         assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
         assertEquals(new PostalCode("AT", "6105", "Leutasch"), service.getNearByPostalCodeFor(11.1603, 47.3694));
         assertEquals(null, service.getNearByPostalCodeFor(0.0, -90.0));
-        assertEquals(null, service.getNearByPostalCodeFor(0.0, 90.0));
-        assertEquals(null, service.getNearByPostalCodeFor(90.0, 90.0));
+        PostalCode code2 = service.getNearByPostalCodeFor(0.0, 90.0);
+        if (code2 != null)
+            assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), code2);
+        PostalCode code3 = service.getNearByPostalCodeFor(90.0, 90.0);
+        if (code3 != null)
+            assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), code3);
         assertEquals(null, service.getNearByPostalCodeFor(-90.0, -90.0));
     }
 
