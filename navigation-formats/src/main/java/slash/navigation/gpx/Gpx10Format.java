@@ -23,7 +23,6 @@ package slash.navigation.gpx;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.NavigationConversion;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 
@@ -35,22 +34,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatHeading;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.common.io.Transfer.formatInt;
-import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatHeading;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatTime;
+import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.navigation.common.UnitConversion.kmhToMs;
 import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
-import static slash.navigation.common.UnitConversion.kmhToMs;
 
 /**
  * Reads and writes GPS Exchange Format 1.0 (.gpx) files.
@@ -140,7 +141,7 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(rtept.getCourse()), NavigationConversion.parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(rtept.getCourse()), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
             }
         }
         return positions;
@@ -149,7 +150,7 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(wpt.getCourse()), NavigationConversion.parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(wpt.getCourse()), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
         }
         return positions;
     }
@@ -159,7 +160,7 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(trkPt.getCourse()), NavigationConversion.parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
                 }
             }
         }
@@ -205,7 +206,7 @@ public class Gpx10Format extends GpxFormat {
                 wpt = objectFactory.createGpxWpt();
             wpt.setLat(latitude);
             wpt.setLon(longitude);
-            wpt.setTime(isWriteTime() ? NavigationConversion.formatTime(position.getTime()) : null);
+            wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             wpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
@@ -251,7 +252,7 @@ public class Gpx10Format extends GpxFormat {
                 rtept = objectFactory.createGpxRteRtept();
             rtept.setLat(latitude);
             rtept.setLon(longitude);
-            rtept.setTime(isWriteTime() ? NavigationConversion.formatTime(position.getTime()) : null);
+            rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             rtept.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
@@ -298,7 +299,7 @@ public class Gpx10Format extends GpxFormat {
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
             trkpt.setLat(latitude);
             trkpt.setLon(longitude);
-            trkpt.setTime(isWriteTime() ? NavigationConversion.formatTime(position.getTime()) : null);
+            trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             trkpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?

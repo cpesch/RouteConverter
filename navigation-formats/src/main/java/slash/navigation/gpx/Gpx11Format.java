@@ -23,7 +23,6 @@ package slash.navigation.gpx;
 import org.w3c.dom.Element;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.common.NavigationConversion;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.MetadataType;
@@ -44,18 +43,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatHeading;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.common.io.Transfer.formatInt;
-import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.common.NavigationConversion.formatSpeed;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatHeading;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeed;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatTime;
+import static slash.navigation.common.NavigationConversion.parseTime;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
@@ -136,7 +137,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), NavigationConversion.parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
             }
         }
         return positions;
@@ -146,7 +147,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), NavigationConversion.parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
 
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
@@ -170,7 +171,7 @@ public class Gpx11Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<WptType> wptTypes, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (WptType wptType : wptTypes) {
-            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), NavigationConversion.parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
         }
         return positions;
     }
@@ -180,7 +181,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), NavigationConversion.parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
                 }
             }
         }
@@ -336,7 +337,7 @@ public class Gpx11Format extends GpxFormat {
         wptType.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
         setSpeed(wptType, isWriteSpeed() ? position.getSpeed() : null);
         setHeading(wptType, isWriteHeading() ? position.getHeading() : null);
-        wptType.setTime(isWriteTime() ? NavigationConversion.formatTime(position.getTime()) : null);
+        wptType.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getComment()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getComment(), wptType.getDesc()) : null);
         wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);

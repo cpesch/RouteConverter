@@ -26,7 +26,6 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
-import slash.navigation.common.NavigationConversion;
 import slash.navigation.lmx.binding.CoordinatesType;
 import slash.navigation.lmx.binding.LandmarkCollectionType;
 import slash.navigation.lmx.binding.LandmarkType;
@@ -42,6 +41,8 @@ import java.util.List;
 
 import static slash.common.io.Transfer.formatFloat;
 import static slash.navigation.common.NavigationConversion.formatDouble;
+import static slash.navigation.common.NavigationConversion.formatTime;
+import static slash.navigation.common.NavigationConversion.parseTime;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -82,7 +83,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
                 coordinates != null ? coordinates.getLatitude() : null,
                 altitude,
                 null,
-                coordinates != null ? NavigationConversion.parseTime(coordinates.getTimeStamp()) : null,
+                coordinates != null ? parseTime(coordinates.getTimeStamp()) : null,
                 landmark.getName(),
                 landmark);
     }
@@ -140,7 +141,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
             coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
             coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
-            coordinatesType.setTimeStamp(NavigationConversion.formatTime(position.getTime()));
+            coordinatesType.setTimeStamp(formatTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 
             landmarkTypeList.add(landmarkType);
