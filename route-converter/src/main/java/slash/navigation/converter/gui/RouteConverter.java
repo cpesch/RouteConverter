@@ -152,6 +152,7 @@ import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
 import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
 import static slash.navigation.gui.helpers.UIHelper.POLAND;
+import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
@@ -279,7 +280,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private List<String> getLanguagesWithActiveTranslators() {
         List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
-                POLAND, SERBIA, SLOVAKIA, SPAIN, US);
+                POLAND, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
         List<String> results = new ArrayList<String>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());

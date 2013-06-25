@@ -86,6 +86,7 @@ import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
 import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
 import static slash.navigation.gui.helpers.UIHelper.POLAND;
+import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
@@ -128,7 +129,7 @@ public class OptionsPanel {
 
         comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{
                 ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA, ITALY, NEDERLANDS, POLAND,
-                SLOVAKIA, SERBIA, ROOT}));
+                RUSSIA, SLOVAKIA, SERBIA, ROOT}));
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {

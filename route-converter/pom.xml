@@ -27,6 +27,7 @@
                                 <include>**/RouteConverter_cs.properties</include>
                                 <include>**/RouteConverter_hr.properties</include>
                                 <include>**/RouteConverter_pl.properties</include>
+                                <include>**/RouteConverter_ru.properties</include>
                                 <include>**/RouteConverter_sk.properties</include>
                                 <include>**/RouteConverter_sr.properties</include>
                                 <include>**/RouteConverter_zh.properties</include>
