@@ -8,6 +8,7 @@ all the programmers sending me code
 
 My special thanks to:
 
+Andrey Denisov for the Russian translation
 Björn Gaworski for Mac OS X fixes
 Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
