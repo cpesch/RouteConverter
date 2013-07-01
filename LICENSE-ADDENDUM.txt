@@ -3,6 +3,7 @@ software projects, the following individual modules underly the Apache License
 2 in addition to GPLv2 (i.e. are dual-licensed):
 
 * common
+* googlemaps
 * gpx
 * jaxb6
 * kml
