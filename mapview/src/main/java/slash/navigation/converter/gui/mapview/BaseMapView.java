@@ -69,6 +69,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
@@ -825,27 +826,24 @@ public abstract class BaseMapView implements MapView {
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("var latlngs").append(j).append(" = [");
-
-            int start = Math.max(0, j * maximumRouteSegmentLength - 1);
+            StringBuilder waypoints = new StringBuilder();
+            int start = max(0, j * maximumRouteSegmentLength - 1);
             int end = min(positions.size(), (j + 1) * maximumRouteSegmentLength) - 1;
             for (int i = start + 1; i < end; i++) {
                 NavigationPosition position = positions.get(i);
-                buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
+                waypoints.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")}");
                 if (i < end - 1)
-                    buffer.append(",");
+                    waypoints.append(",");
             }
-            buffer.append("];\n");
-
             NavigationPosition origin = positions.get(start);
             NavigationPosition destination = positions.get(end);
+            StringBuilder buffer = new StringBuilder();
             buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).
                     append(",").append(origin.getLongitude()).append("), ");
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
                     append(",").append(destination.getLongitude()).append("), ");
-            buffer.append("waypoints: latlngs").append(j).append(", ").
+            buffer.append("waypoints: [").append(waypoints).append("], ").
                     append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
             buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
             buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
@@ -875,18 +873,17 @@ public abstract class BaseMapView implements MapView {
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("var latlngs = [");
+            StringBuilder latlngs = new StringBuilder();
             int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength + 1);
             for (int i = j * maximumPolylineSegmentLength; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
-                buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
+                latlngs.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")");
                 if (i < maximum - 1)
-                    buffer.append(",");
+                    latlngs.append(",");
             }
-            buffer.append("];\n");
-            buffer.append("addPolyline(latlngs,\"#").append(color).append("\",").append(width).append(");");
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("addPolyline([").append(latlngs).append("], \"#").append(color).append("\",").append(width).append(");");
             executeScript(buffer.toString());
         }
         removeOverlays();
