@@ -5,6 +5,7 @@ import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.simple.BrokenColumbusV900StandardFormat;
 import slash.navigation.simple.BrokenHaicomLoggerFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
@@ -49,7 +50,8 @@ public class NavigationFormatsTest {
         assertEquals(ColumbusV900StandardFormat.class, formats.get(3).getClass());
         assertEquals(QstarzQ1000Format.class, formats.get(4).getClass());
         assertEquals(Iblue747Format.class, formats.get(5).getClass());
-        assertEquals(BrokenHaicomLoggerFormat.class, formats.get(6).getClass());
-        assertEquals(NmeaFormat.class, formats.get(7).getClass());
+        assertEquals(BrokenColumbusV900StandardFormat.class, formats.get(6).getClass());
+        assertEquals(BrokenHaicomLoggerFormat.class, formats.get(7).getClass());
+        assertEquals(NmeaFormat.class, formats.get(8).getClass());
     }
 }
