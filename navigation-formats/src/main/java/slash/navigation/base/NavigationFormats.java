@@ -93,6 +93,7 @@ import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.BrokenColumbusV900StandardFormat;
 import slash.navigation.simple.BrokenHaicomLoggerFormat;
 import slash.navigation.simple.BrokenNavilinkFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
@@ -238,6 +239,7 @@ public final class NavigationFormats {
         addFormat(GoogleMapsUrlFormat.class);
 
         // second try for broken files
+        addFormat(BrokenColumbusV900StandardFormat.class);
         addFormat(BrokenNmeaFormat.class);
         addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);
