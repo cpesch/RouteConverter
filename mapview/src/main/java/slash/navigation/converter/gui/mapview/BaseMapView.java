@@ -1343,7 +1343,8 @@ public abstract class BaseMapView implements MapView {
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
             // directions are automatically scaled by the Google Maps API when zooming
-            else if (positionsModel.getRoute().getCharacteristics() != Route || positionReducer.hasFilteredVisibleArea()) {
+            else if (positionsModel.getRoute().getCharacteristics() != Route ||
+                    positionReducer.hasFilteredVisibleArea() || recenterAfterZooming) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
                 if (recenterAfterZooming)
