@@ -28,6 +28,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.gpx.binding11.WptType;
+import slash.navigation.tcx.binding2.HeartRateInBeatsPerMinuteT;
 
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,16 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
                 Double heartBeatRate = getHeartBeatRate(wpt);
                 if (heartBeatRate != null)
                     return heartBeatRate.shortValue();
+            }
+            slash.navigation.tcx.binding1.TrackpointT trackpointT1 = position.getOrigin(slash.navigation.tcx.binding1.TrackpointT.class);
+            if (trackpointT1 != null) {
+                return trackpointT1.getHeartRateBpm();
+            }
+            slash.navigation.tcx.binding2.TrackpointT trackpointT2 = position.getOrigin(slash.navigation.tcx.binding2.TrackpointT.class);
+            if (trackpointT2 != null) {
+                HeartRateInBeatsPerMinuteT heartRateBpm = trackpointT2.getHeartRateBpm();
+                if (heartRateBpm != null)
+                    return heartRateBpm.getValue();
             }
         }
         return null;

@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.nmn.NmnFormat.COMMENT_PATTERN;
 
 /**
  * Represents a position in a Navigon Mobile Navigator (.rte) file.
@@ -36,7 +37,6 @@ import static slash.common.io.Transfer.trim;
 
 public class NmnPosition extends Wgs84Position {
     private String zip, street, number; // comment = city
-
 
     public NmnPosition(Double longitude, Double latitude, String zip, String city, String street, String number) {
         super(longitude, latitude, null, null, null, city);
@@ -69,7 +69,7 @@ public class NmnPosition extends Wgs84Position {
         if (comment == null)
             return;
 
-        Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(escape(comment, NmnFormat.SEPARATOR, ';'));
+        Matcher matcher = COMMENT_PATTERN.matcher(escape(comment, NmnFormat.SEPARATOR, ';'));
         if (matcher.matches()) {
             this.comment = trim(matcher.group(2));
             zip = trim(matcher.group(1));

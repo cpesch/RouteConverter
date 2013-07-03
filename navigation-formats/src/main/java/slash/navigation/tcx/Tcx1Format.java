@@ -23,7 +23,6 @@ package slash.navigation.tcx;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.common.NavigationConversion;
 import slash.navigation.tcx.binding1.ActivityLapT;
 import slash.navigation.tcx.binding1.CourseFolderT;
 import slash.navigation.tcx.binding1.CourseLapT;
@@ -55,6 +54,8 @@ import java.util.Set;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.NavigationConversion.formatTime;
+import static slash.navigation.common.NavigationConversion.parseTime;
 import static slash.navigation.tcx.TcxUtil.marshal1;
 
 /**
@@ -84,7 +85,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
-                    NavigationConversion.parseTime(trackpointT.getTime()),
+                    parseTime(trackpointT.getTime()),
                     null,
                     trackpointT));
         }
@@ -98,7 +99,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
                     null,
-                    NavigationConversion.parseTime(coursePointT.getTime()),
+                    parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, name, positions) : null;
@@ -295,7 +296,7 @@ public class Tcx1Format extends TcxFormat {
             trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(NavigationConversion.formatTime(position.getTime()));
+            trackpointT.setTime(formatTime(position.getTime()));
 
             if (previous != null) {
                 distance += previous.calculateDistance(position);

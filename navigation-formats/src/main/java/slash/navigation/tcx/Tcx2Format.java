@@ -85,7 +85,8 @@ public class Tcx2Format extends TcxFormat {
                     trackpointT.getAltitudeMeters(),
                     null,
                     parseTime(trackpointT.getTime()),
-                    null));
+                    null,
+                    trackpointT));
         }
         return result;
     }
@@ -199,6 +200,13 @@ public class Tcx2Format extends TcxFormat {
 
 
     private HeartRateInBeatsPerMinuteT getHeartBeatRateT(Wgs84Position position) {
+        TrackpointT trackpointT = position.getOrigin(TrackpointT.class);
+        if (trackpointT != null) {
+            HeartRateInBeatsPerMinuteT heartRateBpm = trackpointT.getHeartRateBpm();
+            if (heartRateBpm != null)
+                return heartRateBpm;
+        }
+
         Short heartBeatRate = getHeartBeatRate(position);
         if (heartBeatRate != null) {
             HeartRateInBeatsPerMinuteT result = new ObjectFactory().createHeartRateInBeatsPerMinuteT();
