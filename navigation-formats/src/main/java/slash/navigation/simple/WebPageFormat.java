@@ -34,12 +34,12 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.Positions.northEast;
 import static slash.navigation.base.Positions.southWest;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Writes a Web Page (*.html).

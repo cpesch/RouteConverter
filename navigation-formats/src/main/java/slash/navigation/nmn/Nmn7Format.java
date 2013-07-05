@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.navigation.nmn.Nmn7Util.unmarshal;
 
 /**

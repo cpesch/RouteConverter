@@ -57,11 +57,11 @@ import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
 import static slash.navigation.base.RouteComments.commentPositions;
 import static slash.navigation.base.RouteComments.commentRouteName;
 import static slash.navigation.base.RouteComments.commentRoutePositions;
 import static slash.navigation.base.RouteComments.createRouteName;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
 
 /**
  * Parses byte streams with navigation information via {@link NavigationFormat} classes.

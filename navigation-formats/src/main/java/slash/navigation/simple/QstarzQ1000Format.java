@@ -39,16 +39,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 /**
  * Reads and writes Qstarz BT-Q1000 (.csv) files.

@@ -82,6 +82,7 @@ import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.simple.ApeMapFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
@@ -125,7 +126,6 @@ import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.Positions.contains;
 import static slash.navigation.base.Positions.getSignificantPositions;
-import slash.navigation.simple.*;
 
 /**
  * The base of all routes formats.

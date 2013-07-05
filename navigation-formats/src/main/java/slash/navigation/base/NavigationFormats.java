@@ -93,6 +93,7 @@ import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.ApeMapFormat;
 import slash.navigation.simple.BrokenColumbusV900StandardFormat;
 import slash.navigation.simple.BrokenHaicomLoggerFormat;
 import slash.navigation.simple.BrokenNavilinkFormat;
@@ -133,7 +134,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.trim;
-import slash.navigation.simple.ApeMapFormat;
 
 /**
  * Contains a list of all navigation formats.

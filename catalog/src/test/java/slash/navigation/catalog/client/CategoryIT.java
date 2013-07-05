@@ -1,7 +1,6 @@
 package slash.navigation.catalog.client;
 
 import org.junit.Test;
-import slash.common.io.Transfer;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.rest.Get;

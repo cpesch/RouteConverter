@@ -37,8 +37,6 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.UTC;
@@ -49,6 +47,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.BasicPosition.parsePositions;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
  * The base of all Google Earth formats.

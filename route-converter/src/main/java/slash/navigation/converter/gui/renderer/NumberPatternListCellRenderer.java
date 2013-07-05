@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.common.NumberPattern;
+import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;

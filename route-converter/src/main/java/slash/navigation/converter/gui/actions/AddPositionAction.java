@@ -22,12 +22,12 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.Range;
-import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after

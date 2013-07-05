@@ -20,15 +20,16 @@
 
 package slash.navigation.simple;
 
-import java.text.DateFormat;
-
-import org.junit.*;
-
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
+import java.text.DateFormat;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.utcCalendar;
 

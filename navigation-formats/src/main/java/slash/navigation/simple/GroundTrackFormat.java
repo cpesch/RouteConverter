@@ -40,10 +40,10 @@ import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 
 /**
  * Reads and writes groundtrack vom SondenMonitor (.txt) files.

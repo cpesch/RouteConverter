@@ -45,14 +45,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
  * Reads and writes MagicMaps Project (.ikt) files.
@@ -262,7 +262,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void write(MagicMapsIktRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        write(Arrays.asList(route), target);
+        write(asList(route), target);
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {

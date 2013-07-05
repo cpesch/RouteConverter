@@ -21,11 +21,11 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.common.NumberPattern;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -37,11 +37,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.navigation.base.Positions.extrapolateTime;
+import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.base.Positions.extrapolateTime;
-import static slash.navigation.base.RouteComments.formatNumberedPosition;
 
 /**
  * Helps to augment a newly created position with elevation, postal address

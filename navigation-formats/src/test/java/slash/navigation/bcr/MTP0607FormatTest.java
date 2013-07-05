@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -43,7 +43,7 @@ import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
 
 public class MTP0607FormatTest {
     private MTP0607Format format = new MTP0607Format();
-    private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
+    private BcrRoute route = new BcrRoute(format, "RouteName", asList("Description1", "Description2"), asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
 
     @Test
     public void testIsSectionTitle() {

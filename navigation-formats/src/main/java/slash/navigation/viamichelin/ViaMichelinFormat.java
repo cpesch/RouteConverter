@@ -41,9 +41,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.viamichelin.ViaMichelinUtil.unmarshal;
 
 /**

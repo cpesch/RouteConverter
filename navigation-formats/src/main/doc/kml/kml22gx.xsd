@@ -17,13 +17,11 @@
 
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-  xmlns:gx="http://www.google.com/kml/ext/2.2"
-  xmlns:kml="http://www.opengis.net/kml/2.2"
-  xmlns:atom="http://www.w3.org/2005/Atom"
-  xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0"
-  targetNamespace="http://www.google.com/kml/ext/2.2"
-  elementFormDefault="qualified"
-  version="090102 BETA">
+        xmlns:gx="http://www.google.com/kml/ext/2.2"
+        xmlns:kml="http://www.opengis.net/kml/2.2"
+        targetNamespace="http://www.google.com/kml/ext/2.2"
+        elementFormDefault="qualified"
+        version="090102 BETA">
 
   <!-- Import the language we are extending: OGC KML 2.2 -->
   <import namespace="http://www.opengis.net/kml/2.2"

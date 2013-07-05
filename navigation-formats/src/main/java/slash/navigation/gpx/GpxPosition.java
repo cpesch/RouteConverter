@@ -34,10 +34,10 @@ import java.util.regex.Matcher;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.fpl.WaypointType.UserWaypoint;
-import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 import static slash.navigation.base.RouteComments.parseComment;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
+import static slash.navigation.fpl.WaypointType.UserWaypoint;
+import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 
 /**
  * Represents a position in a GPS Exchange Format (.gpx) file.

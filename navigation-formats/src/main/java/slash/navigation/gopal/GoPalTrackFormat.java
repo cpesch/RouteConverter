@@ -39,16 +39,16 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 /**
  * Reads and writes GoPal Track (.trk) files.

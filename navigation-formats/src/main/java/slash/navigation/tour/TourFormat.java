@@ -32,13 +32,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.parseLong;
@@ -149,7 +149,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private List<TourPosition> sortPositions(List<TourPosition> positions) {
         TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
         sort(positionArray, new PositionInListComparator());
-        return new ArrayList<TourPosition>(Arrays.asList(positionArray));
+        return new ArrayList<TourPosition>(asList(positionArray));
     }
 
     boolean isSectionTitle(String line) {

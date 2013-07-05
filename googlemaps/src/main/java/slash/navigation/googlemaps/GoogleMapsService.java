@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import static slash.common.io.Transfer.encodeUri;
 import static slash.common.util.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
-import static slash.common.io.Transfer.encodeUri;
 
 /**
  * Encapsulates REST access to the Google Maps API Geocoding Service.

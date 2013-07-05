@@ -34,12 +34,12 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.Positions.contains;
 import static slash.navigation.base.Positions.getSignificantPositions;
 import static slash.navigation.base.Positions.northEast;
 import static slash.navigation.base.Positions.southWest;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Helps to reduce the amount of positions for rending routes, tracks, waypoint lists.

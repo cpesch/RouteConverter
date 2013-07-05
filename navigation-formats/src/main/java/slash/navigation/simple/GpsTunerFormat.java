@@ -33,14 +33,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseLong;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
