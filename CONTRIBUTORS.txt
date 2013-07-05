@@ -12,6 +12,7 @@ Andrey Denisov for the Russian translation
 Björn Gaworski for Mac OS X fixes
 Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
+Fredrik Teschke for dual licensing of navigation-formats module
 Harry van der Wolf for Linux and Mac OS X fixes and the Dutch translation
 Ilmari Krebs for contributing code for position selection and zooming on the map
 Javier M.R. (jamaro) for the Spanish translation

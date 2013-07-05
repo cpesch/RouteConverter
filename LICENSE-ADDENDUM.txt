@@ -1,6 +1,5 @@
-Please not that, to enable reuse of RouteConverter code in other non-GPL
-software projects, the following individual modules underly the Apache License
-2 in addition to GPLv2 (i.e. are dual-licensed):
+Please not that, to enable reuse of RouteConverter code in non-GPL software projects, the following individual modules
+underly the Apache License 2 (see LICENSE-APACHE.txt) in addition to GPL 2 (LICENSE-GPL.txt) and are thus dual-licensed:
 
 * common
 * googlemaps
@@ -8,6 +7,3 @@ software projects, the following individual modules underly the Apache License
 * jaxb6
 * kml
 * navigation-formats
-
-This is also documented through additional license files in the corresponding
-directories.
