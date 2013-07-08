@@ -51,6 +51,7 @@ import slash.navigation.kml.binding22.UnitsEnumType;
 import slash.navigation.kml.binding22.Vec2Type;
 import slash.navigation.kml.binding22gx.AbstractTourPrimitiveType;
 import slash.navigation.kml.binding22gx.FlyToType;
+import slash.navigation.kml.binding22gx.MultiTrackType;
 import slash.navigation.kml.binding22gx.TourType;
 import slash.navigation.kml.binding22gx.TrackType;
 import slash.navigation.kml.bindingatom.Link;
@@ -250,7 +251,9 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
-    private List<KmlPosition> extractPositions(List<String> coords, List<String> whens) {
+    private List<KmlPosition> extractPositions(TrackType trackType) {
+        List<String> coords = trackType.getCoord();
+        List<String> whens = trackType.getWhen();
         List<KmlPosition> result = asExtendedKmlPositions(coords);
         for (int i = 0; i < whens.size(); i++) {
             String when = whens.get(i);
@@ -281,11 +284,16 @@ public class Kml22Format extends KmlFormat {
                 positions.addAll(extractPositionsFromGeometry(geometryType2));
             }
         }
+        if (geometryTypeValue instanceof MultiTrackType) {
+            MultiTrackType multiTrackType = (MultiTrackType) geometryTypeValue;
+            List<TrackType> tracks = multiTrackType.getTrack();
+            for (TrackType track : tracks) {
+                positions.addAll(extractPositions(track));
+            }
+        }
         if (geometryTypeValue instanceof TrackType) {
             TrackType trackType = (TrackType) geometryTypeValue;
-            List<String> coord = trackType.getCoord();
-            List<String> when = trackType.getWhen();
-            positions.addAll(extractPositions(coord, when));
+            positions.addAll(extractPositions(trackType));
         }
         return positions;
     }
