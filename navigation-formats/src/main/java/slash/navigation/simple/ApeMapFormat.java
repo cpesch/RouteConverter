@@ -38,7 +38,7 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
- * Reads Ape Map (.trk) files.
+ * Reads ape@map (.trk) files.
  * <p/>
  * [track]
  * (47.14454650878906,15.500686645507813)
@@ -72,7 +72,7 @@ public class ApeMapFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     END_OF_LINE);
 
     public String getName() {
-        return "Ape Map (*" + getExtension() + ")";
+        return "ape@map (*" + getExtension() + ")";
     }
 
     public String getExtension() {
