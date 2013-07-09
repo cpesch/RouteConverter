@@ -19,7 +19,7 @@
 */
 package slash.navigation.feedback.domain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.routecatalog10.UserextensionType;

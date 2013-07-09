@@ -8,7 +8,7 @@ import slash.navigation.gpx.Gpx11Format;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 

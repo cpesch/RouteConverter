@@ -23,7 +23,7 @@ package slash.navigation.simple;
 import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

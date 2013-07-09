@@ -9,7 +9,7 @@ import slash.navigation.kml.Kml22Format;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
