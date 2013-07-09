@@ -67,6 +67,11 @@
         </dependency>
 
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>swt-mapview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun</groupId>
             <artifactId>jna</artifactId>
             <version>3.2.4</version>
