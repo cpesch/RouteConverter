@@ -55,7 +55,6 @@ import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.helper.ShowProfileMenu;
 import slash.navigation.converter.gui.helper.SinglePositionAugmenter;
 import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
-import slash.navigation.converter.gui.mapview.EclipseSWTMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
@@ -135,6 +134,7 @@ import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.system.Platform.isJavaFX;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.feature.client.Feature.initializePreferences;
@@ -349,8 +349,11 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        mapView = new EclipseSWTMapView();
-        if (mapView.isSupportedPlatform()) {
+        if (isJavaFX())
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
         } else {
@@ -361,6 +364,16 @@ public class RouteConverter extends SingleFrameApplication {
         initializeRouteConverterServices();
         initializeActions();
         initializePreferences(preferences);
+    }
+
+    private MapView createMapView(String className) {
+        try {
+            return (MapView) Class.forName(className).newInstance();
+        } catch (Exception e) {
+            log.severe("Cannot create " + className + ": " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void openFrame() {
