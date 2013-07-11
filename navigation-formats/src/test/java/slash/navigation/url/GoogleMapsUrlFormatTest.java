@@ -34,7 +34,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
 
 public class GoogleMapsUrlFormatTest {
     private static final String INPUT1_EMAIL = "Betreff: Route nach/zu Riehler Strasse 190 50735 Koeln (Google Maps)\n" +
@@ -68,7 +69,7 @@ public class GoogleMapsUrlFormatTest {
     public void testFindURL() {
         String url = format.findURL(INPUT1_EMAIL);
         assertNotNull(url);
-        assertTrue(url.startsWith("f=d"));
+        assertTrue(url.startsWith("?f=d"));
         assertNull(format.findURL("don't care"));
     }
 
@@ -294,7 +295,13 @@ public class GoogleMapsUrlFormatTest {
     }
 
     @Test
-    public void testIsGoogleMapsUrl() throws MalformedURLException {
-        assertTrue(isGoogleMapsUrl(new URL("http://maps.google.com/maps/ms?ie=UTF8&hl=de&oe=UTF8&num=200&start=37&msa=0&msid=215491296402946676738.000484ccfd83696d5b12e&z=11")));
+    public void testIsGoogleMapsLinkUrl() throws MalformedURLException {
+        assertTrue(isGoogleMapsLinkUrl(new URL("https://maps.google.com/maps?saddr=Hamburg&daddr=Hannover+to:M%C3%BCnchen&hl=en&ie=UTF8&sll=50.844236,10.557014&sspn=6.272277,10.777588&geocode=Fe0fMQMd0n2YACm5Exh-g2GxRzGgOtZ78j0mBA%3BFVQxHwMdqn-UACmFT0lNUQuwRzEgR6yUbawlBA%3BFRCC3gIdsqWwACnZX4yj-XWeRzF9mLF9SrgMAQ&mra=ls&t=m&z=7")));
+    }
+
+    @Test
+    public void testIsGoogleMapsProfile() throws MalformedURLException {
+        assertTrue(isGoogleMapsProfileUrl(new URL("http://maps.google.com/maps/ms?ie=UTF8&hl=de&oe=UTF8&num=200&start=37&msa=0&msid=215491296402946676738.000484ccfd83696d5b12e&z=11")));
+        assertTrue(isGoogleMapsProfileUrl(new URL("https://maps.google.com/maps/ms?msa=0&msid=218347962219071576267.0004e1131e8ad4ef4fd9b")));
     }
 }

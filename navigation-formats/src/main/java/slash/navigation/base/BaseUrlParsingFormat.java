@@ -96,7 +96,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         while (ix < data.length) {
             byte c = data[ix++];
             switch ((char) c) {
-                case'&':
+                case '&':
                     value = new String(data, 0, ox, encoding);
                     if (key != null) {
                         putMapEntry(result, key, value);
@@ -104,7 +104,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
                     }
                     ox = 0;
                     break;
-                case'=':
+                case '=':
                     if (key == null) {
                         key = new String(data, 0, ox, encoding);
                         ox = 0;
@@ -112,13 +112,15 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
                         data[ox++] = c;
                     }
                     break;
-                case'+':
+                case '+':
                     data[ox++] = (byte) ' ';
                     break;
-                case'%':
+                case '%':
                     int leftNibble = convertHexDigit(data[ix++]) << 4;
                     byte rightNibble = ix < data.length ? convertHexDigit(data[ix++]) : 0;
                     data[ox++] = (byte) (leftNibble + rightNibble);
+                    break;
+                case '?':
                     break;
                 default:
                     data[ox++] = c;

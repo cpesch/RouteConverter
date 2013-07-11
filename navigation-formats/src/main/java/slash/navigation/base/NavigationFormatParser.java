@@ -28,6 +28,7 @@ import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
+import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
@@ -61,7 +62,8 @@ import static slash.navigation.base.RouteComments.commentPositions;
 import static slash.navigation.base.RouteComments.commentRouteName;
 import static slash.navigation.base.RouteComments.commentRoutePositions;
 import static slash.navigation.base.RouteComments.createRouteName;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
 
 /**
  * Parses byte streams with navigation information via {@link NavigationFormat} classes.
@@ -266,7 +268,12 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (isGoogleMapsUrl(url)) {
+        if (isGoogleMapsProfileUrl(url)) {
+            url = new URL(url.toExternalForm() + "&output=kml");
+            formats = new ArrayList<NavigationFormat>(formats);
+            formats.add(0, new Kml22Format());
+
+        } else if (isGoogleMapsLinkUrl(url)) {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());

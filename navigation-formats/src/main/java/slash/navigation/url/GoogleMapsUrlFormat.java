@@ -48,7 +48,7 @@ import static slash.common.io.Transfer.trim;
 public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     private static final Logger log = Logger.getLogger(GoogleMapsUrlFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://.+\\.google\\..+/maps[\\?/]([^\\s]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://.+\\.google\\..+/maps([^\\s]+).*");
     private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
     private static final Pattern PLAIN_POSITION_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
     private static final Pattern COMMENT_POSITION_PATTERN = Pattern.
@@ -69,8 +69,14 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         return preferences.getInt("maximumGoogleMapsUrlPositionCount", 15);
     }
 
-    public static boolean isGoogleMapsUrl(URL url) {
-        return internalFindUrl(url.toExternalForm()) != null;
+    public static boolean isGoogleMapsLinkUrl(URL url) {
+        String found = internalFindUrl(url.toExternalForm());
+        return found != null && found.startsWith("?");
+    }
+
+    public static boolean isGoogleMapsProfileUrl(URL url) {
+        String found = internalFindUrl(url.toExternalForm());
+        return found != null && found.startsWith("/ms?");
     }
 
     private static String internalFindUrl(String text) {
