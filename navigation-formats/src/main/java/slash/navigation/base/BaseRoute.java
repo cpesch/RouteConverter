@@ -120,6 +120,7 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.List;
 
+import static java.lang.Double.MAX_VALUE;
 import static java.lang.Math.max;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
@@ -293,7 +294,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public int getClosestPosition(double longitude, double latitude, double threshold) {
         int closestIndex = -1;
-        double closestDistance = Double.MAX_VALUE;
+        double closestDistance = MAX_VALUE;
 
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); ++i) {

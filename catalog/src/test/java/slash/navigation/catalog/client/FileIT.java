@@ -18,6 +18,7 @@ import slash.navigation.rest.SimpleCredentials;
 import java.io.File;
 import java.io.IOException;
 
+import static java.lang.Integer.MAX_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -108,7 +109,7 @@ public class FileIT extends RouteCatalogClientBase {
 
     @Test
     public void testReadNotExisting() throws Exception {
-        HttpRequest request = readFile(Integer.MAX_VALUE);
+        HttpRequest request = readFile(MAX_VALUE);
         assertNotNull(request.execute());
         assertEquals(404, request.getResult());
         assertFalse(request.isSuccessful());

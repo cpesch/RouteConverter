@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.Integer.MAX_VALUE;
 import static slash.common.io.Transfer.toArray;
 
 /**
@@ -42,7 +43,7 @@ public class Range {
     }
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices) {
-        return asContinuousMonotonicallyIncreasingRanges(indices, Integer.MAX_VALUE);
+        return asContinuousMonotonicallyIncreasingRanges(indices, MAX_VALUE);
     }
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices, int maximumRangeLength) {

@@ -28,6 +28,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.MAX_VALUE;
+
 /**
  * A helper for simplified {@link JTable} operations.
  *
@@ -73,6 +75,6 @@ public class JTableHelper {
     }
 
     public static boolean isFirstToLastRow(TableModelEvent e) {
-        return e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
+        return e.getFirstRow() == 0 && e.getLastRow() == MAX_VALUE;
     }
 }

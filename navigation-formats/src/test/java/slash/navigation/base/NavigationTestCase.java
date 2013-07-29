@@ -104,6 +104,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.io.File.separator;
+import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static slash.common.io.Files.collectFiles;
@@ -581,7 +582,7 @@ public abstract class NavigationTestCase extends TestCase {
         String comment = position.getComment();
         if (comment == null)
             return null;
-        return trim(nameDescription(garminUmlauts(comment).replaceAll(",", ""), 24, Integer.MAX_VALUE, true), 50);
+        return trim(nameDescription(garminUmlauts(comment).replaceAll(",", ""), 24, MAX_VALUE, true), 50);
     }
 
     private static String getGoRiderGpsComment(NavigationPosition position) {
