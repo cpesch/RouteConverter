@@ -28,12 +28,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.TestCase.assertNotEquals;
@@ -99,7 +99,7 @@ public class ReadIT {
     public static void tearDown() throws IOException {
         PrintStream out = new PrintStream(new FileOutputStream(File.createTempFile("comments", ".csv")));
         String[] strings = comments.toArray(new String[comments.size()]);
-        Arrays.sort(strings);
+        sort(strings);
         for (String string : strings) {
             out.println(string);
         }

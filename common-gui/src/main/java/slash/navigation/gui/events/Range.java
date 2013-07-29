@@ -21,10 +21,10 @@
 package slash.navigation.gui.events;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.toArray;
 
 /**
@@ -47,7 +47,7 @@ public class Range {
     }
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices, int maximumRangeLength) {
-        Arrays.sort(indices);
+        sort(indices);
         List<List<Integer>> result = new ArrayList<List<Integer>>();
         List<Integer> range = new ArrayList<Integer>();
         for (int index : indices) {
@@ -81,7 +81,7 @@ public class Range {
     }
 
     public static int[] revert(int[] indices) {
-        Arrays.sort(indices);
+        sort(indices);
         int[] reverted = new int[indices.length];
         for (int i = 0; i < indices.length; i++) {
             reverted[i] = indices[indices.length - i - 1];

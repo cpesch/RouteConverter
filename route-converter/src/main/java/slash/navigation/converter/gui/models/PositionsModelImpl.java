@@ -39,10 +39,10 @@ import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
@@ -357,7 +357,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void top(int[] rowIndices) {
-        Arrays.sort(rowIndices);
+        sort(rowIndices);
 
         for (int i = 0; i < rowIndices.length; i++) {
             getRoute().top(rowIndices[i], i);
@@ -375,7 +375,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void up(int[] rowIndices, int delta) {
-        Arrays.sort(rowIndices);
+        sort(rowIndices);
 
         for (int row : rowIndices) {
             getRoute().up(row, row - delta);
@@ -402,7 +402,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void bottomUp(int[] rows) {
-        Arrays.sort(rows);
+        sort(rows);
 
         for (int i = 0; i < rows.length; i++) {
             getRoute().up(getRowCount() - rows.length + i, rows[i]);

@@ -122,6 +122,7 @@ import java.util.List;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Math.max;
+import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -393,7 +394,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double[] getDistancesFromStart(int[] indices) {
         double[] result = new double[indices.length];
         if (indices.length > 0 && getPositionCount() > 0) {
-            Arrays.sort(indices);
+            sort(indices);
             int endIndex = Math.min(indices[indices.length - 1], getPositionCount() - 1);
 
             int index = 0;
