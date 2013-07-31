@@ -170,7 +170,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return LONGITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    String formatLatititude(Double aDouble) {
+    String formatLatitude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(aDouble);
@@ -195,7 +195,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatLongitude(Math.abs(position.getLongitude()));
         String westOrEast = position.getLongitude() >= 0.0 ? "E" : "W";
-        String latitude = formatLatititude(Math.abs(position.getLatitude()));
+        String latitude = formatLatitude(Math.abs(position.getLatitude()));
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());

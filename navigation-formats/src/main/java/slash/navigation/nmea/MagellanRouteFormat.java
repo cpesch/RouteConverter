@@ -135,7 +135,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         return LONGITUDE_NUMBER_FORMAT.format(longitude);
     }
 
-    protected String formatLatititude(Double latitude) {
+    protected String formatLatitude(Double latitude) {
         if (latitude == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(latitude);
@@ -187,7 +187,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
-        String latitude = formatLatititude(latitudeAsValueAndOrientation.getValue());
+        String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String comment = escape(position.getComment(), SEPARATOR, ';');
         String altitude = formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
