@@ -57,6 +57,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return getLongitude() != null && getLatitude() != null;
     }
 
+    public boolean hasTime() {
+        return getTime() != null;
+    }
+
     public void setStartDate(CompactCalendar startDate) {
         if (getTime() != null && startDate != null) {
             Calendar calendar = getTime().getCalendar();

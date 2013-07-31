@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,7 @@ import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Logger log = Logger.getLogger(HaicomLoggerFormat.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(HaicomLoggerFormat.class);
 
     private static final String SEPARATOR = ",";
     private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,";
@@ -77,13 +79,14 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
     static {
+        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 5);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
     }
 
@@ -170,7 +173,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return LONGITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    String formatLatititude(Double aDouble) {
+    String formatLatitude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(aDouble);
@@ -195,7 +198,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatLongitude(Math.abs(position.getLongitude()));
         String westOrEast = position.getLongitude() >= 0.0 ? "E" : "W";
-        String latitude = formatLatititude(Math.abs(position.getLatitude()));
+        String latitude = formatLatitude(Math.abs(position.getLatitude()));
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());

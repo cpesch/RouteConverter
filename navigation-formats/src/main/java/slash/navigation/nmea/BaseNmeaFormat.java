@@ -82,14 +82,15 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     static {
+        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 4);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(5);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
@@ -127,7 +128,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     else
                         position.setStartDate(startDate);
 
-                    if (haveDifferentLongitudeAndLatitude(previous, position)) {
+                    if (haveDifferentLongitudeAndLatitude(previous, position) ||
+                                     haveDifferentStartDate(previous, position)) {
                         positions.add(position);
                         previous = position;
                     } else {
@@ -150,6 +152,12 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                 (predecessor.hasCoordinates() && successor.hasCoordinates() &&
                         !(predecessor.getLongitude().equals(successor.getLongitude()) &&
                                 predecessor.getLatitude().equals(successor.getLatitude())));
+    }
+
+    boolean haveDifferentStartDate(NmeaPosition predecessor, NmeaPosition successor) {
+        return predecessor == null ||
+                (predecessor.hasTime() && successor.hasTime() &&
+                        !predecessor.getTime().equals(successor.getTime()));
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
@@ -290,7 +298,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return LONGITUDE_NUMBER_FORMAT.format(longitude);
     }
 
-    protected String formatLatititude(Double latitude) {
+    protected String formatLatitude(Double latitude) {
         if (latitude == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(latitude);

@@ -107,7 +107,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
-        String latitude = formatLatititude(latitudeAsValueAndOrientation.getValue());
+        String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String comment = escape(position.getComment(), SEPARATOR, ';');
         String time = formatTime(position.getTime());

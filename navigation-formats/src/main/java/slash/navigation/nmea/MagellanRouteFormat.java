@@ -62,14 +62,15 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
     static {
+        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 5);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(5);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
@@ -135,7 +136,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         return LONGITUDE_NUMBER_FORMAT.format(longitude);
     }
 
-    protected String formatLatititude(Double latitude) {
+    protected String formatLatitude(Double latitude) {
         if (latitude == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(latitude);
@@ -187,7 +188,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
         String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
-        String latitude = formatLatititude(latitudeAsValueAndOrientation.getValue());
+        String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String comment = escape(position.getComment(), SEPARATOR, ';');
         String altitude = formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
