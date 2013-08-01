@@ -248,15 +248,15 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         } catch (ParseException e) {
             // intentionally left empty
         }
-        // date: 16062007 time: 130441
+        // date: 160607 time: 130441
         try {
-            Date parsed = createDateFormat(PRECISE_DATE_AND_TIME_FORMAT).parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
-        // date: 160607 time: 130441
-        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
+        // date: 16062007 time: 130441
+        return parseDate(dateAndTime, PRECISE_DATE_AND_TIME_FORMAT);
     }
 
 
