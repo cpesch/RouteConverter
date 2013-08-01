@@ -29,11 +29,11 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.US;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
@@ -56,7 +56,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         log = Logger.getLogger(NmeaFormat.class.getName());
     }
 
-    private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
+    private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setGroupingUsed(false);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumFractionDigits(1);
@@ -67,7 +67,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
     private static final String DAY_FORMAT = "dd";
     private static final String MONTH_FORMAT = "MM";
-    private static final String YEAR_FORMAT = "yy";
+    private static final String YEAR_FORMAT = "yyyy";
 
     // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
     // $GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F
