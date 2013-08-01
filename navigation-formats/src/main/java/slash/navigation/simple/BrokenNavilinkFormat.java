@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -143,7 +144,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
 
             if ((activeRoute == null || isTrackStart(sbpRecordByteBuffer)) && position != null) {
                 activeRoute = createRoute(Track,
-                        TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
+                        createDateFormat(TRACK_NAME_DATE_FORMAT).format(position.getTime().getTime()),
                         new ArrayList<BaseNavigationPosition>());
                 result.add(activeRoute);
             }
