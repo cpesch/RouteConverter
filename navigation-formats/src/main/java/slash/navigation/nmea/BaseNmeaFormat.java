@@ -156,13 +156,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
 
     boolean haveDifferentStartDate(NmeaPosition predecessor, NmeaPosition successor) {
         long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-        boolean diff = true;
-        if (predecessor == null) return diff;
+        boolean diff;
+        if (predecessor == null) return true;
         if (predecessor.hasTime() && successor.hasTime()) {
             long predTimePortion = predecessor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
             long succTimePortion = successor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
             diff = predTimePortion != succTimePortion;
         }
+        else diff = false;
         return diff;
     }
 
