@@ -31,8 +31,6 @@ import slash.navigation.base.Wgs84Route;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -42,7 +40,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
@@ -127,13 +125,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
-        try {
-            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {

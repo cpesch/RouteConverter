@@ -21,6 +21,7 @@
 package slash.common.type;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 /**
  * A compact representation of a calendar, that saves some memory.
@@ -37,6 +39,7 @@ import java.util.TimeZone;
  */
 
 public class CompactCalendar {
+    private static final Logger log = Logger.getLogger(CompactCalendar.class.getName());
     public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private final long timeInMillis;
@@ -51,6 +54,19 @@ public class CompactCalendar {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         simpleDateFormat.setTimeZone(UTC);
         return simpleDateFormat;
+    }
+
+    public static CompactCalendar parseDate(String dateString, String dateFormatString) {
+        if (dateString == null)
+            return null;
+        try {
+            DateFormat dateFormat = createDateFormat(dateFormatString);
+            Date parsed = dateFormat.parse(dateString);
+            return fromDate(parsed);
+        } catch (ParseException e) {
+            log.severe("Could not parse '" + dateString + "' with format '" + dateFormatString + "'");
+        }
+        return null;
     }
 
     public static CompactCalendar fromMillisAndTimeZone(long timeInMillis, String timeZoneId) {

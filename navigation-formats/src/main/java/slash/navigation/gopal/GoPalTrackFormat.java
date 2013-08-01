@@ -29,9 +29,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -44,8 +42,7 @@ import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
@@ -116,29 +113,13 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return satellites != null && satellites > 0;
     }
 
-    private CompactCalendar parseTime(String time) {
-        try {
-            Date parsed = createDateFormat(TIME_FORMAT).parse(time);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse time '" + time + "'");
-        }
-        return null;
-    }
-
     private CompactCalendar parseDateAndTime(String date, String time) {
         time = trim(time);
         date = trim(date);
         if (date == null)
-            return parseTime(time);
+            return parseDate(time, TIME_FORMAT);
         String dateAndTime = date + " " + time;
-        try {
-            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {

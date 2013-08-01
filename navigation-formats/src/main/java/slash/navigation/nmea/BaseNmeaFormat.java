@@ -45,6 +45,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -230,13 +231,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             // intentionally left empty
         }
         // 130441
-        try {
-            Date parsed = createDateFormat(TIME_FORMAT).parse(time);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse time '" + time + "'");
-        }
-        return null;
+        return parseDate(time, TIME_FORMAT);
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
@@ -253,13 +248,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             // intentionally left empty
         }
         // date: 160607 time: 130441
-        try {
-            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
 

@@ -29,8 +29,6 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -39,7 +37,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -102,13 +100,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
-        try {
-            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
     protected String removeZeros(String string) {

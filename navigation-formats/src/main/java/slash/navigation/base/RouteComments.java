@@ -25,9 +25,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.itn.TomTomPosition;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +35,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
 
 /**
  * Helpers for processing of comments of positions
@@ -342,24 +338,12 @@ public abstract class RouteComments {
             "(" + TTTRACKLOG_REASONS + ") .*");
 
 
-    public static CompactCalendar parseDate(String dateString, DateFormat dateFormat) {
-        if (dateString == null)
-            return null;
-        try {
-            Date parsed = dateFormat.parse(dateString);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            // TODO log.severe("Could not parse date and time '" + dateString + "'");
-        }
-        return null;
-    }
-
     private static CompactCalendar parseTripmaster14Time(String string) {
-        return parseDate(string, createDateFormat(TRIPMASTER_TIME));
+        return parseDate(string, TRIPMASTER_TIME);
     }
 
     private static CompactCalendar parseTripmaster18Date(String string) {
-        return parseDate(string, createDateFormat(TRIPMASTER_DATE));
+        return parseDate(string, TRIPMASTER_DATE);
     }
 
     public static Double parseTripmasterHeading(String string) {
@@ -370,7 +354,7 @@ public abstract class RouteComments {
     }
 
     private static CompactCalendar parseLogposDate(String string) {
-        return parseDate(string, createDateFormat(LOGPOS_DATE));
+        return parseDate(string, LOGPOS_DATE);
     }
 
     private static CompactCalendar parseTTTracklogTime(String string) {
