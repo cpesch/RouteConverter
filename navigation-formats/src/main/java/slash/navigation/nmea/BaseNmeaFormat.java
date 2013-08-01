@@ -155,9 +155,15 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     boolean haveDifferentStartDate(NmeaPosition predecessor, NmeaPosition successor) {
-        return predecessor == null ||
-                (predecessor.hasTime() && successor.hasTime() &&
-                        !predecessor.getTime().equals(successor.getTime()));
+        long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
+        boolean diff = true;
+        if (predecessor == null) return diff;
+        if (predecessor.hasTime() && successor.hasTime()) {
+            long predTimePortion = predecessor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
+            long succTimePortion = successor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
+            diff = predTimePortion != succTimePortion;
+        }
+        return diff;
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
