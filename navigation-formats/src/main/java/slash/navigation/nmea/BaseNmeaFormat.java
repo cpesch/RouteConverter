@@ -66,7 +66,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
 
-    private static final String PRECISE_DATE_AND_TIME_FORMAT = "ddMMyy HHmmss.SSS";
+    private static final String DATE_AND_PRECISE_TIME_FORMAT = "ddMMyy HHmmss.SSS";
+    private static final String PRECISE_DATE_AND_TIME_FORMAT = "ddMMyyyy HHmmss";
     private static final String DATE_AND_TIME_FORMAT = "ddMMyy HHmmss";
     private static final String DATE_FORMAT = "ddMMyy";
     private static final String PRECISE_TIME_FORMAT = "HHmmss.SSS";
@@ -241,6 +242,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             return parseTime(time);
         String dateAndTime = date + " " + time;
         // date: 160607 time: 130441.89
+        try {
+            Date parsed = createDateFormat(DATE_AND_PRECISE_TIME_FORMAT).parse(dateAndTime);
+            return fromDate(parsed);
+        } catch (ParseException e) {
+            // intentionally left empty
+        }
+        // date: 16062007 time: 130441
         try {
             Date parsed = createDateFormat(PRECISE_DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
