@@ -224,7 +224,7 @@ public class Kml21Format extends KmlFormat {
             placemarkType.setName(asName(isWriteName() ? position.getComment() : null));
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
             placemarkType.setVisibility(Boolean.FALSE);
-            if (position.getTime() != null) {
+            if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
                 placemarkType.setTimePrimitive(objectFactory.createTimeStamp(timeStampType));

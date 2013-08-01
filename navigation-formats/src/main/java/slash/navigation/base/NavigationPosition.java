@@ -63,6 +63,8 @@ public interface NavigationPosition {
     CompactCalendar getTime();
     void setTime(CompactCalendar time);
 
+    boolean hasTime();
+
     /**
      * Return the speed in kilometers per hour
      *

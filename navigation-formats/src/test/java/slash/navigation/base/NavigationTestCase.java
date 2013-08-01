@@ -771,7 +771,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
-        if (sourcePosition.getTime() != null && targetPosition.getTime() != null) {
+        if (sourcePosition.hasTime() && targetPosition.hasTime()) {
             if (targetFormat instanceof KmlFormat && targetCharacteristics.equals(Track)) {
                 assertNotNull(sourcePosition.getTime());
                 assertNotNull(targetPosition.getTime());
@@ -983,7 +983,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (expectElevation)
                     assertNotNull("Position " + j + " has no elevation", position.getElevation());
                 if (expectTime) {
-                    assertTrue("Position " + j + " has no time", position.getTime() != null);
+                    assertTrue("Position " + j + " has no time", position.hasTime());
                     if (previous != null)
                         assertTrue(!position.getTime().getCalendar().before(previous.getTime().getCalendar()));
                 }

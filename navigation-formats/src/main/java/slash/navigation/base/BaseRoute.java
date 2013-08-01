@@ -126,6 +126,7 @@ import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.navigation.base.Positions.contains;
 import static slash.navigation.base.Positions.getSignificantPositions;
 
@@ -233,7 +234,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         List<P> positions = getPositions();
         P first = positions.get(0);
-        if (first.getTime() == null)
+        if (!first.hasTime())
             first.setTime(fromCalendar(Calendar.getInstance(UTC)));
 
         P previous = first;
@@ -245,7 +246,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 Long millis = distance != null ? (long) (distance / averageSpeed * 1000) : null;
                 if (millis == null || millis < 1000)
                     millis = 1000L;
-                next.setTime(CompactCalendar.fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));
+                next.setTime(fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));
             }
             previous = next;
         }

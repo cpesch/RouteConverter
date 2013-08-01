@@ -60,7 +60,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         // there could be an elevation/time already parsed from comment or one given as a parameter
         if (getElevation() == null || elevation != null)
             setElevation(elevation);
-        if (getTime() == null || time != null)
+        if (!hasTime() || time != null)
             setTime(time);
     }
 
@@ -194,7 +194,7 @@ public class TomTomPosition extends BaseNavigationPosition {
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
                 !(reason != null ? !reason.equals(that.reason) : that.reason != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 
     public int hashCode() {
@@ -205,7 +205,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         return result;
     }
 }

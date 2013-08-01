@@ -370,7 +370,7 @@ public class BatchPositionAugmenter {
     private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
         while(index-- > 0) {
             NavigationPosition position = positionsModel.getPosition(index);
-            if(position.getTime() != null)
+            if(position.hasTime())
                 return position;
         }
         return null;
@@ -379,7 +379,7 @@ public class BatchPositionAugmenter {
     private NavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
         while(index++ < positionsModel.getRowCount() - 1) {
             NavigationPosition position = positionsModel.getPosition(index);
-            if(position.getTime() != null)
+            if(position.hasTime())
                 return position;
         }
         return null;

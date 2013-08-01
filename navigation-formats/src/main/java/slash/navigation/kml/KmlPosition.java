@@ -49,7 +49,7 @@ public class KmlPosition extends Wgs84Position {
                 !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 
     public int hashCode() {
@@ -57,7 +57,7 @@ public class KmlPosition extends Wgs84Position {
         result = (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         return result;
     }

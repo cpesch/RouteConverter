@@ -82,13 +82,10 @@ public class Positions {
     }
 
     public static CompactCalendar extrapolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition beforePredecessor) {
-        if (predecessor.getTime() == null || beforePredecessor.getTime() == null)
+        if (!predecessor.hasTime() || !beforePredecessor.hasTime())
             return null;
 
-        Long timeDelta = abs(beforePredecessor.calculateTime(predecessor));
-        if (timeDelta == null)
-            return null;
-
+        long timeDelta = abs(beforePredecessor.calculateTime(predecessor));
         Double distanceDelta = beforePredecessor.calculateDistance(predecessor);
         if (isEmpty(distanceDelta))
             return null;
@@ -102,13 +99,10 @@ public class Positions {
     }
 
     public static CompactCalendar intrapolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition successor) {
-        if (predecessor.getTime() == null || successor.getTime() == null)
+        if (!predecessor.hasTime() || !successor.hasTime())
             return null;
 
-        Long timeDelta = abs(predecessor.calculateTime(successor));
-        if (timeDelta == null)
-            return null;
-
+        long timeDelta = abs(predecessor.calculateTime(successor));
         Double distanceToPredecessor = predecessor.calculateDistance(position);
         if (isEmpty(distanceToPredecessor))
             return null;
@@ -129,7 +123,7 @@ public class Positions {
         double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         CompactCalendar time = null;
-        if (northEast.getTime() != null && southWest.getTime() != null) {
+        if (northEast.hasTime() && southWest.hasTime()) {
             long millis = northEast.getTime().getTimeInMillis() +
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
             time = fromMillis(millis);

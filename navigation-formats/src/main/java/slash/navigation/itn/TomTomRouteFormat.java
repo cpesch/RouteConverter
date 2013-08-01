@@ -147,7 +147,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     private boolean isTrack(List<TomTomPosition> positions) {
         for (TomTomPosition position : positions) {
-            if (position.getReason() == null && position.getTime() == null)
+            if (position.getReason() == null && !position.hasTime())
                 return false;
         }
         return true;
@@ -173,11 +173,11 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
         StringBuilder buffer = new StringBuilder();
-        if (position.getTime() != null) {
+        if (position.hasTime()) {
             buffer.append(firstOrLast).append(" : ");
         }
         buffer.append(position.getComment());
-        if (position.getTime() != null) {
+        if (position.hasTime()) {
             buffer.append(" : ").append(createDateFormat(TRIPMASTER_DATE).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
@@ -192,7 +192,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     String formatIntermediateName(TomTomPosition position, Double distance) {
         StringBuilder buffer = new StringBuilder();
         buffer.append(position.getComment());
-        if (position.getTime() != null) {
+        if (position.hasTime()) {
             buffer.append(" : ").append(createDateFormat(TRIPMASTER_TIME).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");

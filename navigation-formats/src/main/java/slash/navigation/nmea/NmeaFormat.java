@@ -356,7 +356,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                 date + SEPARATOR + SEPARATOR + "A";
         writeSentence(writer, rmc);
 
-        if(position.getTime() != null) {
+        if(position.hasTime()) {
             // $GPZDA,032910,07,08,2004,00,00*48
             String day = formatDay(position.getTime());
             String month = formatMonth(position.getTime());

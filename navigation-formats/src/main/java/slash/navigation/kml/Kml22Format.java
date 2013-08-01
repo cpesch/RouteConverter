@@ -330,7 +330,7 @@ public class Kml22Format extends KmlFormat {
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
             placemarkType.setName(asName(isWriteName() ? position.getComment() : null));
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
-            if (position.getTime() != null) {
+            if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
                 placemarkType.setAbstractTimePrimitiveGroup(objectFactory.createTimeStamp(timeStampType));
@@ -372,7 +372,7 @@ public class Kml22Format extends KmlFormat {
             List<KmlPosition> positions = route.getPositions();
             for (int i = startIndex; i < endIndex; i++) {
                 KmlPosition position = positions.get(i);
-                String time = position.getTime() != null ? ISO8601.format(position.getTime()) : "";
+                String time = position.hasTime() ? ISO8601.format(position.getTime()) : "";
                 trackType.getWhen().add(time);
             }
             for (int i = startIndex; i < endIndex; i++) {
@@ -396,7 +396,7 @@ public class Kml22Format extends KmlFormat {
     private boolean containTime(KmlRoute route) {
         int foundTime = 0;
         for (NavigationPosition position : route.getPositions()) {
-            if (position.getTime() != null)
+            if (position.hasTime())
                 foundTime++;
         }
         return foundTime > 1;
