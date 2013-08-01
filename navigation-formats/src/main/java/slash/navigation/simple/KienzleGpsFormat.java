@@ -30,7 +30,6 @@ import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -38,7 +37,8 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -53,12 +53,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR = ';';
     private static final String HEADER_LINE = "Position;X;Y";
-
-    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
-    static {
-        TIME_FORMAT.setTimeZone(UTC);
-    }
-
+    private static final String TIME_FORMAT = "HH:mm";
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR +
@@ -108,8 +103,8 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (string == null)
             return null;
         try {
-            Date parsed = TIME_FORMAT.parse(string);
-            return CompactCalendar.fromDate(parsed);
+            Date parsed = createDateFormat(TIME_FORMAT).parse(string);
+            return fromDate(parsed);
         } catch (ParseException e) {
             return null;
         }

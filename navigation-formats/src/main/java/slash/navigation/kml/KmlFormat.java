@@ -27,7 +27,6 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BasicPosition;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,9 +36,11 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.DOTALL;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
@@ -185,27 +186,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
-    private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-    static {
-        TAVELLOG_DATE.setTimeZone(UTC);
-    }
-
+    private static final String TAVELLOG_DATE ="yyyy/MM/dd HH:mm:ss";
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
-    private static final SimpleDateFormat NAVIGON6310_TIME = new SimpleDateFormat("HH:mm:ss");
-
-    static {
-        NAVIGON6310_TIME.setTimeZone(UTC);
-    }
-
+    private static final String NAVIGON6310_TIME = "HH:mm:ss";
     private static final Pattern BT747_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*TIME:.*>(\\d{2}-.+-\\d{2} \\d{2}:\\d{2}:\\d{2})<.*>([\\d\\.\\s]+)m<.*");
-    private static final SimpleDateFormat BT747_DATE = new SimpleDateFormat("dd-MMMMM-yy HH:mm:ss");
-
-    static {
-        BT747_DATE.setTimeZone(UTC);
-    }
-
-    private static final Pattern QSTARTZ_DATE_AND_SPEED_PATTERN = Pattern.compile(".*Date:\\s*(\\d{4}/\\d{2}/\\d{2}).*Time:\\s*(\\d{2}:\\d{2}:\\d{2}).*Speed:\\s*([\\d\\.]+)\\s*.*", Pattern.DOTALL);
+    private static final String BT747_DATE = "dd-MMMMM-yy HH:mm:ss";
+    private static final Pattern QSTARTZ_DATE_AND_SPEED_PATTERN = Pattern.compile(".*Date:\\s*(\\d{4}/\\d{2}/\\d{2}).*Time:\\s*(\\d{2}:\\d{2}:\\d{2}).*Speed:\\s*([\\d\\.]+)\\s*.*", DOTALL);
 
     void parseTime(NavigationPosition position, String description, CompactCalendar startDate) {
         if (description != null) {
@@ -213,7 +199,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (tavelLogMatcher.matches()) {
                 String timeString = tavelLogMatcher.group(1);
                 try {
-                    Date parsed = TAVELLOG_DATE.parse(timeString);
+                    Date parsed = createDateFormat(TAVELLOG_DATE).parse(timeString);
                     position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
@@ -223,7 +209,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (navigonMatcher.matches()) {
                 String timeString = navigonMatcher.group(1);
                 try {
-                    Date parsed = NAVIGON6310_TIME.parse(timeString);
+                    Date parsed = createDateFormat(NAVIGON6310_TIME).parse(timeString);
                     position.setTime(fromDate(parsed));
                     position.setStartDate(startDate);
                 } catch (ParseException e) {
@@ -234,7 +220,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (bt747Matcher.matches()) {
                 String timeString = bt747Matcher.group(1);
                 try {
-                    Date parsed = BT747_DATE.parse(timeString);
+                    Date parsed = createDateFormat(BT747_DATE).parse(timeString);
                     position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
@@ -245,7 +231,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String dateString = qstarzMatcher.group(1);
                 String timeString = qstarzMatcher.group(2);
                 try {
-                    Date parsed = TAVELLOG_DATE.parse(dateString + " " + timeString);
+                    Date parsed = createDateFormat(TAVELLOG_DATE).parse(dateString + " " + timeString);
                     position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
@@ -255,7 +241,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     private static final Pattern TAVELLOG_SPEED_PATTERN = Pattern.compile(".*Speed:\\s*(\\d+\\.\\d+).*");
-    private static final Pattern WBT201LOG_SPEED_PATTERN = Pattern.compile(".*Speed=\\s*(\\d+)\\s*Km.*", Pattern.DOTALL); // dot captures line terminators, too
+    private static final Pattern WBT201LOG_SPEED_PATTERN = Pattern.compile(".*Speed=\\s*(\\d+)\\s*Km.*", DOTALL); // dot captures line terminators, too
 
     Double parseSpeed(String description) {
         if (description != null) {

@@ -29,9 +29,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,6 +39,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
@@ -56,11 +55,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
     
     private static final char SEPARATOR = ' ';
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
-    static {
-       DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
-
+    private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     "(" + POSITION + ")" + SEPARATOR +
@@ -97,7 +92,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         date = trim(date);
         String dateAndTime = date + " " + time;
         try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
@@ -122,7 +117,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String elevation = formatDoubleAsString(position.getElevation(), 7);
-        String dateAndTime = position.getTime() != null ? DATE_AND_TIME_FORMAT.format(position.getTime().getTime()) : "00.00.00 00:00:=00";
+        String dateAndTime = position.getTime() != null ? createDateFormat(DATE_AND_TIME_FORMAT).format(position.getTime().getTime()) : "00.00.00 00:00:=00";
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation + SEPARATOR + dateAndTime);
     }
 }

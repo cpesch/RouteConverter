@@ -31,7 +31,6 @@ import slash.navigation.base.Wgs84Route;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -42,6 +41,8 @@ import static java.lang.Integer.parseInt;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 
@@ -69,11 +70,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     ".*" +
                     END_OF_LINE);
 
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
-    static {
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setLenient(false);
-    }
+    private static final String TIME_FORMAT = "HH:mm:ss.SSS";
 
     public String getExtension() {
         return ".txt";
@@ -97,13 +94,19 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
+    private DateFormat createTimeFormat() {
+        DateFormat dateFormat = createDateFormat(TIME_FORMAT);
+        dateFormat.setLenient(false);
+        return dateFormat;
+    }
+
     private CompactCalendar parseTime(String time, String milliseconds) {
         if (time == null)
             return null;
         String dateString = time + "." + (milliseconds != null ? milliseconds : "000");
         try {
-            Date parsed = TIME_FORMAT.parse(dateString);
-            return CompactCalendar.fromDate(parsed);
+            Date parsed = createTimeFormat().parse(dateString);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse time '" + dateString + "'");
         }
@@ -128,7 +131,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return TIME_FORMAT.format(time.getTime());
+        return createTimeFormat().format(time.getTime());
     }
 
     private String fillWithSpaces(String string, int length) {

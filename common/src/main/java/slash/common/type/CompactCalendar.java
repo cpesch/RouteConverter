@@ -20,6 +20,8 @@
 
 package slash.common.type;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +45,12 @@ public class CompactCalendar {
     private CompactCalendar(long timeInMillis, String timeZoneId) {
         this.timeInMillis = timeInMillis;
         this.timeZoneId = timeZoneId.equals("UTC") ? "UTC" : timeZoneId.intern();
+    }
+
+    public static DateFormat createDateFormat(String pattern) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(UTC);
+        return simpleDateFormat;
     }
 
     public static CompactCalendar fromMillisAndTimeZone(long timeInMillis, String timeZoneId) {

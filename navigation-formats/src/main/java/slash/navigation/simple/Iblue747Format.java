@@ -29,9 +29,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,6 +39,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatElevationAsString;
@@ -82,14 +81,9 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR + "]*" + SEPARATOR +
                     END_OF_LINE);
 
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-    static {
-        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
+    private static final String DATE_AND_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+    private static final String DATE_FORMAT = "yyyy/MM/dd";
+    private static final String TIME_FORMAT = "HH:mm:ss";
 
     public String getExtension() {
         return ".csv";
@@ -128,7 +122,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
             return null;
         String dateAndTime = date + " " + time;
         try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
@@ -167,13 +161,13 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     private String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return TIME_FORMAT.format(time.getTime());
+        return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
     private String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
-        return DATE_FORMAT.format(date.getTime());
+        return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
     private Wgs84Position previousPosition = null;

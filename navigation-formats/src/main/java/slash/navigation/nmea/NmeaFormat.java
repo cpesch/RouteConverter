@@ -26,10 +26,8 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -41,6 +39,7 @@ import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.common.UnitConversion.kilometerToNauticMiles;
 import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
 
@@ -66,15 +65,9 @@ public class NmeaFormat extends BaseNmeaFormat {
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumIntegerDigits(6);
     }
 
-    private static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
-    private static final DateFormat MONTH_FORMAT = new SimpleDateFormat("MM");
-    private static final DateFormat YEAR_FORMAT = new SimpleDateFormat("yy");
-
-    static {
-        DAY_FORMAT.setTimeZone(CompactCalendar.UTC);
-        MONTH_FORMAT.setTimeZone(CompactCalendar.UTC);
-        YEAR_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
+    private static final String DAY_FORMAT = "dd";
+    private static final String MONTH_FORMAT = "MM";
+    private static final String YEAR_FORMAT = "yy";
 
     // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
     // $GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F
@@ -296,19 +289,19 @@ public class NmeaFormat extends BaseNmeaFormat {
     private String formatDay(CompactCalendar date) {
         if (date == null)
             return "";
-        return DAY_FORMAT.format(date.getTime());
+        return createDateFormat(DAY_FORMAT).format(date.getTime());
     }
 
     private String formatMonth(CompactCalendar date) {
         if (date == null)
             return "";
-        return MONTH_FORMAT.format(date.getTime());
+        return createDateFormat(MONTH_FORMAT).format(date.getTime());
     }
 
     private String formatYear(CompactCalendar date) {
         if (date == null)
             return "";
-        return YEAR_FORMAT.format(date.getTime());
+        return createDateFormat(YEAR_FORMAT).format(date.getTime());
     }
 
     private String formatAltitude(Double altitude) {

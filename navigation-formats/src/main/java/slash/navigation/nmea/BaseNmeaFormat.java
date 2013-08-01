@@ -28,23 +28,22 @@ import slash.navigation.base.SimpleFormat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.US;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.type.HexadecimalNumber.encodeByte;
@@ -66,21 +65,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
 
-    private static final DateFormat PRECISE_DATE_AND_TIME_FORMAT = new SimpleDateFormat("ddMMyy HHmmss.SSS");
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("ddMMyy HHmmss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyy");
-    private static final DateFormat PRECISE_TIME_FORMAT = new SimpleDateFormat("HHmmss.SSS");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
-    static {
-        PRECISE_DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
-        PRECISE_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
-
-    private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-    private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
+    private static final String PRECISE_DATE_AND_TIME_FORMAT = "ddMMyy HHmmss.SSS";
+    private static final String DATE_AND_TIME_FORMAT = "ddMMyy HHmmss";
+    private static final String DATE_FORMAT = "ddMMyy";
+    private static final String PRECISE_TIME_FORMAT = "HHmmss.SSS";
+    private static final String TIME_FORMAT = "HHmmss";
+    private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
+    private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
@@ -233,14 +224,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             return null;
         // 130441.89
         try {
-            Date parsed = PRECISE_TIME_FORMAT.parse(time);
+            Date parsed = createDateFormat(PRECISE_TIME_FORMAT).parse(time);
             return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // 130441
         try {
-            Date parsed = TIME_FORMAT.parse(time);
+            Date parsed = createDateFormat(TIME_FORMAT).parse(time);
             return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse time '" + time + "'");
@@ -256,14 +247,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         String dateAndTime = date + " " + time;
         // date: 160607 time: 130441.89
         try {
-            Date parsed = PRECISE_DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(PRECISE_DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // date: 160607 time: 130441
         try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
@@ -275,13 +266,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return PRECISE_TIME_FORMAT.format(time.getTime());
+        return createDateFormat(PRECISE_TIME_FORMAT).format(time.getTime());
     }
 
     protected String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
-        return DATE_FORMAT.format(date.getTime());
+        return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
     protected String formatLongitude(Double longitude) {
