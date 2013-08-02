@@ -70,7 +70,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
     static {
-        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 5);
+        int MaximumFractionDigits = preferences.getInt("haicomPositionMaximumFractionDigits", 5);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
