@@ -93,7 +93,7 @@ public class UnitConversion {
         double absolute = abs(coordinate);
         double dd = floor(absolute);
         double mm = (absolute - dd) * 60.0;
-        return format(ENGLISH, "%s %.0f° %.3f'", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm);
+        return format(ENGLISH, "%s %.0f\u00B0 %.3f'", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm);
     }
 
     public static String longitude2ddmm(double longitude) {
@@ -106,7 +106,7 @@ public class UnitConversion {
 
     private static final Pattern DDMM_TO_COORDINATE = Pattern.
             compile("\\s*(\\w)\\s*" +
-                    "([\\d\\.]*)\\s*°\\s*" +
+                    "([\\d\\.]*)\\s*\u00B0\\s*" +
                     "([\\d\\.]*)\\s*'\\s*");
 
     private static Double ddmm2coordinate(String coordinateAsDdmm, Orientation negative) {
@@ -145,7 +145,7 @@ public class UnitConversion {
             dd++;
             mm = 0;
         }
-        return format(ENGLISH, "%s %.0f° %.0f' %.3f\"", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm, sss);
+        return format(ENGLISH, "%s %.0f\u00B0 %.0f' %.3f\"", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm, sss);
     }
 
     public static String longitude2ddmmss(double longitude) {
@@ -158,7 +158,7 @@ public class UnitConversion {
 
     private static final Pattern DDMMSS_TO_COORDINATE = Pattern.
             compile("\\s*(\\w)\\s*" +
-                    "([\\d\\.]*)\\s*°\\s*" +
+                    "([\\d\\.]*)\\s*\u00B0\\s*" +
                     "([\\d\\.]*)\\s*'\\s*" +
                     "([\\d\\.]*)\\s*\"\\s*");
 

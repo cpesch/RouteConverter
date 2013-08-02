@@ -81,46 +81,46 @@ public class UnitConversionTest {
 
     @Test
     public void testDegrees2Ddmm() {
-        assertEquals("E 9° 3.343'", longitude2ddmm(9.0557233));
-        assertEquals("N 48° 37.437'", latitude2ddmm(48.6239566));
+        assertEquals("E 9\u00B0 3.343'", longitude2ddmm(9.0557233333));
+        assertEquals("N 48\u00B0 37.437'", latitude2ddmm(48.6239566667));
     }
 
     @Test
     public void testDdmm2Longitude() {
-        assertEquals(0.0, ddmm2longitude("  E  0  °  0  '  "));
-        assertEquals(1.0, ddmm2longitude("E 1° 0'"));
-        assertEquals(-1.0, ddmm2longitude("W 1° 0'"));
-        assertEquals(9.0557233, ddmm2longitude("E 9° 3.3434'"));
+        assertEquals(0.0, ddmm2longitude("  E  0  \u00B0  0  '  "));
+        assertEquals(1.0, ddmm2longitude("E 1\u00B0 0'"));
+        assertEquals(-1.0, ddmm2longitude("W 1\u00B0 0'"));
+        assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3.3434'"));
     }
 
     @Test
     public void testDdmm2Latitude() {
-        assertEquals(1.0, ddmm2latitude("N 1° 0'"));
-        assertEquals(-1.0, ddmm2latitude("S 1° 0'"));
-        assertEquals(48.6239566, ddmm2latitude("N 48° 37.437395'"));
+        assertEquals(1.0, ddmm2latitude("N 1\u00B0 0'"));
+        assertEquals(-1.0, ddmm2latitude("S 1\u00B0 0'"));
+        assertEquals(48.6239566, ddmm2latitude("N 48\u00B0 37.437395'"));
     }
 
     @Test
     public void testDegrees2Ddmmss() {
-        assertEquals("E 9° 3' 20.604\"", longitude2ddmmss(9.0557233));
-        assertEquals("W 9° 3' 20.604\"", longitude2ddmmss(-9.0557233));
-        assertEquals("N 48° 37' 26.244\"", latitude2ddmmss(48.6239566));
-        assertEquals("N 0° 0' 0.000\"", latitude2ddmmss(0.0));
+        assertEquals("E 9\u00B0 3' 20.604\"", longitude2ddmmss(9.0557233333));
+        assertEquals("W 9\u00B0 3' 20.604\"", longitude2ddmmss(-9.0557233333));
+        assertEquals("N 48\u00B0 37' 26.244\"", latitude2ddmmss(48.6239566667));
+        assertEquals("N 0\u00B0 0' 0.000\"", latitude2ddmmss(0.0));
     }
 
     @Test
     public void testDdmmss2Longitude() {
-        assertEquals(0.0, ddmmss2longitude("  E  0  °  0  '  0\"  "));
-        assertEquals(1.0, ddmmss2longitude("E 1° 0' 0\""));
-        assertEquals(-1.0, ddmmss2longitude("W 1° 0' 0\""));
-        assertEquals(9.0557233, ddmmss2longitude("E 9° 3' 20.604\""));
+        assertEquals(0.0, ddmmss2longitude("  E  0  \u00B0  0  '  0\"  "));
+        assertEquals(1.0, ddmmss2longitude("E 1\u00B0 0' 0\""));
+        assertEquals(-1.0, ddmmss2longitude("W 1\u00B0 0' 0\""));
+        assertEquals(9.0557233, ddmmss2longitude("E 9\u00B0 3' 20.604\""));
     }
 
     @Test
     public void testDdmmss2Latitude() {
-        assertEquals(0.0, ddmmss2latitude("  E  0  °  0  '  0\"  "));
-        assertEquals(1.0, ddmmss2latitude("N 1° 0' 0\""));
-        assertEquals(-1.0, ddmmss2latitude("S 1° 0' 0\""));
-        assertEquals(48.6239566, ddmmss2latitude("N 48° 37' 26.2438\""));
+        assertEquals(0.0, ddmmss2latitude("  E  0  \u00B0  0  '  0\"  "));
+        assertEquals(1.0, ddmmss2latitude("N 1\u00B0 0' 0\""));
+        assertEquals(-1.0, ddmmss2latitude("S 1\u00B0 0' 0\""));
+        assertEquals(48.6239566, ddmmss2latitude("N 48\u00B0 37' 26.2438\""));
     }
 }
