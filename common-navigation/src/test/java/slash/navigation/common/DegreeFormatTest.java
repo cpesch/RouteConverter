@@ -43,23 +43,23 @@ public class DegreeFormatTest {
 
     @Test
     public void testDegreesMinutes() {
-        assertEquals("N 0° 0.000'", Degrees_Minutes.latitudeToDegrees(0.0));
-        assertEquals("N 12° 20.740'", Degrees_Minutes.latitudeToDegrees(12.34567));
-        assertEquals("S 12° 20.740'", Degrees_Minutes.latitudeToDegrees(-12.34567));
+        assertEquals("N 0\u00B0 0.000'", Degrees_Minutes.latitudeToDegrees(0.0));
+        assertEquals("N 12\u00B0 20.740'", Degrees_Minutes.latitudeToDegrees(12.34567));
+        assertEquals("S 12\u00B0 20.740'", Degrees_Minutes.latitudeToDegrees(-12.34567));
 
-        assertEquals("E 0° 0.000'", Degrees_Minutes.longitudeToDegrees(0.0));
-        assertEquals("E 12° 20.740'", Degrees_Minutes.longitudeToDegrees(12.34567));
-        assertEquals("W 12° 20.740'", Degrees_Minutes.longitudeToDegrees(-12.34567));
+        assertEquals("E 0\u00B0 0.000'", Degrees_Minutes.longitudeToDegrees(0.0));
+        assertEquals("E 12\u00B0 20.740'", Degrees_Minutes.longitudeToDegrees(12.34567));
+        assertEquals("W 12\u00B0 20.740'", Degrees_Minutes.longitudeToDegrees(-12.34567));
     }
 
     @Test
     public void testDegreesMinutesSeconds() {
-        assertEquals("N 0° 0' 0.000\"", Degrees_Minutes_Seconds.latitudeToDegrees(0.0));
-        assertEquals("N 12° 20' 44.412\"", Degrees_Minutes_Seconds.latitudeToDegrees(12.34567));
-        assertEquals("S 12° 20' 44.412\"", Degrees_Minutes_Seconds.latitudeToDegrees(-12.34567));
+        assertEquals("N 0\u00B0 0' 0.000\"", Degrees_Minutes_Seconds.latitudeToDegrees(0.0));
+        assertEquals("N 12\u00B0 20' 44.412\"", Degrees_Minutes_Seconds.latitudeToDegrees(12.34567));
+        assertEquals("S 12\u00B0 20' 44.412\"", Degrees_Minutes_Seconds.latitudeToDegrees(-12.34567));
 
-        assertEquals("E 0° 0' 0.000\"", Degrees_Minutes_Seconds.longitudeToDegrees(0.0));
-        assertEquals("E 12° 20' 44.412\"", Degrees_Minutes_Seconds.longitudeToDegrees(12.34567));
-        assertEquals("W 12° 20' 44.412\"", Degrees_Minutes_Seconds.longitudeToDegrees(-12.34567));
+        assertEquals("E 0\u00B0 0' 0.000\"", Degrees_Minutes_Seconds.longitudeToDegrees(0.0));
+        assertEquals("E 12\u00B0 20' 44.412\"", Degrees_Minutes_Seconds.longitudeToDegrees(12.34567));
+        assertEquals("W 12\u00B0 20' 44.412\"", Degrees_Minutes_Seconds.longitudeToDegrees(-12.34567));
     }
 }
