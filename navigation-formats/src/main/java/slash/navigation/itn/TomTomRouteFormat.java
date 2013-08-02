@@ -24,7 +24,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.RouteComments;
 import slash.navigation.base.TextNavigationFormat;
 
 import java.io.BufferedReader;
@@ -40,8 +39,10 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteComments.TRIPMASTER_DATE;
 import static slash.navigation.base.RouteComments.TRIPMASTER_TIME;
 
 /**
@@ -177,7 +178,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         }
         buffer.append(position.getComment());
         if (position.getTime() != null) {
-            buffer.append(" : ").append(RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()));
+            buffer.append(" : ").append(createDateFormat(TRIPMASTER_DATE).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
             buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
@@ -192,7 +193,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         StringBuilder buffer = new StringBuilder();
         buffer.append(position.getComment());
         if (position.getTime() != null) {
-            buffer.append(" : ").append(TRIPMASTER_TIME.format(position.getTime().getTime()));
+            buffer.append(" : ").append(createDateFormat(TRIPMASTER_TIME).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
             buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");

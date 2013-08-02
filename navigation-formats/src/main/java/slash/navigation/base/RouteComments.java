@@ -25,10 +25,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.itn.TomTomPosition;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +35,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.parseDate;
 
 /**
  * Helpers for processing of comments of positions
@@ -281,13 +278,8 @@ public abstract class RouteComments {
     }
 
 
-    public static final SimpleDateFormat TRIPMASTER_TIME = new SimpleDateFormat("HH:mm:ss");
-    public static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    static {
-        TRIPMASTER_TIME.setTimeZone(CompactCalendar.UTC);
-        TRIPMASTER_DATE.setTimeZone(CompactCalendar.UTC);
-    }
-
+    public static final String TRIPMASTER_TIME = "HH:mm:ss";
+    public static final String TRIPMASTER_DATE = "dd/MM/yyyy HH:mm:ss";
     private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
     private static final String DATE = "\\d{2}/\\d{2}/\\d{4}";
     private static final String DATE_WITHOUT_SEPARATOR = "\\d{6}";
@@ -332,10 +324,7 @@ public abstract class RouteComments {
      * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
      */
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
-    private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
-    static {
-        LOGPOS_DATE.setTimeZone(CompactCalendar.UTC);
-    }
+    private static final String LOGPOS_DATE = "yyMMdd HH:mm:ss";
     private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");
     private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
@@ -349,23 +338,12 @@ public abstract class RouteComments {
             "(" + TTTRACKLOG_REASONS + ") .*");
 
 
-    private static CompactCalendar parse(String string, DateFormat dateFormat) {
-        if (string == null)
-            return null;
-        try {
-            Date parsed = dateFormat.parse(string);
-            return CompactCalendar.fromDate(parsed);
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
     private static CompactCalendar parseTripmaster14Time(String string) {
-        return parse(string, TRIPMASTER_TIME);
+        return parseDate(string, TRIPMASTER_TIME);
     }
 
     private static CompactCalendar parseTripmaster18Date(String string) {
-        return parse(string, TRIPMASTER_DATE);
+        return parseDate(string, TRIPMASTER_DATE);
     }
 
     public static Double parseTripmasterHeading(String string) {
@@ -376,7 +354,7 @@ public abstract class RouteComments {
     }
 
     private static CompactCalendar parseLogposDate(String string) {
-        return parse(string, LOGPOS_DATE);
+        return parseDate(string, LOGPOS_DATE);
     }
 
     private static CompactCalendar parseTTTracklogTime(String string) {

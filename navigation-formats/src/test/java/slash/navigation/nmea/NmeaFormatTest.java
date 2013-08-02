@@ -328,7 +328,7 @@ public class NmeaFormatTest {
         String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
-                "$GPZDA,134012.000,26,07,07,,*57" + eol +
+                "$GPZDA,134012.000,26,07,2007,,*55" + eol +
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
