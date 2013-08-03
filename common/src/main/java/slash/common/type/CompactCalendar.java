@@ -24,12 +24,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
+
+import static java.util.Calendar.DAY_OF_YEAR;
+import static java.util.Calendar.YEAR;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * A compact representation of a calendar, that saves some memory.
@@ -105,11 +109,16 @@ public class CompactCalendar {
         return result;
     }
 
+    public boolean hasDateDefined() {
+        Calendar calendar = getCalendar();
+        return !(calendar.get(YEAR) == 1970 && calendar.get(DAY_OF_YEAR) == 1);
+    }
+
     public Date getTime() {
         return getCalendar().getTime();
     }
 
-    private static volatile Map<String, TimeZone> timeZones = Collections.emptyMap();
+    private static volatile Map<String, TimeZone> timeZones = emptyMap();
 
     private TimeZone getTimeZone() {
         if ("UTC".equals(getTimeZoneId()))
@@ -129,7 +138,7 @@ public class CompactCalendar {
             result = TimeZone.getTimeZone(getTimeZoneId());
             Map<String, TimeZone> newTimeZones = new HashMap<String, TimeZone>(timeZones);
             newTimeZones.put(getTimeZoneId(), result);
-            newTimeZones = Collections.unmodifiableMap(newTimeZones); // paranoia
+            newTimeZones = unmodifiableMap(newTimeZones); // paranoia
             timeZones = newTimeZones;
         }
         return result;

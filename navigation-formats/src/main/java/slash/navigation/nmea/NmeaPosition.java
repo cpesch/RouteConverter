@@ -115,8 +115,16 @@ public class NmeaPosition extends BaseNavigationPosition {
         return longitude;
     }
 
+    public void setLongitudeAsValueAndOrientation(ValueAndOrientation longitude) {
+        this.longitude = longitude;
+    }
+
     public ValueAndOrientation getLatitudeAsValueAndOrientation() {
         return latitude;
+    }
+
+    public void setLatitudeAsValueAndOrientation(ValueAndOrientation latitude) {
+        this.latitude = latitude;
     }
 
     public Double getHeading() {
@@ -202,7 +210,7 @@ public class NmeaPosition extends BaseNavigationPosition {
                 !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null) &&
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&
                 !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
                 !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
                 !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
@@ -215,7 +223,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         result = 31 * result + (hdop != null ? hdop.hashCode() : 0);
         result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
         result = 31 * result + (vdop != null ? vdop.hashCode() : 0);

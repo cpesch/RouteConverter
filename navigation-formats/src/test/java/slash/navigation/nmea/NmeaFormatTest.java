@@ -34,9 +34,9 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
@@ -181,6 +181,21 @@ public class NmeaFormatTest {
     }
 
     @Test
+    public void testHaveDifferentTime() {
+        NmeaPosition one = new NmeaPosition(null, null, null, null, null, null, null, calendar(2013, 8, 2, 20, 33, 4), null);
+        NmeaPosition two = new NmeaPosition(null, null, null, null, null, null, null, calendar(2013, 8, 2, 20, 33, 5), null);
+        assertTrue(format.haveDifferentTime(one, two));
+        assertTrue(format.haveDifferentTime(two, one));
+        assertFalse(format.haveDifferentTime(one, one));
+        assertFalse(format.haveDifferentTime(two, two));
+
+        NmeaPosition three = new NmeaPosition(null, null, null, null, null, null, null, calendar(2013, 8, 2, 20, 33, 4), null);
+        NmeaPosition four = new NmeaPosition(null, null, null, null, null, null, null, calendar(1970, 1, 1, 20, 33, 4), null);
+        assertFalse(format.haveDifferentTime(three, four));
+        assertFalse(format.haveDifferentTime(four, three));
+    }
+
+    @Test
     public void testParseGGA() {
         NmeaPosition position = format.parsePosition("$GPGGA,130441.89,4837.4374,S,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D");
         assertDoubleEquals(903.4036, position.getLongitudeAsValueAndOrientation().getValue());
@@ -272,11 +287,11 @@ public class NmeaFormatTest {
     }
 
     @Test
-    public void testMerging() throws IOException {
+    public void testMerging1() throws IOException {
         StringReader reader = new StringReader(
-                "$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D\n" +
-                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*7B\n" +
-                        "$GPZDA,032910,07,08,2004,00,00*48\n" +
+                "$GPGGA,130441,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*42\n" +
+                        "$GPRMC,130441,A,4837.4374,N,00903.4036,E,000.0,000.0,290713,,,A*7A\n" +
+                        "$GPZDA,130441,29,07,2013,00,00*47\n" +
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
         ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
@@ -291,11 +306,39 @@ public class NmeaFormatTest {
         assertDoubleEquals(2.835, position.getSpeed());
         assertDoubleEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
+        CompactCalendar expectedCal = calendar(2013, 7, 29, 13, 4, 41);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getComment());
+    }
+
+    @Test
+    public void testMerging2() throws IOException {
+        StringReader reader = new StringReader(
+                "$GPZDA,100436,29,07,2013,,*6B\n" +
+                        "$GPRMC,100436,A,4300.898329,N,00948.227878,E,0.0000,,290713,,A*4F\n" +
+                        "$GPGGA,100436,4300.898329,N,00948.227878,E,1,,,203.0821,M,,M,,*4B\n" +
+                        "$GPWPL,4300.898329,N,00948.227878,E,Position 3*62\n" +
+                        "$GPVTG,,T,,M,0.0000,N,19.3175,K,A*1B"
+        );
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        List<NmeaRoute> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        SimpleRoute route = routes.get(0);
+        assertEquals(1, route.getPositionCount());
+        NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
+        assertDoubleEquals(9.8037979, position.getLongitude());
+        assertDoubleEquals(43.0149721, position.getLatitude());
+        assertDoubleEquals(19.3175, position.getSpeed());
+        assertDoubleEquals(203.0821, position.getElevation());
+        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+        CompactCalendar expectedCal = calendar(2013, 7, 29, 10, 4, 36);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, position.getTime());
+        assertEquals("Position 3", position.getComment());
     }
 
     @Test

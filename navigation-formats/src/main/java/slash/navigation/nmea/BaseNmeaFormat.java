@@ -115,12 +115,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             if (isValidLine(line)) {
                 if (isPosition(line)) {
                     NmeaPosition position = parsePosition(line);
-                    if (isValidStartDate(position.getTime()))
+                    boolean validStartDate = isValidStartDate(position.getTime());
+                    if (validStartDate)
                         startDate = position.getTime();
                     else
                         position.setStartDate(startDate);
 
-                    if (haveDifferentLongitudeAndLatitude(previous, position)) {
+                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) && !validStartDate) {
                         positions.add(position);
                         previous = position;
                     } else {
@@ -141,8 +142,19 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     boolean haveDifferentLongitudeAndLatitude(NmeaPosition predecessor, NmeaPosition successor) {
         return predecessor == null ||
                 (predecessor.hasCoordinates() && successor.hasCoordinates() &&
-                        !(predecessor.getLongitude().equals(successor.getLongitude()) &&
-                                predecessor.getLatitude().equals(successor.getLatitude())));
+                        !(predecessor.getLongitudeAsValueAndOrientation().equals(successor.getLongitudeAsValueAndOrientation()) &&
+                                predecessor.getLatitudeAsValueAndOrientation().equals(successor.getLatitudeAsValueAndOrientation())));
+    }
+
+    boolean haveDifferentTime(NmeaPosition predecessor, NmeaPosition successor) {
+        if(predecessor == null)
+            return true;
+        if(!predecessor.hasTime() || !successor.hasTime())
+            return false;
+        CompactCalendar predecessorTime = predecessor.getTime();
+        CompactCalendar successorTime = successor.getTime();
+        return predecessorTime.hasDateDefined() && successorTime.hasDateDefined() &&
+                !predecessorTime.equals(successorTime);
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
@@ -155,11 +167,11 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         if (isEmpty(position.getHeading()) && !isEmpty(toBeMergedInto.getHeading()))
             position.setHeading(toBeMergedInto.getHeading());
         if (isEmpty(position.getLatitude()) && !isEmpty(toBeMergedInto.getLatitude()))
-            position.setLatitude(toBeMergedInto.getLatitude());
+            position.setLatitudeAsValueAndOrientation(toBeMergedInto.getLatitudeAsValueAndOrientation());
         if (isEmpty(position.getLongitude()) && !isEmpty(toBeMergedInto.getLongitude()))
-            position.setLongitude(toBeMergedInto.getLongitude());
-        if ((toBeMergedInto.getTime() != null) &&
-                (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
+            position.setLongitudeAsValueAndOrientation(toBeMergedInto.getLongitudeAsValueAndOrientation());
+        if (toBeMergedInto.hasTime() &&
+                (!position.hasTime() || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
         if (isEmpty(position.getHdop()) && !isEmpty(toBeMergedInto.getHdop()))
