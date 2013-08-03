@@ -11,24 +11,27 @@
             polyline.setMap(map);
         }
 
-        function addRoute(latlngs) {
+        function addRouteFragment(latlngs, i) {
             var directionsRequest = {
-                origin: latlngs[0],
+                origin: latlngs[i],
                 // TODO waypoints: latlngs,
-                destination: latlngs[latlngs.length - 1],
+                destination: latlngs[i + 1],
                 travelMode: google.maps.DirectionsTravelMode.DRIVING,
                 avoidHighways: false,
                 avoidTolls: true
             };
             var renderer = new google.maps.DirectionsRenderer({map: map, preserveViewport: true,
                 suppressMarkers: true, hideRouteList: true});
-            new google.maps.DirectionsService().route(directionsRequest, function(result, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
+            new google.maps.DirectionsService().route(directionsRequest, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK)
                     renderer.setDirections(result);
-                } else {
-                    setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
-                }
+                if (i < latlngs.length - 1)
+                    addRouteFragment(latlngs, i + 2);
             });
+        }
+
+        function addRoute(latlngs) {
+            addRouteFragment(latlngs, 0);
         }
 
         function addWaypoints(markers) {

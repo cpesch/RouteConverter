@@ -84,26 +84,35 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
 
         StringBuilder routeBuffer = new StringBuilder();
         if (route.getCharacteristics() == Route) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 routeBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("),");
+                        append(position.getLongitude()).append(")");
+                if (i < positions.size() - 1)
+                    routeBuffer.append(",");
             }
         }
 
         StringBuilder trackBuffer = new StringBuilder();
         if (route.getCharacteristics() == Track) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 trackBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("),");
+                        append(position.getLongitude()).append(")");
+                if (i < positions.size() - 1)
+                    routeBuffer.append(",");
             }
         }
 
         StringBuilder waypointsBuffer = new StringBuilder();
         if (route.getCharacteristics() == Waypoints) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 waypointsBuffer.append("new google.maps.Marker({position:new google.maps.LatLng(").
                         append(position.getLatitude()).append(",").append(position.getLongitude()).append("), title: \")").
-                        append(position.getComment()).append("\", clickable:false, icon:markerIcon}),");
+                        append(position.getComment()).append("\", clickable:false, icon:markerIcon})");
+                if (i < positions.size() - 1)
+                    routeBuffer.append(",");
             }
         }
 
