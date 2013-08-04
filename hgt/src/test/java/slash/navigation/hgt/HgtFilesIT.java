@@ -39,10 +39,12 @@ public class HgtFilesIT {
 
     @Test
     public void testElevationFor() throws IOException {
-        Double elevation = files.getElevationFor(11.2, 59.0);
-        assertNotNull(elevation);
-        assertEquals(40, elevation.intValue());
-        assertEquals(190, files.getElevationFor(11.2, 60.0).intValue());
+        Double elevation1 = files.getElevationFor(11.2, 59.0);
+        assertNotNull(elevation1);
+        assertEquals(40, elevation1.intValue());
+        Double elevation2 = files.getElevationFor(11.2, 60.0);
+        assertNotNull(elevation2);
+        assertEquals(190, elevation2.intValue());
         assertNull(files.getElevationFor(11.2, 61.0));
 
         assertEquals(77, files.getElevationFor(-68.0, -54.0).intValue());
