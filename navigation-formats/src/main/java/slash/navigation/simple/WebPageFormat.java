@@ -100,7 +100,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
                 trackBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")");
                 if (i < positions.size() - 1)
-                    routeBuffer.append(",");
+                    trackBuffer.append(",");
             }
         }
 
@@ -112,7 +112,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
                         append(position.getLatitude()).append(",").append(position.getLongitude()).append("), title: \")").
                         append(position.getComment()).append("\", clickable:false, icon:markerIcon})");
                 if (i < positions.size() - 1)
-                    routeBuffer.append(",");
+                    waypointsBuffer.append(",");
             }
         }
 
