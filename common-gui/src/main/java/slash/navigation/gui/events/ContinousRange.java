@@ -64,7 +64,7 @@ public class ContinousRange {
                 if (operation.isInterrupted())
                     return;
             }
-            if(range.size() == 0)
+            if (range.size() == 0)
                 continue;
             int firstValue = range.get(0);
             int lastValue = range.get(range.size() - 1);

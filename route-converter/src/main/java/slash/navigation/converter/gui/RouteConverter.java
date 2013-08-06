@@ -299,6 +299,8 @@ public class RouteConverter extends SingleFrameApplication {
         //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
