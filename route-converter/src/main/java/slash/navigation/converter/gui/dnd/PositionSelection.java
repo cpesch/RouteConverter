@@ -24,7 +24,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.simple.GlopusFormat;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -61,7 +61,7 @@ public class PositionSelection implements Transferable {
     }
 
     private String createStringFor(List<NavigationPosition> sourcePositions) {
-        NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
+        GlopusFormat targetFormat = new GlopusFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         try {
             targetPositions = asFormatForPositions(sourcePositions, targetFormat);
