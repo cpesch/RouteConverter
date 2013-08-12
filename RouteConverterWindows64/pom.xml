@@ -120,7 +120,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>swt-mapview</artifactId>
+            <artifactId>mapsforge-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

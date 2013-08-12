@@ -100,7 +100,6 @@ public abstract class Application {
             method.invoke(null);
         } catch (Exception e) {
             log.info("Cannot invoke NativeInterface#" + name + "(): " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
