@@ -116,7 +116,7 @@ public class NmnPosition extends Wgs84Position {
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 
     public int hashCode() {
@@ -127,7 +127,7 @@ public class NmnPosition extends Wgs84Position {
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (number != null ? number.hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         return result;
     }
 }

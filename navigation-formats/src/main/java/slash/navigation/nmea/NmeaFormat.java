@@ -339,7 +339,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String altitude = formatAltitude(position.getElevation());
         String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToNauticMiles(position.getSpeed())) : "";
 
-        if(position.getTime() != null) {
+        if(position.hasTime()) {
             // $GPZDA,032910,07,08,2004,00,00*48
             String day = formatDay(position.getTime());
             String month = formatMonth(position.getTime());

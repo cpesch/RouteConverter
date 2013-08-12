@@ -193,7 +193,7 @@ public abstract class RouteComments {
                         }
                     }
 
-                    if (position.getTime() != null) {
+                    if (position.hasTime()) {
                         LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
                         if (times.get(lal) == null) {
                             times.put(lal, position.getTime());
@@ -231,7 +231,7 @@ public abstract class RouteComments {
                         }
                     }
 
-                    if (position.getTime() == null) {
+                    if (!position.hasTime()) {
                         LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
                         CompactCalendar time = times.get(lal);
                         if (time != null) {
@@ -394,7 +394,7 @@ public abstract class RouteComments {
             String dateStr = trim(matcher.group(4));
             String timeStr = trim(matcher.group(5));
             position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
-            if (position.getTime() == null)
+            if (!position.hasTime())
                 position.setTime(parseTripmaster14Time(timeStr));
             position.setElevation(parseDouble(matcher.group(6)));
 
@@ -510,7 +510,7 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_LONG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster18Date(matcher.group(3)));
-            if (position.getTime() == null)
+            if (!position.hasTime())
                 position.setTime(parseTripmaster14Time(matcher.group(1)));
             position.setSpeed(parseDouble(matcher.group(9)));
             position.setElevation(parseDouble(matcher.group(6)));

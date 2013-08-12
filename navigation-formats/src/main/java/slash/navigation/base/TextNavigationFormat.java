@@ -30,10 +30,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.Calendar;
 
-import static java.util.Calendar.DAY_OF_YEAR;
-import static java.util.Calendar.YEAR;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 /**
@@ -46,10 +43,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     protected static final char BYTE_ORDER_MARK = '\ufeff';
 
     protected boolean isValidStartDate(CompactCalendar startDate) {
-        if(startDate == null)
-            return false;
-        Calendar calendar = startDate.getCalendar();
-        return !(calendar.get(YEAR) == 1970 && calendar.get(DAY_OF_YEAR) == 1);
+        return startDate != null && startDate.hasDateDefined();
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception {

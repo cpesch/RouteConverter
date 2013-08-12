@@ -42,6 +42,7 @@ import static java.lang.Math.toRadians;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.common.util.Bearing.calculateBearing;
 
@@ -62,13 +63,13 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public void setStartDate(CompactCalendar startDate) {
-        if (getTime() != null && startDate != null) {
+        if (hasTime() && startDate != null) {
             Calendar calendar = getTime().getCalendar();
             Calendar startDateCalendar = startDate.getCalendar();
             calendar.set(YEAR, startDateCalendar.get(YEAR));
             calendar.set(MONTH, startDateCalendar.get(MONTH));
             calendar.set(DAY_OF_MONTH, startDateCalendar.get(DAY_OF_MONTH));
-            setTime(CompactCalendar.fromCalendar(calendar));
+            setTime(fromCalendar(calendar));
         }
     }
 
@@ -94,7 +95,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public Long calculateTime(NavigationPosition other) {
-        if (getTime() != null && other.getTime() != null) {
+        if (hasTime() && other.hasTime()) {
             return other.getTime().getTimeInMillis() - getTime().getTimeInMillis();
         }
         return null;
@@ -123,7 +124,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public Double calculateSpeed(NavigationPosition other) {
-        if (getTime() != null && other.getTime() != null) {
+        if (hasTime() && other.hasTime()) {
             double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
             Double distance = calculateDistance(other);
             if (distance != null && interval > 0.0)

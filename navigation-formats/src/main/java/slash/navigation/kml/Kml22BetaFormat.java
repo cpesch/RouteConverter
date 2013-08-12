@@ -236,7 +236,7 @@ public class Kml22BetaFormat extends KmlFormat {
             placemarkType.setNameElement(asName(isWriteName() ? position.getComment() : null));
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
             placemarkType.setVisibility(FALSE);
-            if (position.getTime() != null) {
+            if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
                 placemarkType.setAbstractTimePrimitiveGroup(objectFactory.createTimeStamp(timeStampType));

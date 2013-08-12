@@ -109,7 +109,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String elevation = formatDoubleAsString(position.getElevation(), 7);
-        String dateAndTime = position.getTime() != null ? createDateFormat(DATE_AND_TIME_FORMAT).format(position.getTime().getTime()) : "00.00.00 00:00:=00";
+        String dateAndTime = position.hasTime() ? createDateFormat(DATE_AND_TIME_FORMAT).format(position.getTime().getTime()) : "00.00.00 00:00:=00";
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation + SEPARATOR + dateAndTime);
     }
 }

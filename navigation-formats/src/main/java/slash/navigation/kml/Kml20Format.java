@@ -272,7 +272,7 @@ public class Kml20Format extends KmlFormat {
             placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getComment() : null)));
             placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getComment() : null)));
             placemarkList.add(objectFactory.createVisibility(Boolean.FALSE));
-            if (position.getTime() != null)
+            if (position.hasTime())
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);

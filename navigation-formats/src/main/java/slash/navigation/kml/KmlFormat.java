@@ -163,11 +163,11 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected void enrichPosition(KmlPosition position, CompactCalendar time, String name, String description, CompactCalendar startDate) {
-        if (position.getTime() == null && time != null)
+        if (!position.hasTime() && time != null)
             position.setTime(time);
-        if (position.getTime() == null)
+        if (!position.hasTime())
             parseTime(position, description, startDate);
-        if (position.getTime() == null)
+        if (!position.hasTime())
             parseTime(position, name, startDate);
         if (position.getComment() == null)
             position.setComment(name);
