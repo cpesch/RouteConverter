@@ -353,8 +353,6 @@ public class RouteConverter extends SingleFrameApplication {
             mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
@@ -373,6 +371,7 @@ public class RouteConverter extends SingleFrameApplication {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
             log.severe("Cannot create " + className + ": " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

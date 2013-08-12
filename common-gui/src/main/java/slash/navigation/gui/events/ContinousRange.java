@@ -27,7 +27,7 @@ import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreas
 /**
  * Allows to perform customizable {@link RangeOperation}s on indexed elements
  * with another customizable operation after a continuous range.
- * Used to reduce the number of notifications that Swing UI Models fire.
+ * Use to reduce the number of notifications that Swing UI Models fire.
  *
  * @author Christian Pesch
  * @see RangeOperation
