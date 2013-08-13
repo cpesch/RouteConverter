@@ -30,8 +30,7 @@ import static java.lang.Math.floor;
 import static java.lang.Math.rint;
 import static java.lang.String.format;
 import static java.util.Locale.ENGLISH;
-import static slash.common.io.Transfer.ceilFraction;
-import static slash.common.io.Transfer.floorFraction;
+import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.common.NavigationConversion.formatDouble;
 import static slash.navigation.common.Orientation.East;
@@ -60,8 +59,9 @@ public class UnitConversion {
             return null;
         double decimal = nmea.getValue() / 100.0;
         int asInt = (int) decimal;
-        double behindDot = floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
+        double behindDot = ((decimal - asInt) * 100.0) / 60.0;
         double degrees = asInt + behindDot;
+        degrees = roundFraction(degrees, 10);
         Orientation orientation = nmea.getOrientation();
         boolean southOrWest = orientation.equals(South) || orientation.equals(West);
         return southOrWest ? -degrees : degrees;
@@ -71,10 +71,11 @@ public class UnitConversion {
         if(degrees == null)
             return null;
         int asInt = (int) degrees.doubleValue();
-        double behindDot = ceilFraction(degrees - asInt, 7);
-        double behindDdMm = ceilFraction(behindDot * 60.0, 4);
+        double behindDot = degrees - asInt;
+        double behindDdMm = behindDot * 60.0;
         double ddmm = asInt * 100.0 + behindDdMm;
         double longitude = abs(ddmm);
+        longitude = roundFraction(longitude, 10);
         Orientation eastOrWest = ddmm >= 0.0 ? aboveZero : belowZero;
         return new ValueAndOrientation(longitude, eastOrWest);
     }
