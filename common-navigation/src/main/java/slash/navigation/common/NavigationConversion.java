@@ -343,48 +343,39 @@ public class NavigationConversion {
     }
 
     public static String formatPositionAsString(Double longitudeOrLatitude) {
-        int MaximumFractionDigits = preferences.getInt("positionAsStringMaximumFractionDigits", 7);
-        return formatDoubleAsString(longitudeOrLatitude, MaximumFractionDigits);
+        return formatDoubleAsString(longitudeOrLatitude, 7);
     }
 
     public static String formatElevationAsString(Double elevation) {
-        int MaximumFractionDigits = preferences.getInt("elevationAsStringMaximumFractionDigits", 2);
-        return formatDoubleAsString(elevation, MaximumFractionDigits);
+        return formatDoubleAsString(elevation, 2);
     }
 
     public static String formatAccuracyAsString(Double elevation) {
-        int MaximumFractionDigits = preferences.getInt("accuracyAsStringMaximumFractionDigits", 6);
-        return formatDoubleAsString(elevation, MaximumFractionDigits);
+        return formatDoubleAsString(elevation, 6);
     }
 
     public static String formatHeadingAsString(Double elevation) {
-        int MaximumFractionDigits = preferences.getInt("headingAsStringMaximumFractionDigits", 1);
-        return formatDoubleAsString(elevation, MaximumFractionDigits);
+        return formatDoubleAsString(elevation, 1);
     }
 
     public static String formatSpeedAsString(Double speed) {
-        int MaximumFractionDigits = preferences.getInt("speedAsStringMaximumFractionDigits", 2);
-        return formatDoubleAsString(speed, MaximumFractionDigits);
+        return formatDoubleAsString(speed, 2);
     }
 
     public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 7);
-        return formatBigDecimal(longitudeOrLatitude, MaximumFractionDigits);
+        return formatBigDecimal(longitudeOrLatitude, 7);
     }
 
     public static BigDecimal formatElevation(Double elevation) {
-        int MaximumFractionDigits = preferences.getInt("elevationMaximumFractionDigits", 1);
-        return formatBigDecimal(elevation, MaximumFractionDigits);
+        return formatBigDecimal(elevation, 1);
     }
 
     public static BigDecimal formatHeading(Double heading) {
-        int MaximumFractionDigits = preferences.getInt("headingMaximumFractionDigits", 1);
-        return formatBigDecimal(heading, MaximumFractionDigits);
+        return formatBigDecimal(heading, 1);
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        int MaximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 2);
-        return formatBigDecimal(speed, MaximumFractionDigits);
+        return formatBigDecimal(speed, 2);
     }
 
     public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
