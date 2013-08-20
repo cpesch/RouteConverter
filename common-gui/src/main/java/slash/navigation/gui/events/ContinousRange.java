@@ -22,6 +22,7 @@ package slash.navigation.gui.events;
 
 import java.util.List;
 
+import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
 import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
 
 /**
@@ -51,7 +52,7 @@ public class ContinousRange {
     }
 
     public void performMonotonicallyDecreasing() {
-        perform(Range.asContinuousMonotonicallyDecreasingRanges(indices));
+        perform(asContinuousMonotonicallyDecreasingRanges(indices));
     }
 
     private void perform(List<List<Integer>> ranges) {
