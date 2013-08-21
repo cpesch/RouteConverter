@@ -27,7 +27,7 @@ import slash.navigation.gui.actions.FrameAction;
 import javax.swing.*;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helper.JTableHelper.getSelectedRouteModels;
+import static slash.navigation.converter.gui.helpers.JTableHelper.getSelectedRouteModels;
 
 /**
  * {@link Action} that removes {@link RouteModel}s of the {@link CatalogModel}.

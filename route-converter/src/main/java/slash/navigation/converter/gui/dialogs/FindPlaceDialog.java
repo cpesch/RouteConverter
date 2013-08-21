@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.BasicPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.helpers.JMenuHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsService;

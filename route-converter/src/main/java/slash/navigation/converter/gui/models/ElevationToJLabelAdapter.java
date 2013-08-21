@@ -25,8 +25,8 @@ import slash.navigation.base.BaseRoute;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
-import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatElevation;
+import static slash.navigation.converter.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
 
 /**
  * A bidirectional adapter that extracts the elevation ascend and descend

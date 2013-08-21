@@ -27,7 +27,7 @@ import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
+import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.renderer.DegreeFormatListCellRenderer;
 import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;

@@ -18,15 +18,15 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helper;
+package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.profileview.ProfileMode;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.JMenuHelper.createMenu;
-import static slash.navigation.converter.gui.helper.JMenuHelper.createRadioItem;
-import static slash.navigation.converter.gui.helper.JMenuHelper.findMenu;
+import static slash.navigation.converter.gui.helpers.JMenuHelper.createMenu;
+import static slash.navigation.converter.gui.helpers.JMenuHelper.createRadioItem;
+import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} for {@link ProfileMode}.

@@ -32,10 +32,10 @@ import java.util.ResourceBundle;
 
 import static java.text.MessageFormat.format;
 import static slash.feature.client.Feature.getFeature;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForForum;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForGeonames;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForHomepage;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForForum;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGeonames;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForHomepage;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 
 /**
  * The about panel of the route converter user interface.

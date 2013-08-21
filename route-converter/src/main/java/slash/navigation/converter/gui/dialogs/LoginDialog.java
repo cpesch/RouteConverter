@@ -45,7 +45,7 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForTerms;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTerms;
 
 /**
  * Dialog to login a user to the RouteService.

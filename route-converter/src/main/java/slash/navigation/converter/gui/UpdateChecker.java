@@ -41,8 +41,8 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForUpdateCheck;
 
 /**
  * Knows how to retrieve the information which is the latest version.

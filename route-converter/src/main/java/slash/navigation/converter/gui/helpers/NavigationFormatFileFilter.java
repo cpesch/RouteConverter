@@ -18,30 +18,38 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.renderer;
+package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.NavigationFormat;
 
-import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractComment;
+import static slash.common.io.Files.getExtension;
 
 /**
- * Renders the description column of the positions table.
+ * Filters files by the extension of a given {@link BaseNavigationFormat}.
  *
  * @author Christian Pesch
  */
 
-public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
-    public DescriptionColumnTableCellEditor() {
-        super(LEFT);
+public class NavigationFormatFileFilter extends FileFilter {
+    private final NavigationFormat format;
+
+    public NavigationFormatFileFilter(NavigationFormat format) {
+        this.format = format;
     }
 
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
+    public boolean accept(File f) {
+        return f.isDirectory() || format.getExtension().equals(getExtension(f.getName()));
     }
 
-    protected String extractValue(NavigationPosition position) {
-        return extractComment(position);
+    public String getDescription() {
+        return format.getName();
+    }
+
+    public NavigationFormat getFormat() {
+        return format;
     }
 }

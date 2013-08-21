@@ -24,7 +24,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 
 /**
  * Renders the speed column of the positions table.

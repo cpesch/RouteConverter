@@ -25,7 +25,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.NavigationFormat;
-import slash.navigation.converter.gui.helper.AbstractListDataListener;
+import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -36,7 +36,7 @@ import javax.swing.event.TableModelListener;
 import java.util.List;
 
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
+import static slash.navigation.converter.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 
 /**

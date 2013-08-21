@@ -29,7 +29,7 @@ import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RouteComparator;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.sort;
-import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
-import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.asNames;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.asParents;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.

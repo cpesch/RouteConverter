@@ -25,7 +25,7 @@ import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
@@ -35,9 +35,9 @@ import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
-import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
-import static slash.navigation.converter.gui.helper.JTreeHelper.asParentsFromRoutes;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.asNames;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.asParents;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.asParentsFromRoutes;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.

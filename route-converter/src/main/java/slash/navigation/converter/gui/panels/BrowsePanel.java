@@ -51,8 +51,8 @@ import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.converter.gui.helper.TreePathStringConversion;
+import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.TreePathStringConversion;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
@@ -104,11 +104,11 @@ import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavo
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
-import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.converter.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.selectCategoryTreePath;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 

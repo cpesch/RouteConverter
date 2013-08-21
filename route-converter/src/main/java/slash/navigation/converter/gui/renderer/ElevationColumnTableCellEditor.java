@@ -24,7 +24,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
 
 /**
  * Renders the elevation column of the positions table.

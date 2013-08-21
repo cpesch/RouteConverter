@@ -24,7 +24,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
 /**
  * Renders the longitude column of the positions table.

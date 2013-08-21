@@ -18,30 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.renderer;
-
-import slash.navigation.base.NavigationPosition;
-
-import javax.swing.*;
-
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractComment;
+package slash.navigation.converter.gui.helpers;
 
 /**
- * Renders the description column of the positions table.
+ * Interface for events from a {@link LengthCalculator}
  *
  * @author Christian Pesch
  */
 
-public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
-    public DescriptionColumnTableCellEditor() {
-        super(LEFT);
-    }
-
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
-    }
-
-    protected String extractValue(NavigationPosition position) {
-        return extractComment(position);
-    }
+public interface LengthCalculatorListener {
+    void calculatedDistance(int meters, int seconds);
 }

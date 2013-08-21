@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.converter.gui.helper.AbstractListDataListener;
+import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.text.BadLocationException;

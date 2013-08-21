@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
+import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
 
@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds postal addresses from Google Maps as comments to
- * the selected rows of a {@link JTable} with the help of a {@link slash.navigation.converter.gui.helper.BatchPositionAugmenter}.
+ * the selected rows of a {@link JTable} with the help of a {@link slash.navigation.converter.gui.helpers.BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */

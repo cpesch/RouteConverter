@@ -18,30 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.renderer;
+package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.base.NavigationPosition;
-
-import javax.swing.*;
-
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractComment;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
- * Renders the description column of the positions table.
+ * A {@link ListDataListener} that treats all events the same
  *
  * @author Christian Pesch
  */
 
-public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
-    public DescriptionColumnTableCellEditor() {
-        super(LEFT);
+public abstract class AbstractListDataListener implements ListDataListener {
+
+    public abstract void process(ListDataEvent e);
+
+    public void intervalAdded(ListDataEvent e) {
+        process(e);
     }
 
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
+    public void intervalRemoved(ListDataEvent e) {
+        process(e);
     }
 
-    protected String extractValue(NavigationPosition position) {
-        return extractComment(position);
+    public void contentsChanged(ListDataEvent e) {
+        process(e);
     }
 }

@@ -33,7 +33,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNode;
 
 /**
  * {@link Action} that renames a {@link CategoryTreeNode} of the {@link CatalogModel}.

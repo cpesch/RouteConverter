@@ -24,7 +24,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 
 /**
  * Renders the latitude column of the positions table.

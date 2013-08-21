@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.helper.LengthCalculator;
-import slash.navigation.converter.gui.helper.LengthCalculatorListener;
+import slash.navigation.converter.gui.helpers.LengthCalculator;
+import slash.navigation.converter.gui.helpers.LengthCalculatorListener;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -30,7 +30,7 @@ import javax.swing.event.TableModelEvent;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 

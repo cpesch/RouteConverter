@@ -27,7 +27,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.helpers.JMenuHelper;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
 import slash.navigation.gui.SimpleDialog;
@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForDouglasPeucker;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForDouglasPeucker;
 
 /**
  * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
