@@ -35,6 +35,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.io.Transfer.toArray;
 import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
@@ -123,7 +124,7 @@ public class AddPositionAction extends FrameAction {
                 complementRow(index, position);
             }
 
-            final int[] rows = Range.asInt(insertedRows);
+            final int[] rows = toArray(insertedRows);
             final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
             invokeLater(new Runnable() {
                 public void run() {
