@@ -183,7 +183,7 @@ public abstract class BaseMapView implements MapView {
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
-                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == MAX_VALUE;
+                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == MAX_VALUE; // TODO use JTableHelper.isFirstToLastRow()
                 // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)

@@ -26,7 +26,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
-import slash.navigation.converter.gui.helper.JTableHelper;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -35,6 +34,8 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
+
+import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
 
 /**
  * Acts as a {@link ComboBoxModel} for the routes of a {@link FormatAndRoutes}.
@@ -53,9 +54,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedItem()
-                if (JTableHelper.isFirstToLastRow(e))
+                if (isFirstToLastRow(e))
                     return;
-
                 setModified(true);
             }
         });
