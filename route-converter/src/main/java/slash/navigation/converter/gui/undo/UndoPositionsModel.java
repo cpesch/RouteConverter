@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -205,8 +206,10 @@ public class UndoPositionsModel implements PositionsModel {
                 removed.add(0, getRoute().remove(index));
             }
             public void performOnRange(int firstIndex, int lastIndex) {
-                if (fireEvent)
-                    delegate.fireTableRowsDeleted(firstIndex, lastIndex);
+                // this leads to a massive slowdown due to ConvertPanel#handlePositionsUpdate() called for
+                // every deletion range and profile view selection completely repainted
+                // if (fireEvent)
+                //    delegate.fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, removed);
                 removed.clear();
@@ -216,6 +219,9 @@ public class UndoPositionsModel implements PositionsModel {
             }
         }).performMonotonicallyDecreasing();
 
+        if (fireEvent)
+            // delegate.fireTableDataChanged() is ignored by FormatAndRoutesModelImpl setModified() listeners
+            fireTableRowsUpdated(rows[0], rows[rows.length-1], ALL_COLUMNS);
         if (trackUndo)
             undoManager.addEdit(edit);
     }

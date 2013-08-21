@@ -35,7 +35,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
 
+import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 
 /**
  * Acts as a {@link ComboBoxModel} for the routes of a {@link FormatAndRoutes}.
@@ -53,7 +55,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         this.positionsModel = positionsModel;
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                // ignore events following setSelectedItem()
+                // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
                     return;
                 setModified(true);
@@ -61,8 +63,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         });
         addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
-                // ignore events following setSelectedItem()
-                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == -1 && e.getIndex1() == -1)
+                // ignore events following setSelectedRoute()
+                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == -1 && e.getIndex1() == -1)
                     return;
                 setModified(true);
             }
@@ -76,7 +78,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
             public void contentsChanged(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
                     return;
                 if (formatAndRoutes.getFormat().isWritingRouteCharacteristics())
                     setModified(true);

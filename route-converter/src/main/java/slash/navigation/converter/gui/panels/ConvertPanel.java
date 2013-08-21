@@ -184,6 +184,7 @@ import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavo
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
+import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
 import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
 import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
@@ -392,6 +393,8 @@ public class ConvertPanel implements PanelInTab {
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                if (!isFirstToLastRow(e))
+                    return;
                 handlePositionsUpdate();
             }
         });
@@ -983,19 +986,19 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-elevation-profile", existsAPosition);
     }
 
-    private int[] selectedPositionIndices = null;
+    private int[] selectedPositions = null;
 
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
         // avoid firing events of the selection hasn't changed
-        if (Arrays.equals(this.selectedPositionIndices, selectedRows))
+        if (Arrays.equals(this.selectedPositions, selectedRows))
             return;
 
-        this.selectedPositionIndices = selectedRows;
+        this.selectedPositions = selectedRows;
 
-        boolean existsASelectedPosition = selectedRows.length > 0;
-        boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
-        boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
+        boolean existsASelectedPosition = selectedPositions.length > 0;
+        boolean allPositionsSelected = selectedPositions.length == tablePositions.getRowCount();
+        boolean firstRowNotSelected = existsASelectedPosition && selectedPositions[0] != 0;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
@@ -1003,7 +1006,7 @@ public class ConvertPanel implements PanelInTab {
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
-        boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+        boolean lastRowNotSelected = existsASelectedPosition && selectedPositions[selectedPositions.length - 1] != tablePositions.getRowCount() - 1;
         buttonMovePositionDown.setEnabled(lastRowNotSelected);
         buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
 
@@ -1029,7 +1032,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
         actionManager.enable("print-elevation-profile", existsAPosition);
 
-        r.selectPositions(selectedRows, tablePositions.getSelectionModel().getLeadSelectionIndex());
+        r.selectPositions(selectedPositions, tablePositions.getSelectionModel().getLeadSelectionIndex());
     }
 
     // helpers
