@@ -18,17 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helpers;
-
-import slash.navigation.catalog.model.RouteModel;
+package slash.navigation.gui.helpers;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * A helper for simplified {@link JTable} operations.
@@ -37,32 +34,13 @@ import static java.lang.Integer.MAX_VALUE;
  */
 
 public class JTableHelper {
-    public static RouteModel getSelectedRouteModel(JTable table) {
-        int row = table.getSelectedRow();
-        if (row == -1)
-            return null;
-        Object value = table.getModel().getValueAt(row, 1);
-        return value instanceof RouteModel ? (RouteModel) value : null;
-    }
-
-    public static List<RouteModel> getSelectedRouteModels(JTable table) {
-        int[] rows = table.getSelectedRows();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
-        for (int row : rows) {
-            Object value = table.getModel().getValueAt(row, 1);
-            if (value instanceof RouteModel)
-                routeModels.add((RouteModel) value);
-        }
-        return routeModels;
-    }
-
     public static void scrollToPosition(JTable table, int insertRow) {
         Rectangle rectangle = table.getCellRect(insertRow, 1, true);
         table.scrollRectToVisible(rectangle);
     }
 
     public static void selectPositions(final JTable table, final int index0, final int index1) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 table.getSelectionModel().setSelectionInterval(index0, index1);
             }

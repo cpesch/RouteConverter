@@ -36,7 +36,7 @@ import javax.swing.event.TableModelListener;
 import java.util.List;
 
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static slash.navigation.converter.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 
 /**

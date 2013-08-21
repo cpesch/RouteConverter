@@ -40,7 +40,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.dnd.PositionSelection.stringFlavor;
-import static slash.navigation.converter.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.

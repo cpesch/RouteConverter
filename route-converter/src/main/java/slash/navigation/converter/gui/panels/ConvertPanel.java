@@ -66,7 +66,6 @@ import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
 import slash.navigation.converter.gui.helpers.JMenuHelper;
-import slash.navigation.converter.gui.helpers.JTableHelper;
 import slash.navigation.converter.gui.helpers.LengthCalculator;
 import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
@@ -184,9 +183,9 @@ import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavo
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.converter.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.converter.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.increment;
 import static slash.navigation.gui.events.Range.revert;
@@ -1445,10 +1444,10 @@ public class ConvertPanel implements PanelInTab {
 
             if (rows[0] > index) {
                 getPositionsModel().up(rows, rows[0] - index);
-                JTableHelper.selectPositions(table, index, index + rows.length - 1);
+                slash.navigation.gui.helpers.JTableHelper.selectPositions(table, index, index + rows.length - 1);
             } else {
                 getPositionsModel().down(revert(rows), index - rows[0] - rows.length + 1);
-                JTableHelper.selectPositions(table, index - rows.length + 1, index);
+                slash.navigation.gui.helpers.JTableHelper.selectPositions(table, index - rows.length + 1, index);
             }
         }
 

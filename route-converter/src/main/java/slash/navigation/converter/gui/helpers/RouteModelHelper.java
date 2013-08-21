@@ -29,12 +29,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A helper for simplified {@link JTree} operations.
+ * A helper for simplified {@link RouteModel} operations.
  *
  * @author Christian Pesch
  */
 
-public class JTreeHelper {
+public class RouteModelHelper {
+    public static RouteModel getSelectedRouteModel(JTable table) {
+        int row = table.getSelectedRow();
+        if (row == -1)
+            return null;
+        Object value = table.getModel().getValueAt(row, 1);
+        return value instanceof RouteModel ? (RouteModel) value : null;
+    }
+
+    public static List<RouteModel> getSelectedRouteModels(JTable table) {
+        int[] rows = table.getSelectedRows();
+        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        for (int row : rows) {
+            Object value = table.getModel().getValueAt(row, 1);
+            if (value instanceof RouteModel)
+                routeModels.add((RouteModel) value);
+        }
+        return routeModels;
+    }
+
     public static CategoryTreeNode getSelectedCategoryTreeNode(JTree tree) {
         TreePath treePath = tree.getSelectionPath();
         // if there is no selected root take the local root

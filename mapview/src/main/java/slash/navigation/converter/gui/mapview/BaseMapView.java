@@ -68,7 +68,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
@@ -103,6 +102,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * Base implementation for a component that displays the positions of a position list on a map.
@@ -183,7 +183,7 @@ public abstract class BaseMapView implements MapView {
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
-                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == MAX_VALUE; // TODO use JTableHelper.isFirstToLastRow()
+                boolean allRowsChanged = isFirstToLastRow(e);
                 // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)

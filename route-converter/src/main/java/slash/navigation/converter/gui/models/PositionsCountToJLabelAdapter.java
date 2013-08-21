@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.models;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
-import static slash.navigation.converter.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the route format name from the selected route

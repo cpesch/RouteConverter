@@ -35,9 +35,9 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.asParents;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
 
 /**
  * {@link Action} that renames {@link CategoryTreeNode}s of the {@link CatalogModel}.

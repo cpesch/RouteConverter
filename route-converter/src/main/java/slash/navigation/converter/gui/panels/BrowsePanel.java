@@ -105,10 +105,10 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helpers.JTableHelper.selectAndScrollToPosition;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.selectCategoryTreePath;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 

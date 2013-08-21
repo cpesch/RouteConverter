@@ -35,9 +35,9 @@ import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helpers.JTreeHelper.asNames;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.asParents;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.asParentsFromRoutes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.asNames;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParentsFromRoutes;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.

@@ -34,8 +34,8 @@ import static java.util.Arrays.asList;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helpers.JTreeHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
 
 /**
  * {@link Action} that adds a {@link Category} to the {@link CatalogModel}.

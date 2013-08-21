@@ -43,7 +43,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.Positions.intrapolateTime;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.converter.gui.helpers.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;

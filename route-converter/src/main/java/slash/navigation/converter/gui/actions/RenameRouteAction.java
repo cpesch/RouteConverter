@@ -31,7 +31,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helpers.JTableHelper.getSelectedRouteModel;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModel;
 
 /**
  * {@link Action} that renames a {@link RouteModel} of the {@link CatalogModel}.
