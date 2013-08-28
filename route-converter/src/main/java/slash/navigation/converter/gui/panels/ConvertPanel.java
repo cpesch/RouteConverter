@@ -98,6 +98,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
+import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
@@ -1444,10 +1445,10 @@ public class ConvertPanel implements PanelInTab {
 
             if (rows[0] > index) {
                 getPositionsModel().up(rows, rows[0] - index);
-                slash.navigation.gui.helpers.JTableHelper.selectPositions(table, index, index + rows.length - 1);
+                JTableHelper.selectPositions(table, index, index + rows.length - 1);
             } else {
                 getPositionsModel().down(revert(rows), index - rows[0] - rows.length + 1);
-                slash.navigation.gui.helpers.JTableHelper.selectPositions(table, index - rows.length + 1, index);
+                JTableHelper.selectPositions(table, index - rows.length + 1, index);
             }
         }
 
