@@ -22,6 +22,8 @@ package slash.navigation.gui.events;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
 import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
 
@@ -66,8 +68,8 @@ public class ContinousRange {
                 continue;
             int firstValue = range.get(0);
             int lastValue = range.get(range.size() - 1);
-            int from = Math.min(firstValue, lastValue);
-            int to = Math.max(firstValue, lastValue);
+            int from = min(firstValue, lastValue);
+            int to = max(firstValue, lastValue);
             operation.performOnRange(from, to);
             if (operation.isInterrupted())
                 return;

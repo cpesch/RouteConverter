@@ -36,6 +36,7 @@ import slash.navigation.gui.events.RangeOperation;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -43,6 +44,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
@@ -410,9 +413,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
     }
 
+    private TableModelEvent currentEvent;
+
     public void fireTableChanged(TableModelEvent e) {
+        this.currentEvent = e;
         distanceCache = null;
         super.fireTableChanged(e);
+        this.currentEvent = null;
+    }
+
+    public boolean isContinousRange() {
+        return currentEvent != null && currentEvent instanceof ContinousRangeTableModelEvent;
+    }
+
+    public void fireTableRowsDeletedInContinousRange(int firstRow, int lastRow) {
+        fireTableChanged(new ContinousRangeTableModelEvent(this, firstRow, lastRow, ALL_COLUMNS, DELETE));
+    }
+
+    private static class ContinousRangeTableModelEvent extends TableModelEvent {
+        @SuppressWarnings("MagicConstant")
+        public ContinousRangeTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
+            super(source, firstRow, lastRow, column, type);
+        }
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

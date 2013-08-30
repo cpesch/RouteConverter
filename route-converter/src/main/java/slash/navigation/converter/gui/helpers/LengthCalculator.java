@@ -44,6 +44,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * Helps to calculate the length of position list of type route and track.
@@ -74,9 +75,12 @@ public class LengthCalculator {
             public void tableChanged(TableModelEvent e) {
                 // ignored updates on columns not relevant for length calculation
                 if (e.getType() == UPDATE &&
+                        !isFirstToLastRow(e) &&
                         !(e.getColumn() == LONGITUDE_COLUMN_INDEX ||
                                 e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS))
+                    return;
+                if (LengthCalculator.this.positionsModel.isContinousRange())
                     return;
 
                 calculateDistance();

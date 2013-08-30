@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.models;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -46,7 +47,10 @@ public class PositionsCountToJLabelAdapter extends PositionsModelToDocumentAdapt
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for row count
-        if (e.getType() == TableModelEvent.UPDATE && !isFirstToLastRow(e))
+        if (e.getType() == UPDATE &&
+                !isFirstToLastRow(e))
+            return;
+        if (getDelegate().isContinousRange())
             return;
 
         label.setText(Integer.toString(getDelegate().getRowCount()));

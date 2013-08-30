@@ -352,6 +352,9 @@ public class ConvertPanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+
                 handlePositionsUpdate();
             }
         });
@@ -395,6 +398,9 @@ public class ConvertPanel implements PanelInTab {
             public void tableChanged(TableModelEvent e) {
                 if (!isFirstToLastRow(e))
                     return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+
                 handlePositionsUpdate();
             }
         });

@@ -25,8 +25,10 @@ import slash.navigation.base.BaseRoute;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
-import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the elevation ascend and descend
@@ -61,9 +63,11 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for ascend and descent calculation
-        if (e.getType() == TableModelEvent.UPDATE &&
+        if (e.getType() == UPDATE &&
                 !isFirstToLastRow(e) &&
-                !(e.getColumn() == PositionColumns.ELEVATION_COLUMN_INDEX))
+                !(e.getColumn() == ELEVATION_COLUMN_INDEX))
+            return;
+        if (getDelegate().isContinousRange())
             return;
 
         BaseRoute route = getDelegate().getRoute();

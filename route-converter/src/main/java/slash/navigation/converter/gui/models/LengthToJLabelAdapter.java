@@ -33,6 +33,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -77,7 +78,10 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not displayed
         if (e.getType() == UPDATE &&
+                !isFirstToLastRow(e) &&
                 !(e.getColumn() == LONGITUDE_COLUMN_INDEX || e.getColumn() == LATITUDE_COLUMN_INDEX))
+            return;
+        if (getDelegate().isContinousRange())
             return;
 
         BaseRoute route = getDelegate().getRoute();

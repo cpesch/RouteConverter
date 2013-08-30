@@ -1,0 +1,28 @@
+UndoPositionsModel#remove()
+    for each continous range calls fireTableRowsDeleted(first row, last row)
+
+BaseMapView
+    PositionsModel: complex logic to minimize repaints #FAIL
+
+ConvertPanel
+    PositionsModel: ignores UPDATE which are not isFirstToLastRow() for handlePositionsUpdate()
+    SelectionModel: ignores adjusting
+
+ElevationToJLabelAdapter
+    PositionsModel: ignores UPDATE which are not isFirstToLastRow() and not ELEVATION_COLUMN_INDEX
+
+FormatAndRoutesModelImpl
+    PositionsModel: ignores isFirstToLastRow() events following setSelectedRoute() for setModified()
+    FormatAndRoutesModel: ignores CONTENTS_CHANGED from -1 to -1 following setSelectedRoute() for setModified()
+
+LengthCalculator
+    PositionsModel: ignores UPDATE which are not isFirstToLastRow() and not LONGITUDE_COLUMN_INDEX or LATITUDE_COLUMN_INDEX or ALL_COLUMNS
+
+LengthToJLabelAdapter
+    PositionsModel: ignores UPDATE which are not isFirstToLastRow() and not ELEVATION_COLUMN_INDEX
+
+PositionsCountToJLabelAdapter
+    PositionsModel: ignores UPDATE which are not isFirstToLastRow()
+
+PositionsModelToXYSeriesSynchronizer
+    PositionsModel: -

@@ -77,12 +77,18 @@ public class DeletePositionsDialog extends SimpleDialog {
         public void valueChanged(ListSelectionEvent e) {
             if (e.getValueIsAdjusting())
                 return;
+            if (RouteConverter.getInstance().getPositionsModel().isContinousRange())
+                return;
+
             handlePositionsUpdate();
         }
     };
 
     private TableModelListener tableModelListener = new TableModelListener() {
         public void tableChanged(TableModelEvent e) {
+            if (RouteConverter.getInstance().getPositionsModel().isContinousRange())
+                return;
+
             handlePositionsUpdate();
         }
     };
