@@ -45,7 +45,8 @@ import static slash.navigation.common.NavigationConversion.formatAccuracyAsStrin
 
 public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
-
+    private static final Pattern HEADER_PATTERN = Pattern.
+            compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -61,9 +62,9 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                     SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
 
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
 
@@ -71,12 +72,16 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         return "Columbus V900 Professional (*" + getExtension() + ")";
     }
 
+    protected Pattern getLinePattern() {
+        return LINE_PATTERN;
+    }
+
     protected String getHeader() {
         return HEADER_LINE;
     }
 
-    protected Pattern getPattern() {
-        return LINE_PATTERN;
+    protected Pattern getHeaderPattern() {
+        return HEADER_PATTERN;
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {

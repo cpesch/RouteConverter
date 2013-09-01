@@ -44,7 +44,7 @@ import static slash.common.io.Transfer.trim;
 
 public class ColumbusV900StandardFormat extends ColumbusV900Format {
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX";
-
+    private static final Pattern HEADER_PATTERN = Pattern.compile(HEADER_LINE);
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -63,12 +63,16 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         return "Columbus V900 Standard (*" + getExtension() + ")";
     }
 
+    protected Pattern getLinePattern() {
+        return LINE_PATTERN;
+    }
+
     protected String getHeader() {
         return HEADER_LINE;
     }
 
-    protected Pattern getPattern() {
-        return LINE_PATTERN;
+    protected Pattern getHeaderPattern() {
+        return HEADER_PATTERN;
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
