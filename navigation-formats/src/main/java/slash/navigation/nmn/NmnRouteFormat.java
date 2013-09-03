@@ -46,6 +46,7 @@ import java.util.prefs.Preferences;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.toMixedCase;
+import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -314,7 +315,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
+            resultPoint = asPosition(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
             resultPoint = positionPoint;
             resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
@@ -349,7 +350,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.position((int) (startPosition + blockLength));
 
         if (positionPoint == null)
-            return new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
+            return asPosition(longitude, latitude, waypointDescription);
         return positionPoint;
     }
 
@@ -387,7 +388,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
+            resultPoint = asPosition(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
             resultPoint = positionPoint;
             resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
@@ -507,7 +508,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
+            resultPoint = asPosition(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
             resultPoint = positionPoint;
             resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());

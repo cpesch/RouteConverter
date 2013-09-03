@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * The base of all Sygic formats.
@@ -80,7 +81,6 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String phone = trim(lineMatcher.group(4));
         if (phone != null)
             comment = comment + " " + phone;
-        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                null, null, null, comment);
+        return asPosition(parseDouble(longitude), parseDouble(latitude), comment);
     }
 }

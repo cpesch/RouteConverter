@@ -43,6 +43,7 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * Reads and writes Opel Navi 600/900 (.poi) files.
@@ -109,7 +110,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (phone != null)
             comment += ";" + phone;
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, null, null, null, comment);
+        Wgs84Position position = asPosition(longitude, latitude, comment);
         position.setStartDate(startDate);
         return position;
     }

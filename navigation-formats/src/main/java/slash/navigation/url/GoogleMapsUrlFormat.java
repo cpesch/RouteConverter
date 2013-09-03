@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * Reads and writes Google Maps URLs from/to files.
@@ -100,7 +101,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
         Double latitude = parseDouble(matcher.group(1));
         Double longitude = parseDouble(matcher.group(2));
-        return new Wgs84Position(longitude, latitude, null, null, null, null);
+        return asPosition(longitude, latitude);
     }
 
     Wgs84Position parseCommentPosition(String position) {
@@ -110,7 +111,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         String comment = trim(matcher.group(1));
         Double latitude = parseDouble(matcher.group(3));
         Double longitude = parseDouble(matcher.group(4));
-        return new Wgs84Position(longitude, latitude, null, null, null, comment);
+        return asPosition(longitude, latitude, comment);
     }
 
     List<Wgs84Position> parseDestinationPositions(String destinationComments) {

@@ -138,6 +138,7 @@ import static slash.common.system.Platform.isJavaFX;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.feature.client.Feature.initializePreferences;
+import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
@@ -775,7 +776,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public NavigationPosition getMapCenter() {
-        return mapView != null ? mapView.getCenter() : new Wgs84Position(-41.0, 41.0, null, null, null, null);
+        return mapView != null ? mapView.getCenter() : asPosition(-41.0, 41.0);
     }
 
     private void setProfileMode(ProfileMode profileMode) {

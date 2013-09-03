@@ -108,6 +108,7 @@ import slash.navigation.tour.TourFormat;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.MotoPlanerUrlFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
@@ -758,6 +759,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public SimpleRoute asMotoPlanerUrlFormat() {
+        if (getFormat() instanceof MotoPlanerUrlFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new MotoPlanerUrlFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")

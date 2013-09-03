@@ -36,6 +36,7 @@ import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * Reads and writes Navigon Mobile Navigator for iPhone/iPad URL from/to files.
@@ -83,13 +84,13 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
                     (houseNumber != null ? " " + houseNumber : "")));
             Double longitude = parseDouble(addressPattern.group(5));
             Double latitude = parseDouble(addressPattern.group(6));
-            return new Wgs84Position(longitude, latitude, null, null, null, trim(comment));
+            return asPosition(longitude, latitude, trim(comment));
         }
         Matcher coordinatesMatcher = COORDINATE_PATTERN.matcher(position);
         if (coordinatesMatcher.matches()) {
             Double longitude = parseDouble(coordinatesMatcher.group(1));
             Double latitude = parseDouble(coordinatesMatcher.group(2));
-            return new Wgs84Position(longitude, latitude, null, null, null, null);
+            return asPosition(longitude, latitude);
         }
         throw new IllegalArgumentException("'" + position + "' does not match");
     }

@@ -43,6 +43,7 @@ import java.util.List;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.viamichelin.ViaMichelinUtil.unmarshal;
 
@@ -100,12 +101,12 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;
                 routeName = itinerary.getName();
                 for (Step step : itinerary.getStep()) {
-                    positions.add(new Wgs84Position(parseDouble(step.getLongitude()), parseDouble(step.getLatitude()), null, null, null, step.getName()));
+                    positions.add(asPosition(parseDouble(step.getLongitude()), parseDouble(step.getLatitude()), step.getName()));
                 }
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(new Wgs84Position(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), null, null, null, parseComment(poi)));
+                positions.add(asPosition(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parseComment(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);

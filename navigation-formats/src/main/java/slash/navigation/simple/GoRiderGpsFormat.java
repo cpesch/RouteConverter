@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -94,7 +95,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String comment = lineMatcher.group(2);
         Double longitude = parseDouble(lineMatcher.group(4));
         Double latitude = parseDouble(lineMatcher.group(5));
-        return new Wgs84Position(longitude, latitude, null, null, null, comment);
+        return asPosition(longitude, latitude, comment);
     }
 
     protected void writeHeader(PrintWriter writer, SimpleRoute route) {

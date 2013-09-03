@@ -37,6 +37,7 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
@@ -87,7 +88,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
         String comment = trim(lineMatcher.group(3));
         if (comment != null)
             comment = comment.replaceAll("\\p{Cntrl}", "");
-        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, comment);
+        return asPosition(parseDouble(longitude), parseDouble(latitude), comment);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

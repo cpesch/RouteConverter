@@ -37,6 +37,7 @@ import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.
@@ -81,8 +82,7 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String comment = toMixedCase(trim(lineMatcher.group(3)));
-        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                null, null, null, comment);
+        return asPosition(parseDouble(longitude), parseDouble(latitude), comment);
     }
 
     private static String formatComment(String string) {

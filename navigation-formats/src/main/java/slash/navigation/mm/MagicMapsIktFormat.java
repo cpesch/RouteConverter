@@ -52,6 +52,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
@@ -122,8 +123,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return new Wgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE),
-                null, null, null, null);
+        return asPosition(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE));
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {

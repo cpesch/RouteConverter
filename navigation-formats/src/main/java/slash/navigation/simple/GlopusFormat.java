@@ -37,6 +37,7 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.Positions.asPosition;
 
 
 /**
@@ -95,16 +96,14 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
             String latitude = commentMatcher.group(1);
             String longitude = commentMatcher.group(2);
             String comment = commentMatcher.group(3);
-            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                    null, null, null, trim(comment));
+            return asPosition(parseDouble(longitude), parseDouble(latitude), trim(comment));
         }
 
         Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
         if (simpleMatcher.matches()) {
             String latitude = simpleMatcher.group(1);
             String longitude = simpleMatcher.group(2);
-            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                    null, null, null, null);
+            return asPosition(parseDouble(longitude), parseDouble(latitude));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

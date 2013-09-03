@@ -118,6 +118,7 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.MotoPlanerUrlFormat;
 import slash.navigation.url.UrlFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
@@ -237,6 +238,7 @@ public final class NavigationFormats {
         addFormat(UrlFormat.class);
         addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
+        addFormat(MotoPlanerUrlFormat.class);
 
         // second try for broken files
         addFormat(BrokenColumbusV900StandardFormat.class);

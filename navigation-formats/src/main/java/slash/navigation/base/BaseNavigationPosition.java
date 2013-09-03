@@ -283,6 +283,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asMotoPlanerUrlPosition() {
+        return asWgs84Position();
+    }
+
     public BcrPosition asMTPPosition() {
         return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
