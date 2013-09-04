@@ -25,7 +25,6 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -368,7 +367,7 @@ public abstract class BaseMapView implements MapView {
                     boolean recenter;
                     synchronized (notificationMutex) {
                         try {
-                            notificationMutex.wait(100);
+                            notificationMutex.wait(250);
                         } catch (InterruptedException e) {
                             // ignore this
                         }
@@ -668,7 +667,7 @@ public abstract class BaseMapView implements MapView {
                 System.arraycopy(selectedPositions, 0, indices, selectedPositionIndices.length, selectedPositions.length);
                 this.selectedPositionIndices = indices;
             }
-            haveToRecenterMap = true;
+            haveToRecenterMap = selectedPositions.length > 0;
             haveToRepaintSelection = true;
             selectionUpdateReason = "selected " + selectedPositions.length + " positions; " +
                     "replacing selection: " + replaceSelection;
@@ -747,7 +746,7 @@ public abstract class BaseMapView implements MapView {
     private NavigationPosition getLastMapCenter() {
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-        return new Wgs84Position(longitude, latitude, null, null, null, null);
+        return asPosition(longitude, latitude);
     }
 
     protected NavigationPosition extractLatLng(String script) {
@@ -958,7 +957,8 @@ public abstract class BaseMapView implements MapView {
 
         if (center != null && center.hasCoordinates())
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
-        buffer.append("removeSelectedPositions();");
+        if (lastSelectedPositions.size() > 0)
+            buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
     }
 
