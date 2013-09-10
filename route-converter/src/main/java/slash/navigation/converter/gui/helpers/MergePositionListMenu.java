@@ -38,8 +38,8 @@ import static slash.navigation.base.RouteComments.shortenRouteName;
  */
 
 public class MergePositionListMenu {
-    private JMenu menu;
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final JMenu menu;
+    private final FormatAndRoutesModel formatAndRoutesModel;
 
     public MergePositionListMenu(JMenu menu, JTable table, FormatAndRoutesModel formatAndRoutesModel) {
         this.menu = menu;

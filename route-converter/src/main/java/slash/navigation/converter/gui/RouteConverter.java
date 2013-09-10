@@ -30,7 +30,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.actions.AboutAction;
@@ -52,7 +51,7 @@ import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.helpers.ShowProfileMenu;
+import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.helpers.SinglePositionAugmenter;
 import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
@@ -60,12 +59,12 @@ import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.ProfileModeModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
-import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
@@ -143,12 +142,10 @@ import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.findItem;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenu;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
-import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
-import static slash.navigation.converter.gui.profileview.ProfileMode.Speed;
+import static slash.navigation.gui.helpers.JMenuHelper.findItem;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
 import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
@@ -211,7 +208,6 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SEARCH_POSITION_PREFERENCE = "searchPosition";
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
     private static final String PROFILE_DIVIDER_LOCATION_PREFERENCE = "profileDividerLocation";
-    private static final String PROFILE_MODE_PREFERENCE = "profileMode";
 
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String USERNAME_PREFERENCE = "userName";
@@ -226,6 +222,7 @@ public class RouteConverter extends SingleFrameApplication {
     private UpdateChecker updateChecker;
     private CompletePositionService completePositionService = new CompletePositionService();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
+    private ProfileModeModel profileModeModel = new ProfileModeModel();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -435,7 +432,7 @@ public class RouteConverter extends SingleFrameApplication {
                 profileView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getUnitSystemModel(),
-                        getProfileModePreference());
+                        getProfileModeModel());
                 elevationPanel.add(profileView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setTransferHandler(new PanelDropHandler());
                 elevationPanel.setVisible(true);
@@ -535,10 +532,6 @@ public class RouteConverter extends SingleFrameApplication {
         return TravelMode.fromValue(preferences.get(TRAVEL_MODE_PREFERENCE, Driving.toString()));
     }
 
-    public ProfileMode getProfileModePreference() {
-        return ProfileMode.fromValue(preferences.get(PROFILE_MODE_PREFERENCE, Elevation.toString()));
-    }
-
     public NumberPattern getNumberPatternPreference() {
         try {
             return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, Number_Space_Then_Description.toString()));
@@ -567,6 +560,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public UnitSystemModel getUnitSystemModel() {
         return unitSystemModel;
+    }
+
+    public ProfileModeModel getProfileModeModel() {
+        return profileModeModel;
     }
 
     // dialogs for external components
@@ -777,11 +774,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public NavigationPosition getMapCenter() {
         return mapView != null ? mapView.getCenter() : asPosition(-41.0, 41.0);
-    }
-
-    private void setProfileMode(ProfileMode profileMode) {
-        preferences.put(PROFILE_MODE_PREFERENCE, profileMode.toString());
-        profileView.setProfileMode(profileMode);
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {
@@ -999,7 +991,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         private void enableActions() {
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+            ActionManager actionManager = getContext().getActionManager();
             actionManager.enable("maximize-map", location < mapSplitPane.getMaximumDividerLocation() - 10);
             actionManager.enable("maximize-positionlist", location > mapSplitPane.getMinimumDividerLocation() + 10);
             actionManager.enable("show-map-and-positionlist", location == 1 || location > mapSplitPane.getMaximumDividerLocation() + tabbedPane.getMinimumSize().width - 1);
@@ -1034,7 +1026,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         private void enableActions() {
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+            ActionManager actionManager = getContext().getActionManager();
             actionManager.enable("maximize-map", location < frame.getHeight() - 10);
             actionManager.enable("maximize-positionlist", location < frame.getHeight() - 10);
             actionManager.enable("show-profile", location > frame.getHeight() - 80);
@@ -1049,7 +1041,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeActions() {
-        final ActionManager actionManager = getInstance().getContext().getActionManager();
+        final ActionManager actionManager = getContext().getActionManager();
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
@@ -1059,8 +1051,6 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("show-profile", new ShowProfileAction());
         actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, MAX_VALUE, profileSplitPane, MAX_VALUE));
         actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, profileSplitPane, MAX_VALUE));
-        actionManager.register("show-elevation", new SetProfileModeAction(Elevation));
-        actionManager.register("show-speed", new SetProfileModeAction(Speed));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
@@ -1091,8 +1081,8 @@ public class RouteConverter extends SingleFrameApplication {
         frame.getRootPane().registerKeyboardAction(actionListener,
                 getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        new ShowProfileMenu(getContext().getMenuBar(), getProfileModePreference());
-        new UndoMenuSynchronizer(getInstance().getContext().getUndoManager(),
+        findMenu(getContext().getMenuBar(), "view").add(new ProfileModeMenu(getProfileModeModel()).createMenu());
+        new UndoMenuSynchronizer(getContext().getUndoManager(),
                 findItem(getContext().getMenuBar(), "edit", "undo"),
                 findItem(getContext().getMenuBar(), "edit", "redo"));
         new ReopenMenuSynchronizer(getConvertPanel(), getRecentUrlsModel(), findMenu(getContext().getMenuBar(), "file", "reopen"));
@@ -1124,18 +1114,6 @@ public class RouteConverter extends SingleFrameApplication {
             if (location > frame.getHeight() - 200)
                 location = frame.getHeight() - 200;
             profileSplitPane.setDividerLocation(location);
-        }
-    }
-
-    private class SetProfileModeAction extends FrameAction {
-        private final ProfileMode profileMode;
-
-        private SetProfileModeAction(ProfileMode profileMode) {
-            this.profileMode = profileMode;
-        }
-
-        public void run() {
-            setProfileMode(profileMode);
         }
     }
 

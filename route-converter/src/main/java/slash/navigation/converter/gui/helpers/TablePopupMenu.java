@@ -24,6 +24,9 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.*;
 
+import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
+
 /**
  * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
  *
@@ -36,32 +39,32 @@ public class TablePopupMenu extends AbstractTablePopupMenu {
         super(table);
     }
 
-    protected JPopupMenu createPopupMenu() {
+    protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
 
-        menu.add(JMenuHelper.createItem("cut"));
-        menu.add(JMenuHelper.createItem("copy"));
-        menu.add(JMenuHelper.createItem("paste"));
-        menu.add(JMenuHelper.createItem("select-all"));
+        menu.add(createItem("cut"));
+        menu.add(createItem("copy"));
+        menu.add(createItem("paste"));
+        menu.add(createItem("select-all"));
         menu.addSeparator();
-        menu.add(JMenuHelper.createItem("new-position"));
-        menu.add(JMenuHelper.createItem("delete"));
+        menu.add(createItem("new-position"));
+        menu.add(createItem("delete"));
         menu.addSeparator();
-        menu.add(JMenuHelper.createItem("find-place"));
-        JMenu completeMenu = JMenuHelper.createMenu("complete");
-        completeMenu.add(JMenuHelper.createItem("add-coordinates"));
-        completeMenu.add(JMenuHelper.createItem("add-elevation"));
-        completeMenu.add(JMenuHelper.createItem("add-postal-address"));
-        completeMenu.add(JMenuHelper.createItem("add-populated-place"));
-        completeMenu.add(JMenuHelper.createItem("add-speed"));
-        completeMenu.add(JMenuHelper.createItem("add-time"));
-        completeMenu.add(JMenuHelper.createItem("add-number"));
+        menu.add(createItem("find-place"));
+        JMenu completeMenu = createMenu("complete");
+        completeMenu.add(createItem("add-coordinates"));
+        completeMenu.add(createItem("add-elevation"));
+        completeMenu.add(createItem("add-postal-address"));
+        completeMenu.add(createItem("add-populated-place"));
+        completeMenu.add(createItem("add-speed"));
+        completeMenu.add(createItem("add-time"));
+        completeMenu.add(createItem("add-number"));
         menu.add(completeMenu);
         menu.addSeparator();
-        menu.add(JMenuHelper.createItem("split-positionlist"));
-        menu.add(JMenuHelper.createMenu("merge-positionlist"));
-        menu.add(JMenuHelper.createItem("import-positionlist"));
-        menu.add(JMenuHelper.createItem("export-positionlist"));
+        menu.add(createItem("split-positionlist"));
+        menu.add(createMenu("merge-positionlist"));
+        menu.add(createItem("import-positionlist"));
+        menu.add(createItem("export-positionlist"));
         return menu;
     }
 }

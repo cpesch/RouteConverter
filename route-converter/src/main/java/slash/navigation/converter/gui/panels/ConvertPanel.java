@@ -65,7 +65,7 @@ import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.helpers.JMenuHelper;
+import slash.navigation.gui.helpers.JMenuHelper;
 import slash.navigation.converter.gui.helpers.LengthCalculator;
 import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
@@ -182,8 +182,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenuComponent;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
@@ -407,7 +407,7 @@ public class ConvertPanel implements PanelInTab {
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
         new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
-        JPopupMenu menu = new TablePopupMenu(tablePositions).createMenu();
+        JPopupMenu menu = new TablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 

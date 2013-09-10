@@ -26,8 +26,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.gui.SimpleDialog;
-import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.helpers.UIHelper;
 
 import javax.swing.*;
@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -68,20 +69,20 @@ public class SendErrorReportDialog extends SimpleDialog {
 
         textAreaLog.setText(LoggingHelper.getInstance().getLogFileAsString());
 
-        buttonChooseFilePath.addActionListener(new FrameAction() {
+        buttonChooseFilePath.addActionListener(new DialogAction(this) {
             public void run() {
                 chooseFilePath();
             }
         });
 
-        buttonSend.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSend.addActionListener(new DialogAction(this) {
+            public void run() {
                 send();
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel.addActionListener(new DialogAction(this) {
+            public void run() {
                 cancel();
             }
         });
@@ -97,7 +98,7 @@ public class SendErrorReportDialog extends SimpleDialog {
             public void actionPerformed(ActionEvent e) {
                 cancel();
             }
-        }, getKeyStroke(VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void chooseFilePath() {

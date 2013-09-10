@@ -24,8 +24,8 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.JMenuHelper.createItem;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.createMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
  * Creates a {@link JMenuBar} for a {@link RouteConverter}.

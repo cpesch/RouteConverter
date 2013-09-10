@@ -37,8 +37,11 @@ import slash.navigation.converter.gui.models.PatchedXYSeries;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.ProfileModel;
+import slash.navigation.converter.gui.models.ProfileModeModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -71,10 +74,10 @@ public class ProfileView implements PositionsSelectionModel {
     private ProfileModel profileModel;
 
     public void initialize(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel,
-                           final UnitSystemModel unitSystemModel, ProfileMode profileMode) {
+                           final UnitSystemModel unitSystemModel, final ProfileModeModel profileModeModel) {
         this.positionsModel = positionsModel;
         PatchedXYSeries series = new PatchedXYSeries("Profile");
-        this.profileModel = new ProfileModel(positionsModel, series, unitSystemModel.getUnitSystem(), profileMode);
+        this.profileModel = new ProfileModel(positionsModel, series, unitSystemModel.getUnitSystem(), profileModeModel.getProfileMode());
         XYSeriesCollection dataset = new XYSeriesCollection(series);
 
         unitSystemModel.addChangeListener(new ChangeListener() {
@@ -82,9 +85,20 @@ public class ProfileView implements PositionsSelectionModel {
                 setUnitSystem(unitSystemModel.getUnitSystem());
             }
         });
+        profileModeModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                setProfileMode(profileModeModel.getProfileMode());
+            }
+        });
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        for (ProfileMode mode : ProfileMode.values()) {
+            actionManager.register("show-" + mode.name().toLowerCase(), new ToggleProfileModeAction(profileModeModel, mode));
+        }
+        // since JFreeChart is not very nice to extensions - constructors calling protected methods...
+        LazyToolTipChartPanel.profileModeModel = profileModeModel;
         chartPanel = new LazyToolTipChartPanel(chart, false, true, true, true, true);
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseClicked(ChartMouseEvent e) {
@@ -137,12 +151,12 @@ public class ProfileView implements PositionsSelectionModel {
         return chartPanel;
     }
 
-    public void setUnitSystem(UnitSystem unitSystem) {
+    private void setUnitSystem(UnitSystem unitSystem) {
         profileModel.setUnitSystem(unitSystem);
         updateAxis();
     }
 
-    public void setProfileMode(ProfileMode profileMode) {
+    private void setProfileMode(ProfileMode profileMode) {
         profileModel.setProfileMode(profileMode);
         updateAxis();
     }
@@ -175,5 +189,20 @@ public class ProfileView implements PositionsSelectionModel {
 
     public void print() {
         chartPanel.createChartPrintJob();
+    }
+
+
+    private class ToggleProfileModeAction extends FrameAction {
+        private final ProfileModeModel profileModeModel;
+        private final ProfileMode profileMode;
+
+        public ToggleProfileModeAction(ProfileModeModel profileModeModel, ProfileMode profileMode) {
+            this.profileModeModel = profileModeModel;
+            this.profileMode = profileMode;
+        }
+
+        public void run() {
+            profileModeModel.setProfileMode(profileMode);
+        }
     }
 }

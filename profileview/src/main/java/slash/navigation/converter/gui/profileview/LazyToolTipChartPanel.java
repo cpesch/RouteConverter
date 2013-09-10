@@ -27,7 +27,9 @@ import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
+import slash.navigation.converter.gui.models.ProfileModeModel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -41,9 +43,11 @@ import static org.jfree.ui.RectangleEdge.BOTTOM;
  */
 
 public class LazyToolTipChartPanel extends ChartPanel {
+    static ProfileModeModel profileModeModel;
     private XYToolTipGenerator toolTipGenerator;
 
-    public LazyToolTipChartPanel(JFreeChart chart, boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
+    public LazyToolTipChartPanel(JFreeChart chart,
+                                 boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
         super(chart,
                 DEFAULT_WIDTH,
                 DEFAULT_HEIGHT,
@@ -58,6 +62,17 @@ public class LazyToolTipChartPanel extends ChartPanel {
                 zoom,
                 tooltips
         );
+    }
+
+    protected JPopupMenu createPopupMenu(boolean properties, boolean copy, boolean save, boolean print, boolean zoom) {
+        JPopupMenu popupMenu = super.createPopupMenu(properties, copy, save, print, zoom);
+        // Zoom in/out plus separator
+        popupMenu.remove(6);
+        popupMenu.remove(5);
+        popupMenu.remove(4);
+        popupMenu.add(new ProfileModeMenu(profileModeModel).createMenu(), 0);
+        popupMenu.add(new JPopupMenu.Separator(), 1);
+        return popupMenu;
     }
 
     public void setToolTipGenerator(XYToolTipGenerator toolTipGenerator) {

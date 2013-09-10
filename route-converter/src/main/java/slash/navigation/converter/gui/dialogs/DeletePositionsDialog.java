@@ -27,10 +27,11 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helpers.JMenuHelper;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.helpers.JMenuHelper;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -208,7 +209,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        RouteConverter.getInstance().getContext().getActionManager().run("delete");
+        Application.getInstance().getContext().getActionManager().run("delete");
         handlePositionsUpdate();
     }
 

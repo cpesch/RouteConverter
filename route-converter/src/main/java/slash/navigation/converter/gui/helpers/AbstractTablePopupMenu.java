@@ -29,7 +29,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+import static java.awt.event.InputEvent.BUTTON1_MASK;
 import static java.awt.event.KeyEvent.VK_CONTEXT_MENU;
+import static java.awt.event.MouseEvent.MOUSE_CLICKED;
+import static java.awt.event.MouseEvent.MOUSE_PRESSED;
+import static java.awt.event.MouseEvent.MOUSE_RELEASED;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 
@@ -47,9 +51,9 @@ public abstract class AbstractTablePopupMenu {
         this.table = table;
     }
 
-    protected abstract JPopupMenu createPopupMenu();
+    protected abstract JPopupMenu doCreatePopupMenu();
 
-    public JPopupMenu createMenu() {
+    public JPopupMenu createPopupMenu() {
         // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
         MouseListener mouseListener = new MouseListener();
         table.addMouseListener(mouseListener);
@@ -61,7 +65,7 @@ public abstract class AbstractTablePopupMenu {
                 showPopup(lastMouseEvent);
             }
         }, getKeyStroke(VK_CONTEXT_MENU, 0), WHEN_IN_FOCUSED_WINDOW);
-        this.popupMenu = createPopupMenu();
+        this.popupMenu = doCreatePopupMenu();
         return popupMenu;
     }
 
@@ -82,14 +86,14 @@ public abstract class AbstractTablePopupMenu {
         if (table.getSelectedRowCount() < selectedRowCountMinimum) {
             // dispatch event again as a left mouse click for selections
             // (do not try to spare one of the three events)
-            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(),
-                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_PRESSED, e.getWhen(),
+                    BUTTON1_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
-            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(),
-                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_RELEASED, e.getWhen(),
+                    BUTTON1_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
-            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(),
-                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_CLICKED, e.getWhen(),
+                    BUTTON1_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
         }
     }

@@ -36,7 +36,7 @@ public class RoutesTableCellHeaderRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        label.setHorizontalAlignment(JLabel.LEFT);
+        label.setHorizontalAlignment(LEFT);
         label.setOpaque(false);
         switch (columnIndex) {
             case 0:

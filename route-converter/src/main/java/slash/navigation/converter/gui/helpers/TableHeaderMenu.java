@@ -37,8 +37,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helpers.JMenuHelper.createMenu;
-import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
@@ -47,8 +48,8 @@ import static slash.navigation.converter.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class TableHeaderMenu {
-    private JPopupMenu popupMenu = new JPopupMenu();
-    private PositionsTableColumnModel columnModel;
+    private final JPopupMenu popupMenu = new JPopupMenu();
+    private final PositionsTableColumnModel columnModel;
 
     public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
         this.columnModel = columnModel;
@@ -76,7 +77,7 @@ public class TableHeaderMenu {
             String menuBarText = RouteConverter.getBundle().getString(column.getName());
             JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuBarText);
             menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
-            JMenuHelper.setMnemonic(menuBarItem, "show-column-" + column.getName() + "-mnemonic");
+            setMnemonic(menuBarItem, "show-column-" + column.getName() + "-mnemonic");
             columnMenu.add(menuBarItem);
         }
 
@@ -133,5 +134,4 @@ public class TableHeaderMenu {
                 visibilityChanged();
         }
     }
-
 }

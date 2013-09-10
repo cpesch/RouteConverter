@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helpers.JMenuHelper;
+import slash.navigation.gui.helpers.JMenuHelper;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
