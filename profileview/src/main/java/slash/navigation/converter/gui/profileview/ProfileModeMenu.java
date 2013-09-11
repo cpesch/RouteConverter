@@ -47,28 +47,28 @@ public class ProfileModeMenu {
         ButtonGroup buttonGroup = new ButtonGroup();
         for (ProfileMode mode : ProfileMode.values()) {
             JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
-            profileModeModel.addChangeListener(new SelectionSynchronizer(menuItem, mode));
+            profileModeModel.addChangeListener(new ProfileModeListener(menuItem, mode));
             buttonGroup.add(menuItem);
             menu.add(menuItem);
         }
         return menu;
     }
 
-    private class SelectionSynchronizer implements ChangeListener {
+    private class ProfileModeListener implements ChangeListener {
         private JRadioButtonMenuItem menuItem;
         private ProfileMode mode;
 
-        public SelectionSynchronizer(JRadioButtonMenuItem menuItem, ProfileMode mode) {
+        public ProfileModeListener(JRadioButtonMenuItem menuItem, ProfileMode mode) {
             this.menuItem = menuItem;
             this.mode = mode;
-            selectionChanged();
+            updateSelected();
         }
 
         public void stateChanged(ChangeEvent e) {
-            selectionChanged();
+            updateSelected();
         }
 
-        private void selectionChanged() {
+        private void updateSelected() {
             if (mode.equals(profileModeModel.getProfileMode()))
                 menuItem.setSelected(true);
         }

@@ -66,7 +66,7 @@ public class LazyToolTipChartPanel extends ChartPanel {
 
     protected JPopupMenu createPopupMenu(boolean properties, boolean copy, boolean save, boolean print, boolean zoom) {
         JPopupMenu popupMenu = super.createPopupMenu(properties, copy, save, print, zoom);
-        // Zoom in/out plus separator
+        // remove Zoom in/out plus separator from default menu
         popupMenu.remove(6);
         popupMenu.remove(5);
         popupMenu.remove(4);

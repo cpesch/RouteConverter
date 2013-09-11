@@ -93,10 +93,10 @@ public class ProfileView implements PositionsSelectionModel {
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
+
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-        for (ProfileMode mode : ProfileMode.values()) {
+        for (ProfileMode mode : ProfileMode.values())
             actionManager.register("show-" + mode.name().toLowerCase(), new ToggleProfileModeAction(profileModeModel, mode));
-        }
         // since JFreeChart is not very nice to extensions - constructors calling protected methods...
         LazyToolTipChartPanel.profileModeModel = profileModeModel;
         chartPanel = new LazyToolTipChartPanel(chart, false, true, true, true, true);
@@ -191,8 +191,7 @@ public class ProfileView implements PositionsSelectionModel {
         chartPanel.createChartPrintJob();
     }
 
-
-    private class ToggleProfileModeAction extends FrameAction {
+    private static class ToggleProfileModeAction extends FrameAction {
         private final ProfileModeModel profileModeModel;
         private final ProfileMode profileMode;
 
