@@ -53,6 +53,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -635,6 +636,7 @@ public abstract class BaseMapView implements MapView {
         }
 
         executor.shutdownNow();
+        insertWaypointsExecutor.shutdownNow();
         long end = currentTimeMillis();
         log.info("Executors stopped after " + (end - start) + " ms");
     }
@@ -962,20 +964,36 @@ public abstract class BaseMapView implements MapView {
         executeScript(buffer.toString());
     }
 
-    private final Map<Integer, List<NavigationPosition>> insertWaypointsQueue = new HashMap<Integer, List<NavigationPosition>>();
+    private static class PositionPair {
+        private NavigationPosition from;
+        private NavigationPosition to;
+
+        private PositionPair(NavigationPosition from, NavigationPosition to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        private NavigationPosition getFrom() {
+            return from;
+        }
+
+        private NavigationPosition getTo() {
+            return to;
+        }
+    }
+
+    private final Map<Integer, PositionPair> insertWaypointsQueue = new LinkedHashMap<Integer, PositionPair>();
+    private final ExecutorService insertWaypointsExecutor = Executors.newSingleThreadExecutor();
 
     private void insertWaypoints(final String mode, int[] startPositions) {
-        final Map<Integer, List<NavigationPosition>> addToQueue = new HashMap<Integer, List<NavigationPosition>>();
+        final Map<Integer, PositionPair> addToQueue = new LinkedHashMap<Integer, PositionPair>();
         Random random = new Random();
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
                 // skip the very last position without successor
                 if (i == positions.size() - 1 || i == startPositions.length - 1)
                     continue;
-                List<NavigationPosition> successorPredecessor = new ArrayList<NavigationPosition>();
-                successorPredecessor.add(positions.get(startPositions[i]));
-                successorPredecessor.add(positions.get(startPositions[i] + 1));
-                addToQueue.put(random.nextInt(), successorPredecessor);
+                addToQueue.put(random.nextInt(), new PositionPair(positions.get(startPositions[i]), positions.get(startPositions[i] + 1)));
             }
         }
 
@@ -983,25 +1001,26 @@ public abstract class BaseMapView implements MapView {
             insertWaypointsQueue.putAll(addToQueue);
         }
 
-        executor.execute(new Runnable() {
+        insertWaypointsExecutor.execute(new Runnable() {
             public void run() {
                 for (Integer key : addToQueue.keySet()) {
-                    List<NavigationPosition> successorPredecessor = addToQueue.get(key);
-                    NavigationPosition from = successorPredecessor.get(0);
-                    NavigationPosition to = successorPredecessor.get(1);
+                    PositionPair pair = addToQueue.get(key);
+                    NavigationPosition origin = pair.getFrom();
+                    NavigationPosition destination = pair.getTo();
                     StringBuilder buffer = new StringBuilder();
                     buffer.append(mode).append("({");
-                    buffer.append("origin: new google.maps.LatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("), ");
-                    buffer.append("destination: new google.maps.LatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append("), ");
+                    buffer.append("origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
+                    buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
                     buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
                     buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
                     buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-                    buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ").append(key).append(");\n");
+                    buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
+                    buffer.append(key).append(");\n");
                     executeScript(buffer.toString());
                     try {
-                        sleep(500);
+                        sleep(preferences.getInt("insertWaypointsSegmentTimeout", 1000));
                     } catch (InterruptedException e) {
-                        // don't care if this happens
+                        // intentionally left empty
                     }
                 }
             }
@@ -1290,24 +1309,27 @@ public abstract class BaseMapView implements MapView {
             Integer key = parseInt(insertWaypointsMatcher.group(2));
             List<String> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
 
-            List<NavigationPosition> successorPredecessor;
+            PositionPair pair;
             synchronized (insertWaypointsQueue) {
-                successorPredecessor = insertWaypointsQueue.remove(key);
+                pair = insertWaypointsQueue.remove(key);
             }
 
-            if (coordinates.size() < 5 || successorPredecessor == null)
+            if (coordinates.size() < 5 || pair == null)
                 return true;
 
-            NavigationPosition before = successorPredecessor.get(0);
-            NavigationPosition after = successorPredecessor.get(1);
-            final int row;
-            synchronized (notificationMutex) {
-                row = positions.indexOf(before) + 1;
-            }
+            final NavigationPosition before = pair.getFrom();
+            NavigationPosition after = pair.getTo();
             final BaseRoute route = parseRoute(coordinates, before, after);
+            synchronized (notificationMutex) {
+                int row = positions.indexOf(before) + 1;
+                insertPositions(row, route);
+            }
             invokeLater(new Runnable() {
                 public void run() {
-                    insertPositions(row, route);
+                    int row;
+                    synchronized (notificationMutex) {
+                        row = positions.indexOf(before) + 1;
+                    }
                     complementPositions(row, route);
                 }
             });
