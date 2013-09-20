@@ -260,8 +260,8 @@
                            for (var l = 0; l < path.length - 1; l++) {
                                waypoints.push(path[l].lat());
                                waypoints.push(path[l].lng());
-                               waypoints.push(l == path.length - 2 ? steps[k].distance.value : 0);
-                               waypoints.push(l == path.length - 2 ? steps[k].duration.value : 0);
+                               waypoints.push(l == 0 ? steps[k].distance.value : 0);
+                               waypoints.push(l == 0 ? steps[k].duration.value : 0);
                                waypoints.push(l == 0 ? removeTags(steps[k].instructions) : "-");
                            }
                        }
@@ -300,8 +300,8 @@
                        for (var k = 0; k < steps.length; k++) {
                            turnpoints.push(steps[k].end_location.lat());
                            turnpoints.push(steps[k].end_location.lng());
-                           turnpoints.push(steps[k].distance.value);
-                           turnpoints.push(steps[k].duration.value);
+                           turnpoints.push(k < steps.length - 1 ? steps[k + 1].distance.value : 0);
+                           turnpoints.push(k < steps.length - 1 ? steps[k + 1].duration.value : 0);
                            turnpoints.push(k < steps.length - 1 ? removeTags(steps[k + 1].instructions) : "-");
                        }
                    }
