@@ -20,9 +20,6 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.helpers.UIHelper;
-
-import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -37,6 +34,8 @@ import java.util.prefs.Preferences;
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 
 /**
  * The base of all graphical user interfaces.
@@ -113,7 +112,7 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
-        UIHelper.setLookAndFeel();
+        setLookAndFeel();
         openNativeInterface();
         initializeLocale(Preferences.userNodeForPackage(applicationClass));
 
@@ -133,7 +132,7 @@ public abstract class Application {
                 }
             }
         };
-        SwingUtilities.invokeLater(doCreateAndShowGUI);
+        invokeLater(doCreateAndShowGUI);
         runNativeInterfaceEventPump();
     }
 
