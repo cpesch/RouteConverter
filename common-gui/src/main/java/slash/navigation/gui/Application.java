@@ -20,6 +20,9 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.jnlp.SingleInstance;
+import slash.navigation.jnlp.SingleInstanceCallback;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -111,6 +114,20 @@ public abstract class Application {
         invokeNativeInterfaceMethod("runEventPump");
     }
 
+    private SingleInstance singleInstance;
+
+    private void initializeSingleInstance() {
+        try {
+            singleInstance = new SingleInstance(new SingleInstanceCallback() {
+                public void newActivation(String[] args) {
+                    Application.this.parseNewActivationArgs(args);
+                }
+            });
+        } catch (Throwable t) {
+            // intentionally left empty
+        }
+    }
+
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         setLookAndFeel();
         openNativeInterface();
@@ -121,6 +138,7 @@ public abstract class Application {
                 try {
                     Application application = create(applicationClass);
                     setInstance(application);
+                    application.initializeSingleInstance();
                     application.startup();
                     application.parseInitialArgs(args);
                 }
@@ -165,6 +183,8 @@ public abstract class Application {
     protected void parseInitialArgs(String[] args) {
     }
 
+    protected void parseNewActivationArgs(String[] args) {
+    }
 
     public/*for ExitAction*/ void exit(EventObject event) {
         for (ExitListener listener : exitListeners) {
@@ -184,7 +204,7 @@ public abstract class Application {
             shutdown();
         }
         catch (Exception e) {
-            log.log(WARNING, "unexpected error in Application.shutdown()", e);
+            log.log(WARNING, "Unexpected error in Application.shutdown()", e);
         }
         finally {
             end();
@@ -204,6 +224,8 @@ public abstract class Application {
     }
 
     void end() {
+        if(singleInstance != null)
+            singleInstance.dispose();
         Runtime.getRuntime().exit(0);
     }
 }

@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jnlp</artifactId>
+    <packaging>jar</packaging>
+    <name>Encapsulate Java Network Launching Protocol (JNLP) access</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>RouteConverter</artifactId>
+        <version>2.11-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <!--suppress MavenModelInspection -->
+            <groupId>javax.jnlp</groupId>
+            <!--suppress MavenModelInspection -->
+            <artifactId>jnlp-api</artifactId>
+            <!--suppress MavenModelInspection -->
+            <version>6.0</version>
+            <!--suppress MavenModelInspection -->
+            <systemPath>${java.home}/lib/javaws.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+    </dependencies>
+</project>

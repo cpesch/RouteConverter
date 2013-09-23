@@ -241,6 +241,7 @@
         <module>gpx</module>
         <module>hgt</module>
         <module>jaxb6</module>
+        <module>jnlp</module>
         <module>kml</module>
         <module>mapview</module>
         <module>navigation-formats</module>

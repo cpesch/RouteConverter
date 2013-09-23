@@ -250,13 +250,29 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void parseInitialArgs(String[] args) {
-        log.info("Processing arguments: " + Arrays.toString(args));
+        log.info("Processing initial arguments: " + Arrays.toString(args));
         if (args.length > 0) {
             List<URL> urls = toUrls(args);
             log.info("Processing urls: " + urls);
             getConvertPanel().openUrls(urls);
         } else {
             getConvertPanel().newFile();
+        }
+    }
+
+    protected void parseNewActivationArgs(final String[] args) {
+        log.info("Processing new activation arguments: " + Arrays.toString(args));
+        if (args.length > 0) {
+            invokeLater(new Runnable() {
+                public void run() {
+                    List<URL> urls = toUrls(args);
+                    log.info("Processing urls: " + urls);
+                    getConvertPanel().openUrls(urls);
+
+                    frame.setVisible(true);
+                    frame.toFront();
+                }
+            });
         }
     }
 
