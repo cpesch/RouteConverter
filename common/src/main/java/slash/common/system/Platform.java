@@ -47,7 +47,7 @@ public class Platform {
 
     public static boolean isJavaFX() {
         return System.getProperty("java.vendor").contains("Oracle") &&
-                System.getProperty("java.version").compareTo("1.7.0") >= 0;
+                System.getProperty("java.version").compareTo("1.7.0_40") >= 0;
     }
 
     public static String getJava() {

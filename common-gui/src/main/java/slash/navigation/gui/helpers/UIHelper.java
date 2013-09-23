@@ -24,6 +24,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -107,5 +109,17 @@ public class UIHelper {
             chooser = new JFileChooser(new RestrictedFileSystemView());
         }
         return chooser;
+    }
+
+    public static void patchUIManager(ResourceBundle bundle, String... keys) {
+        for (String key : keys) {
+            try {
+                String text = bundle.getString(key);
+                if (text != null)
+                    UIManager.getDefaults().put(key, text);
+            } catch (MissingResourceException e) {
+                // intentionally left empty
+            }
+        }
     }
 }

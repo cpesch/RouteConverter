@@ -121,9 +121,8 @@ public abstract class Application {
                 try {
                     Application application = create(applicationClass);
                     setInstance(application);
-                    application.initialize(args);
                     application.startup();
-                    application.waitForReady();
+                    application.parseInitialArgs(args);
                 }
                 catch (Exception e) {
                     String msg = String.format("Application %s failed to launch", applicationClass);
@@ -161,12 +160,9 @@ public abstract class Application {
         return application;
     }
 
-    protected void initialize(String[] args) {
-    }
-
     protected abstract void startup();
 
-    protected void waitForReady() {
+    protected void parseInitialArgs(String[] args) {
     }
 
 

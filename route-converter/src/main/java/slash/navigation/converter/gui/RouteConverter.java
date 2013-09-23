@@ -51,7 +51,6 @@ import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.helpers.SinglePositionAugmenter;
 import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
@@ -65,6 +64,7 @@ import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
+import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
@@ -99,7 +99,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.logging.Logger;
@@ -154,6 +153,7 @@ import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
@@ -238,27 +238,38 @@ public class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 300), 0, true);
 
     private LazyTabInitializer tabInitializer;
-    private String[] args;
 
     // application lifecycle callbacks
 
-    protected void initialize(String[] args) {
+    protected void startup() {
+        initializeLogging();
+        show();
+        checkForTooOldJreVersion();
+        checkForMissingTranslator();
+        updateChecker.implicitCheck(getFrame());
+    }
+
+    protected void parseInitialArgs(String[] args) {
+        log.info("Processing arguments: " + Arrays.toString(args));
+        if (args.length > 0) {
+            List<URL> urls = toUrls(args);
+            log.info("Processing urls: " + urls);
+            getConvertPanel().openUrls(urls);
+        } else {
+            getConvertPanel().newFile();
+        }
+    }
+
+    // helper
+
+    private void initializeLogging() {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFile();
         if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
             loggingHelper.logToConsole();
         }
-        this.args = args;
-    }
-
-    protected void startup() {
         log.info("Started " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
-        show();
-        checkForTooOldJreVersion();
-        checkForMissingTranslator();
-        updateChecker.implicitCheck(getFrame());
-        parseArgs(args);
     }
 
     private void checkForTooOldJreVersion() {
@@ -301,35 +312,11 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void parseArgs(String[] args) {
-        log.info("Processing arguments: " + Arrays.toString(args));
-        if (args.length > 0) {
-            List<URL> urls = toUrls(args);
-            log.info("Processing urls: " + urls);
-            getConvertPanel().openUrls(urls);
-        } else {
-            getConvertPanel().newFile();
-        }
-    }
-
-    private void patchUIManager(String key) {
-        try {
-            String text = getBundle().getString(key);
-            if (text != null)
-                UIManager.getDefaults().put(key, text);
-        } catch (MissingResourceException e) {
-            // intentionally left empty
-        }
-    }
-
     private void show() {
-        patchUIManager("OptionPane.yesButtonText");
-        patchUIManager("OptionPane.noButtonText");
-        patchUIManager("OptionPane.cancelButtonText");
-        patchUIManager("FileChooser.openButtonText");
-        patchUIManager("FileChooser.saveButtonText");
-        patchUIManager("FileChooser.cancelButtonText");
-        patchUIManager("FileChooser.acceptAllFileFilterText");
+        patchUIManager(getBundle(),
+                "OptionPane.yesButtonText", "OptionPane.noButtonText", "OptionPane.cancelButtonText",
+                "FileChooser.openButtonText", "FileChooser.saveButtonText", "FileChooser.cancelButtonText",
+                "FileChooser.acceptAllFileFilterText");
 
         createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
 
