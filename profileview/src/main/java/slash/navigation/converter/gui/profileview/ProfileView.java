@@ -36,8 +36,8 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.PatchedXYSeries;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.ProfileModel;
 import slash.navigation.converter.gui.models.ProfileModeModel;
+import slash.navigation.converter.gui.models.ProfileModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
@@ -52,7 +52,7 @@ import java.util.prefs.Preferences;
 
 import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
-import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
+import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
@@ -133,12 +133,12 @@ public class ProfileView implements PositionsSelectionModel {
         plot.setRangeGridlinesVisible(preferences.getBoolean(Y_GRID_PREFERENCE, true));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setStandardTickUnits(createStandardTickUnits());
+        rangeAxis.setStandardTickUnits(createIntegerTickUnits());
         Font font = new JLabel().getFont();
         rangeAxis.setLabelFont(font);
 
         NumberAxis valueAxis = (NumberAxis) plot.getDomainAxis();
-        valueAxis.setStandardTickUnits(createStandardTickUnits());
+        valueAxis.setStandardTickUnits(createIntegerTickUnits());
         valueAxis.setLowerMargin(0.0);
         valueAxis.setUpperMargin(0.0);
         valueAxis.setLabelFont(font);
