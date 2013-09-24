@@ -45,6 +45,7 @@
                                     <gen>false</gen>
                                 </keystoreConfig>
                             </sign>
+                            <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
                         </configuration>
                     </plugin>
                 </plugins>
