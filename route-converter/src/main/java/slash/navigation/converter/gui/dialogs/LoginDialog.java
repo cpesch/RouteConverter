@@ -161,14 +161,14 @@ public class LoginDialog extends SimpleDialog {
     }
 
     private void login() {
-        String userName = textFieldLogin.getText();
-        if (trim(userName) == null) {
+        String userName = trim(textFieldLogin.getText());
+        if (userName == null) {
             labelLoginResult.setText("Error: No user name given!"); // TODO make nicer
             pack();
             return;
         }
-        String password = new String(passwordLogin.getPassword());
-        if (trim(password) == null) {
+        String password = trim(new String(passwordLogin.getPassword()));
+        if (password == null) {
             labelLoginResult.setText("Error: No password given!"); // TODO make nicer
             pack();
             return;
@@ -180,43 +180,40 @@ public class LoginDialog extends SimpleDialog {
     }
 
     private void register() {
-        String userName = textFieldName.getText();
-        if (trim(userName) == null) {
-            labelRegisterResult.setText("Error: No user name given!"); // TODO make nicer
-            pack();
-            return;
-        }
-        if (userName.length() < 4) {
+        String userName = trim(textFieldName.getText());
+        if (userName == null || userName.length() < 4) {
             labelRegisterResult.setText("Error: User name too short; at least 4 characters required!"); // TODO make nicer
             pack();
             return;
         }
-
-        String email = textFieldEMail.getText();
-        if (trim(email) == null) {
-            labelRegisterResult.setText("Error: No email given!"); // TODO make nicer
+        String firstName = trim(textFieldFirstName.getText());
+        if (firstName == null || firstName.length() < 3) {
+            labelRegisterResult.setText("Error: First name too short; at least 3 characters required!"); // TODO make nicer
             pack();
             return;
         }
-        if (!email.contains("@") || !email.contains(".")) {
+        String lastName = trim(textFieldLastName.getText());
+        if (lastName == null || lastName.length() < 3) {
+            labelRegisterResult.setText("Error: Last name too short; at least 3 characters required!"); // TODO make nicer
+            pack();
+            return;
+        }
+
+        String email = trim(textFieldEMail.getText());
+        if (email == null || !email.contains("@") || !email.contains(".")) {
             labelRegisterResult.setText("Error: No valid email given; at least @ and . required!"); // TODO make nicer
             pack();
             return;
         }
 
-        String password = new String(passwordRegister.getPassword());
-        if (trim(password) == null) {
-            labelRegisterResult.setText("Error: No password given!"); // TODO make nicer
-            pack();
-            return;
-        }
-        if (password.length() < 4) {
+        String password = trim(new String(passwordRegister.getPassword()));
+        if (password == null || password.length() < 4) {
             labelRegisterResult.setText("Error: Password too short; at least 4 characters required!"); // TODO make nicer
             pack();
             return;
         }
-        String repeat = new String(passwordRepeat.getPassword());
-        if (!password.equals(repeat)) {
+        String repeat = trim(new String(passwordRepeat.getPassword()));
+        if (repeat == null || !password.equals(repeat)) {
             labelRegisterResult.setText("Error: Passwords do not match!"); // TODO make nicer
             pack();
             return;
@@ -229,8 +226,8 @@ public class LoginDialog extends SimpleDialog {
         }
 
         try {
-            register(userName, password, textFieldFirstName.getText(), textFieldLastName.getText(), email);
-            labelRegisterResult.setText("Successfully registred user!"); // TODO make nicer
+            register(userName, password, firstName, lastName, email);
+            labelRegisterResult.setText("Successfully registered user!"); // TODO make nicer
             pack();
             login(userName, password);
             successful = true;
