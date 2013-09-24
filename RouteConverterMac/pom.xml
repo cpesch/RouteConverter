@@ -41,8 +41,10 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
-                                        <exclude>META-INF/maven/**</exclude>
                                         <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
                                     </excludes>
