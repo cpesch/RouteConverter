@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
@@ -170,7 +171,7 @@ public class BatchPositionAugmenter {
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
                     if (lastException[0] != null)
-                        JOptionPane.showMessageDialog(frame,
+                        showMessageDialog(frame,
                                 MessageFormat.format(operation.getErrorMessage(), lastException[0].getLocalizedMessage()),
                                 frame.getTitle(), ERROR_MESSAGE);
                 } finally {
