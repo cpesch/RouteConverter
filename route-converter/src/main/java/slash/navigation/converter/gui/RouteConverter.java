@@ -333,6 +333,7 @@ public class RouteConverter extends SingleFrameApplication {
                 "OptionPane.yesButtonText", "OptionPane.noButtonText", "OptionPane.cancelButtonText",
                 "FileChooser.openButtonText", "FileChooser.saveButtonText", "FileChooser.cancelButtonText",
                 "FileChooser.acceptAllFileFilterText");
+        initializePreferences(preferences);
 
         createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
 
@@ -364,7 +365,6 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeRouteConverterServices();
         initializeActions();
-        initializePreferences(preferences);
     }
 
     private MapView createMapView(String className) {
