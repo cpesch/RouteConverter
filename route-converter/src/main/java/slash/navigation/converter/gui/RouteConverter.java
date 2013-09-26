@@ -132,7 +132,6 @@ import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
-import static slash.common.system.Platform.isJavaFX;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.feature.client.Feature.initializePreferences;
@@ -351,8 +350,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        if (isJavaFX())
-            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        // if (isJavaFX())
+        //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
         if (mapView != null && mapView.isSupportedPlatform()) {
@@ -372,7 +371,6 @@ public class RouteConverter extends SingleFrameApplication {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
             log.severe("Cannot create " + className + ": " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
