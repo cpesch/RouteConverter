@@ -18,9 +18,10 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.helpers;
 
 import slash.common.system.Version;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.feedback.domain.RouteFeedback;
 
 import javax.swing.*;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
@@ -41,6 +41,9 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
+import static slash.feature.client.Feature.initializePreferences;
+import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForUpdateCheck;
 
@@ -51,15 +54,14 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrows
  */
 public class UpdateChecker {
     private static final Logger log = Logger.getLogger(UpdateChecker.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(UpdateChecker.class);
     private static final String START_COUNT_PREFERENCE = "startCount";
     private static final String START_TIME_PREFERENCE = "startTime";
     private RouteFeedback routeFeedback;
 
     static {
-        preferences.putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
-        if (preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
-            preferences.putLong(START_TIME_PREFERENCE, currentTimeMillis());
+        getPreferences().putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
+        if (getPreferences().getLong(START_TIME_PREFERENCE, -1) == -1)
+            getPreferences().putLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
     public UpdateChecker(RouteFeedback routeFeedback) {
@@ -67,11 +69,11 @@ public class UpdateChecker {
     }
 
     private static int getStartCount() {
-        return preferences.getInt(START_COUNT_PREFERENCE, 0);
+        return getPreferences().getInt(START_COUNT_PREFERENCE, 0);
     }
 
     private static long getStartTime() {
-        return preferences.getLong(START_TIME_PREFERENCE, currentTimeMillis());
+        return getPreferences().getLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
     private UpdateResult check() {
@@ -118,7 +120,7 @@ public class UpdateChecker {
     }
 
     public void implicitCheck(final Window window) {
-        if (!RouteConverter.getInstance().isAutomaticUpdateCheck())
+        if (!getPreferences().getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true))
             return;
 
         new Thread(new Runnable() {
@@ -220,6 +222,7 @@ public class UpdateChecker {
         public void setParameters(String parameters) {
             this.parameters = parseParameters(parameters);
             initializeFeatures(getValue("features"));
+            initializePreferences(getPreferences());
         }
     }
 }

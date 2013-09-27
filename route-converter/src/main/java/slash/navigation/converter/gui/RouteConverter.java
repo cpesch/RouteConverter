@@ -53,6 +53,7 @@ import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.helpers.SinglePositionAugmenter;
 import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
+import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
@@ -457,10 +458,6 @@ public class RouteConverter extends SingleFrameApplication {
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
-    }
-
-    boolean isAutomaticUpdateCheck() {
-        return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
     }
 
     public double getSelectByDistancePreference() {
