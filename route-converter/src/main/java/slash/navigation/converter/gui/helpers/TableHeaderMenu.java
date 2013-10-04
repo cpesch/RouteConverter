@@ -24,9 +24,11 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.ToggleColumnVisibilityAction;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionTableColumnButtonModel;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
@@ -49,37 +51,15 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 public class TableHeaderMenu {
     private final JPopupMenu popupMenu = new JPopupMenu();
+    private final PositionsModel positionsModel;
     private final PositionsTableColumnModel columnModel;
 
-    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
+    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel, PositionsTableColumnModel columnModel) {
+        this.positionsModel = positionsModel;
         this.columnModel = columnModel;
-        initialize(tableHeader, findMenu(menuBar, "view"));
-    }
 
-    private void initialize(JTableHeader tableHeader, JMenu viewMenu) {
-        JMenu columnMenu = createMenu("show-column");
-        viewMenu.add(columnMenu);
-
-        VisibleListener visibleListener = new VisibleListener();
-        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-        for (PositionTableColumn column : columnModel.getPreparedColumns()) {
-            column.addPropertyChangeListener(visibleListener);
-
-            ToggleColumnVisibilityAction action = new ToggleColumnVisibilityAction(column);
-            actionManager.register("show-column-" + column.getName(), action);
-
-            String popupText = RouteConverter.getBundle().getString("show-column-prefix") + " " +
-                    RouteConverter.getBundle().getString(column.getName());
-            JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(popupText);
-            popupItem.setModel(new PositionTableColumnButtonModel(column, action));
-            popupMenu.add(popupItem);
-
-            String menuBarText = RouteConverter.getBundle().getString(column.getName());
-            JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuBarText);
-            menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
-            setMnemonic(menuBarItem, "show-column-" + column.getName() + "-mnemonic");
-            columnMenu.add(menuBarItem);
-        }
+        initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"));
+        initializeShowColumn(findMenu(menuBar, "view", "show-column"));
 
         tableHeader.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -90,6 +70,56 @@ public class TableHeaderMenu {
                 showPopup(e);
             }
         });
+    }
+
+    private void initializeSortPositions(JMenu sortPositionListMenu) {
+        JMenu sortPositionsPopupMenu = createMenu("sort-positions");
+        popupMenu.add(sortPositionsPopupMenu);
+        sortPositionsPopupMenu.setEnabled(false);
+        sortPositionListMenu.setEnabled(false);
+
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        for (PositionTableColumn column : columnModel.getPreparedColumns()) {
+            if(column.getComparator() == null)
+                continue;
+
+            String menuItemText = RouteConverter.getBundle().getString(column.getName());
+            SortColumnAction action = new SortColumnAction(positionsModel, column);
+            actionManager.register("sort-column-" + column.getName(), action);
+
+            JMenuItem popupItem = new JMenuItem(action);
+            popupItem.setText(menuItemText);
+            sortPositionsPopupMenu.add(popupItem);
+
+            JMenuItem menuBarItem = new JMenuItem(action);
+            menuBarItem.setText(menuItemText);
+            setMnemonic(menuBarItem, column.getName() + "-mnemonic");
+            sortPositionListMenu.add(menuBarItem);
+        }
+    }
+
+    private void initializeShowColumn(JMenu showColumnMenu) {
+        JMenu showColumnPopupMenu = createMenu("show-column-popup");
+        popupMenu.add(showColumnPopupMenu);
+
+        VisibleListener visibleListener = new VisibleListener();
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        for (PositionTableColumn column : columnModel.getPreparedColumns()) {
+            column.addPropertyChangeListener(visibleListener);
+
+            String menuItemText = RouteConverter.getBundle().getString(column.getName());
+            ToggleColumnVisibilityAction action = new ToggleColumnVisibilityAction(column);
+            actionManager.register("show-column-" + column.getName(), action);
+
+            JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(menuItemText);
+            popupItem.setModel(new PositionTableColumnButtonModel(column, action));
+            showColumnPopupMenu.add(popupItem);
+
+            JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuItemText);
+            menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
+            setMnemonic(menuBarItem, column.getName() + "-mnemonic");
+            showColumnMenu.add(menuBarItem);
+        }
     }
 
     private void showPopup(MouseEvent e) {
@@ -132,6 +162,20 @@ public class TableHeaderMenu {
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals("visible"))
                 visibilityChanged();
+        }
+    }
+
+    private static class SortColumnAction extends FrameAction {
+        private final PositionsModel positionsModel;
+        private final PositionTableColumn column;
+
+        public SortColumnAction(PositionsModel positionsModel, PositionTableColumn column) {
+            this.positionsModel = positionsModel;
+            this.column = column;
+        }
+
+        public void run() {
+            positionsModel.sort(column.getComparator());
         }
     }
 }

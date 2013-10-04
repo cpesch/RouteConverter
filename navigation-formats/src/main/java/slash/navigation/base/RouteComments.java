@@ -38,7 +38,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.parseDate;
 
 /**
- * Helpers for processing of comments of positions
+ * Helpers for processing the description of positions
  *
  * @author Christian Pesch
  */

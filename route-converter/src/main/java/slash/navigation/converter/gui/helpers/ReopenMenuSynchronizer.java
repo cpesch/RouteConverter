@@ -34,6 +34,7 @@ import java.util.prefs.Preferences;
 
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toFile;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Synchronizes the entries of a {@link JMenu}s with the {@link RecentUrlsModel}.
@@ -43,31 +44,29 @@ import static slash.common.io.Files.toFile;
 
 public class ReopenMenuSynchronizer {
     private static final String MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE = "maximumReopenUrlMenuTextLength";
-    private final Preferences preferences = Preferences.userNodeForPackage(ReopenMenuSynchronizer.class);
-    private ConvertPanel convertPanel;
-    private RecentUrlsModel recentUrlsModel;
-    private JMenu reopenMenu;
+    private static final Preferences preferences = Preferences.userNodeForPackage(ReopenMenuSynchronizer.class);
+    private final ConvertPanel convertPanel;
+    private final RecentUrlsModel recentUrlsModel;
 
-    public ReopenMenuSynchronizer(ConvertPanel convertPanel, RecentUrlsModel recentUrlsModel, JMenu reopenMenu) {
+    public ReopenMenuSynchronizer(JMenuBar menuBar, ConvertPanel convertPanel, RecentUrlsModel recentUrlsModel) {
         this.convertPanel = convertPanel;
         this.recentUrlsModel = recentUrlsModel;
-        this.reopenMenu = reopenMenu;
-        initialize();
+        initializeMenu(findMenu(menuBar, "file", "reopen"));
     }
 
-    private void initialize() {
-        fillMenu();
+    private void initializeMenu(final JMenu reopenMenu) {
+        fillMenu(reopenMenu);
 
         recentUrlsModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 reopenMenu.removeAll();
 
-                fillMenu();
+                fillMenu(reopenMenu);
             }
         });
     }
 
-    private void fillMenu() {
+    private void fillMenu(JMenu reopenMenu) {
         List<URL> urls = recentUrlsModel.getUrls();
         reopenMenu.setEnabled(urls.size() > 0);
 

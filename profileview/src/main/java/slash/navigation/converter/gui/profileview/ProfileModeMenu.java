@@ -21,13 +21,13 @@
 package slash.navigation.converter.gui.profileview;
 
 import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.gui.helpers.JMenuHelper;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} for {@link ProfileMode}.
@@ -38,20 +38,23 @@ import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
 public class ProfileModeMenu {
     private final ProfileModeModel profileModeModel;
 
-    public ProfileModeMenu(ProfileModeModel profileModeModel) {
-        this.profileModeModel = profileModeModel;
+    public ProfileModeMenu(JMenuBar menuBar, ProfileModeModel profileModeModel) {
+        this(findMenu(menuBar, "view", "show-profile"), profileModeModel);
     }
 
-    public JMenu createMenu() {
-        JMenu menu = JMenuHelper.createMenu("show-profile");
+    public ProfileModeMenu(JMenu menu, ProfileModeModel profileModeModel) {
+        this.profileModeModel = profileModeModel;
+        initializeMenu(menu);
+    }
+
+    private void initializeMenu(JMenu showProfileMenu) {
         ButtonGroup buttonGroup = new ButtonGroup();
         for (ProfileMode mode : ProfileMode.values()) {
             JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
             profileModeModel.addChangeListener(new ProfileModeListener(menuItem, mode));
             buttonGroup.add(menuItem);
-            menu.add(menuItem);
+            showProfileMenu.add(menuItem);
         }
-        return menu;
     }
 
     private class ProfileModeListener implements ChangeListener {

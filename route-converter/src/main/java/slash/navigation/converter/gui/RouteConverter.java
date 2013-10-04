@@ -142,8 +142,6 @@ import static slash.navigation.common.NumberPattern.Number_Space_Then_Descriptio
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
-import static slash.navigation.gui.helpers.JMenuHelper.findItem;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
@@ -1060,7 +1058,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("about", new AboutAction());
-        JMenu mergeMenu = (JMenu) findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist");
+        JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
         CSH.setHelpIDString(frame.getRootPane(), "top");
@@ -1079,11 +1077,9 @@ public class RouteConverter extends SingleFrameApplication {
         frame.getRootPane().registerKeyboardAction(actionListener,
                 getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        findMenu(getContext().getMenuBar(), "view").add(new ProfileModeMenu(getProfileModeModel()).createMenu());
-        new UndoMenuSynchronizer(getContext().getUndoManager(),
-                findItem(getContext().getMenuBar(), "edit", "undo"),
-                findItem(getContext().getMenuBar(), "edit", "redo"));
-        new ReopenMenuSynchronizer(getConvertPanel(), getRecentUrlsModel(), findMenu(getContext().getMenuBar(), "file", "reopen"));
+        new ProfileModeMenu(getContext().getMenuBar(), getProfileModeModel());
+        new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
+        new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }
 
     private class PrintMapAction extends FrameAction {

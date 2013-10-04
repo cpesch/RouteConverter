@@ -27,7 +27,7 @@ import java.text.Collator;
 import java.util.Comparator;
 
 /**
- * Compares routes by name.
+ * Compares {@link Route}s by their name.
  *
  * @author Christian Pesch
  */

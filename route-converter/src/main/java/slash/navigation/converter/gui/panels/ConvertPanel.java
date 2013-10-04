@@ -184,6 +184,7 @@ import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavo
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
@@ -406,7 +407,7 @@ public class ConvertPanel implements PanelInTab {
         });
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
+        new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(), tableColumnModel);
         JPopupMenu menu = new TablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
@@ -440,9 +441,9 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
         actionManager.register("export-positionlist", new ExportPositionListAction(this));
 
-        JMenuHelper.registerKeyStroke(tablePositions, "copy");
-        JMenuHelper.registerKeyStroke(tablePositions, "cut");
-        JMenuHelper.registerKeyStroke(tablePositions, "paste");
+        registerKeyStroke(tablePositions, "copy");
+        registerKeyStroke(tablePositions, "cut");
+        registerKeyStroke(tablePositions, "paste");
 
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {

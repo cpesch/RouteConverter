@@ -35,6 +35,7 @@ import slash.navigation.gui.undo.UndoManager;
 import javax.swing.event.TableModelListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
@@ -229,6 +230,22 @@ public class UndoPositionsModel implements PositionsModel {
             fireTableRowsUpdated(0, MAX_VALUE, CONTINOUS_RANGE_FINAL_EVENT);
         if (trackUndo)
             undoManager.addEdit(edit);
+    }
+
+    public void sort(Comparator<NavigationPosition> comparator) {
+        sort(comparator, true);
+    }
+
+    void sort(Comparator<NavigationPosition> comparator, boolean trackUndo) {
+        List<NavigationPosition> original = getRoute().getPositions();
+        List<NavigationPosition> positions = new ArrayList<NavigationPosition>(original);
+        delegate.sort(comparator);
+        if (trackUndo)
+            undoManager.addEdit(new SortPositions(this, comparator, positions));
+    }
+
+    public void order(List<NavigationPosition> positions) {
+        delegate.order(positions);
     }
 
     public void revert() {

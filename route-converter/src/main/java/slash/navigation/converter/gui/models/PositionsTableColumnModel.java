@@ -21,6 +21,9 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationPosition;
+import slash.navigation.converter.gui.comparators.DescriptionComparator;
+import slash.navigation.converter.gui.comparators.TimeComparator;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
@@ -45,11 +48,20 @@ import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
+import static java.util.Locale.US;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
@@ -75,8 +87,8 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
 
     public PositionsTableColumnModel() {
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
-        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer);
-        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
+        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
+        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
@@ -114,30 +126,37 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     }
 
     private String getExampleDateFromCurrentLocale() {
-        Calendar calendar = Calendar.getInstance(Locale.US);
-        calendar.set(Calendar.YEAR, 2030);
-        calendar.set(Calendar.MONTH, 11);
-        calendar.set(Calendar.DAY_OF_MONTH, 22);
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 33);
-        calendar.set(Calendar.SECOND, 44);
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(new Date(calendar.getTimeInMillis()));
+        Calendar calendar = Calendar.getInstance(US);
+        calendar.set(YEAR, 2030);
+        calendar.set(MONTH, 11);
+        calendar.set(DAY_OF_MONTH, 22);
+        calendar.set(HOUR_OF_DAY, 22);
+        calendar.set(MINUTE, 33);
+        calendar.set(SECOND, 44);
+        return DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
                                  TableCellRenderer cellRenderer, TableCellRenderer headerRenderer) {
-        predefineColumn(modelIndex, name, maxWidth, visiblityDefault, cellRenderer, null, headerRenderer);
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellRenderer, null, headerRenderer, null);
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
                                  PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer) {
-        predefineColumn(modelIndex, name, maxWidth, visiblityDefault, cellEditor, cellEditor, headerRenderer);
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellEditor, headerRenderer, null);
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
-                                 TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer) {
-        boolean visible = preferences.getBoolean(VISIBLE_PREFERENCE + name, visiblityDefault);
-        PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, cellEditor);
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
+                                 PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                 Comparator<NavigationPosition> comparator) {
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellEditor, cellEditor, headerRenderer, comparator);
+    }
+
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
+                                 TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                 Comparator<NavigationPosition> comparator) {
+        boolean visible = preferences.getBoolean(VISIBLE_PREFERENCE + name, visibilityDefault);
+        PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, cellEditor, comparator);
         column.setHeaderRenderer(headerRenderer);
         if (maxWidth != null) {
             column.setMaxWidth(maxWidth * 2);

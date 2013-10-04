@@ -119,11 +119,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Double.MAX_VALUE;
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
-import static java.util.Arrays.sort;
+import static java.lang.Math.min;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.binarySearch;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -396,8 +400,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double[] getDistancesFromStart(int[] indices) {
         double[] result = new double[indices.length];
         if (indices.length > 0 && getPositionCount() > 0) {
-            sort(indices);
-            int endIndex = Math.min(indices[indices.length - 1], getPositionCount() - 1);
+            Arrays.sort(indices);
+            int endIndex = min(indices[indices.length - 1], getPositionCount() - 1);
 
             int index = 0;
             double distance = 0.0;
@@ -409,7 +413,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     Double delta = previous.calculateDistance(next);
                     if (delta != null)
                         distance += delta;
-                    int indexInIndices = Arrays.binarySearch(indices, index);
+                    int indexInIndices = binarySearch(indices, index);
                     if (indexInIndices >= 0)
                         result[indexInIndices] = distance;
                 }
@@ -445,11 +449,26 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             if (previous != null) {
                 Double elevation = previous.calculateElevation(next);
                 if (elevation != null && elevation < 0)
-                    result += Math.abs(elevation);
+                    result += abs(elevation);
             }
             previous = next;
         }
         return result;
+    }
+
+    public void sort(Comparator<P> comparator) {
+        List<P> positions = getPositions();
+        @SuppressWarnings("SuspiciousToArrayCall")
+        P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[positions.size()]);
+        Arrays.sort(sorted, comparator);
+        order(asList(sorted));
+    }
+
+    public void order(List<P> positions) {
+        List<P> existing = getPositions();
+        for (int i = 0; i < positions.size(); i++) {
+            existing.set(i, positions.get(i));
+        }
     }
 
     public void revert() {
@@ -458,9 +477,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         for (P position : positions) {
             reverted.add(0, position);
         }
-        for (int i = 0; i < reverted.size(); i++) {
-            positions.set(i, reverted.get(i));
-        }
+        order(reverted);
 
         String routeName = getName();
         if (!routeName.endsWith(REVERSE_ROUTE_NAME_POSTFIX))

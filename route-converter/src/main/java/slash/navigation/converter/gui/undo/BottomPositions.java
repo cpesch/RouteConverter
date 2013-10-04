@@ -29,7 +29,7 @@ import javax.swing.undo.UndoableEdit;
 
 
 /**
- * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} upwards.
+ * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} to the bottom.
  *
  * @author Christian Pesch
  */

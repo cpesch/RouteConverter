@@ -31,7 +31,7 @@ import slash.navigation.gui.actions.FrameAction;
  */
 
 public class ToggleColumnVisibilityAction extends FrameAction {
-    private PositionTableColumn column;
+    private final PositionTableColumn column;
 
     public ToggleColumnVisibilityAction(PositionTableColumn column) {
         this.column = column;

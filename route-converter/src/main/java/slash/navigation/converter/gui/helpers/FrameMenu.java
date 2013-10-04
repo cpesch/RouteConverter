@@ -78,12 +78,13 @@ public class FrameMenu {
 
         JMenu positionlistMenu = createMenu("positionlist");
         positionlistMenu.add(createItem("new-positionlist"));
+        positionlistMenu.add(createItem("rename-positionlist"));
         positionlistMenu.add(createItem("delete-positionlist"));
         positionlistMenu.addSeparator();
-        positionlistMenu.add(createItem("rename-positionlist"));
-        positionlistMenu.add(createItem("revert-positions"));
         positionlistMenu.add(createItem("convert-route-to-track"));
         positionlistMenu.add(createItem("convert-track-to-route"));
+        positionlistMenu.add(createItem("revert-positions"));
+        positionlistMenu.add(createMenu("sort-positions"));
         positionlistMenu.addSeparator();
         positionlistMenu.add(createItem("split-positionlist"));
         positionlistMenu.add(createMenu("merge-positionlist"));
@@ -96,6 +97,8 @@ public class FrameMenu {
         viewMenu.add(createItem("maximize-map"));
         viewMenu.add(createItem("maximize-positionlist"));
         viewMenu.addSeparator();
+        viewMenu.add(createMenu("show-column"));
+        viewMenu.add(createMenu("show-profile"));
 
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));

@@ -28,6 +28,7 @@ import slash.navigation.base.NavigationPosition;
 
 import javax.swing.table.TableModel;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -60,6 +61,7 @@ public interface PositionsModel extends TableModel {
     void remove(int firstIndex, int lastIndex);
     void remove(int[] rowIndices);
 
+    void sort(Comparator<NavigationPosition> comparator);
     void revert();
 
     void top(int[] rowIndices);

@@ -148,13 +148,11 @@ public class JMenuHelper {
     }
 
     public static JMenu findMenu(JMenuBar menuBar, String menuName, String subMenuName) {
-        Component component = findMenuComponent(menuBar, menuName, subMenuName);
-        return component instanceof JMenu ? (JMenu) component : null;
+        return findMenuComponent(menuBar, menuName, subMenuName, JMenu.class);
     }
 
     public static JMenuItem findItem(JMenuBar menuBar, String menuName, String menuItemName) {
-        Component component = findMenuComponent(menuBar, menuName, menuItemName);
-        return component instanceof JMenuItem ? (JMenuItem) component : null;
+        return findMenuComponent(menuBar, menuName, menuItemName, JMenuItem.class);
     }
 
     public static Component findMenuComponent(JPopupMenu menu, String menuComponentName) {
@@ -166,19 +164,19 @@ public class JMenuHelper {
         return null;
     }
 
-    public static Component findMenuComponent(JMenu menu, String menuComponentName) {
+    public static <T extends Component> T findMenuComponent(JMenu menu, String menuComponentName, Class<T> componentClass) {
         for (int i = 0; i < menu.getMenuComponentCount(); i++) {
             Component component = menu.getMenuComponent(i);
-            if (menuComponentName.equals(component.getName()))
-                return component;
+            if (menuComponentName.equals(component.getName()) && componentClass.isInstance(component))
+                return componentClass.cast(component);
         }
         return null;
     }
 
-    public static Component findMenuComponent(JMenuBar menuBar, String menuName, String menuComponentName) {
+    public static <T extends Component> T findMenuComponent(JMenuBar menuBar, String menuName, String menuComponentName, Class<T> componentClass) {
         JMenu menu = findMenu(menuBar, menuName);
         if (menu != null) {
-            return findMenuComponent(menu, menuComponentName);
+            return findMenuComponent(menu, menuComponentName, componentClass);
         }
         return null;
     }

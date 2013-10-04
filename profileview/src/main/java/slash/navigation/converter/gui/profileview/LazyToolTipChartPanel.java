@@ -35,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
 import static org.jfree.ui.RectangleEdge.BOTTOM;
+import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
  * [@link ChartPanel} that allows for a cheaper display of tooltips.
@@ -70,7 +71,9 @@ public class LazyToolTipChartPanel extends ChartPanel {
         popupMenu.remove(6);
         popupMenu.remove(5);
         popupMenu.remove(4);
-        popupMenu.add(new ProfileModeMenu(profileModeModel).createMenu(), 0);
+        JMenu menu = createMenu("show-profile");
+        new ProfileModeMenu(menu, profileModeModel);
+        popupMenu.add(menu, 0);
         popupMenu.add(new JPopupMenu.Separator(), 1);
         return popupMenu;
     }

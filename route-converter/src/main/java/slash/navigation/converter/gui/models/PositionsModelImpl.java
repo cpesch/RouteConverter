@@ -40,10 +40,11 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.sort;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.UPDATE;
@@ -353,6 +354,18 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }).performMonotonicallyDecreasing();
     }
 
+    public void sort(Comparator<NavigationPosition> comparator) {
+        getRoute().sort(comparator);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
+    }
+
+    public void order(List<NavigationPosition> positions) {
+        getRoute().order(positions);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
+    }
+
     public void revert() {
         getRoute().revert();
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
@@ -360,7 +373,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void top(int[] rowIndices) {
-        sort(rowIndices);
+        Arrays.sort(rowIndices);
 
         for (int i = 0; i < rowIndices.length; i++) {
             getRoute().top(rowIndices[i], i);
@@ -378,7 +391,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void up(int[] rowIndices, int delta) {
-        sort(rowIndices);
+        Arrays.sort(rowIndices);
 
         for (int row : rowIndices) {
             getRoute().up(row, row - delta);
@@ -405,7 +418,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void bottomUp(int[] rows) {
-        sort(rows);
+        Arrays.sort(rows);
 
         for (int i = 0; i < rows.length; i++) {
             getRoute().up(getRowCount() - rows.length + i, rows[i]);
