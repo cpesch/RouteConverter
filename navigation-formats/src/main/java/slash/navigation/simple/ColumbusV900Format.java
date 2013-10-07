@@ -138,11 +138,11 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    protected String formatLineType(String comment) {
-        if (comment != null) {
-            if (comment.startsWith("VOX"))
+    protected String formatLineType(String description) {
+        if (description != null) {
+            if (description.startsWith("VOX"))
                 return VOICE_POSITION;
-            if (comment.startsWith("POI")) {
+            if (description.startsWith("POI")) {
                 return POI_POSITION;
             }
         }

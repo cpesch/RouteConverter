@@ -52,7 +52,7 @@ public interface PositionsModel extends TableModel {
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);
 
-    void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
+    void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
     void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
     void add(int rowIndex, List<BaseNavigationPosition> positions);
 

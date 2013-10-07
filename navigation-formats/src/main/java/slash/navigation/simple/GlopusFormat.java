@@ -95,8 +95,8 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (commentMatcher.matches()) {
             String latitude = commentMatcher.group(1);
             String longitude = commentMatcher.group(2);
-            String comment = commentMatcher.group(3);
-            return asPosition(parseDouble(longitude), parseDouble(latitude), trim(comment));
+            String description = commentMatcher.group(3);
+            return asPosition(parseDouble(longitude), parseDouble(latitude), trim(description));
         }
 
         Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
@@ -112,8 +112,8 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
-        String comment = escape(position.getComment(), SEPARATOR, ';');
-        comment = escape(comment, '\"', ';');
-        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + comment);
+        String description = escape(position.getDescription(), SEPARATOR, ';');
+        description = escape(description, '\"', ';');
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + description);
     }
 }

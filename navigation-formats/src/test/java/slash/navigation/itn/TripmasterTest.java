@@ -196,57 +196,57 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2012, 3, 24, 18, 30, 48), position.getTime());
     }
 
-    private void checkTripmasterComment(String expectedComment, String expectedReason, String comment) {
-        TomTomPosition position = new TomTomPosition(0.0, 0.0, 0.0, null, null, comment);
+    private void checkTripmasterDescription(String expectedDescription, String expectedReason, String description) {
+        TomTomPosition position = new TomTomPosition(0.0, 0.0, 0.0, null, null, description);
         assertEquals(expectedReason, position.getReason());
-        assertEquals(expectedComment, position.getCity());
-        assertEquals(expectedComment, position.getComment());
+        assertEquals(expectedDescription, position.getCity());
+        assertEquals(expectedDescription, position.getDescription());
     }
 
-    public void testTripmasterShortComments() {
-        checkTripmasterComment(null, "Waypoint", "13:35:13 - 430.5 m");
-        checkTripmasterComment(null, "Waypoint", "23:33:44 - -2.5 m");
+    public void testTripmasterShortDescriptions() {
+        checkTripmasterDescription(null, "Waypoint", "13:35:13 - 430.5 m");
+        checkTripmasterDescription(null, "Waypoint", "23:33:44 - -2.5 m");
     }
 
-    public void testTripmasterMiddleComments() {
-        checkTripmasterComment("Weil Der Stadt", "Start : 27/12/2006 - 13:35:13", "Start : Weil Der Stadt - 27/12/2006 - 13:35:13 - 430.5 m - 0.0 km");
-        checkTripmasterComment("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km");
-        checkTripmasterComment("Weil Der Stadt", "Wpt", "13:36:13 - Wpt : Weil Der Stadt - 408.5 m - 0.1 km");
-        checkTripmasterComment("Herrenberg", "Ende : 14:03:45", "Ende : Herrenberg - 14:03:45 - 437.4 m - 25.5 km");
+    public void testTripmasterMiddleDescriptions() {
+        checkTripmasterDescription("Weil Der Stadt", "Start : 27/12/2006 - 13:35:13", "Start : Weil Der Stadt - 27/12/2006 - 13:35:13 - 430.5 m - 0.0 km");
+        checkTripmasterDescription("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km");
+        checkTripmasterDescription("Weil Der Stadt", "Wpt", "13:36:13 - Wpt : Weil Der Stadt - 408.5 m - 0.1 km");
+        checkTripmasterDescription("Herrenberg", "Ende : 14:03:45", "Ende : Herrenberg - 14:03:45 - 437.4 m - 25.5 km");
     }
 
-    public void testTripmasterLongComments() {
-        checkTripmasterComment("Altona-Altstadt", "Start : 31/08/2007 19:57:24", "19:57:24 - Start : 31/08/2007 19:57:24 : Altona-Altstadt - 18.2 m - 0.0 Km - 0 Km/h - 9");
-        checkTripmasterComment("Altona-Altstadt", "Dist. 8", "19:57:24 - Dist. 8 : Altona-Altstadt - 25.5 m - 8.0 Km - 50 Km/h - 9");
-        checkTripmasterComment("Altona-Altstadt", "Dur. 0:23:18", "19:57:24 - Dur. 0:23:18 : Altona-Altstadt - 25.7 m - 8.3 Km - 50 Km/h - 10");
-        checkTripmasterComment("Altona-Altstadt", "Course 327", "19:57:24 - Course 327 : Altona-Altstadt - 27.5 m - 8.4 Km - 25 Km/h - 11");
-        checkTripmasterComment("Altona-Altstadt", "Finish : 31/08/2007 20:15:11", "20:15:11 - Finish : 31/08/2007 20:15:11 : Altona-Altstadt - 24.6 m - 10.3 Km - 7 Km/h - 7");
+    public void testTripmasterLongDescriptions() {
+        checkTripmasterDescription("Altona-Altstadt", "Start : 31/08/2007 19:57:24", "19:57:24 - Start : 31/08/2007 19:57:24 : Altona-Altstadt - 18.2 m - 0.0 Km - 0 Km/h - 9");
+        checkTripmasterDescription("Altona-Altstadt", "Dist. 8", "19:57:24 - Dist. 8 : Altona-Altstadt - 25.5 m - 8.0 Km - 50 Km/h - 9");
+        checkTripmasterDescription("Altona-Altstadt", "Dur. 0:23:18", "19:57:24 - Dur. 0:23:18 : Altona-Altstadt - 25.7 m - 8.3 Km - 50 Km/h - 10");
+        checkTripmasterDescription("Altona-Altstadt", "Course 327", "19:57:24 - Course 327 : Altona-Altstadt - 27.5 m - 8.4 Km - 25 Km/h - 11");
+        checkTripmasterDescription("Altona-Altstadt", "Finish : 31/08/2007 20:15:11", "20:15:11 - Finish : 31/08/2007 20:15:11 : Altona-Altstadt - 24.6 m - 10.3 Km - 7 Km/h - 7");
 
-        checkTripmasterComment("Abtsgm\u00fcnd", "Start : 30/09/2007 09:34:55", "09:34:55 - Start : 30/09/2007 09:34:55 : Abtsgm\u00fcnd - 369.2 m - 0.0 km - 0 km/h - 6");
-        checkTripmasterComment("Abtsgm\u00fcnd", "Kurs 193", "09:36:43 - Kurs 193 : Abtsgm\u00fcnd - 371.1 m - 0.1 km - 18 km/h - 6");
-        checkTripmasterComment("Neuschmiede", "Distanz 2", "09:39:18 - Distanz 2 : Neuschmiede - 379.5 m - 2.0 km - 67 km/h - 6");
-        checkTripmasterComment("H\u00fcttlingen DE", "Dauer 0:10:04", "09:44:58 - Dauer 0:10:04 : H\u00fcttlingen DE - 407.8 m - 8.6 km - 71 km/h - 7");
-        checkTripmasterComment("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km - 5 km/h");
-        checkTripmasterComment("Weil Der Stadt", "Wpt", "13:36:13 - Wpt : Weil Der Stadt - 408.5 m - 0.1 km - 25 km/h");
-        checkTripmasterComment("Acigné", "Cape 155", "08:52:25 - Cape 155 : Acigné - 39.4 m - 2.1 km - 54 Km/h");
+        checkTripmasterDescription("Abtsgm\u00fcnd", "Start : 30/09/2007 09:34:55", "09:34:55 - Start : 30/09/2007 09:34:55 : Abtsgm\u00fcnd - 369.2 m - 0.0 km - 0 km/h - 6");
+        checkTripmasterDescription("Abtsgm\u00fcnd", "Kurs 193", "09:36:43 - Kurs 193 : Abtsgm\u00fcnd - 371.1 m - 0.1 km - 18 km/h - 6");
+        checkTripmasterDescription("Neuschmiede", "Distanz 2", "09:39:18 - Distanz 2 : Neuschmiede - 379.5 m - 2.0 km - 67 km/h - 6");
+        checkTripmasterDescription("H\u00fcttlingen DE", "Dauer 0:10:04", "09:44:58 - Dauer 0:10:04 : H\u00fcttlingen DE - 407.8 m - 8.6 km - 71 km/h - 7");
+        checkTripmasterDescription("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km - 5 km/h");
+        checkTripmasterDescription("Weil Der Stadt", "Wpt", "13:36:13 - Wpt : Weil Der Stadt - 408.5 m - 0.1 km - 25 km/h");
+        checkTripmasterDescription("Acigné", "Cape 155", "08:52:25 - Cape 155 : Acigné - 39.4 m - 2.1 km - 54 Km/h");
     }
 
-    private void checkTripmasterGpxComment(String expectedComment, String expectedReason, String comment) {
-        GpxPosition position = new GpxPosition(0.0, 0.0, 0.0, null, null, comment);
+    private void checkTripmasterGpxDescription(String expectedDescription, String expectedReason, String description) {
+        GpxPosition position = new GpxPosition(0.0, 0.0, 0.0, null, null, description);
         assertEquals(expectedReason, position.getReason());
-        assertEquals(expectedComment, position.getCity());
-        assertEquals(expectedComment, position.getComment());
+        assertEquals(expectedDescription, position.getCity());
+        assertEquals(expectedDescription, position.getDescription());
     }
 
-    public void testTripmaster14GpxComments() {
-        checkTripmasterGpxComment("Deven (Gross Plasten)", "Richtung 358", "Richtung 358 - Deven (Gross Plasten)");
-        checkTripmasterGpxComment("Gross Gievitz", "Abstand 10", "Abstand 10 - Gross Gievitz");
-        checkTripmasterGpxComment("Malchin", "Punkt", "Punkt - Malchin");
+    public void testTripmaster14GpxDescriptions() {
+        checkTripmasterGpxDescription("Deven (Gross Plasten)", "Richtung 358", "Richtung 358 - Deven (Gross Plasten)");
+        checkTripmasterGpxDescription("Gross Gievitz", "Abstand 10", "Abstand 10 - Gross Gievitz");
+        checkTripmasterGpxDescription("Malchin", "Punkt", "Punkt - Malchin");
     }
 
-    public void testTripmasterGpxComments() {
-        checkTripmasterGpxComment("Blunk", "Dur. 2:11:13", "Dur. 2:11:13 : Blunk");
-        checkTripmasterGpxComment("Blunk", "Dist. 107", "Dist. 107 : Blunk");
-        checkTripmasterGpxComment("Blunk", "Course 35", "Course 35 : Blunk");
+    public void testTripmasterGpxDescriptions() {
+        checkTripmasterGpxDescription("Blunk", "Dur. 2:11:13", "Dur. 2:11:13 : Blunk");
+        checkTripmasterGpxDescription("Blunk", "Dist. 107", "Dist. 107 : Blunk");
+        checkTripmasterGpxDescription("Blunk", "Course 35", "Course 35 : Blunk");
     }
 }

@@ -133,7 +133,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             LandmarkType landmarkType = position.getOrigin(LandmarkType.class);
             if (landmarkType == null)
                 landmarkType = objectFactory.createLandmarkType();
-            landmarkType.setName(position.getComment());
+            landmarkType.setName(position.getDescription());
 
             CoordinatesType coordinatesType = landmarkType.getCoordinates();
             if (coordinatesType == null)

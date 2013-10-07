@@ -240,9 +240,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = wplMatcher.group(2);
             String longitude = wplMatcher.group(3);
             String westOrEast = wplMatcher.group(4);
-            String comment = wplMatcher.group(5);
+            String description = wplMatcher.group(5);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    null, null, null, null, trim(comment));
+                    null, null, null, null, trim(description));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
@@ -330,7 +330,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "";
-        String comment = escape(position.getComment(), SEPARATOR, ';');
+        String description = escape(position.getDescription(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
@@ -346,7 +346,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPWPL,5334.169,N,01001.920,E,STATN1*22
         String wpl = "GPWPL" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                comment;
+                description;
         writeSentence(writer, wpl);
 
         // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76

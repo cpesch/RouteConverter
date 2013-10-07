@@ -63,7 +63,7 @@ public class OvlFormatTest extends NavigationTestCase {
         Wgs84Position position = section.getPosition(0);
         assertEquals(13.41151290, position.getLongitude());
         assertEquals(52.52020790, position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertNull(position.getElevation());
         assertNull(position.getTime());
     }
@@ -88,7 +88,7 @@ public class OvlFormatTest extends NavigationTestCase {
         Wgs84Position position = section.getPosition(0);
         assertEquals(13.4119419, position.getLongitude());
         assertEquals(52.520688, position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertNull(position.getElevation());
         assertNull(position.getTime());
     }

@@ -316,9 +316,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         Wgs84Position resultPoint;
         if (positionPoint == null) {
             resultPoint = asPosition(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
+        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
-            resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
+            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
         } else
             resultPoint = positionPoint;
 
@@ -389,9 +389,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         Wgs84Position resultPoint;
         if (positionPoint == null) {
             resultPoint = asPosition(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
+        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
-            resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
+            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
         } else
             resultPoint = positionPoint;
         return resultPoint;
@@ -509,9 +509,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         Wgs84Position resultPoint;
         if (positionPoint == null) {
             resultPoint = asPosition(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
+        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
-            resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
+            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
         } else
             resultPoint = positionPoint;
 
@@ -551,9 +551,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(4); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
-        byte[] comment = position.getComment().getBytes(UTF8_ENCODING);
-        byteBuffer.putInt(comment.length);
-        byteBuffer.put(comment);
+        byte[] description = position.getDescription().getBytes(UTF8_ENCODING);
+        byteBuffer.putInt(description.length);
+        byteBuffer.put(description);
         byteBuffer.putInt(0); //this 4 bytes only if startag = 4 
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());

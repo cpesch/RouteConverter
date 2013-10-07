@@ -65,12 +65,12 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         executorService.shutdownNow();
     }
 
-    public String createComment(int index) {
+    public String createDescription(int index) {
         String description = RouteConverter.getBundle().getString("new-position-name");
-        return createComment(index, description);
+        return createDescription(index, description);
     }
 
-    public String createComment(int index, String description) {
+    public String createDescription(int index, String description) {
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(index);
         return formatNumberedPosition(numberPattern, number, description);
@@ -99,22 +99,22 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         });
     }
 
-    public void complementComment(final int row, final Double longitude, final Double latitude) {
+    public void complementDescription(final int row, final Double longitude, final Double latitude) {
         executorService.execute(new Runnable() {
             public void run() {
-                final String[] comment = new String[1];
+                final String[] description = new String[1];
                 try {
-                    comment[0] = completePositionService.getCommentFor(longitude, latitude);
+                    description[0] = completePositionService.getDescriptionFor(longitude, latitude);
                 } catch (IOException e) {
-                    log.warning("Cannot retrieve comment for " + longitude + "/" + latitude + ": " + e.getMessage());
+                    log.warning("Cannot retrieve description for " + longitude + "/" + latitude + ": " + e.getMessage());
                 }
 
-                if (comment[0] != null) {
+                if (description[0] != null) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            if (comment[0] != null) {
-                                String description = createComment(row + 1, comment[0]);
-                                positionsModel.edit(row, DESCRIPTION_COLUMN_INDEX, description, -1, null, true, false);
+                            if (description[0] != null) {
+                                String newDescription = createDescription(row + 1, description[0]);
+                                positionsModel.edit(row, DESCRIPTION_COLUMN_INDEX, newDescription, -1, null, true, false);
                             }
                         }
                     });

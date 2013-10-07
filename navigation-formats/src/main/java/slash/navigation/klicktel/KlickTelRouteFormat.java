@@ -75,12 +75,12 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         for (KDRoute.Stations.Station station : route.getStations().getStation()) {
             KDRoute.Stations.Station.Point point = station.getPoint();
-            String comment = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
+            String description = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
                     (station.getPostalCode() != null ? station.getPostalCode() + " " : "") +
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(asPosition(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()), trim(comment)));
+            positions.add(asPosition(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()), trim(description)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
@@ -105,9 +105,9 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
             point.setLongitude(formatPosition(position.getLongitude()));
             point.setLatitude(formatPosition(position.getLatitude()));
             KDRoute.Stations.Station station = objectFactory.createKDRouteStationsStation();
-            station.setCity(position.getComment());
+            station.setCity(position.getDescription());
 
-            // TODO write decomposed comment
+            // TODO write decomposed description
             // <Street>Raiffeisenstr.</Street>
             // <HouseNumber>33</HouseNumber>
             // <PostalCode>47665</PostalCode>

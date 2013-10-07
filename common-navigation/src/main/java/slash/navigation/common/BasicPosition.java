@@ -43,13 +43,13 @@ public class BasicPosition {
     private static final Pattern EXTENSION_POSITION_PATTERN = Pattern.compile("\\s*(" + NUMBER + "+)" + SEPARATOR + "(" + NUMBER + "+)" + SEPARATOR + "(" + NUMBER + "+)\\s*");
 
     private Double longitude, latitude, elevation;
-    private String location;
+    private String description;
 
-    public BasicPosition(Double longitude, Double latitude, Double elevation, String location) {
+    public BasicPosition(Double longitude, Double latitude, Double elevation, String description) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.elevation = elevation;
-        this.location = location;
+        this.description = description;
     }
 
     public Double getLongitude() {
@@ -64,8 +64,8 @@ public class BasicPosition {
         return elevation;
     }
 
-    public String getComment() {
-        return location;
+    public String getDescription() {
+        return description;
     }
 
     public static boolean isPosition(String coordinates) {
@@ -73,7 +73,7 @@ public class BasicPosition {
         return matcher.matches();
     }
 
-    public static BasicPosition parsePosition(String coordinates, String comment) {
+    public static BasicPosition parsePosition(String coordinates, String description) {
         Matcher matcher = POSITION_PATTERN.matcher(coordinates);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
@@ -82,7 +82,7 @@ public class BasicPosition {
         String elevation = matcher.group(3);
         if(elevation != null && elevation.startsWith(","))
             elevation = elevation.substring(1);
-        return new BasicPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), trim(comment));
+        return new BasicPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), trim(description));
     }
 
     public static List<BasicPosition> parsePositions(String listOfCoordinates) {
@@ -114,7 +114,7 @@ public class BasicPosition {
 
         return !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(location != null ? !location.equals(that.location) : that.location != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null);
     }
 
@@ -122,7 +122,7 @@ public class BasicPosition {
         int result = longitude != null ? longitude.hashCode() : 0;
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
-        result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 }

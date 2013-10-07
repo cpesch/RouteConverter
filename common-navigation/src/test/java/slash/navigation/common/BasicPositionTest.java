@@ -61,7 +61,7 @@ public class BasicPositionTest {
         BasicPosition position = parsePosition(",,0", null);
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertDoubleEquals(0.0, position.getElevation());
     }
 
@@ -71,16 +71,16 @@ public class BasicPositionTest {
         assertDoubleEquals(11.5709833333333, position.getLongitude());
         assertDoubleEquals(49.9467027777778, position.getLatitude());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
     public void testParseFloatElevationPosition() {
-        BasicPosition position = parsePosition("13.383570,54.096930,0.000000", "comment");
+        BasicPosition position = parsePosition("13.383570,54.096930,0.000000", "description");
         assertDoubleEquals(13.383570, position.getLongitude());
         assertDoubleEquals(54.096930, position.getLatitude());
         assertDoubleEquals(0.0, position.getElevation());
-        assertEquals("comment", position.getComment());
+        assertEquals("description", position.getDescription());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class BasicPositionTest {
         assertDoubleEquals(0.00001, position.getLongitude());
         assertDoubleEquals(-0.000002, position.getLatitude());
         assertDoubleEquals(0.0000003, position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test

@@ -110,7 +110,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
                 Wgs84Position position = positions.get(i);
                 waypointsBuffer.append("new google.maps.Marker({position:new google.maps.LatLng(").
                         append(position.getLatitude()).append(",").append(position.getLongitude()).append("), title: \")").
-                        append(position.getComment()).append("\", clickable:false, icon:markerIcon})");
+                        append(position.getDescription()).append("\", clickable:false, icon:markerIcon})");
                 if (i < positions.size() - 1)
                     waypointsBuffer.append(",");
             }

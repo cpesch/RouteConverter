@@ -85,16 +85,16 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = trim(lineMatcher.group(3));
-        if (comment != null)
-            comment = comment.replaceAll("\\p{Cntrl}", "");
-        return asPosition(parseDouble(longitude), parseDouble(latitude), comment);
+        String description = trim(lineMatcher.group(3));
+        if (description != null)
+            description = description.replaceAll("\\p{Cntrl}", "");
+        return asPosition(parseDouble(longitude), parseDouble(latitude), description);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
-        String comment = escape(position.getComment(), SEPARATOR, ';');
-        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
+        String description = escape(position.getDescription(), SEPARATOR, ';');
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + description + "\"");
     }
 }

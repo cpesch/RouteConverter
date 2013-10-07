@@ -734,8 +734,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void complementComment(int row, Double longitude, Double latitude) {
-        getPositionAugmenter().complementComment(row, longitude, latitude);
+    public void complementDescription(int row, Double longitude, Double latitude) {
+        getPositionAugmenter().complementDescription(row, longitude, latitude);
     }
 
     public void complementTime(int row, CompactCalendar time) {

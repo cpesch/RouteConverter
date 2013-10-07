@@ -211,7 +211,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -225,7 +225,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -239,7 +239,7 @@ public class NmeaFormatTest {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertDoubleEquals(nauticMilesToKilometer(14.32), position.getSpeed());
     }
 
@@ -250,7 +250,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(53.5694833, position.getLatitude());
         assertNull(position.getTime());
         assertNull(position.getElevation());
-        assertEquals("STATN1", position.getComment());
+        assertEquals("STATN1", position.getDescription());
     }
 
     @Test
@@ -264,7 +264,7 @@ public class NmeaFormatTest {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertNull(position.getSpeed());
     }
 
@@ -275,7 +275,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(32.19, position.getHeading());
         assertNull(position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -310,7 +310,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -338,7 +338,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Position 3", position.getComment());
+        assertEquals("Position 3", position.getDescription());
     }
 
     @Test
@@ -363,7 +363,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
 
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
@@ -388,7 +388,7 @@ public class NmeaFormatTest {
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());
-        assertNull(position2.getComment());
+        assertNull(position2.getDescription());
     }
 
     @Test

@@ -30,8 +30,8 @@ import slash.common.type.CompactCalendar;
  */
 
 public interface PositionAugmenter {
-    String createComment(int index);
-    void complementComment(int row, Double longitude, Double latitude);
+    String createDescription(int index);
+    void complementDescription(int row, Double longitude, Double latitude);
     void complementElevation(int row, Double longitude, Double latitude);
     void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
     void interrupt();

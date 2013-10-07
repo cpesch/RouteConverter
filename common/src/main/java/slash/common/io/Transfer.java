@@ -118,13 +118,17 @@ public class Transfer {
     }
 
 
-    public static String escape(String string, char escape, char replacement) {
+    public static String escape(String string, char escape, char replacement, String defaultString) {
         String trimmed = trim(string);
         if (trimmed != null)
             trimmed = trimmed.replaceAll("\\" + escape, String.valueOf(replacement));
         else
-            trimmed = "";
+            trimmed = defaultString;
         return trimmed;
+    }
+
+    public static String escape(String string, char escape, char replacement) {
+        return escape(string, escape, replacement, "");
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {

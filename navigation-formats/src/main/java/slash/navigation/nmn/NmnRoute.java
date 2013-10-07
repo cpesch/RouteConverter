@@ -37,7 +37,7 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
         super(format, characteristics, name, positions);
     }
 
-    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new NmnPosition(longitude, latitude, elevation, speed, time, comment);
+    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new NmnPosition(longitude, latitude, elevation, speed, time, description);
     }
 }

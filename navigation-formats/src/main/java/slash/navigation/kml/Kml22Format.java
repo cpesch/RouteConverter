@@ -132,7 +132,7 @@ public class Kml22Format extends KmlFormat {
 
         if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
-            String placemarkName = asComment(trim(placemarkType.getName()), trim(placemarkType.getDescription()));
+            String placemarkName = asDescription(trim(placemarkType.getName()), trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositionsFromGeometry(placemarkType.getAbstractGeometryGroup());
             for (KmlPosition position : positions) {
@@ -143,7 +143,7 @@ public class Kml22Format extends KmlFormat {
 
         if (feature instanceof TourType) {
             TourType tourType = (TourType) feature;
-            String tourName = asComment(trim(tourType.getName()), trim(tourType.getDescription()));
+            String tourName = asDescription(trim(tourType.getName()), trim(tourType.getDescription()));
 
             List<KmlPosition> positions = extractPositionsFromTour(tourType.getPlaylist().getAbstractTourPrimitiveGroup());
             for (KmlPosition position : positions) {
@@ -195,7 +195,7 @@ public class Kml22Format extends KmlFormat {
         List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
-            String placemarkName = asComment(trim(placemarkTypeValue.getName()), trim(placemarkTypeValue.getDescription()));
+            String placemarkName = asDescription(trim(placemarkTypeValue.getName()), trim(placemarkTypeValue.getDescription()));
 
             JAXBElement<? extends AbstractGeometryType> abstractGeometryGroup = placemarkTypeValue.getAbstractGeometryGroup();
             if (abstractGeometryGroup == null)
@@ -328,8 +328,8 @@ public class Kml22Format extends KmlFormat {
             KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
-            placemarkType.setName(asName(isWriteName() ? position.getComment() : null));
-            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
+            placemarkType.setName(asName(isWriteName() ? position.getDescription() : null));
+            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));

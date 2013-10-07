@@ -56,7 +56,7 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * Helps to augment a batch of positions with geocoded coordinates, elevation,
- * position number for its comment, postal address, populated place and speed
+ * position number for its description, postal address, populated place and speed
  * information.
  *
  * @author Christian Pesch
@@ -205,7 +205,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        BasicPosition coordinates = googleMapsService.getPositionFor(position.getComment());
+                        BasicPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
                         if (coordinates != null) {
                             positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
                                     LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), false, true);
@@ -277,10 +277,10 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String comment = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
-                        if (comment != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
-                        return comment != null;
+                        String description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+                        if (description != null)
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                        return description != null;
                     }
 
                     public String getErrorMessage() {
@@ -312,10 +312,10 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String comment = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
-                        if (comment != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, comment, -1, null, false, true);
-                        return comment != null;
+                        String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+                        if (description != null)
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                        return description != null;
                     }
 
                     public String getErrorMessage() {
@@ -443,11 +443,11 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String previousComment = position.getComment();
-                        String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
-                        boolean changed = nextComment == null || !nextComment.equals(previousComment);
+                        String previousDescription = position.getDescription();
+                        String nextDescription = getNumberedPosition(position, index, digitCount, numberPattern);
+                        boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
                         if (changed)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextComment, -1, null, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextDescription, -1, null, false, true);
                         return changed;
                     }
 

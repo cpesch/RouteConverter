@@ -70,7 +70,7 @@ public class AddPositionAction extends FrameAction {
         return center(asList(second, position));
     }
 
-    private String getRouteComment() {
+    private String getDescription() {
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(positionsModel.getRowCount() + 1);
         String description = RouteConverter.getBundle().getString("new-position-name");
@@ -79,13 +79,13 @@ public class AddPositionAction extends FrameAction {
 
     private NavigationPosition insertRow(int row, NavigationPosition position) {
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                position.getSpeed(), position.getTime(), getRouteComment());
+                position.getSpeed(), position.getTime(), getDescription());
         return positionsModel.getPosition(row);
     }
 
     private void complementRow(int row, NavigationPosition position) {
         RouteConverter r = RouteConverter.getInstance();
-        r.complementComment(row, position.getLongitude(), position.getLatitude());
+        r.complementDescription(row, position.getLongitude(), position.getLatitude());
         r.complementElevation(row, position.getLongitude(), position.getLatitude());
         r.complementTime(row, position.getTime());
     }

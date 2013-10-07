@@ -47,7 +47,7 @@ public class GoogleMapsUrlFormatIT {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
         assertEquals(9, route.getPositionCount());
         NavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
-        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getComment());
+        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getDescription());
         assertNotNull(position.getLongitude());
         assertNotNull(position.getLatitude());
     }

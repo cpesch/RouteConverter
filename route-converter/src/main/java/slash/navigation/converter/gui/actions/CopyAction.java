@@ -54,7 +54,7 @@ public class CopyAction extends FrameAction {
         for (NavigationPosition position : positions) {
             // TODO should copy extra properties, too
             result.add(new GpxPosition(position.getLongitude(), position.getLatitude(), position.getElevation(),
-                    position.getSpeed(), position.getTime(), position.getComment()));
+                    position.getSpeed(), position.getTime(), position.getDescription()));
         }
         return result;
     }

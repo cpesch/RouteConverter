@@ -155,7 +155,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             flightPlanRoute.getRoutePoint().add(routePoint);
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(position.getComment());
+            waypoint.setComment(position.getDescription());
             waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());

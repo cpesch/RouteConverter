@@ -77,10 +77,10 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = trim(lineMatcher.group(3));
+        String description = trim(lineMatcher.group(3));
         String phone = trim(lineMatcher.group(4));
         if (phone != null)
-            comment = comment + " " + phone;
-        return asPosition(parseDouble(longitude), parseDouble(latitude), comment);
+            description = description + " " + phone;
+        return asPosition(parseDouble(longitude), parseDouble(latitude), description);
     }
 }

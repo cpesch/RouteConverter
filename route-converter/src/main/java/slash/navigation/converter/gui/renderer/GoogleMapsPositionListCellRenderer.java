@@ -35,7 +35,7 @@ public class GoogleMapsPositionListCellRenderer extends DefaultListCellRenderer 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         BasicPosition position = (BasicPosition) value;
-        label.setText(position.getComment() + " @ " + position.getLongitude() + "," + position.getLatitude());
+        label.setText(position.getDescription() + " @ " + position.getLongitude() + "," + position.getLatitude());
         return label;
     }
 }

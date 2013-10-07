@@ -38,13 +38,13 @@ public class OpelNaviFormatTest extends NavigationTestCase {
         Wgs84Position position = format.parsePosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\"", null);
         assertEquals(8.402824, position.getLongitude());
         assertEquals(49.986889, position.getLatitude());
-        assertEquals("Tor 45;Opel, Rüsselsheim;+49-6142-77-0", position.getComment());
+        assertEquals("Tor 45;Opel, Rüsselsheim;+49-6142-77-0", position.getDescription());
     }
 
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("-8.402824,-49.986889,\"Tor 45\",\"\",\"\"", null);
         assertEquals(-8.402824, position.getLongitude());
         assertEquals(-49.986889, position.getLatitude());
-        assertEquals("Tor 45", position.getComment());
+        assertEquals("Tor 45", position.getDescription());
     }
 }

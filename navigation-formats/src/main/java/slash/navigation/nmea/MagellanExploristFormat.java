@@ -42,7 +42,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
                     "M" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time, hhmmss
                     "[A]" + SEPARATOR +
-                    "(.*)" + SEPARATOR +            // Comment,
+                    "(.*)" + SEPARATOR +            // description,
                     "(\\d*)" +                      // Date, ddmmyy
                     END_OF_LINE);
 
@@ -83,10 +83,10 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
             String time = matcher.group(6);
-            String comment = toMixedCase(matcher.group(7));
+            String description = toMixedCase(matcher.group(7));
             String date = matcher.group(8);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    parseDouble(altitude), null, null, parseDateAndTime(date, time), trim(comment));
+                    parseDouble(altitude), null, null, parseDateAndTime(date, time), trim(description));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -109,7 +109,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
         String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
-        String comment = escape(position.getComment(), SEPARATOR, ';');
+        String description = escape(position.getDescription(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
@@ -117,7 +117,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String trk = "PMGNTRK" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
                 altitude + SEPARATOR + "M" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
-                comment + SEPARATOR + date;
+                description + SEPARATOR + date;
         writeSentence(writer, trk);
     }
 

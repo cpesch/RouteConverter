@@ -191,8 +191,8 @@ public class Positions {
         return asPosition(longitude, latitude, (String)null);
     }
 
-    public static Wgs84Position asPosition(Double longitude, Double latitude, String comment) {
-        return new Wgs84Position(longitude, latitude, null, null, null, comment);
+    public static Wgs84Position asPosition(Double longitude, Double latitude, String description) {
+        return new Wgs84Position(longitude, latitude, null, null, null, description);
     }
 
     private static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {

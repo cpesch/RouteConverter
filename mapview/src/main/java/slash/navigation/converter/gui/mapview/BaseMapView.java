@@ -901,7 +901,7 @@ public abstract class BaseMapView implements MapView {
                 NavigationPosition position = positions.get(i);
                 buffer.append("addMarker(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(",").
-                        append("\"").append(escape(position.getComment())).append("\",").
+                        append("\"").append(escape(position.getDescription())).append("\",").
                         append(showWaypointDescription).append(");\n");
             }
             executeScript(buffer.toString());
@@ -953,7 +953,7 @@ public abstract class BaseMapView implements MapView {
             NavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("selectPosition(").append(selectedPosition.getLatitude()).append(",").
                     append(selectedPosition.getLongitude()).append(",").
-                    append("\"").append(escape(selectedPosition.getComment())).append("\",").
+                    append("\"").append(escape(selectedPosition.getDescription())).append("\",").
                     append(i).append(");\n");
         }
 
@@ -1445,8 +1445,8 @@ public abstract class BaseMapView implements MapView {
                 time = fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            String comment = instructions != null ? instructions : positionAugmenter.createComment(positionNumber);
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, comment);
+            String description = instructions != null ? instructions : positionAugmenter.createDescription(positionNumber);
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, description);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1468,7 +1468,7 @@ public abstract class BaseMapView implements MapView {
         List<NavigationPosition> positions = route.getPositions();
         int index = row;
         for (NavigationPosition position : positions) {
-            // do not complement comment since this is limited to 2500 calls/day
+            // do not complement description since this is limited to 2500 calls/day
             positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
             positionAugmenter.complementTime(index, position.getTime(), false);
             index++;
@@ -1476,10 +1476,10 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
-        positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createComment(positionsModel.getRowCount() + 1));
+        positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createDescription(positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
-        positionAugmenter.complementComment(row, longitude, latitude);
+        positionAugmenter.complementDescription(row, longitude, latitude);
         positionAugmenter.complementElevation(row, longitude, latitude);
         positionAugmenter.complementTime(row, null, true);
     }

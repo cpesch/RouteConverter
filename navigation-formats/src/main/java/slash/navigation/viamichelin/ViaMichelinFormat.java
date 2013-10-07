@@ -76,21 +76,21 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(name, (List<Wgs84Position>) positions);
     }
 
-    private String parseComment(Poi poi) {
-        String comment = trim(poi.getCpCity());
+    private String parsedescription(Poi poi) {
+        String city = trim(poi.getCpCity());
         String address = trim(poi.getAddress());
         if (address != null)
-            comment = comment != null ? comment + " " + address : address;
+            city = city != null ? city + " " + address : address;
         String name = trim(poi.getName());
         if (name != null)
-            comment = comment != null ? comment + " " + name : name;
+            city = city != null ? city + " " + name : name;
         Description description = poi.getDescription();
         if (description != null) {
             String descriptionStr = trim(description.toString());
             if (descriptionStr != null)
-                comment = comment != null ? comment + " " + descriptionStr : descriptionStr;
+                city = city != null ? city + " " + descriptionStr : descriptionStr;
         }
-        return comment;
+        return city;
     }
 
     private ViaMichelinRoute process(PoiList poiList) {
@@ -106,7 +106,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(asPosition(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parseComment(poi)));
+                positions.add(asPosition(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parsedescription(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);
@@ -135,7 +135,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
             Step step = objectFactory.createStep();
             step.setLongitude(formatPositionAsString(position.getLongitude()));
             step.setLatitude(formatPositionAsString(position.getLatitude()));
-            step.setName(position.getComment());
+            step.setName(position.getDescription());
             itinerary.getStep().add(step);
         }
         return poiList;

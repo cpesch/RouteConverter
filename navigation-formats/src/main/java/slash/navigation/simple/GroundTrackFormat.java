@@ -117,13 +117,13 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String comment = trim(lineMatcher.group(1));
+        String description = trim(lineMatcher.group(1));
         Double latitude = parseDouble(lineMatcher.group(2));
         Double longitude = parseDouble(lineMatcher.group(3));
         Double elevation = parseDouble(lineMatcher.group(4));
         CompactCalendar time = parseTime(trim(lineMatcher.group(5)), trim(lineMatcher.group(6)));
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, elevation, null, time, comment);
+        Wgs84Position position = new Wgs84Position(longitude, latitude, elevation, null, time, description);
         position.setStartDate(startDate);
         return position;
     }
@@ -148,10 +148,10 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String elevation = position.getElevation() != null ? formatElevationAsString(position.getElevation()) : "0.0";
         String time = formatTime(position.getTime());
 
-        // try to parse number from comment to make read/write round trip easier
+        // try to parse number from description to make read/write round trip easier
         int number;
         try {
-            number = parseInt(position.getComment());
+            number = parseInt(position.getDescription());
         }
         catch (NumberFormatException e) {
             number = index + 1;

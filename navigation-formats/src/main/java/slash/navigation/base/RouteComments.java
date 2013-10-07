@@ -60,7 +60,7 @@ public abstract class RouteComments {
 
     public static String createRouteName(List<? extends NavigationPosition> positions) {
         if (positions.size() > 0)
-            return positions.get(0).getComment() + " to " + positions.get(positions.size() - 1).getComment();
+            return positions.get(0).getDescription() + " to " + positions.get(positions.size() - 1).getDescription();
         else
             return "?";
     }
@@ -112,25 +112,25 @@ public abstract class RouteComments {
     public static void commentPositions(List<? extends NavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             NavigationPosition position = positions.get(i);
-            String original = position.getComment();
+            String original = position.getDescription();
             String modified = getPositionComment(position, i);
             if (original == null || !original.equals(modified))
-                position.setComment(modified);
+                position.setDescription(modified);
         }
     }
 
     private static String getPositionComment(NavigationPosition position, int index) {
-        if (position.getComment() == null || "(null)".equals(position.getComment())) {
+        if (position.getDescription() == null || "(null)".equals(position.getDescription())) {
             return getPositionComment(index);
         } else {
-            Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
+            Matcher matcher = POSITION_PATTERN.matcher(position.getDescription());
             if (matcher.matches()) {
                 String prefix = trim(matcher.group(1));
                 String postfix = trim(matcher.group(3));
                 return (prefix != null ? prefix : "") + getPositionComment(index) + (postfix != null ? postfix : "");
             }
         }
-        return position.getComment();
+        return position.getDescription();
     }
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\s*(\\d*)(.*)");
@@ -172,10 +172,10 @@ public abstract class RouteComments {
                     if (!position.hasCoordinates())
                         continue;
 
-                    if (position.getComment() != null) {
+                    if (position.getDescription() != null) {
                         LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
                         if (comments.get(lal) == null) {
-                            comments.put(lal, position.getComment());
+                            comments.put(lal, position.getDescription());
                         }
                     }
 
@@ -207,11 +207,11 @@ public abstract class RouteComments {
                     if (!position.hasCoordinates())
                         continue;
 
-                    if (position.getComment() == null) {
+                    if (position.getDescription() == null) {
                         LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
                         String comment = comments.get(lal);
                         if (comment != null) {
-                            position.setComment(comment);
+                            position.setDescription(comment);
                         }
                     }
 
@@ -313,12 +313,12 @@ public abstract class RouteComments {
             "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
 
     /**
-     * logpos encoding of the comment:
-     * + looks like a planned position with a verbose comment
+     * logpos encoding of the description:
+     * + looks like a planned position with a verbose description
      * + Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @166.6m (s=60 d=34)
-     * - looks like a tracked position with a verbose comment
+     * - looks like a tracked position with a verbose description
      * - Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @162.6m (s=66 d=6)
-     * * is a coordinate comment
+     * * is a coordinate description
      * * 1000462:4889518 @365.8m (s=1 d=193)
      * = seems to be written if the position does not change for a time period
      * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
@@ -368,7 +368,7 @@ public abstract class RouteComments {
         return !isEmpty(aDouble) ? aDouble : null;
     }
 
-    public static void parseComment(NavigationPosition position, String comment) {
+    public static void parseDescription(NavigationPosition position, String comment) {
         Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(2)));

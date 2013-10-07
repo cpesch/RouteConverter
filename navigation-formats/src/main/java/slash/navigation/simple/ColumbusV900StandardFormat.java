@@ -93,20 +93,20 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
         String heading = lineMatcher.group(11);
 
-        String comment = removeZeros(lineMatcher.group(12));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
-        if (commentSeparatorIndex != -1)
-            comment = comment.substring(commentSeparatorIndex + 1);
-        comment = trim(comment);
+        String description = removeZeros(lineMatcher.group(12));
+        int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
+        if (descriptionSeparatorIndex != -1)
+            description = description.substring(descriptionSeparatorIndex + 1);
+        description = trim(description);
 
         String lineType = trim(lineMatcher.group(2));
-        if (comment == null && POI_POSITION.equals(lineType)) {
+        if (description == null && POI_POSITION.equals(lineType)) {
             String lineNumber = lineMatcher.group(1);
-            comment = "POI " + trim(removeZeros(lineNumber));
+            description = "POI " + trim(removeZeros(lineNumber));
         }
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), comment);
+                parseDateAndTime(date, time), description);
         position.setHeading(parseDouble(heading));
         return position;
     }
@@ -121,16 +121,16 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String comment = fillWithZeros(escape(position.getComment(), SEPARATOR, ';'), 8);
+        String description = fillWithZeros(escape(position.getDescription(), SEPARATOR, ';'), 8);
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatLineType(position.getComment()) + SEPARATOR +
+                formatLineType(position.getDescription()) + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + northOrSouth + SEPARATOR +
                 longitude + westOrEast + SEPARATOR +
                 height + SEPARATOR +
                 speed + SEPARATOR +
                 heading + SEPARATOR +
-                comment);
+                description);
     }
 }

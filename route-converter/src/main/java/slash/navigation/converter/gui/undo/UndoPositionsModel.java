@@ -163,8 +163,8 @@ public class UndoPositionsModel implements PositionsModel {
 
     // Undoable operations
 
-    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
         add(rowIndex, asList(position));
 
     }

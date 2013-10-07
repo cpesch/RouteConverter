@@ -20,6 +20,7 @@
 
 package slash.navigation.simple;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.ParserContext;
@@ -39,7 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
@@ -104,19 +104,19 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String extra = trim(lineMatcher.group(4));
         String phone = trim(lineMatcher.group(5));
 
-        String comment = name;
+        String description = name;
         if (extra != null)
-            comment += ";" + extra;
+            description += ";" + extra;
         if (phone != null)
-            comment += ";" + phone;
+            description += ";" + phone;
 
-        Wgs84Position position = asPosition(longitude, latitude, comment);
+        Wgs84Position position = asPosition(longitude, latitude, description);
         position.setStartDate(startDate);
         return position;
     }
 
-    private String formatComment(String string, int maximumLength) {
-        string = escape(string, '"', '\'');
+    private String escape(String string, int maximumLength) {
+        string = Transfer.escape(string, '"', '\'');
         return string != null ? string.substring(0, Math.min(string.length(), maximumLength)) : null;
     }
 
@@ -124,13 +124,13 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = formatDoubleAsString(position.getLongitude(), 6);
         String latitude = formatDoubleAsString(position.getLatitude(), 6);
 
-        String[] strings = position.getComment().split(";");
-        String comment = strings.length > 0 ? formatComment(strings[0], 60) : "";
-        String extra = strings.length > 1 ? formatComment(strings[1], 60) : "";
-        String phone = strings.length > 2 ? formatComment(strings[2], 30) : "";
+        String[] strings = position.getDescription().split(";");
+        String description = strings.length > 0 ? escape(strings[0], 60) : "";
+        String extra = strings.length > 1 ? escape(strings[1], 60) : "";
+        String phone = strings.length > 2 ? escape(strings[2], 30) : "";
 
         writer.println(longitude + SEPARATOR + " " + latitude + SEPARATOR + " " +
-                QUOTE + comment + QUOTE + SEPARATOR + " " +
+                QUOTE + description + QUOTE + SEPARATOR + " " +
                 QUOTE + extra + QUOTE + SEPARATOR + " " +
                 QUOTE + phone + QUOTE);
     }

@@ -30,12 +30,12 @@ package slash.navigation.base;
  *
  * Track: a collection of locations recorded by your GPS device while
  * traveling -- "breadcrumb trails". The order of trackpoints within the track
- * is important. Usually a trackpoint doesn't have a name or comment, but usually
+ * is important. Usually a trackpoint doesn't have a name or description, but usually
  * has a timestamp. This distinguishes a trackpoint from a waypoint.
  *
  * Waypoints: are geopoints that are not necessarily connected to other points,
  * and their order is unimportant. They can be entered before, while or after
- * you actually visit the place and might have tags like name, comment and the
+ * you actually visit the place and might have tags like name, description and the
  * like. Usually used to mark special locations as your home, a hotel or a geocache.
  *
  * @author Christian Pesch

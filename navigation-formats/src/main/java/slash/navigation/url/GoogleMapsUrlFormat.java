@@ -132,7 +132,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         List<Wgs84Position> result = new ArrayList<Wgs84Position>(positions);
         for (int i = result.size() - 1; i >= 0; i--) {
             Wgs84Position position = result.get(i);
-            if (trim(position.getComment()) == null)
+            if (trim(position.getDescription()) == null)
                 result.remove(i);
         }
         return result;
@@ -191,7 +191,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             Wgs84Position position = positions.get(i);
             String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;
             String latitude = position.getLatitude() != null ? formatDoubleAsString(position.getLatitude(), 6) : null;
-            String comment = encodeComment(trim(position.getComment()));
+            String comment = encodeDescription(trim(position.getDescription()));
             if (i == startIndex) {
                 buffer.append("saddr=").append(comment);
                 if(longitude != null && latitude != null)

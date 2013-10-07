@@ -78,13 +78,13 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
             String city = trim(addressPattern.group(2));
             String street = trim(addressPattern.group(3));
             String houseNumber = trim(addressPattern.group(4));
-            String comment = toMixedCase(decodeComment((zip != null ? zip + " " : "") +
+            String description = toMixedCase(decodeDescription((zip != null ? zip + " " : "") +
                     (city != null ? city : "") +
                     (street != null ? ", " + street : "") +
                     (houseNumber != null ? " " + houseNumber : "")));
             Double longitude = parseDouble(addressPattern.group(5));
             Double latitude = parseDouble(addressPattern.group(6));
-            return asPosition(longitude, latitude, trim(comment));
+            return asPosition(longitude, latitude, trim(description));
         }
         Matcher coordinatesMatcher = COORDINATE_PATTERN.matcher(position);
         if (coordinatesMatcher.matches()) {

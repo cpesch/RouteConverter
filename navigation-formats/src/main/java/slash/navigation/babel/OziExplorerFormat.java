@@ -53,8 +53,8 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
                 route.getPositionCount() > 0 &&
                 route.getPosition(0).getLongitude() == 0.0 &&
                 route.getPosition(0).getLatitude() == 0.0 &&
-                route.getPosition(0).getComment() != null &&
-                route.getPosition(0).getComment().startsWith("RPT"))
+                route.getPosition(0).getDescription() != null &&
+                route.getPosition(0).getDescription().startsWith("RPT"))
             route.getPositions().remove(0);
         return route;
     }

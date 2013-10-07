@@ -79,7 +79,7 @@ public class ReadIT {
                 for (BaseRoute route : result.getAllRoutes()) {
                     List<NavigationPosition> positions = route.getPositions();
                     for (NavigationPosition position : positions) {
-                        comments.add(position.getComment());
+                        comments.add(position.getDescription());
                     }
                 }
                 if (!NO_NAME_DEFINED.contains(file.getName()) && !file.getName().endsWith(".axe") &&

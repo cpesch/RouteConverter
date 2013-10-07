@@ -264,7 +264,7 @@ public abstract class NavigationTestCase extends TestCase {
                                         int index,
                                         NavigationPosition sourcePosition,
                                         NavigationPosition targetPosition,
-                                        boolean commentPositionNames,
+                                        boolean descriptionPositionNames,
                                         RouteCharacteristics sourceCharacteristics,
                                         RouteCharacteristics targetCharacteristics) {
         if (sourceFormat instanceof GoogleMapsUrlFormat &&
@@ -284,7 +284,7 @@ public abstract class NavigationTestCase extends TestCase {
         compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
-        compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
+        compareDescription(sourceFormat, targetFormat, index, sourcePosition, targetPosition, descriptionPositionNames, sourceCharacteristics, targetCharacteristics);
         compareHdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         comparePdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareVdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
@@ -543,12 +543,12 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull("Satellites " + index + " is not null: " + targetSatellites, targetSatellites);
     }
 
-    private static String getAlanWaypointsAndRoutesPositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        int index = comment.indexOf(';');
+    private static String getAlanWaypointsAndRoutesPositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        int index = description.indexOf(';');
         if (index != -1)
-            comment = comment.substring(0, index);
-        return trim(comment, 8);
+            description = description.substring(0, index);
+        return trim(description, 8);
     }
 
     private static String spaceUmlauts(String str) {
@@ -556,84 +556,84 @@ public abstract class NavigationTestCase extends TestCase {
                 .replaceAll("\u00f6", "  ");
     }
 
-    private static String getGarminMapSource6PositionComment(NavigationPosition position) {
-        String comment = spaceUmlauts(position.getComment());
-        if (comment.startsWith("STATION")) {
-            int index = comment.indexOf(';');
+    private static String getGarminMapSource6PositionDescription(NavigationPosition position) {
+        String description = spaceUmlauts(position.getDescription());
+        if (description.startsWith("STATION")) {
+            int index = description.indexOf(';');
             if (index != -1)
-                return Transfer.trim(comment.substring(index + 1));
+                return Transfer.trim(description.substring(index + 1));
         }
-        return comment;
+        return description;
     }
 
-    private static String getGarminPcx5PositionComment(NavigationPosition position) {
-        return nameDescription(garminUmlauts(trim(position.getComment(), 39)), 6, 4, true);
+    private static String getGarminPcx5PositionDescription(NavigationPosition position) {
+        return nameDescription(garminUmlauts(trim(position.getDescription(), 39)), 6, 4, true);
     }
 
-    private static String getGarminPoiPositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getGarminPoiPositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        comment = comment.replaceAll("  ", " ");
-        return trim(comment, 45);
+        description = description.replaceAll("  ", " ");
+        return trim(description, 45);
     }
 
-    private static String getGarminPoiDbPositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getGarminPoiDbPositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        return trim(nameDescription(garminUmlauts(comment).replaceAll(",", ""), 24, MAX_VALUE, true), 50);
+        return trim(nameDescription(garminUmlauts(description).replaceAll(",", ""), 24, MAX_VALUE, true), 50);
     }
 
-    private static String getGoRiderGpsComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getGoRiderGpsDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        return comment.replaceAll("\"", ";");
+        return description.replaceAll("\"", ";");
     }
 
-    private static String getMagellanMapSendPositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment.startsWith("WPT")) {
-            int index = comment.indexOf(';');
+    private static String getMagellanMapSendPositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description.startsWith("WPT")) {
+            int index = description.indexOf(';');
             if (index != -1)
-                comment = comment.substring(index + 1);
+                description = description.substring(index + 1);
         }
-        return trim(trimSpaces(comment), 19);
+        return trim(trimSpaces(description), 19);
     }
 
-    private static String getMicrosoftAutoroutePositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getMicrosoftAutoroutePositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        return trimDot1Substring(trim(comment, 16));
+        return trimDot1Substring(trim(description, 16));
     }
 
-    private static String getTourExchangePositionComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getTourExchangePositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        comment = spaceUmlauts(comment);
-        int index = comment.indexOf(";");
+        description = spaceUmlauts(description);
+        int index = description.indexOf(";");
         if (index == -1)
-            return comment;
-        String name = comment.substring(0, index);
-        String description = comment.substring(index + 1);
+            return description;
+        String name = description.substring(0, index);
+        description = description.substring(index + 1);
         return trimDot1Substring(name) + ";" + Transfer.trim(description);
 
     }
 
-    private static String getNavigatingPoiWarnerComment(NavigationPosition position) {
-        String comment = position.getComment();
-        if (comment == null)
+    private static String getNavigatingPoiWarnerDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
             return null;
-        return comment.replaceAll(",", ";").replaceAll("\"", ";");
+        return description.replaceAll(",", ";").replaceAll("\"", ";");
     }
 
 
-    private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
+    private static void compareDescription(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition, boolean descriptionPositionNames, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
-        if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
+        if (!(sourcePosition.getDescription() == null && targetPosition.getDescription().startsWith("Position"))) {
             if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof CompeGPSDataFormat ||
                     (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
                     (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
@@ -643,97 +643,97 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||
-                    ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !commentPositionNames))
-                assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
+                    ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !descriptionPositionNames))
+                assertTrue("Description " + index + " does not match", targetPosition.getDescription().startsWith("Position"));
             else if (sourceFormat instanceof AlanTrackLogFormat)
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), targetPosition.getDescription());
             else if (targetFormat instanceof AlanWaypointsAndRoutesFormat)
-                assertEquals("Comment " + index + " does not match", getAlanWaypointsAndRoutesPositionComment(sourcePosition), getAlanWaypointsAndRoutesPositionComment(targetPosition));
+                assertEquals("Description " + index + " does not match", getAlanWaypointsAndRoutesPositionDescription(sourcePosition), getAlanWaypointsAndRoutesPositionDescription(targetPosition));
             else if (sourceFormat instanceof BcrFormat && targetFormat instanceof TomTomRouteFormat) {
                 BcrPosition bcrPosition = (BcrPosition) sourcePosition;
-                assertEquals("Comment " + index + " does not match", escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), targetPosition.getDescription());
             } else if (sourceFormat instanceof GarminPoiFormat && targetFormat instanceof GarminPoiDbFormat) {
-                String sourceName = getGarminPoiDbPositionComment(sourcePosition);
-                String targetName = getGarminPoiDbPositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGarminPoiDbPositionDescription(sourcePosition);
+                String targetName = getGarminPoiDbPositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GarminPoiDbFormat) {
-                String sourceName = getGarminPoiDbPositionComment(sourcePosition);
-                String targetName = getGarminPoiDbPositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGarminPoiDbPositionDescription(sourcePosition);
+                String targetName = getGarminPoiDbPositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GarminPoiFormat) {
-                String sourceName = getGarminPoiPositionComment(sourcePosition);
-                String targetName = getGarminPoiPositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGarminPoiPositionDescription(sourcePosition);
+                String targetName = getGarminPoiPositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Waypoints))
-                assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(trimSpeedComment(targetPosition.getComment()), 50));
+                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 50)), trim(trimSpeedDescription(targetPosition.getDescription()), 50));
             else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
-                assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
+                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 8)), trim(trimSpeedDescription(targetPosition.getDescription()), 8));
             else if (targetFormat instanceof TomTomRouteFormat) {
-                String targetComment = targetPosition.getComment();
+                String targetDescription = targetPosition.getDescription();
                 // strip tripmaster prefix if required
-                int colonIndex = targetComment.lastIndexOf(" : ");
+                int colonIndex = targetDescription.lastIndexOf(" : ");
                 if (colonIndex == -1)
-                    colonIndex = targetComment.lastIndexOf(" - ");
+                    colonIndex = targetDescription.lastIndexOf(" - ");
                 if (colonIndex != -1)
-                    targetComment = targetComment.substring(colonIndex + 3);
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetComment);
+                    targetDescription = targetDescription.substring(colonIndex + 3);
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll("\\|", ";"), targetDescription);
             } else if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof MagellanExploristFormat ||
                     targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll(",", ";"), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
-                assertEquals("Comment " + index + " does not match", escapeNmn4and5(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", escapeNmn4and5(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn6Format)
-                assertEquals("Comment " + index + " does not match", escapeNmn6(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", escapeNmn6(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn6FavoritesFormat)
-                assertEquals("Comment " + index + " does not match", escapeNmn6Favorites(sourcePosition.getComment().toUpperCase()), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", escapeNmn6Favorites(sourcePosition.getDescription().toUpperCase()), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn7Format)
-                assertEquals("Comment " + index + " does not match", trimSpaces(sourcePosition.getComment()), trimSpaces(targetPosition.getComment()));
+                assertEquals("Description " + index + " does not match", trimSpaces(sourcePosition.getDescription()), trimSpaces(targetPosition.getDescription()));
             else if (sourceFormat instanceof GarminPcx5Format && targetFormat instanceof MagellanMapSendFormat) {
                 // makes no sense, as the result is "WPT001" from a "D22081..." source
                 assertTrue(true);
             } else if (targetFormat instanceof MagellanMapSendFormat) {
-                String sourceName = getMagellanMapSendPositionComment(sourcePosition);
-                String targetName = getMagellanMapSendPositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getMagellanMapSendPositionDescription(sourcePosition);
+                String targetName = getMagellanMapSendPositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GarminPcx5Format) {
-                String sourceName = getGarminPcx5PositionComment(sourcePosition);
-                String targetName = getGarminPcx5PositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGarminPcx5PositionDescription(sourcePosition);
+                String targetName = getGarminPcx5PositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof MicrosoftAutoRouteFormat) {
-                String sourceName = getMicrosoftAutoroutePositionComment(sourcePosition);
-                String targetName = getMicrosoftAutoroutePositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getMicrosoftAutoroutePositionDescription(sourcePosition);
+                String targetName = getMicrosoftAutoroutePositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof Route66Format)
-                assertEquals("Comment " + index + " does not match", toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", toMixedCase(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format ||
                     targetFormat instanceof GarminMapSource5Format) {
-                String sourceName = getGarminMapSource6PositionComment(sourcePosition);
-                String targetName = getGarminMapSource6PositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGarminMapSource6PositionDescription(sourcePosition);
+                String targetName = getGarminMapSource6PositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof NavigatingPoiWarnerFormat || targetFormat instanceof NavigatingPoiWarnerFormat) {
-                String sourceName = getNavigatingPoiWarnerComment(sourcePosition);
-                String targetName = getNavigatingPoiWarnerComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getNavigatingPoiWarnerDescription(sourcePosition);
+                String targetName = getNavigatingPoiWarnerDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GlopusFormat) {
-                String sourceName = getNavigatingPoiWarnerComment(sourcePosition);
-                String targetName = getNavigatingPoiWarnerComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getNavigatingPoiWarnerDescription(sourcePosition);
+                String targetName = getNavigatingPoiWarnerDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GoRiderGpsFormat) {
-                String sourceName = getGoRiderGpsComment(sourcePosition);
-                String targetName = getGoRiderGpsComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getGoRiderGpsDescription(sourcePosition);
+                String targetName = getGoRiderGpsDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof TourExchangeFormat) {
-                String sourceName = getTourExchangePositionComment(sourcePosition);
-                String targetName = getTourExchangePositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getTourExchangePositionDescription(sourcePosition);
+                String targetName = getTourExchangePositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof GpxFormat) {
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment().trim(), trimSpeedComment(targetPosition.getComment()));
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().trim(), trimSpeedDescription(targetPosition.getDescription()));
             } else if (sourceFormat instanceof OpelNaviFormat) {
-                String sourceName = getTourExchangePositionComment(sourcePosition);
-                String targetName = getTourExchangePositionComment(targetPosition);
-                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+                String sourceName = getTourExchangePositionDescription(sourcePosition);
+                String targetName = getTourExchangePositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), targetPosition.getDescription());
         }
     }
 
@@ -833,7 +833,7 @@ public abstract class NavigationTestCase extends TestCase {
         return index != -1 ? str.substring(0, index) : str;
     }
 
-    private static String trimSpeedComment(String str) {
+    private static String trimSpeedDescription(String str) {
         return trimSuffix(str, "; Speed");
     }
 
@@ -885,14 +885,14 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,
-                                        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat, boolean commentPositionNames) {
+                                        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat, boolean descriptionPositionNames) {
         if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
             assertTrue(true);
         } else if (targetFormat instanceof TomTomPoiFormat) {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, 1), sourceFormat, targetRoute.getPositions().subList(0, 1), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
-            comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(0, 1), sourceFormat, targetRoute.getPositions().subList(0, 1), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
             // TomTomPoiFormat has no order of the positions except for first and second
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
@@ -900,10 +900,10 @@ public abstract class NavigationTestCase extends TestCase {
                 targetRoute.getCharacteristics().equals(Waypoints)) {
             int sourcePositionCount = sourceRoute.getPositionCount() - 1;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         }
     }
 
@@ -911,22 +911,22 @@ public abstract class NavigationTestCase extends TestCase {
                                         NavigationFormat sourceFormat,
                                         List<BaseNavigationPosition> targetPositions,
                                         NavigationFormat targetFormat,
-                                        boolean commentPositionNames,
+                                        boolean descriptionPositionNames,
                                         boolean compareByEquals,
                                         RouteCharacteristics sourceCharacteristics,
                                         RouteCharacteristics targetCharacteristics) {
         for (int i = 0; i < sourcePositions.size(); i++) {
             NavigationPosition sourcePosition = sourcePositions.get(i);
             NavigationPosition targetPosition = targetPositions.get(i);
-            comparePosition(sourceFormat, targetFormat, i, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
+            comparePosition(sourceFormat, targetFormat, i, sourcePosition, targetPosition, descriptionPositionNames, sourceCharacteristics, targetCharacteristics);
         }
         if (!compareByEquals)
             return;
         for (int i = 0; i < sourcePositions.size(); i++) {
             NavigationPosition sourcePosition = sourcePositions.get(i);
             // don't fail if a position has been commented by us
-            if (sourcePosition.getComment() == null)
-                sourcePosition.setComment("Position " + (i + 1));
+            if (sourcePosition.getDescription() == null)
+                sourcePosition.setDescription("Position " + (i + 1));
             NavigationPosition targetPosition = targetPositions.get(i);
             assertEquals("Position " + i + " is not equal", sourcePosition, targetPosition);
             assertEquals(sourcePositions, targetPositions);
@@ -940,7 +940,7 @@ public abstract class NavigationTestCase extends TestCase {
                                              int fileNumber,
                                              int positionsPerFile,
                                              boolean duplicateFirstPosition,
-                                             boolean commentPositionNames,
+                                             boolean descriptionPositionNames,
                                              RouteCharacteristics sourceCharacteristics,
                                              RouteCharacteristics targetCharacteristics) {
         int count = duplicateFirstPosition ? sourcePositions.size() : targetPositions.size();
@@ -948,7 +948,7 @@ public abstract class NavigationTestCase extends TestCase {
             int index = i + positionsPerFile * fileNumber;
             NavigationPosition sourcePosition = sourcePositions.get(index);
             NavigationPosition targetPosition = targetPositions.get(i + (duplicateFirstPosition ? 1 : 0));
-            comparePosition(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
+            comparePosition(sourceFormat, targetFormat, index, sourcePosition, targetPosition, descriptionPositionNames, sourceCharacteristics, targetCharacteristics);
         }
     }
 

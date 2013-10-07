@@ -98,10 +98,10 @@ public class CompletePositionService {
         return null;
     }
 
-    public String getCommentFor(double longitude, double latitude) throws IOException {
-        String comment = googleMapsService.getLocationFor(longitude, latitude);
-        if (comment == null)
-            comment = geoNamesService.getNearByFor(longitude, latitude);
-        return comment;
+    public String getDescriptionFor(double longitude, double latitude) throws IOException {
+        String description = googleMapsService.getLocationFor(longitude, latitude);
+        if (description == null)
+            description = geoNamesService.getNearByFor(longitude, latitude);
+        return description;
     }
 }

@@ -33,6 +33,6 @@ import java.util.Comparator;
 
 public class DescriptionComparator implements Comparator<NavigationPosition> {
     public int compare(NavigationPosition p1, NavigationPosition p2) {
-        return Collator.getInstance().compare(p1.getComment(), p2.getComment());
+        return Collator.getInstance().compare(p1.getDescription(), p2.getDescription());
     }
 }

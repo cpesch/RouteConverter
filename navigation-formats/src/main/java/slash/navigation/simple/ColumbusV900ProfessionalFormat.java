@@ -105,20 +105,20 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String hdop = lineMatcher.group(13);
         String vdop = lineMatcher.group(14);
 
-        String comment = removeZeros(lineMatcher.group(15));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
-        if (commentSeparatorIndex != -1)
-            comment = comment.substring(commentSeparatorIndex + 1);
-        comment = trim(comment);
+        String description = removeZeros(lineMatcher.group(15));
+        int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
+        if (descriptionSeparatorIndex != -1)
+            description = description.substring(descriptionSeparatorIndex + 1);
+        description = trim(description);
 
         String lineType = trim(lineMatcher.group(2));
-        if (comment == null && POI_POSITION.equals(lineType)) {
+        if (description == null && POI_POSITION.equals(lineType)) {
             String lineNumber = lineMatcher.group(1);
-            comment = "POI " + trim(removeZeros(lineNumber));
+            description = "POI " + trim(removeZeros(lineNumber));
         }
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), comment);
+                parseDateAndTime(date, time), description);
         position.setHeading(parseDouble(heading));
         position.setPdop(parseDouble(pdop));
         position.setHdop(parseDouble(hdop));
@@ -139,10 +139,10 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "0.0", 5);
         String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "0.0", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "0.0", 5);
-        String comment = fillWithZeros(escape(position.getComment(), SEPARATOR, ';'), 8);
+        String description = fillWithZeros(escape(position.getDescription(), SEPARATOR, ';'), 8);
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatLineType(position.getComment()) + SEPARATOR +
+                formatLineType(position.getDescription()) + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + northOrSouth + SEPARATOR +
                 longitude + westOrEast + SEPARATOR +
@@ -154,6 +154,6 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                 pdop + SEPARATOR +
                 hdop + SEPARATOR +
                 vdop + SEPARATOR +
-                comment);
+                description);
     }
 }

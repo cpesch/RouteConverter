@@ -27,7 +27,6 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
@@ -86,17 +85,13 @@ public class Nmn5Format extends NmnFormat {
         return new NmnPosition(parseDouble(longitude), parseDouble(latitude), null, city, street, number);
     }
 
-    private static String formatComment(String string) {
-        return string != null ? escape(string, SEPARATOR, ';') : "-";
-    }
-
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
         String longitude = formatPositionAsString(nmnPosition.getLongitude());
         String latitude = formatPositionAsString(nmnPosition.getLatitude());
-        String city = formatComment(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
-        String street = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
-        String number = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());
+        String city = escape(nmnPosition.isUnstructured() ? nmnPosition.getDescription() : nmnPosition.getCity());
+        String street = escape(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
+        String number = escape(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());
         writer.println("-" + SEPARATOR + "-" + SEPARATOR +
                 "-" + SEPARATOR + "-" + SEPARATOR + "-" + SEPARATOR +
                 city + "" + SEPARATOR +

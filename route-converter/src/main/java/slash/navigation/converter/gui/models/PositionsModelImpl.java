@@ -54,7 +54,6 @@ import static slash.navigation.common.UnitConversion.ddmm2latitude;
 import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
 import static slash.navigation.common.UnitConversion.ddmmss2longitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractComment;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
@@ -100,7 +99,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         NavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                return extractComment(position);
+                return position.getDescription();
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
@@ -209,7 +208,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                position.setComment(string);
+                position.setDescription(string);
                 break;
             case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(value, string));
@@ -296,8 +295,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return null;
     }
 
-    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
         add(rowIndex, asList(position));
     }
 

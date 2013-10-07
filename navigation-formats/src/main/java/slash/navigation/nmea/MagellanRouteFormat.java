@@ -82,8 +82,8 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
                     "(-?[\\d\\.]+)" + SEPARATOR +
                     "M" + SEPARATOR +
-                    "([^" + SEPARATOR + "]*)" + SEPARATOR +          // Comment
-                    "[^" + SEPARATOR + "]*" + SEPARATOR +            // copy of the comment above
+                    "([^" + SEPARATOR + "]*)" + SEPARATOR +          // description
+                    "[^" + SEPARATOR + "]*" + SEPARATOR +            // copy of the description above
                     "a" +
                     END_OF_LINE);
 
@@ -121,9 +121,9 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             String longitude = matcher.group(3);
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
-            String comment = toMixedCase(matcher.group(6));
+            String description = toMixedCase(matcher.group(6));
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    parseDouble(altitude), null, null, null, trim(comment));
+                    parseDouble(altitude), null, null, null, trim(description));
         }
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
@@ -189,22 +189,22 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
         String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
-        String comment = escape(position.getComment(), SEPARATOR, ';');
+        String description = escape(position.getDescription(), SEPARATOR, ';');
         String altitude = formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                altitude + SEPARATOR + "M" + SEPARATOR + comment + SEPARATOR + SEPARATOR + "a";
+                altitude + SEPARATOR + "M" + SEPARATOR + description + SEPARATOR + SEPARATOR + "a";
         writeSentence(writer, wpl);
     }
 
     private void writeRte(NmeaPosition start, NmeaPosition end, PrintWriter writer, int count, int index, String routeName) {
-        String startName = escape(start.getComment(), SEPARATOR, ';');
+        String startName = escape(start.getDescription(), SEPARATOR, ';');
 
         String rte = "PMGNRTE" + SEPARATOR + count + SEPARATOR + (index + 1) + SEPARATOR +
                 "c" + SEPARATOR + "01" + SEPARATOR + routeName + SEPARATOR + startName + SEPARATOR + "a";
         if (end != null) {
-            String endName = escape(end.getComment(), SEPARATOR, ';');
+            String endName = escape(end.getDescription(), SEPARATOR, ';');
             rte += SEPARATOR + endName + SEPARATOR + "a";
         }
         writeSentence(writer, rte);

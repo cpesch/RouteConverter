@@ -80,7 +80,7 @@ public class GoPalTrackFormatTest {
         String expected = format.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class GoPalTrackFormatTest {
         String expected = format.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -117,6 +117,6 @@ public class GoPalTrackFormatTest {
         CompactCalendar expectedCal = calendar(2010, 7, 19, 9, 22, 58);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

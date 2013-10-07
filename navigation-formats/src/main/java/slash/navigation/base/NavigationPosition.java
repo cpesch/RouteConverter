@@ -73,8 +73,8 @@ public interface NavigationPosition {
     Double getSpeed();
     void setSpeed(Double speed);
 
-    String getComment();
-    void setComment(String comment);
+    String getDescription();
+    void setDescription(String description);
 
     /**
      * Set the day/month/year-offset for date-less, time-only positions

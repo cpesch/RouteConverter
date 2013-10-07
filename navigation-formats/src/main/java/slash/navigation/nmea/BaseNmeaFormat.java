@@ -158,8 +158,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (isEmpty(position.getComment()) && !isEmpty(toBeMergedInto.getComment()))
-            position.setComment(toBeMergedInto.getComment());
+        if (isEmpty(position.getDescription()) && !isEmpty(toBeMergedInto.getDescription()))
+            position.setDescription(toBeMergedInto.getDescription());
         if (isEmpty(position.getElevation()) && !isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
         if (isEmpty(position.getSpeed()) && !isEmpty(toBeMergedInto.getSpeed()))

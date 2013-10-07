@@ -28,8 +28,8 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that adds populated places from geonames.org as comments to
- * the selected rows of a {@link JTable} with the help of a {@link slash.navigation.converter.gui.helpers.BatchPositionAugmenter}.
+ * {@link ActionListener} that adds populated places from geonames.org as descriptions to
+ * the selected rows of a {@link JTable} with the help of a {@link BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */

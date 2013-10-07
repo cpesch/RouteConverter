@@ -179,11 +179,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
     }
 
     public GkPosition asGkPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -197,7 +197,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -216,7 +216,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GpxPosition asGpxPosition() {
-        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -235,7 +235,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public KmlPosition asKmlPosition() {
-        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -280,7 +280,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     @SuppressWarnings("UnusedDeclaration")
     public GkPosition asMagicMapsPthPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -289,7 +289,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public BcrPosition asMTPPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -298,7 +298,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public NmeaPosition asNmeaPosition() {
-        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -307,7 +307,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public NmnPosition asNmnPosition() {
-        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -351,15 +351,15 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public TomTomPosition asTomTomRoutePosition() {
-        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")

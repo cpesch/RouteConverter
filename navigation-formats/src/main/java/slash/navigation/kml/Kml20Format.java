@@ -195,7 +195,7 @@ public class Kml20Format extends KmlFormat {
     private void extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, CompactCalendar startDate, ParserContext<KmlRoute> context) {
         List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (Placemark placemark : placemarks) {
-            String placemarkName = asComment(extractName(placemark.getDescriptionOrNameOrSnippet()),
+            String placemarkName = asDescription(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
 
             List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
@@ -269,8 +269,8 @@ public class Kml20Format extends KmlFormat {
             Placemark placemark = objectFactory.createPlacemark();
             folderList.add(placemark);
             List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-            placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getComment() : null)));
-            placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getComment() : null)));
+            placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getDescription() : null)));
+            placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getDescription() : null)));
             placemarkList.add(objectFactory.createVisibility(Boolean.FALSE));
             if (position.hasTime())
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));

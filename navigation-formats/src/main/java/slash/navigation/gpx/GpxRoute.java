@@ -123,18 +123,18 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         positions.add(index, position);
     }
 
-    public GpxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new GpxPosition(longitude, latitude, elevation, speed, time, comment);
+    public GpxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new GpxPosition(longitude, latitude, elevation, speed, time, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (GpxPosition position : positions) {
             BcrPosition bcrPosition = position.asMTPPosition();
-            // shortens comment to better fit to Map&Guide Tourenplaner station list
+            // shortens description to better fit to Map&Guide Tourenplaner station list
             String location = position.getCity();
             if (location != null)
-                bcrPosition.setComment(location);
+                bcrPosition.setDescription(location);
             bcrPositions.add(bcrPosition);
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);

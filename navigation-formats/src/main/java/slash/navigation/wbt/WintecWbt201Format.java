@@ -236,14 +236,14 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         calendar.set(SECOND, second);
         calendar.set(MILLISECOND, 0);
 
-        String comment;
+        String description;
         if (isTrackpoint)
-            comment = "Trackpoint " + String.valueOf(pointNo);
+            description = "Trackpoint " + String.valueOf(pointNo);
         else
-            comment = "Pushpoint " + String.valueOf(pointNo);
+            description = "Pushpoint " + String.valueOf(pointNo);
 
         return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null,
-                fromCalendar(calendar), comment);
+                fromCalendar(calendar), description);
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {

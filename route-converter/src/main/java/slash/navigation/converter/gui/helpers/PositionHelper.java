@@ -56,10 +56,6 @@ public class PositionHelper {
     private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static String currentTimeZone = "";
 
-    public static String extractComment(NavigationPosition position) {
-        return position.getComment();
-    }
-
     public static String formatDistance(Double distance) {
         if (distance == null || distance <= 0.0)
             return "";

@@ -86,7 +86,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected KmlPosition asKmlPosition(BasicPosition position) {
-        return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
+        return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getDescription());
     }
 
     protected List<KmlPosition> asKmlPositions(List<String> strings) {
@@ -169,8 +169,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
             parseTime(position, description, startDate);
         if (!position.hasTime())
             parseTime(position, name, startDate);
-        if (position.getComment() == null)
-            position.setComment(name);
+        if (position.getDescription() == null)
+            position.setDescription(name);
 
         if (position.getElevation() == null) {
             Double elevation = parseElevation(description);

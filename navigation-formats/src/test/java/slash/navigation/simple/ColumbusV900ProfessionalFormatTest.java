@@ -62,6 +62,6 @@ public class ColumbusV900ProfessionalFormatTest extends NavigationTestCase {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("VOX02971", position.getComment());
+        assertEquals("VOX02971", position.getDescription());
     }
 }

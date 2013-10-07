@@ -56,13 +56,13 @@ public class PositionsModelTest {
     public void testGetPositions() {
         initialize();
         assertEquals(5, model.getRowCount());
-        assertEquals("b", model.getPosition(1).getComment());
+        assertEquals("b", model.getPosition(1).getDescription());
         assertEquals(0, model.getPositions(1, 1).size());
-        assertEquals("b", model.getPositions(1, 3).get(0).getComment());
-        assertEquals("b", model.getPositions(0, 2).get(1).getComment());
+        assertEquals("b", model.getPositions(1, 3).get(0).getDescription());
+        assertEquals("b", model.getPositions(0, 2).get(1).getDescription());
         assertEquals(1, model.getPositions(new int[]{1}).size());
-        assertEquals("b", model.getPositions(new int[]{1}).get(0).getComment());
-        assertEquals("b", model.getPositions(new int[]{0, 1}).get(1).getComment());
+        assertEquals("b", model.getPositions(new int[]{1}).get(0).getDescription());
+        assertEquals("b", model.getPositions(new int[]{0, 1}).get(1).getDescription());
     }
 
     @Test
@@ -70,8 +70,8 @@ public class PositionsModelTest {
         initialize();
         model.remove(1, 4);
         assertEquals(2, model.getRowCount());
-        assertEquals("a", model.getPosition(0).getComment());
-        assertEquals("e", model.getPosition(1).getComment());
+        assertEquals("a", model.getPosition(0).getDescription());
+        assertEquals("e", model.getPosition(1).getDescription());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class PositionsModelTest {
         initialize();
         model.remove(new int[]{1, 2, 3});
         assertEquals(2, model.getRowCount());
-        assertEquals("a", model.getPosition(0).getComment());
-        assertEquals("e", model.getPosition(1).getComment());
+        assertEquals("a", model.getPosition(0).getDescription());
+        assertEquals("e", model.getPosition(1).getDescription());
     }
 }

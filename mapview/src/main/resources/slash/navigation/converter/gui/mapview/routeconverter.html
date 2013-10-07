@@ -215,9 +215,9 @@
    var oldSelectedPositions = new Array();
    var newSelectedPositions = new Array();
 
-   function selectPosition(latitude, longitude, comment, index) {
+   function selectPosition(latitude, longitude, description, index) {
        var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
-           title:comment, draggable:true, zIndex:1000});
+           title:description, draggable:true, zIndex:1000});
        marker.index_ = index;
        addListener(marker);
        newSelectedPositions.push(marker);
@@ -238,13 +238,13 @@
 
    var markerIcon;
 
-   function addMarker(latitude, longitude, comment, showWaypointDescription) {
+   function addMarker(latitude, longitude, description, showWaypointDescription) {
        if (showWaypointDescription)
            addOverlay(new MarkerWithLabel({position: new google.maps.LatLng(latitude, longitude),
-               title: comment, clickable: false, icon: markerIcon}));
+               title: description, clickable: false, icon: markerIcon}));
        else
            addOverlay(new google.maps.Marker({position: new google.maps.LatLng(latitude, longitude),
-               title: comment, clickable: false, icon:markerIcon}));
+               title: description, clickable: false, icon:markerIcon}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {
