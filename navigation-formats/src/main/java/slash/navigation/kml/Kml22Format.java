@@ -83,6 +83,8 @@ import static slash.navigation.common.BasicPosition.parseExtensionPositions;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.kml.KmlUtil.marshal22;
 import static slash.navigation.kml.KmlUtil.unmarshal22;
+import static slash.navigation.kml.binding22.UnitsEnumType.FRACTION;
+import static slash.navigation.kml.binding22.UnitsEnumType.PIXELS;
 
 /**
  * Reads and writes Google Earth 5 (.kml) files.
@@ -495,40 +497,44 @@ public class Kml22Format extends KmlFormat {
         folderType.setOpen(FALSE);
         folderType.getAbstractFeatureGroup().add(objectFactory.createScreenOverlay(createSpeedbar()));
 
-        boolean foundSpeed = false;
-        int currentSegment = 1;
-        int previousSpeedClass = -1;
+        int segmentIndex = 0;
         List<String> coordinates = new ArrayList<String>();
+        Integer previousSpeedClass = null;
+        Double previousSpeed = null;
+        KmlPosition previous = null;
         List<KmlPosition> positions = route.getPositions();
-        for (int i = startIndex; i < endIndex - 1; i++) {
-            KmlPosition nextPosition = positions.get(i + 1);
-            Double speed = positions.get(i).calculateSpeed(nextPosition);
+
+        // since the speed of a position is the average speed of the previous segment
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
+
+            Double speed = null;
+            if(position.hasSpeed())
+                speed = position.getSpeed();
+            else if (previous != null)
+                speed = previous.calculateSpeed(position);
+            if (speed == null)
+                speed = previousSpeed;
             if (speed == null)
                 continue;
-            foundSpeed = true;
+
+            coordinates.add(createCoordinates(position, false));
 
             int speedClass = getSpeedClass(speed);
-            if (previousSpeedClass != speedClass && previousSpeedClass != -1) {
-                PlacemarkType placemarkType = createSpeedSegment(currentSegment, speedClass, coordinates);
+            if (previousSpeedClass != null && previousSpeedClass != speedClass) {
+                PlacemarkType placemarkType = createSpeedSegment(++segmentIndex, previousSpeedClass, coordinates);
                 folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
 
                 coordinates.clear();
-                currentSegment++;
+                coordinates.add(createCoordinates(position, false));
             }
 
             previousSpeedClass = speedClass;
-            coordinates.add(createCoordinates(positions.get(i), false));
+            previousSpeed = speed;
+            previous = position;
         }
 
-        if (!foundSpeed)
-            return null;
-
-        KmlPosition lastPosition = positions.get(positions.size() - 1);
-        coordinates.add(createCoordinates(lastPosition, false));
-        PlacemarkType placemarkType = createSpeedSegment(currentSegment, previousSpeedClass, coordinates);
-        folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
-
-        return folderType;
+        return segmentIndex > 0 ? folderType : null;
     }
 
     private PlacemarkType createSpeedSegment(int currentSegment, int speedClass, List<String> coordinates) {
@@ -547,9 +553,9 @@ public class Kml22Format extends KmlFormat {
     private ScreenOverlayType createSpeedbar() {
         ScreenOverlayType speedbar = createScreenOverlayImage("Speedbar",
                 SPEEDBAR_URL,
-                createVec2Type(0.0, 0.01, UnitsEnumType.FRACTION, UnitsEnumType.FRACTION),
-                createVec2Type(0.0, 0.01, UnitsEnumType.FRACTION, UnitsEnumType.FRACTION),
-                createVec2Type(250, 0, UnitsEnumType.PIXELS, UnitsEnumType.PIXELS));
+                createVec2Type(0.0, 0.01, FRACTION, FRACTION),
+                createVec2Type(0.0, 0.01, FRACTION, FRACTION),
+                createVec2Type(250, 0, PIXELS, PIXELS));
         speedbar.setVisibility(FALSE);
         return speedbar;
     }

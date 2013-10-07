@@ -62,6 +62,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return getTime() != null;
     }
 
+    public boolean hasSpeed() {
+        return getSpeed() != null;
+    }
+
     public void setStartDate(CompactCalendar startDate) {
         if (hasTime() && startDate != null) {
             Calendar calendar = getTime().getCalendar();
