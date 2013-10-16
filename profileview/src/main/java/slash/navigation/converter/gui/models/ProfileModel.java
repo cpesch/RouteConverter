@@ -65,7 +65,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    protected void handleDelete(int firstRow, int lastRow) {
+    protected void handleRemove(int firstRow, int lastRow) {
         recomputeEverythingAfter(firstRow);
     }
 
