@@ -369,7 +369,7 @@ public class RouteConverter extends SingleFrameApplication {
         try {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
-            log.severe("Cannot create " + className + ": " + e.getMessage());
+            log.info("Cannot create " + className + ": " + e.getMessage());
             return null;
         }
     }
