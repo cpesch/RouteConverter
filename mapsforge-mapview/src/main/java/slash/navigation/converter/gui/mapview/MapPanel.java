@@ -15,6 +15,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
 import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
 import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
 import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static java.awt.event.ItemEvent.SELECTED;
 
 public class MapPanel {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapPanel.class);
@@ -30,26 +31,34 @@ public class MapPanel {
         comboBoxMap.setModel(new DefaultComboBoxModel(mapFileNames.toArray()));
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED)
+                    return;
                 String mapFileName = (String) e.getItem();
                 mapsforgeMapView.setMapFile(mapFileName, (String) comboBoxTheme.getSelectedItem());
                 preferences.put(MAP_FILE_PREFERENCE, mapFileName);
             }
         });
-        comboBoxMap.setSelectedItem(preferences.get(MAP_FILE_PREFERENCE, "germany.map"));
+        String mapFileName = preferences.get(MAP_FILE_PREFERENCE, "germany.map");
+        comboBoxMap.setSelectedItem(mapFileName);
 
         comboBoxTheme.setModel(new DefaultComboBoxModel(themeFileNames.toArray()));
         comboBoxTheme.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED)
+                    return;
                 String themeFileName = (String) e.getItem();
                 mapsforgeMapView.setMapFile((String) comboBoxMap.getSelectedItem(), themeFileName);
                 preferences.put(THEME_FILE_PREFERENCE, themeFileName);
             }
         });
-        comboBoxTheme.setSelectedItem(preferences.get(THEME_FILE_PREFERENCE, "Osmarenderer"));
+        String themeFileName = preferences.get(THEME_FILE_PREFERENCE, "Osmarenderer");
+        comboBoxTheme.setSelectedItem(themeFileName);
 
         mapViewPanel.add(awtGraphicMapView, new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
                 SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true));
+
+        mapsforgeMapView.setMapFile(mapFileName, themeFileName);
     }
 
     public Component getComponent() {

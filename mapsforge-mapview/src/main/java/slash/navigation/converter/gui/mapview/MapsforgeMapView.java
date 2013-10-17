@@ -23,6 +23,7 @@ import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
@@ -195,12 +196,14 @@ public class MapsforgeMapView implements MapView {
     }
 
     void setMapFile(String mapFileName, String themeFileName) {
-        Layers layers = mapView.getLayerManager().getLayers();
+        LayerManager layerManager = mapView.getLayerManager();
+        Layers layers = layerManager.getLayers();
         if(mapLayer != null)
             layers.remove(mapLayer);
 
         this.mapLayer = createTileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, mapFileName, themeFileName);
         layers.add(mapLayer);
+        layerManager.redrawLayers();
     }
 
     protected void setModel(PositionsModel positionsModel,
