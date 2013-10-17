@@ -283,26 +283,26 @@ public class Files {
      * @param collectDirectories decides whether directories are collected
      * @param collectFiles       decides whether file are collected
      * @param extension          the extension in lower case
-     * @param list               the list to add hits to
+     * @param result             the list to add hits to
      */
     private static void recursiveCollect(File path,
                                          final boolean collectDirectories,
                                          final boolean collectFiles,
                                          final String extension,
-                                         final List<File> list) {
+                                         final List<File> result) {
         if (path.isFile()) {
             if (collectFiles &&
                     (extension == null || getExtension(path).equals(extension)))
-                list.add(path);
+                result.add(path);
 
         } else {
             if (collectDirectories)
-                list.add(path);
+                result.add(path);
 
             //noinspection ResultOfMethodCallIgnored
             path.listFiles(new FileFilter() {
                 public boolean accept(File file) {
-                    recursiveCollect(file, collectDirectories, collectFiles, extension, list);
+                    recursiveCollect(file, collectDirectories, collectFiles, extension, result);
                     return true;
                 }
             });
@@ -320,10 +320,10 @@ public class Files {
      *         with the given extension
      */
     public static List<File> collectFiles(File path, String extension) {
-        List<File> list = new ArrayList<File>(1);
+        List<File> result = new ArrayList<File>(1);
         extension = extension != null ? extension.toLowerCase() : null;
-        recursiveCollect(path, false, true, extension, list);
-        return list;
+        recursiveCollect(path, false, true, extension, result);
+        return result;
     }
 
     public static File findExistingPath(File path) {

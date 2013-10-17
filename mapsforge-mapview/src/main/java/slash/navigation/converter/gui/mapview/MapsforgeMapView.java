@@ -27,9 +27,12 @@ import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
+import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
+import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
-import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.base.NavigationPosition;
@@ -43,8 +46,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,6 @@ import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
-import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.base.Positions.center;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
@@ -73,10 +75,13 @@ public class MapsforgeMapView implements MapView {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final Logger log = Logger.getLogger(MapsforgeMapView.class.getName());
 
-    private static final String MAPSFORGE_CACHE_DIRECTORY_PREFERENCE = "mapsforgeCacheDirectory";
+    private static final String MAPSFORGE_DIRECTORY_PREFERENCE = "mapsforgeDirectory";
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
+    static final File OSMARENDERER_INTERNAL = new File("Osmarenderer (internal)");
+    static final File OPEN_STREET_MAP_MAPNIK_ONLINE = new File("OpenStreetMapMapnik (online)");
+    private static final File OPEN_CYCLE_MAP_ONLINE = new File("OpenCycleMap (online)");
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -129,7 +134,7 @@ public class MapsforgeMapView implements MapView {
             log.severe("Cannot create marker icon: " + e.getMessage());
         }
 
-        mapPanel = new MapPanel(this, getMapFileNames(), getThemeFileNames(), mapView);
+        mapPanel = new MapPanel(this, getMapsforgeDirectory(), mapView);
     }
 
     private AwtGraphicMapView createMapView() {
@@ -143,47 +148,37 @@ public class MapsforgeMapView implements MapView {
         return mapView;
     }
 
-    private static File getMapsforgeCacheDirectory() {
-        String directoryName = preferences.get(MAPSFORGE_CACHE_DIRECTORY_PREFERENCE, new File(System.getProperty("user.home"), ".mapsforge").getAbsolutePath());
+    private File getMapsforgeDirectory() {
+        String directoryName = preferences.get(MAPSFORGE_DIRECTORY_PREFERENCE, new File(System.getProperty("user.home"), ".mapsforge").getAbsolutePath());
         File directory = new File(directoryName);
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
-                throw new IllegalArgumentException("Cannot create mapsforge map directory " + directory);
+                throw new IllegalArgumentException("Cannot create mapsforge directory " + directory);
             }
         }
         return directory;
     }
 
-    private List<String> getMapFileNames() {
-        List<File> files = collectFiles(getMapsforgeCacheDirectory(), ".map");
-        List<String> result = new ArrayList<String>();
-        for (File file : files) {
-            result.add(file.getName());
-        }
-        return result;
-    }
-
-    private List<String> getThemeFileNames() {
-        List<File> files = collectFiles(getMapsforgeCacheDirectory(), ".xml");
-        List<String> result = new ArrayList<String>();
-        result.add("Osmarenderer");
-        for (File file : files) {
-            result.add(file.getName());
-        }
-        return result;
-    }
-
-    private Layer createTileRendererLayer(TileCache tileCache, MapViewPosition mapViewPosition, String mapFileName, String themeFileName) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapViewPosition, GRAPHIC_FACTORY);
-        tileRendererLayer.setMapFile(new File(getMapsforgeCacheDirectory(), mapFileName));
+    private Layer createTileRendererLayer(File mapFile, File themeFile) {
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, GRAPHIC_FACTORY);
+        tileRendererLayer.setMapFile(mapFile);
         XmlRenderTheme xmlRenderTheme;
-        try {
-            xmlRenderTheme = new ExternalRenderTheme(new File(getMapsforgeCacheDirectory(), themeFileName));
-        } catch (Exception e) {
+        if(OSMARENDERER_INTERNAL.equals(themeFile))
             xmlRenderTheme = OSMARENDER;
-        }
+        else
+            try {
+                xmlRenderTheme = new ExternalRenderTheme(themeFile);
+            } catch (FileNotFoundException e) {
+                xmlRenderTheme = OSMARENDER;
+            }
         tileRendererLayer.setXmlRenderTheme(xmlRenderTheme);
         return tileRendererLayer;
+    }
+
+    private TileDownloadLayer createTileDownloadLayer(TileSource tileSource) {
+        TileDownloadLayer tileDownloadLayer = new TileDownloadLayer(createTileCache(), mapView.getModel().mapViewPosition, tileSource, GRAPHIC_FACTORY);
+        tileDownloadLayer.start();
+        return tileDownloadLayer;
     }
 
     private TileCache createTileCache() {
@@ -195,13 +190,19 @@ public class MapsforgeMapView implements MapView {
         return firstLevelTileCache;
     }
 
-    void setMapFile(String mapFileName, String themeFileName) {
+    void setMapFile(File mapFile, File themeFile) {
         LayerManager layerManager = mapView.getLayerManager();
         Layers layers = layerManager.getLayers();
         if(mapLayer != null)
             layers.remove(mapLayer);
 
-        this.mapLayer = createTileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, mapFileName, themeFileName);
+        if (OPEN_CYCLE_MAP_ONLINE.equals(mapFile))
+            this.mapLayer = createTileDownloadLayer(OpenCycleMap.INSTANCE);
+        else if (OPEN_STREET_MAP_MAPNIK_ONLINE.equals(mapFile))
+            this.mapLayer = createTileDownloadLayer(OpenStreetMapMapnik.INSTANCE);
+        else
+            this.mapLayer = createTileRendererLayer(mapFile, themeFile);
+        // TODO add fallback if the map file doesn't exist
         layers.add(mapLayer);
         layerManager.redrawLayers();
     }
