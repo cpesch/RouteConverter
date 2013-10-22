@@ -41,6 +41,7 @@ import static java.awt.event.ItemEvent.SELECTED;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.converter.gui.mapview.FileListCellRenderer.removePrefix;
+import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_CYCLE_MAP_ONLINE;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_STREET_MAP_MAPNIK_ONLINE;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OSMARENDERER_INTERNAL;
 
@@ -59,6 +60,7 @@ public class MapPanel {
     private JComboBox comboBoxTheme;
     private JPanel component;
     private JPanel mapViewPanel;
+    private JLabel labelZoom;
 
     private File mapsforgeDirectory;
     private DefaultComboBoxModel themeModel = new DefaultComboBoxModel(new File[]{OSMARENDERER_INTERNAL});
@@ -68,7 +70,7 @@ public class MapPanel {
         this.mapsforgeDirectory = newMapsforgeDirectory;
 
         comboBoxMap.setRenderer(new FileListCellRenderer(mapsforgeDirectory));
-        comboBoxMap.setModel(new DefaultComboBoxModel(collectFiles(mapsforgeDirectory, ".map").toArray()));
+        comboBoxMap.setModel(new DefaultComboBoxModel(collectMapFiles(mapsforgeDirectory).toArray()));
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
@@ -102,6 +104,14 @@ public class MapPanel {
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true));
 
         mapsforgeMapView.setMapFile((File) comboBoxMap.getSelectedItem(), (File) comboBoxTheme.getSelectedItem());
+    }
+
+    private static List<File> collectMapFiles(File directory) {
+        List<File> result = new ArrayList<File>();
+        result.add(OPEN_STREET_MAP_MAPNIK_ONLINE);
+        result.add(OPEN_CYCLE_MAP_ONLINE);
+        result.addAll(collectFiles(directory, ".map"));
+        return result;
     }
 
     private void updateThemes(File mapFile) {
@@ -147,6 +157,10 @@ public class MapPanel {
         });
     }
 
+    public void zoomChanged(int zoomLevel) {
+        labelZoom.setText(Integer.toString(zoomLevel));
+    }
+
     public Component getComponent() {
         return component;
     }
@@ -169,20 +183,26 @@ public class MapPanel {
         component = new JPanel();
         component.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 5, new Insets(2, 2, 0, 4), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 7, new Insets(2, 2, 0, 4), -1, -1));
         component.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("Map:");
-        panel1.add(label1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
+        panel1.add(label1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         comboBoxMap = new JComboBox();
-        panel1.add(comboBoxMap, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(comboBoxMap, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Theme:");
-        panel1.add(label2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 2, false));
+        panel1.add(label2, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 2, false));
         comboBoxTheme = new JComboBox();
-        panel1.add(comboBoxTheme, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(comboBoxTheme, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel1.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Zoom:");
+        panel1.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelZoom = new JLabel();
+        labelZoom.setText("");
+        panel1.add(labelZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mapViewPanel = new JPanel();
         mapViewPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         component.add(mapViewPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

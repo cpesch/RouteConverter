@@ -33,6 +33,7 @@ import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.base.NavigationPosition;
@@ -81,7 +82,7 @@ public class MapsforgeMapView implements MapView {
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
     static final File OSMARENDERER_INTERNAL = new File("Osmarenderer (internal)");
     static final File OPEN_STREET_MAP_MAPNIK_ONLINE = new File("OpenStreetMapMapnik (online)");
-    private static final File OPEN_CYCLE_MAP_ONLINE = new File("OpenCycleMap (online)");
+    static final File OPEN_CYCLE_MAP_ONLINE = new File("OpenCycleMap (online)");
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -123,11 +124,6 @@ public class MapsforgeMapView implements MapView {
     private void initializeMapView() {
         mapView = createMapView();
 
-        double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-        double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
-        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 8);
-        mapView.getModel().mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
-
         try {
             markerIcon = GRAPHIC_FACTORY.createBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"));
         } catch (IOException e) {
@@ -135,6 +131,17 @@ public class MapsforgeMapView implements MapView {
         }
 
         mapPanel = new MapPanel(this, getMapsforgeDirectory(), mapView);
+
+        mapView.getModel().mapViewPosition.addObserver(new Observer() {
+            public void onChange() {
+                mapPanel.zoomChanged(mapView.getModel().mapViewPosition.getZoomLevel());
+            }
+        });
+
+        double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
+        double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
+        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 8);
+        mapView.getModel().mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
     }
 
     private AwtGraphicMapView createMapView() {
@@ -196,6 +203,9 @@ public class MapsforgeMapView implements MapView {
         if(mapLayer != null)
             layers.remove(mapLayer);
 
+        if (mapFile == null)
+            return;
+
         if (OPEN_CYCLE_MAP_ONLINE.equals(mapFile))
             this.mapLayer = createTileDownloadLayer(OpenCycleMap.INSTANCE);
         else if (OPEN_STREET_MAP_MAPNIK_ONLINE.equals(mapFile))
@@ -203,7 +213,7 @@ public class MapsforgeMapView implements MapView {
         else
             this.mapLayer = createTileRendererLayer(mapFile, themeFile);
         // TODO add fallback if the map file doesn't exist
-        layers.add(mapLayer);
+        layers.add(0, mapLayer);
         layerManager.redrawLayers();
     }
 
