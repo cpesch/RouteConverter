@@ -20,6 +20,7 @@
 package slash.navigation.converter.gui.mapview;
 
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.layer.Layer;
@@ -36,6 +37,7 @@ import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -56,15 +58,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.min;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
+import static org.mapsforge.core.model.Tile.TILE_SIZE;
+import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
+import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.base.Positions.center;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-
 /**
  * Implementation for a component that displays the positions of a position list on a map
  * using the rewrite branch of the mapsforge project.
@@ -89,7 +96,7 @@ public class MapsforgeMapView implements MapView {
     private CharacteristicsModel characteristicsModel;
     private UnitSystemModel unitSystemModel;
 
-    private MapPanel mapPanel;
+    private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
     private Layer mapLayer;
     private static Bitmap markerIcon;
@@ -130,11 +137,11 @@ public class MapsforgeMapView implements MapView {
             log.severe("Cannot create marker icon: " + e.getMessage());
         }
 
-        mapPanel = new MapPanel(this, getMapsforgeDirectory(), mapView);
+        mapSelector = new MapSelector(this, getMapsforgeDirectory(), mapView);
 
         mapView.getModel().mapViewPosition.addObserver(new Observer() {
             public void onChange() {
-                mapPanel.zoomChanged(mapView.getModel().mapViewPosition.getZoomLevel());
+                mapSelector.zoomChanged(mapView.getModel().mapViewPosition.getZoomLevel());
             }
         });
 
@@ -146,6 +153,9 @@ public class MapsforgeMapView implements MapView {
 
     private AwtGraphicMapView createMapView() {
         AwtGraphicMapView mapView = new AwtGraphicMapView();
+        // TODO avoids NullPointerExceptions in MapScaleBar#draw()
+        mapView.getModel().mapViewDimension.setDimension(new Dimension(0, 0));
+        mapView.getMapScaleBar().setVisible(true);
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
 
         MapViewMouseEventListener mapViewMouseEventListener = new MapViewMouseEventListener(mapView.getModel().mapViewPosition);
@@ -166,7 +176,7 @@ public class MapsforgeMapView implements MapView {
         return directory;
     }
 
-    private Layer createTileRendererLayer(File mapFile, File themeFile) {
+    private TileRendererLayer createTileRendererLayer(File mapFile, File themeFile) {
         TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, GRAPHIC_FACTORY);
         tileRendererLayer.setMapFile(mapFile);
         XmlRenderTheme xmlRenderTheme;
@@ -210,11 +220,18 @@ public class MapsforgeMapView implements MapView {
             this.mapLayer = createTileDownloadLayer(OpenCycleMap.INSTANCE);
         else if (OPEN_STREET_MAP_MAPNIK_ONLINE.equals(mapFile))
             this.mapLayer = createTileDownloadLayer(OpenStreetMapMapnik.INSTANCE);
-        else
-            this.mapLayer = createTileRendererLayer(mapFile, themeFile);
+        else {
+            TileRendererLayer tileRendererLayer = createTileRendererLayer(mapFile, themeFile);
+            this.mapLayer = tileRendererLayer;
+            org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
+            setCenter(boundingBox.getCenterPoint());
+            zoomToBounds(boundingBox);
+        }
         // TODO add fallback if the map file doesn't exist
         layers.add(0, mapLayer);
         layerManager.redrawLayers();
+
+        log.info("Using map " + mapFile + " and theme " + themeFile);
     }
 
     protected void setModel(PositionsModel positionsModel,
@@ -283,8 +300,12 @@ public class MapsforgeMapView implements MapView {
 
                         boolean allRowsChanged = isFirstToLastRow(e);
                         if (allRowsChanged) {
-                            NavigationPosition center = center(MapsforgeMapView.this.positionsModel.getRoute().getPositions());
-                            setCenter(center);
+                            List positions = MapsforgeMapView.this.positionsModel.getRoute().getPositions();
+                            if (positions.size() > 0) {
+                                BoundingBox boundingBox = new BoundingBox(positions);
+                                setCenter(boundingBox.getCenter());
+                                zoomToBounds(boundingBox);
+                            }
                         }
 
                         break;
@@ -319,7 +340,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public Component getComponent() {
-        return mapPanel.getComponent();
+        return mapSelector.getComponent();
     }
 
     public void resize() {
@@ -359,13 +380,26 @@ public class MapsforgeMapView implements MapView {
         return new LatLong(position.getLatitude(), position.getLongitude());
     }
 
+    private org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
+        return new org.mapsforge.core.model.BoundingBox(
+                boundingBox.getSouthWest().getLatitude(),
+                boundingBox.getSouthWest().getLongitude(),
+                boundingBox.getNorthEast().getLatitude(),
+                boundingBox.getNorthEast().getLongitude()
+        );
+    }
+
 
     public NavigationPosition getCenter() {
         return asNavigationPosition(mapView.getModel().mapViewPosition.getCenter());
     }
 
+    public void setCenter(LatLong center) {
+        mapView.getModel().mapViewPosition.setCenter(center);
+    }
+
     public void setCenter(NavigationPosition center) {
-        mapView.getModel().mapViewPosition.setCenter(asLatLong(center));
+        setCenter(asLatLong(center));
     }
 
     private int getZoom() {
@@ -375,6 +409,26 @@ public class MapsforgeMapView implements MapView {
     private void setZoom(int zoom) {
         mapView.getModel().mapViewPosition.setZoomLevel((byte) zoom);
     }
+
+
+    private void zoomToBounds(org.mapsforge.core.model.BoundingBox boundingBox) {
+        Dimension mapViewDimension = mapView.getModel().mapViewDimension.getDimension();
+        if(mapViewDimension == null)
+            return;
+        double dxMax = longitudeToPixelX(boundingBox.maxLongitude, (byte) 0) / TILE_SIZE;
+        double dxMin = longitudeToPixelX(boundingBox.minLongitude, (byte) 0) / TILE_SIZE;
+        double zoomX = floor(-log(3.8) * log(abs(dxMax-dxMin)) + mapViewDimension.width / TILE_SIZE);
+        double dyMax = latitudeToPixelY(boundingBox.maxLatitude, (byte) 0) / TILE_SIZE;
+        double dyMin = latitudeToPixelY(boundingBox.minLatitude, (byte) 0) / TILE_SIZE;
+        double zoomY = floor(-log(3.8) * log(abs(dyMax-dyMin)) + mapViewDimension.height / TILE_SIZE);
+        int newZoom = new Double(min(zoomX, zoomY)).intValue();
+        setZoom(newZoom);
+    }
+
+    private void zoomToBounds(BoundingBox boundingBox) {
+        zoomToBounds(asBoundingBox(boundingBox));
+    }
+
 
     public void print(String title, boolean withDirections) {
         // TODO implement me

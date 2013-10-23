@@ -90,7 +90,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     }
 
     public MapScaleBar getMapScaleBar() {
-        return this.mapScaleBar;
+        return mapScaleBar;
     }
 
     public Model getModel() {

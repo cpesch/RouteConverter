@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
@@ -40,6 +41,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
 import static java.awt.event.ItemEvent.SELECTED;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.converter.gui.mapview.FileListCellRenderer.removePrefix;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_CYCLE_MAP_ONLINE;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_STREET_MAP_MAPNIK_ONLINE;
@@ -51,8 +53,10 @@ import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OSMARENDER
  * @author Christian Pesch
  */
 
-public class MapPanel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapPanel.class);
+public class MapSelector {
+    private static final Preferences preferences = Preferences.userNodeForPackage(MapSelector.class);
+    private static final Logger log = Logger.getLogger(MapsforgeMapView.class.getName());
+
     private static final String MAP_FILE_PREFERENCE = "mapFile";
     private static final String THEME_FILE_PREFERENCE = "themeFile";
 
@@ -66,11 +70,15 @@ public class MapPanel {
     private DefaultComboBoxModel themeModel = new DefaultComboBoxModel(new File[]{OSMARENDERER_INTERNAL});
     private boolean ignoreThemeSelectionEvents = false;
 
-    public MapPanel(final MapsforgeMapView mapsforgeMapView, File newMapsforgeDirectory, AwtGraphicMapView awtGraphicMapView) {
+    public MapSelector(final MapsforgeMapView mapsforgeMapView, File newMapsforgeDirectory, AwtGraphicMapView awtGraphicMapView) {
         this.mapsforgeDirectory = newMapsforgeDirectory;
 
+        List<File> mapFiles = collectMapFiles(mapsforgeDirectory);
+        File[] mapFileArray = mapFiles.toArray(new File[mapFiles.size()]);
+        log.info("Collected map files " + printArrayToDialogString(mapFileArray) + " from " + mapsforgeMapView);
+
         comboBoxMap.setRenderer(new FileListCellRenderer(mapsforgeDirectory));
-        comboBoxMap.setModel(new DefaultComboBoxModel(collectMapFiles(mapsforgeDirectory).toArray()));
+        comboBoxMap.setModel(new DefaultComboBoxModel(mapFileArray));
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
@@ -123,6 +131,9 @@ public class MapPanel {
             }
             if (mapFile.getParentFile() != null) {
                 List<File> themeFiles = collectThemeFiles(mapFile.getParentFile(), mapsforgeDirectory);
+                File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
+                log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + mapFile.getParentFile());
+
                 for (File file : themeFiles) {
                     themeModel.addElement(file);
                 }
@@ -141,6 +152,8 @@ public class MapPanel {
     }
 
     private static void recursiveCollect(final File path, final File root, final String extension, final List<File> result) {
+        if (path == null)
+            return;
         collectThemeFiles(path, extension, result);
         if (!path.equals(root))
             recursiveCollect(path.getParentFile(), root, extension, result);
@@ -192,7 +205,7 @@ public class MapPanel {
         panel1.add(comboBoxMap, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Theme:");
-        panel1.add(label2, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 2, false));
+        panel1.add(label2, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         comboBoxTheme = new JComboBox();
         panel1.add(comboBoxTheme, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
