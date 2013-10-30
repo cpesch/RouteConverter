@@ -76,7 +76,7 @@ import static java.lang.String.valueOf;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
-import static slash.common.util.Bearing.EARTH_RADIUS;
+import static slash.navigation.common.Bearing.EARTH_RADIUS;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.BasicPosition.parseExtensionPositions;

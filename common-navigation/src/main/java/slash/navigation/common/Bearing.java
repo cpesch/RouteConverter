@@ -20,7 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package slash.common.util;
+package slash.navigation.common;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;

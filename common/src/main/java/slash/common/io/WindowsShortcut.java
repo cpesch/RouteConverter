@@ -66,8 +66,7 @@ public class WindowsShortcut {
 
         InputStream fis = new FileInputStream(file);
         try {
-            return fis.available() >= MINIMUM_LENGTH
-                    && isMagicPresent(getBytes(fis, 32));
+            return fis.available() >= MINIMUM_LENGTH && isMagicPresent(getBytes(fis, 32));
         } finally {
             fis.close();
         }

@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.common.util;
+package slash.navigation.common;
 
 import org.junit.Test;
 

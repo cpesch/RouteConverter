@@ -66,8 +66,6 @@ import static slash.navigation.common.UnitConversion.meterToFeets;
  */
 
 public class NavigationConversion {
-    private static DatatypeFactory datatypeFactory = null;
-
     private NavigationConversion() {}
 
     private static final Preferences preferences = Preferences.userNodeForPackage(NavigationConversion.class);
@@ -384,6 +382,8 @@ public class NavigationConversion {
         GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
         return fromMillis(gregorianCalendar.getTimeInMillis());
     }
+
+    private static DatatypeFactory datatypeFactory = null;
 
     private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
         if (datatypeFactory == null) {

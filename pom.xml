@@ -107,7 +107,7 @@
                         <bottom>Created by Christian Pesch</bottom>
                         <detectLinks>true</detectLinks>
                         <excludePackageNames>
-                            slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.earthtools*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.rest*:*binding*
+                            slash.common.helpers*:slash.navigation.jnlp*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.earthtools*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.rest*:*binding*
                         </excludePackageNames>
                         <groups>
                             <group>

@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.common.util.Bearing;
+import slash.navigation.common.Bearing;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
@@ -43,8 +43,8 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.util.Bearing.EARTH_RADIUS;
-import static slash.common.util.Bearing.calculateBearing;
+import static slash.navigation.common.Bearing.EARTH_RADIUS;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * The base of all navigation positions.

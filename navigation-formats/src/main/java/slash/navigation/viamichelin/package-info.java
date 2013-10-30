@@ -1,4 +1,4 @@
 /**
- * Contains the ViaMichelin format.
+ * The ViaMichelin format.
  */
 package slash.navigation.viamichelin;

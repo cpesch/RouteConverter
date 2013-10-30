@@ -1,4 +1,4 @@
 /**
- * Contains the NMEA formats.
+ * The NMEA formats.
  */
 package slash.navigation.nmea;

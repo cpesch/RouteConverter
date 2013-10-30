@@ -36,7 +36,7 @@ import java.util.prefs.Preferences;
 
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
-import static slash.common.util.Bearing.calculateBearing;
+import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
 
 /**

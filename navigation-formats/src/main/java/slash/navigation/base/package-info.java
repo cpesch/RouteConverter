@@ -1,5 +1,5 @@
 /**
- * The Base API.
+ * The base API.
  * <p>
  * This package facilitates the implementation of the <a href="NavigationFormatParser.html">NavigationFormatParser</a>.
  * The formats are based on the interfaces <a href="BaseRoute.html">BaseRoute</a>,
