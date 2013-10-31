@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.UnitSystem;
@@ -153,8 +154,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
-    public int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner) {
-        return getRoute().getContainedPositions(northEastCorner, southWestCorner);
+    public int[] getContainedPositions(BoundingBox boundingBox) {
+        return getRoute().getContainedPositions(boundingBox);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -354,12 +355,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void sort(Comparator<NavigationPosition> comparator) {
+        //noinspection unchecked
         getRoute().sort(comparator);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableRowsUpdated(-1, -1);
     }
 
     public void order(List<NavigationPosition> positions) {
+        //noinspection unchecked
         getRoute().order(positions);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableRowsUpdated(-1, -1);

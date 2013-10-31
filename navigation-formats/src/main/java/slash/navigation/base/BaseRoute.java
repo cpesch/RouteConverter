@@ -132,7 +132,6 @@ import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
-import static slash.navigation.base.Positions.contains;
 import static slash.navigation.base.Positions.getSignificantPositions;
 
 /**
@@ -257,13 +256,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
     }
 
-    public int[] getContainedPositions(NavigationPosition northEastCorner,
-                                       NavigationPosition southWestCorner) {
+    public int[] getContainedPositions(BoundingBox boundingBox) {
         List<Integer> result = new ArrayList<Integer>();
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); i++) {
             P position = positions.get(i);
-            if (position.hasCoordinates() && contains(northEastCorner, southWestCorner, position))
+            if (position.hasCoordinates() && boundingBox.contains(position))
                 result.add(i);
         }
         return toArray(result);
@@ -458,9 +456,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public void sort(Comparator<P> comparator) {
         List<P> positions = getPositions();
-        @SuppressWarnings("SuspiciousToArrayCall")
+        @SuppressWarnings({"SuspiciousToArrayCall", "unchecked"})
         P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[positions.size()]);
         Arrays.sort(sorted, comparator);
+        //noinspection unchecked
         order(asList(sorted));
     }
 

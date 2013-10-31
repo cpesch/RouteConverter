@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 
 import javax.swing.table.TableModel;
@@ -47,7 +48,7 @@ public interface PositionsModel extends TableModel {
     List<NavigationPosition> getPositions(int[] rowIndices);
     List<NavigationPosition> getPositions(int firstIndex, int lastIndex);
 
-    int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner);
+    int[] getContainedPositions(BoundingBox boundingBox);
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);

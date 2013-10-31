@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
@@ -1254,15 +1255,16 @@ public abstract class BaseMapView implements MapView {
 
         Matcher selectPositionsMatcher = SELECT_POSITIONS_PATTERN.matcher(callback);
         if (selectPositionsMatcher.matches()) {
-            final Double latitudeNorthEast = parseDouble(selectPositionsMatcher.group(1));
-            final Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
-            final Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
-            final Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
+            Double latitudeNorthEast = parseDouble(selectPositionsMatcher.group(1));
+            Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
+            Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
+            Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
+            final BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast,
+                    longitudeSouthWest, latitudeSouthWest);
             final Boolean replaceSelection = parseBoolean(selectPositionsMatcher.group(5));
             invokeLater(new Runnable() {
                 public void run() {
-                    selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
-                            asPosition(longitudeSouthWest, latitudeSouthWest), replaceSelection);
+                    selectPositions(boundingBox, replaceSelection);
                 }
             });
             return true;
@@ -1551,8 +1553,8 @@ public abstract class BaseMapView implements MapView {
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
     }
 
-    private void selectPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner, boolean replaceSelection) {
-        int[] rows = positionsModel.getContainedPositions(northEastCorner, southWestCorner);
+    private void selectPositions(BoundingBox boundingBox, boolean replaceSelection) {
+        int[] rows = positionsModel.getContainedPositions(boundingBox);
         if (rows.length > 0) {
             positionsSelectionModel.setSelectedPositions(rows, replaceSelection);
         }

@@ -177,16 +177,6 @@ public class Positions {
         return asPosition(maximumLongitude, maximumLatitude, maximumTime);
     }
 
-    public static boolean contains(NavigationPosition northEastCorner,
-                                   NavigationPosition southWestCorner,
-                                   NavigationPosition position) {
-        boolean result = position.getLongitude() > southWestCorner.getLongitude();
-        result = result && (position.getLongitude() < northEastCorner.getLongitude());
-        result = result && (position.getLatitude() > southWestCorner.getLatitude());
-        result = result && (position.getLatitude() < northEastCorner.getLatitude());
-        return result;
-    }
-
     public static Wgs84Position asPosition(double longitude, double latitude) {
         return asPosition(longitude, latitude, (String)null);
     }
@@ -195,7 +185,7 @@ public class Positions {
         return new Wgs84Position(longitude, latitude, null, null, null, description);
     }
 
-    private static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {
+    static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {
         return new Wgs84Position(longitude, latitude, null, null, time, null);
     }
 }

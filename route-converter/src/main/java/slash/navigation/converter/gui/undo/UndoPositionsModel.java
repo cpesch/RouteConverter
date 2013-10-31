@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
@@ -145,8 +146,8 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
-    public int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner) {
-        return delegate.getContainedPositions(northEastCorner, southWestCorner);
+    public int[] getContainedPositions(BoundingBox boundingBox) {
+        return delegate.getContainedPositions(boundingBox);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -237,6 +238,7 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     void sort(Comparator<NavigationPosition> comparator, boolean trackUndo) {
+        @SuppressWarnings("unchecked")
         List<NavigationPosition> original = getRoute().getPositions();
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>(original);
         delegate.sort(comparator);

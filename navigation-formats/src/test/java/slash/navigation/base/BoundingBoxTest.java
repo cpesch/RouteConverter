@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.base;
 
 import org.junit.Test;
@@ -25,23 +24,22 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.base.Positions.contains;
 
-public class PositionsTest {
+public class BoundingBoxTest {
     @Test
     public void testContains() {
-        assertTrue(contains(asPosition(0.1, 0.1), asPosition(-0.1, -0.1), asPosition(0.0, 0.0)));
-        assertTrue(contains(asPosition(-1.0, -1.0), asPosition(-2.0, -2.0), asPosition(-1.5, -1.5)));
-        assertTrue(contains(asPosition(-1.0, 2.0), asPosition(-2.0, 1.0), asPosition(-1.5, 1.5)));
-        assertTrue(contains(asPosition(2.0, 2.0), asPosition(1.0, 1.0), asPosition(1.5, 1.5)));
-        assertTrue(contains(asPosition(2.0, -1.0), asPosition(1.0, -2.0), asPosition(1.5, -1.5)));
+        assertTrue(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
+        assertTrue(new BoundingBox(-1.0, -1.0, -2.0, -2.0).contains(asPosition(-1.5, -1.5)));
+        assertTrue(new BoundingBox(-1.0, 2.0, -2.0, 1.0).contains(asPosition(-1.5, 1.5)));
+        assertTrue(new BoundingBox(2.0, 2.0, 1.0, 1.0).contains(asPosition(1.5, 1.5)));
+        assertTrue(new BoundingBox(2.0, -1.0, 1.0, -2.0).contains(asPosition(1.5, -1.5)));
     }
 
     @Test
     public void testNotContains() {
-        assertFalse(contains(asPosition(0.0, 0.0), asPosition(0.0, 0.0), asPosition(0.0, 0.0)));
-        assertFalse(contains(asPosition(-0.1, -0.1), asPosition(0.0, 0.0), asPosition(0.0, 0.0)));
-        assertFalse(contains(asPosition(0.0, 0.0), asPosition(-0.1, -0.1), asPosition(0.0, 0.0)));
-        assertFalse(contains(asPosition(-0.1, -0.1), asPosition(-0.1, -0.1), asPosition(0.0, 0.0)));
+        assertFalse(new BoundingBox(0.0, 0.0, 0.0, 0.0).contains(asPosition(0.0, 0.0)));
+        assertFalse(new BoundingBox(-0.1, -0.1, 0.0, 0.0).contains(asPosition(0.0, 0.0)));
+        assertFalse(new BoundingBox(0.0, 0.0, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
+        assertFalse(new BoundingBox(-0.1, -0.1, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
     }
 }
