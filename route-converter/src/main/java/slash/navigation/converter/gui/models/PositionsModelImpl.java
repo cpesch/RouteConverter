@@ -354,15 +354,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }).performMonotonicallyDecreasing();
     }
 
+    @SuppressWarnings("unchecked")
     public void sort(Comparator<NavigationPosition> comparator) {
-        //noinspection unchecked
         getRoute().sort(comparator);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableRowsUpdated(-1, -1);
     }
 
+    @SuppressWarnings("unchecked")
     public void order(List<NavigationPosition> positions) {
-        //noinspection unchecked
         getRoute().order(positions);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableRowsUpdated(-1, -1);
