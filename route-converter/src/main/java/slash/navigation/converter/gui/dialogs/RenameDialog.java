@@ -37,12 +37,13 @@ import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static java.awt.Color.RED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
- * Dialog to renameRoute position list
+ * Dialog to rename position list
  *
  * @author Christian Pesch
  */
@@ -54,7 +55,7 @@ public class RenameDialog extends SimpleDialog {
     private JTextField textFieldName;
     private JLabel labelResult;
 
-    public RenameDialog(String sourceRouteName, final NavigationFormat targetFormat) {
+    public RenameDialog(String routeName, final NavigationFormat format) {
         super(RouteConverter.getInstance().getFrame(), "rename");
         setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
@@ -64,18 +65,18 @@ public class RenameDialog extends SimpleDialog {
         final Color defaultBackground = textFieldName.getBackground();
         textFieldName.getDocument().addDocumentListener(new AbstractDocumentListener() {
             public void process(DocumentEvent e) {
-                boolean routeNameTooLong = textFieldName.getDocument().getLength() > targetFormat.getMaximumRouteNameLength();
-                textFieldName.setBackground(routeNameTooLong ? Color.RED : defaultBackground);
+                boolean routeNameTooLong = textFieldName.getDocument().getLength() > format.getMaximumRouteNameLength();
+                textFieldName.setBackground(routeNameTooLong ? RED : defaultBackground);
                 if (routeNameTooLong) {
                     labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("rename-position-list-name-too-long"),
-                            targetFormat.getName(), targetFormat.getMaximumRouteNameLength()));
+                            format.getName(), format.getMaximumRouteNameLength()));
                 } else {
                     labelResult.setText("");
                 }
                 pack();
             }
         });
-        textFieldName.setText(sourceRouteName);
+        textFieldName.setText(routeName);
 
         buttonRename.addActionListener(new DialogAction(this) {
             public void run() {
