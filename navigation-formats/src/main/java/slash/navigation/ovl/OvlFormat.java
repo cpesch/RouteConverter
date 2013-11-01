@@ -21,6 +21,7 @@
 package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationPosition;
@@ -43,7 +44,6 @@ import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
@@ -294,7 +294,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
-        NavigationPosition center = center(route.getPositions());
+        NavigationPosition center = new BoundingBox(route.getPositions()).getCenter();
         writeMissingAttribute(route.getMapLage(), writer, "CenterLat", formatPositionAsString(center.getLatitude()));
         writeMissingAttribute(route.getMapLage(), writer, "CenterLong", formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);

@@ -91,9 +91,6 @@ import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.base.Positions.center;
-import static slash.navigation.base.Positions.northEast;
-import static slash.navigation.base.Positions.southWest;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -916,10 +913,11 @@ public abstract class BaseMapView implements MapView {
 
         boolean fitBoundsToPositions = positions.size() > 0 && recenter;
         if (fitBoundsToPositions) {
-            NavigationPosition northEast = northEast(positions);
-            NavigationPosition southWest = southWest(positions);
-            buffer.append("fitBounds(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(",").
-                    append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(");\n");
+            BoundingBox boundingBox = new BoundingBox(positions);
+            buffer.append("fitBounds(").append(boundingBox.getSouthWest().getLatitude()).append(",").
+                    append(boundingBox.getSouthWest().getLongitude()).append(",").
+                    append(boundingBox.getNorthEast().getLatitude()).append(",").
+                    append(boundingBox.getNorthEast().getLongitude()).append(");\n");
             ignoreNextZoomCallback = true;
         }
 
@@ -927,7 +925,7 @@ public abstract class BaseMapView implements MapView {
             NavigationPosition center;
             // if there are positions right at the start center on them else take the last known center and zoom
             if (positions.size() > 0) {
-                center = center(positions);
+                center = new BoundingBox(positions).getCenter();
             } else {
                 int zoom = getZoom();
                 buffer.append("setZoom(").append(zoom).append(");\n");

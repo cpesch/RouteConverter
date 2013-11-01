@@ -36,8 +36,6 @@ import static slash.common.type.CompactCalendar.fromMillis;
  */
 
 public class Positions {
-    private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
-
     private static int[] douglasPeuckerSimplify(List<? extends NavigationPosition> positions, int from, int to, double threshold) {
         // find the point with the maximum distance
         NavigationPosition pointA = positions.get(from);
@@ -120,66 +118,6 @@ public class Positions {
 
         long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
         return fromMillis(time);
-    }
-
-    public static NavigationPosition center(List<? extends NavigationPosition> positions) {
-        NavigationPosition northEast = northEast(positions);
-        NavigationPosition southWest = southWest(positions);
-        double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
-        double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
-        CompactCalendar time = null;
-        if (northEast.hasTime() && southWest.hasTime()) {
-            long millis = northEast.getTime().getTimeInMillis() +
-                    (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
-            time = fromMillis(millis);
-        }
-        return asPosition(longitude, latitude, time);
-    }
-
-    public static NavigationPosition southWest(List<? extends NavigationPosition> positions) {
-        double minimumLongitude = 180.0, minimumLatitude = 180.0;
-        CompactCalendar minimumTime = null;
-        for (NavigationPosition position : positions) {
-            Double longitude = position.getLongitude();
-            if (longitude == null)
-                continue;
-            if (longitude < minimumLongitude)
-                minimumLongitude = longitude;
-            Double latitude = position.getLatitude();
-            if (latitude == null)
-                continue;
-            if (latitude < minimumLatitude)
-                minimumLatitude = latitude;
-            CompactCalendar time = position.getTime();
-            if (time == null)
-                continue;
-            if (minimumTime == null || time.before(minimumTime))
-                minimumTime = time;
-        }
-        return asPosition(minimumLongitude, minimumLatitude, minimumTime);
-    }
-
-    public static NavigationPosition northEast(List<? extends NavigationPosition> positions) {
-        double maximumLongitude = -180.0, maximumLatitude = -180.0;
-        CompactCalendar maximumTime = null;
-        for (NavigationPosition position : positions) {
-            Double longitude = position.getLongitude();
-            if (longitude == null)
-                continue;
-            if (longitude > maximumLongitude)
-                maximumLongitude = longitude;
-            Double latitude = position.getLatitude();
-            if (latitude == null)
-                continue;
-            if (latitude > maximumLatitude)
-                maximumLatitude = latitude;
-            CompactCalendar time = position.getTime();
-            if (time == null)
-                continue;
-            if (maximumTime == null || time.after(maximumTime))
-                maximumTime = time;
-        }
-        return asPosition(maximumLongitude, maximumLatitude, maximumTime);
     }
 
     public static Wgs84Position asPosition(double longitude, double latitude) {

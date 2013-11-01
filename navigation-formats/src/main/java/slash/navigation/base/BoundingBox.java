@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 
 import java.util.List;
 
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.Positions.asPosition;
 
 /**
@@ -92,5 +93,19 @@ public class BoundingBox {
         result = result && (position.getLatitude() > southWest.getLatitude());
         result = result && (position.getLatitude() < northEast.getLatitude());
         return result;
+    }
+
+    private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
+
+    public NavigationPosition getCenter() {
+        double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
+        double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
+        CompactCalendar time = null;
+        if (northEast.hasTime() && southWest.hasTime()) {
+            long millis = northEast.getTime().getTimeInMillis() +
+                    (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
+            time = fromMillis(millis);
+        }
+        return asPosition(longitude, latitude, time);
     }
 }

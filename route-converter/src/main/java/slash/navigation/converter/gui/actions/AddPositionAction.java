@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BoundingBox;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
@@ -36,7 +37,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.toArray;
-import static slash.navigation.base.Positions.center;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
@@ -67,7 +67,7 @@ public class AddPositionAction extends FrameAction {
         NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return center(asList(second, position));
+        return new BoundingBox(asList(second, position)).getCenter();
     }
 
     private String getDescription() {
