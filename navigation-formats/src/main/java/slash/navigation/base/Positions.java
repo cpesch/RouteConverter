@@ -78,7 +78,12 @@ public class Positions {
      * @return an array of indices to the original list of positions with the significant positions
      */
     public static int[] getSignificantPositions(List<? extends NavigationPosition> positions, double threshold) {
-        return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
+        if (positions.size() == 0)
+            return new int[0];
+        else if (positions.size() == 1)
+            return new int[]{0};
+        else
+            return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
     }
 
     public static CompactCalendar extrapolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition beforePredecessor) {

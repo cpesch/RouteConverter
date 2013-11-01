@@ -31,7 +31,6 @@ import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 
-import javax.swing.*;
 import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.sort;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.asNames;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
 
@@ -93,7 +93,7 @@ public class CatalogModelImpl implements CatalogModel {
                     categories.add(new CategoryTreeNodeImpl(category));
                 }
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         for (int i = 0; i < parents.size(); i++) {
                             CategoryTreeNode parent = parents.get(i);
@@ -120,7 +120,7 @@ public class CatalogModelImpl implements CatalogModel {
 
                 category.getCategory().update(null, name);
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         categoryTreeModel.nodeChanged(category);
                     }
@@ -152,7 +152,7 @@ public class CatalogModelImpl implements CatalogModel {
                     category.getCategory().update(parent.getCategory(), category.getCategory().getName());
                 }
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         for (int i = 0; i < categories.size(); i++) {
                             CategoryTreeNode category = categories.get(i);
@@ -188,7 +188,7 @@ public class CatalogModelImpl implements CatalogModel {
                     category.getCategory().delete();
                 }
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         for (int i = 0; i < parents.size(); i++) {
                             CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
@@ -213,7 +213,7 @@ public class CatalogModelImpl implements CatalogModel {
                 final RouteModel routeModel = new RouteModel(category, route);
                 callback.setRoute(routeModel);
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.addRoute(routeModel);
                     }
@@ -231,7 +231,7 @@ public class CatalogModelImpl implements CatalogModel {
             public void run() throws IOException {
                 route.getRoute().update(route.getCategory().getCategory().getUrl(), name);
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.updateRoute(route);
                     }
@@ -264,7 +264,7 @@ public class CatalogModelImpl implements CatalogModel {
                     route.getRoute().update(parent.getCategory().getUrl(), route.getDescription() != null ? route.getDescription() : route.getName());
                 }
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         for (CategoryTreeNode parent : parents) {
                             setCurrentCategory(parent);
@@ -288,7 +288,7 @@ public class CatalogModelImpl implements CatalogModel {
                     route.getRoute().delete();
                 }
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         for (RouteModel route : routes) {
                             routesTableModel.removeRoute(route);
