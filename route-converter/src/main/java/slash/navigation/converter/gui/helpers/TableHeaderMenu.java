@@ -58,8 +58,8 @@ public class TableHeaderMenu {
         this.positionsModel = positionsModel;
         this.columnModel = columnModel;
 
-        initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"));
         initializeShowColumn(findMenu(menuBar, "view", "show-column"));
+        initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"));
 
         tableHeader.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -75,8 +75,6 @@ public class TableHeaderMenu {
     private void initializeSortPositions(JMenu sortPositionListMenu) {
         JMenu sortPositionsPopupMenu = createMenu("sort-positions");
         popupMenu.add(sortPositionsPopupMenu);
-        sortPositionsPopupMenu.setEnabled(false);
-        sortPositionListMenu.setEnabled(false);
 
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {

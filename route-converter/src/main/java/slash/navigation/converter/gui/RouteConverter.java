@@ -76,7 +76,6 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.rest.Credentials;
 
-import javax.help.CSH;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -118,6 +117,7 @@ import static java.util.Locale.FRANCE;
 import static java.util.Locale.GERMANY;
 import static java.util.Locale.ITALY;
 import static java.util.Locale.US;
+import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
@@ -134,10 +134,8 @@ import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
 import static slash.common.system.Version.parseVersionFromManifest;
-import static slash.feature.client.Feature.hasFeature;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
@@ -387,17 +385,15 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        if (!hasFeature("degree-format"))
-            getUnitSystemModel().setDegreeFormat(Degrees);
         invokeLater(new Runnable() {
             public void run() {
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getPositionAugmenter(),
-                        hasFeature("recenter-after-zooming") && preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
-                        hasFeature("show-coordinates") && preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
-                        hasFeature("show-waypoint-description") && preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
+                        preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
+                        preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
+                        preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
                         getTravelModePreference(),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
                         preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true),
@@ -1061,10 +1057,10 @@ public class RouteConverter extends SingleFrameApplication {
         JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
-        CSH.setHelpIDString(frame.getRootPane(), "top");
-        CSH.setHelpIDString(convertPanel, "convert");
-        CSH.setHelpIDString(browsePanel, "browse");
-        CSH.setHelpIDString(mapPanel, "map");
+        setHelpIDString(frame.getRootPane(), "top");
+        setHelpIDString(convertPanel, "convert");
+        setHelpIDString(browsePanel, "browse");
+        setHelpIDString(mapPanel, "map");
 
         // delay JavaHelp initialization
         ActionListener actionListener = new ActionListener() {
