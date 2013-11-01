@@ -24,7 +24,6 @@ import slash.common.system.Version;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.feedback.domain.RouteFeedback;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +37,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
@@ -127,14 +127,14 @@ public class UpdateChecker {
             public void run() {
                 final UpdateResult result = check();
                 if (result.existsLaterRouteConverterVersion()) {
-                    SwingUtilities.invokeLater(new Runnable() {
+                    invokeLater(new Runnable() {
                         public void run() {
                             offerRouteConverterUpdate(window, result);
                         }
                     });
 
                 } else if (result.existsLaterJavaVersion()) {
-                    SwingUtilities.invokeLater(new Runnable() {
+                    invokeLater(new Runnable() {
                         public void run() {
                             offerJavaUpdate(window, result);
                         }
