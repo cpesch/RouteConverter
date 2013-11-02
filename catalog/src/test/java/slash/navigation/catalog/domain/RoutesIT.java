@@ -95,7 +95,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertFalse(sourceAfterCategoryChange.contains(route));
 
         List<Route> targetAfterCategoryChange = target.getRoutes();
-        assertTrue(targetAfterCategoryChange.contains(route));
+        assertFalse(targetAfterCategoryChange.contains(route));
         route = targetAfterCategoryChange.get(0);
         assertTrue(targetAfterCategoryChange.contains(route));
         assertEquals(targetDescription, route.getDescription());

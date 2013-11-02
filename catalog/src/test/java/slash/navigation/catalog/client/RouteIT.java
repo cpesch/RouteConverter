@@ -177,19 +177,61 @@ public class RouteIT extends RouteCatalogClientBase {
     }
 
     @Test
+    public void testUpdateWithoutFile() throws Exception {
+        Post request0 = createFile("filestest.gpx");
+        request0.execute();
+        int fileKey = parseFileKey(request0.getLocation());
+
+        Post request1 = createRoute("Upload", fileKey, "Description");
+        String result1 = request1.execute();
+        assertTrue(result1.contains("route"));
+        assertTrue(result1.contains("created"));
+        int routeKey = parseRouteKey(request1.getLocation());
+        HttpRequest request2 = updateRoute(routeKey, "Upload", null, "Updated description");
+        String result2 = request2.execute();
+        assertTrue(result2.contains("no"));
+        assertTrue(result2.contains("url"));
+        assertTrue(result2.contains("given"));
+        assertEquals(412, request2.getResult());
+        assertFalse(request2.isSuccessful());
+    }
+
+    @Test
+    public void testUpdateWithoutCategory() throws Exception {
+        Post request0 = createFile("filestest.gpx");
+        request0.execute();
+        int fileKey = parseFileKey(request0.getLocation());
+
+        Post request1 = createRoute("Upload", fileKey, "Description");
+        String result1 = request1.execute();
+        assertTrue(result1.contains("route"));
+        assertTrue(result1.contains("created"));
+        int routeKey = parseRouteKey(request1.getLocation());
+        HttpRequest request2 = updateRoute(routeKey, null, fileKey, "Updated description");
+        String result2 = request2.execute();
+        assertTrue(result2.contains("no"));
+        assertTrue(result2.contains("category"));
+        assertTrue(result2.contains("given"));
+        assertEquals(412, request2.getResult());
+        assertFalse(request2.isSuccessful());
+    }
+
+    @Test
     public void testUpdateWithInvalidCategory() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        String result1 = request1.execute();
+        assertTrue(result1.contains("route"));
+        assertTrue(result1.contains("created"));
         int routeKey = parseRouteKey(request1.getLocation());
-        HttpRequest request2 = updateRoute(routeKey, "Invalid category " + System.currentTimeMillis(), null, "Updated description");
-        String result = request2.execute();
-        assertTrue(result.contains("no"));
-        assertTrue(result.contains("valid"));
-        assertTrue(result.contains("category"));
+        HttpRequest request2 = updateRoute(routeKey, "Invalid category " + System.currentTimeMillis(), fileKey, "Updated description");
+        String result2 = request2.execute();
+        assertTrue(result2.contains("no"));
+        assertTrue(result2.contains("valid"));
+        assertTrue(result2.contains("category"));
         assertEquals(412, request2.getResult());
         assertFalse(request2.isSuccessful());
     }

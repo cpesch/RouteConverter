@@ -21,11 +21,11 @@ public class FilesIT extends RouteCatalogServiceBase {
         Category category = root.create(name);
 
         File in = File.createTempFile("äöüß", ".file");
-        long inLength = in.length();
 
         FileInputStream input = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
         FileOutputStream output = new FileOutputStream(in);
         copy(input, output);
+        long inLength = in.length();
 
         Route route = category.createRoute("File with umlauts", in);
         assertNotNull(route);
