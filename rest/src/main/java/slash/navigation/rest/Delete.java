@@ -19,7 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.http.client.methods.HttpDelete;
 
 /**
  * Wrapper to initiate an HTTP DELETE Request.
@@ -28,8 +28,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
  */
 
 public class Delete extends HttpRequest {
-
     public Delete(String url, Credentials credentials) {
-        super(new DeleteMethod(url), credentials);
+        super(new HttpDelete(url), credentials);
     }
 }

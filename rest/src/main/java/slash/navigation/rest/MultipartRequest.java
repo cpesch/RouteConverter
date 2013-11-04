@@ -19,19 +19,17 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 
-import static slash.common.io.Transfer.UTF8_ENCODING;
+import static org.apache.http.HttpHeaders.LOCATION;
+import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 import static slash.common.io.Transfer.encodeUri;
 
 /**
@@ -41,30 +39,46 @@ import static slash.common.io.Transfer.encodeUri;
  */
 
 abstract class MultipartRequest extends HttpRequest {
-    private List<Part> parts = new ArrayList<Part>();
+    private MultipartEntityBuilder builder;
     private boolean containsFileLargerThan4k = false;
 
-    MultipartRequest(HttpMethod method, Credentials credentials) {
+    MultipartRequest(HttpEntityEnclosingRequestBase method, Credentials credentials) {
         super(method, credentials);
     }
 
-    public void addString(String name, String value) {
-        parts.add(new StringPart(name, value));
+    private MultipartEntityBuilder getBuilder() {
+        if (builder == null)
+            builder = MultipartEntityBuilder.create();
+        return builder;
+    }
+
+    private HttpEntityEnclosingRequestBase getHttpEntityEnclosingRequestBase() {
+        return (HttpEntityEnclosingRequestBase) getMethod();
+    }
+
+    public void addString(String name, String value) throws UnsupportedEncodingException {
+        getBuilder().addTextBody(name, value);
     }
 
     public void addFile(String name, File value) throws IOException {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
-        parts.add(new FilePart(name, encodeUri(value.getName()), value, "application/octet-stream", UTF8_ENCODING));
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(value.getName()));
     }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return containsFileLargerThan4k;
     }
 
-    protected void doExecute() throws IOException {
-        if (parts.size() > 0)
-            ((EntityEnclosingMethod) method).setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), method.getParams()));
-        super.doExecute();
+    protected HttpResponse doExecute() throws IOException {
+        if (builder != null) {
+            HttpEntity entity = builder.build();
+            getHttpEntityEnclosingRequestBase().setEntity(entity);
+        }
+        return super.doExecute();
+    }
+
+    public String getLocation() {
+        return getHeader(LOCATION);
     }
 }
