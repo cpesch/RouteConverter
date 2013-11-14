@@ -21,6 +21,7 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.ExtensionsType;
@@ -195,7 +196,19 @@ public class Gpx11Format extends GpxFormat {
             for (Object any : extensions.getAny()) {
                 if (any instanceof Element) {
                     Element element = (Element) any;
-                    if ("speed".equals(element.getLocalName())) {
+
+                    // Garmin Extensions v3
+                    if ("TrackPointExtension".equals(element.getLocalName())) {
+                        Node firstChild = element.getFirstChild();
+                        if(firstChild != null && "speed".equals(firstChild.getLocalName())) {
+                            result = parseDouble(element.getTextContent());
+                            // everything is converted from m/s to Km/h except for the exceptional case
+                            if (!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
+                               result = asKmh(result);
+                        }
+
+                    // generic reading of speed elements
+                    } else if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // everything is converted from m/s to Km/h except for the exceptional case
                         if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
