@@ -46,17 +46,18 @@ import java.io.Reader;
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
+import static slash.navigation.jaxb.JaxbUtils.newContext;
 
 class ViaMichelinUtil {
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(JaxbUtils.newContext(ObjectFactory.class));
+        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(JaxbUtils.newContext(ObjectFactory.class));
+        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_FRAGMENT, true);
             marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);

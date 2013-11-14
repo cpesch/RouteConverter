@@ -55,7 +55,6 @@ class Nmn7Util {
         return marshaller;
     }
 
-
     public static Route unmarshal(InputStream in) throws JAXBException {
         Route result = null;
         try {
@@ -65,7 +64,6 @@ class Nmn7Util {
         }
         return result;
     }
-
 
     public static void marshal(Route route, OutputStream out) throws JAXBException {
         try {
