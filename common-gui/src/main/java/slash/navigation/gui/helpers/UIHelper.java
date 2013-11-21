@@ -31,6 +31,8 @@ import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 
 /**
  * Helpers used throughout the UI
@@ -39,8 +41,8 @@ import static java.awt.Cursor.WAIT_CURSOR;
  */
 
 public class UIHelper {
-    private static final Preferences preferences = Preferences.userNodeForPackage(UIHelper.class);
-    private static final Logger log = Logger.getLogger(UIHelper.class.getName());
+    private static final Preferences preferences = userNodeForPackage(UIHelper.class);
+    private static final Logger log = getLogger(UIHelper.class.getName());
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
     // for language support which is not defined by a constant in Locale

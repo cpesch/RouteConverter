@@ -47,10 +47,8 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 
 public abstract class RouteCatalogClientBase {
     protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
-    // protected static final String HOST = "www.routeconverter.com";
-    protected static final String HOST = "localhost:8000";
-    protected static final String CATALOG = "http://" + HOST + "/catalog/";
-    protected static final String FEEDBACK = "http://" + HOST + "/feedback/";
+    protected static final String CATALOG = System.getProperty("catalog", "http://localhost:8000/catalog/");
+    protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
 

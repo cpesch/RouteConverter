@@ -37,6 +37,8 @@ import java.util.prefs.Preferences;
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 
@@ -47,11 +49,11 @@ import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
  */
 
 public abstract class Application {
-    private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
+    private static final Logger log = getLogger(SingleFrameApplication.class.getName());
     private static Application application = null;
     private final List<ExitListener> exitListeners;
     private final ApplicationContext context;
-    private Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private Preferences preferences = userNodeForPackage(getClass());
 
     private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
@@ -130,7 +132,7 @@ public abstract class Application {
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         setLookAndFeel();
         openNativeInterface();
-        initializeLocale(Preferences.userNodeForPackage(applicationClass));
+        initializeLocale(userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {

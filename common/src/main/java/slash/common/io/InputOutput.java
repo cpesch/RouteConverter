@@ -29,6 +29,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 /**
  * As a pipe reads from input and writes to output.
  *
@@ -41,9 +43,9 @@ public class InputOutput {
             IOUtils.copy(input, output);
         } finally {
             try {
-                IOUtils.closeQuietly(input);
+                closeQuietly(input);
             } finally {
-                IOUtils.closeQuietly(output);
+                closeQuietly(output);
             }
         }
     }
@@ -53,9 +55,9 @@ public class InputOutput {
             IOUtils.copy(reader, writer);
         } finally {
             try {
-                IOUtils.closeQuietly(reader);
+                closeQuietly(reader);
             } finally {
-                IOUtils.closeQuietly(writer);
+                closeQuietly(writer);
             }
         }
     }
