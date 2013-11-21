@@ -20,6 +20,7 @@
 package slash.navigation.rest;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -47,6 +48,7 @@ import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_PARTIAL_CONTENT;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static slash.common.io.InputOutput.readBytes;
@@ -71,7 +73,7 @@ public abstract class HttpRequest {
         requestConfigBuilder.setSocketTimeout(60 * 1000);
         clientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
-        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.5"));
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.6"));
         this.method = method;
     }
 
@@ -107,6 +109,13 @@ public abstract class HttpRequest {
         clientBuilder.setUserAgent(userAgent);
     }
 
+    protected void setHeader(String name, String value) {
+        getMethod().setHeader(name, value);
+    }
+
+    protected void disableContentCompression() {
+        clientBuilder.disableContentCompression();
+    }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return false;
@@ -133,8 +142,10 @@ public abstract class HttpRequest {
             // no response body then
             if (isUnAuthorized())
                 return null;
-            String body = new String(readBytes(response.getEntity().getContent()), UTF8_ENCODING);
-            if (!isSuccessful() && logUnsuccessful)
+            HttpEntity entity = response.getEntity();
+            // HEAD requests don't have a body
+            String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
+            if (!isSuccessful() && logUnsuccessful && body != null)
                 log.warning(body);
             return body;
         } finally {
@@ -159,19 +170,32 @@ public abstract class HttpRequest {
         method.reset();
     }
 
-    public int getStatusCode() throws IOException {
+    private void assertExecuted() throws IOException {
         if (response == null)
             throw new IOException("No request executed yet");
-        return response.getStatusLine().getStatusCode();
     }
 
-    protected String getHeader(String name) {
+    protected String getHeader(String name) throws IOException {
+        assertExecuted();
         Header header = response.getFirstHeader(name);
         return header != null ? header.getValue() : null;
     }
 
+    public int getStatusCode() throws IOException {
+        assertExecuted();
+        return response.getStatusLine().getStatusCode();
+    }
+
     public boolean isSuccessful() throws IOException {
         return getStatusCode() >= SC_OK && getStatusCode() < SC_MULTIPLE_CHOICES;
+    }
+
+    public boolean isOk() throws IOException {
+        return getStatusCode() == SC_OK;
+    }
+
+    public boolean isPartialContent() throws IOException {
+        return getStatusCode() == SC_PARTIAL_CONTENT;
     }
 
     public boolean isUnAuthorized() throws IOException {

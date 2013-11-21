@@ -78,7 +78,7 @@ abstract class MultipartRequest extends HttpRequest {
         return super.doExecute();
     }
 
-    public String getLocation() {
+    public String getLocation() throws IOException {
         return getHeader(LOCATION);
     }
 }

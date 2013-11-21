@@ -35,4 +35,11 @@ public class Get extends HttpRequest {
     public Get(String url) {
         super(new HttpGet(url));
     }
+
+    public void setRange(long startIndex, Long endIndex) {
+        // avoid GZIP'ed range
+        disableContentCompression();
+        // Apache accepts just bytes=1234-1235 while the spec says bytes 1234-1235/1236
+        setHeader("Range", "bytes=" + startIndex + "-" + (endIndex != null ? endIndex : ""));
+    }
 }
