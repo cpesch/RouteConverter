@@ -83,7 +83,7 @@ public class Files {
     }
 
     /**
-     * Replace the extension of the given file name with the
+     * sets the extension of the given file name with the
      * given extension.
      *
      * @param name      the file name to replace the extension
@@ -91,8 +91,11 @@ public class Files {
      * @return the file name with the given extension
      */
     private static String setExtension(String name, String extension) {
-        name = removeExtension(name);
-        name += extension;
+        // name = removeExtension(name);
+
+        if (! extension.equalsIgnoreCase(getExtension(name))) {
+            name += extension;
+        }
         return name;
     }
 
