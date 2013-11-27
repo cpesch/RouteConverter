@@ -56,7 +56,7 @@ public class RoutesTableModel extends AbstractTableModel {
     }
 
     public void addRoute(RouteModel route) {
-        routes.add(route);
+        assert routes.add(route);
         int index = routes.indexOf(route);
         assert index != -1;
         fireTableRowsInserted(index, index);
