@@ -675,16 +675,23 @@ public class ConvertPanel implements PanelInTab {
                             countRead(result.getFormat());
 
                             final String finalPath = path;
-                            final int finalRow = row > 0 ? row : getPositionsModel().getRowCount();
                             // avoid parallelism to ensure the URLs are processed in order
                             invokeAndWait(new Runnable() {
                                 public void run() {
-                                    try {
-                                        getPositionsModel().add(finalRow, result.getTheRoute());
-                                    } catch (FileNotFoundException e) {
-                                        r.handleFileNotFound(finalPath);
-                                    } catch (IOException e) {
-                                        r.handleOpenError(e, finalPath);
+                                    if (getFormatAndRoutesModel().getFormat().isSupportsMultipleRoutes()) {
+                                        for (BaseRoute route : result.getAllRoutes()) {
+                                            int appendIndex = getFormatAndRoutesModel().getSize();
+                                            getFormatAndRoutesModel().addPositionList(appendIndex, route);
+                                        }
+                                    } else {
+                                        try {
+                                            int appendRow = row > 0 ? row : getPositionsModel().getRowCount();
+                                            getPositionsModel().add(appendRow, result.getTheRoute());
+                                        } catch (FileNotFoundException e) {
+                                            r.handleFileNotFound(finalPath);
+                                        } catch (IOException e) {
+                                            r.handleOpenError(e, finalPath);
+                                        }
                                     }
                                 }
                             });
