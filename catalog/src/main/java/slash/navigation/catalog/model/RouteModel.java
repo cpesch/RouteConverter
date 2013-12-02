@@ -65,4 +65,19 @@ public class RouteModel {
             return "?";
         }
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RouteModel that = (RouteModel) o;
+
+        return category.equals(that.category) && route.equals(that.route);
+    }
+
+    public int hashCode() {
+        int result = category.hashCode();
+        result = 31 * result + route.hashCode();
+        return result;
+    }
 }

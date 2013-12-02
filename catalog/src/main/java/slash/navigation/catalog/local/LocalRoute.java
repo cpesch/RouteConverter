@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import static java.lang.String.format;
+import static slash.common.io.Transfer.encodeFileName;
 
 /**
  * Represents a route in the file system.
@@ -79,7 +80,7 @@ public class LocalRoute implements Route {
 
     public void update(String categoryUrl, String description) throws IOException {
         File category = Files.toFile(new URL(categoryUrl));
-        File newName = new File(category, description);
+        File newName = new File(category, encodeFileName(description));
         if (!file.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", file, newName));
         file = newName;

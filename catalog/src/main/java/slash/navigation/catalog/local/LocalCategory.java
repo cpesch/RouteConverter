@@ -39,6 +39,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.copy;
+import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
 /**
@@ -96,7 +97,7 @@ public class LocalCategory implements Category {
     }
 
     public Category create(String name) throws IOException {
-        File subDirectory = new File(directory, name);
+        File subDirectory = new File(directory, encodeFileName(name));
         if (!subDirectory.mkdir())
             throw new IOException(format("cannot create %s", subDirectory));
         return new LocalCategory(catalog, subDirectory);
@@ -105,7 +106,7 @@ public class LocalCategory implements Category {
     public void update(Category parent, String name) throws IOException {
         File newName = null;
         try {
-            newName = new File(parent != null ? new File(new URL(parent.getUrl()).toURI()) : directory.getParentFile(), name);
+            newName = new File(parent != null ? new File(new URL(parent.getUrl()).toURI()) : directory.getParentFile(), encodeFileName(name));
         } catch (URISyntaxException e) {
             throw new IOException(format("cannot rename %s to %s", directory, newName));
         }
@@ -131,7 +132,6 @@ public class LocalCategory implements Category {
 
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
-        assert directory != null;
         for (File file : directory.listFiles(new FileFileFilter())) {
             String name = file.getName();
             if (isPotentialValidLink(file)) {
@@ -148,13 +148,13 @@ public class LocalCategory implements Category {
     }
 
     public Route createRoute(String description, File file) throws IOException {
-        File destination = new File(directory, description);
+        File destination = new File(directory, encodeFileName(description));
         copy(new FileInputStream(file), new FileOutputStream(destination));
         return new LocalRoute(catalog, destination);
     }
 
     public Route createRoute(String description, String fileUrl) throws IOException {
-        File destination = new File(directory, description);
+        File destination = new File(directory, encodeFileName(description));
         PrintWriter writer = new PrintWriter(destination);
         try {
             writer.println("[InternetShortcut]");

@@ -105,7 +105,7 @@ public abstract class ConvertBase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            assert target.delete();
+            assertTrue(target.delete());
         }
     }
 
@@ -147,7 +147,7 @@ public abstract class ConvertBase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            assert target.delete();
+            assertTrue(target.delete());
         }
     }
 }

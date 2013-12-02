@@ -276,6 +276,10 @@ public class Transfer {
         }
     }
 
+    public static String encodeFileName(String name) {
+        return name.replaceAll("[\\\\/:.]", " ");
+    }
+
     public static String asUtf8(String string) {
         try {
             byte[] bytes = string.getBytes(UTF8_ENCODING);
