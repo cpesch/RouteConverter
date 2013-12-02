@@ -116,6 +116,7 @@ public abstract class BaseMapView implements MapView {
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
+    private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
@@ -1506,6 +1507,11 @@ public abstract class BaseMapView implements MapView {
         Double diffLongitude = reference != null ? longitude - reference.getLongitude() : 0.0;
         Double diffLatitude = reference != null ? latitude - reference.getLatitude() : 0.0;
 
+        boolean moveCompleteSelection = preferences.getBoolean(MOVE_COMPLETE_SELECTION_PREFERENCE, true);
+        boolean cleanElevation = preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false);
+        boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
+        boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false);
+
         int minimum = row;
         for (int index : selectedPositionIndices) {
             if (index < minimum)
@@ -1516,6 +1522,9 @@ public abstract class BaseMapView implements MapView {
                 continue;
 
             if (index != row) {
+                if (!moveCompleteSelection)
+                    continue;
+
                 positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, position.getLongitude() + diffLongitude,
                         LATITUDE_COLUMN_INDEX, position.getLatitude() + diffLatitude, false, true);
             } else {
@@ -1523,11 +1532,11 @@ public abstract class BaseMapView implements MapView {
                         LATITUDE_COLUMN_INDEX, latitude, false, true);
             }
 
-            if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
+            if (cleanElevation)
                 positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
-            if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
+            if (cleanTime)
                 positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
-            if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
+            if (complementTime)
                 positionAugmenter.complementTime(index, null, true);
         }
 
