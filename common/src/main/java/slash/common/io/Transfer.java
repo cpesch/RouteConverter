@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import static java.lang.Double.POSITIVE_INFINITY;
+import static java.lang.Integer.toHexString;
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 import static java.lang.Math.log;
@@ -276,8 +277,23 @@ public class Transfer {
         }
     }
 
+    private static final char URI_ESCAPE_CHAR = '%';
+    private static final String FORBIDDEN_CHARACTERS = "\\/:*?\"<>|";
+
     public static String encodeFileName(String name) {
-        return name.replaceAll("[\\\\/:.]", " ");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if ((c == '.' && i == 0) || c == URI_ESCAPE_CHAR || FORBIDDEN_CHARACTERS.indexOf(c) != -1) {
+                builder.append(URI_ESCAPE_CHAR);
+                if (c < 0x10)
+                    builder.append('0');
+                builder.append(toHexString(c));
+            } else {
+                builder.append(c);
+            }
+        }
+        return builder.toString();
     }
 
     public static String asUtf8(String string) {

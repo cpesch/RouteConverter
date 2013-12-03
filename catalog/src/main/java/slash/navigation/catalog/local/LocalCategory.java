@@ -39,6 +39,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.copy;
+import static slash.common.io.Transfer.decodeUri;
 import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
@@ -82,7 +83,7 @@ public class LocalCategory implements Category {
     public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
-            String name = subDirectory.getName();
+            String name = decodeUri(subDirectory.getName());
             if (isPotentialValidLink(subDirectory)) {
                 WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
                 if (shortcut.isDirectory()) {
@@ -133,7 +134,7 @@ public class LocalCategory implements Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
         for (File file : directory.listFiles(new FileFileFilter())) {
-            String name = file.getName();
+            String name = decodeUri(file.getName());
             if (isPotentialValidLink(file)) {
                 WindowsShortcut shortcut = new WindowsShortcut(file);
                 if (shortcut.isFile()) {

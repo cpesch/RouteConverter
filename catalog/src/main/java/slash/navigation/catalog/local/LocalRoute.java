@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import static java.lang.String.format;
+import static slash.common.io.Transfer.decodeUri;
 import static slash.common.io.Transfer.encodeFileName;
 
 /**
@@ -43,7 +44,7 @@ public class LocalRoute implements Route {
     public LocalRoute(LocalCatalog catalog, File file, String name) {
         this.catalog = catalog;
         this.file = file;
-        this.name = name;
+        this.name = decodeUri(name);
     }
 
     public LocalRoute(LocalCatalog catalog, File file) {
