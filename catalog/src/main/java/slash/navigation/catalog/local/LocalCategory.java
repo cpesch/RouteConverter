@@ -57,7 +57,7 @@ public class LocalCategory implements Category {
     public LocalCategory(LocalCatalog catalog, File directory, String name) {
         this.catalog = catalog;
         this.directory = directory;
-        this.name = name;
+        this.name = decodeUri(name);
     }
 
     public LocalCategory(LocalCatalog catalog, File directory) {

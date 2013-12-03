@@ -80,7 +80,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertTrue(routesBefore.contains(route));
 
         String targetDescription = "NEW Description";
-        route.update(source.getUrl(), targetDescription);
+        route.update(source, targetDescription);
 
         List<Route> afterDescriptionChange = source.getRoutes();
         assertTrue(afterDescriptionChange.contains(route));
@@ -90,7 +90,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
         String targetName = "Target Category " + currentTimeMillis();
         Category target = root.create(targetName);
-        route.update(target.getUrl(), targetDescription);
+        route.update(target, targetDescription);
 
         List<Route> sourceAfterCategoryChange = source.getRoutes();
         assertFalse(sourceAfterCategoryChange.contains(route));

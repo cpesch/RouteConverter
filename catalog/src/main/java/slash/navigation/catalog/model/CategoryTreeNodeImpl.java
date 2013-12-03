@@ -132,6 +132,4 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
             return null;
         }
     }
-
-
 }

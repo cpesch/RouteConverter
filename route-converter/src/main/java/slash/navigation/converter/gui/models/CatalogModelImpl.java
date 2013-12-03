@@ -229,7 +229,7 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                route.getRoute().update(route.getCategory().getCategory().getUrl(), name);
+                route.getRoute().update(route.getCategory().getCategory(), name);
 
                 invokeLater(new Runnable() {
                     public void run() {
@@ -261,7 +261,7 @@ public class CatalogModelImpl implements CatalogModel {
                     if (category.isRemote() && parent.isLocal())
                         throw new IOException("cannot move remote route " + route.getName() + " to local parent " + parent.getName());
 
-                    route.getRoute().update(parent.getCategory().getUrl(), route.getDescription() != null ? route.getDescription() : route.getName());
+                    route.getRoute().update(parent.getCategory(), route.getDescription() != null ? route.getDescription() : route.getName());
                 }
 
                 invokeLater(new Runnable() {
