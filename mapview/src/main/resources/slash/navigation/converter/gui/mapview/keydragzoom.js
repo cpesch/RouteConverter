@@ -841,14 +841,12 @@
       for (i = 0; i < this.veilDiv_.length; i++) {
         this.veilDiv_[i].style.display = "none";
       }
-      if (this.visualEnabled_) {
-        this.buttonDiv_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
-        this.buttonDiv_.title = this.visualTips_.zoomOff;
-        this.buttonDiv_.style.display = "";
-        this.buttonDiv2_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
-        this.buttonDiv2_.title = this.visualTips_.selectOff;
-        this.buttonDiv2_.style.display = "";
-      }
+      this.buttonDiv_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
+      this.buttonDiv_.title = this.visualTips_.zoomOff;
+      this.buttonDiv_.style.display = "";
+      this.buttonDiv2_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
+      this.buttonDiv2_.title = this.visualTips_.selectOff;
+      this.buttonDiv2_.style.display = "";
       /**
        * This event is fired when the hot key is released.
        * @name DragZoom#deactivate
