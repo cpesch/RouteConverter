@@ -111,14 +111,14 @@ public class AddFileDialog extends SimpleDialog {
     private void addFile() {
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            labelResult.setText("No description given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-description-error"));
             pack();
             return;
         }
 
         catalogModel.addRoute(category, description, file, null, new AddRouteCallback());
 
-        labelResult.setText("Successfully added file!"); // TODO make nicer
+        labelResult.setText(RouteConverter.getBundle().getString("add-route-by-file-success"));
         pack();
         dispose();
     }

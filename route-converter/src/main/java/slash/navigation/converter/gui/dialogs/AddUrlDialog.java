@@ -103,21 +103,21 @@ public class AddUrlDialog extends SimpleDialog {
     private void addUrl() {
         String url = textFieldUrl.getText();
         if (trim(url) == null) {
-            labelResult.setText("No url given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-url-error"));
             pack();
             return;
         }
 
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            labelResult.setText("No description given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-description-error"));
             pack();
             return;
         }
 
         catalogModel.addRoute(category, description, null, url, new AddRouteCallback());
 
-        labelResult.setText("Successfully added url!"); // TODO make nicer
+        labelResult.setText(RouteConverter.getBundle().getString("add-route-by-url-success"));
         pack();
         dispose();
     }
