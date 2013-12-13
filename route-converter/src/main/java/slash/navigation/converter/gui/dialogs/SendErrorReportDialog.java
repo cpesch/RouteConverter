@@ -44,6 +44,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
  * Dialog for sending error reports
@@ -102,7 +103,7 @@ public class SendErrorReportDialog extends SimpleDialog {
     }
 
     private void chooseFilePath() {
-        JFileChooser chooser = UIHelper.createJFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-file-path"));
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);

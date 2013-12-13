@@ -32,41 +32,20 @@ import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
-import slash.navigation.converter.gui.actions.AboutAction;
-import slash.navigation.converter.gui.actions.CheckForUpdateAction;
-import slash.navigation.converter.gui.actions.CompleteFlightPlanAction;
-import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
-import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
-import slash.navigation.converter.gui.actions.DeletePositionsAction;
-import slash.navigation.converter.gui.actions.FindPlaceAction;
-import slash.navigation.converter.gui.actions.InsertPositionsAction;
-import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
-import slash.navigation.converter.gui.actions.OptionsAction;
-import slash.navigation.converter.gui.actions.RevertPositionListAction;
-import slash.navigation.converter.gui.actions.SendErrorReportAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.helpers.FrameMenu;
-import slash.navigation.converter.gui.helpers.MergePositionListMenu;
-import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.helpers.SinglePositionAugmenter;
-import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.UpdateChecker;
+import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -92,47 +71,25 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.shortenPath;
-import static slash.common.io.Files.toUrls;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
-import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.io.Files.*;
+import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.base.Positions.asPosition;
@@ -141,17 +98,7 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrows
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
-import static slash.navigation.gui.helpers.UIHelper.CROATIA;
-import static slash.navigation.gui.helpers.UIHelper.CZECH;
-import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
-import static slash.navigation.gui.helpers.UIHelper.POLAND;
-import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
-import static slash.navigation.gui.helpers.UIHelper.SERBIA;
-import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
-import static slash.navigation.gui.helpers.UIHelper.SPAIN;
-import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -216,7 +163,8 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
-    private CompletePositionService completePositionService = new CompletePositionService();
+    private DownloadManager downloadManager = new DownloadManager();
+    private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -447,7 +395,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView != null)
             mapView.dispose();
         getConvertPanel().dispose();
-        completePositionService.dispose();
+        getCompletePositionService().dispose();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -707,11 +655,19 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    public CompletePositionService getCompletePositionService() {
+        return completePositionService;
+    }
+
+    public DownloadManager getDownloadManager() {
+        return downloadManager;
+    }
+
     private BatchPositionAugmenter batchPositionAugmenter = null;
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
         if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(frame, completePositionService);
+            batchPositionAugmenter = new BatchPositionAugmenter(frame, getCompletePositionService());
         }
         return batchPositionAugmenter;
     }
@@ -720,7 +676,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
-            positionAugmenter = new SinglePositionAugmenter(getPositionsModel(), completePositionService);
+            positionAugmenter = new SinglePositionAugmenter(getPositionsModel(), getCompletePositionService());
         }
         return positionAugmenter;
     }
@@ -1048,6 +1004,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("revert-positions", new RevertPositionListAction());
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
+        actionManager.register("downloads", new DownloadsAction());
         actionManager.register("options", new OptionsAction());
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());

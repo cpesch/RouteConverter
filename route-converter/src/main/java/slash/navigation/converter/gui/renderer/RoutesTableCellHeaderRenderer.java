@@ -27,7 +27,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders the column header of the routes table.
+ * Renders the column headers of the routes table.
  *
  * @author Christian Pesch
  */

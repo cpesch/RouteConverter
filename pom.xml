@@ -142,7 +142,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>2.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -234,7 +234,9 @@
         <module>common</module>
         <module>common-gui</module>
         <module>common-navigation</module>
+        <module>download</module>
         <module>earthtools</module>
+        <module>elevation-lookup</module>
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>

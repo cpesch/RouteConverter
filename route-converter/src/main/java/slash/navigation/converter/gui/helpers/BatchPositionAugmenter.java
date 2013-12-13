@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.common.BasicPosition;
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
@@ -34,6 +35,8 @@ import slash.navigation.gui.events.RangeOperation;
 
 import javax.swing.*;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -44,13 +47,13 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.Positions.intrapolateTime;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
@@ -100,8 +103,13 @@ public class BatchPositionAugmenter {
 
     private interface Operation {
         String getName();
+
         int getColumnIndex();
+
+        void performOnStart();
+
         boolean run(int index, NavigationPosition position) throws Exception;
+
         String getErrorMessage();
     }
 
@@ -120,6 +128,13 @@ public class BatchPositionAugmenter {
         new Thread(new Runnable() {
             public void run() {
                 try {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            progress.setNote(RouteConverter.getBundle().getString("progress-downloading"));
+                        }
+                    });
+                    operation.performOnStart();
+
                     final Exception[] lastException = new Exception[1];
                     lastException[0] = null;
                     final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
@@ -204,6 +219,9 @@ public class BatchPositionAugmenter {
                         return ALL_COLUMNS; // LONGITUDE_COLUMN_INDEX + LATITUDE_COLUMN_INDEX;
                     }
 
+                    public void performOnStart() {
+                    }
+
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         BasicPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
                         if (coordinates != null) {
@@ -237,6 +255,15 @@ public class BatchPositionAugmenter {
 
                     public int getColumnIndex() {
                         return ELEVATION_COLUMN_INDEX;
+                    }
+
+                    public void performOnStart() {
+                        List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<LongitudeAndLatitude>();
+                        for (int row : rows) {
+                            NavigationPosition position = positionsModel.getPosition(row);
+                            longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
+                        }
+                        completePositionService.downloadElevationFor(longitudeAndLatitudes);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
@@ -276,6 +303,9 @@ public class BatchPositionAugmenter {
                         return DESCRIPTION_COLUMN_INDEX;
                     }
 
+                    public void performOnStart() {
+                    }
+
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
@@ -311,6 +341,9 @@ public class BatchPositionAugmenter {
                         return DESCRIPTION_COLUMN_INDEX;
                     }
 
+                    public void performOnStart() {
+                    }
+
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
@@ -344,6 +377,9 @@ public class BatchPositionAugmenter {
                         return SPEED_COLUMN_INDEX;
                     }
 
+                    public void performOnStart() {
+                    }
+
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         NavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
                         if (predecessor != null) {
@@ -369,27 +405,27 @@ public class BatchPositionAugmenter {
     }
 
     private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while(index-- > 0) {
+        while (index-- > 0) {
             NavigationPosition position = positionsModel.getPosition(index);
-            if(position.hasTime())
+            if (position.hasTime())
                 return position;
         }
         return null;
     }
 
     private NavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
-        while(index++ < positionsModel.getRowCount() - 1) {
+        while (index++ < positionsModel.getRowCount() - 1) {
             NavigationPosition position = positionsModel.getPosition(index);
-            if(position.hasTime())
+            if (position.hasTime())
                 return position;
         }
         return null;
     }
 
     private void processTimes(final JTable positionsTable,
-                               final PositionsModel positionsModel,
-                               final int[] rows,
-                               final OverwritePredicate predicate) {
+                              final PositionsModel positionsModel,
+                              final int[] rows,
+                              final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
                     public String getName() {
@@ -398,6 +434,9 @@ public class BatchPositionAugmenter {
 
                     public int getColumnIndex() {
                         return TIME_COLUMN_INDEX;
+                    }
+
+                    public void performOnStart() {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
@@ -440,6 +479,9 @@ public class BatchPositionAugmenter {
 
                     public int getColumnIndex() {
                         return DESCRIPTION_COLUMN_INDEX;
+                    }
+
+                    public void performOnStart() {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {

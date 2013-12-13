@@ -74,6 +74,8 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
@@ -145,7 +147,7 @@ public abstract class BaseMapView implements MapView {
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private PositionAugmenter positionAugmenter;
     private PositionReducer positionReducer;
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = newCachedThreadPool();
     private int overQueryLimitCount = 0;
 
     // initialization
@@ -983,7 +985,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private final Map<Integer, PositionPair> insertWaypointsQueue = new LinkedHashMap<Integer, PositionPair>();
-    private final ExecutorService insertWaypointsExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService insertWaypointsExecutor = newSingleThreadExecutor();
 
     private void insertWaypoints(final String mode, int[] startPositions) {
         final Map<Integer, PositionPair> addToQueue = new LinkedHashMap<Integer, PositionPair>();

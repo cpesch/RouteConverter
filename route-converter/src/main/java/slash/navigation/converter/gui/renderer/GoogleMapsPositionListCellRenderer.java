@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the position labels of the insert position list.
+ * Renders the position labels of the position list.
  *
  * @author Christian Pesch
  */

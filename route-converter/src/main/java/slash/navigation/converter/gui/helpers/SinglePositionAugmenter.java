@@ -52,7 +52,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
 
 public class SinglePositionAugmenter implements PositionAugmenter {
     private static final Logger log = Logger.getLogger(SinglePositionAugmenter.class.getName());
-    private ExecutorService executorService = newSingleThreadExecutor();
+    private final ExecutorService executorService = newSingleThreadExecutor();
     private CompletePositionService completePositionService;
     private PositionsModel positionsModel;
 

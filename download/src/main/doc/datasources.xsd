@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.routeconverter.com/datasources"
+            targetNamespace="http://www.routeconverter.com/datasources"
+            elementFormDefault="qualified">
+
+    <xsd:element name="datasources" type="datasourcesType">
+        <xsd:annotation>
+            <xsd:documentation>
+                datasources is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="datasourcesType">
+        <xsd:annotation>
+            <xsd:documentation>
+                datasources contain datasource definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded">
+                <xsd:unique name="unique-name">
+                    <xsd:selector xpath="datasource"/>
+                    <xsd:field xpath="@name"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="datasourceType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a datasource contains a name and a base url followed by a mapping.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="mapping" type="mappingType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-key">
+                    <xsd:selector xpath="mapping"/>
+                    <xsd:field xpath="@key"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="baseUrl" type="xsd:string"/>
+        <xsd:attribute name="directory" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="mappingType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a mapping contains a key and the uri for the data relative to the base url
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="key" type="xsd:string"/>
+        <xsd:attribute name="uri" type="xsd:string"/>
+    </xsd:complexType>
+</xsd:schema>

@@ -36,7 +36,6 @@ import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.helpers.UIHelper;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -90,6 +89,7 @@ import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
  * The misc panel of the route converter user interface.
@@ -98,7 +98,7 @@ import static slash.navigation.gui.helpers.UIHelper.SPAIN;
  */
 
 public class OptionsPanel {
-    private JPanel miscPanel;
+    private JPanel rootPanel;
     private JComboBox comboBoxLocale;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseBabelPath;
@@ -265,11 +265,11 @@ public class OptionsPanel {
     }
 
     public Component getRootComponent() {
-        return miscPanel;
+        return rootPanel;
     }
 
     private void chooseBabelPath() {
-        JFileChooser chooser = UIHelper.createJFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(FILES_ONLY);
@@ -306,11 +306,11 @@ public class OptionsPanel {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
-        miscPanel = new JPanel();
-        miscPanel.setLayout(new GridLayoutManager(3, 1, new Insets(3, 3, 3, 3), -1, -1));
+        rootPanel = new JPanel();
+        rootPanel.setLayout(new GridLayoutManager(3, 1, new Insets(3, 3, 3, 3), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
-        miscPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        rootPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("preferred-locale"));
         panel1.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -339,10 +339,10 @@ public class OptionsPanel {
         final JSeparator separator1 = new JSeparator();
         panel1.add(separator1, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        miscPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 20), null, null, 0, false));
+        rootPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 20), null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(22, 2, new Insets(3, 3, 3, 3), -1, -1));
-        miscPanel.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        rootPanel.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
         panel3.add(label5, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -473,6 +473,6 @@ public class OptionsPanel {
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() {
-        return miscPanel;
+        return rootPanel;
     }
 }

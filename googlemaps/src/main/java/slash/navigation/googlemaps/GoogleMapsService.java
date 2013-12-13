@@ -21,6 +21,7 @@
 package slash.navigation.googlemaps;
 
 import slash.navigation.common.BasicPosition;
+import slash.navigation.completer.elevation.ElevationLookupService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -45,11 +46,15 @@ import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
  * @author Christian Pesch
  */
 
-public class GoogleMapsService {
+public class GoogleMapsService implements ElevationLookupService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
     private static final String GOOGLE_MAPS_API_URL_PREFERENCE = "googleMapsApiUrl";
     private static final String OK = "OK";
     private static final String OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
+
+    public String getName() {
+        return "Google Maps";
+    }
 
     private static String getGoogleMapsApiUrl(String api, String payload) {
         String language = Locale.getDefault().getLanguage();

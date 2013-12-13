@@ -44,12 +44,8 @@ import java.net.SocketException;
 import java.net.URI;
 import java.util.logging.Logger;
 
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.HttpStatus.SC_PARTIAL_CONTENT;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static java.lang.String.format;
+import static org.apache.http.HttpStatus.*;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
@@ -160,7 +156,7 @@ public abstract class HttpRequest {
             return null;
         InputStream body = response.getEntity().getContent();
         if (!isSuccessful() && logUnsuccessful)
-            log.warning("Cannot read response body");
+            log.warning(format("Cannot read response body for %s", method.getURI()));
         return body;
     }
 

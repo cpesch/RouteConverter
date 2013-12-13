@@ -29,7 +29,7 @@ import static slash.navigation.converter.gui.helpers.RouteHelper.formatCreator;
 import static slash.navigation.converter.gui.helpers.RouteHelper.formatName;
 
 /**
- * Renders the table cells of the positions table.
+ * Renders the table cells of the routes table.
  *
  * @author Christian Pesch
  */

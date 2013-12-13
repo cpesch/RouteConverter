@@ -20,15 +20,22 @@
 
 package slash.navigation.completer;
 
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.hgt.HgtFiles;
+import slash.navigation.hgt.HgtFilesService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.String.format;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 
 /**
@@ -40,62 +47,49 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
 public class CompletePositionService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
-    private static final String COMPLEMENT_ELEVATION_FROM_HGT_FILES = "complementElevationFromHgtFiles";
-    private static final String COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS = "complementElevationFromGoogleMaps";
-    private static final String COMPLEMENT_ELEVATION_FROM_GEONAMES = "complementElevationFromGeonames";
-    private static final String COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS = "complementElevationFromEarthTools";
+    private static final String ELEVATION_LOOKUP_SERVICE = "elevationLookupService";
 
-    private EarthToolsService earthToolsService = new EarthToolsService();
-    private GeoNamesService geoNamesService = new GeoNamesService();
-    private GoogleMapsService googleMapsService = new GoogleMapsService();
-    private HgtFiles hgtFiles = new HgtFiles();
+    private final List<ElevationLookupService> elevationLookupServices = new ArrayList<ElevationLookupService>();
+    private final HgtFilesService hgtFilesService;
+    private final GeoNamesService geoNamesService = new GeoNamesService();
+    private final GoogleMapsService googleMapsService = new GoogleMapsService();
+
+    public CompletePositionService(DownloadManager downloadManager) {
+        hgtFilesService = new HgtFilesService(downloadManager);
+        for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
+            elevationLookupServices.add(hgtFile);
+        elevationLookupServices.add(geoNamesService);
+        elevationLookupServices.add(googleMapsService);
+        elevationLookupServices.add(new EarthToolsService());
+    }
 
     public void dispose() {
-        hgtFiles.dispose();
+        hgtFilesService.dispose();
+    }
+
+    public List<ElevationLookupService> getElevationLookupServices() {
+        return elevationLookupServices;
+    }
+
+    public ElevationLookupService getElevationLookupService() {
+        String lookupServiceName = preferences.get(ELEVATION_LOOKUP_SERVICE, elevationLookupServices.get(0).getName());
+
+        for (ElevationLookupService service : elevationLookupServices) {
+            if (lookupServiceName.endsWith(service.getName()))
+                return service;
+        }
+
+        log.warning(format("Failed to find elevation lookup service %s; using GeoNames", lookupServiceName));
+        return geoNamesService;
+    }
+
+    public void setElevationLookupService(ElevationLookupService service) {
+        preferences.put(ELEVATION_LOOKUP_SERVICE, service.getName());
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        Double elevation = null;
-        Exception exception = null;
-
-        if (preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_HGT_FILES, true)) {
-            try {
-                elevation = hgtFiles.getElevationFor(longitude, latitude);
-                log.info("Service: HGTFiles Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
-            } catch (Exception e) {
-                exception = e;
-            }
-        }
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS, true)) {
-            try {
-                elevation = googleMapsService.getElevationFor(longitude, latitude);
-                log.info("Service: GoogleMaps Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
-            } catch (Exception e) {
-                exception = e;
-            }
-        }
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GEONAMES, true)) {
-            try {
-                elevation = geoNamesService.getElevationFor(longitude, latitude);
-                log.info("Service: GeoNames Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
-            } catch (Exception e) {
-                exception = e;
-            }
-        }
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true)) {
-            try {
-                elevation = earthToolsService.getElevationFor(longitude, latitude);
-                log.info("Service: EarthTools Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
-            } catch (Exception e) {
-                exception = e;
-            }
-        }
-
-        if(elevation != null)
-            return formatElevation(elevation).doubleValue();
-        if(exception != null)
-            throw new IOException(exception);
-        return null;
+        Double elevation = getElevationLookupService().getElevationFor(longitude, latitude);
+        return elevation != null ? formatElevation(elevation).doubleValue() : null;
     }
 
     public String getDescriptionFor(double longitude, double latitude) throws IOException {
@@ -103,5 +97,13 @@ public class CompletePositionService {
         if (description == null)
             description = geoNamesService.getNearByFor(longitude, latitude);
         return description;
+    }
+
+    public void downloadElevationFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        ElevationLookupService service = getElevationLookupService();
+        if(service instanceof HgtFiles) {
+            HgtFiles hgtFiles = (HgtFiles) service;
+            hgtFiles.downloadElevationFor(longitudeAndLatitudes);
+        }
     }
 }

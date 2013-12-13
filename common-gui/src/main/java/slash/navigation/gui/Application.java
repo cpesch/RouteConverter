@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.String.format;
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
@@ -144,7 +145,7 @@ public abstract class Application {
                     application.parseInitialArgs(args);
                 }
                 catch (Exception e) {
-                    String msg = String.format("Application %s failed to launch", applicationClass);
+                    String msg = format("Application %s failed to launch", applicationClass);
                     log.log(SEVERE, msg, e);
                     throw new Error(msg, e);
                 }

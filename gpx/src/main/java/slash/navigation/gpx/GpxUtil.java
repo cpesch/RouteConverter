@@ -23,22 +23,11 @@ package slash.navigation.gpx;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
+import java.io.*;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.navigation.jaxb.JaxbUtils.*;
 
 public class GpxUtil {
     private static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
@@ -143,13 +132,13 @@ public class GpxUtil {
     }
 
     public static void marshal11(GpxType gpxType, Writer writer) throws JAXBException {
-        newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), writer);
+        newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), writer);
     }
 
     public static void marshal11(GpxType gpxType, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), out);
+                newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), out);
             }
             finally {
                 out.flush();
