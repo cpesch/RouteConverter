@@ -46,17 +46,19 @@ public class Line extends Layer {
     }
     private final LatLong from;
     private final LatLong to;
+    private final int tileSize;
 
-    public Line(LatLong from, LatLong to) {
+    public Line(LatLong from, LatLong to, int tileSize) {
         this.to = to;
         this.from = from;
+        this.tileSize = tileSize;
     }
 
     public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        int fromX = (int) (longitudeToPixelX(from.longitude, zoomLevel) - topLeftPoint.x);
-        int fromY = (int) (latitudeToPixelY(from.latitude, zoomLevel) - topLeftPoint.y);
-        int toX = (int) (longitudeToPixelX(to.longitude, zoomLevel) - topLeftPoint.x);
-        int toY = (int) (latitudeToPixelY(to.latitude, zoomLevel) - topLeftPoint.y);
+        int fromX = (int) (longitudeToPixelX(from.longitude, zoomLevel, tileSize) - topLeftPoint.x);
+        int fromY = (int) (latitudeToPixelY(from.latitude, zoomLevel, tileSize) - topLeftPoint.y);
+        int toX = (int) (longitudeToPixelX(to.longitude, zoomLevel, tileSize) - topLeftPoint.x);
+        int toY = (int) (latitudeToPixelY(to.latitude, zoomLevel, tileSize) - topLeftPoint.y);
         canvas.drawLine(fromX, fromY, toX, toY, paint);
     }
 }

@@ -38,10 +38,16 @@ public class MapViewComponentListener extends ComponentAdapter {
     public MapViewComponentListener(AwtGraphicMapView mapView, MapViewDimension mapViewDimension) {
         this.mapView = mapView;
         this.mapViewDimension = mapViewDimension;
+        // avoid NPE in MapScaleBar#draw and division by 0 in FrameBufferController#calculateFrameBufferDimension
+        setDimension(1, 1);
     }
 
     public void componentResized(ComponentEvent componentEvent) {
         Dimension size = mapView.getSize();
-        mapViewDimension.setDimension(new org.mapsforge.core.model.Dimension(size.width, size.height));
+        setDimension(size.width, size.height);
+    }
+
+    private void setDimension(int width, int height) {
+        mapViewDimension.setDimension(new org.mapsforge.core.model.Dimension(width, height));
     }
 }

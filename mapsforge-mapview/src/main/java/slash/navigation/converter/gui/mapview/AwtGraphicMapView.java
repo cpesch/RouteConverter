@@ -46,6 +46,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     static final GraphicFactory GRAPHIC_FACTORY = INSTANCE;
 
     private final FrameBuffer frameBuffer;
+    private final FrameBufferController frameBufferController;
     private final LayerManager layerManager;
     private final FpsCounter fpsCounter;
     private final MapScaleBar mapScaleBar;
@@ -56,8 +57,8 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
         this.model = new Model();
 
-        this.frameBuffer = new FrameBuffer(model.frameBufferModel, GRAPHIC_FACTORY);
-        FrameBufferController.create(frameBuffer, model);
+        this.frameBuffer = new FrameBuffer(model.frameBufferModel, model.displayModel, GRAPHIC_FACTORY);
+        this.frameBufferController = FrameBufferController.create(frameBuffer, model);
 
         this.layerManager = new LayerManager(this, model.mapViewPosition, GRAPHIC_FACTORY);
         this.layerManager.start();
@@ -66,11 +67,12 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         MapViewController.create(this, model);
 
         this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY);
-        this.mapScaleBar = new MapScaleBar(this.model.mapViewPosition, this.model.mapViewDimension, GRAPHIC_FACTORY);
+        this.mapScaleBar = new MapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
     }
 
     public void destroy() {
         layerManager.interrupt();
+        frameBufferController.destroy();
     }
 
     public Dimension getDimension() {
