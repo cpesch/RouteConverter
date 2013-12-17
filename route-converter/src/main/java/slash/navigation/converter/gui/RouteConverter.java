@@ -404,7 +404,7 @@ public class RouteConverter extends SingleFrameApplication {
                 if (mapView.getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
-                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"),
+                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
                             parseVersionFromManifest().getBits(), Platform.getBits(),
                             stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
