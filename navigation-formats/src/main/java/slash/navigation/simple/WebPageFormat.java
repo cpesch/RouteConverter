@@ -21,23 +21,18 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.asUtf8;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * Writes a Web Page (*.html).
@@ -74,6 +69,10 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
