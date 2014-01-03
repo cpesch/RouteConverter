@@ -188,9 +188,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileDownloadLayer createTileDownloadLayer(TileSource tileSource) {
-        TileDownloadLayer tileDownloadLayer = new TileDownloadLayer(createTileCache(), mapView.getModel().mapViewPosition, tileSource, GRAPHIC_FACTORY);
-        tileDownloadLayer.start();
-        return tileDownloadLayer;
+        return new TileDownloadLayer(createTileCache(), mapView.getModel().mapViewPosition, tileSource, GRAPHIC_FACTORY);
     }
 
     private TileCache createTileCache() {
@@ -225,6 +223,9 @@ public class MapsforgeMapView implements MapView {
         // TODO add fallback if the map file doesn't exist
         layers.add(0, mapLayer);
         layerManager.redrawLayers();
+
+        if(mapLayer instanceof TileDownloadLayer)
+            ((TileDownloadLayer)mapLayer).start();
 
         log.info("Using map " + mapFile + " and theme " + themeFile);
     }
