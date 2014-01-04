@@ -172,7 +172,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(File mapFile, File themeFile) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, GRAPHIC_FACTORY);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, false, GRAPHIC_FACTORY);
         tileRendererLayer.setMapFile(mapFile);
         XmlRenderTheme xmlRenderTheme;
         if(OSMARENDERER_INTERNAL.equals(themeFile))
