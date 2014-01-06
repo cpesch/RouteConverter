@@ -21,11 +21,7 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -34,35 +30,17 @@ import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -79,29 +57,14 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ThreadHelper.safeJoin;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.decodeUri;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.Positions.asPosition;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -346,11 +309,14 @@ public abstract class BaseMapView implements MapView {
                         case Route:
                             addDirectionsToMap(render);
                             break;
+                        case Track:
+                            addPolylinesToMap(render);
+                            break;
                         case Waypoints:
                             addMarkersToMap(render);
                             break;
                         default:
-                            addPolylinesToMap(render);
+                            throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
                             characteristics + ", recentering: " + recenter);
