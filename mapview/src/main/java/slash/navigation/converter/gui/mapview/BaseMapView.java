@@ -23,10 +23,9 @@ package slash.navigation.converter.gui.mapview;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -66,6 +65,7 @@ import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -313,11 +313,14 @@ public abstract class BaseMapView implements MapView {
                         case Route:
                             addDirectionsToMap(render);
                             break;
+                        case Track:
+                            addPolylinesToMap(render);
+                            break;
                         case Waypoints:
                             addMarkersToMap(render);
                             break;
                         default:
-                            addPolylinesToMap(render);
+                            throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
                             characteristics + ", recentering: " + recenter);
