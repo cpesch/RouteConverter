@@ -17,18 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.updater;
+
+import slash.navigation.base.NavigationPosition;
 
 import java.util.List;
 
 /**
- * Operations to perform on track.
+ * Operations to perform on a waypoint list.
  *
  * @author Christian Pesch
- * @see TrackUpdater
+ * @see WaypointUpdater
  */
 
-public interface TrackOperation {
-  void add(List<PositionPair> pairs);
-  void remove(List<PositionPair> pairs);
+public interface WaypointOperation {
+  void add(List<NavigationPosition> positions);
+  void remove(List<NavigationPosition> positions);
 }

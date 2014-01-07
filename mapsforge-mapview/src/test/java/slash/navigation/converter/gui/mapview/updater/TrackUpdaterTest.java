@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.updater;
 
 import org.junit.Test;
 import slash.navigation.base.NavigationPosition;
@@ -31,11 +31,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TrackUpdaterTest {
     private NavigationPosition p1 = new Wgs84Position(1.0, 0.0, null, null, null, null);

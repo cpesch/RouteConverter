@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.updater;
 
 import slash.navigation.base.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -35,7 +35,7 @@ import static java.lang.Math.min;
  * @see TrackOperation
  */
 
-public class TrackUpdater {
+public class TrackUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final TrackOperation trackOperation;
     private final List<NavigationPosition> currentTrack = new ArrayList<NavigationPosition>();

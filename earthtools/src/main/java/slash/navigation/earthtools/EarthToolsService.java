@@ -20,7 +20,7 @@
 
 package slash.navigation.earthtools;
 
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.rest.Get;
 
@@ -36,7 +36,7 @@ import static slash.navigation.earthtools.EarthToolsUtil.unmarshal;
  * @author Christian Pesch
  */
 
-public class EarthToolsService implements ElevationLookupService {
+public class EarthToolsService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(EarthToolsService.class);
     private static final String GEONAMES_URL_PREFERENCE = "earthtoolsUrl";
 

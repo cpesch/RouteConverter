@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
@@ -58,7 +58,7 @@ public class DownloadsPanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-        for (ElevationLookupService service : r.getCompletePositionService().getElevationLookupServices())
+        for (ElevationService service : r.getCompletePositionService().getElevationServices())
             comboBoxModel.addElement(service);
         comboBoxElevationService.setModel(comboBoxModel);
         comboBoxElevationService.setRenderer(new ElevationLookupServiceListCellRenderer());
@@ -66,7 +66,7 @@ public class DownloadsPanel {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                ElevationLookupService service = ElevationLookupService.class.cast(e.getItem());
+                ElevationService service = ElevationService.class.cast(e.getItem());
                 r.getCompletePositionService().setElevationLookupService(service);
             }
         });

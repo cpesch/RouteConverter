@@ -20,7 +20,7 @@
 
 package slash.navigation.geonames;
 
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
@@ -39,7 +39,7 @@ import static slash.common.io.Transfer.parseInt;
  * @author Christian Pesch
  */
 
-public class GeoNamesService implements ElevationLookupService {
+public class GeoNamesService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
     private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";

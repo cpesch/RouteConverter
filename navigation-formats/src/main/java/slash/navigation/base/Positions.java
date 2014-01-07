@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.BasicPosition;
 
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class Positions {
     }
 
     public static Wgs84Position asPosition(double longitude, double latitude) {
-        return asPosition(longitude, latitude, (String)null);
+        return asPosition(longitude, latitude, (String) null);
     }
 
     public static Wgs84Position asPosition(Double longitude, Double latitude, String description) {
@@ -130,5 +131,9 @@ public class Positions {
 
     static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {
         return new Wgs84Position(longitude, latitude, null, null, time, null);
+    }
+
+    public static BasicPosition asPosition(NavigationPosition position) {
+        return new BasicPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getDescription());
     }
 }

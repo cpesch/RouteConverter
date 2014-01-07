@@ -17,18 +17,16 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.completer.elevation;
-
-import java.io.IOException;
+package slash.navigation.converter.gui.mapview.updater;
 
 /**
- * Interface for a service that looks up the elevation for a given position.
+ * Reduces the number of interactions between event listener and map UI.
  *
  * @author Christian Pesch
  */
 
-public interface ElevationLookupService {
-    String getName();
-    Double getElevationFor(double longitude, double latitude) throws IOException;
+public interface EventMapUpdater {
+    void handleAdd(int firstRow, int lastRow);
+    void handleUpdate(int firstRow, int lastRow);
+    void handleRemove(int firstRow, int lastRow);
 }

@@ -230,13 +230,14 @@
     </dependencyManagement>
 
     <modules>
+        <module>brouter</module>
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
         <module>common-navigation</module>
         <module>download</module>
         <module>earthtools</module>
-        <module>elevation-lookup</module>
+        <module>elevation-service</module>
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
@@ -251,6 +252,7 @@
         <module>position-completer</module>
         <module>profileview</module>
         <module>rest</module>
+        <module>routing-service</module>
         <module>swt-mapview</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>

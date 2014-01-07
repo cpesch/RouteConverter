@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>brouter</artifactId>
+    <packaging>jar</packaging>
+    <name>Access to the BRouter routing</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>RouteConverter</artifactId>
+        <version>2.12-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+            <type>test-jar</type> <!-- for http://youtrack.jetbrains.net/issue/IDEA-54254 -->
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>routing-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-core</artifactId>
+            <version>0.96</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-mapaccess</artifactId> <!-- TODO shouldn't be here, fix brouter package dependency -->
+            <version>0.96</version>
+        </dependency>
+    </dependencies>
+</project>
