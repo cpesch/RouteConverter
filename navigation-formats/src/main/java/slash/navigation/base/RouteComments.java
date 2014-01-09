@@ -23,6 +23,7 @@ package slash.navigation.base;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.itn.TomTomPosition;
 

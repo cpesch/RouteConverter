@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 

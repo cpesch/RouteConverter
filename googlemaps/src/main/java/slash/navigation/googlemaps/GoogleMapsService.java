@@ -20,7 +20,8 @@
 
 package slash.navigation.googlemaps;
 
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
@@ -113,12 +114,12 @@ public class GoogleMapsService implements ElevationService {
         return resultsArray[0].getFormattedAddress();
     }
 
-    public BasicPosition getPositionFor(String address) throws IOException {
-        List<BasicPosition> positions = getPositionsFor(address);
+    public NavigationPosition getPositionFor(String address) throws IOException {
+        List<NavigationPosition> positions = getPositionsFor(address);
         return positions != null && positions.size() > 0 ? positions.get(0) : null;
     }
 
-    public List<BasicPosition> getPositionsFor(String address) throws IOException {
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
         String result = get.execute();
@@ -140,11 +141,11 @@ public class GoogleMapsService implements ElevationService {
         return null;
     }
 
-    private List<BasicPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
-        List<BasicPosition> result = new ArrayList<BasicPosition>(responses.size());
+    private List<NavigationPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(responses.size());
         for (GeocodeResponse.Result response : responses) {
             GeocodeResponse.Result.Geometry.Location location = response.getGeometry().getLocation();
-            result.add(new BasicPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
+            result.add(new SimpleNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
                     0.0d, response.getFormattedAddress()));
         }
         return result;

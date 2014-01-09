@@ -20,12 +20,18 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.base.Positions.asPosition;
 
 public class BoundingBoxTest {
+    private NavigationPosition asPosition(double longitude, double latitude) {
+        return new SimpleNavigationPosition(longitude, latitude);
+    }
+
     @Test
     public void testContains() {
         assertTrue(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(asPosition(0.0, 0.0)));

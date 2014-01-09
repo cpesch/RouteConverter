@@ -39,11 +39,11 @@ import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.brouter.BRouter;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.mapview.updater.*;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -71,7 +71,6 @@ import java.util.prefs.Preferences;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
-import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -280,7 +279,7 @@ public class MapsforgeMapView implements MapView {
                 for (PositionPair pair : pairs) {
                     List<LatLong> latLongs = new ArrayList<LatLong>();
                     latLongs.add(asLatLong(pair.getFirst()));
-                    latLongs.addAll(asLatLongs(routingService.getRouteBetween(pair.getFirst(), pair.getSecond())));
+                    latLongs.addAll(asLatLong(routingService.getRouteBetween(pair.getFirst(), pair.getSecond())));
                     latLongs.add(asLatLong(pair.getSecond()));
                     Polyline line = new Polyline(latLongs, tileSize);
                     getLayerManager().getLayers().add(line);
@@ -481,7 +480,7 @@ public class MapsforgeMapView implements MapView {
 
 
     private NavigationPosition asNavigationPosition(LatLong latLong) {
-        return asPosition(latLong.longitude, latLong.latitude);
+        return new SimpleNavigationPosition(latLong.longitude, latLong.latitude);
     }
 
     private LatLong asLatLong(NavigationPosition position) {

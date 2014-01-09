@@ -20,10 +20,7 @@
 
 package slash.navigation.url;
 
-import slash.navigation.base.BaseUrlParsingFormat;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,7 +36,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -80,7 +77,7 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
 
         String latitude = tokenizer.nextToken();
         String longitude = tokenizer.nextToken();
-        return asPosition(parseDouble(longitude), parseDouble(latitude));
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude));
     }
 
     List<Wgs84Position> parsePositions(String data) {

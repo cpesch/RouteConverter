@@ -24,8 +24,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.table.TableModel;
 import java.io.IOException;

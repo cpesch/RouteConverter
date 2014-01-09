@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.mapview.updater;
 
 import org.junit.Test;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class SelectionUpdaterTest {
-    private NavigationPosition a = new Wgs84Position(1.0, 0.0, null, null, null, null);
-    private NavigationPosition b = new Wgs84Position(2.0, 0.0, null, null, null, null);
+    private NavigationPosition a = new SimpleNavigationPosition(1.0, 0.0);
+    private NavigationPosition b = new SimpleNavigationPosition(2.0, 0.0);
 
     @Test
     public void testNavigationPositionEqualsAndHashCode() {

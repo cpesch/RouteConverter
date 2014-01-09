@@ -21,7 +21,8 @@
 package slash.navigation.brouter;
 
 import btools.router.*;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.routing.RoutingService;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class BRouter implements RoutingService {
         return "BRouter";
     }
 
-    public List<BasicPosition> getRouteBetween(BasicPosition from, BasicPosition to) {
+    public List<NavigationPosition> getRouteBetween(NavigationPosition from, NavigationPosition to) {
         RoutingContext routingContext = new RoutingContext();
         RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
         routingEngine.quite = true;
@@ -66,7 +67,7 @@ public class BRouter implements RoutingService {
         return directory;
     }
 
-    private List<OsmNodeNamed> createWaypoints(BasicPosition from, BasicPosition to) {
+    private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
         List<OsmNodeNamed> result = new ArrayList<OsmNodeNamed>();
         result.add(asOsmNodeNamed(from.getDescription(), from.getLongitude(), from.getLatitude()));
         result.add(asOsmNodeNamed(to.getDescription(), to.getLongitude(), to.getLatitude()));
@@ -89,16 +90,16 @@ public class BRouter implements RoutingService {
         return latitude != null ? (int) ((latitude + 90.0) * 1000000.0 + 0.5) : 0;
     }
 
-    private List<BasicPosition> asPositions(OsmTrack track) {
-        List<BasicPosition> result = new ArrayList<BasicPosition>();
+    private List<NavigationPosition> asPositions(OsmTrack track) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
         for (OsmPathElement element : track.nodes) {
             result.add(asPosition(element));
         }
         return result;
     }
 
-    private BasicPosition asPosition(OsmPathElement element) {
-        return new BasicPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), element.message);
+    private NavigationPosition asPosition(OsmPathElement element) {
+        return new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), element.message);
     }
 
     double asLongitude(int longitude) {

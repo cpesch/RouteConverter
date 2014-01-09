@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;

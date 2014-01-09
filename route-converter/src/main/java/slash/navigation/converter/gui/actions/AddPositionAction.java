@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;

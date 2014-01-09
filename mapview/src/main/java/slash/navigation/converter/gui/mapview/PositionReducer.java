@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.base.BoundingBox;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
-import static slash.navigation.base.Positions.getSignificantPositions;
+import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 

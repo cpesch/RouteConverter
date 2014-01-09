@@ -20,7 +20,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * The base of all Sygic formats.
@@ -81,6 +81,6 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String phone = trim(lineMatcher.group(4));
         if (phone != null)
             description = description + " " + phone;
-        return asPosition(parseDouble(longitude), parseDouble(latitude), description);
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude), description);
     }
 }

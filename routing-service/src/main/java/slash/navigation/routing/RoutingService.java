@@ -20,7 +20,7 @@
 
 package slash.navigation.routing;
 
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 
@@ -32,5 +32,5 @@ import java.util.List;
 
 public interface RoutingService {
     String getName();
-    List<BasicPosition> getRouteBetween(BasicPosition from, BasicPosition to);
+    List<NavigationPosition> getRouteBetween(NavigationPosition from, NavigationPosition to);
 }

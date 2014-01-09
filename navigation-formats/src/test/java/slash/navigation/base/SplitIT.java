@@ -221,7 +221,8 @@ public class SplitIT {
         } finally {
             // avoid to clutter the temp directory
             for (File target : targets) {
-                assertTrue(target.delete());
+                if (target.exists())
+                    assertTrue(target.delete());
             }
         }
     }

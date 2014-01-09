@@ -22,6 +22,8 @@ package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,7 +33,6 @@ import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.asUtf8;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 /**

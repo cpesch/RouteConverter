@@ -23,6 +23,7 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,7 +106,8 @@ public abstract class ConvertBase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            assertTrue(target.delete());
+            if (target.exists())
+                assertTrue(target.delete());
         }
     }
 
@@ -147,7 +149,8 @@ public abstract class ConvertBase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            assertTrue(target.delete());
+            if (target.exists())
+                assertTrue(target.delete());
         }
     }
 }

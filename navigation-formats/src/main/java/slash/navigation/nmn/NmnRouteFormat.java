@@ -21,7 +21,7 @@
 package slash.navigation.nmn;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -46,7 +46,7 @@ import java.util.prefs.Preferences;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.toMixedCase;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -315,7 +315,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = asPosition(longitude, latitude, waypointDescription);
+            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
             resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
@@ -350,7 +350,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.position((int) (startPosition + blockLength));
 
         if (positionPoint == null)
-            return asPosition(longitude, latitude, waypointDescription);
+            return asWgs84Position(longitude, latitude, waypointDescription);
         return positionPoint;
     }
 
@@ -388,7 +388,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = asPosition(longitude, latitude, waypointDescription);
+            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
             resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
@@ -508,7 +508,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
-            resultPoint = asPosition(longitude, latitude, waypointDescription);
+            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
         } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
             resultPoint = positionPoint;
             resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());

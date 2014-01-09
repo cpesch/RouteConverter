@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -134,9 +134,9 @@ public class FindPlaceDialog extends SimpleDialog {
         listResult.setModel(listModel);
         GoogleMapsService service = new GoogleMapsService();
         try {
-            List<BasicPosition> positions = service.getPositionsFor(textFieldSearch.getText());
+            List<NavigationPosition> positions = service.getPositionsFor(textFieldSearch.getText());
             if (positions != null) {
-                for (BasicPosition position : positions) {
+                for (NavigationPosition position : positions) {
                     listModel.addElement(position);
                 }
                 if (listModel.getSize() > 0) {
@@ -161,7 +161,7 @@ public class FindPlaceDialog extends SimpleDialog {
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         Object[] objects = listResult.getSelectedValues();
         for (int i = objects.length - 1; i >= 0; i -= 1) {
-            BasicPosition position = (BasicPosition) objects[i];
+            NavigationPosition position = (NavigationPosition) objects[i];
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow}, true);

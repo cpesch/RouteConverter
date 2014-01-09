@@ -21,10 +21,10 @@
 package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BoundingBox;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;

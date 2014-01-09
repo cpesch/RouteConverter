@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import static slash.common.type.CompactCalendar.fromMillis;
  * @author Christian Pesch, Malte Neumann
  */
 
-public class Positions {
+public class RouteCalculations {
     private static int[] douglasPeuckerSimplify(List<? extends NavigationPosition> positions, int from, int to, double threshold) {
         // find the point with the maximum distance
         NavigationPosition pointA = positions.get(from);
@@ -69,7 +69,6 @@ public class Positions {
 
     /**
      * Search the significant positions with the Douglas-Peucker-Algorithm.
-     * <p/>
      * http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus
      *
      * @param positions the original list of positions
@@ -121,19 +120,11 @@ public class Positions {
         return fromMillis(time);
     }
 
-    public static Wgs84Position asPosition(double longitude, double latitude) {
-        return asPosition(longitude, latitude, (String) null);
+    public static Wgs84Position asWgs84Position(double longitude, double latitude) {
+        return asWgs84Position(longitude, latitude, (String)null);
     }
 
-    public static Wgs84Position asPosition(Double longitude, Double latitude, String description) {
+    public static Wgs84Position asWgs84Position(Double longitude, Double latitude, String description) {
         return new Wgs84Position(longitude, latitude, null, null, null, description);
-    }
-
-    static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {
-        return new Wgs84Position(longitude, latitude, null, null, time, null);
-    }
-
-    public static BasicPosition asPosition(NavigationPosition position) {
-        return new BasicPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getDescription());
     }
 }

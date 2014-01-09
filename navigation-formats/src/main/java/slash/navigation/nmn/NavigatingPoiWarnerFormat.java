@@ -21,7 +21,7 @@
 package slash.navigation.nmn;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -37,7 +37,7 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
@@ -88,7 +88,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
         String description = trim(lineMatcher.group(3));
         if (description != null)
             description = description.replaceAll("\\p{Cntrl}", "");
-        return asPosition(parseDouble(longitude), parseDouble(latitude), description);
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude), description);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

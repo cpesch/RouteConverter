@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.mapview.updater;
 
 import org.junit.Test;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
@@ -34,10 +34,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class WaypointUpdaterTest {
-    private NavigationPosition p1 = new Wgs84Position(1.0, 0.0, null, null, null, null);
-    private NavigationPosition p2 = new Wgs84Position(2.0, 0.0, null, null, null, null);
-    private NavigationPosition p3 = new Wgs84Position(3.0, 0.0, null, null, null, null);
-    private NavigationPosition p4 = new Wgs84Position(4.0, 0.0, null, null, null, null);
+    private NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
+    private NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
+    private NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
+    private NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
 
     @Test
     public void testInitiallyEmpty() {

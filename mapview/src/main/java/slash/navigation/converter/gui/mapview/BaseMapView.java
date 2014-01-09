@@ -21,7 +21,12 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -61,7 +66,6 @@ import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -309,14 +313,11 @@ public abstract class BaseMapView implements MapView {
                         case Route:
                             addDirectionsToMap(render);
                             break;
-                        case Track:
-                            addPolylinesToMap(render);
-                            break;
                         case Waypoints:
                             addMarkersToMap(render);
                             break;
                         default:
-                            throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+                            addPolylinesToMap(render);
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
                             characteristics + ", recentering: " + recenter);
@@ -715,7 +716,7 @@ public abstract class BaseMapView implements MapView {
     private NavigationPosition getLastMapCenter() {
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-        return asPosition(longitude, latitude);
+        return new SimpleNavigationPosition(longitude, latitude);
     }
 
     protected NavigationPosition extractLatLng(String script) {
@@ -729,7 +730,7 @@ public abstract class BaseMapView implements MapView {
 
         String latitude = tokenizer.nextToken();
         String longitude = tokenizer.nextToken();
-        return asPosition(parseDouble(longitude), parseDouble(latitude));
+        return new SimpleNavigationPosition(parseDouble(longitude), parseDouble(latitude));
     }
 
     // draw on map

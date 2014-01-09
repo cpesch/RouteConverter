@@ -28,9 +28,10 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
@@ -92,7 +93,6 @@ import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
-import static slash.navigation.base.Positions.asPosition;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
@@ -723,7 +723,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public NavigationPosition getMapCenter() {
-        return mapView != null ? mapView.getCenter() : asPosition(-41.0, 41.0);
+        return mapView != null ? mapView.getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {

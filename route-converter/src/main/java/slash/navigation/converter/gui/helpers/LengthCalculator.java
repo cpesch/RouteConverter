@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;

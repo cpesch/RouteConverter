@@ -22,7 +22,7 @@ package slash.navigation.simple;
 
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
@@ -43,7 +43,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Opel Navi 600/900 (.poi) files.
@@ -110,7 +110,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (phone != null)
             description += ";" + phone;
 
-        Wgs84Position position = asPosition(longitude, latitude, description);
+        Wgs84Position position = asWgs84Position(longitude, latitude, description);
         position.setStartDate(startDate);
         return position;
     }

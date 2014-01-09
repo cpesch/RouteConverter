@@ -19,14 +19,13 @@
  *     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
  * /
  */
-package slash.navigation.base;
+package slash.navigation.common;
 
 import slash.common.type.CompactCalendar;
 
 import java.util.List;
 
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.base.Positions.asPosition;
 
 /**
  * An area defined by the north east and south west {@link NavigationPosition}s.
@@ -43,8 +42,8 @@ public class BoundingBox {
 
     public BoundingBox(Double longitudeNorthEast, Double latitudeNorthEast,
                        Double longitudeSouthWest, Double latitudeSouthWest) {
-        this(asPosition(longitudeNorthEast, latitudeNorthEast),
-                asPosition(longitudeSouthWest, latitudeSouthWest));
+        this(new SimpleNavigationPosition(longitudeNorthEast, latitudeNorthEast),
+                new SimpleNavigationPosition(longitudeSouthWest, latitudeSouthWest));
     }
 
     public BoundingBox(List<? extends NavigationPosition> positions) {
@@ -75,8 +74,8 @@ public class BoundingBox {
             if (minimumTime == null || time.before(minimumTime))
                 minimumTime = time;
         }
-        this.northEast = asPosition(maximumLongitude, maximumLatitude, maximumTime);
-        this.southWest = asPosition(minimumLongitude, minimumLatitude, minimumTime);
+        this.northEast = new SimpleNavigationPosition(maximumLongitude, maximumLatitude, maximumTime);
+        this.southWest = new SimpleNavigationPosition(minimumLongitude, minimumLatitude, minimumTime);
     }
 
     public NavigationPosition getNorthEast() {
@@ -106,6 +105,6 @@ public class BoundingBox {
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
             time = fromMillis(millis);
         }
-        return asPosition(longitude, latitude, time);
+        return new SimpleNavigationPosition(longitude, latitude, time);
     }
 }

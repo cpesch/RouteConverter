@@ -20,6 +20,8 @@
 
 package slash.navigation.base;
 
+import slash.navigation.common.NavigationPosition;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;

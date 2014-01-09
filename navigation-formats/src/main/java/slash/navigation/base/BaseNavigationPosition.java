@@ -23,6 +23,7 @@ package slash.navigation.base;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.Bearing;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
