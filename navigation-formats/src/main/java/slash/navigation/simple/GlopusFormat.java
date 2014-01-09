@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -37,7 +37,6 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
 
 
 /**
@@ -96,14 +95,14 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
             String latitude = commentMatcher.group(1);
             String longitude = commentMatcher.group(2);
             String description = commentMatcher.group(3);
-            return asPosition(parseDouble(longitude), parseDouble(latitude), trim(description));
+            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, trim(description));
         }
 
         Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
         if (simpleMatcher.matches()) {
             String latitude = simpleMatcher.group(1);
             String longitude = simpleMatcher.group(2);
-            return asPosition(parseDouble(longitude), parseDouble(latitude));
+            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -96,7 +96,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
         NavigationPosition first = positions.get(0);
-        return asPosition(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
+        return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {

@@ -28,7 +28,7 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.TokenResolver;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
 import java.io.File;

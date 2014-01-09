@@ -37,7 +37,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.Positions.extrapolateTime;
+import static slash.navigation.base.RouteCalculations.extrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;

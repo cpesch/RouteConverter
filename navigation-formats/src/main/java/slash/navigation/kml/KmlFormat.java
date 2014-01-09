@@ -22,9 +22,8 @@ package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.BasicPosition;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -47,9 +46,9 @@ import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.BasicPosition.parsePositions;
 import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.common.PositionParser.parsePositions;
 
 /**
  * The base of all Google Earth formats.
@@ -85,7 +84,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    protected KmlPosition asKmlPosition(BasicPosition position) {
+    protected KmlPosition asKmlPosition(NavigationPosition position) {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getDescription());
     }
 
@@ -97,7 +96,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             buffer.append(' ');
         }
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (BasicPosition position : parsePositions(buffer.toString()))
+        for (NavigationPosition position : parsePositions(buffer.toString()))
             result.add(asKmlPosition(position));
         return result;
     }

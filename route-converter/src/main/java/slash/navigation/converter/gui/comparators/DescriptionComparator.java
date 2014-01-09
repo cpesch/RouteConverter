@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.comparators;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import java.text.Collator;
 import java.util.Comparator;

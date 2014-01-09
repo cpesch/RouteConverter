@@ -42,6 +42,7 @@ import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;

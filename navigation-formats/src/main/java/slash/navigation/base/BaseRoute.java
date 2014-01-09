@@ -25,6 +25,8 @@ import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -132,7 +134,7 @@ import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
-import static slash.navigation.base.Positions.getSignificantPositions;
+import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 
 /**
  * The base of all routes formats.

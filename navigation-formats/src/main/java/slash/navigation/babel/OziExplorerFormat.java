@@ -25,10 +25,12 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import static slash.common.io.Files.setExtension;
 import static slash.common.io.Transfer.isEmpty;
 
 /**
@@ -85,5 +87,13 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
             // otherwise the ozi gpsbabel module would write .rte for Routes, .plt for Tracks and .wpt for Waypoints
             route.setCharacteristics(getRouteCharacteristics());
         super.write(routes, target);
+    }
+
+    protected void delete(File file) {
+        super.delete(file);
+        // sometimes the ozi gpsbabel module writes .rte for Routes, .plt for Tracks and .wpt for Waypoints
+        super.delete(new File(setExtension(file.getAbsolutePath(), ".plt")));
+        super.delete(new File(setExtension(file.getAbsolutePath(), ".rte")));
+        super.delete(new File(setExtension(file.getAbsolutePath(), ".wpt")));
     }
 }

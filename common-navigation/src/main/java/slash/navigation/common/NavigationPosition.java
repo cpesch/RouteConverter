@@ -17,8 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.base;
+package slash.navigation.common;
 
 import slash.common.type.CompactCalendar;
 

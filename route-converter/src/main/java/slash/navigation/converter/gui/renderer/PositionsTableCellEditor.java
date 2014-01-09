@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;

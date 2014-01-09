@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTomRouteFormat;

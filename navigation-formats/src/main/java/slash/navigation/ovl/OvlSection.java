@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Represents a section in a Top50 OVL ASCII (.ovl) file,
@@ -88,7 +88,7 @@ class OvlSection extends IniFileSection {
         }
         x = parseDouble(xValue);
         y = parseDouble(yValue);
-        return asPosition(x, y, description);
+        return asWgs84Position(x, y, description);
     }
 
     void removePositions() {

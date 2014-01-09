@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.comparators.TimeComparator;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;

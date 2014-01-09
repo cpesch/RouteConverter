@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -95,7 +95,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String description = lineMatcher.group(2);
         Double longitude = parseDouble(lineMatcher.group(4));
         Double latitude = parseDouble(lineMatcher.group(5));
-        return asPosition(longitude, latitude, description);
+        return asWgs84Position(longitude, latitude, description);
     }
 
     protected void writeHeader(PrintWriter writer, SimpleRoute route) {

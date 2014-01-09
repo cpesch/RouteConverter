@@ -22,7 +22,7 @@ package slash.navigation.babel;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
@@ -425,7 +425,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return route;
     }
 
-    private void delete(File file) {
+    protected void delete(File file) {
         if (file != null && file.exists()) {
             if (!file.delete())
                 log.warning("Cannot delete babel file " + file);

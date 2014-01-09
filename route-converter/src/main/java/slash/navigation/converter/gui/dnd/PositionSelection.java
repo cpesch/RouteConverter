@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.simple.GlopusFormat;
 

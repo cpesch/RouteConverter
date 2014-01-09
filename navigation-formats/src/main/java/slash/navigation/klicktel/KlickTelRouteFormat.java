@@ -21,7 +21,7 @@
 package slash.navigation.klicktel;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -39,7 +39,7 @@ import java.util.List;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.klicktel.KlickTelUtil.unmarshal;
 
 /**
@@ -80,7 +80,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(asPosition(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()), trim(description)));
+            positions.add(asWgs84Position(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()), trim(description)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }

@@ -20,7 +20,7 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.ValueAndOrientation;
 

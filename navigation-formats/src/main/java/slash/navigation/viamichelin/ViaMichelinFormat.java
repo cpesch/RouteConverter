@@ -21,7 +21,7 @@
 package slash.navigation.viamichelin;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.viamichelin.ViaMichelinUtil.unmarshal;
 
@@ -101,12 +101,12 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;
                 routeName = itinerary.getName();
                 for (Step step : itinerary.getStep()) {
-                    positions.add(asPosition(parseDouble(step.getLongitude()), parseDouble(step.getLatitude()), step.getName()));
+                    positions.add(asWgs84Position(parseDouble(step.getLongitude()), parseDouble(step.getLatitude()), step.getName()));
                 }
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(asPosition(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parsedescription(poi)));
+                positions.add(asWgs84Position(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parsedescription(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);

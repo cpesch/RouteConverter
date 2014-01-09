@@ -21,8 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.completer.CompletePositionService;
@@ -45,7 +44,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
-import static slash.navigation.base.Positions.intrapolateTime;
+import static slash.navigation.base.RouteCalculations.intrapolateTime;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
@@ -223,7 +222,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        BasicPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
+                        NavigationPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
                         if (coordinates != null) {
                             positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
                                     LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), false, true);

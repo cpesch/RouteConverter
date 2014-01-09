@@ -21,7 +21,7 @@ package slash.navigation.simple;
 
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -37,7 +37,7 @@ import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.Positions.asPosition;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.
@@ -82,7 +82,7 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String description = toMixedCase(trim(lineMatcher.group(3)));
-        return asPosition(parseDouble(longitude), parseDouble(latitude), description);
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude), description);
     }
 
     private static String escape(String string) {

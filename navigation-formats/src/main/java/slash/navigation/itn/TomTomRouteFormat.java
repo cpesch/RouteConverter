@@ -22,7 +22,7 @@ package slash.navigation.itn;
 
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
