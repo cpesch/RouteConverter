@@ -42,7 +42,7 @@ public class HgtFilesIT {
 
     @Before
     public void setUp() throws Exception {
-        files.downloadElevationFor(Arrays.asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
+        files.downloadElevationDataFor(Arrays.asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
     }
 
     @Test

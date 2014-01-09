@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>elevation-lookup</artifactId>
+            <artifactId>elevation-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

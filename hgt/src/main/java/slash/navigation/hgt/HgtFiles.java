@@ -20,10 +20,10 @@
 package slash.navigation.hgt;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.completer.elevation.ElevationLookupService;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.Extractor;
+import slash.navigation.elevation.ElevationService;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import static slash.common.io.Files.lastPathFragment;
  * @author Robert "robekas", Christian Pesch
  */
 
-public class HgtFiles implements ElevationLookupService {
+public class HgtFiles implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
@@ -74,7 +74,7 @@ public class HgtFiles implements ElevationLookupService {
         File directory = new File(directoryName);
         if (!directory.exists()) {
             if (!directory.mkdirs())
-                throw new IllegalArgumentException("Cannot create " + getName() + " cache directory " + directory);
+                throw new IllegalArgumentException("Cannot create '" + getName() + "' directory '" + directory + "'");
         }
         return directory;
     }
@@ -115,7 +115,7 @@ public class HgtFiles implements ElevationLookupService {
         randomAccessFileCache.clear();
     }
 
-    public void downloadElevationFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<String> keys = new HashSet<String>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));

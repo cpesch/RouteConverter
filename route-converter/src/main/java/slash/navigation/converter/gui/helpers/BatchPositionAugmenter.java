@@ -262,7 +262,7 @@ public class BatchPositionAugmenter {
                             NavigationPosition position = positionsModel.getPosition(row);
                             longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
                         }
-                        completePositionService.downloadElevationFor(longitudeAndLatitudes);
+                        completePositionService.downloadElevationDataFor(longitudeAndLatitudes);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {

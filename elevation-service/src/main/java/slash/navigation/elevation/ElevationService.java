@@ -18,9 +18,12 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.completer.elevation;
+package slash.navigation.elevation;
+
+import slash.navigation.common.LongitudeAndLatitude;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Interface for a service that looks up the elevation for a given position.
@@ -28,7 +31,8 @@ import java.io.IOException;
  * @author Christian Pesch
  */
 
-public interface ElevationLookupService {
+public interface ElevationService {
     String getName();
     Double getElevationFor(double longitude, double latitude) throws IOException;
+    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

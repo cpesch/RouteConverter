@@ -21,9 +21,9 @@
 package slash.navigation.completer;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.completer.elevation.ElevationLookupService;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.hgt.HgtFiles;
@@ -44,12 +44,12 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
  * @author Christian Pesch
  */
 
-public class CompletePositionService {
+public class CompletePositionService implements ElevationService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
-    private static final String ELEVATION_LOOKUP_SERVICE = "elevationLookupService";
+    private static final String ELEVATION_SERVICE = "elevationLookupService";
 
-    private final List<ElevationLookupService> elevationLookupServices = new ArrayList<ElevationLookupService>();
+    private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
     private final HgtFilesService hgtFilesService;
     private final GeoNamesService geoNamesService = new GeoNamesService();
     private final GoogleMapsService googleMapsService = new GoogleMapsService();
@@ -57,38 +57,42 @@ public class CompletePositionService {
     public CompletePositionService(DownloadManager downloadManager) {
         hgtFilesService = new HgtFilesService(downloadManager);
         for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
-            elevationLookupServices.add(hgtFile);
-        elevationLookupServices.add(geoNamesService);
-        elevationLookupServices.add(googleMapsService);
-        elevationLookupServices.add(new EarthToolsService());
+            elevationServices.add(hgtFile);
+        elevationServices.add(geoNamesService);
+        elevationServices.add(googleMapsService);
+        elevationServices.add(new EarthToolsService());
+    }
+
+    public String getName() {
+        return "Elevation Lookup Facade";
     }
 
     public void dispose() {
         hgtFilesService.dispose();
     }
 
-    public List<ElevationLookupService> getElevationLookupServices() {
-        return elevationLookupServices;
+    public List<ElevationService> getElevationServices() {
+        return elevationServices;
     }
 
-    public ElevationLookupService getElevationLookupService() {
-        String lookupServiceName = preferences.get(ELEVATION_LOOKUP_SERVICE, elevationLookupServices.get(0).getName());
+    public ElevationService getElevationService() {
+        String lookupServiceName = preferences.get(ELEVATION_SERVICE, elevationServices.get(0).getName());
 
-        for (ElevationLookupService service : elevationLookupServices) {
+        for (ElevationService service : elevationServices) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
 
-        log.warning(format("Failed to find elevation lookup service %s; using GeoNames", lookupServiceName));
+        log.warning(format("Failed to find elevation service %s; using GeoNames", lookupServiceName));
         return geoNamesService;
     }
 
-    public void setElevationLookupService(ElevationLookupService service) {
-        preferences.put(ELEVATION_LOOKUP_SERVICE, service.getName());
+    public void setElevationService(ElevationService service) {
+        preferences.put(ELEVATION_SERVICE, service.getName());
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        Double elevation = getElevationLookupService().getElevationFor(longitude, latitude);
+        Double elevation = getElevationService().getElevationFor(longitude, latitude);
         return elevation != null ? formatElevation(elevation).doubleValue() : null;
     }
 
@@ -99,11 +103,7 @@ public class CompletePositionService {
         return description;
     }
 
-    public void downloadElevationFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        ElevationLookupService service = getElevationLookupService();
-        if(service instanceof HgtFiles) {
-            HgtFiles hgtFiles = (HgtFiles) service;
-            hgtFiles.downloadElevationFor(longitudeAndLatitudes);
-        }
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        getElevationService().downloadElevationDataFor(longitudeAndLatitudes);
     }
 }

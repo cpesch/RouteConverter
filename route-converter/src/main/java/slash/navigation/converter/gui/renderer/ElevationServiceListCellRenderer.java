@@ -22,21 +22,21 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.elevation.ElevationService;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link ElevationLookupService} labels of the elevation lookup service combo box.
+ * Renders the {@link ElevationService} labels of the elevation lookup service combo box.
  *
  * @author Christian Pesch
  */
 
-public class ElevationLookupServiceListCellRenderer extends DefaultListCellRenderer {
+public class ElevationServiceListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        ElevationLookupService unitSystem = ElevationLookupService.class.cast(value);
+        ElevationService unitSystem = ElevationService.class.cast(value);
         label.setText(unitSystem.getName());
         return label;
     }

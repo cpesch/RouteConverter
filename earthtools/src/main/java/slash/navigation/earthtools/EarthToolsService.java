@@ -20,11 +20,13 @@
 
 package slash.navigation.earthtools;
 
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInt;
@@ -36,7 +38,7 @@ import static slash.navigation.earthtools.EarthToolsUtil.unmarshal;
  * @author Christian Pesch
  */
 
-public class EarthToolsService implements ElevationLookupService {
+public class EarthToolsService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(EarthToolsService.class);
     private static final String GEONAMES_URL_PREFERENCE = "earthtoolsUrl";
 
@@ -63,5 +65,9 @@ public class EarthToolsService implements ElevationLookupService {
                 throw io;
             }
         return null;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

@@ -22,11 +22,11 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.converter.gui.renderer.ElevationServiceListCellRenderer;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
-import slash.navigation.converter.gui.renderer.ElevationLookupServiceListCellRenderer;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -58,19 +58,19 @@ public class DownloadsPanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-        for (ElevationLookupService service : r.getCompletePositionService().getElevationLookupServices())
+        for (ElevationService service : r.getCompletePositionService().getElevationServices())
             comboBoxModel.addElement(service);
         comboBoxElevationService.setModel(comboBoxModel);
-        comboBoxElevationService.setRenderer(new ElevationLookupServiceListCellRenderer());
+        comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                ElevationLookupService service = ElevationLookupService.class.cast(e.getItem());
-                r.getCompletePositionService().setElevationLookupService(service);
+                ElevationService service = ElevationService.class.cast(e.getItem());
+                r.getCompletePositionService().setElevationService(service);
             }
         });
-        comboBoxElevationService.setSelectedItem(r.getCompletePositionService().getElevationLookupService());
+        comboBoxElevationService.setSelectedItem(r.getCompletePositionService().getElevationService());
 
         tableDownloads.setModel(r.getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
@@ -84,38 +84,6 @@ public class DownloadsPanel {
                 column.setMaxWidth(140);
             }
         }
-
-        new Thread(new Runnable() {
-            public void run() {
-                /*
-                try {
-                    File mapFile = new File(createTempFile("germany", ".map").getParentFile(), "germany.map");
-                    r.getDownloadManager().queueForDownload("Germany Map", "http://download.mapsforge.org/maps/europe/germany.map", mapFile);
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                */
-                /*
-                int i = 1;
-                while (true) {
-                    try {
-                        File tempFile = createTempFile("447bytes", ".test");
-                        r.getDownloadManager().queueForDownload("447 Bytes " + (i++), "http://static.routeconverter.com/download/test/447bytes.txt", tempFile);
-                        sleep(100);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                */
-                /*
-                List<LongitudeAndLatitude> list = new ArrayList<LongitudeAndLatitude>();
-                for(int j=0; j < 180; j++) {
-                    list.add(new LongitudeAndLatitude(j, j));
-                }
-                r.getCompletePositionService().downloadElevationFor(list);
-                */
-            }
-        }).start();
     }
 
     public Component getRootComponent() {

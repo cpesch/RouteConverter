@@ -236,7 +236,7 @@
         <module>common-navigation</module>
         <module>download</module>
         <module>earthtools</module>
-        <module>elevation-lookup</module>
+        <module>elevation-service</module>
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>

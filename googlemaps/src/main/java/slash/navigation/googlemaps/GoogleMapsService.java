@@ -20,9 +20,10 @@
 
 package slash.navigation.googlemaps;
 
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.completer.elevation.ElevationLookupService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -47,7 +48,7 @@ import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
  * @author Christian Pesch
  */
 
-public class GoogleMapsService implements ElevationLookupService {
+public class GoogleMapsService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
     private static final String GOOGLE_MAPS_API_URL_PREFERENCE = "googleMapsApiUrl";
     private static final String OK = "OK";
@@ -181,5 +182,9 @@ public class GoogleMapsService implements ElevationLookupService {
             results.add(response.getElevation().doubleValue());
         }
         return results;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }
