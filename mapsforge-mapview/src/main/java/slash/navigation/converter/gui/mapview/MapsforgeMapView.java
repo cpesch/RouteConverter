@@ -39,9 +39,11 @@ import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
@@ -50,6 +52,7 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.event.ListDataEvent;
@@ -65,9 +68,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Integer.MAX_VALUE;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
@@ -107,9 +114,10 @@ public class MapsforgeMapView implements MapView {
     private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls;
     private TravelMode travelMode;
     private PositionAugmenter positionAugmenter;
-    private RoutingService routingService = new BRouter();
+    private RoutingService routingService;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
+    private ExecutorService executor = newSingleThreadExecutor();
 
     // initialization
 
@@ -117,6 +125,7 @@ public class MapsforgeMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            PositionAugmenter positionAugmenter,
+                           DownloadManager downloadManager,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
@@ -124,6 +133,14 @@ public class MapsforgeMapView implements MapView {
         initializeMapView();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
+        BRouter router = new BRouter(downloadManager);
+        try {
+            router.initialize();
+        } catch (IOException e) {
+            log.severe("Cannot initialize BRouter: " + e.getMessage());
+        }
+        this.routingService = router;
+
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
@@ -274,18 +291,54 @@ public class MapsforgeMapView implements MapView {
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
             private Map<PositionPair, Polyline> pairsToLines = new HashMap<PositionPair, Polyline>();
 
-            public void add(List<PositionPair> pairs) {
+            public void add(final List<PositionPair> pairs) {
+                executor.execute(new Runnable() {
+                    public void run() {
+                        downloadRoutingDataFor(pairs);
+                        paintRoute(pairs);
+
+                        invokeLater(new Runnable() {
+                            public void run() {
+                                getLayerManager().redrawLayers();
+                            }
+                        });
+                    }
+
+                });
+            }
+
+            private void downloadRoutingDataFor(List<PositionPair> pairs) {
+                List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
+                for (PositionPair pair : pairs) {
+                    longitudeAndLatitudes.add(asLongitudeAndLatitude(pair.getFirst()));
+                    longitudeAndLatitudes.add(asLongitudeAndLatitude(pair.getSecond()));
+                }
+                routingService.downloadRoutingDataFor(longitudeAndLatitudes);
+            }
+
+            private void paintRoute(List<PositionPair> pairs) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PositionPair pair : pairs) {
-                    List<LatLong> latLongs = new ArrayList<LatLong>();
-                    latLongs.add(asLatLong(pair.getFirst()));
-                    latLongs.addAll(asLatLong(routingService.getRouteBetween(pair.getFirst(), pair.getSecond())));
-                    latLongs.add(asLatLong(pair.getSecond()));
-                    Polyline line = new Polyline(latLongs, tileSize);
-                    getLayerManager().getLayers().add(line);
+                    List<LatLong> latLongs = calculateRoute(pair);
+
+                    final Polyline line = new Polyline(latLongs, tileSize);
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            getLayerManager().getLayers().add(line);
+                        }
+                    });
                     pairsToLines.put(pair, line);
                 }
-                getLayerManager().redrawLayers();
+            }
+
+            private List<LatLong> calculateRoute(PositionPair pair) {
+                List<LatLong> latLongs = new ArrayList<LatLong>();
+                latLongs.add(asLatLong(pair.getFirst()));
+                List<NavigationPosition> intermediate = routingService.getRouteBetween(pair.getFirst(), pair.getSecond());
+                if (intermediate != null)
+                    latLongs.addAll(asLatLong(intermediate));  // TODO fire distance from result
+                latLongs.add(asLatLong(pair.getSecond()));
+                return latLongs;
             }
 
             public void remove(List<PositionPair> pairs) {
@@ -348,10 +401,9 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        this.eventMapUpdater = waypointUpdater;
-        characteristicsModel.addListDataListener(new ListDataListener() {
-            private RouteCharacteristics lastCharacteristics = Waypoints;
+        this.eventMapUpdater = getEventMapUpdaterFor(Waypoints);
 
+        characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
             }
 
@@ -359,16 +411,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void contentsChanged(ListDataEvent e) {
-                RouteCharacteristics characteristics = MapsforgeMapView.this.characteristicsModel.getSelectedCharacteristics();
-                if (characteristics.equals(lastCharacteristics))
-                    return;
-
-                eventMapUpdater.handleRemove(0, getPositionsModel().getRowCount() - 1);
-
-                eventMapUpdater = getEventMapUpdaterFor(characteristics);
-                eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
-
-                lastCharacteristics = characteristics;
+                updateRouteButDontRecenter();
             }
         });
 
@@ -381,7 +424,7 @@ public class MapsforgeMapView implements MapView {
                     case UPDATE:
                         boolean allRowsChanged = isFirstToLastRow(e);
                         if (allRowsChanged)
-                            eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
+                            ; // TODO updateRouteButDontRecenter();
                         else
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
 
@@ -401,6 +444,30 @@ public class MapsforgeMapView implements MapView {
                 }
             }
         });
+    }
+
+    private BaseRoute lastRoute = null;
+    private RouteCharacteristics lastCharacteristics = Waypoints; // corresponds to default eventMapUpdater
+
+    private void updateRouteButDontRecenter() {
+        // avoid duplicate work
+        RouteCharacteristics characteristics = MapsforgeMapView.this.characteristicsModel.getSelectedCharacteristics();
+        BaseRoute route = getPositionsModel().getRoute();
+        if (lastCharacteristics.equals(characteristics) && lastRoute != null && lastRoute.equals(getPositionsModel().getRoute()))
+            return;
+        lastCharacteristics = characteristics;
+        lastRoute = route;
+
+        // throw away running routing executions      // TODO use signals later
+        executor.shutdownNow();
+        executor = newSingleThreadExecutor();
+
+        // remove all from previous event map updater
+        eventMapUpdater.handleRemove(0, MAX_VALUE);
+
+        // select current event map updater and let him add all
+        eventMapUpdater = getEventMapUpdaterFor(characteristics);
+        eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
     }
 
     private LayerManager getLayerManager() {
@@ -443,6 +510,7 @@ public class MapsforgeMapView implements MapView {
         int zoom = getZoom();
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
 
+        executor.shutdownNow();
         mapView.destroy();
     }
 
@@ -493,6 +561,10 @@ public class MapsforgeMapView implements MapView {
             result.add(asLatLong(position));
         }
         return result;
+    }
+
+    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
+        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
     }
 
     private org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
@@ -559,7 +631,7 @@ public class MapsforgeMapView implements MapView {
 
     // listeners
 
-    private final java.util.List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
+    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);

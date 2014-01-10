@@ -20,6 +20,7 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
@@ -33,4 +34,5 @@ import java.util.List;
 public interface RoutingService {
     String getName();
     List<NavigationPosition> getRouteBetween(NavigationPosition from, NavigationPosition to);
+    void downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

@@ -75,8 +75,9 @@ public class WaypointUpdater implements EventMapUpdater {
 
     public void handleRemove(int firstRow, int lastRow) {
         List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
-        for (int i = lastRow; i >= firstRow; i--) {
-            NavigationPosition position = positionsModel.getPosition(i);
+        int validLastRow = min(lastRow, currentWaypoints.size() - 1);
+        for (int i = validLastRow; i >= firstRow; i--) {
+            NavigationPosition position = currentWaypoints.get(i);
             removed.add(position);
             currentWaypoints.remove(i);
         }

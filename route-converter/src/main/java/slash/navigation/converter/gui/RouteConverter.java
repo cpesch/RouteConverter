@@ -341,6 +341,7 @@ public class RouteConverter extends SingleFrameApplication {
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getPositionAugmenter(),
+                        getDownloadManager(),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
@@ -682,6 +683,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
         return positionAugmenter;
     }
+
+
 
     public void complementElevation(int row, Double longitude, Double latitude) {
         getPositionAugmenter().complementElevation(row, longitude, latitude);

@@ -70,7 +70,7 @@ public class DownloadsPanel {
                 r.getCompletePositionService().setElevationLookupService(service);
             }
         });
-        comboBoxElevationService.setSelectedItem(r.getCompletePositionService().getElevationLookupService());
+        comboBoxElevationService.setSelectedItem(r.getCompletePositionService().getElevationService());
 
         tableDownloads.setModel(r.getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());

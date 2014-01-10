@@ -51,6 +51,7 @@ public class TrackUpdater implements EventMapUpdater {
 
         int startIndex = firstRow > 0 ? firstRow - 1 : firstRow;
         int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : lastRow;
+        // TODO endIndex = min(endIndex, currentTrack.size() - 1);
 
         List<PositionPair> added = new ArrayList<PositionPair>();
         for (int i = startIndex; i < endIndex; i++)
@@ -86,17 +87,18 @@ public class TrackUpdater implements EventMapUpdater {
 
     public void handleRemove(int firstRow, int lastRow) {
         int startIndex = firstRow > 0 ? firstRow - 1 : firstRow;
-        int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : lastRow;
+        int validLastRow = min(lastRow, currentTrack.size() - 1);
+        int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : validLastRow;
 
         List<PositionPair> removed = new ArrayList<PositionPair>();
         for (int i = startIndex; i < endIndex; i++)
-            removed.add(new PositionPair(positionsModel.getPosition(i), positionsModel.getPosition(i + 1)));
+            removed.add(new PositionPair(currentTrack.get(i), currentTrack.get(i + 1)));
 
         List<PositionPair> added = new ArrayList<PositionPair>();
         if (firstRow > 0 && lastRow < currentTrack.size() - 1)
-            added.add(new PositionPair(positionsModel.getPosition(firstRow - 1), positionsModel.getPosition(lastRow + 1)));
+            added.add(new PositionPair(currentTrack.get(firstRow - 1), currentTrack.get(lastRow + 1)));
 
-        for (int i = lastRow; i >= firstRow; i--)
+        for (int i = validLastRow; i >= firstRow; i--)
             currentTrack.remove(i);
 
         if (!added.isEmpty())

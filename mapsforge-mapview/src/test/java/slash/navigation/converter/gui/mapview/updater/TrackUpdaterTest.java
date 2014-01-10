@@ -235,6 +235,28 @@ public class TrackUpdaterTest {
     }
 
     @Test
+    public void testRemoveAll() {
+        PositionsModel positionsModel = mock(PositionsModel.class);
+        when(positionsModel.getPosition(0)).thenReturn(p1);
+        when(positionsModel.getPosition(1)).thenReturn(p2);
+        when(positionsModel.getPosition(2)).thenReturn(p3);
+        TrackOperation trackOperation = mock(TrackOperation.class);
+
+        TrackUpdater trackUpdater = new TrackUpdater(positionsModel, trackOperation);
+        trackUpdater.handleAdd(0, 2);
+
+        assertEquals(asList(p1p2, p2p3), trackUpdater.getCurrentTrack());
+        verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
+        verify(trackOperation, never()).remove(new ArrayList<PositionPair>());
+
+        trackUpdater.handleRemove(0, MAX_VALUE);
+
+        assertEquals(new ArrayList<PositionPair>(), trackUpdater.getCurrentTrack());
+        verify(trackOperation, never()).add(new ArrayList<PositionPair>());
+        verify(trackOperation, times(1)).remove(asList(p1p2, p2p3));
+    }
+
+    @Test
     public void testUpdate() {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(0)).thenReturn(p1);

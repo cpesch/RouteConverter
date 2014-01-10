@@ -71,7 +71,7 @@ public class CompletePositionService {
         return elevationServices;
     }
 
-    public ElevationService getElevationLookupService() {
+    public ElevationService getElevationService() {
         String lookupServiceName = preferences.get(ELEVATION_LOOKUP_SERVICE, elevationServices.get(0).getName());
 
         for (ElevationService service : elevationServices) {
@@ -88,7 +88,7 @@ public class CompletePositionService {
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        Double elevation = getElevationLookupService().getElevationFor(longitude, latitude);
+        Double elevation = getElevationService().getElevationFor(longitude, latitude);
         return elevation != null ? formatElevation(elevation).doubleValue() : null;
     }
 
@@ -100,7 +100,7 @@ public class CompletePositionService {
     }
 
     public void downloadElevationFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        ElevationService service = getElevationLookupService();
+        ElevationService service = getElevationService();
         if(service instanceof HgtFiles) {
             HgtFiles hgtFiles = (HgtFiles) service;
             hgtFiles.downloadElevationFor(longitudeAndLatitudes);
