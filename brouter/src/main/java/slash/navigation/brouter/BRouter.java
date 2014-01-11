@@ -189,7 +189,7 @@ public class BRouter implements RoutingService {
     }
 
     private Download download(String key) {
-        String url = format("segments2/%s%s.rd5", getBaseUrl(), key);
+        String url = format("%ssegments2/%s.rd5", getBaseUrl(), key);
         File archive = createFile(key);
         return downloadManager.queueForDownloadAndProcess(getName() + " routing data for " + key, url, archive, null);
     }
