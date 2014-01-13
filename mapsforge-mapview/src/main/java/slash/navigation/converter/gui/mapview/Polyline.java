@@ -28,7 +28,6 @@ import org.mapsforge.map.layer.Layer;
 
 import java.util.List;
 
-import static org.mapsforge.core.graphics.Color.GREEN;
 import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
@@ -43,7 +42,7 @@ public class Polyline extends Layer {
     private static final Paint paint;
     static {
         paint = GRAPHIC_FACTORY.createPaint();
-        paint.setColor(GREEN);
+        paint.setColor(0x9973B9FF);
         paint.setStrokeWidth(5);
     }
     private final List<LatLong> latLongs;
