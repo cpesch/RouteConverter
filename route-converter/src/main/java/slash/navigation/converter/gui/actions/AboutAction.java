@@ -20,12 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.panels.AboutPanel;
+import slash.navigation.converter.gui.dialogs.AboutDialog;
 import slash.navigation.gui.actions.FrameAction;
-
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Show information about the program.
@@ -35,6 +31,9 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 public class AboutAction extends FrameAction {
     public void run() {
-        showMessageDialog(getFrame(), new AboutPanel().getRootComponent(), RouteConverter.getTitle(), INFORMATION_MESSAGE);
+        AboutDialog aboutDialog = new AboutDialog();
+        aboutDialog.pack();
+        aboutDialog.restoreLocation();
+        aboutDialog.setVisible(true);
     }
 }
