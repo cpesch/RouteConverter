@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.panels.DownloadsPanel;
-import slash.navigation.converter.gui.panels.OptionsPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
