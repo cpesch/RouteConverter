@@ -47,7 +47,7 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
 public class CompletePositionService implements ElevationService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
-    private static final String ELEVATION_SERVICE = "elevationLookupService";
+    private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
     private final HgtFilesService hgtFilesService;
@@ -64,7 +64,7 @@ public class CompletePositionService implements ElevationService {
     }
 
     public String getName() {
-        return "Elevation Lookup Facade";
+        return "Complete Position Facade";
     }
 
     public void dispose() {

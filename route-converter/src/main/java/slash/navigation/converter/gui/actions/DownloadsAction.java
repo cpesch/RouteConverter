@@ -20,21 +20,20 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.panels.DownloadsPanel;
+import slash.navigation.converter.gui.dialogs.DownloadsDialog;
 import slash.navigation.gui.actions.FrameAction;
 
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
-
 /**
- * Show downloads.
+ * Show downloads of the program.
  *
  * @author Christian Pesch
  */
 
 public class DownloadsAction extends FrameAction {
     public void run() {
-        showMessageDialog(getFrame(), new DownloadsPanel().getRootComponent(), RouteConverter.getTitle(), INFORMATION_MESSAGE);
+        DownloadsDialog downloadsDialog = new DownloadsDialog();
+        downloadsDialog.pack();
+        downloadsDialog.restoreLocation();
+        downloadsDialog.setVisible(true);
     }
 }
