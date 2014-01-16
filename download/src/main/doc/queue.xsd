@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.routeconverter.com/queue"
+            targetNamespace="http://www.routeconverter.com/queue"
+            elementFormDefault="qualified">
+
+    <xsd:element name="queue" type="queueType">
+        <xsd:annotation>
+            <xsd:documentation>
+                queue is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="queueType">
+        <xsd:annotation>
+            <xsd:documentation>
+                queue contain download items.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="download" type="downloadType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-name">
+                    <xsd:selector xpath="download"/>
+                    <xsd:field xpath="@name"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="downloadType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a download contains a description, an url, optionally size and checksum,
+                a state and an action like copy or extract for the target.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="description" type="xsd:string"/>
+        <xsd:attribute name="url" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="creationDate" type="xsd:dateTime"/>
+        <xsd:attribute name="state" type="xsd:string"/>
+        <xsd:attribute name="action" type="xsd:string"/>
+        <xsd:attribute name="target" type="xsd:string"/>
+        <xsd:attribute name="tempFile" type="xsd:string"/>
+    </xsd:complexType>
+</xsd:schema>

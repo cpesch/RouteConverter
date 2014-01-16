@@ -20,16 +20,23 @@
 
 package slash.navigation.download;
 
+import slash.navigation.download.queue.QueuePersister;
+
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
 import java.util.Collection;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static slash.navigation.download.DownloadState.Failed;
-import static slash.navigation.download.DownloadState.Succeeded;
+import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.State.*;
 
 /**
  * Manages {@link Download}s
@@ -38,10 +45,11 @@ import static slash.navigation.download.DownloadState.Succeeded;
  */
 
 public class DownloadManager {
+    private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
     static final int WAIT_TIMEOUT = 15 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
-    private DownloadTableModel model = new DownloadTableModel();
-    private ThreadPoolExecutor pool;
+    private final DownloadTableModel model = new DownloadTableModel();
+    private final ThreadPoolExecutor pool;
 
     public DownloadManager() {
         BlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(1, new DownloadExecutorComparator());
@@ -49,7 +57,29 @@ public class DownloadManager {
         pool.allowCoreThreadTimeOut(true);
     }
 
-    public void interrupt() {
+    public void restartQueue(File file) {
+        try {
+            List<Download> downloads = new QueuePersister(file).load();
+            if (downloads != null)
+                model.setDownloads(downloads);
+        } catch (Exception e) {
+            log.severe(format("Could not load '%s': %s", file, e.getMessage()));
+        }
+
+        for (Download download : model.getDownloads()) {
+            if (Downloading.equals(download.getState()) || Resuming.equals(download.getState()))
+                queueForDownload(download);
+        }
+    }
+
+    public void saveQueue(File file) {
+        try {
+            new QueuePersister(file).save(model.getDownloads());
+        } catch (Exception e) {
+            log.severe(format("Could not save %d downloads to '%s': %s", model.getRowCount(), file, e.getMessage()));
+        }
+    }
+    public void dispose() {
         pool.shutdownNow();
     }
 
@@ -57,16 +87,17 @@ public class DownloadManager {
         return model;
     }
 
-    public Download queueForDownloadAndProcess(String description, String url, File target, DownloadProcessor downloadProcessor) {
-        DownloadExecutor executor = new DownloadExecutor(description, url, target, downloadProcessor, model);
-        Download download = executor.getDownload();
-        model.addDownload(download);
+    public Download queueForDownload(Download download) {
+        if(Extract.equals(download.getAction()) && !download.getTarget().isDirectory())
+            throw new IllegalArgumentException(format("Need a directory to extract to but got %s", download.getTarget()));
+        DownloadExecutor executor = new DownloadExecutor(download, model);
+        model.addOrUpdateDownload(download);
         pool.execute(executor);
         return download;
     }
 
-    public Download queueForDownload(String description, String url, File target) {
-        return queueForDownloadAndProcess(description, url, target, null);
+    public Download queueForDownload(String description, String url, Long size, String checksum, Action action, File target) {
+        return queueForDownload(new Download(description, url, size, checksum, action, target));
     }
 
     private static final Object LOCK = new Object();
@@ -82,8 +113,8 @@ public class DownloadManager {
                 synchronized (LOCK) {
                     lastEvent[0] = currentTimeMillis();
 
-                    for(Download download : downloads) {
-                        if(!(Succeeded.equals(download.getState()) || Failed.equals(download.getState())))
+                    for (Download download : downloads) {
+                        if (!(Succeeded.equals(download.getState()) || Failed.equals(download.getState())))
                             return;
                     }
                     found[0] = true;

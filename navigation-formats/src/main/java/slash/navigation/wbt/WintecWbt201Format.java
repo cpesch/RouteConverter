@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR_OF_DAY;
@@ -110,13 +111,13 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         if (source.read(header) == getHeaderSize()) {
 
             // copy headerbytes in ByteBuffer, because header contains little endian int
-            ByteBuffer headerBuffer = ByteBuffer.allocate(getHeaderSize());
+            ByteBuffer headerBuffer = allocate(getHeaderSize());
             headerBuffer.position(0);
             headerBuffer.put(header);
 
             if (checkFormatDescriptor(headerBuffer)) {
                 // read whole file in ByteBuffer with a size limit of about 2 MB
-                ByteBuffer sourceData = ByteBuffer.allocate(header.length + source.available());
+                ByteBuffer sourceData = allocate(header.length + source.available());
                 int available = source.available();
                 byte[] data = new byte[available];
                 if (source.read(data) != available)

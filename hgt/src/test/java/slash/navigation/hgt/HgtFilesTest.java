@@ -6,7 +6,7 @@ import slash.navigation.download.DownloadManager;
 import static org.junit.Assert.assertEquals;
 
 public class HgtFilesTest {
-    private HgtFiles files = new HgtFiles(null, null, null, null, new DownloadManager());
+    private HgtFiles files = new HgtFiles(null, null, null, null, null, new DownloadManager());
 
     @Test
     public void createFileKey() {

@@ -23,10 +23,15 @@ package slash.navigation.download;
 import slash.common.type.CompactCalendar;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
+import static java.io.File.createTempFile;
+import static slash.common.io.Externalization.getTempDirectory;
+import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.removeExtension;
 import static slash.common.type.CompactCalendar.fromDate;
-import static slash.navigation.download.DownloadState.Queued;
+import static slash.navigation.download.State.Queued;
 
 /**
  * A file to download
@@ -35,27 +40,66 @@ import static slash.navigation.download.DownloadState.Queued;
  */
 
 public class Download {
-    private static final int UNKNOWN_EXPECTED_BYTES = 1024 * 1024 * 1024;
-    private String url;
-    private File target;
-    private CompactCalendar creationDate = fromDate(new Date());
-    private DownloadState state = Queued;
+    private final String description, url, checksum;
+    private final Long size;
+    private final CompactCalendar creationDate;
+    private final Action action;
+    private final File target, tempFile;
+
+    private State state;
     private long processedBytes;
     private Long expectedBytes;
-    private String description;
 
-    public Download(String description, String url, File target) {
+    public Download(String description, String url, Long size, String checksum, Action action, File target,
+                    CompactCalendar creationDate, State state, File tempFile) {
         this.description = description;
         this.url = url;
+        this.size = size;
+        this.checksum = checksum;
+        this.action = action;
         this.target = target;
+        this.creationDate = creationDate;
+        this.state = state;
+        this.tempFile = tempFile;
+    }
+
+    public Download(String description, String url, Long size, String checksum, Action action, File target) {
+        this(description, url, size, checksum, action, target, fromDate(new Date()), Queued, newTempFile(target, action));
+    }
+
+    private static File newTempFile(File target, Action action) {
+        try {
+            switch (action) {
+                case Copy:
+                    return createTempFile(removeExtension(target.getName()) + "-", getExtension(target), getTempDirectory());
+                case Extract:
+                    return createTempFile(target.getName() + "-", ".zip", getTempDirectory());
+                default:
+                    throw new IllegalArgumentException("Unknown Action " + action);
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Cannot create temp file for " + target, e);
+        }
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String getURL() {
+    public String getUrl() {
         return url;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public Action getAction() {
+        return action;
     }
 
     public File getTarget() {
@@ -66,13 +110,19 @@ public class Download {
         return creationDate;
     }
 
-    public DownloadState getState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(DownloadState state) {
+    public void setState(State state) {
         this.state = state;
     }
+
+    public File getTempFile() {
+        return tempFile;
+    }
+
+    private static final int UNKNOWN_EXPECTED_BYTES = 1024 * 1024 * 1024;
 
     public int getPercentage() {
         long totalBytes = expectedBytes != null ? expectedBytes : UNKNOWN_EXPECTED_BYTES;
@@ -85,5 +135,18 @@ public class Download {
 
     public void setExpectedBytes(Long expectedBytes) {
         this.expectedBytes = expectedBytes;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Download download = (Download) o;
+
+        return !(url != null ? !url.equals(download.url) : download.url != null);
+    }
+
+    public int hashCode() {
+        return url != null ? url.hashCode() : 0;
     }
 }

@@ -31,14 +31,20 @@
     <xsd:complexType name="datasourceType">
         <xsd:annotation>
             <xsd:documentation>
-                a datasource contains a name and a base url followed by a mapping.
+                a datasource contains a name, a base url, a directory, fragments and downloads.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="mapping" type="mappingType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="fragment" type="fragmentType" minOccurs="0" maxOccurs="unbounded">
                 <xsd:unique name="unique-key">
-                    <xsd:selector xpath="mapping"/>
+                    <xsd:selector xpath="fragment"/>
                     <xsd:field xpath="@key"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-uri">
+                    <xsd:selector xpath="file"/>
+                    <xsd:field xpath="@uri"/>
                 </xsd:unique>
             </xsd:element>
         </xsd:sequence>
@@ -47,13 +53,27 @@
         <xsd:attribute name="directory" type="xsd:string"/>
     </xsd:complexType>
 
-    <xsd:complexType name="mappingType">
+    <xsd:complexType name="fragmentType">
         <xsd:annotation>
             <xsd:documentation>
-                a mapping contains a key and the uri for the data relative to the base url
+                an fragment contains a key for the fragment of an fragment plus
+                the size, checksum and uri for ab fragment relative to the base url
             </xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="key" type="xsd:string"/>
         <xsd:attribute name="uri" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fileType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a file contains the size, checksum and uri for a file relative to the base url
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="uri" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
     </xsd:complexType>
 </xsd:schema>

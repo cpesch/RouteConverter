@@ -22,23 +22,15 @@ package slash.navigation.babel;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,15 +40,10 @@ import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static slash.common.io.Externalization.extractFile;
+import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.InputOutput.copy;
-import static slash.common.system.Platform.getArchitecture;
-import static slash.common.system.Platform.getOperationSystem;
-import static slash.common.system.Platform.isLinux;
-import static slash.common.system.Platform.isMac;
-import static slash.common.system.Platform.isWindows;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.common.system.Platform.*;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * The base of all GPSBabel based formats.
@@ -171,7 +158,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             public void run() {
                 try {
                     try {
-                        byte buffer[] = new byte[2048];
+                        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
                         int count = 0;
                         while (count >= 0) {
                             count = input.read(buffer);
@@ -304,7 +291,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private void readStream(InputStream inputStream, String streamName) throws IOException {
-        byte buffer[] = new byte[2048];
+        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
         int count = 0;
         while (inputStream.available() > 0 && count < buffer.length) {
             buffer[count++] = (byte) inputStream.read();

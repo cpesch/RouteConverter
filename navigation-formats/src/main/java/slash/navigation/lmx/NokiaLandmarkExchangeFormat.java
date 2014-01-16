@@ -41,8 +41,8 @@ import java.util.List;
 
 import static slash.common.io.Transfer.formatFloat;
 import static slash.navigation.common.NavigationConversion.formatDouble;
-import static slash.navigation.common.NavigationConversion.formatTime;
-import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 

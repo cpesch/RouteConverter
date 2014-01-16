@@ -20,6 +20,11 @@
 
 package slash.common.io;
 
+import slash.common.type.CompactCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,20 +32,14 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Integer.toHexString;
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
+import static java.lang.Math.*;
+import static java.util.Calendar.*;
 
 /**
  * Provides value transfer functionality.
@@ -51,6 +50,7 @@ import static java.lang.Math.round;
 public class Transfer {
     private Transfer() {}
 
+    private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
     public static final String ISO_LATIN1_ENCODING = "ISO-8859-1";
     public static final String UTF8_ENCODING = "UTF-8";
@@ -303,6 +303,42 @@ public class Transfer {
         } catch (UnsupportedEncodingException e) {
             log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e.getMessage());
             return string;
+        }
+    }
+
+    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
+        if (calendar == null)
+            return null;
+        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(CompactCalendar.UTC, null, null);
+        return CompactCalendar.fromMillis(gregorianCalendar.getTimeInMillis());
+    }
+
+    private static DatatypeFactory datatypeFactory = null;
+
+    private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
+        if (datatypeFactory == null) {
+            datatypeFactory = DatatypeFactory.newInstance();
+        }
+        return datatypeFactory;
+    }
+
+    @SuppressWarnings("MagicConstant")
+    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
+        if (time == null)
+            return null;
+        try {
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.UTC, Locale.getDefault());
+            gregorianCalendar.clear();
+            Calendar calendar = time.getCalendar();
+            gregorianCalendar.set(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DATE),
+                    calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
+            gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
+            XMLGregorianCalendar result = getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
+            if (preferences.getBoolean("reduceTimeToSecondPrecision", false))
+                result.setFractionalSecond(null);
+            return result;
+        } catch (DatatypeConfigurationException e) {
+            return null;
         }
     }
 }

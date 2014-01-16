@@ -37,8 +37,9 @@ import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertCalendarEquals;
 import static slash.common.TestCase.localCalendar;
 import static slash.common.TestCase.utcCalendar;
-import static slash.navigation.common.NavigationConversion.formatTime;
-import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
+import static slash.common.type.CompactCalendar.fromCalendar;
 
 public class TimeZoneTest {
 
@@ -97,7 +98,7 @@ public class TimeZoneTest {
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42Z", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        XMLGregorianCalendar formatted = formatTime(CompactCalendar.fromCalendar(java));
+        XMLGregorianCalendar formatted = formatTime(fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
@@ -108,7 +109,7 @@ public class TimeZoneTest {
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42+02:00", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        XMLGregorianCalendar formatted = formatTime(CompactCalendar.fromCalendar(java));
+        XMLGregorianCalendar formatted = formatTime(fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
@@ -116,9 +117,9 @@ public class TimeZoneTest {
     public void testTimeZone() {
         long now = System.currentTimeMillis();
         Calendar local = localCalendar(now).getCalendar();
-        CompactCalendar compactLocal = CompactCalendar.fromCalendar(local);
+        CompactCalendar compactLocal = fromCalendar(local);
         Calendar utc = utcCalendar(now).getCalendar();
-        CompactCalendar compactUtc = CompactCalendar.fromCalendar(utc);
+        CompactCalendar compactUtc = fromCalendar(utc);
 
         GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, compactLocal, "gpx");
         assertCalendarEquals(compactUtc, gpxPosition.getTime());

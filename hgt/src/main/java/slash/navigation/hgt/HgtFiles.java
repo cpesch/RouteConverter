@@ -22,19 +22,19 @@ package slash.navigation.hgt;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.Extractor;
+import slash.navigation.download.datasources.File;
+import slash.navigation.download.datasources.Fragment;
 import slash.navigation.elevation.ElevationService;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
-import static slash.common.io.Externalization.getTempDirectory;
-import static slash.common.io.Files.lastPathFragment;
+import static java.util.logging.Logger.getLogger;
+import static slash.navigation.download.Action.Extract;
 
 /**
  * Encapsulates access to HGT files.
@@ -43,20 +43,25 @@ import static slash.common.io.Files.lastPathFragment;
  */
 
 public class HgtFiles implements ElevationService {
+    private static final Logger log = getLogger(HgtFiles.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
 
-    private final Map<File, RandomAccessFile> randomAccessFileCache = new HashMap<File, RandomAccessFile>();
+    private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<java.io.File, RandomAccessFile>();
     private final String name, baseUrl, directory;
-    private final Map<String, String> mapping;
+    private final Map<String, Fragment> archiveMap;
+    private final Map<String, File> fileMap;
     private final DownloadManager downloadManager;
 
-    public HgtFiles(String name, String baseUrl, Map<String, String> mapping, String directory, DownloadManager downloadManager) {
+    public HgtFiles(String name, String baseUrl, String directory,
+                    Map<String, Fragment> archiveMap, Map<String, File> fileMap,
+                    DownloadManager downloadManager) {
         this.name = name;
         this.baseUrl = baseUrl;
-        this.mapping = mapping;
         this.directory = directory;
+        this.archiveMap = archiveMap;
+        this.fileMap = fileMap;
         this.downloadManager = downloadManager;
     }
 
@@ -68,10 +73,10 @@ public class HgtFiles implements ElevationService {
         return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
     }
 
-    File getDirectory() {
+    java.io.File getDirectory() {
         String directoryName = preferences.get(DIRECTORY_PREFERENCE + getName(),
-                new File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
-        File directory = new File(directoryName);
+                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
+        java.io.File directory = new java.io.File(directoryName);
         if (!directory.exists()) {
             if (!directory.mkdirs())
                 throw new IllegalArgumentException("Cannot create '" + getName() + "' directory '" + directory + "'");
@@ -88,12 +93,12 @@ public class HgtFiles implements ElevationService {
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
     }
 
-    private File createFile(String key) {
-        return new File(getDirectory(), format("%s%s", key, ".hgt"));
+    private java.io.File createFile(String key) {
+        return new java.io.File(getDirectory(), format("%s%s", key, ".hgt"));
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        File file = createFile(createFileKey(longitude, latitude));
+        java.io.File file = createFile(createFileKey(longitude, latitude));
         if (!file.exists())
             return null;
 
@@ -121,19 +126,20 @@ public class HgtFiles implements ElevationService {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Set<String> uris = new HashSet<String>();
+        Set<Fragment> fragments = new HashSet<Fragment>();
         for (String key : keys) {
-            File file = createFile(key);
-            if (!file.exists()) {
-                String uri = mapping.get(key);
-                if (uri != null)
-                    uris.add(uri);
-            }
+            Fragment fragment = archiveMap.get(key);
+            if (fragment == null)
+                continue;
+
+            java.io.File file = createFile(key);
+            if (!validate(file, fragment.getSize()))
+                fragments.add(fragment);
         }
 
         Collection<Download> downloads = new HashSet<Download>();
-        for (String uri : uris) {
-            Download download = download(uri);
+        for (Fragment fragment : fragments) {
+            Download download = download(fragment);
             if (download != null)
                 downloads.add(download);
         }
@@ -142,9 +148,25 @@ public class HgtFiles implements ElevationService {
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(String uri) {
-        String url = format("%s%s", getBaseUrl(), uri);
-        File archive = new File(getTempDirectory(), lastPathFragment(uri, MAX_VALUE));
-        return downloadManager.queueForDownloadAndProcess(getName() + " elevation data for " + uri, url, archive, new Extractor(getDirectory()));
+    private boolean validate(java.io.File file, Long fileSize) {
+        // do not validate checksum here since it's too expensive
+        if (!file.exists()) {
+            log.info("File " + file + " does not exist");
+            return false;
+        }
+        if (fileSize != null && file.length() != fileSize) {
+            log.info("File " + file + " size is " + file.length() + " but expected " + fileSize + " bytes");
+            return false;
+        }
+        return true;
+    }
+
+    private Download download(Fragment fragment) {
+        String uri = fragment.getUri();
+        File file = fileMap.get(uri);
+        Long fileSize = file != null ? file.getSize() : null;
+        String fileChecksum = file != null ? file.getChecksum() : null;
+        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, getBaseUrl() + uri,
+                fileSize, fileChecksum, Extract, getDirectory());
     }
 }

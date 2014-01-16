@@ -19,14 +19,15 @@
 */
 package slash.navigation.hgt;
 
-import slash.navigation.datasources.DataSourceService;
-import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.datasources.DataSourceService;
+import slash.navigation.download.datasources.binding.DatasourceType;
 
-import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 /**
  * Encapsulates access to all services using HGT files.
@@ -37,21 +38,27 @@ import java.util.logging.Logger;
 public class HgtFilesService {
     private static Logger log = Logger.getLogger(HgtFiles.class.getName());
     private final List<HgtFiles> hgtFiles = new ArrayList<HgtFiles>();
+    private static final String[] DATASOURCE_URLS = new String[]{
+            "srtm3-datasources.xml",
+            "srtm1-datasources.xml",
+            "ferranti3-datasources.xml",
+            "ferranti1-datasources.xml"
+    };
 
     public HgtFilesService(DownloadManager downloadManager) {
         DataSourceService service = new DataSourceService();
-        try {
-            service.initialize(getClass().getResourceAsStream("hgt-datasources.xml"));
-        } catch (JAXBException e) {
-            log.severe("Cannot load HGT files data sources: " + e.getMessage());
-            return;
+        for (String datasourceUrl : DATASOURCE_URLS) {
+            try {
+                service.load(getClass().getResourceAsStream(datasourceUrl));
+            } catch (Exception e) {
+                log.severe(format("Cannot load '%s': %s", datasourceUrl, e.getMessage()));
+            }
         }
 
-        List<DatasourceType> datasourceTypes = service.getDatasourcesType().getDatasource();
-        for (DatasourceType datasourceType : datasourceTypes) {
+        for (DatasourceType datasourceType : service.getDatasourceTypes()) {
             String name = datasourceType.getName();
-            hgtFiles.add(new HgtFiles(name, datasourceType.getBaseUrl(), service.getMapping(name),
-                    datasourceType.getDirectory(), downloadManager));
+            hgtFiles.add(new HgtFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
+                    service.getArchives(name), service.getFiles(name), downloadManager));
         }
     }
 
@@ -60,7 +67,7 @@ public class HgtFilesService {
     }
 
     public void dispose() {
-        for(HgtFiles hgtFile : getHgtFiles())
+        for (HgtFiles hgtFile : getHgtFiles())
             hgtFile.dispose();
     }
 }

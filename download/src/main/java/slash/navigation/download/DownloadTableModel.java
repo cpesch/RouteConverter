@@ -25,6 +25,9 @@ import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.SwingUtilities.isEventDispatchThread;
+
 /**
  * Acts as a {@link TableModel} for the {@link Download}s of the {@link DownloadManager}.
  *
@@ -33,6 +36,10 @@ import java.util.List;
 
 public class DownloadTableModel extends AbstractTableModel {
     private List<Download> downloads = new ArrayList<Download>();
+
+    public List<Download> getDownloads() {
+        return downloads;
+    }
 
     public void setDownloads(List<Download> downloads) {
         this.downloads = downloads;
@@ -55,33 +62,64 @@ public class DownloadTableModel extends AbstractTableModel {
         return downloads.get(rowIndex);
     }
 
-    void addDownload(Download download) {
+    private void addDownload(Download download) {
         if (!downloads.add(download))
             throw new IllegalArgumentException("Download " + download + " not added to " + downloads);
 
-        int index = downloads.indexOf(download);
+        final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
 
-        fireTableRowsInserted(index, index);
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                fireTableRowsInserted(index, index);
+            }
+        });
     }
 
     void updateDownload(Download download) {
-        int index = downloads.indexOf(download);
+        final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
-        fireTableRowsUpdated(index, index);
+
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                fireTableRowsUpdated(index, index);
+            }
+        });
     }
 
-    void removeDownload(Download download) {
+    void addOrUpdateDownload(Download download) {
         int index = downloads.indexOf(download);
+        if (index == -1)
+            addDownload(download);
+        else
+            updateDownload(download);
+    }
+
+    private void removeDownload(Download download) {
+        final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
 
         if (!downloads.remove(download))
             throw new IllegalArgumentException("Download " + download + " not removed from " + downloads);
 
-        fireTableRowsDeleted(index, index);
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                fireTableRowsDeleted(index, index);
+            }
+        });
     }
 
+    private void invokeInAwtEventQueue(final Runnable runnable) {
+        if (!isEventDispatchThread())
+            invokeLater(new Runnable() {
+                public void run() {
+                    runnable.run();
+                }
+            });
+        else
+            runnable.run();
+    }
 }

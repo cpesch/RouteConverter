@@ -59,6 +59,8 @@ import slash.navigation.rest.Credentials;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -89,6 +91,7 @@ import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.io.Externalization.getTempDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -309,6 +312,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeRouteConverterServices();
         initializeActions();
+        initializeDownloadManager();
     }
 
     private MapView createMapView(String className) {
@@ -396,6 +400,8 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.dispose();
         getConvertPanel().dispose();
         getCompletePositionService().dispose();
+        getDownloadManager().dispose();
+        getDownloadManager().saveQueue(getDownloadQueueFile());
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -661,6 +667,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public DownloadManager getDownloadManager() {
         return downloadManager;
+    }
+
+    private File getDownloadQueueFile() {
+        return new File(getTempDirectory(), "download-queue.xml");
     }
 
     private BatchPositionAugmenter batchPositionAugmenter = null;
@@ -1004,13 +1014,13 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("revert-positions", new RevertPositionListAction());
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
-        actionManager.register("downloads", new DownloadsAction());
-        actionManager.register("options", new OptionsAction());
+        actionManager.register("show-downloads", new ShowDownloadsAction());
+        actionManager.register("show-options", new ShowOptionsAction());
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
-        actionManager.register("about", new AboutAction());
+        actionManager.register("show-about", new ShowAboutAction());
         JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
@@ -1033,6 +1043,15 @@ public class RouteConverter extends SingleFrameApplication {
         new ProfileModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
+    }
+
+    private void initializeDownloadManager() {
+        getDownloadManager().restartQueue(getDownloadQueueFile());
+        getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                getContext().getActionManager().run("show-downloads");
+            }
+        });
     }
 
     private class PrintMapAction extends FrameAction {

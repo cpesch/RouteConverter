@@ -242,6 +242,7 @@
         <module>googlemaps</module>
         <module>gpx</module>
         <module>hgt</module>
+        <module>hgt-tools</module>
         <module>jaxb6</module>
         <module>jnlp</module>
         <module>kml</module>
