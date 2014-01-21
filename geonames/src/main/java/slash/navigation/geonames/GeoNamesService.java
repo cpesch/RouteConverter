@@ -20,6 +20,7 @@
 
 package slash.navigation.geonames;
 
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
@@ -192,5 +193,9 @@ public class GeoNamesService implements ElevationService {
             result.add(code.getLat().doubleValue());
         }
         return result.size() > 1 ? new double[]{result.get(0), result.get(1)} : null;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

@@ -315,11 +315,14 @@ public abstract class BaseMapView implements MapView {
                         case Route:
                             addDirectionsToMap(render);
                             break;
+                        case Track:
+                            addPolylinesToMap(render);
+                            break;
                         case Waypoints:
                             addMarkersToMap(render);
                             break;
                         default:
-                            addPolylinesToMap(render);
+                            throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
                             characteristics + ", recentering: " + recenter);

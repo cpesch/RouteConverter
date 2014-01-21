@@ -56,8 +56,8 @@ import static slash.navigation.common.NavigationConversion.formatHeadingAsString
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.common.NavigationConversion.formatSpeed;
 import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
-import static slash.navigation.common.NavigationConversion.formatTime;
-import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 

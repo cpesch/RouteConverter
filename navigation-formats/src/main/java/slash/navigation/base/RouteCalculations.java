@@ -69,6 +69,7 @@ public class RouteCalculations {
 
     /**
      * Search the significant positions with the Douglas-Peucker-Algorithm.
+     * <p/>
      * http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus
      *
      * @param positions the original list of positions
@@ -121,7 +122,7 @@ public class RouteCalculations {
     }
 
     public static Wgs84Position asWgs84Position(double longitude, double latitude) {
-        return asWgs84Position(longitude, latitude, (String)null);
+        return asWgs84Position(longitude, latitude, null);
     }
 
     public static Wgs84Position asWgs84Position(Double longitude, Double latitude, String description) {

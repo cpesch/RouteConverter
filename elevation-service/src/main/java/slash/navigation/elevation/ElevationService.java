@@ -20,10 +20,13 @@
 
 package slash.navigation.elevation;
 
+import slash.navigation.common.LongitudeAndLatitude;
+
 import java.io.IOException;
+import java.util.List;
 
 /**
- * Interface for a service that returns the elevation for a given position.
+ * Interface for a service that looks up the elevation for a given position.
  *
  * @author Christian Pesch
  */
@@ -31,4 +34,5 @@ import java.io.IOException;
 public interface ElevationService {
     String getName();
     Double getElevationFor(double longitude, double latitude) throws IOException;
+    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

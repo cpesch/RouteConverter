@@ -20,11 +20,13 @@
 
 package slash.navigation.earthtools;
 
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInt;
@@ -63,5 +65,9 @@ public class EarthToolsService implements ElevationService {
                 throw io;
             }
         return null;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

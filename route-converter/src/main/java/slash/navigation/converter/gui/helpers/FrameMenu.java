@@ -102,14 +102,14 @@ public class FrameMenu {
 
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));
-        extrasMenu.add(createItem("downloads"));
-        extrasMenu.add(createItem("options"));
+        extrasMenu.add(createItem("show-downloads"));
+        extrasMenu.add(createItem("show-options"));
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
-        helpMenu.add(createItem("about"));
+        helpMenu.add(createItem("show-about"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);

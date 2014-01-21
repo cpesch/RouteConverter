@@ -32,8 +32,10 @@ import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.*;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.navigation.download.Action.Copy;
+import static slash.navigation.download.Action.Extract;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
-import static slash.navigation.download.DownloadState.*;
+import static slash.navigation.download.State.*;
 
 public class DownloadManagerIT {
     private static final String DOWNLOAD = System.getProperty("download", "http://static.routeconverter.com/download/test/");
@@ -41,7 +43,7 @@ public class DownloadManagerIT {
     private static final String EXPECTED = LOREM_IPSUM_DOLOR_SIT_AMET + ", consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
 
-    private DownloadManager service;
+    private DownloadManager manager;
     private File target;
 
     private String readFileToString(File file) throws IOException {
@@ -57,7 +59,7 @@ public class DownloadManagerIT {
 
     @Before
     public void setUp() throws IOException {
-        service = new DownloadManager();
+        manager = new DownloadManager();
         target = createTempFile("local", ".txt");
     }
 
@@ -65,12 +67,12 @@ public class DownloadManagerIT {
     public void tearDown() {
         if (target.exists())
             assertTrue(target.delete());
-        service.interrupt();
+        manager.dispose();
     }
 
     private static final Object LOCK = new Object();
 
-    void waitFor(final Download download, final DownloadState expectedState) {
+    void waitFor(final Download download, final State expectedState) {
         final boolean[] found = new boolean[1];
         found[0] = false;
 
@@ -86,7 +88,7 @@ public class DownloadManagerIT {
         };
 
         long start = currentTimeMillis();
-        service.getModel().addTableModelListener(l);
+        manager.getModel().addTableModelListener(l);
         try {
             while (true) {
                 synchronized (LOCK) {
@@ -100,13 +102,13 @@ public class DownloadManagerIT {
                 }
             }
         } finally {
-            service.getModel().removeTableModelListener(l);
+            manager.getModel().removeTableModelListener(l);
         }
     }
 
     @Test
     public void testInvalidUrl() throws IOException {
-        Download download = service.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", target);
+        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, null, null, target);
         waitFor(download, Failed);
 
         assertEquals(Failed, download.getState());
@@ -116,7 +118,7 @@ public class DownloadManagerIT {
     public void testFreshDownload() throws IOException {
         assertTrue(target.delete());
 
-        Download download = service.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, Copy, target);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -125,10 +127,59 @@ public class DownloadManagerIT {
     }
 
     @Test
+    public void testDownloadWithCorrectChecksum() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", Copy, target);
+        waitFor(download, Resuming);
+        waitFor(download, Succeeded);
+
+        assertEquals(Succeeded, download.getState());
+        String actual = readFileToString(target);
+        assertEquals(EXPECTED, actual);
+    }
+
+    @Test
+    public void testDownloadWithWrongChecksum() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "notdefined", Copy, target);
+        waitFor(download, Resuming);
+        waitFor(download, Downloading);
+        waitFor(download, Failed);
+
+        assertEquals(Failed, download.getState());
+    }
+
+    @Test
+    public void testDownloadWithCorrectSize() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 447L, null, Copy, target);
+        waitFor(download, Succeeded);
+
+        assertEquals(Succeeded, download.getState());
+        String actual = readFileToString(target);
+        assertEquals(EXPECTED, actual);
+    }
+
+    @Test
+    public void testDownloadWithWrongSize() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 4711L, null, Copy, target);
+        waitFor(download, Resuming);
+        waitFor(download, Downloading);
+        waitFor(download, Failed);
+
+        assertEquals(Failed, download.getState());
+    }
+
+    @Test
     public void testResumeDownload() throws IOException {
         writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
 
-        Download download = service.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, Copy, target);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -140,7 +191,7 @@ public class DownloadManagerIT {
     public void testNotModifiedDownload() throws IOException {
         writeStringToFile(target, EXPECTED);
 
-        Download download = service.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 447L, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", Copy, target);
         waitFor(download, NotModified);
 
         assertEquals(Succeeded, download.getState());
@@ -150,24 +201,25 @@ public class DownloadManagerIT {
 
     @Test
     public void testDownloadAndExtract() throws IOException {
+        // using just the directory from target as an extraction target
         File extracted = new File(target.getParentFile(), "447bytes.txt");
-        if(extracted.exists())
+        if (extracted.exists())
             assertTrue(extracted.delete());
 
         try {
-            Download download = service.queueForDownloadAndProcess("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", target, new Extractor(target.getParentFile()));
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null,
+                    Extract, target.getParentFile());
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 
             waitFor(download, Succeeded);
             assertEquals(Succeeded, download.getState());
 
-            assertEquals(423, target.length());
             assertTrue(extracted.exists());
             String actual = readFileToString(extracted);
             assertEquals(EXPECTED, actual);
         } finally {
-            if(extracted.exists())
+            if (extracted.exists())
                 assertTrue(extracted.delete());
         }
     }

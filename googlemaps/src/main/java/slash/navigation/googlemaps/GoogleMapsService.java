@@ -20,6 +20,7 @@
 
 package slash.navigation.googlemaps;
 
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.elevation.ElevationService;
@@ -181,5 +182,9 @@ public class GoogleMapsService implements ElevationService {
             results.add(response.getElevation().doubleValue());
         }
         return results;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

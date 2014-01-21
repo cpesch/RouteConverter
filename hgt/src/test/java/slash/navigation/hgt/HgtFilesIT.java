@@ -23,26 +23,30 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.datasources.File;
+import slash.navigation.download.datasources.Fragment;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 public class HgtFilesIT {
     private DownloadManager downloadManager = new DownloadManager();
-    private Map<String, String> mapping = new HashMap<String, String>();
-    private HgtFiles files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", mapping, "test", downloadManager);
+    private Map<String, Fragment> archiveMap = new HashMap<String, Fragment>();
+    private Map<String, File> fileMap = new HashMap<String, File>();
+    private HgtFiles files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test",
+            archiveMap, fileMap, downloadManager);
     {
-        mapping.put("N59E011", "Eurasia/N59E011.hgt.zip");
-        mapping.put("N60E012", "Eurasia/N60E012.hgt.zip");
+        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined"));
+        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined"));
     }
 
     @Before
     public void setUp() throws Exception {
-        files.downloadElevationFor(Arrays.asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
     }
 
     @Test

@@ -9,4 +9,12 @@
         <version>2.12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>common-navigation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

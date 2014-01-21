@@ -25,9 +25,9 @@ import slash.navigation.download.Download;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.download.DownloadState.Downloading;
-import static slash.navigation.download.DownloadState.Processing;
-import static slash.navigation.download.DownloadState.Resuming;
+import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Processing;
+import static slash.navigation.download.State.Resuming;
 
 /**
  * Renders the table cells of the downloads table.
@@ -42,7 +42,7 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
         switch (columnIndex) {
             case 0:
                 label.setText(download.getDescription());
-                label.setToolTipText(download.getURL());
+                label.setToolTipText(download.getUrl());
                 break;
             case 1:
                 String text = download.getState().name();

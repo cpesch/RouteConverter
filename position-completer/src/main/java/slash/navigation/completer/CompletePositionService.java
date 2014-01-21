@@ -21,9 +21,9 @@
 package slash.navigation.completer;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.elevation.ElevationService;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.hgt.HgtFiles;
@@ -44,10 +44,10 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
  * @author Christian Pesch
  */
 
-public class CompletePositionService {
+public class CompletePositionService implements ElevationService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
-    private static final String ELEVATION_LOOKUP_SERVICE = "elevationLookupService";
+    private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
     private final HgtFilesService hgtFilesService;
@@ -63,6 +63,10 @@ public class CompletePositionService {
         elevationServices.add(new EarthToolsService());
     }
 
+    public String getName() {
+        return "Complete Position Facade";
+    }
+
     public void dispose() {
         hgtFilesService.dispose();
     }
@@ -72,19 +76,19 @@ public class CompletePositionService {
     }
 
     public ElevationService getElevationService() {
-        String lookupServiceName = preferences.get(ELEVATION_LOOKUP_SERVICE, elevationServices.get(0).getName());
+        String lookupServiceName = preferences.get(ELEVATION_SERVICE, elevationServices.get(0).getName());
 
         for (ElevationService service : elevationServices) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
 
-        log.warning(format("Failed to find elevation lookup service %s; using GeoNames", lookupServiceName));
+        log.warning(format("Failed to find elevation service %s; using GeoNames", lookupServiceName));
         return geoNamesService;
     }
 
-    public void setElevationLookupService(ElevationService service) {
-        preferences.put(ELEVATION_LOOKUP_SERVICE, service.getName());
+    public void setElevationService(ElevationService service) {
+        preferences.put(ELEVATION_SERVICE, service.getName());
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
@@ -99,11 +103,7 @@ public class CompletePositionService {
         return description;
     }
 
-    public void downloadElevationFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        ElevationService service = getElevationService();
-        if(service instanceof HgtFiles) {
-            HgtFiles hgtFiles = (HgtFiles) service;
-            hgtFiles.downloadElevationFor(longitudeAndLatitudes);
-        }
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        getElevationService().downloadElevationDataFor(longitudeAndLatitudes);
     }
 }
