@@ -236,6 +236,7 @@
         <module>common-gui</module>
         <module>common-navigation</module>
         <module>download</module>
+        <module>download-tools</module>
         <module>earthtools</module>
         <module>elevation-service</module>
         <module>feedback</module>
@@ -243,7 +244,6 @@
         <module>googlemaps</module>
         <module>gpx</module>
         <module>hgt</module>
-        <module>hgt-tools</module>
         <module>jaxb6</module>
         <module>jnlp</module>
         <module>kml</module>

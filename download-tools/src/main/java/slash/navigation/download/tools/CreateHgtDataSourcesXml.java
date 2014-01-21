@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.hgt.tools;
+package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.*;
 
