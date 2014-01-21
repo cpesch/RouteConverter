@@ -138,11 +138,8 @@ public class HgtFiles implements ElevationService {
         }
 
         Collection<Download> downloads = new HashSet<Download>();
-        for (Fragment fragment : fragments) {
-            Download download = download(fragment);
-            if (download != null)
-                downloads.add(download);
-        }
+        for (Fragment fragment : fragments)
+            downloads.add(download(fragment));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
