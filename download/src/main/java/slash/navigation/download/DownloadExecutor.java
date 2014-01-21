@@ -94,8 +94,6 @@ public class DownloadExecutor implements Runnable {
                 log.warning("Content modified after file, need to download again");
             else {
                 updateState(download, NotModified);
-
-                // finished download but not post processing
                 postProcess();
                 updateState(download, Succeeded);
                 return true;
@@ -147,10 +145,8 @@ public class DownloadExecutor implements Runnable {
         get.setRange(fileSize, contentLength);
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful() && get.isPartialContent()) {
-
             // resume download
-            modelUpdater.expectingBytes(contentLength);
-            new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile(), true), fileSize);
+            new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile(), true), fileSize, contentLength);
 
             // validate download
             if (!validate(download.getTempFile(), download.getSize(), download.getChecksum())) {
@@ -176,10 +172,8 @@ public class DownloadExecutor implements Runnable {
         Get get = new Get(download.getUrl());
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful()) {
-
             // download
-            modelUpdater.expectingBytes(download.getSize());
-            new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0);
+            new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0, download.getSize());
 
             // validate download
             if (!validate(download.getTempFile(), download.getSize(), download.getChecksum())) {
@@ -204,7 +198,7 @@ public class DownloadExecutor implements Runnable {
         Action action = download.getAction();
         switch (action) {
             case Copy:
-                new Copier(modelUpdater).copyAndClose(new FileInputStream(download.getTempFile()), new FileOutputStream(download.getTarget()), 0);
+                new Copier(modelUpdater).copyAndClose(new FileInputStream(download.getTempFile()), new FileOutputStream(download.getTarget()), 0, download.getTempFile().length());
                 break;
             case Extract:
                 new Extractor(modelUpdater).extract(download.getTempFile(), download.getTarget());

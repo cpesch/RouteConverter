@@ -97,7 +97,8 @@ public class DownloadManager {
     }
 
     public Download queueForDownload(String description, String url, Long size, String checksum, Action action, File target) {
-        return queueForDownload(new Download(description, url, size, checksum, action, target));
+        Download queued = getModel().getDownload(url);
+        return queueForDownload(queued != null ? queued : new Download(description, url, size, checksum, action, target));
     }
 
     private static final Object LOCK = new Object();

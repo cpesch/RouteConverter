@@ -62,6 +62,14 @@ public class DownloadTableModel extends AbstractTableModel {
         return downloads.get(rowIndex);
     }
 
+    Download getDownload(String url) {
+        for(Download download : downloads) {
+            if(download.getUrl().equals(url))
+                return download;
+        }
+        return null;
+    }
+
     private void addDownload(Download download) {
         if (!downloads.add(download))
             throw new IllegalArgumentException("Download " + download + " not added to " + downloads);

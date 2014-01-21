@@ -37,12 +37,12 @@
         <dependency>
             <groupId>org.btools</groupId>
             <artifactId>brouter-core</artifactId>
-            <version>0.96</version>
+            <version>0.98</version>
         </dependency>
         <dependency>
             <groupId>org.btools</groupId>
             <artifactId>brouter-mapaccess</artifactId> <!-- TODO shouldn't be here, fix brouter package dependency -->
-            <version>0.96</version>
+            <version>0.98</version>
         </dependency>
     </dependencies>
 </project>

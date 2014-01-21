@@ -55,6 +55,7 @@ public class BRouter implements RoutingService {
     private static final String DATASOURCE_URL = "brouter-datasources.xml";
 
     private Map<String, File> fileMap;
+    private String baseUrl, directory;
     private final DownloadManager downloadManager;
     private final RoutingContext routingContext = new RoutingContext();
 
@@ -69,7 +70,9 @@ public class BRouter implements RoutingService {
         } catch (JAXBException e) {
             log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e.getMessage()));
         }
-        this.fileMap = service.getFiles("BRouter");
+        this.fileMap = service.getFiles(getName());
+        this.baseUrl = service.getDataSource(getName()).getBaseUrl();
+        this.directory = service.getDataSource(getName()).getDirectory();
 
         extractFile("slash/navigation/brouter/car-test.brf");
         extractFile("slash/navigation/brouter/fastbike.brf");
@@ -91,7 +94,7 @@ public class BRouter implements RoutingService {
     }
 
     private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, "http://h2096617.stratoserver.net/brouter/");
+        return preferences.get(BASE_URL_PREFERENCE, baseUrl);
     }
 
     public List<NavigationPosition> getRouteBetween(NavigationPosition from, NavigationPosition to) {
@@ -109,8 +112,8 @@ public class BRouter implements RoutingService {
     }
 
     private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE + getName(),
-                new java.io.File(System.getProperty("user.home"), ".routeconverter/brouter").getAbsolutePath());
+        String directoryName = preferences.get(DIRECTORY_PREFERENCE,
+                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
         java.io.File directory = new java.io.File(directoryName);
         if (!directory.exists()) {
             if (!directory.mkdirs())
@@ -194,34 +197,28 @@ public class BRouter implements RoutingService {
 
         Set<FileAndTarget> files = new HashSet<FileAndTarget>();
         for (String key : keys) {
-            File file = fileMap.get(key);
+            File file = fileMap.get(key + ".rd5");
             if (file == null)
                 continue;
 
             java.io.File target = createFile(key);
-            if (!validate(target, file.getSize()))
+            if (!validate(target))
                 files.add(new FileAndTarget(file, target));
         }
 
         Collection<Download> downloads = new HashSet<Download>();
-        for (FileAndTarget file : files) {
-            Download download = download(file);
-            if (download != null)
-                downloads.add(download);
-        }
+        for (FileAndTarget file : files)
+            downloads.add(download(file));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private boolean validate(java.io.File file, Long fileSize) {
+    private boolean validate(java.io.File file) {
+        // do not validate file size here since the data source XML might be outdated
         // do not validate checksum here since it's too expensive
         if (!file.exists()) {
             log.info("File " + file + " does not exist");
-            return false;
-        }
-        if (fileSize != null && file.length() != fileSize) {
-            log.info("File " + file + " size is " + file.length() + " but expected " + fileSize + " bytes");
             return false;
         }
         return true;
@@ -229,9 +226,7 @@ public class BRouter implements RoutingService {
 
     private Download download(FileAndTarget file) {
         String uri = file.file.getUri();
-        Long fileSize = file != null ? file.file.getSize() : null;
-        String fileChecksum = file != null ? file.file.getChecksum() : null;
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, getBaseUrl() + "segments2/" + uri,
-                fileSize, fileChecksum, Copy, file.target);
+        return downloadManager.queueForDownload(getName() + " routing data for " + uri, getBaseUrl() + uri,
+                file.file.getSize(), file.file.getChecksum(), Copy, file.target);
     }
 }
