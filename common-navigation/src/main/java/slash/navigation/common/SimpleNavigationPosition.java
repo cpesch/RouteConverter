@@ -28,7 +28,7 @@ import slash.common.type.CompactCalendar;
  */
 
 public class SimpleNavigationPosition implements NavigationPosition {
-    private Double longitude, latitude, elevation;
+    private Double longitude, latitude, elevation, speed;
     private String description;
     private CompactCalendar time;
 
@@ -93,11 +93,11 @@ public class SimpleNavigationPosition implements NavigationPosition {
     }
 
     public Double getSpeed() {
-        throw new UnsupportedOperationException();
+        return speed;
     }
 
     public void setSpeed(Double speed) {
-        throw new UnsupportedOperationException();
+        this.speed = speed;
     }
 
     public String getDescription() {
@@ -147,6 +147,7 @@ public class SimpleNavigationPosition implements NavigationPosition {
         SimpleNavigationPosition that = (SimpleNavigationPosition) o;
 
         return !(description != null ? !description.equals(that.description) : that.description != null) &&
+                !(speed != null ? !speed.equals(that.speed) : that.speed != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
@@ -157,6 +158,7 @@ public class SimpleNavigationPosition implements NavigationPosition {
         int result = longitude != null ? longitude.hashCode() : 0;
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
+        result = 31 * result + (speed != null ? speed.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
