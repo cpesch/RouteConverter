@@ -76,6 +76,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
+import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -110,6 +111,7 @@ public class MapsforgeMapView implements MapView {
     private AwtGraphicMapView mapView;
     private Layer mapLayer;
     private static Bitmap markerIcon, waypointIcon;
+    private static org.mapsforge.core.graphics.Paint TRACK_PAINT, ROUTE_PAINT;
 
     private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls;
     private TravelMode travelMode;
@@ -158,6 +160,12 @@ public class MapsforgeMapView implements MapView {
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e.getMessage());
         }
+        TRACK_PAINT = GRAPHIC_FACTORY.createPaint();
+        TRACK_PAINT.setColor(BLUE);
+        TRACK_PAINT.setStrokeWidth(3);
+        ROUTE_PAINT = GRAPHIC_FACTORY.createPaint();
+        ROUTE_PAINT.setColor(0x9973B9FF);
+        ROUTE_PAINT.setStrokeWidth(5);
 
         mapSelector = new MapSelector(this, getMapsforgeDirectory(), mapView);
 
@@ -294,7 +302,9 @@ public class MapsforgeMapView implements MapView {
             public void add(final List<PositionPair> pairs) {
                 executor.execute(new Runnable() {
                     public void run() {
+                        List<Line> lines = paintLines(pairs);
                         downloadRoutingDataFor(pairs);
+                        removeLines(lines);
                         paintRoute(pairs);
 
                         invokeLater(new Runnable() {
@@ -305,6 +315,22 @@ public class MapsforgeMapView implements MapView {
                     }
 
                 });
+            }
+
+            private void removeLines(List<Line> lines) {
+                for (Line line : lines)
+                    getLayerManager().getLayers().remove(line);
+            }
+
+            private List<Line> paintLines(List<PositionPair> pairs) {
+                List<Line> lines = new ArrayList<Line>();
+                int tileSize = mapView.getModel().displayModel.getTileSize();
+                for (PositionPair pair : pairs) {
+                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), ROUTE_PAINT, tileSize);
+                    getLayerManager().getLayers().add(line);
+                    lines.add(line);
+                }
+                return lines;
             }
 
             private void downloadRoutingDataFor(List<PositionPair> pairs) {
@@ -321,12 +347,8 @@ public class MapsforgeMapView implements MapView {
                 for (PositionPair pair : pairs) {
                     List<LatLong> latLongs = calculateRoute(pair);
 
-                    final Polyline line = new Polyline(latLongs, tileSize);
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            getLayerManager().getLayers().add(line);
-                        }
-                    });
+                    Polyline line = new Polyline(latLongs, ROUTE_PAINT, tileSize);
+                    getLayerManager().getLayers().add(line);
                     pairsToLines.put(pair, line);
                 }
             }
@@ -349,7 +371,8 @@ public class MapsforgeMapView implements MapView {
                         pairsToLines.remove(pair);
                     }
                 }
-                getLayerManager().redrawLayers();    }
+                getLayerManager().redrawLayers();
+            }
         });
 
         this.trackUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
@@ -358,7 +381,7 @@ public class MapsforgeMapView implements MapView {
             public void add(List<PositionPair> pairs) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PositionPair pair : pairs) {
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), tileSize);
+                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), TRACK_PAINT, tileSize);
                     getLayerManager().getLayers().add(line);
                     pairsToLines.put(pair, line);
                 }

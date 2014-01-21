@@ -30,7 +30,6 @@ import java.util.List;
 
 import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
-import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 
 /**
  * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}
@@ -39,17 +38,13 @@ import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_F
  */
 
 public class Polyline extends Layer {
-    private static final Paint paint;
-    static {
-        paint = GRAPHIC_FACTORY.createPaint();
-        paint.setColor(0x9973B9FF);
-        paint.setStrokeWidth(5);
-    }
     private final List<LatLong> latLongs;
+    private final Paint paint;
     private final int tileSize;
 
-    public Polyline(List<LatLong> latLongs, int tileSize) {
+    public Polyline(List<LatLong> latLongs, Paint paint, int tileSize) {
         this.latLongs = latLongs;
+        this.paint = paint;
         this.tileSize = tileSize;
     }
 

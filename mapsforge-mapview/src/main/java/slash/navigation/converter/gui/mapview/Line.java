@@ -26,10 +26,8 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.Layer;
 
-import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
-import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 
 /**
  * A line between two {@link LatLong}s on {@link MapsforgeMapView}
@@ -38,19 +36,15 @@ import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_F
  */
 
 public class Line extends Layer {
-    private static final Paint paint;
-    static {
-        paint = GRAPHIC_FACTORY.createPaint();
-        paint.setColor(BLUE);
-        paint.setStrokeWidth(3);
-    }
     private final LatLong from;
     private final LatLong to;
+    private final Paint paint;
     private final int tileSize;
 
-    public Line(LatLong from, LatLong to, int tileSize) {
+    public Line(LatLong from, LatLong to, Paint paint, int tileSize) {
         this.to = to;
         this.from = from;
+        this.paint = paint;
         this.tileSize = tileSize;
     }
 
