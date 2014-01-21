@@ -49,6 +49,7 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
                 if (Downloading.equals(download.getState()) || Processing.equals(download.getState()) || Resuming.equals(download.getState()))
                     text += " (" + download.getPercentage() + "%)";
                 label.setText(text);
+                label.setToolTipText(download.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
