@@ -27,15 +27,15 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
+import slash.navigation.download.Download;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -73,6 +73,19 @@ public class DownloadsDialog extends SimpleDialog {
                 column.setMaxWidth(140);
             }
         }
+        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableDownloads.getModel());
+        sorter.setSortsOnUpdates(true);
+        sorter.setComparator(0, new Comparator<Download>() {
+            public int compare(Download d1, Download d2) {
+                return d1.getDescription().compareTo(d2.getDescription());
+            }
+        });
+        sorter.setComparator(1, new Comparator<Download>() {
+            public int compare(Download d1, Download d2) {
+                return d1.getState().compareTo(d2.getState());
+            }
+        });
+        tableDownloads.setRowSorter(sorter);
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
