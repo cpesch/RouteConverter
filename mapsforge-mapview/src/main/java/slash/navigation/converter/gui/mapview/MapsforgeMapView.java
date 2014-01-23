@@ -20,6 +20,7 @@
 package slash.navigation.converter.gui.mapview;
 
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -111,7 +112,7 @@ public class MapsforgeMapView implements MapView {
     private AwtGraphicMapView mapView;
     private Layer mapLayer;
     private static Bitmap markerIcon, waypointIcon;
-    private static org.mapsforge.core.graphics.Paint TRACK_PAINT, ROUTE_PAINT;
+    private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
 
     private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls;
     private TravelMode travelMode;
@@ -164,8 +165,12 @@ public class MapsforgeMapView implements MapView {
         TRACK_PAINT.setColor(BLUE);
         TRACK_PAINT.setStrokeWidth(3);
         ROUTE_PAINT = GRAPHIC_FACTORY.createPaint();
-        ROUTE_PAINT.setColor(0x9973B9FF);
+        ROUTE_PAINT.setColor(0x993379FF);
         ROUTE_PAINT.setStrokeWidth(5);
+        ROUTE_DOWNLOADING_PAINT = GRAPHIC_FACTORY.createPaint();
+        ROUTE_DOWNLOADING_PAINT.setColor(0x993379FF);
+        ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
+        ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
         mapSelector = new MapSelector(this, getMapsforgeDirectory(), mapView);
 
@@ -326,7 +331,7 @@ public class MapsforgeMapView implements MapView {
                 List<Line> lines = new ArrayList<Line>();
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PositionPair pair : pairs) {
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), ROUTE_PAINT, tileSize);
+                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
                     getLayerManager().getLayers().add(line);
                     lines.add(line);
                 }
