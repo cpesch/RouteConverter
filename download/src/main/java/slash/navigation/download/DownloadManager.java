@@ -66,9 +66,16 @@ public class DownloadManager {
             log.severe(format("Could not load '%s': %s", file, e.getMessage()));
         }
 
+        restartDownloadsWithState(Resuming);
+        restartDownloadsWithState(Downloading);
+        restartDownloadsWithState(Processing);
+        restartDownloadsWithState(Queued);
+    }
+
+    private void restartDownloadsWithState(State state) {
         for (Download download : model.getDownloads()) {
-            if (Downloading.equals(download.getState()) || Resuming.equals(download.getState()))
-                queueForDownload(download);
+            if (state.equals(download.getState()))
+                startExecutor(download);
         }
     }
 
@@ -87,12 +94,20 @@ public class DownloadManager {
         return model;
     }
 
-    public Download queueForDownload(Download download) {
-        if(Extract.equals(download.getAction()) && !download.getTarget().isDirectory())
-            throw new IllegalArgumentException(format("Need a directory to extract to but got %s", download.getTarget()));
+    private void startExecutor(Download download) {
         DownloadExecutor executor = new DownloadExecutor(download, model);
         model.addOrUpdateDownload(download);
         pool.execute(executor);
+    }
+
+    public Download queueForDownload(Download download) {
+        Download queued = getModel().getDownload(download.getUrl());
+        if(queued != null)
+            return queued;
+
+        if(Extract.equals(download.getAction()) && !download.getTarget().isDirectory())
+            throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getTarget()));
+        startExecutor(download);
         return download;
     }
 
