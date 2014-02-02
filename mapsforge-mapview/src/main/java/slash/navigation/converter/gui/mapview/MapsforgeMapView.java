@@ -54,6 +54,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.event.ListDataEvent;
@@ -303,10 +304,14 @@ public class MapsforgeMapView implements MapView {
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
             private Map<PositionPair, Polyline> pairsToLines = new HashMap<PositionPair, Polyline>();
+            private int distance;
 
             public void add(final List<PositionPair> pairs) {
                 executor.execute(new Runnable() {
                     public void run() {
+                        distance = 0;
+                        fireCalculatedDistance(0, 0);
+
                         List<Line> lines = paintLines(pairs);
                         downloadRoutingDataFor(pairs);
                         removeLines(lines);
@@ -361,9 +366,16 @@ public class MapsforgeMapView implements MapView {
             private List<LatLong> calculateRoute(PositionPair pair) {
                 List<LatLong> latLongs = new ArrayList<LatLong>();
                 latLongs.add(asLatLong(pair.getFirst()));
-                List<NavigationPosition> intermediate = routingService.getRouteBetween(pair.getFirst(), pair.getSecond());
-                if (intermediate != null)
-                    latLongs.addAll(asLatLong(intermediate));  // TODO fire distance from result
+                RoutingResult intermediate = routingService.getRouteBetween(pair.getFirst(), pair.getSecond());
+                if (intermediate != null) {
+                    latLongs.addAll(asLatLong(intermediate.getPositions()));
+                    distance += intermediate.getDistance();
+                } else {
+                    Double calculateDistance = pair.getFirst().calculateDistance(pair.getSecond());
+                    if (calculateDistance != null)
+                        distance += calculateDistance;
+                }
+                fireCalculatedDistance(distance, 0);
                 latLongs.add(asLatLong(pair.getSecond()));
                 return latLongs;
             }

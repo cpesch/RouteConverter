@@ -20,19 +20,34 @@
 
 package slash.navigation.routing;
 
-import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 
 /**
- * Interface for a service that determines the routing between two given positions.
+ * The result for the routing between two positions.
  *
  * @author Christian Pesch
  */
 
-public interface RoutingService {
-    String getName();
-    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to);
-    void downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+public class RoutingResult   {
+    private List<NavigationPosition> positions;
+    private int distance;
+
+    public RoutingResult(List<NavigationPosition> positions, int distance) {
+        this.positions = positions;
+        this.distance = distance;
+    }
+
+    public List<NavigationPosition> getPositions() {
+        return positions;
+    }
+
+    /**
+     * Return the distance in meters for the positions.
+     * @return  the distance in meters for the positions
+     */
+    public int getDistance() {
+        return distance;
+    }
 }

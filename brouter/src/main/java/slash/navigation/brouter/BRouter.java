@@ -28,6 +28,7 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
+import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
@@ -97,7 +98,7 @@ public class BRouter implements RoutingService {
         return preferences.get(BASE_URL_PREFERENCE, baseUrl);
     }
 
-    public List<NavigationPosition> getRouteBetween(NavigationPosition from, NavigationPosition to) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
         RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
         routingEngine.quite = true;
         routingEngine.doRun(MAX_RUNNING_TIME);
@@ -107,8 +108,8 @@ public class BRouter implements RoutingService {
         }
 
         OsmTrack track = routingEngine.getFoundTrack();
-        int distance = routingEngine.getDistance(); // TODO add distance to result
-        return asPositions(track);
+        int distance = routingEngine.getDistance();
+        return new RoutingResult(asPositions(track), distance);
     }
 
     private java.io.File getDirectory() {
