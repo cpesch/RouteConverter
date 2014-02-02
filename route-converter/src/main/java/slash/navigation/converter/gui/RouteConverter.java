@@ -91,6 +91,7 @@ import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Externalization.getTempDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
@@ -1053,7 +1054,15 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDownloadManager() {
         getDownloadManager().restartQueue(getDownloadQueueFile());
         getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
+            private boolean initialUpdateEvent = true;
+
             public void tableChanged(TableModelEvent e) {
+                // ignore updates but the first to show resumed downloads after program start
+                // but avoid flickering for every tiny download update
+                if(e.getType() == UPDATE && !initialUpdateEvent)
+                    return;
+                initialUpdateEvent = false;
+
                 getContext().getActionManager().run("show-downloads");
             }
         });
