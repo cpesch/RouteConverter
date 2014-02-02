@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.helpers.LengthCalculatorListener;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -55,7 +56,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
         lengthCalculator.addLengthCalculatorListener(new LengthCalculatorListener() {
             public void calculatedDistance(final int meters, final int seconds) {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         updateLabel(meters, seconds);
                     }
