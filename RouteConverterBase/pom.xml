@@ -33,6 +33,7 @@
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
+                                        <Application-Name>RouteConverter</Application-Name>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
