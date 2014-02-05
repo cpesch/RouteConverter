@@ -74,7 +74,8 @@ public class QueuePersister {
     private Download asDownload(DownloadType downloadType) {
         return new Download(downloadType.getDescription(), downloadType.getUrl(), downloadType.getSize(),
                 downloadType.getChecksum(), Action.valueOf(downloadType.getAction()), new File(downloadType.getTarget()),
-                parseTime(downloadType.getCreationDate()), State.valueOf(downloadType.getState()), new File(downloadType.getTempFile()));
+                parseTime(downloadType.getLastSync()), State.valueOf(downloadType.getState()), new File(downloadType.getTempFile()),
+                parseTime(downloadType.getLastModified()), downloadType.getContentLength());
     }
 
     public void save(List<Download> downloads) throws IOException, JAXBException {
@@ -96,10 +97,12 @@ public class QueuePersister {
         downloadType.setSize(download.getSize());
         downloadType.setChecksum(download.getChecksum());
         downloadType.setState(download.getState().name());
-        downloadType.setCreationDate(formatTime(download.getCreationDate()));
+        downloadType.setLastSync(formatTime(download.getLastSync()));
         downloadType.setAction(download.getAction().name());
         downloadType.setTarget(download.getTarget().getPath());
         downloadType.setTempFile(download.getTempFile().getPath());
+        downloadType.setLastModified(formatTime(download.getLastModified()));
+        downloadType.setContentLength(download.getContentLength());
         return downloadType;
     }
 }

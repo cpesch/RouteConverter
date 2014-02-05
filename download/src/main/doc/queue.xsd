@@ -32,17 +32,25 @@
         <xsd:annotation>
             <xsd:documentation>
                 a download contains a description, an url, optionally size and checksum,
-                a state and an action like copy or extract for the target.
+                plus data to perform the download upon restart.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="description" type="xsd:string"/>
         <xsd:attribute name="url" type="xsd:string"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
-        <xsd:attribute name="creationDate" type="xsd:dateTime"/>
-        <xsd:attribute name="state" type="xsd:string"/>
+
+        <!-- what to do with the download -->
         <xsd:attribute name="action" type="xsd:string"/>
         <xsd:attribute name="target" type="xsd:string"/>
+
+        <!-- temporary state -->
+        <xsd:attribute name="lastSync" type="xsd:dateTime"/>
+        <xsd:attribute name="state" type="xsd:string"/>
         <xsd:attribute name="tempFile" type="xsd:string"/>
+
+        <!-- data from HEAD request -->
+        <xsd:attribute name="lastModified" type="xsd:dateTime"/>
+        <xsd:attribute name="contentLength" type="xsd:long"/>
     </xsd:complexType>
 </xsd:schema>

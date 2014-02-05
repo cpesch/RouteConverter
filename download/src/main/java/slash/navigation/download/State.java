@@ -30,8 +30,10 @@ public enum State {
     Queued,
     Resuming,
     Downloading,
-    NotModified,
     Processing,
     Succeeded,
+    NoFileError,
+    ChecksumError,
+    SizeError,
     Failed
 }

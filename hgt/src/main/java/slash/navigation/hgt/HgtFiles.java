@@ -19,9 +19,11 @@
 */
 package slash.navigation.hgt;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.File;
 import slash.navigation.download.datasources.Fragment;
 import slash.navigation.elevation.ElevationService;
@@ -29,11 +31,10 @@ import slash.navigation.elevation.ElevationService;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
-import static java.util.logging.Logger.getLogger;
+import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Extract;
 
 /**
@@ -43,7 +44,6 @@ import static slash.navigation.download.Action.Extract;
  */
 
 public class HgtFiles implements ElevationService {
-    private static final Logger log = getLogger(HgtFiles.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
@@ -120,50 +120,52 @@ public class HgtFiles implements ElevationService {
         randomAccessFileCache.clear();
     }
 
+    private static class FragmentAndTarget {
+        public final Fragment fragment;
+        public final java.io.File target;
+
+        private FragmentAndTarget(Fragment fragment, java.io.File target) {
+            this.fragment = fragment;
+            this.target = target;
+        }
+    }
+
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<String> keys = new HashSet<String>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Set<Fragment> fragments = new HashSet<Fragment>();
+        Set<FragmentAndTarget> fragments = new HashSet<FragmentAndTarget>();
         for (String key : keys) {
             Fragment fragment = archiveMap.get(key);
-            if (fragment == null)
-                continue;
-
-            java.io.File file = createFile(key);
-            if (!validate(file, fragment.getSize()))
-                fragments.add(fragment);
+            if (fragment != null)
+                fragments.add(new FragmentAndTarget(fragment, createFile(key)));
         }
 
         Collection<Download> downloads = new HashSet<Download>();
-        for (Fragment fragment : fragments)
-            downloads.add(download(fragment));
+        for (FragmentAndTarget fragment : fragments) {
+            Download download = download(fragment);
+            if (download != null && !new Validator(fragment.target).existsFile())
+                downloads.add(download);
+        }
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private boolean validate(java.io.File file, Long fileSize) {
-        // do not validate checksum here since it's too expensive
-        if (!file.exists()) {
-            log.info("File " + file + " does not exist");
-            return false;
-        }
-        if (fileSize != null && file.length() != fileSize) {
-            log.info("File " + file + " size is " + file.length() + " but expected " + fileSize + " bytes");
-            return false;
-        }
-        return true;
-    }
-
-    private Download download(Fragment fragment) {
-        String uri = fragment.getUri();
+    private Download download(FragmentAndTarget fragment) {
+        String uri = fragment.fragment.getUri();
+        String url = getBaseUrl() + uri;
         File file = fileMap.get(uri);
         Long fileSize = file != null ? file.getSize() : null;
         String fileChecksum = file != null ? file.getChecksum() : null;
-        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, getBaseUrl() + uri,
+
+        CompactCalendar lastSync = downloadManager.getLastSync(url);
+        if (lastSync != null && lastSync.after(oneWeekAgo()) && fragment.target.exists())
+            return null;
+
+        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url,
                 fileSize, fileChecksum, Extract, getDirectory());
     }
 }
