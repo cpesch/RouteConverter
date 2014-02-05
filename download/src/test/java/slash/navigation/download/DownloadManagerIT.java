@@ -29,9 +29,11 @@ import java.io.*;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
@@ -92,8 +94,10 @@ public class DownloadManagerIT {
         try {
             while (true) {
                 synchronized (LOCK) {
-                    if (found[0] || currentTimeMillis() - start > WAIT_TIMEOUT)
+                    if (found[0])
                         break;
+                    if (currentTimeMillis() - start > WAIT_TIMEOUT)
+                        throw new IllegalStateException("waited for " + WAIT_TIMEOUT + " seconds without seeing " + expectedState);
                     try {
                         LOCK.wait(1000);
                     } catch (InterruptedException e) {
@@ -108,7 +112,7 @@ public class DownloadManagerIT {
 
     @Test
     public void testInvalidUrl() throws IOException {
-        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, null, null, target);
+        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, null, Copy, target);
         waitFor(download, Failed);
 
         assertEquals(Failed, download.getState());
@@ -131,7 +135,6 @@ public class DownloadManagerIT {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", Copy, target);
-        waitFor(download, Resuming);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -144,11 +147,10 @@ public class DownloadManagerIT {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "notdefined", Copy, target);
-        waitFor(download, Resuming);
         waitFor(download, Downloading);
-        waitFor(download, Failed);
+        waitFor(download, ChecksumError);
 
-        assertEquals(Failed, download.getState());
+        assertEquals(ChecksumError, download.getState());
     }
 
     @Test
@@ -168,18 +170,20 @@ public class DownloadManagerIT {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 4711L, null, Copy, target);
-        waitFor(download, Resuming);
         waitFor(download, Downloading);
-        waitFor(download, Failed);
+        waitFor(download, SizeError);
 
-        assertEquals(Failed, download.getState());
+        assertEquals(SizeError, download.getState());
     }
 
     @Test
     public void testResumeDownload() throws IOException {
-        writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
-
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, Copy, target);
+        // write content to temp file and patch download object
+        writeStringToFile(download.getTempFile(), LOREM_IPSUM_DOLOR_SIT_AMET);
+        download.setLastModified(fromMillis(download.getTempFile().lastModified()));
+        download.setContentLength(447L);
+
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -189,14 +193,28 @@ public class DownloadManagerIT {
 
     @Test
     public void testNotModifiedDownload() throws IOException {
-        writeStringToFile(target, EXPECTED);
-
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 447L, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", Copy, target);
-        waitFor(download, NotModified);
+        // write content to temp file and patch download object
+        writeStringToFile(download.getTempFile(), EXPECTED);
+        download.setLastModified(fromMillis(download.getTempFile().lastModified()));
+        download.setContentLength(download.getTempFile().length());
+
+        waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
         String actual = readFileToString(target);
         assertEquals(EXPECTED, actual);
+    }
+
+    @Test
+    public void testDownloadSameUrl() throws IOException {
+        writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
+
+        Download download1 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, Copy, target);
+        Download download2 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, Copy, target);
+        waitFor(download2, Succeeded);
+
+        assertEquals(download2, download1);
     }
 
     @Test

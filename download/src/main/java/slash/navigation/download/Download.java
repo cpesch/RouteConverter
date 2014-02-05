@@ -24,13 +24,12 @@ import slash.common.type.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import static java.io.File.createTempFile;
 import static slash.common.io.Externalization.getTempDirectory;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.State.Queued;
 
 /**
@@ -42,29 +41,33 @@ import static slash.navigation.download.State.Queued;
 public class Download {
     private final String description, url, checksum;
     private final Long size;
-    private final CompactCalendar creationDate;
+    private CompactCalendar lastSync;
     private final Action action;
     private final File target, tempFile;
+    private CompactCalendar lastModified;
+    private Long contentLength;
 
     private State state;
     private long processedBytes;
     private Long expectedBytes;
 
     public Download(String description, String url, Long size, String checksum, Action action, File target,
-                    CompactCalendar creationDate, State state, File tempFile) {
+                    CompactCalendar lastSync, State state, File tempFile, CompactCalendar lastModified, Long contentLength) {
         this.description = description;
         this.url = url;
         this.size = size;
         this.checksum = checksum;
         this.action = action;
         this.target = target;
-        this.creationDate = creationDate;
+        this.lastSync = lastSync;
         this.state = state;
         this.tempFile = tempFile;
+        this.lastModified = lastModified;
+        this.contentLength = contentLength;
     }
 
     public Download(String description, String url, Long size, String checksum, Action action, File target) {
-        this(description, url, size, checksum, action, target, fromDate(new Date()), Queued, newTempFile(target, action));
+        this(description, url, size, checksum, action, target, now(), Queued, newTempFile(target, action), null, null);
     }
 
     private static File newTempFile(File target, Action action) {
@@ -106,8 +109,12 @@ public class Download {
         return target;
     }
 
-    public CompactCalendar getCreationDate() {
-        return creationDate;
+    public CompactCalendar getLastSync() {
+        return lastSync;
+    }
+
+    public void setLastSync(CompactCalendar lastSync) {
+        this.lastSync = lastSync;
     }
 
     public State getState() {
@@ -120,6 +127,22 @@ public class Download {
 
     public File getTempFile() {
         return tempFile;
+    }
+
+    public CompactCalendar getLastModified() {
+        return lastModified;
+    }
+
+    void setLastModified(CompactCalendar lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
     }
 
     private static final int UNKNOWN_EXPECTED_BYTES = 1024 * 1024 * 1024;

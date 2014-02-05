@@ -20,6 +20,7 @@
 
 package slash.navigation.download;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
@@ -98,6 +99,11 @@ public class DownloadManager {
         DownloadExecutor executor = new DownloadExecutor(download, model);
         model.addOrUpdateDownload(download);
         pool.execute(executor);
+    }
+
+    public CompactCalendar getLastSync(String url) {
+        Download queued = getModel().getDownload(url);
+        return queued != null ? queued.getLastSync() : null;
     }
 
     public Download queueForDownload(Download download) {

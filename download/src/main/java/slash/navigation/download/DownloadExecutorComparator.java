@@ -22,7 +22,7 @@ package slash.navigation.download;
 import java.util.Comparator;
 
 /**
- * Compares {@link DownloadExecutor}s by their creation date.
+ * Compares {@link DownloadExecutor}s by their last sync date.
  *
  * @author Christian Pesch
  */
@@ -32,7 +32,7 @@ class DownloadExecutorComparator implements Comparator<Runnable> {
             return -1;
         if (!(r2 instanceof DownloadExecutor))
             return 1;
-        return (int) (((DownloadExecutor) r1).getDownload().getCreationDate().getTimeInMillis() -
-                ((DownloadExecutor) r2).getDownload().getCreationDate().getTimeInMillis());
+        return (int) (((DownloadExecutor) r1).getDownload().getLastSync().getTimeInMillis() -
+                ((DownloadExecutor) r2).getDownload().getLastSync().getTimeInMillis());
     }
 }

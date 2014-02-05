@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import static java.util.Calendar.DATE;
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
 import static java.util.Collections.emptyMap;
@@ -88,6 +89,16 @@ public class CompactCalendar {
     public static CompactCalendar fromDate(Date date) {
         Calendar calendar = Calendar.getInstance(UTC);
         calendar.setTime(date);
+        return fromCalendar(calendar);
+    }
+
+    public static CompactCalendar now() {
+        return fromDate(new Date());
+    }
+
+    public static CompactCalendar oneWeekAgo() {
+        Calendar calendar = Calendar.getInstance(UTC);
+        calendar.add(DATE, -7);
         return fromCalendar(calendar);
     }
 
