@@ -56,7 +56,12 @@
                     </execution>
                 </executions>
             </plugin>
+        </plugins>
+    </build>
 
+    <profiles><profile><id>routeconverter</id>
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jarsigner-plugin</artifactId>
@@ -77,12 +82,7 @@
                     <removeExistingSignatures>true</removeExistingSignatures>
                 </configuration>
             </plugin>
-        </plugins>
-    </build>
 
-    <profiles><profile><id>launcher</id>
-    <build>
-        <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
