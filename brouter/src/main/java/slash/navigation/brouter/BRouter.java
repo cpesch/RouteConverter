@@ -21,11 +21,13 @@
 package slash.navigation.brouter;
 
 import btools.router.*;
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
 import slash.navigation.routing.RoutingResult;
@@ -39,6 +41,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 import static slash.common.io.Externalization.extractFile;
+import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -198,36 +201,31 @@ public class BRouter implements RoutingService {
 
         Set<FileAndTarget> files = new HashSet<FileAndTarget>();
         for (String key : keys) {
-            File file = fileMap.get(key + ".rd5");
-            if (file == null)
-                continue;
-
-            java.io.File target = createFile(key);
-            if (!validate(target))
-                files.add(new FileAndTarget(file, target));
+            File catalog = fileMap.get(key + ".rd5");
+            if (catalog != null)
+                files.add(new FileAndTarget(catalog, createFile(key)));
         }
 
         Collection<Download> downloads = new HashSet<Download>();
-        for (FileAndTarget file : files)
-            downloads.add(download(file));
+        for (FileAndTarget file : files) {
+            Download download = download(file);
+            if (download != null && !new Validator(download.getTarget()).existsFile())
+                downloads.add(download);
+        }
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private boolean validate(java.io.File file) {
-        // do not validate file size here since the data source XML might be outdated
-        // do not validate checksum here since it's too expensive
-        if (!file.exists()) {
-            log.info("File " + file + " does not exist");
-            return false;
-        }
-        return true;
-    }
-
     private Download download(FileAndTarget file) {
         String uri = file.file.getUri();
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, getBaseUrl() + uri,
+        String url = getBaseUrl() + uri;
+
+        CompactCalendar lastSync = downloadManager.getLastSync(url);
+        if (lastSync != null && lastSync.after(oneWeekAgo()) && file.target.exists())
+            return null;
+
+        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
                 file.file.getSize(), file.file.getChecksum(), Copy, file.target);
     }
 }
