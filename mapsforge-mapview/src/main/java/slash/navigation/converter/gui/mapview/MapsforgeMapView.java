@@ -261,12 +261,12 @@ public class MapsforgeMapView implements MapView {
         else {
             TileRendererLayer tileRendererLayer = createTileRendererLayer(mapFile, themeFile);
             this.mapLayer = tileRendererLayer;
-            org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
+
             if (restoreView) {
                 setCenter(getCenter());
                 setZoom(getZoom());
-            }
-            else {
+            } else {
+                org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
                 setCenter(boundingBox.getCenterPoint());
                 zoomToBounds(boundingBox);
             }
