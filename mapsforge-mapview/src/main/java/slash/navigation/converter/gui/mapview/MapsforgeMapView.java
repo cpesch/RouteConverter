@@ -244,8 +244,12 @@ public class MapsforgeMapView implements MapView {
 
     void setMapFile(File mapFile, File themeFile) {
         Layers layers = getLayerManager().getLayers();
-        if (mapLayer != null)
+        boolean restoreView = false;
+
+        if (mapLayer != null) {
             layers.remove(mapLayer);
+            restoreView = true;
+        }
 
         if (mapFile == null)
             return;
@@ -258,8 +262,14 @@ public class MapsforgeMapView implements MapView {
             TileRendererLayer tileRendererLayer = createTileRendererLayer(mapFile, themeFile);
             this.mapLayer = tileRendererLayer;
             org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
-            setCenter(boundingBox.getCenterPoint());
-            zoomToBounds(boundingBox);
+            if (restoreView) {
+                setCenter(getCenter());
+                setZoom(getZoom());
+            }
+            else {
+                setCenter(boundingBox.getCenterPoint());
+                zoomToBounds(boundingBox);
+            }
         }
         // TODO add fallback if the map file doesn't exist
         layers.add(0, mapLayer);
