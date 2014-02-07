@@ -38,9 +38,9 @@ public class Copier {
         this.listener = listener;
     }
 
-    public long copyAndClose(InputStream input, OutputStream output, long startByte) throws IOException {
+    public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
         try {
-            return copy(input, output, startByte);
+            return copy(input, output, startByte, expectingBytes);
         } finally {
             try {
                 closeQuietly(input);
@@ -50,7 +50,9 @@ public class Copier {
         }
     }
 
-    public long copy(InputStream input, OutputStream output, long startByte) throws IOException {
+    public long copy(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
+        listener.expectingBytes(expectingBytes != null ? expectingBytes : input.available());
+
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long totalBytes = startByte;
         int read;

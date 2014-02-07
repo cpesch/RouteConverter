@@ -54,8 +54,7 @@ public class Extractor {
                     File extracted = new File(destination, lastPathFragment(entry.getName(), MAX_VALUE));
                     FileOutputStream output = new FileOutputStream(extracted);
 
-                    listener.expectingBytes(entry.getSize());
-                    new Copier(listener).copy(zipInputStream, output, 0);
+                    new Copier(listener).copy(zipInputStream, output, 0, entry.getSize());
 
                     // do not close zip input stream
                     closeQuietly(output);
