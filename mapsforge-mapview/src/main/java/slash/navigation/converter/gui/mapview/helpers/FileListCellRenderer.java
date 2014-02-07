@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.helpers;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +46,7 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
         return label;
     }
 
-    static String removePrefix(File root, File file) {
+    public static String removePrefix(File root, File file) {
         String rootPath = root.getAbsolutePath();
         String filePath = file.getAbsolutePath();
         if (filePath.startsWith(rootPath))

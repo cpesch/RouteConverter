@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.lines;
 
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.Paint;
@@ -30,7 +30,7 @@ import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 
 /**
- * A line between two {@link LatLong}s on {@link MapsforgeMapView}
+ * A line between two {@link LatLong}s on {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}
  *
  * @author Christian Pesch
  */

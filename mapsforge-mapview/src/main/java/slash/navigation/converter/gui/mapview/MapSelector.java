@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.mapview;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.converter.gui.mapview.helpers.FileListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ import static java.awt.event.ItemEvent.SELECTED;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.navigation.converter.gui.mapview.FileListCellRenderer.removePrefix;
+import static slash.navigation.converter.gui.mapview.helpers.FileListCellRenderer.removePrefix;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_CYCLE_MAP_ONLINE;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OPEN_STREET_MAP_MAPNIK_ONLINE;
 import static slash.navigation.converter.gui.mapview.MapsforgeMapView.OSMARENDERER_INTERNAL;

@@ -17,16 +17,17 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.map.model.MapViewDimension;
+import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 /**
- * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewDimension}
+ * Listen to mouse events of the {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}'s {@link MapViewDimension}
  *
  * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
  */

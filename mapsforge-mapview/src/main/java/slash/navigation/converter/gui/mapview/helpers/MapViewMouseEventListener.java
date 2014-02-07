@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.map.model.MapViewPosition;
 
@@ -29,7 +29,7 @@ import java.awt.event.MouseWheelEvent;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 
 /**
- * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewPosition}
+ * Listen to mouse events of the {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}'s {@link MapViewPosition}
  *
  * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
  */
