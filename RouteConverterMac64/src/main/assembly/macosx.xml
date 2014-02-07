@@ -21,7 +21,7 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>target/${project.artifactId}.jar</source>
+            <source>target/RouteConverterMac64.jar</source>
             <outputDirectory>/Contents/Resources/Java</outputDirectory>
         </file>
     </files>
