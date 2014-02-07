@@ -161,6 +161,7 @@ public class DownloadExecutor implements Runnable {
         get.setRange(fileSize, contentLength);
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful() && get.isPartialContent()) {
+            modelUpdater.expectingBytes(contentLength);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile(), true), fileSize, contentLength);
             return true;
         }
@@ -176,6 +177,7 @@ public class DownloadExecutor implements Runnable {
         Get get = new Get(download.getUrl());
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful()) {
+            modelUpdater.expectingBytes(contentLength);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0, contentLength);
             return true;
         }
