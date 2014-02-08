@@ -185,7 +185,7 @@ public class MapsforgeMapView implements MapView {
                 mapSelector.zoomChanged(mapViewPosition.getZoomLevel());
             }
         });
-        mapViewPosition.setZoomLevelMin((byte) 4);
+        mapViewPosition.setZoomLevelMin((byte) 2);
         mapViewPosition.setZoomLevelMax((byte) 22);
 
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
