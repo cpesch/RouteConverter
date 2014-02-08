@@ -139,4 +139,8 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     protected boolean isWriteTime() {
         return preferences.getBoolean("writeTime", true);
     }
+
+    protected boolean isWriteMetaData() {
+        return preferences.getBoolean("writeMetaData", true);
+    }
 }

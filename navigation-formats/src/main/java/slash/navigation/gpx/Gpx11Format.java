@@ -380,7 +380,7 @@ public class Gpx11Format extends GpxFormat {
             rteType.getRtept().clear();
         else
             rteType = objectFactory.createRteType();
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             rteType.setName(asRouteName(route.getName()));
             rteType.setDesc(asDescription(route.getDescription()));
         }
@@ -403,7 +403,7 @@ public class Gpx11Format extends GpxFormat {
             trkType.getTrkseg().clear();
         else
             trkType = objectFactory.createTrkType();
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             trkType.setName(asRouteName(route.getName()));
             trkType.setDesc(asDescription(route.getDescription()));
         }
@@ -437,7 +437,7 @@ public class Gpx11Format extends GpxFormat {
         if (metadataType == null)
             metadataType = objectFactory.createMetadataType();
 
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             metadataType.setName(asRouteName(route.getName()));
             metadataType.setDesc(asDescription(route.getDescription()));
         }
