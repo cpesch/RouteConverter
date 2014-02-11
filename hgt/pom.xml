@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>hgt</artifactId>
     <packaging>jar</packaging>
-    <name>Access to the elevation from HGT files</name>
+    <name>Access to elevation data from HGT files</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
