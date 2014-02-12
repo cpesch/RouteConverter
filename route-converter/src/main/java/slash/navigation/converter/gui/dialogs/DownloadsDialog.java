@@ -25,8 +25,8 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.renderer.DownloadsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
+import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Download;
 import slash.navigation.gui.SimpleDialog;
 
@@ -63,7 +63,7 @@ public class DownloadsDialog extends SimpleDialog {
 
         tableDownloads.setModel(r.getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
-        TableCellRenderer routesHeaderRenderer = new DownloadsTableCellHeaderRenderer();
+        TableCellRenderer routesHeaderRenderer = new SimpleHeaderRenderer("description", "state");
         TableColumnModel routeColumns = tableDownloads.getColumnModel();
         for (int i = 0; i < routeColumns.getColumnCount(); i++) {
             TableColumn column = routeColumns.getColumn(i);
