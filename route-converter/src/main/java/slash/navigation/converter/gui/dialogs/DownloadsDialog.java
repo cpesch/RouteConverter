@@ -63,11 +63,11 @@ public class DownloadsDialog extends SimpleDialog {
 
         tableDownloads.setModel(r.getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
-        TableCellRenderer routesHeaderRenderer = new SimpleHeaderRenderer("description", "state");
-        TableColumnModel routeColumns = tableDownloads.getColumnModel();
-        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
-            TableColumn column = routeColumns.getColumn(i);
-            column.setHeaderRenderer(routesHeaderRenderer);
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "state");
+        TableColumnModel columns = tableDownloads.getColumnModel();
+        for (int i = 0; i < columns.getColumnCount(); i++) {
+            TableColumn column = columns.getColumn(i);
+            column.setHeaderRenderer(headerRenderer);
             if (i == 1) {
                 column.setPreferredWidth(100);
                 column.setMaxWidth(140);
