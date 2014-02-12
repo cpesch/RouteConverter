@@ -215,11 +215,11 @@ public class BrowsePanel implements PanelInTab {
                 handlePositionListUpdate();
             }
         });
-        TableCellRenderer routesHeaderRenderer = new SimpleHeaderRenderer("description", "creator");
-        TableColumnModel routeColumns = tableRoutes.getColumnModel();
-        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
-            TableColumn column = routeColumns.getColumn(i);
-            column.setHeaderRenderer(routesHeaderRenderer);
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
+        TableColumnModel columns = tableRoutes.getColumnModel();
+        for (int i = 0; i < columns.getColumnCount(); i++) {
+            TableColumn column = columns.getColumn(i);
+            column.setHeaderRenderer(headerRenderer);
             if (i == 1) {
                 column.setPreferredWidth(80);
                 column.setMaxWidth(100);

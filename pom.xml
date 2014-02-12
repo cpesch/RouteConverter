@@ -52,6 +52,7 @@
 
     <properties>
         <targetJdk>1.7</targetJdk>
+        <mapsforge.version>0.4.0-SNAPSHOT</mapsforge.version>
     </properties>
 
     <build>
@@ -247,6 +248,7 @@
         <module>jaxb6</module>
         <module>jnlp</module>
         <module>kml</module>
+        <module>mapsforge-maps</module>
         <module>mapsforge-mapview</module>
         <module>mapview</module>
         <module>navigation-formats</module>
