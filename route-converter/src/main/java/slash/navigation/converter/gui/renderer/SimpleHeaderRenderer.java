@@ -27,27 +27,23 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders the column headers of the downloads table.
+ * Renders the column headers by looking them up in the bundle.
  *
  * @author Christian Pesch
  */
 
-public class DownloadsTableCellHeaderRenderer extends DefaultTableCellRenderer {
+public class SimpleHeaderRenderer extends DefaultTableCellRenderer {
+    private final String[] bundleKeys;
+
+    public SimpleHeaderRenderer(String... bundleKeys) {
+        this.bundleKeys = bundleKeys;
+    }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(LEFT);
         label.setOpaque(false);
-        switch (columnIndex) {
-            case 0:
-                label.setText(RouteConverter.getBundle().getString("description"));
-                break;
-            case 1:
-                label.setText(RouteConverter.getBundle().getString("state"));
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", columnIndex " + columnIndex + " does not exist");
-        }
+        label.setText(RouteConverter.getBundle().getString(bundleKeys[columnIndex]));
         return label;
     }
 }
