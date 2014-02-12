@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 
 /**
- * Encapsulates access to all services using HGT files.
+ * Encapsulates access to all services providing HGT files.
  *
  * @author Christian Pesch
  */
