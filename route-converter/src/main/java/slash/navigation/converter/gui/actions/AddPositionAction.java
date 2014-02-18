@@ -28,7 +28,6 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.events.Range;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
+import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
@@ -95,7 +95,7 @@ public class AddPositionAction extends FrameAction {
 
         boolean hasInsertedRowInMapCenter = false;
         List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
-        int[] rowIndices = Range.revert(table.getSelectedRows());
+        int[] rowIndices = revert(table.getSelectedRows());
         // append to table if there is nothing selected
         boolean areRowsSelected = rowIndices.length > 0;
         if (!areRowsSelected)
