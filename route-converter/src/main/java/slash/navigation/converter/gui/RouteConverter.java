@@ -1047,20 +1047,24 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDownloadManager() {
-        getDownloadManager().restartQueue(getDownloadQueueFile());
-        getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
-            private boolean initialUpdateEvent = true;
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().restartQueue(getDownloadQueueFile());
+                getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
+                    private boolean initialUpdateEvent = true;
 
-            public void tableChanged(TableModelEvent e) {
-                // ignore updates but the first to show resumed downloads after program start
-                // but avoid flickering for every tiny download update
-                if(e.getType() == UPDATE && !initialUpdateEvent)
-                    return;
-                initialUpdateEvent = false;
+                    public void tableChanged(TableModelEvent e) {
+                        // ignore updates but the first to show resumed downloads after program start
+                        // but avoid flickering for every tiny download update
+                        if (e.getType() == UPDATE && !initialUpdateEvent)
+                            return;
+                        initialUpdateEvent = false;
 
-                getContext().getActionManager().run("show-downloads");
+                        getContext().getActionManager().run("show-downloads");
+                    }
+                });
             }
-        });
+        }, "DownloadManagerInitializer").start();
     }
 
     private class PrintMapAction extends FrameAction {
