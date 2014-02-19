@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.converter.gui.profileview.ProfileMode;
@@ -35,7 +34,7 @@ import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
  */
 
 public class ProfileModeModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(UnitSystemModel.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(ProfileModeModel.class);
     private static final String PROFILE_MODE_PREFERENCE = "profileMode";
 
     private EventListenerList listenerList = new EventListenerList();
