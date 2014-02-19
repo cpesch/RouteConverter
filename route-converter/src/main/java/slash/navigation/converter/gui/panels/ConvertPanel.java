@@ -76,7 +76,6 @@ import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
 import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -241,6 +240,7 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
+    private TableHeaderMenu tableHeaderMenu;
 
     public ConvertPanel() {
         initialize();
@@ -408,7 +408,8 @@ public class ConvertPanel implements PanelInTab {
         });
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(), tableColumnModel);
+        tableHeaderMenu = new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(),
+                tableColumnModel, actionManager);
         JPopupMenu menu = new TablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
@@ -994,6 +995,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
+        tableHeaderMenu.enable(existsMoreThanOnePosition);
         //noinspection ConstantConditions
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
@@ -1043,9 +1045,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
-        for (PositionTableColumn column : ((PositionsTableColumnModel) tablePositions.getColumnModel()).getPreparedColumns())
-            if (column.getComparator() != null)
-                actionManager.enable("sort-column-" + column.getName(), getPositionsModel().getRowCount() > 1);
+        tableHeaderMenu.enable(existsMoreThanOnePosition);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
         actionManager.enable("print-elevation-profile", existsAPosition);

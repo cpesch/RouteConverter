@@ -53,10 +53,13 @@ public class TableHeaderMenu {
     private final JPopupMenu popupMenu = new JPopupMenu();
     private final PositionsModel positionsModel;
     private final PositionsTableColumnModel columnModel;
+    private final ActionManager actionManager;
 
-    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel, PositionsTableColumnModel columnModel) {
+    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
+                           PositionsTableColumnModel columnModel, ActionManager actionManager) {
         this.positionsModel = positionsModel;
         this.columnModel = columnModel;
+        this.actionManager = actionManager;
 
         initializeShowColumn(findMenu(menuBar, "view", "show-column"));
         initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"));
@@ -154,6 +157,12 @@ public class TableHeaderMenu {
             if (action.isSelected())
                 action.setEnabled(false);
         }
+    }
+
+    public void enable(boolean enable) {
+        for (PositionTableColumn column : columnModel.getPreparedColumns())
+            if (column.getComparator() != null)
+                actionManager.enable("sort-column-" + column.getName(), enable);
     }
 
     private class VisibleListener implements PropertyChangeListener {
