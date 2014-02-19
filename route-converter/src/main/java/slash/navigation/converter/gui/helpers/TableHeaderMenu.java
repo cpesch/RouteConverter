@@ -73,8 +73,8 @@ public class TableHeaderMenu {
     }
 
     private void initializeSortPositions(JMenu sortPositionListMenu) {
-        JMenu sortPositionsPopupMenu = createMenu("sort-positions");
-        popupMenu.add(sortPositionsPopupMenu);
+        // JMenu sortPositionsPopupMenu = createMenu("sort-positions");
+        // popupMenu.add(sortPositionsPopupMenu);
 
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
@@ -85,9 +85,9 @@ public class TableHeaderMenu {
             SortColumnAction action = new SortColumnAction(positionsModel, column);
             actionManager.register("sort-column-" + column.getName(), action);
 
-            JMenuItem popupItem = new JMenuItem(action);
-            popupItem.setText(menuItemText);
-            sortPositionsPopupMenu.add(popupItem);
+            // JMenuItem popupItem = new JMenuItem(action);
+            // popupItem.setText(menuItemText);
+            // sortPositionsPopupMenu.add(popupItem);
 
             JMenuItem menuBarItem = new JMenuItem(action);
             menuBarItem.setText(menuItemText);
@@ -97,8 +97,8 @@ public class TableHeaderMenu {
     }
 
     private void initializeShowColumn(JMenu showColumnMenu) {
-        JMenu showColumnPopupMenu = createMenu("show-column-popup");
-        popupMenu.add(showColumnPopupMenu);
+        // JMenu showColumnPopupMenu = createMenu("show-column-popup");
+        // popupMenu.add(showColumnPopupMenu);
 
         VisibleListener visibleListener = new VisibleListener();
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
@@ -111,7 +111,7 @@ public class TableHeaderMenu {
 
             JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(menuItemText);
             popupItem.setModel(new PositionTableColumnButtonModel(column, action));
-            showColumnPopupMenu.add(popupItem);
+            popupMenu.add(popupItem);
 
             JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuItemText);
             menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
