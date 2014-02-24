@@ -24,16 +24,8 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.comparators.TimeComparator;
-import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
-import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
-import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
 
 import javax.swing.*;
 import javax.swing.event.TableColumnModelEvent;
@@ -86,7 +78,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
 
     public PositionsTableColumnModel() {
-        PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
+        PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
