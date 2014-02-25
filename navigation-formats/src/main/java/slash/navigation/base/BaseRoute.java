@@ -460,7 +460,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         NavigationPosition previous = index > 0 ? positions.get(index - 1) : null;
         NavigationPosition current = index < positions.size() ? positions.get(index) : null;
-        return previous != null && current != null ? previous.calculateElevation(current) : 0;
+        if(previous != null && current != null) {
+            Double elevation = previous.calculateElevation(current);
+            if(elevation != null)
+                return elevation;
+        }
+        return 0;
     }
 
     public void sort(Comparator<P> comparator) {
