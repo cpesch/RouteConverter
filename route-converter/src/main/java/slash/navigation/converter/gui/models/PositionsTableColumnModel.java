@@ -54,15 +54,7 @@ import static java.util.Calendar.MONTH;
 import static java.util.Calendar.SECOND;
 import static java.util.Calendar.YEAR;
 import static java.util.Locale.US;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
@@ -83,11 +75,12 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
-        predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
-        predefineColumn(ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
         predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 84, true, new LatitudeColumnTableCellEditor(), headerRenderer);
         predefineColumn(ELEVATION_COLUMN_INDEX, "elevation", getMaxWidth("9999 m", 5), true, new ElevationColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(ELEVATION_DIFFERENCE_COLUMN_INDEX, "elevation-difference", getMaxWidth("999 m", 4), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
 
         VisibleListener visibleListener = new VisibleListener();
         PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
