@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mapsforge-mapview</artifactId>
+    <artifactId>mapsforge-maps</artifactId>
     <packaging>jar</packaging>
-    <name>MapView based on mapsforge</name>
+    <name>Access to mapsforge maps and themes files</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -13,27 +13,24 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>brouter</artifactId>
+            <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapview</artifactId>
+            <artifactId>download</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>navigation-formats</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>routing-service</artifactId>
+            <artifactId>rest</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -41,16 +38,6 @@
             <groupId>org.mapsforge</groupId>
             <artifactId>mapsforge-map</artifactId>
             <version>${mapsforge.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapsforge</groupId>
-            <artifactId>mapsforge-map-awt</artifactId>
-            <version>${mapsforge.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>forms-rt</artifactId>
-            <version>6.0.5</version>
         </dependency>
     </dependencies>
 </project>

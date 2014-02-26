@@ -54,6 +54,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
+import slash.navigation.maps.MapManager;
 import slash.navigation.rest.Credentials;
 
 import javax.swing.*;
@@ -168,6 +169,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager();
+    private MapManager mapManager = new MapManager(downloadManager);
     private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -316,6 +318,7 @@ public class RouteConverter extends SingleFrameApplication {
         initializeRouteConverterServices();
         initializeActions();
         initializeDownloadManager();
+        initializeMapManager();
     }
 
     private MapView createMapView(String className) {
@@ -347,6 +350,7 @@ public class RouteConverter extends SingleFrameApplication {
                         getConvertPanel().getCharacteristicsModel(),
                         getPositionAugmenter(),
                         getDownloadManager(),
+                        getMapManager(),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
@@ -673,6 +677,10 @@ public class RouteConverter extends SingleFrameApplication {
         return downloadManager;
     }
 
+    public MapManager getMapManager() {
+        return mapManager;
+    }
+
     private File getDownloadQueueFile() {
         return new File(getTempDirectory(), "download-queue.xml");
     }
@@ -694,7 +702,6 @@ public class RouteConverter extends SingleFrameApplication {
         }
         return positionAugmenter;
     }
-
 
 
     public void complementElevation(int row, Double longitude, Double latitude) {
@@ -1021,6 +1028,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("show-downloads", new ShowDownloadsAction());
+        actionManager.register("select-maps", new SelectMapsAction());
         actionManager.register("show-options", new ShowOptionsAction());
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
@@ -1052,20 +1060,43 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDownloadManager() {
-        getDownloadManager().restartQueue(getDownloadQueueFile());
-        getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
-            private boolean initialUpdateEvent = true;
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().restartQueue(getDownloadQueueFile());
+                getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
+                    private boolean initialUpdateEvent = true;
 
-            public void tableChanged(TableModelEvent e) {
-                // ignore updates but the first to show resumed downloads after program start
-                // but avoid flickering for every tiny download update
-                if(e.getType() == UPDATE && !initialUpdateEvent)
-                    return;
-                initialUpdateEvent = false;
+                    public void tableChanged(TableModelEvent e) {
+                        // ignore updates but the first to show resumed downloads after program start
+                        // but avoid flickering for every tiny download update
+                        if (e.getType() == UPDATE && !initialUpdateEvent)
+                            return;
+                        initialUpdateEvent = false;
 
-                getContext().getActionManager().run("show-downloads");
+                        getContext().getActionManager().run("show-downloads");
+                    }
+                });
             }
-        });
+        }, "DownloadManagerInitializer").start();
+    }
+
+    private void initializeMapManager() {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    getMapManager().initialize();
+                    getMapManager().scanDirectories();
+                } catch (final IOException e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(frame,
+                                    MessageFormat.format(getBundle().getString("babel-error"), e.getMessage()), frame.getTitle(),   // TODO add own message
+                                    ERROR_MESSAGE);
+                        }
+                    });
+                }
+            }
+        }, "MapManagerInitializer").start();
     }
 
     private class PrintMapAction extends FrameAction {

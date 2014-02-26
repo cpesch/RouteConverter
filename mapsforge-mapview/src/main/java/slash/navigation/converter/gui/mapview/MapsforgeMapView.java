@@ -30,15 +30,11 @@ import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
-import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
-import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
-import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
@@ -58,21 +54,18 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.maps.Map;
+import slash.navigation.maps.MapManager;
+import slash.navigation.maps.Theme;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -84,7 +77,6 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
-import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -100,13 +92,9 @@ public class MapsforgeMapView implements MapView {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final Logger log = Logger.getLogger(MapsforgeMapView.class.getName());
 
-    private static final String MAPSFORGE_DIRECTORY_PREFERENCE = "mapsforgeDirectory";
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
-    static final File OSMARENDERER_INTERNAL = new File("Osmarenderer (internal)");
-    static final File OPEN_STREET_MAP_MAPNIK_ONLINE = new File("OpenStreetMapMapnik (online)");
-    static final File OPEN_CYCLE_MAP_ONLINE = new File("OpenCycleMap (online)");
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -115,7 +103,6 @@ public class MapsforgeMapView implements MapView {
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
-    private Layer mapLayer;
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
 
@@ -123,6 +110,7 @@ public class MapsforgeMapView implements MapView {
     private TravelMode travelMode;
     private PositionAugmenter positionAugmenter;
     private RoutingService routingService;
+    private MapManager mapManager;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private ExecutorService executor = newSingleThreadExecutor();
@@ -133,11 +121,12 @@ public class MapsforgeMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            PositionAugmenter positionAugmenter,
-                           DownloadManager downloadManager,
+                           DownloadManager downloadManager, MapManager mapManager,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
+        this.mapManager = mapManager;
         initializeMapView();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
@@ -156,6 +145,8 @@ public class MapsforgeMapView implements MapView {
         this.avoidHighways = avoidHighways;
         this.avoidTolls = avoidTolls;
     }
+
+    private java.util.Map<Map, Layer> mapsToLayers = new HashMap<Map, Layer>();
 
     private void initializeMapView() {
         mapView = createMapView();
@@ -177,7 +168,7 @@ public class MapsforgeMapView implements MapView {
         ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
-        mapSelector = new MapSelector(this, getMapsforgeDirectory(), mapView);
+        mapSelector = new MapSelector(mapManager, mapView);
 
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(new Observer() {
@@ -190,8 +181,17 @@ public class MapsforgeMapView implements MapView {
 
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
-        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 8);
+        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
+
+        ChangeListener mapAndThemeChangeListener = new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleMapAndThemeUpdate();
+            }
+        };
+        mapManager.getDisplayedMapModel().addChangeListener(mapAndThemeChangeListener);
+        mapManager.getAppliedThemeModel().addChangeListener(mapAndThemeChangeListener);
+        handleMapAndThemeUpdate();
     }
 
     private AwtGraphicMapView createMapView() {
@@ -206,30 +206,10 @@ public class MapsforgeMapView implements MapView {
         return mapView;
     }
 
-    private File getMapsforgeDirectory() {
-        String directoryName = preferences.get(MAPSFORGE_DIRECTORY_PREFERENCE, new File(System.getProperty("user.home"), ".mapsforge").getAbsolutePath());
-        File directory = new File(directoryName);
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                throw new IllegalArgumentException("Cannot create mapsforge directory " + directory);
-            }
-        }
-        return directory;
-    }
-
-    private TileRendererLayer createTileRendererLayer(File mapFile, File themeFile) {
+    private TileRendererLayer createTileRendererLayer(Map map, Theme theme) {
         TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, false, GRAPHIC_FACTORY);
-        tileRendererLayer.setMapFile(mapFile);
-        XmlRenderTheme xmlRenderTheme;
-        if (OSMARENDERER_INTERNAL.equals(themeFile))
-            xmlRenderTheme = OSMARENDER;
-        else
-            try {
-                xmlRenderTheme = new ExternalRenderTheme(themeFile);
-            } catch (FileNotFoundException e) {
-                xmlRenderTheme = OSMARENDER;
-            }
-        tileRendererLayer.setXmlRenderTheme(xmlRenderTheme);
+        tileRendererLayer.setMapFile(map.getFile());
+        tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         return tileRendererLayer;
     }
 
@@ -246,45 +226,6 @@ public class MapsforgeMapView implements MapView {
         return firstLevelTileCache;
     }
 
-    void setMapFile(File mapFile, File themeFile) {
-        Layers layers = getLayerManager().getLayers();
-        boolean restoreView = false;
-
-        if (mapLayer != null) {
-            layers.remove(mapLayer);
-            restoreView = true;
-        }
-
-        if (mapFile == null)
-            return;
-
-        if (OPEN_CYCLE_MAP_ONLINE.equals(mapFile))
-            this.mapLayer = createTileDownloadLayer(OpenCycleMap.INSTANCE);
-        else if (OPEN_STREET_MAP_MAPNIK_ONLINE.equals(mapFile))
-            this.mapLayer = createTileDownloadLayer(OpenStreetMapMapnik.INSTANCE);
-        else {
-            TileRendererLayer tileRendererLayer = createTileRendererLayer(mapFile, themeFile);
-            this.mapLayer = tileRendererLayer;
-
-            if (restoreView) {
-                setCenter(getCenter());
-                setZoom(getZoom());
-            } else {
-                org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
-                setCenter(boundingBox.getCenterPoint());
-                zoomToBounds(boundingBox);
-            }
-        }
-        // TODO add fallback if the map file doesn't exist
-        layers.add(0, mapLayer);
-        getLayerManager().redrawLayers();
-
-        if (mapLayer instanceof TileDownloadLayer)
-            ((TileDownloadLayer) mapLayer).start();
-
-        log.info("Using map " + mapFile + " and theme " + themeFile);
-    }
-
     protected void setModel(PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
                             CharacteristicsModel characteristicsModel,
@@ -295,7 +236,7 @@ public class MapsforgeMapView implements MapView {
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
-            private Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
+            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
 
             public void add(List<NavigationPosition> positions) {
                 for (NavigationPosition position : positions) {
@@ -317,7 +258,7 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private Map<PositionPair, Polyline> pairsToLines = new HashMap<PositionPair, Polyline>();
+            private java.util.Map<PositionPair, Polyline> pairsToLines = new HashMap<PositionPair, Polyline>();
             private int distance;
 
             public void add(final List<PositionPair> pairs) {
@@ -407,7 +348,7 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.trackUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private Map<PositionPair, Line> pairsToLines = new HashMap<PositionPair, Line>();
+            private java.util.Map<PositionPair, Line> pairsToLines = new HashMap<PositionPair, Line>();
 
             public void add(List<PositionPair> pairs) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
@@ -432,7 +373,7 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.waypointUpdater = new WaypointUpdater(positionsModel, new WaypointOperation() {
-            private Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
+            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
 
             public void add(List<NavigationPosition> positions) {
                 for (NavigationPosition position : positions) {
@@ -498,6 +439,49 @@ public class MapsforgeMapView implements MapView {
                 }
             }
         });
+    }
+
+    private void handleMapAndThemeUpdate() {
+        Layers layers = getLayerManager().getLayers();
+
+        // remove old map
+        boolean restoreView = false;
+        for(Map map : mapsToLayers.keySet()) {
+            Layer layer = mapsToLayers.get(map);
+            layers.remove(layer);
+            restoreView = true;
+        }
+        mapsToLayers.clear();
+
+        // add new map with a theme
+        Map map = mapManager.getDisplayedMapModel().getItem();
+        Theme theme = mapManager.getAppliedThemeModel().getItem();
+        Layer layer;
+
+        if (map.isRenderer()) {
+            TileRendererLayer tileRendererLayer = createTileRendererLayer(map, theme);
+            layer = tileRendererLayer;
+
+            if (!restoreView) {
+                org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
+                setCenter(boundingBox.getCenterPoint());
+                zoomToBounds(boundingBox);
+            }
+
+        } else {
+            layer = createTileDownloadLayer(map.getTileSource());
+        }
+        mapsToLayers.put(map, layer);
+
+        // add map as the first to be behind all additional layers
+        layers.add(0, layer);
+
+        if (layer instanceof TileDownloadLayer)
+            ((TileDownloadLayer) layer).start();
+
+        getLayerManager().redrawLayers();
+
+        log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
     private BaseRoute lastRoute = null;
