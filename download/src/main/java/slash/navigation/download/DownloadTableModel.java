@@ -25,8 +25,7 @@ import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.SwingUtilities.isEventDispatchThread;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
  * Acts as a {@link TableModel} for the {@link Download}s of the {@link DownloadManager}.
@@ -118,16 +117,5 @@ public class DownloadTableModel extends AbstractTableModel {
                 fireTableRowsDeleted(index, index);
             }
         });
-    }
-
-    private void invokeInAwtEventQueue(final Runnable runnable) {
-        if (!isEventDispatchThread())
-            invokeLater(new Runnable() {
-                public void run() {
-                    runnable.run();
-                }
-            });
-        else
-            runnable.run();
     }
 }
