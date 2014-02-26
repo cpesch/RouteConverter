@@ -20,13 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserCommandEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
+import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.TokenResolver;
 import slash.navigation.common.NavigationPosition;
 
@@ -43,13 +37,11 @@ import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
 import static javax.swing.SwingUtilities.invokeAndWait;
-import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.system.Platform.isLinux;
-import static slash.common.system.Platform.isMac;
-import static slash.common.system.Platform.isWindows;
+import static slash.common.system.Platform.*;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -325,25 +317,16 @@ public class EclipseSWTMapView extends BaseMapView {
         if (webBrowser == null || script.length() == 0)
             return;
 
-        if (!isEventDispatchThread()) {
-            invokeLater(new Runnable() {
-                public void run() {
-                    webBrowser.runInSequence(new Runnable() {
-                        public void run() {
-                            webBrowser.executeJavascript(script);
-                        }
-                    });
-                    logJavaScript(script, null);
-                }
-            });
-        } else {
-            webBrowser.runInSequence(new Runnable() {
-                public void run() {
-                    webBrowser.executeJavascript(script);
-                }
-            });
-            logJavaScript(script, null);
-        }
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                webBrowser.runInSequence(new Runnable() {
+                    public void run() {
+                        webBrowser.executeJavascript(script);
+                    }
+                });
+                logJavaScript(script, null);
+            }
+        });
     }
 
     protected String executeScriptWithResult(final String script) {
