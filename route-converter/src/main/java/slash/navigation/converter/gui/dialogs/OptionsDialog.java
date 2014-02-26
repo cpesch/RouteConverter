@@ -46,8 +46,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.*;
-import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -103,9 +104,12 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{
-                ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA, ITALY, NEDERLANDS, POLAND,
-                RUSSIA, SLOVAKIA, SERBIA, ROOT}));
+        ComboBoxModel localeModel = new DefaultComboBoxModel(new Object[]{
+                ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA,
+                ITALY, NEDERLANDS, POLAND, RUSSIA, SLOVAKIA, SERBIA, ROOT
+        });
+        localeModel.setSelectedItem(Application.getInstance().getLocale());
+        comboBoxLocale.setModel(localeModel);
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -115,7 +119,6 @@ public class OptionsDialog extends SimpleDialog {
                 Application.getInstance().setLocale(locale);
             }
         });
-        comboBoxLocale.setSelectedItem(Application.getInstance().getLocale());
 
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
@@ -155,11 +158,11 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        List<Object> travelModes = new ArrayList<Object>();
-        travelModes.add(Bicycling);
-        travelModes.add(Driving);
-        travelModes.add(Walking);
-        comboboxTravelMode.setModel(new DefaultComboBoxModel(travelModes.toArray()));
+        ComboBoxModel travelModeModel = new DefaultComboBoxModel(new Object[]{
+                Bicycling, Driving, Walking
+        });
+        travelModeModel.setSelectedItem(r.getTravelModePreference());
+        comboboxTravelMode.setModel(travelModeModel);
         comboboxTravelMode.setRenderer(new TravelModeListCellRenderer());
         comboboxTravelMode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -169,7 +172,6 @@ public class OptionsDialog extends SimpleDialog {
                 r.setTravelMode(travelMode);
             }
         });
-        comboboxTravelMode.setSelectedItem(r.getTravelModePreference());
 
         new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, getPreferences(), AVOID_HIGHWAYS_PREFERENCE, true);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
@@ -184,9 +186,11 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        comboboxNumberPattern.setModel(new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel numberPatternModel = new DefaultComboBoxModel(new Object[]{
                 Description_Only, Number_Only, Number_Directly_Followed_By_Description, Number_Space_Then_Description
-        }));
+        });
+        numberPatternModel.setSelectedItem(r.getNumberPatternPreference());
+        comboboxNumberPattern.setModel(numberPatternModel);
         comboboxNumberPattern.setRenderer(new NumberPatternListCellRenderer());
         comboboxNumberPattern.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -196,12 +200,12 @@ public class OptionsDialog extends SimpleDialog {
                 r.setNumberPatternPreference(numberPattern);
             }
         });
-        comboboxNumberPattern.setSelectedItem(r.getNumberPatternPreference());
 
-        DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel elevationServiceModel = new DefaultComboBoxModel();
         for (ElevationService service : r.getCompletePositionService().getElevationServices())
-            comboBoxModel.addElement(service);
-        comboBoxElevationService.setModel(comboBoxModel);
+            elevationServiceModel.addElement(service);
+        elevationServiceModel.setSelectedItem(r.getCompletePositionService().getElevationService());
+        comboBoxElevationService.setModel(elevationServiceModel);
         comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -211,11 +215,12 @@ public class OptionsDialog extends SimpleDialog {
                 r.getCompletePositionService().setElevationService(service);
             }
         });
-        comboBoxElevationService.setSelectedItem(r.getCompletePositionService().getElevationService());
 
-        comboBoxUnitSystem.setModel(new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel unitSystemModel = new DefaultComboBoxModel(new Object[]{
                 Metric, Statute, Nautic
-        }));
+        });
+        unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
+        comboBoxUnitSystem.setModel(unitSystemModel);
         comboBoxUnitSystem.setRenderer(new UnitSystemListCellRenderer());
         comboBoxUnitSystem.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -225,11 +230,12 @@ public class OptionsDialog extends SimpleDialog {
                 r.getUnitSystemModel().setUnitSystem(unitSystem);
             }
         });
-        comboBoxUnitSystem.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
 
-        comboBoxDegreeFormat.setModel(new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel degreeFormatModel = new DefaultComboBoxModel(new Object[]{
                 Degrees, Degrees_Minutes, Degrees_Minutes_Seconds
-        }));
+        });
+        degreeFormatModel.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
+        comboBoxDegreeFormat.setModel(degreeFormatModel);
         comboBoxDegreeFormat.setRenderer(new DegreeFormatListCellRenderer());
         comboBoxDegreeFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -239,9 +245,10 @@ public class OptionsDialog extends SimpleDialog {
                 r.getUnitSystemModel().setDegreeFormat(degreeFormat);
             }
         });
-        comboBoxDegreeFormat.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
 
-        comboBoxTimeZone.setModel(new DefaultComboBoxModel(getTimeZoneIds()));
+        ComboBoxModel timeZoneModel = new DefaultComboBoxModel(getTimeZoneIds());
+        timeZoneModel.setSelectedItem(r.getTimeZonePreference());
+        comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
@@ -250,7 +257,6 @@ public class OptionsDialog extends SimpleDialog {
                 r.setTimeZonePreference(timeZoneId);
             }
         });
-        comboBoxTimeZone.setSelectedItem(r.getTimeZonePreference());
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
