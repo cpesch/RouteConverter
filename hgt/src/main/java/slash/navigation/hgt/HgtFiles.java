@@ -34,6 +34,8 @@ import java.util.*;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Extract;
 
@@ -73,15 +75,9 @@ public class HgtFiles implements ElevationService {
         return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
     }
 
-    java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE + getName(),
-                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
-        java.io.File directory = new java.io.File(directoryName);
-        if (!directory.exists()) {
-            if (!directory.mkdirs())
-                throw new IllegalArgumentException("Cannot create '" + getName() + "' directory '" + directory + "'");
-        }
-        return directory;
+    private java.io.File getDirectory() {
+        String directoryName = preferences.get(DIRECTORY_PREFERENCE, getApplicationDirectory(directory).getAbsolutePath());
+        return ensureDirectory(directoryName);
     }
 
     String createFileKey(double longitude, double latitude) {

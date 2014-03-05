@@ -22,7 +22,6 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Platform;
 import slash.common.system.Version;
@@ -92,7 +91,7 @@ import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.UPDATE;
-import static slash.common.io.Externalization.getTempDirectory;
+import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -460,7 +459,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public File getUploadRoutePreference() {
         File path = new File(preferences.get(UPLOAD_ROUTE_PREFERENCE, ""));
-        return Files.findExistingPath(path);
+        return findExistingPath(path);
     }
 
     public void setUploadRoutePreference(File path) {
@@ -671,7 +670,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private File getDownloadQueueFile() {
-        return new File(getTempDirectory(), "download-queue.xml");
+        return new File(getTemporaryDirectory(), "download-queue.xml");
     }
 
     private BatchPositionAugmenter batchPositionAugmenter = null;
