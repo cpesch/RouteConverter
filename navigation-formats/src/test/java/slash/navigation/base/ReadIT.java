@@ -33,17 +33,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.collectFiles;
-import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.assertNotNull;
-import static slash.navigation.base.NavigationTestCase.assertTrue;
+import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
@@ -98,7 +95,7 @@ public class ReadIT {
 
     @AfterClass
     public static void tearDown() throws IOException {
-        PrintStream out = new PrintStream(new FileOutputStream(File.createTempFile("comments", ".csv")));
+        PrintStream out = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
         String[] strings = comments.toArray(new String[comments.size()]);
         sort(strings);
         for (String string : strings) {

@@ -34,6 +34,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
 
@@ -262,7 +263,7 @@ public class Files {
     }
 
     public static File writeToTempFile(byte[] bytes) throws IOException {
-        File tempFile = createTempFile("catalog", ".xml");
+        File tempFile = createTempFile("catalog", ".xml", getTemporaryDirectory());
         tempFile.deleteOnExit();
         OutputStream outputStream = new FileOutputStream(tempFile);
         try {

@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Vector;
 
+import static java.io.File.createTempFile;
+import static slash.common.io.Directories.getTemporaryDirectory;
+
 /**
  * Fallback implementation of a FileSystemView.
  * <p/>
@@ -133,7 +136,7 @@ class RestrictedFileSystemView extends FileSystemView {
     public File getDefaultDirectory() {
         if (defaultDirectory == null) {
             try {
-                File tempFile = File.createTempFile("filesystemview", "restricted");
+                File tempFile = createTempFile("filesystemview", "restricted", getTemporaryDirectory());
                 tempFile.deleteOnExit();
                 defaultDirectory = tempFile.getParentFile();
             } catch (IOException e) {
