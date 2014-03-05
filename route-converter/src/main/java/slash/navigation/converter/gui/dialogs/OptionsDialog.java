@@ -28,7 +28,7 @@ import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.DialogAction;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.renderer.*;
