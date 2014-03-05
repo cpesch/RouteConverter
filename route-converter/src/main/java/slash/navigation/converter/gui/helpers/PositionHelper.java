@@ -63,10 +63,10 @@ public class PositionHelper {
         double distanceInMeters = unitSystem.valueToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
             return format("%d %s", round(distanceInMeters), unitSystem.getElevationName());
-        double distanceInKilometers = unitSystem.distanceToUnit(distance / 1000.0);
+        double distanceInKiloMeters = unitSystem.distanceToUnit(distance / 1000.0);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
-            return format("%s %s", roundFraction(distanceInKilometers, 1), unitSystem.getDistanceName());
-        return format("%d %s", round(distanceInKilometers), unitSystem.getDistanceName());
+            return format("%s %s", roundFraction(distanceInKiloMeters, 1), unitSystem.getDistanceName());
+        return format("%d %s", round(distanceInKiloMeters), unitSystem.getDistanceName());
     }
 
     public static String formatElevation(Double elevation) {

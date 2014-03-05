@@ -40,8 +40,8 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.navigation.common.UnitConversion.kilometerToNauticMiles;
-import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
+import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
@@ -212,7 +212,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             if (speedStr != null) {
                 Double miles = parseDouble(speedStr);
                 if (miles != null)
-                    speed = nauticMilesToKilometer(miles);
+                    speed = nauticMilesToKiloMeter(miles);
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
@@ -266,7 +266,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             }
             Double speed = parseDouble(speedStr);
             if (miles && speed != null)
-                speed = nauticMilesToKilometer(speed);
+                speed = nauticMilesToKiloMeter(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
         }
 
@@ -334,7 +334,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
-        String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToNauticMiles(position.getSpeed())) : "";
+        String speedKnots = position.getSpeed() != null ? formatSpeed(kiloMeterToNauticMiles(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +

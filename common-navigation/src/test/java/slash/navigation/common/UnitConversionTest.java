@@ -35,7 +35,7 @@ import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
 import static slash.navigation.common.UnitConversion.ddmmss2longitude;
 import static slash.navigation.common.UnitConversion.feetToMeters;
-import static slash.navigation.common.UnitConversion.kilometerToStatuteMiles;
+import static slash.navigation.common.UnitConversion.kiloMeterToStatuteMiles;
 import static slash.navigation.common.UnitConversion.kmhToMs;
 import static slash.navigation.common.UnitConversion.latitude2ddmm;
 import static slash.navigation.common.UnitConversion.latitude2ddmmss;
@@ -53,12 +53,12 @@ public class UnitConversionTest {
     }
 
     @Test
-    public void testMilesToKilometers() {
-        assertDoubleEquals(6.2137119223733395, kilometerToStatuteMiles(10));
+    public void testMilesToKiloMeters() {
+        assertDoubleEquals(6.2137119223733395, kiloMeterToStatuteMiles(10));
     }
 
     @Test
-    public void testMetersPerSecondToKilometersPerHour() {
+    public void testMetersPerSecondToKiloMetersPerHour() {
         assertDoubleEquals(3.6, msToKmh(1.0));
         assertDoubleEquals(20.0, kmhToMs(72.0));
     }

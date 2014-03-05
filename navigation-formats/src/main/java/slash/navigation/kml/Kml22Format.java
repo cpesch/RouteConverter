@@ -568,7 +568,7 @@ public class Kml22Format extends KmlFormat {
         marks.setOpen(FALSE);
 
         double currentDistance = 0, previousDistance = 0;
-        int currentKilometer = 1;
+        int currentKiloMeter = 1;
         List<KmlPosition> positions = route.getPositions();
         for (int i = startIndex + 1; i < endIndex; i++) {
             KmlPosition previousPosition = positions.get(i - 1);
@@ -599,7 +599,7 @@ public class Kml22Format extends KmlFormat {
                     intermediate.setLatitude(toDegrees(latitude2));
                     intermediate.setLongitude(toDegrees(longitude2));
 
-                    PlacemarkType placeMark = createMark(currentKilometer++, intermediate.getLongitude(), intermediate.getLatitude());
+                    PlacemarkType placeMark = createMark(currentKiloMeter++, intermediate.getLongitude(), intermediate.getLatitude());
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));
 
                     remainingDistance = METERS_BETWEEN_MARKS;
@@ -612,10 +612,10 @@ public class Kml22Format extends KmlFormat {
         return marks;
     }
 
-    private PlacemarkType createMark(int kilometer, double longitude, double latitude) {
+    private PlacemarkType createMark(int kiloMeter, double longitude, double latitude) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placeMark = objectFactory.createPlacemarkType();
-        placeMark.setName(kilometer + ". Km");
+        placeMark.setName(kiloMeter + ". Km");
         placeMark.setVisibility(FALSE);
         PointType point = objectFactory.createPointType();
         point.getCoordinates().add(formatPositionAsString(longitude) + "," + formatPositionAsString(latitude) + ",0");

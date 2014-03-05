@@ -78,13 +78,13 @@ public class Gpx11Format extends GpxFormat {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
             return;
 
-        boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond = gpxType.getCreator() != null &&
+        boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond = gpxType.getCreator() != null &&
                 ("Whatever".equals(gpxType.getCreator()));
-        GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
+        GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
         if (wayPointsAsRoute != null)
             context.appendRoute(wayPointsAsRoute);
-        context.appendRoutes(extractRoutes(gpxType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
-        context.appendRoutes(extractTracks(gpxType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
+        context.appendRoutes(extractRoutes(gpxType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
+        context.appendRoutes(extractTracks(gpxType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
@@ -92,19 +92,19 @@ public class Gpx11Format extends GpxFormat {
         process(gpxType, context);
     }
 
-    private List<GpxRoute> extractRoutes(GpxType gpxType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxRoute> extractRoutes(GpxType gpxType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
 
         for (RteType rteType : gpxType.getRte()) {
             String name = rteType.getName();
             String desc = rteType.getDesc();
             List<String> descriptions = asDescription(desc);
-            List<GpxPosition> positions = extractRoute(rteType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
+            List<GpxPosition> positions = extractRoute(rteType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
             result.add(new GpxRoute(this, Route, name, descriptions, positions, gpxType, rteType));
 
             // Garmin Extensions v3
             if (rteType.getExtensions() != null && rteType.getExtensions().getAny().size() > 0) {
-                List<GpxPosition> extendedPositions = extractRouteWithGarminExtensions(rteType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
+                List<GpxPosition> extendedPositions = extractRouteWithGarminExtensions(rteType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
                 result.add(new GpxRoute(this, Track, name, descriptions, extendedPositions, gpxType, rteType));
             }
         }
@@ -112,43 +112,43 @@ public class Gpx11Format extends GpxFormat {
         return result;
     }
 
-    private GpxRoute extractWayPoints(GpxType gpxType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private GpxRoute extractWayPoints(GpxType gpxType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         String name = gpxType.getMetadata() != null ? gpxType.getMetadata().getName() : null;
         String desc = gpxType.getMetadata() != null ? gpxType.getMetadata().getDesc() : null;
         List<String> descriptions = asDescription(desc);
-        List<GpxPosition> positions = extractWayPoints(gpxType.getWpt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
+        List<GpxPosition> positions = extractWayPoints(gpxType.getWpt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
         return positions.size() == 0 ? null : new GpxRoute(this, Waypoints, name, descriptions, positions, gpxType);
     }
 
-    private List<GpxRoute> extractTracks(GpxType gpxType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxRoute> extractTracks(GpxType gpxType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
 
         for (TrkType trkType : gpxType.getTrk()) {
             String name = trkType.getName();
             String desc = trkType.getDesc();
             List<String> descriptions = asDescription(desc);
-            List<GpxPosition> positions = extractTrack(trkType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
+            List<GpxPosition> positions = extractTrack(trkType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
             result.add(new GpxRoute(this, Track, name, descriptions, positions, gpxType, trkType));
         }
 
         return result;
     }
 
-    private List<GpxPosition> extractRoute(RteType rteType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxPosition> extractRoute(RteType rteType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
             }
         }
         return positions;
     }
 
-    private List<GpxPosition> extractRouteWithGarminExtensions(RteType rteType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxPosition> extractRouteWithGarminExtensions(RteType rteType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
 
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
@@ -169,27 +169,27 @@ public class Gpx11Format extends GpxFormat {
         return positions;
     }
 
-    private List<GpxPosition> extractWayPoints(List<WptType> wptTypes, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxPosition> extractWayPoints(List<WptType> wptTypes, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (WptType wptType : wptTypes) {
-            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
         }
         return positions;
     }
 
-    private List<GpxPosition> extractTrack(TrkType trkType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private List<GpxPosition> extractTrack(TrkType trkType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
                 }
             }
         }
         return positions;
     }
 
-    private Double getSpeed(WptType wptType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+    private Double getSpeed(WptType wptType, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         Double result = null;
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
@@ -203,7 +203,7 @@ public class Gpx11Format extends GpxFormat {
                         if(firstChild != null && "speed".equals(firstChild.getLocalName())) {
                             result = parseDouble(element.getTextContent());
                             // everything is converted from m/s to Km/h except for the exceptional case
-                            if (!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
+                            if (!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
                                result = asKmh(result);
                         }
 
@@ -211,7 +211,7 @@ public class Gpx11Format extends GpxFormat {
                     } else if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // everything is converted from m/s to Km/h except for the exceptional case
-                        if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
+                        if(!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
                             result = asKmh(result);
                     }
                 }
