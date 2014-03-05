@@ -108,8 +108,11 @@ public class DownloadManager {
 
     public Download queueForDownload(Download download) {
         Download queued = getModel().getDownload(download.getUrl());
-        if(queued != null)
+        if(queued != null) {
+            if(Failed.equals(queued.getState()))
+                startExecutor(download);
             return queued;
+        }
 
         if(Extract.equals(download.getAction()) && !download.getTarget().isDirectory())
             throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getTarget()));

@@ -40,6 +40,8 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Copy;
@@ -116,14 +118,8 @@ public class BRouter implements RoutingService {
     }
 
     private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE,
-                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
-        java.io.File directory = new java.io.File(directoryName);
-        if (!directory.exists()) {
-            if (!directory.mkdirs())
-                throw new IllegalArgumentException(format("Cannot create '%s' directory '%s'", getName(), directory));
-        }
-        return directory;
+        String directoryName = preferences.get(DIRECTORY_PREFERENCE, getApplicationDirectory(directory).getAbsolutePath());
+        return ensureDirectory(directoryName);
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {

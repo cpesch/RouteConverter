@@ -27,7 +27,7 @@ package slash.navigation.download.datasources;
  */
 
 public class Fragment extends File {
-    private String key;
+    private final String key;
 
     public Fragment(String key, String uri, Long size, String checksum) {
         super(uri, size, checksum);

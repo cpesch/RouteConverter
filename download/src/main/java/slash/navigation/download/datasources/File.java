@@ -27,9 +27,9 @@ package slash.navigation.download.datasources;
  */
 
 public class File {
-    private String uri;
-    private Long size;
-    private String checksum;
+    private final String uri;
+    private final Long size;
+    private final String checksum;
 
     public File(String uri, Long size, String checksum) {
         this.uri = uri;

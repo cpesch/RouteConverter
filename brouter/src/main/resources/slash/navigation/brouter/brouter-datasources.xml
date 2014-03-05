@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<datasources xmlns="http://www.routeconverter.com/datasources">
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="BRouter" baseUrl="http://h2096617.stratoserver.net/brouter/segments2/" directory="brouter">
         <file uri="E0_N10.rd5" size="2236187" checksum="9DE01AE68A11F500E3A3C8543177820231EFE895"/>
         <file uri="E0_N15.rd5" size="1390045" checksum="E0A711B9B9CF64929672234D7BD01EFFDE15C061"/>

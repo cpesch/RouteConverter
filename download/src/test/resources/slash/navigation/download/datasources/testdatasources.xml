@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datasources xmlns="http://www.routeconverter.com/datasources">
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="1" baseUrl="http://local1/1/" directory="dir1">
         <fragment key="a" uri="x/y/z.data" size="1" checksum="a"/>
         <file uri="x/y/z.data" size="1" checksum="x"/>
