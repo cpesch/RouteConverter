@@ -110,10 +110,10 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return msToKmh(metersPerSecond);
     }
 
-    protected Double asMs(Double kilometersPerHour) {
-        if (kilometersPerHour == null)
+    protected Double asMs(Double kiloMetersPerHour) {
+        if (kiloMetersPerHour == null)
             return null;
-        return kmhToMs(kilometersPerHour);
+        return kmhToMs(kiloMetersPerHour);
     }
 
     protected boolean isWriteAccuracy() {

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 
 public class NmeaFormatTest {
     private NmeaFormat format = new NmeaFormat();
@@ -240,7 +240,7 @@ public class NmeaFormatTest {
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getDescription());
-        assertDoubleEquals(nauticMilesToKilometer(14.32), position.getSpeed());
+        assertDoubleEquals(nauticMilesToKiloMeter(14.32), position.getSpeed());
     }
 
     @Test
