@@ -208,6 +208,9 @@ public class DownloadExecutor implements Runnable {
                 ensureDirectory(download.getTarget().getParent());
                 new Copier(modelUpdater).copyAndClose(new FileInputStream(download.getTempFile()), new FileOutputStream(download.getTarget()), 0, download.getTempFile().length());
                 break;
+            case Flatten:
+                new Extractor(modelUpdater).flatten(download.getTempFile(), download.getTarget());
+                break;
             case Extract:
                 new Extractor(modelUpdater).extract(download.getTempFile(), download.getTarget());
                 break;

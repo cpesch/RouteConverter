@@ -28,5 +28,6 @@ package slash.navigation.download;
 
 public enum Action {
     Copy,
+    Flatten,
     Extract
 }

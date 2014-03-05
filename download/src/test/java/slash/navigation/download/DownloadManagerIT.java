@@ -41,6 +41,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
 import static slash.navigation.download.State.ChecksumError;
 import static slash.navigation.download.State.Downloading;
@@ -70,10 +71,20 @@ public class DownloadManagerIT {
         assertEquals(string.length(), file.length());
     }
 
+    private void delete(String path) {
+        File toDelete = new File(target.getParentFile(), path);
+        if (toDelete.exists())
+            assertTrue(toDelete.delete());
+    }
+
     @Before
     public void setUp() throws IOException {
         manager = new DownloadManager();
         target = createTempFile("local", ".txt");
+        delete("first/second/447bytes.txt");
+        delete("first/second");
+        delete("first");
+        delete("447bytes.txt");
     }
 
     @After
@@ -256,7 +267,8 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null, null, Flatten, target.getParentFile());
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null,
+                    Flatten, target.getParentFile());
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 
@@ -274,10 +286,7 @@ public class DownloadManagerIT {
 
     @Test
     public void testDownloadAndExtract() throws IOException {
-        // using just the directory from target as an extraction target
-        File extracted = new File(target.getParentFile(), "447bytes.txt");
-        if (extracted.exists())
-            assertTrue(extracted.delete());
+        File extracted = new File(target.getParentFile(), "first/second/447bytes.txt");
 
         try {
             Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null, null, Extract, target.getParentFile());

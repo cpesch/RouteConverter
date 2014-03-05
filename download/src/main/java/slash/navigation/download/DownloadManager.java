@@ -38,6 +38,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
 import static slash.navigation.download.State.*;
 
 /**
@@ -115,7 +116,7 @@ public class DownloadManager {
             return queued;
         }
 
-        if(Extract.equals(download.getAction()) && !download.getTarget().isDirectory())
+        if((Flatten.equals(download.getAction()) || Extract.equals(download.getAction())) && !download.getTarget().isDirectory())
             throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getTarget()));
         startExecutor(download);
         return download;

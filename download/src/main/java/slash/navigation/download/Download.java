@@ -78,6 +78,7 @@ public class Download {
             switch (action) {
                 case Copy:
                     return createTempFile(removeExtension(target.getName()) + "-", getExtension(target), getTemporaryDirectory());
+                case Flatten:
                 case Extract:
                     return createTempFile(target.getName() + "-", ".zip", getTemporaryDirectory());
                 default:
