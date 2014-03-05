@@ -42,11 +42,6 @@ public class ThemesTableModel extends AbstractTableModel {
         return themes;
     }
 
-    public void setThemes(List<Theme> themes) {
-        this.themes = themes;
-        fireTableDataChanged();
-    }
-
     public int getRowCount() {
         return themes.size();
     }
@@ -109,6 +104,16 @@ public class ThemesTableModel extends AbstractTableModel {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 fireTableRowsDeleted(index, index);
+            }
+        });
+    }
+
+    public void clear() {
+        this.themes = new ArrayList<Theme>();
+
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                fireTableDataChanged();
             }
         });
     }

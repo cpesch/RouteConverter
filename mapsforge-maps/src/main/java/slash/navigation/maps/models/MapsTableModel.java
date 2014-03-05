@@ -44,11 +44,6 @@ public class MapsTableModel extends AbstractTableModel {
         return maps;
     }
 
-    public void setMaps(List<Map> maps) {
-        this.maps = maps;
-        fireTableDataChanged();
-    }
-
     public int getRowCount() {
         return maps.size();
     }
@@ -111,6 +106,16 @@ public class MapsTableModel extends AbstractTableModel {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 fireTableRowsDeleted(index, index);
+            }
+        });
+    }
+
+    public void clear() {
+        this.maps = new ArrayList<Map>();
+
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                fireTableDataChanged();
             }
         });
     }

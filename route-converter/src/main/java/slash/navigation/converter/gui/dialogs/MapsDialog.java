@@ -40,10 +40,16 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.text.MessageFormat.format;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
@@ -62,6 +68,8 @@ public class MapsDialog extends SimpleDialog {
     private JButton buttonDownload;
     private JButton buttonClose;
 
+    private ExecutorService executor = newSingleThreadExecutor();
+
     public MapsDialog() {
         super(RouteConverter.getInstance().getFrame(), "maps");
         setTitle(RouteConverter.getBundle().getString("maps-title"));
@@ -70,11 +78,11 @@ public class MapsDialog extends SimpleDialog {
 
         tableAvailableMaps.setModel(getMapManager().getMapsModel());
         tableAvailableMaps.setDefaultRenderer(Object.class, new MapsTableCellRenderer());
-        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "offline");
+        TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description", "offline");
         TableColumnModel mapsColumns = tableAvailableMaps.getColumnModel();
         for (int i = 0; i < mapsColumns.getColumnCount(); i++) {
             TableColumn column = mapsColumns.getColumn(i);
-            column.setHeaderRenderer(headerRenderer);
+            column.setHeaderRenderer(availableMapsHeaderRenderer);
             if (i == 1) {
                 column.setPreferredWidth(36);
                 column.setMaxWidth(36);
@@ -89,10 +97,11 @@ public class MapsDialog extends SimpleDialog {
 
         tableAvailableThemes.setModel(getMapManager().getThemesModel());
         tableAvailableThemes.setDefaultRenderer(Object.class, new ThemesTableCellRenderer());
+        TableCellRenderer availableThemesHeaderRenderer = new SimpleHeaderRenderer("description");
         TableColumnModel themesColumns = tableAvailableThemes.getColumnModel();
         for (int i = 0; i < themesColumns.getColumnCount(); i++) {
             TableColumn column = themesColumns.getColumn(i);
-            column.setHeaderRenderer(headerRenderer);
+            column.setHeaderRenderer(availableThemesHeaderRenderer);
         }
 
         buttonApply.addActionListener(new DialogAction(this) {
@@ -103,10 +112,11 @@ public class MapsDialog extends SimpleDialog {
 
         tableResources.setModel(getMapManager().getResourcesModel());
         tableResources.setDefaultRenderer(Object.class, new ResourcesTableCellRenderer());
+        TableCellRenderer resourcesHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
         TableColumnModel resourcesColumns = tableResources.getColumnModel();
         for (int i = 0; i < resourcesColumns.getColumnCount(); i++) {
             TableColumn column = resourcesColumns.getColumn(i);
-            column.setHeaderRenderer(headerRenderer);
+            column.setHeaderRenderer(resourcesHeaderRenderer);
         }
 
 
@@ -153,12 +163,28 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void download() {
-        MapManager mapManager = getMapManager();
-        int[] selectedRows = tableResources.getSelectedRows();
-        // TODO fix me
+        final int[] selectedRows = tableResources.getSelectedRows();
+        executor.execute(new Runnable() {
+            public void run() {
+                for (int selectedRow : selectedRows) {
+                    try {
+                        getMapManager().queueForDownload(getMapManager().getResourcesModel().getResource(selectedRow));
+                    } catch (final IOException e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                showMessageDialog(null,
+                                        format(RouteConverter.getBundle().getString("scan-error"), e.getMessage()), "Error",
+                                        ERROR_MESSAGE);
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
 
     private void close() {
+        executor.shutdownNow();
         dispose();
     }
 

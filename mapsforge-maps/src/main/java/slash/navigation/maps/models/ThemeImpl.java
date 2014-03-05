@@ -28,7 +28,7 @@ import slash.navigation.maps.Theme;
  * @author Christian Pesch
  */
 
-public class ThemeImpl extends ResourceImpl implements Theme {
+public class ThemeImpl extends LocaleResourceImpl implements Theme {
     private final XmlRenderTheme xmlRenderTheme;
 
     public ThemeImpl(String description, String url, XmlRenderTheme xmlRenderTheme) {

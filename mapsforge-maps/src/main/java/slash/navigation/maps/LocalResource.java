@@ -20,12 +20,12 @@
 package slash.navigation.maps;
 
 /**
- * Represents a mapsforge resource.
+ * Represents a local resource.
  *
  * @author Christian Pesch
  */
 
-public interface Resource {
+public interface LocalResource {
     String getDescription();
     String getUrl();
 }

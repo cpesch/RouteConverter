@@ -19,34 +19,28 @@
 */
 package slash.navigation.maps.models;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
-import slash.navigation.maps.Map;
-
-import java.io.File;
+import slash.navigation.maps.LocalResource;
 
 /**
- * A {@link Map} that is rendered from a data set.
+ * The implementation of a {@link LocalResource}.
  *
  * @author Christian Pesch
  */
 
-public class RendererMap extends LocaleResourceImpl implements Map {
-    private final File file;
+abstract class LocaleResourceImpl implements LocalResource {
+    private final String description;
+    private final String url;
 
-    public RendererMap(String description, String url, File file) {
-        super(description, url);
-        this.file = file;
+    public LocaleResourceImpl(String description, String url) {
+        this.description = description;
+        this.url = url;
     }
 
-    public File getFile() {
-        return file;
+    public String getDescription() {
+        return description;
     }
 
-    public AbstractTileSource getTileSource() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isRenderer() {
-        return true;
+    public String getUrl() {
+        return url;
     }
 }

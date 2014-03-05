@@ -19,28 +19,45 @@
 */
 package slash.navigation.maps.models;
 
-import slash.navigation.maps.Resource;
+import slash.navigation.download.datasources.File;
+import slash.navigation.maps.RemoteResource;
 
 /**
- * A {@link Resource} that is used when rendering a {@link RendererMap}.
+ * The implementation of a {@link RemoteResource}.
  *
  * @author Christian Pesch
  */
 
-abstract class ResourceImpl implements Resource {
-    private final String description;
-    private final String url;
+public class RemoteResourceImpl implements RemoteResource {
+    private final String datasource;
+    private final String baseUrl;
+    private final String subDirectory;
+    private final File file;
 
-    protected ResourceImpl(String description, String url) {
-        this.description = description;
-        this.url = url;
+    public RemoteResourceImpl(String datasource, String baseUrl, String subDirectory, File file) {
+        this.datasource = datasource;
+        this.baseUrl = baseUrl;
+        this.subDirectory = subDirectory;
+        this.file = file;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDataSource() {
+        return datasource;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public String getSubDirectory() {
+        return subDirectory;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public String getUrl() {
-        return url;
+        return baseUrl + file.getUri();
     }
 }

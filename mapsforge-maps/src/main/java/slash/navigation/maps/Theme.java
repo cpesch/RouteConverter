@@ -26,6 +26,6 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
  *
  * @author Christian Pesch
  */
-public interface Theme extends Resource {
+public interface Theme extends LocalResource {
     XmlRenderTheme getXmlRenderTheme();
 }

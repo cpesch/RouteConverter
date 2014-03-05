@@ -30,7 +30,7 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-public class DownloadMap extends ResourceImpl implements Map {
+public class DownloadMap extends LocaleResourceImpl implements Map {
     private final AbstractTileSource tileSource;
 
     public DownloadMap(String description, String url, AbstractTileSource tileSource) {

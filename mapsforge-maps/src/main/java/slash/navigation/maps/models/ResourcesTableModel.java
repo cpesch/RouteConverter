@@ -21,7 +21,7 @@ package slash.navigation.maps.models;
 
 import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.Resource;
+import slash.navigation.maps.RemoteResource;
 import slash.navigation.maps.Theme;
 
 import javax.swing.table.AbstractTableModel;
@@ -38,13 +38,13 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class ResourcesTableModel extends AbstractTableModel {
-    private List<Resource> resources = new ArrayList<Resource>();
+    private List<RemoteResource> resources = new ArrayList<RemoteResource>();
 
-    public List<Resource> getResources() {
+    public List<RemoteResource> getResources() {
         return resources;
     }
 
-    public void setResources(List<Resource> resources) {
+    public void setResources(List<RemoteResource> resources) {
         this.resources = resources;
         fireTableDataChanged();
     }
@@ -54,18 +54,18 @@ public class ResourcesTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 1;
+        return 3;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         return getResource(rowIndex);
     }
 
-    public Resource getResource(int rowIndex) {
+    public RemoteResource getResource(int rowIndex) {
         return resources.get(rowIndex);
     }
 
-    private void addResource(Resource resource) {
+    private void addResource(RemoteResource resource) {
         if (!resources.add(resource))
             throw new IllegalArgumentException("Resource " + resource + " not added to " + resources);
 
@@ -80,7 +80,7 @@ public class ResourcesTableModel extends AbstractTableModel {
         });
     }
 
-    void updateResource(Resource resource) {
+    void updateResource(RemoteResource resource) {
         final int index = resources.indexOf(resource);
         if (index == -1)
             throw new IllegalArgumentException("Resource " + resource + " not found in " + resources);
@@ -92,7 +92,7 @@ public class ResourcesTableModel extends AbstractTableModel {
         });
     }
 
-    public void addOrUpdateResource(Resource resource) {
+    public void addOrUpdateResource(RemoteResource resource) {
         int index = resources.indexOf(resource);
         if (index == -1)
             addResource(resource);
@@ -100,7 +100,7 @@ public class ResourcesTableModel extends AbstractTableModel {
             updateResource(resource);
     }
 
-    private void removeResource(Resource resource) {
+    private void removeResource(RemoteResource resource) {
         final int index = resources.indexOf(resource);
         if (index == -1)
             throw new IllegalArgumentException("Resource " + resource + " not found in " + resources);

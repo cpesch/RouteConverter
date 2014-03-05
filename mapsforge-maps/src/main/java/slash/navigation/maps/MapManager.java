@@ -22,6 +22,7 @@ package slash.navigation.maps;
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.maps.models.*;
 
@@ -31,10 +32,14 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.String.format;
+import static java.io.File.separator;
+import static java.util.Arrays.asList;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
+import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.download.Action.Extract;
 
 /**
  * Manages {@link Map}s and {@link Theme}s
@@ -56,6 +61,7 @@ public class MapManager {
     private MapsTableModel mapsModel = new MapsTableModel();
     private ThemesTableModel themesModel = new ThemesTableModel();
     private ResourcesTableModel resourcesModel = new ResourcesTableModel();
+    private MapFilesService mapFilesService;
 
     private ItemModel<Map> displayedMapModel = new ItemModel<Map>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
         protected Map stringToItem(String url) {
@@ -109,30 +115,20 @@ public class MapManager {
         return resourcesModel;
     }
 
-    private java.io.File getDirectory(String preferenceName, String defaultDirectoryName) {
-        String directoryName = preferences.get(preferenceName,
-                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + defaultDirectoryName).getAbsolutePath());
-        java.io.File directory = new java.io.File(directoryName);
-        if (!directory.exists()) {
-            if (!directory.mkdirs())
-                throw new IllegalArgumentException(format("Cannot create '%s' directory '%s'", defaultDirectoryName, directory));
-        }
-        return directory;
+    private String getMapsDirectory() {
+        return preferences.get(MAP_DIRECTORY_PREFERENCE, getApplicationDirectory("maps").getAbsolutePath());
     }
 
-    private java.io.File getMapsDirectory() {
-        return getDirectory(MAP_DIRECTORY_PREFERENCE, "maps");
-    }
-
-    private java.io.File getThemesDirectory() {
-        return getDirectory(THEME_DIRECTORY_PREFERENCE, "themes");
+    private String getThemesDirectory() {
+        return preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath());
     }
 
     public void scanDirectories() throws IOException {
+        mapsModel.clear();
         mapsModel.addOrUpdateMap(new DownloadMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
         mapsModel.addOrUpdateMap(new DownloadMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
-        File mapsDirectory = getMapsDirectory();
+        File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory);
@@ -140,9 +136,10 @@ public class MapManager {
         for (File file : mapFilesArray)
             mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file));
 
+        themesModel.clear();
         themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
 
-        File themesDirectory = getThemesDirectory();
+        File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
         log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory);
@@ -158,17 +155,34 @@ public class MapManager {
             filePath = filePath.substring(rootPath.length());
         else
             filePath = file.getName();
-        if (filePath.startsWith(File.separator))
+        if (filePath.startsWith(separator))
             filePath = filePath.substring(1);
         return filePath;
     }
 
     public void initialize() {
-        MapFilesService mapFilesService = new MapFilesService(downloadManager);
+        mapFilesService = new MapFilesService(downloadManager);
         for (MapFiles mapFiles : mapFilesService.getMapFiles()) {
-            List<Resource> resources = mapFiles.getResources();
-            for (Resource resource : resources)
+            List<RemoteResource> resources = mapFiles.getResources();
+            for (RemoteResource resource : resources)
                 resourcesModel.addOrUpdateResource(resource);
         }
+    }
+
+    public void queueForDownload(RemoteResource resource) throws IOException {
+        slash.navigation.download.datasources.File file = resource.getFile();
+        Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
+                file.getSize(), file.getChecksum(), Extract, getDirectory(resource));
+        downloadManager.waitForCompletion(asList(download));
+        scanDirectories();
+    }
+
+    private File getDirectory(RemoteResource resource) {
+        String subDirectory = resource.getSubDirectory();
+        if(subDirectory.startsWith("maps/"))
+            return ensureDirectory(getMapsDirectory() + separator + resource.getSubDirectory().substring(5));
+        else if(subDirectory.startsWith("themes/"))
+            return ensureDirectory(getThemesDirectory() + separator + resource.getSubDirectory().substring(7));
+        return getApplicationDirectory(resource.getSubDirectory());
     }
 }

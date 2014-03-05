@@ -17,36 +17,21 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.models;
+package slash.navigation.maps;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
-import slash.navigation.maps.Map;
-
-import java.io.File;
+import slash.navigation.download.datasources.File;
 
 /**
- * A {@link Map} that is rendered from a data set.
+ * Represents a mapsforge resource.
  *
  * @author Christian Pesch
  */
 
-public class RendererMap extends LocaleResourceImpl implements Map {
-    private final File file;
+public interface RemoteResource {
+    String getDataSource();
+    String getBaseUrl();
+    String getSubDirectory();
+    File getFile();
 
-    public RendererMap(String description, String url, File file) {
-        super(description, url);
-        this.file = file;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public AbstractTileSource getTileSource() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isRenderer() {
-        return true;
-    }
+    String getUrl();
 }

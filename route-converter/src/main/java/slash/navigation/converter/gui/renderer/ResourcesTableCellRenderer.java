@@ -20,10 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.Resource;
+import slash.navigation.maps.RemoteResource;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static java.lang.Math.round;
 
 /**
  * Renders the table cells of the resources table.
@@ -32,17 +34,40 @@ import java.awt.*;
  */
 
 public class ResourcesTableCellRenderer extends AlternatingColorTableCellRenderer {
+    private static final long ONE_KILOBYTE = 1024;
+    private static final long ONE_MEGABYTE = ONE_KILOBYTE * ONE_KILOBYTE;
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        Resource resource = (Resource) value;
+        RemoteResource resource = (RemoteResource) value;
         switch (columnIndex) {
             case 0:
-                label.setText(resource.getDescription());
+                label.setText(resource.getDataSource());
+                label.setToolTipText(resource.getUrl());
+                break;
+            case 1:
+                label.setText(resource.getFile().getUri());
+                label.setToolTipText(resource.getUrl());
+                break;
+            case 2:
+                label.setText(asSize(resource.getFile().getSize()));
                 label.setToolTipText(resource.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
+    }
+
+    private static String asSize(Long size) {
+        if(size == null)
+            return "?";
+        if(size > ONE_MEGABYTE)
+            return toNextUnit(size, ONE_MEGABYTE) + " MB";
+        return toNextUnit(size, ONE_KILOBYTE) + " kB";
+    }
+
+    private static long toNextUnit(Long size, long nextUnit) {
+        return round(size / nextUnit + 0.5);
     }
 }

@@ -29,7 +29,7 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-public interface Map extends Resource {
+public interface Map extends LocalResource {
     /**
      * Return if this map is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
      * @return true, if this map is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}

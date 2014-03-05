@@ -1089,7 +1089,7 @@ public class RouteConverter extends SingleFrameApplication {
                     invokeLater(new Runnable() {
                         public void run() {
                             showMessageDialog(frame,
-                                    MessageFormat.format(getBundle().getString("babel-error"), e.getMessage()), frame.getTitle(),   // TODO add own message
+                                    MessageFormat.format(getBundle().getString("scan-error"), e.getMessage()), frame.getTitle(),
                                     ERROR_MESSAGE);
                         }
                     });

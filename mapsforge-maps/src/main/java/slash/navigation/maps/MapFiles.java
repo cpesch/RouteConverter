@@ -22,6 +22,7 @@ package slash.navigation.maps;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.datasources.File;
 import slash.navigation.download.datasources.Fragment;
+import slash.navigation.maps.models.RemoteResourceImpl;
 
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -29,8 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
-
-import static java.lang.String.format;
 
 /**
  * Encapsulates access to mapsforge .map and theme files.
@@ -40,66 +39,44 @@ import static java.lang.String.format;
 
 public class MapFiles {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapFiles.class);
-    private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
 
     private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<java.io.File, RandomAccessFile>();
-    private final String name, baseUrl, directory;
+    private final String name, baseUrl, subDirectory;
     private final Map<String, Fragment> archiveMap;
     private final Map<String, File> fileMap;
     private final DownloadManager downloadManager;
 
-    public MapFiles(String name, String baseUrl, String directory,
+    public MapFiles(String name, String baseUrl, String subDirectory,
                     Map<String, Fragment> archiveMap, Map<String, File> fileMap,
                     DownloadManager downloadManager) {
         this.name = name;
         this.baseUrl = baseUrl;
-        this.directory = directory;
+        this.subDirectory = subDirectory;
         this.archiveMap = archiveMap;
         this.fileMap = fileMap;
         this.downloadManager = downloadManager;
     }
 
-    public String getName() {
+    private String getName() {
         return name;
     }
 
-    String getBaseUrl() {
+    private String getBaseUrl() {
         return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
     }
 
-    private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE + getName(),
-                new java.io.File(System.getProperty("user.home"), ".routeconverter/" + directory).getAbsolutePath());
-        java.io.File directory = new java.io.File(directoryName);
-        if (!directory.exists()) {
-            if (!directory.mkdirs())
-                throw new IllegalArgumentException(format("Cannot create '%s' directory '%s'", getName(), directory));
-        }
-        return directory;
+    private String getSubDirectory() {
+        return subDirectory;
     }
 
-    public List<Resource> getResources() {
-        List<Resource> result = new ArrayList<Resource>();
+    public List<RemoteResource> getResources() {
+        List<RemoteResource> result = new ArrayList<RemoteResource>();
         for(final File file : fileMap.values()) {
-            result.add(new Resource() {
-                public String getDescription() {
-                    return file.getUri();
-                }
-                public String getUrl() {
-                    return file.getUri();
-                }
-            });
+            result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), file));
         }
         for(final Fragment fragment : archiveMap.values()) {
-            result.add(new Resource() {
-                public String getDescription() {
-                    return fragment.getUri();
-                }
-                public String getUrl() {
-                    return fragment.getUri();
-                }
-            });
+            result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), fragment));
         }
         return result;
     }
