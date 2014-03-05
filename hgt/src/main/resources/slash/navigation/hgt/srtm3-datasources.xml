@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<datasources xmlns="http://www.routeconverter.com/datasources">
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="NASA SRTM 3" baseUrl="http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/" directory="srtm3">
         <fragment key="N00E006" uri="Africa/N00E006.hgt.zip" size="2884802" checksum="8014E27BD824CDA8F1F6094B919AA63A3369101E"/>
         <fragment key="N00E009" uri="Africa/N00E009.hgt.zip" size="2884802" checksum="D5DE3E2B85162CEA796DF3C777467A28CDECB573"/>

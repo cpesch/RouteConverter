@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<datasources xmlns="http://www.routeconverter.com/datasources">
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="Jonathan de Ferranti DEM 1" baseUrl="http://www.viewfinderpanoramas.org/dem1/" directory="ferranti1">
         <fragment key="N40W004" uri="n40w004.zip" size="25934402" checksum="18269C6F0F313A3C77BE5CAAB759134C63446663"/>
         <fragment key="N40W005" uri="n40w005.zip" size="25934402" checksum="E72418CEC9105421FDDB584862CA67486153098E"/>

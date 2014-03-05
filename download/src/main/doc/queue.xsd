@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.routeconverter.com/queue"
-            targetNamespace="http://www.routeconverter.com/queue"
+            xmlns="http://www.routeconverter.de/xmlschemas/Queue/1.0"
+            targetNamespace="http://www.routeconverter.de/xmlschemas/Queue/1.0"
             elementFormDefault="qualified">
 
     <xsd:element name="queue" type="queueType">
@@ -35,22 +35,22 @@
                 plus data to perform the download upon restart.
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="description" type="xsd:string"/>
-        <xsd:attribute name="url" type="xsd:string"/>
-        <xsd:attribute name="size" type="xsd:long"/>
-        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="description" type="xsd:string" use="required"/>
+        <xsd:attribute name="url" type="xsd:string" use="required"/>
+        <xsd:attribute name="size" type="xsd:long" use="required"/>
+        <xsd:attribute name="checksum" type="xsd:string" use="required"/>
 
         <!-- what to do with the download -->
-        <xsd:attribute name="action" type="xsd:string"/>
-        <xsd:attribute name="target" type="xsd:string"/>
+        <xsd:attribute name="action" type="xsd:string" use="required"/>
+        <xsd:attribute name="target" type="xsd:string" use="required"/>
 
         <!-- temporary state -->
-        <xsd:attribute name="lastSync" type="xsd:dateTime"/>
-        <xsd:attribute name="state" type="xsd:string"/>
-        <xsd:attribute name="tempFile" type="xsd:string"/>
+        <xsd:attribute name="lastSync" type="xsd:dateTime" use="required"/>
+        <xsd:attribute name="state" type="xsd:string" use="required"/>
+        <xsd:attribute name="tempFile" type="xsd:string" use="required"/>
 
         <!-- data from HEAD request -->
-        <xsd:attribute name="lastModified" type="xsd:dateTime"/>
-        <xsd:attribute name="contentLength" type="xsd:long"/>
+        <xsd:attribute name="lastModified" type="xsd:dateTime" use="required"/>
+        <xsd:attribute name="contentLength" type="xsd:long" use="required"/>
     </xsd:complexType>
 </xsd:schema>

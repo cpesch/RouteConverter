@@ -155,7 +155,7 @@ public class DownloadExecutor implements Runnable {
         updateState(download, Resuming);
         long fileSize = download.getTempFile().length();
         Long contentLength = download.getContentLength();
-        log.severe(format("Resuming bytes %d-%d from %s", fileSize, contentLength, download.getUrl()));
+        log.info(format("Resuming bytes %d-%d from %s", fileSize, contentLength, download.getUrl()));
 
         Get get = new Get(download.getUrl());
         get.setRange(fileSize, contentLength);
@@ -172,7 +172,7 @@ public class DownloadExecutor implements Runnable {
     private boolean download() throws IOException {
         updateState(download, Downloading);
         Long contentLength = download.getContentLength();
-        log.severe(format("Downloading %d bytes from %s", contentLength, download.getUrl()));
+        log.info(format("Downloading %d bytes from %s", contentLength, download.getUrl()));
 
         Get get = new Get(download.getUrl());
         InputStream inputStream = get.executeAsStream(true);

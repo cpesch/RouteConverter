@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.routeconverter.com/datasources"
-            targetNamespace="http://www.routeconverter.com/datasources"
+            xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
+            targetNamespace="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
             elementFormDefault="qualified">
 
     <xsd:element name="datasources" type="datasourcesType">
@@ -41,16 +41,16 @@
                     <xsd:field xpath="@key"/>
                 </xsd:unique>
             </xsd:element>
-            <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="file" type="fileType" minOccurs="1" maxOccurs="unbounded">
                 <xsd:unique name="unique-uri">
                     <xsd:selector xpath="file"/>
                     <xsd:field xpath="@uri"/>
                 </xsd:unique>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="baseUrl" type="xsd:string"/>
-        <xsd:attribute name="directory" type="xsd:string"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="baseUrl" type="xsd:string" use="required"/>
+        <xsd:attribute name="directory" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="fragmentType">
@@ -60,8 +60,8 @@
                 the size, checksum and uri for ab fragment relative to the base url
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="key" type="xsd:string"/>
-        <xsd:attribute name="uri" type="xsd:string"/>
+        <xsd:attribute name="key" type="xsd:string" use="required"/>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
     </xsd:complexType>
@@ -72,7 +72,7 @@
                 a file contains the size, checksum and uri for a file relative to the base url
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="uri" type="xsd:string"/>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
     </xsd:complexType>

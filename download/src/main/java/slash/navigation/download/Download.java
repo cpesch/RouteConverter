@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static slash.common.io.Externalization.getTempDirectory;
+import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.type.CompactCalendar.now;
@@ -74,9 +74,9 @@ public class Download {
         try {
             switch (action) {
                 case Copy:
-                    return createTempFile(removeExtension(target.getName()) + "-", getExtension(target), getTempDirectory());
+                    return createTempFile(removeExtension(target.getName()) + "-", getExtension(target), getTemporaryDirectory());
                 case Extract:
-                    return createTempFile(target.getName() + "-", ".zip", getTempDirectory());
+                    return createTempFile(target.getName() + "-", ".zip", getTemporaryDirectory());
                 default:
                     throw new IllegalArgumentException("Unknown Action " + action);
             }
