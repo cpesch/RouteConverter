@@ -117,6 +117,10 @@ public class MapsDialog extends SimpleDialog {
         for (int i = 0; i < resourcesColumns.getColumnCount(); i++) {
             TableColumn column = resourcesColumns.getColumn(i);
             column.setHeaderRenderer(resourcesHeaderRenderer);
+            if (i == 2) {
+                column.setPreferredWidth(50);
+                column.setMaxWidth(50);
+            }
         }
 
 
