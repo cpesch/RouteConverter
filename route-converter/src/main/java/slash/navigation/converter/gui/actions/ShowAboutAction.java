@@ -21,7 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.AboutDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
  * Show information about the program.
@@ -29,11 +30,8 @@ import slash.navigation.gui.actions.FrameAction;
  * @author Christian Pesch
  */
 
-public class ShowAboutAction extends FrameAction {
-    public void run() {
-        AboutDialog aboutDialog = new AboutDialog();
-        aboutDialog.pack();
-        aboutDialog.restoreLocation();
-        aboutDialog.setVisible(true);
+public class ShowAboutAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new AboutDialog();
     }
 }

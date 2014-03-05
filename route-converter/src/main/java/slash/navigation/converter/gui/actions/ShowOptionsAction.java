@@ -21,19 +21,17 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.OptionsDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Show options of the program.
+ * Show configuration options of the program.
  *
  * @author Christian Pesch
  */
 
-public class ShowOptionsAction extends FrameAction {
-    public void run() {
-        OptionsDialog optionsDialog = new OptionsDialog();
-        optionsDialog.pack();
-        optionsDialog.restoreLocation();
-        optionsDialog.setVisible(true);
+public class ShowOptionsAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new OptionsDialog();
     }
 }

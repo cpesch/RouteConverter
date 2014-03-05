@@ -18,20 +18,40 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.actions;
+package slash.navigation.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.DownloadsDialog;
-import slash.navigation.gui.SimpleDialog;
-import slash.navigation.gui.actions.SingletonDialogAction;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
- * Show downloads of the program.
+ * An {@link ActionListener} that starts and stops the wait cursor on the dialog.
  *
  * @author Christian Pesch
  */
 
-public class ShowDownloadsAction extends SingletonDialogAction {
-    protected SimpleDialog createDialog() {
-        return new DownloadsDialog();
+public abstract class DialogAction implements ActionListener {
+    private JDialog dialog;
+
+    protected DialogAction(JDialog dialog) {
+        this.dialog = dialog;
     }
+
+    protected JDialog getDialog() {
+        return dialog;
+    }
+
+    public final void actionPerformed(ActionEvent e) {
+        startWaitCursor(getDialog().getRootPane());
+        try {
+            run();
+        } finally {
+            stopWaitCursor(getDialog().getRootPane());
+        }
+    }
+
+    public abstract void run();
 }
