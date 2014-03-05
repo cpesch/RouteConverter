@@ -53,7 +53,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
- * Dialog to show mapss of the program.
+ * Dialog to show maps of the program.
  *
  * @author Christian Pesch
  */
