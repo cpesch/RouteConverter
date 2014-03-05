@@ -21,7 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.MapsDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
  * Select maps and themes for display.
@@ -29,11 +30,8 @@ import slash.navigation.gui.actions.FrameAction;
  * @author Christian Pesch
  */
 
-public class SelectMapsAction extends FrameAction {
-    public void run() {
-        MapsDialog mapsDialog = new MapsDialog();
-        mapsDialog.pack();
-        mapsDialog.restoreLocation();
-        mapsDialog.setVisible(true);
+public class SelectMapsAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new MapsDialog();
     }
 }
