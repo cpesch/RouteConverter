@@ -69,6 +69,10 @@ public class Extractor {
 
                     // do not close zip input stream
                     closeQuietly(output);
+
+                    if(!extracted.setLastModified(entry.getTime()))
+                        throw new IOException("Could not set last modified of " + extracted);
+
                     zipInputStream.closeEntry();
                 }
 
