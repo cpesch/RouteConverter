@@ -141,9 +141,14 @@ public class HgtFiles implements ElevationService {
 
         Collection<Download> downloads = new HashSet<Download>();
         for (FragmentAndTarget fragment : fragments) {
-            Download download = download(fragment);
-            if (download != null && !new Validator(fragment.target).existsFile())
-                downloads.add(download);
+            String uri = fragment.fragment.getUri();
+            String url = getBaseUrl() + uri;
+            CompactCalendar lastSync = downloadManager.getLastSync(url);
+            if (lastSync != null && lastSync.after(oneWeekAgo()))
+                continue;
+            if (new Validator(fragment.target).existsFile())
+                continue;
+            downloads.add(download(fragment));
         }
 
         if (!downloads.isEmpty())
@@ -156,11 +161,6 @@ public class HgtFiles implements ElevationService {
         File file = fileMap.get(uri);
         Long fileSize = file != null ? file.getSize() : null;
         String fileChecksum = file != null ? file.getChecksum() : null;
-
-        CompactCalendar lastSync = downloadManager.getLastSync(url);
-        if (lastSync != null && lastSync.after(oneWeekAgo()) && fragment.target.exists())
-            return null;
-
         return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url,
                 fileSize, fileChecksum, Extract, getDirectory());
     }
