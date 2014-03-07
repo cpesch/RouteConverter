@@ -21,7 +21,6 @@
 package slash.navigation.brouter;
 
 import btools.router.*;
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -43,7 +42,6 @@ import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
-import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -204,9 +202,9 @@ public class BRouter implements RoutingService {
 
         Collection<Download> downloads = new HashSet<Download>();
         for (FileAndTarget file : files) {
-            Download download = download(file);
-            if (download != null && !new Validator(download.getTarget()).existsFile())
-                downloads.add(download);
+            if (new Validator(file.target).existsFile())
+                continue;
+            downloads.add(download(file));
         }
 
         if (!downloads.isEmpty())
@@ -216,11 +214,6 @@ public class BRouter implements RoutingService {
     private Download download(FileAndTarget file) {
         String uri = file.file.getUri();
         String url = getBaseUrl() + uri;
-
-        CompactCalendar lastSync = downloadManager.getLastSync(url);
-        if (lastSync != null && lastSync.after(oneWeekAgo()) && file.target.exists())
-            return null;
-
         return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
                 file.file.getSize(), file.file.getChecksum(), Copy, file.target);
     }
