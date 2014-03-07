@@ -19,7 +19,6 @@
 */
 package slash.navigation.hgt;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -36,7 +35,6 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.type.CompactCalendar.oneWeekAgo;
 import static slash.navigation.download.Action.Extract;
 
 /**
@@ -141,11 +139,6 @@ public class HgtFiles implements ElevationService {
 
         Collection<Download> downloads = new HashSet<Download>();
         for (FragmentAndTarget fragment : fragments) {
-            String uri = fragment.fragment.getUri();
-            String url = getBaseUrl() + uri;
-            CompactCalendar lastSync = downloadManager.getLastSync(url);
-            if (lastSync != null && lastSync.after(oneWeekAgo()))
-                continue;
             if (new Validator(fragment.target).existsFile())
                 continue;
             downloads.add(download(fragment));
