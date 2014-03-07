@@ -28,12 +28,14 @@ import slash.navigation.maps.models.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.io.File.separator;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -61,15 +63,10 @@ public class MapManager {
     private MapsTableModel mapsModel = new MapsTableModel();
     private ThemesTableModel themesModel = new ThemesTableModel();
     private ResourcesTableModel resourcesModel = new ResourcesTableModel();
-    private MapFilesService mapFilesService;
 
     private ItemModel<Map> displayedMapModel = new ItemModel<Map>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
         protected Map stringToItem(String url) {
-            for(Map map : getMapsModel().getMaps()) {
-                if(map.getUrl().equals(url))
-                    return map;
-            }
-            return null;
+            return getMapsModel().getMap(url);
         }
 
         protected String itemToString(Map map) {
@@ -79,11 +76,7 @@ public class MapManager {
 
     private ItemModel<Theme> appliedThemeModel = new ItemModel<Theme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
         protected Theme stringToItem(String url) {
-            for(Theme theme : getThemesModel().getThemes()) {
-                if(theme.getUrl().equals(url))
-                    return theme;
-            }
-            return null;
+            return getThemesModel().getTheme(url);
         }
 
         protected String itemToString(Theme theme) {
@@ -161,12 +154,15 @@ public class MapManager {
     }
 
     public void initialize() {
-        mapFilesService = new MapFilesService(downloadManager);
-        for (MapFiles mapFiles : mapFilesService.getMapFiles()) {
-            List<RemoteResource> resources = mapFiles.getResources();
-            for (RemoteResource resource : resources)
-                resourcesModel.addOrUpdateResource(resource);
-        }
+        List<RemoteResource> resources = new MapFilesService().getResources();
+        RemoteResource[] remoteResources = resources.toArray(new RemoteResource[resources.size()]);
+        sort(remoteResources, new Comparator<RemoteResource>() {
+            public int compare(RemoteResource r1, RemoteResource r2) {
+                return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
+            }
+        });
+        for (RemoteResource resource : remoteResources)
+            resourcesModel.addOrUpdateResource(resource);
     }
 
     public void queueForDownload(RemoteResource resource) throws IOException {

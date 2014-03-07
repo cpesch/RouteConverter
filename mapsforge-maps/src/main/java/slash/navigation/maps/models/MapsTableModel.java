@@ -60,6 +60,14 @@ public class MapsTableModel extends AbstractTableModel {
         return maps.get(rowIndex);
     }
 
+    public Map getMap(String url) {
+        for (Map map : new ArrayList<Map>(maps)) {
+            if (map.getUrl().equals(url))
+                return map;
+        }
+        return null;
+    }
+
     private void addMap(Map map) {
         if (!maps.add(map))
             throw new IllegalArgumentException("Map " + map + " not added to " + maps);

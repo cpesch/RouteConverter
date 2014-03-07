@@ -43,4 +43,8 @@ abstract class LocaleResourceImpl implements LocalResource {
     public String getUrl() {
         return url;
     }
+
+    public String toString() {
+        return super.toString() + "[url=" + getUrl() + "]";
+    }
 }

@@ -19,7 +19,6 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.download.DownloadManager;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.binding.DatasourceType;
 
@@ -36,13 +35,17 @@ import static java.lang.String.format;
  */
 
 public class MapFilesService {
-    private static Logger log = Logger.getLogger(MapFilesService.class.getName());
+    private static final Logger log = Logger.getLogger(MapFilesService.class.getName());
     private final List<MapFiles> mapFiles = new ArrayList<MapFiles>();
     private static final String[] DATASOURCE_URLS = new String[]{
-            "freizeitkarte-datasources.xml"
+            "freizeitkarte-maps-datasources.xml",
+            "freizeitkarte-themes-datasources.xml",
+            "mapsforge-maps-datasources.xml",
+            "openandromaps-maps-datasources.xml",
+            "openandromaps-themes-datasources.xml"
     };
 
-    public MapFilesService(DownloadManager downloadManager) {
+    public MapFilesService() {
         DataSourceService service = new DataSourceService();
         for (String datasourceUrl : DATASOURCE_URLS) {
             try {
@@ -55,11 +58,19 @@ public class MapFilesService {
         for (DatasourceType datasourceType : service.getDatasourceTypes()) {
             String name = datasourceType.getName();
             mapFiles.add(new MapFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getArchives(name), service.getFiles(name), downloadManager));
+                    service.getArchives(name), service.getFiles(name)));
         }
     }
 
     public List<MapFiles> getMapFiles() {
         return mapFiles;
+    }
+
+    public List<RemoteResource> getResources() {
+        List<RemoteResource> result = new ArrayList<RemoteResource>();
+        for (MapFiles files : getMapFiles()) {
+            result.addAll(files.getResources());
+        }
+        return result;
     }
 }

@@ -23,24 +23,24 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.renderer.MapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ResourcesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
+import slash.navigation.maps.RemoteResource;
 import slash.navigation.maps.Theme;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
@@ -88,6 +88,19 @@ public class MapsDialog extends SimpleDialog {
                 column.setMaxWidth(36);
             }
         }
+        TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<TableModel>(tableAvailableMaps.getModel());
+        sorterAvailableMaps.setSortsOnUpdates(true);
+        sorterAvailableMaps.setComparator(0, new Comparator<Map>() {
+            public int compare(Map m1, Map m2) {
+                return m1.getDescription().compareToIgnoreCase(m2.getDescription());
+            }
+        });
+        sorterAvailableMaps.setComparator(1, new Comparator<Map>() {
+            public int compare(Map m1, Map m2) {
+                return m1.isRenderer() ? m2.isRenderer() ? 0 : -1 : 1;
+            }
+        });
+        tableAvailableMaps.setRowSorter(sorterAvailableMaps);
 
         buttonDisplay.addActionListener(new DialogAction(this) {
             public void run() {
@@ -103,6 +116,14 @@ public class MapsDialog extends SimpleDialog {
             TableColumn column = themesColumns.getColumn(i);
             column.setHeaderRenderer(availableThemesHeaderRenderer);
         }
+        TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<TableModel>(tableAvailableThemes.getModel());
+        sorterAvailableThemes.setSortsOnUpdates(true);
+        sorterAvailableThemes.setComparator(0, new Comparator<Theme>() {
+            public int compare(Theme t1, Theme t2) {
+                return t1.getDescription().compareToIgnoreCase(t2.getDescription());
+            }
+        });
+        tableAvailableThemes.setRowSorter(sorterAvailableThemes);
 
         buttonApply.addActionListener(new DialogAction(this) {
             public void run() {
@@ -117,12 +138,33 @@ public class MapsDialog extends SimpleDialog {
         for (int i = 0; i < resourcesColumns.getColumnCount(); i++) {
             TableColumn column = resourcesColumns.getColumn(i);
             column.setHeaderRenderer(resourcesHeaderRenderer);
+            if (i == 0) {
+                column.setPreferredWidth(120);
+                column.setMaxWidth(120);
+            }
             if (i == 2) {
-                column.setPreferredWidth(50);
-                column.setMaxWidth(50);
+                column.setPreferredWidth(45);
+                column.setMaxWidth(45);
             }
         }
-
+        TableRowSorter<TableModel> sorterResources = new TableRowSorter<TableModel>(tableResources.getModel());
+        sorterResources.setSortsOnUpdates(true);
+        sorterResources.setComparator(0, new Comparator<RemoteResource>() {
+            public int compare(RemoteResource r1, RemoteResource r2) {
+                return r1.getDataSource().compareToIgnoreCase(r2.getDataSource());
+            }
+        });
+        sorterResources.setComparator(1, new Comparator<RemoteResource>() {
+            public int compare(RemoteResource r1, RemoteResource r2) {
+                return r1.getUrl().compareToIgnoreCase(r2.getUrl());
+            }
+        });
+        sorterResources.setComparator(2, new Comparator<RemoteResource>() {
+            public int compare(RemoteResource r1, RemoteResource r2) {
+                return r1.getFile().getSize().intValue() - r2.getFile().getSize().intValue();
+            }
+        });
+        tableResources.setRowSorter(sorterResources);
 
         buttonDownload.addActionListener(new DialogAction(this) {
             public void run() {

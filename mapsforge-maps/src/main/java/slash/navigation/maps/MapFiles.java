@@ -19,14 +19,11 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.download.DownloadManager;
 import slash.navigation.download.datasources.File;
 import slash.navigation.download.datasources.Fragment;
 import slash.navigation.maps.models.RemoteResourceImpl;
 
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -41,21 +38,17 @@ public class MapFiles {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapFiles.class);
     private static final String BASE_URL_PREFERENCE = "baseUrl";
 
-    private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<java.io.File, RandomAccessFile>();
     private final String name, baseUrl, subDirectory;
     private final Map<String, Fragment> archiveMap;
     private final Map<String, File> fileMap;
-    private final DownloadManager downloadManager;
 
     public MapFiles(String name, String baseUrl, String subDirectory,
-                    Map<String, Fragment> archiveMap, Map<String, File> fileMap,
-                    DownloadManager downloadManager) {
+                    Map<String, Fragment> archiveMap, Map<String, File> fileMap) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.subDirectory = subDirectory;
         this.archiveMap = archiveMap;
         this.fileMap = fileMap;
-        this.downloadManager = downloadManager;
     }
 
     private String getName() {

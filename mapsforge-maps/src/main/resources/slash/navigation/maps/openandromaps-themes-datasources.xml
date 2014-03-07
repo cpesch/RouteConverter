@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="Openandromaps Theme" baseUrl="http://www.openandromaps.org/wp-content/" directory="themes/">
+        <!-- Locus: High contrast theme for cyclists and hikers -->
+        <file uri="files/themes/locus/andromaps_hc.zip" size="358147" checksum="F7414CAC9831FACF2E05FB9B5E72B84FE1566DD7"/>
+        <!-- Locus: High contrast theme for mountainbikes -->
+        <file uri="files/themes/locus/andromaps_mtb.zip" size="105545" checksum="31A0E5ABAA37FDB5590972DDAEE227951B7F89FE"/>
+        <!-- Locus: High contrast “light” theme without hike/cycle routes -->
+        <file uri="files/themes/locus/andromaps_light.zip" size="97501" checksum="880B1F41BD5F5643D632EF1201BDDF34839CEFA2"/>
+
+        <!-- Oruxmaps: High contrast Themes for Oruxmaps (MTB,Hike/Cycle,Light) -->
+        <file uri="files/themes/orux_new/themes_orux_new.zip" size="368475" checksum="34F9FDBE8B05436DD45CB25364F1DF11C292F1F6"/>
+        <!-- Oruxmaps: Elevate, highly recommended for Mountain Hikers from Tobias! -->
+        <file uri="users/tobias/Elevate.zip" size="247701" checksum="5C0D9DA14D548C4528ECAF0EB47F10CFBD5BA98A"/>
+
+        <!-- Generic: High contrast theme Cycle/Hike -->
+        <file uri="files/themes/generic/andromaps_hc.zip" size="8820" checksum="7398F36ACC816E2B2DF15074DA46FEDD716FF2B2"/>
+        <!-- Generic: High contrast theme MTB -->
+        <file uri="files/themes/generic/andromaps_mtb.zip" size="8113" checksum="B47017B485BA359717ECB90A9F6F1EE90AF1D0E8"/>
+        <!-- Generic: Light theme w/o cycle or hike routes -->
+        <file uri="files/themes/generic/andromaps_light.zip" size="6994" checksum="30D9A97725D471E457DDF43FE69FF2F3E0B918FF"/>
+    </datasource>
+</datasources>

@@ -58,6 +58,14 @@ public class ThemesTableModel extends AbstractTableModel {
         return themes.get(rowIndex);
     }
 
+    public Theme getTheme(String url) {
+        for (Theme theme : new ArrayList<Theme>(themes)) {
+            if (theme.getUrl().equals(url))
+                return theme;
+        }
+        return null;
+    }
+
     private void addTheme(Theme theme) {
         if (!themes.add(theme))
             throw new IllegalArgumentException("Theme " + theme + " not added to " + themes);
