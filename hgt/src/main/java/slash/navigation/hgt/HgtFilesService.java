@@ -36,7 +36,7 @@ import static java.lang.String.format;
  */
 
 public class HgtFilesService {
-    private static Logger log = Logger.getLogger(HgtFiles.class.getName());
+    private static final Logger log = Logger.getLogger(HgtFiles.class.getName());
     private final List<HgtFiles> hgtFiles = new ArrayList<HgtFiles>();
     private static final String[] DATASOURCE_URLS = new String[]{
             "srtm3-datasources.xml",
