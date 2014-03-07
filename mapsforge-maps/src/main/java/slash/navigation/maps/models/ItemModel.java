@@ -43,10 +43,13 @@ public abstract class ItemModel<T> {
 
     public T getItem() {
         try {
-            return stringToItem(preferences.get(preferenceName, defaultValue));
+            T item = stringToItem(preferences.get(preferenceName, defaultValue));
+            if (item != null)
+                return item;
         } catch (IllegalArgumentException e) {
-            return stringToItem(defaultValue);
+            // intentionally left empty
         }
+        return stringToItem(defaultValue);
     }
 
     protected abstract T stringToItem(String value);
