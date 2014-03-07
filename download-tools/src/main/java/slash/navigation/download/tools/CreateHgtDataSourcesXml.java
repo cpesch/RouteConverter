@@ -43,7 +43,6 @@ import static slash.common.io.Files.generateChecksum;
  */
 
 public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
-
     private static final Pattern KEY_PATTERN = Pattern.compile(".*([N|S]\\d{2}[E|W]\\d{3}).*", CASE_INSENSITIVE);
 
     private String extractKey(String string) {
