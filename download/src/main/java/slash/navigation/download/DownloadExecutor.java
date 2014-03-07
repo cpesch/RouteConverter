@@ -80,10 +80,12 @@ public class DownloadExecutor implements Runnable {
                 Validator validator = new Validator(download.getTempFile());
                 if(!validator.existsFile())
                     result = NoFileError;
-                else if(!validator.validSize(download.getSize()))
-                    result = SizeError;
-                else if(!validator.validChecksum(download.getChecksum()))
-                    result = ChecksumError;
+                else {
+                    if(!validator.validSize(download.getSize()))
+                        result = SizeError;
+                    if(!validator.validChecksum(download.getChecksum()))
+                        result = ChecksumError;
+                }
 
                 postProcess();
                 updateState(download, result);
