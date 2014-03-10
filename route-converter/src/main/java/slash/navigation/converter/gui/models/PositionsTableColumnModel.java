@@ -26,35 +26,23 @@ import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.comparators.TimeComparator;
 import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
+import slash.navigation.converter.gui.renderer.*;
 
-import javax.swing.*;
 import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import javax.swing.table.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 import static java.util.Locale.US;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
@@ -101,13 +89,6 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
             if (column != null && column.isVisible())
                 addColumn(column);
         }
-    }
-
-    private int getMaxWidth(String string, int extraWidth) {
-        JLabel label = new JLabel();
-        FontMetrics fm = label.getFontMetrics(label.getFont());
-        int width = fm.stringWidth(string);
-        return width + extraWidth;
     }
 
     private String getExampleDateFromCurrentLocale() {

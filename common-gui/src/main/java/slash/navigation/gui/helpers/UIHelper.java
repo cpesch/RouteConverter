@@ -59,7 +59,7 @@ public class UIHelper {
     public static void setLookAndFeel() {
         try {
             String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
-            if("default".equals(lookAndFeelClass))
+            if ("default".equals(lookAndFeelClass))
                 lookAndFeelClass = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(lookAndFeelClass);
         } catch (Exception e) {
@@ -99,14 +99,12 @@ public class UIHelper {
         try {
             try {
                 chooser = new JFileChooser();
-            }
-            catch (NullPointerException npe) {
+            } catch (NullPointerException npe) {
                 log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
                 UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
                 chooser = new JFileChooser();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857 by using restricted file system view");
             chooser = new JFileChooser(new RestrictedFileSystemView());
         }
@@ -123,5 +121,16 @@ public class UIHelper {
                 // intentionally left empty
             }
         }
+    }
+
+    private static FontMetrics fontMetrics = null;
+
+    public static int getMaxWidth(String string, int extraWidth) {
+        if (fontMetrics == null) {
+            JLabel label = new JLabel();
+            fontMetrics = label.getFontMetrics(label.getFont());
+        }
+        int width = fontMetrics.stringWidth(string);
+        return width + extraWidth;
     }
 }
