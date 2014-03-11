@@ -41,7 +41,6 @@ public class TablePopupMenu extends AbstractTablePopupMenu {
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-
         menu.add(createItem("cut"));
         menu.add(createItem("copy"));
         menu.add(createItem("paste"));
