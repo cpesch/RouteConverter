@@ -51,6 +51,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
  * Dialog to show maps of the program.
@@ -84,8 +85,9 @@ public class MapsDialog extends SimpleDialog {
             TableColumn column = mapsColumns.getColumn(i);
             column.setHeaderRenderer(availableMapsHeaderRenderer);
             if (i == 1) {
-                column.setPreferredWidth(36);
-                column.setMaxWidth(36);
+                int width = getMaxWidth("offline", 6);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
             }
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<TableModel>(tableAvailableMaps.getModel());
@@ -143,8 +145,9 @@ public class MapsDialog extends SimpleDialog {
                 column.setMaxWidth(120);
             }
             if (i == 2) {
-                column.setPreferredWidth(45);
-                column.setMaxWidth(45);
+                int width = getMaxWidth("999 MB", 10);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
             }
         }
         TableRowSorter<TableModel> sorterResources = new TableRowSorter<TableModel>(tableResources.getModel());
