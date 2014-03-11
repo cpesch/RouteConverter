@@ -21,15 +21,18 @@ package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.map.model.MapViewPosition;
-import org.mapsforge.map.view.MapView;
+import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 
 /**
  * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewPosition}
@@ -38,11 +41,14 @@ import static javax.swing.SwingUtilities.isLeftMouseButton;
  */
 
 public class MapViewMouseEventListener extends MouseAdapter {
-    private final MapView mapView;
+    private final AwtGraphicMapView mapView;
+    private final JPopupMenu popupMenu;
     private Point lastDragPoint;
+    private MouseEvent popupMouseEvent;
 
-    public MapViewMouseEventListener(MapView mapView) {
+    public MapViewMouseEventListener(AwtGraphicMapView mapView, JPopupMenu popupMenu) {
         this.mapView = mapView;
+        this.popupMenu = popupMenu;
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -60,6 +66,9 @@ public class MapViewMouseEventListener extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         if (isLeftMouseButton(e)) {
             lastDragPoint = e.getPoint();
+        } else if (isRightMouseButton(e)) {
+            popupMouseEvent = e;
+            popupMenu.show(mapView, e.getX(), e.getY());
         }
     }
 
@@ -68,7 +77,37 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        byte zoomLevelDiff = (byte) -e.getWheelRotation();
+        zoomToMousePosition((byte) -e.getWheelRotation(), e);
+    }
+
+    private static final int TOTAL_STEPS = 25;
+
+    public void centerToMousePosition() {
+        new Thread(new Runnable() {
+            public void run() {
+                Dimension dimension = mapView.getDimension();
+                int horizontalDiff = dimension.width / 2 - popupMouseEvent.getX();
+                int verticalDiff = dimension.height / 2 - popupMouseEvent.getY();
+
+                double stepSizeX = horizontalDiff / TOTAL_STEPS;
+                double stepSizeY = verticalDiff / TOTAL_STEPS;
+                for (int i = 0; i < TOTAL_STEPS; i++) {
+                    mapView.getModel().mapViewPosition.moveCenter(stepSizeX, stepSizeY);
+                    try {
+                        sleep(10);
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void zoomToMousePosition(byte zoomLevelDiff) {
+        zoomToMousePosition(zoomLevelDiff, popupMouseEvent);
+    }
+
+    public void zoomToMousePosition(byte zoomLevelDiff, MouseEvent e) {
         Dimension dimension = mapView.getDimension();
         int horizontalDiff = dimension.width / 2 - e.getX();
         int verticalDiff = dimension.height / 2 - e.getY();

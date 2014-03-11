@@ -48,19 +48,35 @@ import slash.navigation.converter.gui.mapview.helpers.MapViewComponentListener;
 import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
 import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
-import slash.navigation.converter.gui.mapview.updater.*;
+import slash.navigation.converter.gui.mapview.updater.EventMapUpdater;
+import slash.navigation.converter.gui.mapview.updater.PositionPair;
+import slash.navigation.converter.gui.mapview.updater.SelectionOperation;
+import slash.navigation.converter.gui.mapview.updater.SelectionUpdater;
+import slash.navigation.converter.gui.mapview.updater.TrackOperation;
+import slash.navigation.converter.gui.mapview.updater.TrackUpdater;
+import slash.navigation.converter.gui.mapview.updater.WaypointOperation;
+import slash.navigation.converter.gui.mapview.updater.WaypointUpdater;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.Theme;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
-import javax.swing.event.*;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,11 +90,14 @@ import java.util.prefs.Preferences;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -103,6 +122,7 @@ public class MapsforgeMapView implements MapView {
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
+    private MapViewMouseEventListener mapViewMouseEventListener;
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
 
@@ -127,6 +147,7 @@ public class MapsforgeMapView implements MapView {
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
         this.mapManager = mapManager;
+        initializeActions();
         initializeMapView();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
@@ -146,10 +167,20 @@ public class MapsforgeMapView implements MapView {
         this.avoidTolls = avoidTolls;
     }
 
-    private java.util.Map<Map, Layer> mapsToLayers = new HashMap<Map, Layer>();
+    private void initializeActions() {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.register("center-here", new CenterAction());
+        actionManager.register("zoom-in", new ZoomAction(+1));
+        actionManager.register("zoom-out", new ZoomAction(-1));
+    }
 
     private void initializeMapView() {
         mapView = createMapView();
+
+        mapViewMouseEventListener = new MapViewMouseEventListener(mapView, createPopupMenu());
+        mapView.addMouseListener(mapViewMouseEventListener);
+        mapView.addMouseMotionListener(mapViewMouseEventListener);
+        mapView.addMouseWheelListener(mapViewMouseEventListener);
 
         try {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
@@ -198,12 +229,43 @@ public class MapsforgeMapView implements MapView {
         AwtGraphicMapView mapView = new AwtGraphicMapView();
         mapView.getMapScaleBar().setVisible(true);
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
-
-        MapViewMouseEventListener mapViewMouseEventListener = new MapViewMouseEventListener(mapView);
-        mapView.addMouseListener(mapViewMouseEventListener);
-        mapView.addMouseMotionListener(mapViewMouseEventListener);
-        mapView.addMouseWheelListener(mapViewMouseEventListener);
         return mapView;
+    }
+
+    private JPopupMenu createPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        menu.add(createItem("select-position"));
+        menu.add(createItem("new-position"));
+        menu.add(createItem("delete"));
+        menu.addSeparator();
+        menu.add(createItem("center-here"));
+        menu.add(createItem("zoom-in"));
+        menu.add(createItem("zoom-out"));
+        /*
+         menu.addItem('Select', function(map, latLng) {
+                   callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
+               });
+               menu.addItem('Insert', function(map, latLng) {
+                   callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
+               });
+               menu.addItem('Delete', function(map, latLng) {
+                   callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+               });
+               menu.addSep();
+               menu.addItem('Center Here', function(map, latLng) {
+                   map.panTo(latLng);
+               });
+               menu.addItem('Zoom In', function(map, latLng) {
+                   map.setZoom(map.getZoom() + 1);
+                   map.panTo(latLng);
+               });
+               menu.addItem('Zoom Out', function(map, latLng) {
+                   map.setZoom(map.getZoom() - 1);
+                   map.panTo(latLng);
+               });*
+
+         */
+        return menu;
     }
 
     private TileRendererLayer createTileRendererLayer(Map map, Theme theme) {
@@ -440,6 +502,8 @@ public class MapsforgeMapView implements MapView {
             }
         });
     }
+
+    private java.util.Map<Map, Layer> mapsToLayers = new HashMap<Map, Layer>();
 
     private void handleMapAndThemeUpdate() {
         Layers layers = getLayerManager().getLayers();
@@ -685,9 +749,21 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private void fireReceivedCallback(int port) {
-        for (MapViewListener listener : mapViewListeners) {
-            listener.receivedCallback(port);
+    private class CenterAction extends FrameAction {
+        public void run() {
+            mapViewMouseEventListener.centerToMousePosition();
+        }
+    }
+
+    private class ZoomAction extends FrameAction {
+        private byte zoomLevelDiff;
+
+        private ZoomAction(int zoomLevelDiff) {
+            this.zoomLevelDiff = (byte) zoomLevelDiff;
+        }
+
+        public void run() {
+            mapViewMouseEventListener.zoomToMousePosition(zoomLevelDiff);
         }
     }
 }
