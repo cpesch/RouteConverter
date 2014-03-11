@@ -199,7 +199,7 @@ public class MapsforgeMapView implements MapView {
         mapView.getMapScaleBar().setVisible(true);
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
 
-        MapViewMouseEventListener mapViewMouseEventListener = new MapViewMouseEventListener(mapView.getModel().mapViewPosition);
+        MapViewMouseEventListener mapViewMouseEventListener = new MapViewMouseEventListener(mapView);
         mapView.addMouseListener(mapViewMouseEventListener);
         mapView.addMouseMotionListener(mapViewMouseEventListener);
         mapView.addMouseWheelListener(mapViewMouseEventListener);

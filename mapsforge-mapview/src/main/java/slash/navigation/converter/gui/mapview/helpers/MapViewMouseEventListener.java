@@ -19,7 +19,10 @@
 */
 package slash.navigation.converter.gui.mapview.helpers;
 
+import org.mapsforge.core.model.Dimension;
 import org.mapsforge.map.model.MapViewPosition;
+import org.mapsforge.map.view.MapView;
+import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -29,43 +32,46 @@ import java.awt.event.MouseWheelEvent;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 
 /**
- * Listen to mouse events of the {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}'s {@link MapViewPosition}
+ * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewPosition}
  *
  * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
  */
 
 public class MapViewMouseEventListener extends MouseAdapter {
-    private final MapViewPosition mapViewPosition;
+    private final MapView mapView;
     private Point lastDragPoint;
 
-    public MapViewMouseEventListener(MapViewPosition mapViewPosition) {
-        this.mapViewPosition = mapViewPosition;
+    public MapViewMouseEventListener(MapView mapView) {
+        this.mapView = mapView;
     }
 
-    public void mouseDragged(MouseEvent mouseEvent) {
-        if (isLeftMouseButton(mouseEvent)) {
-            Point point = mouseEvent.getPoint();
+    public void mouseDragged(MouseEvent e) {
+        if (isLeftMouseButton(e)) {
+            Point point = e.getPoint();
             if (lastDragPoint != null) {
                 int moveHorizontal = point.x - lastDragPoint.x;
                 int moveVertical = point.y - lastDragPoint.y;
-                mapViewPosition.moveCenter(moveHorizontal, moveVertical);
+                mapView.getModel().mapViewPosition.moveCenter(moveHorizontal, moveVertical);
             }
             lastDragPoint = point;
         }
     }
 
-    public void mousePressed(MouseEvent mouseEvent) {
-        if (isLeftMouseButton(mouseEvent)) {
-            lastDragPoint = mouseEvent.getPoint();
+    public void mousePressed(MouseEvent e) {
+        if (isLeftMouseButton(e)) {
+            lastDragPoint = e.getPoint();
         }
     }
 
-    public void mouseReleased(MouseEvent mouseEvent) {
+    public void mouseReleased(MouseEvent e) {
         lastDragPoint = null;
     }
 
-    public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-        byte zoomLevelDiff = (byte) -mouseWheelEvent.getWheelRotation();
-        mapViewPosition.zoom(zoomLevelDiff);
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        byte zoomLevelDiff = (byte) -e.getWheelRotation();
+        Dimension dimension = mapView.getDimension();
+        int horizontalDiff = dimension.width / 2 - e.getX();
+        int verticalDiff = dimension.height / 2 - e.getY();
+        mapView.getModel().mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
     }
 }
