@@ -24,7 +24,6 @@ import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -36,6 +35,7 @@ import static java.awt.event.MouseEvent.MOUSE_PRESSED;
 import static java.awt.event.MouseEvent.MOUSE_RELEASED;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * Helps to make popups for tables useable.
@@ -46,6 +46,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 public abstract class AbstractTablePopupMenu {
     private final JTable table;
     private JPopupMenu popupMenu;
+    private MouseEvent lastMouseEvent;
 
     public AbstractTablePopupMenu(JTable table) {
         this.table = table;
@@ -73,7 +74,7 @@ public abstract class AbstractTablePopupMenu {
         if (table.getCellEditor() != null)
             table.getCellEditor().cancelCellEditing();
 
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -113,8 +114,6 @@ public abstract class AbstractTablePopupMenu {
             }
         }
     }
-
-    private MouseEvent lastMouseEvent;
 
     private class MouseMotionListener extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
