@@ -1451,7 +1451,7 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void insertPosition(int row, Double longitude, Double latitude) {
+    private void insertPosition(int row, Double longitude, Double latitude) { // TODO unify with different code path from AddPositionAction
         positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createDescription(positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
