@@ -97,7 +97,7 @@ public class AddPositionAction extends FrameAction {
         List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
         int[] rowIndices = revert(table.getSelectedRows());
         // append to table if there is nothing selected
-        boolean areRowsSelected = rowIndices.length > 0;
+        boolean areRowsSelected = rowIndices.length > 0;                        // TODO complicated logic, unify with BaseMapView#getAddRow
         if (!areRowsSelected)
             rowIndices = new int[]{table.getRowCount()};
         for (int row : rowIndices) {
