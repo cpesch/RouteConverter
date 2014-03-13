@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
-    <datasource name="Openandromaps Theme" baseUrl="http://www.openandromaps.org/wp-content/" directory="themes/">
+    <datasource name="Openandromaps Themes" baseUrl="http://www.openandromaps.org/wp-content/" directory="themes/">
         <!-- Locus: High contrast theme for cyclists and hikers -->
         <file uri="files/themes/locus/andromaps_hc.zip" size="358147" checksum="F7414CAC9831FACF2E05FB9B5E72B84FE1566DD7"/>
         <!-- Locus: High contrast theme for mountainbikes -->

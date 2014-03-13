@@ -141,8 +141,9 @@ public class MapsDialog extends SimpleDialog {
             TableColumn column = resourcesColumns.getColumn(i);
             column.setHeaderRenderer(resourcesHeaderRenderer);
             if (i == 0) {
-                column.setPreferredWidth(120);
-                column.setMaxWidth(120);
+                int width = getMaxWidth("Openandromaps Themes", 13);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
             }
             if (i == 2) {
                 int width = getMaxWidth("999 MB", 10);
