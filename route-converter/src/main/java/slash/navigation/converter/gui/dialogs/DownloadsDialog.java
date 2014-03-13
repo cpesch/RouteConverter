@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
  * Dialog to show downloads of the program.
@@ -69,8 +70,9 @@ public class DownloadsDialog extends SimpleDialog {
             TableColumn column = columns.getColumn(i);
             column.setHeaderRenderer(headerRenderer);
             if (i == 1) {
-                column.setPreferredWidth(100);
-                column.setMaxWidth(140);
+                int width = getMaxWidth("Downloading (100%)", 10);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
             }
         }
         TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableDownloads.getModel());
