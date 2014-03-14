@@ -29,6 +29,8 @@ import java.awt.*;
 
 import static javax.swing.SwingConstants.LEFT;
 
+import static javax.swing.SwingConstants.LEFT;
+
 /**
  * Renders the column headers of the positions table.
  *
