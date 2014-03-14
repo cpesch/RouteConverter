@@ -200,19 +200,22 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void display() {
-        int selectedRow = tableAvailableMaps.getSelectedRow();
+        int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
         Map map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
     }
 
     private void apply() {
-        int selectedRow = tableAvailableThemes.getSelectedRow();
+        int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
         Theme theme = getMapManager().getThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
     }
 
     private void download() {
         final int[] selectedRows = tableResources.getSelectedRows();
+        for (int i = 0; i < selectedRows.length; i++) {
+            selectedRows[i] = tableResources.convertRowIndexToModel(selectedRows[i]);
+        }
         executor.execute(new Runnable() {
             public void run() {
                 for (int selectedRow : selectedRows) {
