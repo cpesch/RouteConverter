@@ -30,11 +30,10 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.*;
 import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
 import static java.util.Locale.US;
@@ -95,7 +94,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         calendar.set(HOUR_OF_DAY, 22);
         calendar.set(MINUTE, 33);
         calendar.set(SECOND, 44);
-        return DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
+        return getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
     }
 
     private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,

@@ -27,6 +27,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
+import static javax.swing.SwingConstants.LEFT;
+
 /**
  * Renders the column headers of the positions table.
  *
@@ -37,7 +39,7 @@ public class PositionsTableCellHeaderRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        label.setHorizontalAlignment(JLabel.LEFT);
+        label.setHorizontalAlignment(LEFT);
         label.setOpaque(false);
         PositionTableColumn column = (PositionTableColumn) table.getColumnModel().getColumn(columnIndex);
         String name = RouteConverter.getBundle().getString(column.getName());
