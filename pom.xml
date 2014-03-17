@@ -253,7 +253,6 @@
         <module>mapsforge-mapview</module>
         <module>mapview</module>
         <module>navigation-formats</module>
-        <module>position-completer</module>
         <module>profileview</module>
         <module>rest</module>
         <module>routing-service</module>
