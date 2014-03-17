@@ -24,7 +24,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NumberPattern;
-import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;

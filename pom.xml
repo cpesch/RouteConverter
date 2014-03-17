@@ -248,7 +248,6 @@
         <module>kml</module>
         <module>mapview</module>
         <module>navigation-formats</module>
-        <module>position-completer</module>
         <module>profileview</module>
         <module>rest</module>
         <module>swt-mapview</module>

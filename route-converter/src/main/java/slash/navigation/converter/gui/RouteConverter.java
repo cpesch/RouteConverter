@@ -31,7 +31,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.completer.CompletePositionService;
+import slash.navigation.converter.gui.helpers.CompletePositionService;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
