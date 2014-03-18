@@ -35,6 +35,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
+import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
@@ -95,6 +96,7 @@ import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
+import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
@@ -169,6 +171,10 @@ public class MapsforgeMapView implements MapView {
 
     private void initializeActions() {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.register("select-position", new SelectPositionAction());
+        actionManager.register("extend-selection", new ExtendSelectionAction());
+        actionManager.register("add-position", new AddPositionAction());
+        actionManager.register("delete-position", new DeletePositionAction());
         actionManager.register("center-here", new CenterAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
@@ -235,36 +241,12 @@ public class MapsforgeMapView implements MapView {
     private JPopupMenu createPopupMenu() {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("select-position"));
-        menu.add(createItem("new-position"));
-        menu.add(createItem("delete"));
+        menu.add(createItem("add-position"));    // TODO should be "new-position"
+        menu.add(createItem("delete-position")); // TODO should be "delete"
         menu.addSeparator();
         menu.add(createItem("center-here"));
         menu.add(createItem("zoom-in"));
         menu.add(createItem("zoom-out"));
-        /*
-         menu.addItem('Select', function(map, latLng) {
-                   callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
-               });
-               menu.addItem('Insert', function(map, latLng) {
-                   callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
-               });
-               menu.addItem('Delete', function(map, latLng) {
-                   callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
-               });
-               menu.addSep();
-               menu.addItem('Center Here', function(map, latLng) {
-                   map.panTo(latLng);
-               });
-               menu.addItem('Zoom In', function(map, latLng) {
-                   map.setZoom(map.getZoom() + 1);
-                   map.panTo(latLng);
-               });
-               menu.addItem('Zoom Out', function(map, latLng) {
-                   map.setZoom(map.getZoom() - 1);
-                   map.panTo(latLng);
-               });*
-
-         */
         return menu;
     }
 
@@ -439,7 +421,7 @@ public class MapsforgeMapView implements MapView {
 
             public void add(List<NavigationPosition> positions) {
                 for (NavigationPosition position : positions) {
-                    Marker marker = new Marker(asLatLong(position), waypointIcon, 8, -16);
+                    Marker marker = new Marker(asLatLong(position), waypointIcon, 1, 0);
                     getLayerManager().getLayers().add(marker);
                     positionsToMarkers.put(position, marker);
                 }
@@ -746,6 +728,81 @@ public class MapsforgeMapView implements MapView {
     private void fireCalculatedDistance(int meters, int seconds) {
         for (MapViewListener listener : mapViewListeners) {
             listener.calculatedDistance(meters, seconds);
+        }
+    }
+
+    private LatLong getMousePosition() {
+        Point point = mapViewMouseEventListener.getMousePosition();
+        return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
+                mapView.getModel().mapViewPosition.getCenter();
+    }
+
+    private double getThresholdForPixel(LatLong latLong, int pixel) {
+        double metersPerPixel = calculateGroundResolution(latLong.latitude,
+                mapView.getModel().mapViewPosition.getZoomLevel(), mapView.getModel().displayModel.getTileSize());
+        return metersPerPixel * pixel;
+    }
+
+    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) { // TODO same as in BaseMapView
+        int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
+        if (row != -1)
+            positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
+    }
+
+    private class SelectPositionAction extends FrameAction {
+        public void run() {
+            LatLong latLong = getMousePosition();
+            Double threshold = getThresholdForPixel(latLong, 15);
+            selectPosition(latLong.longitude, latLong.latitude, threshold, true);
+        }
+    }
+
+    private class ExtendSelectionAction extends FrameAction {
+        public void run() {
+            LatLong latLong = getMousePosition();
+            Double threshold = getThresholdForPixel(latLong, 15);
+            selectPosition(latLong.longitude, latLong.latitude, threshold, false);
+        }
+    }
+
+    private class AddPositionAction extends FrameAction {
+        private int getAddRow() { // TODO same as in BaseMapView
+            List<NavigationPosition> lastSelectedPositions = selectionUpdater.getCurrentSelection();
+            NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+            // quite crude logic to be as robust as possible on failures
+            if (position == null && positionsModel.getRowCount() > 0)
+                position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
+            return position != null ? positionsModel.getIndex(position) + 1 : 0;
+        }
+
+        private void insertPosition(int row, Double longitude, Double latitude) { // TODO unify with different code path from AddPositionAction
+            positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createDescription(positionsModel.getRowCount() + 1));
+            positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
+
+            positionAugmenter.complementDescription(row, longitude, latitude);
+            positionAugmenter.complementElevation(row, longitude, latitude);
+            positionAugmenter.complementTime(row, null, true);
+        }
+
+        public void run() {
+            LatLong latLong = getMousePosition();
+            int row = getAddRow();
+            insertPosition(row, latLong.longitude, latLong.latitude);
+        }
+    }
+
+    private class DeletePositionAction extends FrameAction {
+        private void removePosition(Double longitude, Double latitude, Double threshold) {
+            int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
+            if (row != -1) {
+                positionsModel.remove(new int[]{row});
+            }
+        }
+
+        public void run() {
+            LatLong latLong = getMousePosition();
+            Double threshold = getThresholdForPixel(latLong, 15);
+            removePosition(latLong.longitude, latLong.latitude, threshold);
         }
     }
 

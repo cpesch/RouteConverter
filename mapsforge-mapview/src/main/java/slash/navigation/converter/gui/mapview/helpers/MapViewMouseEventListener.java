@@ -20,9 +20,13 @@
 package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.core.model.Dimension;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.model.MapViewPosition;
+import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,10 +68,25 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
+        popupMouseEvent = e;
+
         if (isLeftMouseButton(e)) {
             lastDragPoint = e.getPoint();
+
+            boolean shiftKey = e.isShiftDown();
+            boolean altKey = e.isAltDown();
+            boolean ctrlKey = e.isControlDown();
+            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+            if (!shiftKey && !altKey && !ctrlKey)
+                actionManager.run("select-position");
+            else if (shiftKey && !altKey && !ctrlKey)
+                actionManager.run("extend-selection");
+            else if (!shiftKey && !altKey && ctrlKey)
+                actionManager.run("add-position");
+            else if (!shiftKey && altKey && ctrlKey)
+                actionManager.run("delete-position");
+
         } else if (isRightMouseButton(e)) {
-            popupMouseEvent = e;
             popupMenu.show(mapView, e.getX(), e.getY());
         }
     }
@@ -109,8 +128,17 @@ public class MapViewMouseEventListener extends MouseAdapter {
 
     public void zoomToMousePosition(byte zoomLevelDiff, MouseEvent e) {
         Dimension dimension = mapView.getDimension();
-        int horizontalDiff = dimension.width / 2 - e.getX();
-        int verticalDiff = dimension.height / 2 - e.getY();
+        MapViewProjection projection = new MapViewProjection(mapView);
+        LatLong mouse = projection.fromPixels(e.getX(), e.getY());
+        LatLong center = projection.fromPixels(dimension.width / 2, dimension.height / 2);
+        org.mapsforge.core.model.Point mousePoint = projection.toPixels(mouse);
+        org.mapsforge.core.model.Point centerPoint = projection.toPixels(center);
+        int horizontalDiff = (int) (centerPoint.x - mousePoint.x) / 2;
+        int verticalDiff = (int) (centerPoint.y - mousePoint.y) / 2;
         mapView.getModel().mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
+    }
+
+    public Point getMousePosition() {
+        return popupMouseEvent != null ? popupMouseEvent.getPoint() : null;
     }
 }

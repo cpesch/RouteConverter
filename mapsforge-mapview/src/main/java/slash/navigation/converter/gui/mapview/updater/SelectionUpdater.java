@@ -51,7 +51,7 @@ public class SelectionUpdater {
         }
     }
 
-    List<NavigationPosition> getCurrentSelection() {
+    public List<NavigationPosition> getCurrentSelection() {
         return currentSelection;
     }
 
