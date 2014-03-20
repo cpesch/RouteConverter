@@ -62,6 +62,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -153,13 +154,20 @@ public class MapsforgeMapView implements MapView {
         initializeMapView();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.positionAugmenter = positionAugmenter;
-        BRouter router = new BRouter(downloadManager);
+        BRouter bRouter = new BRouter();
+        bRouter.setDownloadManager(downloadManager);
         try {
-            router.initialize();
+            bRouter.initialize();
         } catch (IOException e) {
             log.severe("Cannot initialize BRouter: " + e.getMessage());
         }
-        this.routingService = router;
+        GraphHopper graphHopper = new GraphHopper();
+        try {
+            graphHopper.initialize();
+        } catch (IOException e) {
+            log.severe("Cannot initialize GraphHopper: " + e.getMessage());
+        }
+        this.routingService = graphHopper;
 
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;

@@ -243,6 +243,7 @@
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
         <module>jaxb6</module>

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mapsforge-mapview</artifactId>
+    <artifactId>graphhopper</artifactId>
     <packaging>jar</packaging>
-    <name>MapView based on mapsforge</name>
+    <name>Access to the GraphHopper routing</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -13,27 +13,20 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>brouter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+            <type>test-jar</type> <!-- for http://youtrack.jetbrains.net/issue/IDEA-54254 -->
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>graphhopper</artifactId>
+            <artifactId>common-navigation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapview</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>navigation-formats</artifactId>
+            <artifactId>download</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -41,21 +34,10 @@
             <artifactId>routing-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.mapsforge</groupId>
-            <artifactId>mapsforge-map</artifactId>
-            <version>${mapsforge.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapsforge</groupId>
-            <artifactId>mapsforge-map-awt</artifactId>
-            <version>${mapsforge.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>forms-rt</artifactId>
-            <version>6.0.5</version>
+            <groupId>com.graphhopper</groupId>
+            <artifactId>graphhopper</artifactId>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="GraphHopper" baseUrl="http://graphhopper.com/public/maps/0.3/" directory="graphhopper">
+        <file uri="europe_germany.ghz" size="1372494683"/>
+    </datasource>
+</datasources>

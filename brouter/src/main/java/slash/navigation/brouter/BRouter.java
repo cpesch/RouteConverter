@@ -60,10 +60,10 @@ public class BRouter implements RoutingService {
 
     private Map<String, File> fileMap;
     private String baseUrl, directory;
-    private final DownloadManager downloadManager;
+    private DownloadManager downloadManager;
     private final RoutingContext routingContext = new RoutingContext();
 
-    public BRouter(DownloadManager downloadManager) {
+    public void setDownloadManager(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
 
