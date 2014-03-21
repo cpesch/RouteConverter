@@ -8,6 +8,7 @@ java -jar download-tools\target\CreateHgtDataSourcesXml.jar "Jonathan de Ferrant
 java -jar download-tools\target\CreateHgtDataSourcesXml.jar "Jonathan de Ferranti DEM 1" "http://www.viewfinderpanoramas.org/dem1/" "ferranti1" "W:\Mirrors\www.viewfinderpanoramas.org\dem1" "hgt\src\main\resources\slash\navigation\hgt\ferranti1-datasources.xml"
 
 java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "BRouter" "http://h2096617.stratoserver.net/brouter/segments2/" "brouter" "W:\Mirrors\h2096617.stratoserver.net\brouter\segments2" "brouter\src\main\resources\slash\navigation\brouter\brouter-datasources.xml"
+java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "GraphHopper" "http://download.geofabrik.de/" "graphhopper" "W:\Mirrors\download.geofabrik.de" "graphhopper\src\main\resources\slash\navigation\graphhopper\graphhopper-datasources.xml"
 
 java -jar download-tools\target\CreateMapDataSourcesXml.jar "Freizeitkarte Maps" "http://download.freizeitkarte-osm.de/Experimental/MapsForge/Beta6/" "maps/freizeitkarte" "W:\Mirrors\download.freizeitkarte-osm.de\Experimental\MapsForge\Beta6" "mapsforge-maps\src\main\resources\slash\navigation\maps\freizeitkarte-maps-datasources.xml"
 java -jar download-tools\target\CreateMapDataSourcesXml.jar "Mapsforge Maps" "http://download.mapsforge.org/maps/" "maps/mapsforge" "W:\Mirrors\download.mapsforge.org\maps" "mapsforge-maps\src\main\resources\slash\navigation\maps\mapsforge-maps-datasources.xml"

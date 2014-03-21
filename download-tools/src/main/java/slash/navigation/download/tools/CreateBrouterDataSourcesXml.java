@@ -36,6 +36,7 @@ public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
+        System.out.println(getClass().getSimpleName() + ": " + uri);
         fileTypes.add(createFileType(uri, file));
     }
 
