@@ -20,12 +20,15 @@
 
 package slash.navigation.download.actions;
 
+import slash.common.type.CompactCalendar;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Files.generateChecksum;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * Validates the properties of a {@link File}.
@@ -70,6 +73,20 @@ public class Validator {
             boolean result = actualChecksum.equals(expectedChecksum);
             if (!result)
                 log.warning("File " + file + " checksum is " + actualChecksum + " but expected " + expectedChecksum);
+            return result;
+        }
+        return true;
+    }
+
+    public boolean validTimestamp(CompactCalendar expectedTimestamp) {
+        if (!existsFile())
+            return false;
+
+        if (expectedTimestamp != null) {
+            CompactCalendar actualTimestamp = fromMillis(file.lastModified());
+            boolean result = actualTimestamp.equals(expectedTimestamp);
+            if (!result)
+                log.warning("File " + file + " timestamp is " + actualTimestamp + " but expected " + expectedTimestamp);
             return result;
         }
         return true;

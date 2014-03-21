@@ -35,6 +35,9 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.Files.generateChecksum;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.datasources.DataSourcesUtil.marshal;
 
 /**
@@ -124,6 +127,18 @@ public abstract class BaseDataSourcesXmlGenerator {
             }
         });
         return asList(fileTypesArray);
+    }
+
+    protected FileType createFileType(String uri, File file) throws IOException {
+        String fileChecksum = generateChecksum(file);
+
+        FileType fileType = new ObjectFactory().createFileType();
+        fileType.setUri(uri);
+        fileType.setSize(file.length());
+        fileType.setChecksum(fileChecksum);
+        fileType.setTimestamp(formatTime(fromMillis(file.lastModified()), true));
+
+        return fileType;
     }
 
     private void writeXml(File file) throws JAXBException, FileNotFoundException {

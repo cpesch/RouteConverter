@@ -19,6 +19,7 @@
 */
 package slash.navigation.hgt;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -153,8 +154,9 @@ public class HgtFiles implements ElevationService {
         String url = getBaseUrl() + uri;
         File file = fileMap.get(uri);
         Long fileSize = file != null ? file.getSize() : null;
+        CompactCalendar fileTimestamp = file != null ? file.getTimestamp() : null;
         String fileChecksum = file != null ? file.getChecksum() : null;
         return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url,
-                fileSize, fileChecksum, Extract, getDirectory());
+                fileSize, fileChecksum, fileTimestamp, Extract, getDirectory());
     }
 }

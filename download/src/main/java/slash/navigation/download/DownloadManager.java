@@ -21,6 +21,7 @@
 package slash.navigation.download;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.download.actions.Validator;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
@@ -109,7 +110,7 @@ public class DownloadManager {
     public Download queueForDownload(Download download) {
         Download queued = getModel().getDownload(download.getUrl());
         if(queued != null) {
-            if(Failed.equals(queued.getState()))
+            if(Failed.equals(queued.getState()) || !new Validator(download.getTarget()).existsFile())
                 startExecutor(download);
             return queued;
         }
@@ -120,8 +121,9 @@ public class DownloadManager {
         return download;
     }
 
-    public Download queueForDownload(String description, String url, Long size, String checksum, Action action, File target) {
-        return queueForDownload(new Download(description, url, size, checksum, action, target));
+    public Download queueForDownload(String description, String url, Long size, String checksum,
+                                     CompactCalendar timestamp, Action action, File target) {
+        return queueForDownload(new Download(description, url, size, checksum, timestamp, action, target));
     }
 
     private static final Object LOCK = new Object();

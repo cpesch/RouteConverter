@@ -20,10 +20,10 @@
 
 package slash.navigation.download.datasources;
 
-import slash.navigation.download.datasources.binding.FragmentType;
 import slash.navigation.download.datasources.binding.DatasourceType;
 import slash.navigation.download.datasources.binding.DatasourcesType;
 import slash.navigation.download.datasources.binding.FileType;
+import slash.navigation.download.datasources.binding.FragmentType;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static slash.common.io.Transfer.parseTime;
 
 /**
  * Encapsulates access to the {@link DataSourceService}
@@ -68,7 +70,7 @@ public class DataSourceService {
     }
 
     private Fragment asFragment(FragmentType fragmentType) {
-        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum());
+        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum(), parseTime(fragmentType.getTimestamp()));
     }
 
     public Map<String, File> getFiles(String dataSourceName) {
@@ -81,6 +83,6 @@ public class DataSourceService {
     }
 
     private File asFile(FileType fileType) {
-        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum());
+        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()));
     }
 }
