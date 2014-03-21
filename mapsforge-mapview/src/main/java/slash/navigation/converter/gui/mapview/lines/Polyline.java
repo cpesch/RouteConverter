@@ -25,6 +25,7 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.Layer;
+import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 
 /**
- * A line spanning across several {@link LatLong}s on {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}
+ * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}
  *
  * @author Christian Pesch, inspired by Vass Gábor https://groups.google.com/forum/#!msg/mapsforge-dev/9svKL86y4aM/WdIay38iNeEJ
  */

@@ -31,12 +31,14 @@ import java.util.List;
  */
 
 public class RoutingResult   {
-    private List<NavigationPosition> positions;
-    private int distance;
+    private final List<NavigationPosition> positions;
+    private final double distance;
+    private final long time;
 
-    public RoutingResult(List<NavigationPosition> positions, int distance) {
+    public RoutingResult(List<NavigationPosition> positions, double distance, long time) {
         this.positions = positions;
         this.distance = distance;
+        this.time = time;
     }
 
     public List<NavigationPosition> getPositions() {
@@ -45,9 +47,17 @@ public class RoutingResult   {
 
     /**
      * Return the distance in meters for the positions.
-     * @return  the distance in meters for the positions
+     * @return the distance in meters for the positions
      */
-    public int getDistance() {
+    public double getDistance() {
         return distance;
+    }
+
+    /**
+     * Return the time in seconds for the positions.
+     * @return the time in seconds for the positions
+     */
+    public long getTime() {
+        return time;
     }
 }

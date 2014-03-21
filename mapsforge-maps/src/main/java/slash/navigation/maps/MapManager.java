@@ -168,7 +168,7 @@ public class MapManager {
     public void queueForDownload(RemoteResource resource) throws IOException {
         slash.navigation.download.datasources.File file = resource.getFile();
         Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
-                file.getSize(), file.getChecksum(), Extract, getDirectory(resource));
+                file.getSize(), file.getChecksum(), file.getTimestamp(), Extract, getDirectory(resource));
         downloadManager.waitForCompletion(asList(download));
         scanDirectories();
     }

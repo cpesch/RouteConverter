@@ -19,36 +19,13 @@
 */
 package slash.navigation.brouter;
 
-import org.junit.Before;
 import org.junit.Test;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.download.DownloadManager;
-import slash.navigation.routing.RoutingResult;
 
-import java.io.IOException;
-
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class BRouterTest {
-    private BRouter router;
-
-    @Before
-    public void setUp() throws IOException {
-        router = new BRouter();
-        router.setDownloadManager(new DownloadManager());
-        router.initialize();
-        router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
-    }
-
-    @Test
-    public void testGetRouteBetween() {
-        RoutingResult result = router.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
-                new SimpleNavigationPosition(10.06767, 53.49249));
-        assertEquals(109, result.getPositions().size());
-    }
+    private BRouter router = new BRouter();
 
     @Test
     public void testLongitude() {

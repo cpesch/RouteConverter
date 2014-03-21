@@ -20,6 +20,8 @@
 
 package slash.navigation.download.datasources;
 
+import slash.common.type.CompactCalendar;
+
 /**
  * A file that may be downloaded
  *
@@ -30,11 +32,13 @@ public class File {
     private final String uri;
     private final Long size;
     private final String checksum;
+    private final CompactCalendar timestamp;
 
-    public File(String uri, Long size, String checksum) {
+    public File(String uri, Long size, String checksum, CompactCalendar timestamp) {
         this.uri = uri;
         this.size = size;
         this.checksum = checksum;
+        this.timestamp = timestamp;
     }
 
     public String getUri() {
@@ -47,5 +51,9 @@ public class File {
 
     public String getChecksum() {
         return checksum;
+    }
+
+    public CompactCalendar getTimestamp() {
+        return timestamp;
     }
 }

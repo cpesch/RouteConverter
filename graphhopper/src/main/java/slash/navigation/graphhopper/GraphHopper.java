@@ -31,16 +31,23 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
+import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.graphhopper.util.CmdArgs.read;
+import static java.io.File.separator;
 import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -80,9 +87,13 @@ public class GraphHopper implements RoutingService {
         this.downloadManager = downloadManager;
     }
 
-    public void initialize() throws IOException {
-        String[] args = new String[] {
-                "osmreader.osm", new java.io.File(getDirectory(), "europe_germany.ghz").getAbsolutePath()
+    public void initialize() throws IOException { // TODO have to do this before routing
+        String folder = new java.io.File(getDirectory(), "europe/germany/").getAbsolutePath();
+        ensureDirectory(folder);
+        String[] args = new String[]{
+                "graph.location=" + folder,
+                "osmreader.osm=" + folder + separator + "hamburg-latest.osm.pbf"
+                // osmreader.acceptWay= CAR FOOT
         };
 
         hopper = new com.graphhopper.GraphHopper().forDesktop();
@@ -100,8 +111,7 @@ public class GraphHopper implements RoutingService {
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
         GHResponse response = hopper.route(new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude()));
-        // TODO response.getMillis();
-        return new RoutingResult(asPositions(response.getPoints()), (int) response.getDistance());
+        return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis());
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
@@ -131,34 +141,50 @@ public class GraphHopper implements RoutingService {
         }
     }
 
-    public void downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<String> keys = new HashSet<String>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add("europe_germany.ghz"); // TODO too simple
+            keys.add("europe/germany/hamburg-latest.osm.pbf"); // TODO too simple, need to determine from bounding box
         }
 
-        Set<FileAndTarget> files = new HashSet<FileAndTarget>();
+        Set<FileAndTarget> files = new HashSet<FileAndTarget>();                          // TODO from here same as BRouter
         for (String key : keys) {
             File catalog = fileMap.get(key);
             if (catalog != null)
                 files.add(new FileAndTarget(catalog, createFile(key)));
         }
 
-        Collection<Download> downloads = new HashSet<Download>();
+        final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
         for (FileAndTarget file : files) {
             if (new Validator(file.target).existsFile())
                 continue;
-            downloads.add(download(file));
+            notExistingFiles.add(file);
         }
+
+        return new DownloadFuture() {
+            public boolean isRequiresDownload() {
+                return !notExistingFiles.isEmpty();
+            }
+
+            public void download() {
+                downloadFiles(notExistingFiles);
+            }
+        };
+    }
+
+    private void downloadFiles(Set<FileAndTarget> retrieve) {
+        Collection<Download> downloads = new HashSet<Download>();
+        for (FileAndTarget file : retrieve)
+            downloads.add(initiateDownload(file));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(FileAndTarget file) {
+    private Download initiateDownload(FileAndTarget file) {
         String uri = file.file.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
-                file.file.getSize(), file.file.getChecksum(), Copy, file.target);
+                file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
     }
 }

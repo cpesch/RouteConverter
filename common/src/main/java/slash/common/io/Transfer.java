@@ -322,8 +322,12 @@ public class Transfer {
         return datatypeFactory;
     }
 
-    @SuppressWarnings("MagicConstant")
     public static XMLGregorianCalendar formatTime(CompactCalendar time) {
+       return formatTime(time, preferences.getBoolean("reduceTimeToSecondPrecision", false));
+    }
+
+    @SuppressWarnings("MagicConstant")
+    public static XMLGregorianCalendar formatTime(CompactCalendar time, boolean reduceTimeToSecondPrecision) {
         if (time == null)
             return null;
         try {
@@ -334,7 +338,7 @@ public class Transfer {
                     calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
             gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
             XMLGregorianCalendar result = getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
-            if (preferences.getBoolean("reduceTimeToSecondPrecision", false))
+            if (reduceTimeToSecondPrecision)
                 result.setFractionalSecond(null);
             return result;
         } catch (DatatypeConfigurationException e) {

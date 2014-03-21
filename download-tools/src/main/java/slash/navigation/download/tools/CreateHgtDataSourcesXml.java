@@ -35,6 +35,8 @@ import java.util.zip.ZipInputStream;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Files.generateChecksum;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * Creates a HGT data sources XML from file system mirror.
@@ -56,13 +58,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        String fileChecksum = generateChecksum(file);
-
-        FileType fileType = new ObjectFactory().createFileType();
-        fileType.setUri(uri);
-        fileType.setSize(file.length());
-        fileType.setChecksum(fileChecksum);
-        fileTypes.add(fileType);
+        fileTypes.add(createFileType(uri, file));
 
         ZipInputStream zipInputStream = null;
         try {
@@ -81,6 +77,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
                         fragmentType.setUri(uri);
                         fragmentType.setSize(entry.getSize());
                         fragmentType.setChecksum(checksum);
+                        fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
                         fragmentTypes.add(fragmentType);
 
                         // do not close zip input stream

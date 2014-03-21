@@ -27,12 +27,16 @@ import slash.navigation.base.Wgs84Position;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.SECOND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.common.type.CompactCalendar.UTC;
 
 public class GoPalTrackFormatTest {
     GoPalTrackFormat format = new GoPalTrackFormat();
@@ -70,13 +74,13 @@ public class GoPalTrackFormatTest {
         assertDoubleEquals(3.000001, position.getHdop());
         assertEquals(new Integer(4), position.getSatellites());
         DateFormat format = DateFormat.getDateTimeInstance();
-        format.setTimeZone(CompactCalendar.UTC);
+        format.setTimeZone(UTC);
         String actual = format.format(position.getTime().getTime());
-        Calendar expectedCal = Calendar.getInstance(CompactCalendar.UTC);
+        Calendar expectedCal = Calendar.getInstance(UTC);
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
-        expectedCal.set(Calendar.HOUR_OF_DAY, 18);
-        expectedCal.set(Calendar.MINUTE, 8);
-        expectedCal.set(Calendar.SECOND, 20);
+        expectedCal.set(HOUR_OF_DAY, 18);
+        expectedCal.set(MINUTE, 8);
+        expectedCal.set(SECOND, 20);
         String expected = format.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());
@@ -90,13 +94,13 @@ public class GoPalTrackFormatTest {
         assertDoubleEquals(-52.34555, position.getLatitude());
         assertNull(position.getElevation());
         DateFormat format = DateFormat.getDateTimeInstance();
-        format.setTimeZone(CompactCalendar.UTC);
+        format.setTimeZone(UTC);
         String actual = format.format(position.getTime().getTime());
-        Calendar expectedCal = Calendar.getInstance(CompactCalendar.UTC);
+        Calendar expectedCal = Calendar.getInstance(UTC);
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
-        expectedCal.set(Calendar.HOUR_OF_DAY, 18);
-        expectedCal.set(Calendar.MINUTE, 8);
-        expectedCal.set(Calendar.SECOND, 20);
+        expectedCal.set(HOUR_OF_DAY, 18);
+        expectedCal.set(MINUTE, 8);
+        expectedCal.set(SECOND, 20);
         String expected = format.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());

@@ -73,9 +73,11 @@ public class QueuePersister {
 
     private Download asDownload(DownloadType downloadType) {
         return new Download(downloadType.getDescription(), downloadType.getUrl(), downloadType.getSize(),
-                downloadType.getChecksum(), Action.valueOf(downloadType.getAction()), new File(downloadType.getTarget()),
-                parseTime(downloadType.getLastSync()), State.valueOf(downloadType.getState()), new File(downloadType.getTempFile()),
-                parseTime(downloadType.getLastModified()), downloadType.getContentLength());
+                downloadType.getChecksum(), parseTime(downloadType.getTimestamp()),
+                Action.valueOf(downloadType.getAction()), new File(downloadType.getTarget()),
+                parseTime(downloadType.getLastSync()), State.valueOf(downloadType.getState()),
+                new File(downloadType.getTempFile()), parseTime(downloadType.getLastModified()),
+                downloadType.getContentLength());
     }
 
     public void save(List<Download> downloads) throws IOException, JAXBException {
@@ -96,12 +98,13 @@ public class QueuePersister {
         downloadType.setUrl(download.getUrl());
         downloadType.setSize(download.getSize());
         downloadType.setChecksum(download.getChecksum());
+        downloadType.setTimestamp(formatTime(download.getTimestamp(), true));
         downloadType.setState(download.getState().name());
-        downloadType.setLastSync(formatTime(download.getLastSync()));
+        downloadType.setLastSync(formatTime(download.getLastSync(), true));
         downloadType.setAction(download.getAction().name());
         downloadType.setTarget(download.getTarget().getPath());
         downloadType.setTempFile(download.getTempFile().getPath());
-        downloadType.setLastModified(formatTime(download.getLastModified()));
+        downloadType.setLastModified(formatTime(download.getLastModified(), true));
         downloadType.setContentLength(download.getContentLength());
         return downloadType;
     }

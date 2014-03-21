@@ -64,6 +64,7 @@
         <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
     </xsd:complexType>
 
     <xsd:complexType name="fileType">
@@ -75,5 +76,6 @@
         <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
     </xsd:complexType>
 </xsd:schema>

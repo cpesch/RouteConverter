@@ -34,5 +34,5 @@ import java.util.List;
 public interface RoutingService {
     String getName();
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to);
-    void downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

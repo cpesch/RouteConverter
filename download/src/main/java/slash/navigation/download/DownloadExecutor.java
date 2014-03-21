@@ -32,16 +32,22 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.text.DateFormat.MEDIUM;
-import static java.text.DateFormat.SHORT;
 import static java.util.logging.Logger.getLogger;
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.CompactCalendar.now;
-import static slash.navigation.download.State.*;
+import static slash.navigation.download.State.ChecksumError;
+import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Failed;
+import static slash.navigation.download.State.NoFileError;
+import static slash.navigation.download.State.Processing;
+import static slash.navigation.download.State.Resuming;
+import static slash.navigation.download.State.SizeError;
+import static slash.navigation.download.State.Succeeded;
+import static slash.navigation.download.State.TimestampError;
 
 /**
  * Performs the {@link Download} of an URL to local file.
@@ -76,6 +82,7 @@ public class DownloadExecutor implements Runnable {
 
             if (success) {
                 State result = Succeeded;
+                setLastModified();
 
                 Validator validator = new Validator(download.getTempFile());
                 if(!validator.existsFile())
@@ -85,6 +92,8 @@ public class DownloadExecutor implements Runnable {
                         result = SizeError;
                     if(!validator.validChecksum(download.getChecksum()))
                         result = ChecksumError;
+                    if(!validator.validTimestamp(download.getTimestamp()))
+                        result = TimestampError;
                 }
 
                 postProcess();
@@ -98,10 +107,6 @@ public class DownloadExecutor implements Runnable {
 
         // finally set date of latest sync
         download.setLastSync(now());
-    }
-
-    private String formatTime(CompactCalendar calendar) {
-        return calendar != null ? DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(calendar.getTime()) : "<none>";
     }
 
     private boolean head() throws IOException {
@@ -128,10 +133,18 @@ public class DownloadExecutor implements Runnable {
         download.setContentLength(head.getContentLength());
 
         if (!lastModifiedAfter)
-            log.warning("HEAD last modified " + formatTime(lastModified) + " is later than " + formatTime(download.getLastModified()) + " when download started, need to download");
+            log.warning("HEAD last modified " + lastModified + " is later than " + download.getLastModified() + " when download started, need to download");
         download.setLastModified(lastModified);
 
         return false;
+    }
+
+    private void setLastModified() {
+        CompactCalendar lastModified = download.getLastModified();
+        if (lastModified != null) {
+            if(!download.getTempFile().setLastModified(lastModified.getTimeInMillis()))
+                log.warning("Could not set last modified of " + download.getTempFile() + " to " + lastModified);
+        }
     }
 
     private void updateState(Download download, State state) {
@@ -192,6 +205,7 @@ public class DownloadExecutor implements Runnable {
         Action action = download.getAction();
         switch (action) {
             case Copy:
+                ensureDirectory(download.getTarget().getParent());
                 new Copier(modelUpdater).copyAndClose(new FileInputStream(download.getTempFile()), new FileOutputStream(download.getTarget()), 0, download.getTempFile().length());
                 break;
             case Flatten:

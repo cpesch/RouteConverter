@@ -41,6 +41,7 @@ import static slash.navigation.download.State.Queued;
 public class Download {
     private final String description, url, checksum;
     private final Long size;
+    private final CompactCalendar timestamp;
     private CompactCalendar lastSync;
     private final Action action;
     private final File target, tempFile;
@@ -51,12 +52,14 @@ public class Download {
     private long processedBytes;
     private Long expectedBytes;
 
-    public Download(String description, String url, Long size, String checksum, Action action, File target,
+    public Download(String description, String url, Long size, String checksum, CompactCalendar timestamp, Action action, File target,
                     CompactCalendar lastSync, State state, File tempFile, CompactCalendar lastModified, Long contentLength) {
         this.description = description;
         this.url = url;
         this.size = size;
         this.checksum = checksum;
+        this.timestamp = timestamp;
+
         this.action = action;
         this.target = target;
         this.lastSync = lastSync;
@@ -66,8 +69,8 @@ public class Download {
         this.contentLength = contentLength;
     }
 
-    public Download(String description, String url, Long size, String checksum, Action action, File target) {
-        this(description, url, size, checksum, action, target, now(), Queued, newTempFile(target, action), null, null);
+    public Download(String description, String url, Long size, String checksum, CompactCalendar timestamp, Action action, File target) {
+        this(description, url, size, checksum, timestamp, action, target, now(), Queued, newTempFile(target, action), null, null);
     }
 
     private static File newTempFile(File target, Action action) {
@@ -100,6 +103,10 @@ public class Download {
 
     public String getChecksum() {
         return checksum;
+    }
+
+    public CompactCalendar getTimestamp() {
+        return timestamp;
     }
 
     public Action getAction() {

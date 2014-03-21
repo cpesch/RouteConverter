@@ -35,5 +35,6 @@ public enum State {
     NoFileError,
     ChecksumError,
     SizeError,
+    TimestampError,
     Failed
 }

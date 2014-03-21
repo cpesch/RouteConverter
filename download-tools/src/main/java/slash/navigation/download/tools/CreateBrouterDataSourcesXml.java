@@ -21,13 +21,10 @@ package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.ObjectFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import static slash.common.io.Files.generateChecksum;
 
 /**
  * Creates a BRouter data sources XML from file system mirror.
@@ -39,13 +36,7 @@ public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        String fileChecksum = generateChecksum(file);
-
-        FileType fileType = new ObjectFactory().createFileType();
-        fileType.setUri(uri);
-        fileType.setSize(file.length());
-        fileType.setChecksum(fileChecksum);
-        fileTypes.add(fileType);
+        fileTypes.add(createFileType(uri, file));
     }
 
     public static void main(String[] args) throws Exception {

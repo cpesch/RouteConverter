@@ -62,13 +62,13 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.Theme;
+import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
@@ -91,7 +91,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
@@ -100,6 +100,9 @@ import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -161,13 +164,7 @@ public class MapsforgeMapView implements MapView {
         } catch (IOException e) {
             log.severe("Cannot initialize BRouter: " + e.getMessage());
         }
-        GraphHopper graphHopper = new GraphHopper();
-        try {
-            graphHopper.initialize();
-        } catch (IOException e) {
-            log.severe("Cannot initialize GraphHopper: " + e.getMessage());
-        }
-        this.routingService = graphHopper;
+        this.routingService = bRouter; // TODO need to make this configurable
 
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
@@ -310,56 +307,59 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private java.util.Map<PositionPair, Polyline> pairsToLines = new HashMap<PositionPair, Polyline>();
-            private int distance;
+            private java.util.Map<PositionPair, Layer> pairsToLines = new HashMap<PositionPair, Layer>();
+            private java.util.Map<PositionPair, Double> pairsToDistances = new HashMap<PositionPair, Double>();
+            private java.util.Map<PositionPair, Long> pairsToTimes = new HashMap<PositionPair, Long>();
 
             public void add(final List<PositionPair> pairs) {
-                executor.execute(new Runnable() {
-                    public void run() {
-                        distance = 0;
-                        fireCalculatedDistance(0, 0);
+                final DownloadFuture future = routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairs));
+                if(future.isRequiresDownload()) {
+                    drawBeeline(pairs);
+                    fireDistance();
 
-                        List<Line> lines = paintLines(pairs);
-                        downloadRoutingDataFor(pairs);
-                        removeLines(lines);
-                        paintRoute(pairs);
-
-                        invokeLater(new Runnable() {
-                            public void run() {
-                                getLayerManager().redrawLayers();
-                            }
-                        });
-                    }
-
-                });
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            future.download();
+                            removeLines(pairs);
+                            drawRoute(pairs);
+                            fireDistance();
+                            getLayerManager().redrawLayers();
+                        }
+                    });
+                } else {
+                    drawRoute(pairs);
+                    fireDistance();
+                    getLayerManager().redrawLayers();
+                }
             }
 
-            private void removeLines(List<Line> lines) {
-                for (Line line : lines)
-                    getLayerManager().getLayers().remove(line);
-            }
-
-            private List<Line> paintLines(List<PositionPair> pairs) {
-                List<Line> lines = new ArrayList<Line>();
+            private void drawBeeline(List<PositionPair> pairs) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PositionPair pair : pairs) {
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
                     getLayerManager().getLayers().add(line);
-                    lines.add(line);
+                    pairsToLines.put(pair, line);
+
+                    Double distance = pair.getFirst().calculateDistance(pair.getSecond());
+                    pairsToDistances.put(pair, distance);
+                    Long time = pair.getFirst().calculateTime(pair.getSecond());
+                    pairsToTimes.put(pair, time);
                 }
-                return lines;
             }
 
-            private void downloadRoutingDataFor(List<PositionPair> pairs) {
-                List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
+            private void removeLines(List<PositionPair> pairs) {
                 for (PositionPair pair : pairs) {
-                    longitudeAndLatitudes.add(asLongitudeAndLatitude(pair.getFirst()));
-                    longitudeAndLatitudes.add(asLongitudeAndLatitude(pair.getSecond()));
+                    Layer line = pairsToLines.get(pair);
+                    if (line != null) {
+                        getLayerManager().getLayers().remove(line);
+                        pairsToLines.remove(pair);
+                        pairsToDistances.remove(pair);
+                        pairsToTimes.remove(pair);
+                    }
                 }
-                routingService.downloadRoutingDataFor(longitudeAndLatitudes);
             }
 
-            private void paintRoute(List<PositionPair> pairs) {
+            private void drawRoute(List<PositionPair> pairs) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PositionPair pair : pairs) {
                     List<LatLong> latLongs = calculateRoute(pair);
@@ -376,25 +376,25 @@ public class MapsforgeMapView implements MapView {
                 RoutingResult intermediate = routingService.getRouteBetween(pair.getFirst(), pair.getSecond());
                 if (intermediate != null) {
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
-                    distance += intermediate.getDistance();
-                } else {
-                    Double calculateDistance = pair.getFirst().calculateDistance(pair.getSecond());
-                    if (calculateDistance != null)
-                        distance += calculateDistance;
+                    pairsToDistances.put(pair, intermediate.getDistance());
+                    pairsToTimes.put(pair, intermediate.getTime());
                 }
-                fireCalculatedDistance(distance, 0);
                 latLongs.add(asLatLong(pair.getSecond()));
                 return latLongs;
             }
 
-            public void remove(List<PositionPair> pairs) {
-                for (PositionPair pair : pairs) {
-                    Polyline line = pairsToLines.get(pair);
-                    if (line != null) {
-                        getLayerManager().getLayers().remove(line);
-                        pairsToLines.remove(pair);
-                    }
+            private void fireDistance() {
+                double sum = 0.0;
+                for(Double distance : pairsToDistances.values()) {
+                    if(distance != null)
+                        sum += distance;
                 }
+                fireCalculatedDistance((int)sum, 0);
+            }
+
+            public void remove(List<PositionPair> pairs) {
+                removeLines(pairs);
+                fireDistance();
                 getLayerManager().redrawLayers();
             }
         });
@@ -409,6 +409,7 @@ public class MapsforgeMapView implements MapView {
                     getLayerManager().getLayers().add(line);
                     pairsToLines.put(pair, line);
                 }
+                // TODO fireCalculatedDistance((int)sum, 0);
                 getLayerManager().redrawLayers();
             }
 
@@ -420,6 +421,7 @@ public class MapsforgeMapView implements MapView {
                         pairsToLines.remove(pair);
                     }
                 }
+                // TODO fireCalculatedDistance((int)sum, 0);
                 getLayerManager().redrawLayers();
             }
         });
@@ -469,10 +471,16 @@ public class MapsforgeMapView implements MapView {
                         eventMapUpdater.handleAdd(e.getFirstRow(), e.getLastRow());
                         break;
                     case UPDATE:
+                        if(getPositionsModel().isContinousRange())
+                            return;
+                        if (!(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
+                                e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == ALL_COLUMNS))
+                            return;
+
                         boolean allRowsChanged = isFirstToLastRow(e);
-                        if (allRowsChanged)
-                            ; // TODO updateRouteButDontRecenter();
-                        else
+                        if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
 
                         if (allRowsChanged) {
@@ -658,6 +666,16 @@ public class MapsforgeMapView implements MapView {
     private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
         return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
     }
+
+    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PositionPair> pairs) {
+        List<LongitudeAndLatitude> result = new ArrayList<>();
+        for (PositionPair pair : pairs) {
+            result.add(asLongitudeAndLatitude(pair.getFirst()));
+            result.add(asLongitudeAndLatitude(pair.getSecond()));
+        }
+        return result;
+    }
+
 
     private org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
         return new org.mapsforge.core.model.BoundingBox(

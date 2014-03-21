@@ -21,7 +21,6 @@ package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.ObjectFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.Files.getExtension;
 
 /**
@@ -44,17 +42,11 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        String fileChecksum = generateChecksum(file);
 
         String extension = getExtension(file);
         if(".map".equals(extension)) {
             System.out.println(getClass().getSimpleName() + ": " + uri);
-
-            FileType fileType = new ObjectFactory().createFileType();
-            fileType.setUri(uri);
-            fileType.setSize(file.length());
-            fileType.setChecksum(fileChecksum);
-            fileTypes.add(fileType);
+            fileTypes.add(createFileType(uri, file));
 
         } else if (".zip".endsWith(extension)) {
             ZipInputStream zipInputStream = null;
@@ -64,12 +56,7 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
                 while (entry != null) {
                     if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
                         System.out.println(getClass().getSimpleName() + ": " + entry.getName() + " maps to " + uri);
-
-                        FileType fileType = new ObjectFactory().createFileType();
-                        fileType.setUri(uri);
-                        fileType.setSize(file.length());
-                        fileType.setChecksum(fileChecksum);
-                        fileTypes.add(fileType);
+                        fileTypes.add(createFileType(uri, file));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

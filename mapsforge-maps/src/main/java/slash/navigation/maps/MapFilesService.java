@@ -40,6 +40,7 @@ public class MapFilesService {
     private static final String[] DATASOURCE_URLS = new String[]{
             "freizeitkarte-maps-datasources.xml",
             "freizeitkarte-themes-datasources.xml",
+            "android-maps-datasources.xml",
             "mapsforge-maps-datasources.xml",
             "openandromaps-maps-datasources.xml",
             "openandromaps-themes-datasources.xml"

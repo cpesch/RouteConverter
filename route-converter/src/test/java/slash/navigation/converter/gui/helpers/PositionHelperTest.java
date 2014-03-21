@@ -26,17 +26,17 @@ import slash.common.type.CompactCalendar;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Locale;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
+import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
 
 public class PositionHelperTest {
 
     private String asDefaultLocaleTime(String germanString) throws ParseException {
-        DateFormat germanFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM, Locale.GERMAN);
+        DateFormat germanFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM, GERMAN);
         Date date = germanFormat.parse(germanString);
         DateFormat defaultFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
         return defaultFormat.format(date);

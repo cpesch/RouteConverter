@@ -25,12 +25,13 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.Layer;
+import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
 import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 
 /**
- * A line between two {@link LatLong}s on {@link slash.navigation.converter.gui.mapview.MapsforgeMapView}
+ * A line between two {@link LatLong}s on {@link MapsforgeMapView}
  *
  * @author Christian Pesch
  */

@@ -20,7 +20,11 @@
 
 package slash.navigation.brouter;
 
-import btools.router.*;
+import btools.router.OsmNodeNamed;
+import btools.router.OsmPathElement;
+import btools.router.OsmTrack;
+import btools.router.RoutingContext;
+import btools.router.RoutingEngine;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -29,12 +33,18 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
+import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -63,11 +73,7 @@ public class BRouter implements RoutingService {
     private DownloadManager downloadManager;
     private final RoutingContext routingContext = new RoutingContext();
 
-    public void setDownloadManager(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
-    }
-
-    public void initialize() throws IOException {
+    public BRouter() {
         DataSourceService service = new DataSourceService();
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
@@ -77,7 +83,13 @@ public class BRouter implements RoutingService {
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
         this.directory = service.getDataSource(getName()).getDirectory();
+    }
 
+    public void setDownloadManager(DownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
+    }
+
+    public void initialize() throws IOException {
         extractFile("slash/navigation/brouter/car-test.brf");
         extractFile("slash/navigation/brouter/fastbike.brf");
         extractFile("slash/navigation/brouter/lookups.dat");
@@ -112,7 +124,7 @@ public class BRouter implements RoutingService {
 
         OsmTrack track = routingEngine.getFoundTrack();
         int distance = routingEngine.getDistance();
-        return new RoutingResult(asPositions(track), distance);
+        return new RoutingResult(asPositions(track), distance, 0);
     }
 
     private java.io.File getDirectory() {
@@ -187,7 +199,7 @@ public class BRouter implements RoutingService {
         }
     }
 
-    public void downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<String> keys = new HashSet<String>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
@@ -200,21 +212,37 @@ public class BRouter implements RoutingService {
                 files.add(new FileAndTarget(catalog, createFile(key)));
         }
 
-        Collection<Download> downloads = new HashSet<Download>();
+        final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
         for (FileAndTarget file : files) {
             if (new Validator(file.target).existsFile())
                 continue;
-            downloads.add(download(file));
+            notExistingFiles.add(file);
         }
+
+        return new DownloadFuture() {
+            public boolean isRequiresDownload() {
+                return !notExistingFiles.isEmpty();
+            }
+
+            public void download() {
+                downloadFiles(notExistingFiles);
+            }
+        };
+    }
+
+    private void downloadFiles(Set<FileAndTarget> retrieve) {
+        Collection<Download> downloads = new HashSet<Download>();
+        for (FileAndTarget file : retrieve)
+            downloads.add(initiateDownload(file));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(FileAndTarget file) {
+    private Download initiateDownload(FileAndTarget file) {
         String uri = file.file.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
-                file.file.getSize(), file.file.getChecksum(), Copy, file.target);
+                file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
     }
 }

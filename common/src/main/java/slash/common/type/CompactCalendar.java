@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
@@ -173,13 +175,16 @@ public class CompactCalendar {
 
         CompactCalendar that = (CompactCalendar) o;
 
-        return timeInMillis == that.timeInMillis && !(timeZoneId != null ?
-                !timeZoneId.equals(that.timeZoneId) : that.timeZoneId != null);        
+        return timeInMillis == that.timeInMillis && timeZoneId.equals(that.timeZoneId);
     }
 
     public int hashCode() {
         int result = (int) (timeInMillis ^ (timeInMillis >>> 32));
-        result = 31 * result + (timeZoneId != null ? timeZoneId.hashCode() : 0);
+        result = 31 * result + timeZoneId.hashCode();
         return result;
+    }
+
+    public String toString() {
+        return DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(getTime());
     }
 }

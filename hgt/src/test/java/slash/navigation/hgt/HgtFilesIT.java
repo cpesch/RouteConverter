@@ -40,8 +40,8 @@ public class HgtFilesIT {
     private HgtFiles files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test",
             archiveMap, fileMap, downloadManager);
     {
-        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined"));
-        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined"));
+        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
+        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
     }
 
     @Before
