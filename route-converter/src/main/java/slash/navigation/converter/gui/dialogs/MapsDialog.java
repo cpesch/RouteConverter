@@ -51,6 +51,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -68,8 +69,6 @@ public class MapsDialog extends SimpleDialog {
     private JTable tableResources;
     private JButton buttonDownload;
     private JButton buttonClose;
-
-    private ExecutorService executor = newCachedThreadPool();
 
     public MapsDialog() {
         super(RouteConverter.getInstance().getFrame(), "maps");
@@ -217,13 +216,14 @@ public class MapsDialog extends SimpleDialog {
         for (int i = 0; i < selectedRows.length; i++) {
             selectedRows[i] = tableResources.convertRowIndexToModel(selectedRows[i]);
         }
-        executor.execute(new Runnable() {
+
+        Thread queueForDownload = new Thread(new Runnable() {
             public void run() {
                 for (int selectedRow : selectedRows) {
                     try {
                         getMapManager().queueForDownload(getMapManager().getResourcesModel().getResource(selectedRow));
                     } catch (final IOException e) {
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 showMessageDialog(null,
                                         format(RouteConverter.getBundle().getString("scan-error"), e.getMessage()), "Error",
@@ -233,11 +233,12 @@ public class MapsDialog extends SimpleDialog {
                     }
                 }
             }
-        });
+        }, "MapDownloadQueuer");
+        queueForDownload.setDaemon(true);
+        queueForDownload.start();
     }
 
     private void close() {
-        executor.shutdownNow();
         dispose();
     }
 

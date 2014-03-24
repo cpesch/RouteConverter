@@ -118,7 +118,7 @@ public class MapManager {
         return preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath());
     }
 
-    public void scanDirectories() throws IOException {
+    public synchronized void scanDirectories() throws IOException {
         mapsModel.clear();
         mapsModel.addOrUpdateMap(new DownloadMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
         mapsModel.addOrUpdateMap(new DownloadMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
@@ -174,6 +174,7 @@ public class MapManager {
         Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
                 file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
         downloadManager.waitForCompletion(asList(download));
+        // TODO might want to make this a Thread like in BaseMapView that is notified
         scanDirectories();
     }
 
