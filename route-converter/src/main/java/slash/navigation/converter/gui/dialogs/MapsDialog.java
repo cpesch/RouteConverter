@@ -28,6 +28,7 @@ import slash.navigation.converter.gui.renderer.MapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ResourcesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
@@ -47,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -67,6 +69,7 @@ public class MapsDialog extends SimpleDialog {
     private JTable tableResources;
     private JButton buttonDownload;
     private JButton buttonClose;
+    private ExecutorService executor = newCachedThreadPool();
 
     private ExecutorService executor = newCachedThreadPool();
 
@@ -168,20 +171,26 @@ public class MapsDialog extends SimpleDialog {
 
     private void download() {
         final int[] selectedRows = tableResources.getSelectedRows();
+        for (int i = 0; i < selectedRows.length; i++) {
+            selectedRows[i] = tableResources.convertRowIndexToModel(selectedRows[i]);
+        }
+
         executor.execute(new Runnable() {
             public void run() {
                 for (int selectedRow : selectedRows) {
-                    try {
-                        getMapManager().queueForDownload(getMapManager().getResourcesModel().getResource(selectedRow));
-                    } catch (final IOException e) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                showMessageDialog(null,
-                                        format(RouteConverter.getBundle().getString("scan-error"), e.getMessage()), "Error",
-                                        ERROR_MESSAGE);
-                            }
-                        });
-                    }
+                    getMapManager().queueForDownload(getMapManager().getResourcesModel().getResource(selectedRow));
+                }
+
+                try {
+                    getMapManager().scanDirectories();
+                } catch (final IOException e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(null,
+                                    format(RouteConverter.getBundle().getString("scan-error"), e.getMessage()), "Error",
+                                    ERROR_MESSAGE);
+                        }
+                    });
                 }
             }
         });
