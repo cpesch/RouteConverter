@@ -408,7 +408,7 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().dispose();
         getCompletePositionService().dispose();
         getDownloadManager().dispose();
-        getDownloadManager().saveQueue(getDownloadQueueFile());
+        getDownloadManager().saveQueue();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -1061,7 +1061,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDownloadManager() {
         new Thread(new Runnable() {
             public void run() {
-                getDownloadManager().restartQueue(getDownloadQueueFile());
+                getDownloadManager().setQueue(getDownloadQueueFile());
                 getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
                     private boolean initialUpdateEvent = true;
 
