@@ -46,7 +46,7 @@ import java.util.concurrent.ExecutorService;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -68,7 +68,7 @@ public class MapsDialog extends SimpleDialog {
     private JButton buttonDownload;
     private JButton buttonClose;
 
-    private ExecutorService executor = newSingleThreadExecutor();
+    private ExecutorService executor = newCachedThreadPool();
 
     public MapsDialog() {
         super(RouteConverter.getInstance().getFrame(), "maps");

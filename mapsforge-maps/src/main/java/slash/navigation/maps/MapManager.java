@@ -22,6 +22,7 @@ package slash.navigation.maps;
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.maps.models.*;
@@ -41,6 +42,7 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
 
 /**
@@ -167,10 +169,16 @@ public class MapManager {
 
     public void queueForDownload(RemoteResource resource) throws IOException {
         slash.navigation.download.datasources.File file = resource.getFile();
+        Action action = resource.getFile().getUri().endsWith(".zip") ? Extract : Copy;
+        File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);                ;
         Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
-                file.getSize(), file.getChecksum(), file.getTimestamp(), Extract, getDirectory(resource));
+                file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
         downloadManager.waitForCompletion(asList(download));
         scanDirectories();
+    }
+
+    private File getFile(RemoteResource resource) {
+        return new File(getApplicationDirectory(resource.getSubDirectory()), resource.getFile().getUri());
     }
 
     private File getDirectory(RemoteResource resource) {

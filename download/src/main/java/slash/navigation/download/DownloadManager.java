@@ -50,9 +50,11 @@ import static slash.navigation.download.State.*;
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
     static final int WAIT_TIMEOUT = 15 * 1000;
+    private static final long QUEUE_FILE_SAVE_INTERVAL = 5 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
     private final DownloadTableModel model = new DownloadTableModel();
     private final ThreadPoolExecutor pool;
+    private File queueFile;
 
     public DownloadManager() {
         BlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(1, new DownloadExecutorComparator());
@@ -60,7 +62,8 @@ public class DownloadManager {
         pool.allowCoreThreadTimeOut(true);
     }
 
-    public void restartQueue(File file) {
+    public void setQueue(File file) {
+        this.queueFile = file;
         try {
             List<Download> downloads = new QueuePersister(file).load();
             if (downloads != null)
@@ -82,11 +85,13 @@ public class DownloadManager {
         }
     }
 
-    public void saveQueue(File file) {
+    public void saveQueue() {
+        if(currentTimeMillis() - queueFile.lastModified() < QUEUE_FILE_SAVE_INTERVAL)
+            return;
         try {
-            new QueuePersister(file).save(model.getDownloads());
+            new QueuePersister(queueFile).save(model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d downloads to '%s': %s", model.getRowCount(), file, e.getMessage()));
+            log.severe(format("Could not save %d downloads to '%s': %s", model.getRowCount(), queueFile, e.getMessage()));
         }
     }
     public void dispose() {
@@ -101,6 +106,7 @@ public class DownloadManager {
         DownloadExecutor executor = new DownloadExecutor(download, model);
         model.addOrUpdateDownload(download);
         pool.execute(executor);
+        saveQueue();
     }
 
     public CompactCalendar getLastSync(String url) {
