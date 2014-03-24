@@ -78,8 +78,8 @@ public class DownloadType {
     @XmlAttribute(name = "lastModified", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar lastModified;
-    @XmlAttribute(name = "contentLength", required = true)
-    protected long contentLength;
+    @XmlAttribute(name = "contentLength")
+    protected Long contentLength;
 
     /**
      * Gets the value of the description property.
@@ -341,7 +341,7 @@ public class DownloadType {
      * Gets the value of the contentLength property.
      * 
      */
-    public long getContentLength() {
+    public Long getContentLength() {
         return contentLength;
     }
 
@@ -349,7 +349,7 @@ public class DownloadType {
      * Sets the value of the contentLength property.
      * 
      */
-    public void setContentLength(long value) {
+    public void setContentLength(Long value) {
         this.contentLength = value;
     }
 

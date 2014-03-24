@@ -51,7 +51,7 @@
         <xsd:attribute name="tempFile" type="xsd:string" use="required"/>
 
         <!-- data from HEAD request -->
-        <xsd:attribute name="lastModified" type="xsd:dateTime" use="required"/>
-        <xsd:attribute name="contentLength" type="xsd:long" use="required"/>
+        <xsd:attribute name="lastModified" type="xsd:dateTime"/>
+        <xsd:attribute name="contentLength" type="xsd:long"/>
     </xsd:complexType>
 </xsd:schema>

@@ -167,15 +167,13 @@ public class MapManager {
             resourcesModel.addOrUpdateResource(resource);
     }
 
-    public void queueForDownload(RemoteResource resource) throws IOException {
+    public void queueForDownload(RemoteResource resource) {
         slash.navigation.download.datasources.File file = resource.getFile();
         Action action = resource.getFile().getUri().endsWith(".zip") ? Extract : Copy;
-        File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);                ;
+        File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
         Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
                 file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
         downloadManager.waitForCompletion(asList(download));
-        // TODO might want to make this a Thread like in BaseMapView that is notified
-        scanDirectories();
     }
 
     private File getFile(RemoteResource resource) {
