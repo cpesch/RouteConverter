@@ -267,8 +267,7 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null,
-                    Flatten, target.getParentFile());
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null, null, Flatten, target.getParentFile());
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 
