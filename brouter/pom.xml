@@ -17,7 +17,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
-            <type>test-jar</type> <!-- for http://youtrack.jetbrains.net/issue/IDEA-54254 -->
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -37,12 +36,7 @@
         <dependency>
             <groupId>org.btools</groupId>
             <artifactId>brouter-core</artifactId>
-            <version>0.98</version>
-        </dependency>
-        <dependency>
-            <groupId>org.btools</groupId>
-            <artifactId>brouter-mapaccess</artifactId> <!-- TODO shouldn't be here, fix brouter package dependency -->
-            <version>0.98</version>
+            <version>0.9.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
