@@ -27,7 +27,7 @@
         <key>Java</key>
         <dict>
             <key>JVMVersion</key>
-            <string>1.6+</string>
+            <string>1.7+</string>
             <key>VMOptions</key>
             <string>-XstartOnFirstThread -d64 -Xmx1024m -Dapple.laf.useScreenMenuBar=true</string>
             <key>MainClass</key>
