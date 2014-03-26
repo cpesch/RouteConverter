@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.mapview.renderer;
 
+import slash.navigation.gui.Application;
 import slash.navigation.maps.Map;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
         if (map != null) {
             text = shortenName(map.getDescription());
             if (map.isRenderer())
-                text += " (offline)"; // TODO localize offline
+                text += " " + Application.getInstance().getContext().getBundle().getString("renderer-map");
             tooltip = map.getUrl();
         }
         label.setText(text);
