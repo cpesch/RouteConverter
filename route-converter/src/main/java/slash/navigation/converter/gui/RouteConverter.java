@@ -40,6 +40,7 @@ import slash.navigation.converter.gui.actions.FindPlaceAction;
 import slash.navigation.converter.gui.actions.InsertPositionsAction;
 import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
 import slash.navigation.converter.gui.actions.RevertPositionListAction;
+import slash.navigation.converter.gui.actions.SelectMapsAction;
 import slash.navigation.converter.gui.actions.SendErrorReportAction;
 import slash.navigation.converter.gui.actions.ShowAboutAction;
 import slash.navigation.converter.gui.actions.ShowDownloadsAction;
@@ -1115,19 +1116,6 @@ public class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 getDownloadManager().setQueue(getDownloadQueueFile());
-                getDownloadManager().getModel().addTableModelListener(new TableModelListener() {
-                    private boolean initialUpdateEvent = true;
-
-                    public void tableChanged(TableModelEvent e) {
-                        // ignore updates but the first to show resumed downloads after program start
-                        // but avoid flickering for every tiny download update
-                        if (e.getType() == UPDATE && !initialUpdateEvent)
-                            return;
-                        initialUpdateEvent = false;
-
-                        getContext().getActionManager().run("show-downloads");
-                    }
-                });
             }
         }, "DownloadManagerInitializer").start();
     }
@@ -1149,7 +1137,6 @@ public class RouteConverter extends SingleFrameApplication {
                 }
             }
         }, "MapManagerInitializer").start();
-        getDownloadManager().restartQueue(getDownloadQueueFile());
     }
 
     private class PrintMapAction extends FrameAction {

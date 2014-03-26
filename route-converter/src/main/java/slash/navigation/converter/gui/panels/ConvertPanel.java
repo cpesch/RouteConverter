@@ -790,8 +790,7 @@ public class ConvertPanel implements PanelInTab {
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
                             shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
-                    r.getFrame().getTitle(), YES_NO_CANCEL_OPTION
-            );
+                    r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
                 case YES_OPTION:
                     break;
