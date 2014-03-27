@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="Freizeitkarte Maps" baseUrl="http://download.freizeitkarte-osm.de/Experimental/MapsForge/Beta6/" directory="maps/freizeitkarte">
+        <file uri="freizeitkarte_alps_east.map.zip" size="642494391" checksum="42CE7AB7C2CF96E8985556FB5E0FA38344F5173D" timestamp="2013-12-18T18:40:54Z"/>
+        <file uri="freizeitkarte_alps_west.map.zip" size="738676123" checksum="CC9BFCF84098F3397CDFDB555D9459CFE1C2CB4A" timestamp="2013-12-18T18:42:19Z"/>
+        <file uri="freizeitkarte_aut+.map.zip" size="511965107" checksum="0384FFCC704416EDD3C8E6C2ED16B9820C4DC91D" timestamp="2013-12-18T18:43:15Z"/>
+        <file uri="freizeitkarte_bel+.map.zip" size="356352990" checksum="E7DA1FB72DF809790D5C9550DAB3C5665D541DA7" timestamp="2013-12-18T18:43:54Z"/>
+        <file uri="freizeitkarte_che+.map.zip" size="400730625" checksum="F56CF4E29B340B459B356F2AA3BD40D00909A7CC" timestamp="2013-12-18T18:44:39Z"/>
+        <file uri="freizeitkarte_cze+.map.zip" size="409006867" checksum="BC86E6BA9CA45518E2B6458D4EB5084148F4277F" timestamp="2013-12-18T18:45:24Z"/>
+        <file uri="freizeitkarte_deu+nord.map.zip" size="786057229" checksum="B2D6D35BA73A6591D897EB30DBF8A9F464D1F20D" timestamp="2013-12-18T18:46:50Z"/>
+        <file uri="freizeitkarte_deu+sued.map.zip" size="805219856" checksum="F01C981DC143D913BB09DF55F932C6B79609885D" timestamp="2013-12-18T18:48:58Z"/>
+        <file uri="freizeitkarte_dnk.map.zip" size="79498957" checksum="CF7185092CAF86DDD516D0D68EDC5BD28ED244FE" timestamp="2013-12-18T18:49:14Z"/>
+        <file uri="freizeitkarte_esp.map.zip" size="459859896" checksum="6F4C7F283B056272BCC788408CC45A9DA317251E" timestamp="2013-12-29T08:37:57Z"/>
+        <file uri="freizeitkarte_gbr.map.zip" size="379636744" checksum="A4E5326E828C4902A4AF85AA0CA6D00105376F68" timestamp="2013-12-29T08:38:32Z"/>
+        <file uri="freizeitkarte_grc.map.zip" size="157659645" checksum="53DEFFEFBB2932E05BFA1B35DC2A5EC2CEF74B92" timestamp="2013-12-29T08:38:48Z"/>
+        <file uri="freizeitkarte_irl.map.zip" size="61243261" checksum="27B7BCD727C085004EB19D1BC9F8A1B17AEAB7D3" timestamp="2013-12-29T08:38:54Z"/>
+        <file uri="freizeitkarte_isl.map.zip" size="63382878" checksum="CE1F617D1537721706DF17DC780C61BD7D0C6EB7" timestamp="2013-12-29T08:39:00Z"/>
+        <file uri="freizeitkarte_ita.map.zip" size="644530399" checksum="0CE987082C0DEE2414B03A95A0C2DDE70F7A2E58" timestamp="2013-12-29T08:39:59Z"/>
+        <file uri="freizeitkarte_lux+.map.zip" size="61626808" checksum="5F236551F51C4B5B5A1DB67B02B6B5A9C5DD3EEE" timestamp="2013-12-18T18:49:26Z"/>
+        <file uri="freizeitkarte_nld+.map.zip" size="449220783" checksum="1A925DF86451094E42E8918CA80BA7D76D2C0D06" timestamp="2013-12-18T18:50:15Z"/>
+        <file uri="freizeitkarte_pol+.map.zip" size="408618402" checksum="BE4D7860743EBA1AAF351BA7E4C24867D7D635D4" timestamp="2013-12-18T18:50:59Z"/>
+        <file uri="freizeitkarte_svk.map.zip" size="107317627" checksum="FE59FA48EC8B65BD312A4B4E857AE0592327D328" timestamp="2013-12-29T08:40:08Z"/>
+        <file uri="freizeitkarte_svn.map.zip" size="34498829" checksum="2C08EBEC66BBB38A5C5EFB6AF37BE0E707A370CF" timestamp="2013-12-29T08:40:12Z"/>
+    </datasource>
+</datasources>

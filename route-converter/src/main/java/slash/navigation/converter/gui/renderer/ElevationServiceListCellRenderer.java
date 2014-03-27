@@ -20,19 +20,24 @@
  * /
  */
 
-package slash.navigation.converter.gui.panels;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.elevation.ElevationService;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * A panel within a {@link JTabbedPane}.
+ * Renders the {@link ElevationService} labels of the elevation lookup service combo box.
  *
  * @author Christian Pesch
  */
 
-public interface PanelInTab {
-    Component getRootComponent();
-    JComponent getFocusComponent();
-    JButton getDefaultButton();
+public class ElevationServiceListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        ElevationService unitSystem = ElevationService.class.cast(value);
+        label.setText(unitSystem.getName());
+        return label;
+    }
 }
