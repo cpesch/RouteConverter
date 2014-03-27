@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -73,18 +73,25 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return Track;
     }
 
-    protected abstract String getHeader();
-
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line.startsWith(getHeader());
+        return isPosition(line) || isHeader(line);
     }
 
-    protected abstract Pattern getPattern();
+    protected abstract Pattern getLinePattern();
 
     protected boolean isPosition(String line) {
-        Matcher matcher = getPattern().matcher(line);
+        Matcher matcher = getLinePattern().matcher(line);
         return matcher.matches() && hasValidFix(line, trim(matcher.group(2)), "G");
     }
+
+    protected abstract Pattern getHeaderPattern();
+
+    protected boolean isHeader(String line) {
+        Matcher matcher = getHeaderPattern().matcher(line);
+        return matcher.matches();
+    }
+
+    protected abstract String getHeader();
 
     private boolean hasValidFix(String line, String field, String valueThatIndicatesNoFix) {
         if (field != null && field.equals(valueThatIndicatesNoFix)) {
@@ -131,11 +138,11 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    protected String formatLineType(String comment) {
-        if (comment != null) {
-            if (comment.startsWith("VOX"))
+    protected String formatLineType(String description) {
+        if (description != null) {
+            if (description.startsWith("VOX"))
                 return VOICE_POSITION;
-            if (comment.startsWith("POI")) {
+            if (description.startsWith("POI")) {
                 return POI_POSITION;
             }
         }

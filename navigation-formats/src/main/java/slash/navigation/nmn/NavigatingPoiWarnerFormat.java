@@ -21,7 +21,7 @@
 package slash.navigation.nmn;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -37,6 +37,7 @@ import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
@@ -84,16 +85,16 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = trim(lineMatcher.group(3));
-        if (comment != null)
-            comment = comment.replaceAll("\\p{Cntrl}", "");
-        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, comment);
+        String description = trim(lineMatcher.group(3));
+        if (description != null)
+            description = description.replaceAll("\\p{Cntrl}", "");
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude), description);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
-        String comment = escape(position.getComment(), SEPARATOR, ';');
-        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
+        String description = escape(position.getDescription(), SEPARATOR, ';');
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + description + "\"");
     }
 }

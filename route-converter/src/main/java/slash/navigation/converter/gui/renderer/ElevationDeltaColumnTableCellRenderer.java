@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.renderer;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.formatElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
 
 /**
  * Renders the elevation column of the positions table.

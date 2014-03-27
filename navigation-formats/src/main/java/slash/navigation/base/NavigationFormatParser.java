@@ -32,6 +32,7 @@ import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.MotoPlanerUrlFormat;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -64,6 +65,7 @@ import static slash.navigation.base.RouteComments.commentRoutePositions;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
+import static slash.navigation.url.MotoPlanerUrlFormat.isMotoPlanerUrl;
 
 /**
  * Parses byte streams with navigation information via {@link NavigationFormat} classes.
@@ -277,6 +279,12 @@ public class NavigationFormatParser {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
+
+        } else if (isMotoPlanerUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
+            readFormats.add(0, new MotoPlanerUrlFormat());
             return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
         }
 

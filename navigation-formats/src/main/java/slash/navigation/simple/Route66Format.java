@@ -19,8 +19,9 @@
 */
 package slash.navigation.simple;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -32,11 +33,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.
@@ -80,20 +81,19 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = toMixedCase(trim(lineMatcher.group(3)));
-        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                null, null, null, comment);
+        String description = toMixedCase(trim(lineMatcher.group(3)));
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude), description);
     }
 
-    private static String formatComment(String string) {
-        string = escape(string, SEPARATOR, ';');
+    private static String escape(String string) {
+        string = Transfer.escape(string, SEPARATOR, ';');
         return string != null ? string.toUpperCase() : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 6);
         String latitude = formatDoubleAsString(position.getLatitude(), 6);
-        String comment = formatComment(position.getComment());
-        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
+        String description = escape(position.getDescription());
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + description + "\"");
     }
 }

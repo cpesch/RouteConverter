@@ -81,6 +81,6 @@ public class ApeMapFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

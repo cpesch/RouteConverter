@@ -19,20 +19,36 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHttpResponse;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
+import java.net.URI;
 import java.util.logging.Logger;
+
+import static java.lang.String.format;
+import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpVersion.HTTP_1_1;
+import static slash.common.io.InputOutput.readBytes;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
  * Wrapper for a simple HTTP Request.
@@ -42,59 +58,74 @@ import java.util.logging.Logger;
 
 public abstract class HttpRequest {
     private final Logger log;
-    private final HttpClient client;
-    final HttpMethod method;
-    private Integer statusCode;
+    private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+    private final HttpRequestBase method;
+    private HttpResponse response;
 
-    HttpRequest(HttpMethod method) {
+    HttpRequest(HttpRequestBase method) {
         this.log = Logger.getLogger(getClass().getName());
-        this.client = new HttpClient();
-        client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
-        client.getParams().setIntParameter("http.socket.timeout", 60 * 1000);
-        client.getParams().setParameter("http.method.retry-handler", new DefaultHttpMethodRetryHandler(0, false));
-        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "0.5"));
+        RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+        requestConfigBuilder.setConnectTimeout(15 * 1000);
+        requestConfigBuilder.setSocketTimeout(60 * 1000);
+        clientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
+        clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.6"));
         this.method = method;
     }
 
-    HttpRequest(HttpMethod method, Credentials credentials) {
+    HttpRequest(HttpRequestBase method, Credentials credentials) {
         this(method);
         setAuthentication(credentials);
     }
 
+    HttpRequestBase getMethod() {
+        return method;
+    }
+
     private void setAuthentication(String userName, String password, AuthScope authScope) {
-        client.getState().setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
-        client.getParams().setAuthenticationPreemptive(true);
-        method.setDoAuthentication(true);
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
+        clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+        // preemptive authentication
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        HttpHost targetHost = new HttpHost(authScope.getHost(), authScope.getPort(), authScope.getScheme());
+        authCache.put(targetHost, basicAuth);
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache(authCache);
     }
 
     private void setAuthentication(Credentials credentials) {
-        try {
-            URI uri = method.getURI();
-            setAuthentication(credentials.getUserName(), credentials.getPassword(), new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
-        } catch (URIException e) {
-            log.severe("Cannot set authentication: " + e.getMessage());
-        }
+        URI uri = method.getURI();
+        setAuthentication(credentials.getUserName(), credentials.getPassword(), new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
+    }
+
+    public void setUserAgent(String userAgent) {
+        clientBuilder.setUserAgent(userAgent);
+    }
+
+    protected void setHeader(String name, String value) {
+        getMethod().setHeader(name, value);
+    }
+
+    protected void disableContentCompression() {
+        clientBuilder.disableContentCompression();
     }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return false;
     }
 
-    protected void doExecute() throws IOException {
+    protected HttpResponse doExecute() throws IOException {
         try {
-            statusCode = client.executeMethod(method);
-        }
-        catch(SocketException e) {
-            if(throwsSocketExceptionIfUnAuthorized())
-                statusCode = 401;
+            return clientBuilder.build().execute(method);
+        } catch (SocketException e) {
+            if (throwsSocketExceptionIfUnAuthorized())
+                return new BasicHttpResponse(HTTP_1_1, SC_UNAUTHORIZED, "socket exception since unauthorized");
             else
                 throw e;
         }
-    }
-
-
-    public void setUserAgent(String userAgent) {
-        client.getParams().setParameter("http.useragent", userAgent);
     }
 
     public String execute() throws IOException {
@@ -103,12 +134,14 @@ public abstract class HttpRequest {
 
     public String execute(boolean logUnsuccessful) throws IOException {
         try {
-            doExecute();
+            this.response = doExecute();
             // no response body then
             if (isUnAuthorized())
                 return null;
-            String body = method.getResponseBodyAsString();
-            if (!isSuccessful() && logUnsuccessful)
+            HttpEntity entity = response.getEntity();
+            // HEAD requests don't have a body
+            String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
+            if (!isSuccessful() && logUnsuccessful && body != null)
                 log.warning(body);
             return body;
         } finally {
@@ -117,39 +150,59 @@ public abstract class HttpRequest {
     }
 
     public InputStream executeAsStream(boolean logUnsuccessful) throws IOException {
-        doExecute();
+        this.response = doExecute();
         // no response body then
         if (isUnAuthorized())
             return null;
-        InputStream body = method.getResponseBodyAsStream();
+        InputStream body = response.getEntity().getContent();
         if (!isSuccessful() && logUnsuccessful)
-            log.warning("Cannot read response body");
+            log.warning(format("Cannot read response body for %s", method.getURI()));
         return body;
     }
 
-    void release() {
-        method.releaseConnection();
+    private void release() throws IOException {
+        if(response instanceof Closeable)
+            ((Closeable)response).close();
+        method.reset();
     }
 
-    public int getResult() throws IOException {
-        if (statusCode == null)
-            throw new HttpException("No method executed yet");
-        return statusCode;
+    private void assertExecuted() throws IOException {
+        if (response == null)
+            throw new IOException("No request executed yet");
+    }
+
+    protected String getHeader(String name) throws IOException {
+        assertExecuted();
+        Header header = response.getFirstHeader(name);
+        return header != null ? header.getValue() : null;
+    }
+
+    public int getStatusCode() throws IOException {
+        assertExecuted();
+        return response.getStatusLine().getStatusCode();
     }
 
     public boolean isSuccessful() throws IOException {
-        return getResult() >= HttpStatus.SC_OK && getResult() < HttpStatus.SC_MULTIPLE_CHOICES;
+        return getStatusCode() >= SC_OK && getStatusCode() < SC_MULTIPLE_CHOICES;
+    }
+
+    public boolean isOk() throws IOException {
+        return getStatusCode() == SC_OK;
+    }
+
+    public boolean isPartialContent() throws IOException {
+        return getStatusCode() == SC_PARTIAL_CONTENT;
     }
 
     public boolean isUnAuthorized() throws IOException {
-        return getResult() == HttpStatus.SC_UNAUTHORIZED;
+        return getStatusCode() == SC_UNAUTHORIZED;
     }
 
     public boolean isForbidden() throws IOException {
-        return getResult() == HttpStatus.SC_FORBIDDEN;
+        return getStatusCode() == SC_FORBIDDEN;
     }
 
     public boolean isNotFound() throws IOException {
-        return getResult() == HttpStatus.SC_NOT_FOUND;
+        return getStatusCode() == SC_NOT_FOUND;
     }
 }

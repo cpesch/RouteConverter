@@ -20,6 +20,8 @@
 
 package slash.navigation.geonames;
 
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
@@ -38,10 +40,14 @@ import static slash.common.io.Transfer.parseInt;
  * @author Christian Pesch
  */
 
-public class GeoNamesService {
+public class GeoNamesService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
     private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";
+
+    public String getName() {
+        return "GeoNames";
+    }
 
     private String getGeoNamesNamesUrl() {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
@@ -187,5 +193,9 @@ public class GeoNamesService {
             result.add(code.getLat().doubleValue());
         }
         return result.size() > 1 ? new double[]{result.get(0), result.get(1)} : null;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

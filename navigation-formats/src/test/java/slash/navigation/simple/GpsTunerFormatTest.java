@@ -65,7 +65,7 @@ public class GpsTunerFormatTest {
         assertEquals(expectedCal, position.getTime());
         assertDoubleEquals(77.56176, position.getSpeed());
         assertDoubleEquals(279.0, position.getHeading());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test

@@ -61,27 +61,27 @@ public class CoPilotFormatTest {
         assertDoubleEquals(47.68835, position1.getLatitude());
         assertNull(position1.getElevation());
         assertNull(position1.getTime());
-        assertNull(position1.getComment());
+        assertNull(position1.getDescription());
 
         map.put("City", "Innsbruck");
         map.put("County","Tirol");
 
         Wgs84Position position2 = format.parsePosition(map);
         assertNotNull(position2);
-        assertEquals("Innsbruck, Tirol", position2.getComment());
+        assertEquals("Innsbruck, Tirol", position2.getDescription());
 
         map.put("State","A");
 
         Wgs84Position position3 = format.parsePosition(map);
         assertNotNull(position3);
-        assertEquals("A Innsbruck, Tirol", position3.getComment());
+        assertEquals("A Innsbruck, Tirol", position3.getDescription());
 
         map.put("Address","39 Gumppstrasse");
         map.put("Zip","6020");
 
         Wgs84Position position4 = format.parsePosition(map);
         assertNotNull(position4);
-        assertEquals("A-6020 Innsbruck, Tirol, 39 Gumppstrasse", position4.getComment());
+        assertEquals("A-6020 Innsbruck, Tirol, 39 Gumppstrasse", position4.getDescription());
     }
 
     @Test

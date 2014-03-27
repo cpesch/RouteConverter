@@ -39,9 +39,9 @@ import static slash.navigation.common.UnitSystem.Metric;
  */
 
 public class UnitSystemModel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(UnitSystemModel.class);
     private static final String UNIT_SYSTEM_PREFERENCE = "unitSystem";
     private static final String DEGREE_FORMAT_PREFERENCE = "degreeFormat";
-    private static final Preferences preferences = Preferences.userNodeForPackage(UnitSystemModel.class);
 
     private EventListenerList listenerList = new EventListenerList();
 

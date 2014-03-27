@@ -25,6 +25,8 @@ import java.awt.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 import static slash.navigation.gui.SingleFrameApplication.X_PREFERENCE;
 import static slash.navigation.gui.SingleFrameApplication.Y_PREFERENCE;
 import static slash.navigation.gui.SingleFrameApplication.crop;
@@ -36,8 +38,8 @@ import static slash.navigation.gui.SingleFrameApplication.crop;
  */
 
 public abstract class SimpleDialog extends JDialog {
-    private static final Logger log = Logger.getLogger(SimpleDialog.class.getName());
-    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private static final Logger log = getLogger(SimpleDialog.class.getName());
+    private final Preferences preferences = userNodeForPackage(getClass());
 
     public SimpleDialog(Window owner, String name) {
         super(owner);

@@ -27,7 +27,8 @@ import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.nmn.NmnFormat.COMMENT_PATTERN;
+import static slash.navigation.nmn.NmnFormat.DESCRIPTION_PATTERN;
+import static slash.navigation.nmn.NmnFormat.SEPARATOR;
 
 /**
  * Represents a position in a Navigon Mobile Navigator (.rte) file.
@@ -36,7 +37,7 @@ import static slash.navigation.nmn.NmnFormat.COMMENT_PATTERN;
  */
 
 public class NmnPosition extends Wgs84Position {
-    private String zip, street, number; // comment = city
+    private String zip, street, number; // description = city
 
     public NmnPosition(Double longitude, Double latitude, String zip, String city, String street, String number) {
         super(longitude, latitude, null, null, null, city);
@@ -45,15 +46,15 @@ public class NmnPosition extends Wgs84Position {
         this.number = number;
     }
 
-    public NmnPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+    public NmnPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        super(longitude, latitude, elevation, speed, time, description);
     }
 
     public boolean isUnstructured() {
         return getStreet() == null && getNumber() == null;
     }
 
-    public String getComment() {
+    public String getDescription() {
         String result = (getZip() != null ? getZip() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
@@ -61,17 +62,17 @@ public class NmnPosition extends Wgs84Position {
         return result.length() > 0 ? result : null;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
         this.street = null;
         this.number = null;
 
-        if (comment == null)
+        if (description == null)
             return;
 
-        Matcher matcher = COMMENT_PATTERN.matcher(escape(comment, NmnFormat.SEPARATOR, ';'));
+        Matcher matcher = DESCRIPTION_PATTERN.matcher(escape(description, SEPARATOR, ';'));
         if (matcher.matches()) {
-            this.comment = trim(matcher.group(2));
+            this.description = trim(matcher.group(2));
             zip = trim(matcher.group(1));
             street = trim(matcher.group(3));
             number = trim(matcher.group(4));
@@ -83,7 +84,7 @@ public class NmnPosition extends Wgs84Position {
     }
 
     public String getCity() {
-        return comment;
+        return description;
     }
 
     public String getStreet() {
@@ -100,7 +101,7 @@ public class NmnPosition extends Wgs84Position {
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
     
 
@@ -110,7 +111,7 @@ public class NmnPosition extends Wgs84Position {
 
         NmnPosition that = (NmnPosition) o;
 
-        return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+        return !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
                 !(number != null ? !number.equals(that.number) : that.number != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
@@ -124,7 +125,7 @@ public class NmnPosition extends Wgs84Position {
         result = (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (number != null ? number.hashCode() : 0);
         result = 31 * result + (hasTime() ? getTime().hashCode() : 0);

@@ -121,7 +121,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     else
                         position.setStartDate(startDate);
 
-                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position)) {
+                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) && !validStartDate) {
                         positions.add(position);
                         previous = position;
                     } else {
@@ -140,34 +140,26 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     boolean haveDifferentLongitudeAndLatitude(NmeaPosition predecessor, NmeaPosition successor) {
-        boolean diff;
-        if (predecessor == null) {
-            return true;
-        }
-        diff = (predecessor.hasCoordinates() && successor.hasCoordinates() &&
+        return predecessor == null ||
+                (predecessor.hasCoordinates() && successor.hasCoordinates() &&
                         !(predecessor.getLongitudeAsValueAndOrientation().equals(successor.getLongitudeAsValueAndOrientation()) &&
                                 predecessor.getLatitudeAsValueAndOrientation().equals(successor.getLatitudeAsValueAndOrientation())));
-        return diff;
     }
 
     boolean haveDifferentTime(NmeaPosition predecessor, NmeaPosition successor) {
-        long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-        boolean diff;
-        if(predecessor == null) {
+        if(predecessor == null)
             return true;
-        }
-        if(!predecessor.hasTime() || !successor.hasTime()) {
+        if(!predecessor.hasTime() || !successor.hasTime())
             return false;
-        }
-        long predTimePortion = predecessor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
-        long succTimePortion = successor.getTime().getTimeInMillis() % MILLIS_PER_DAY;
-        diff = predTimePortion != succTimePortion;
-        return diff;
+        CompactCalendar predecessorTime = predecessor.getTime();
+        CompactCalendar successorTime = successor.getTime();
+        return predecessorTime.hasDateDefined() && successorTime.hasDateDefined() &&
+                !predecessorTime.equals(successorTime);
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (isEmpty(position.getComment()) && !isEmpty(toBeMergedInto.getComment()))
-            position.setComment(toBeMergedInto.getComment());
+        if (isEmpty(position.getDescription()) && !isEmpty(toBeMergedInto.getDescription()))
+            position.setDescription(toBeMergedInto.getDescription());
         if (isEmpty(position.getElevation()) && !isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
         if (isEmpty(position.getSpeed()) && !isEmpty(toBeMergedInto.getSpeed()))

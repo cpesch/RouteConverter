@@ -21,7 +21,7 @@
 package slash.navigation.nmea;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.ValueAndOrientation;
 
@@ -40,8 +40,8 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.navigation.common.UnitConversion.kilometerToNauticMiles;
-import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
+import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
@@ -212,7 +212,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             if (speedStr != null) {
                 Double miles = parseDouble(speedStr);
                 if (miles != null)
-                    speed = nauticMilesToKilometer(miles);
+                    speed = nauticMilesToKiloMeter(miles);
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
@@ -240,9 +240,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = wplMatcher.group(2);
             String longitude = wplMatcher.group(3);
             String westOrEast = wplMatcher.group(4);
-            String comment = wplMatcher.group(5);
+            String description = wplMatcher.group(5);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    null, null, null, null, trim(comment));
+                    null, null, null, null, trim(description));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
@@ -266,7 +266,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             }
             Double speed = parseDouble(speedStr);
             if (miles && speed != null)
-                speed = nauticMilesToKilometer(speed);
+                speed = nauticMilesToKiloMeter(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
         }
 
@@ -330,11 +330,11 @@ public class NmeaFormat extends BaseNmeaFormat {
         String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "";
-        String comment = escape(position.getComment(), SEPARATOR, ';');
+        String description = escape(position.getDescription(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
-        String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToNauticMiles(position.getSpeed())) : "";
+        String speedKnots = position.getSpeed() != null ? formatSpeed(kiloMeterToNauticMiles(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
@@ -346,7 +346,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPWPL,5334.169,N,01001.920,E,STATN1*22
         String wpl = "GPWPL" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                comment;
+                description;
         writeSentence(writer, wpl);
 
         // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76

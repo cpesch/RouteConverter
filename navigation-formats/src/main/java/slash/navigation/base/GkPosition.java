@@ -33,12 +33,12 @@ import static slash.navigation.common.NavigationConversion.wgs84LongitudeLatitud
 
 public class GkPosition extends BaseNavigationPosition {
     private double right, height;
-    private String comment;
+    private String description;
     private Double elevation;
     private Double speed;
     private CompactCalendar time;
 
-    public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+    public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         setElevation(elevation);
         setSpeed(speed);
         setTime(time);
@@ -47,13 +47,13 @@ public class GkPosition extends BaseNavigationPosition {
             setRight(gk[0]);
             setHeight(gk[1]);
         }
-        setComment(comment);
+        setDescription(description);
     }
 
-    public GkPosition(double right, double height, String comment) {
+    public GkPosition(double right, double height, String description) {
         this.right = right;
         this.height = height;
-        setComment(comment);
+        setDescription(description);
     }
 
     public Double getLongitude() {
@@ -74,12 +74,12 @@ public class GkPosition extends BaseNavigationPosition {
         setHeight(gk[1]);
     }
 
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Double getElevation() {
@@ -134,7 +134,7 @@ public class GkPosition extends BaseNavigationPosition {
 
         return Double.compare(that.height, height) == 0 &&
                 Double.compare(that.right, right) == 0 &&
-                !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
@@ -147,7 +147,7 @@ public class GkPosition extends BaseNavigationPosition {
         temp = height != +0.0d ? Double.doubleToLongBits(height) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         return result;
     }

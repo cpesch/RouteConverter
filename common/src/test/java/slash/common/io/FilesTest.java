@@ -27,20 +27,17 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static java.io.File.createTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static slash.common.io.Files.calculateConvertFileName;
-import static slash.common.io.Files.createGoPalFileName;
-import static slash.common.io.Files.lastPathFragment;
-import static slash.common.io.Files.numberToString;
-import static slash.common.io.Files.shortenPath;
+import static slash.common.io.Files.*;
 
 public class FilesTest {
     private File file;
 
     @Before
     public void setUp() throws Exception {
-        file = File.createTempFile("convert", ".tmp");
+        file = createTempFile("convert", ".tmp");
         File renamed = new File(file.getParentFile(), "convert.tmp");
         assertTrue(file.renameTo(renamed));
         file = renamed;
@@ -126,7 +123,7 @@ public class FilesTest {
 
     @Test
     public void testCalculateConvertFileNameMoreThanOneDot() throws IOException {
-        File tempPath = File.createTempFile("test", "egal").getParentFile();
+        File tempPath = createTempFile("test", "egal").getParentFile();
         assertEquals(new File(tempPath, "a.b.c.d.gpx").getAbsolutePath(),
                 calculateConvertFileName(new File(tempPath, "a.b.c.d.e"), ".gpx", 255));
     }

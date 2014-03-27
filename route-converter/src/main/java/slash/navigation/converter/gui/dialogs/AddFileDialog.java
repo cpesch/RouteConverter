@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.DialogAction;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
@@ -111,14 +111,14 @@ public class AddFileDialog extends SimpleDialog {
     private void addFile() {
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            labelResult.setText("No description given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-description-error"));
             pack();
             return;
         }
 
         catalogModel.addRoute(category, description, file, null, new AddRouteCallback());
 
-        labelResult.setText("Successfully added file!"); // TODO make nicer
+        labelResult.setText(RouteConverter.getBundle().getString("add-route-by-file-success"));
         pack();
         dispose();
     }

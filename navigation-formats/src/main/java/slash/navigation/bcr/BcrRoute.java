@@ -161,8 +161,8 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         positions.add(index, position);
     }
 
-    public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new BcrPosition(longitude, latitude, elevation, speed, time, comment);
+    public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new BcrPosition(longitude, latitude, elevation, speed, time, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
@@ -230,11 +230,11 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (BcrPosition bcrPosition : positions) {
             TomTomPosition tomTomPosition = bcrPosition.asTomTomRoutePosition();
-            // shortens comment to better fit to Tom Tom Rider display
+            // shortens description to better fit to Tom Tom Rider display
             String city = bcrPosition.getCity();
             String street = bcrPosition.getStreet();
             if (city != null)
-                tomTomPosition.setComment(city + (street != null && !BcrPosition.STREET_DEFINES_CENTER_SYMBOL.equals(street) ? "," + street : ""));
+                tomTomPosition.setDescription(city + (street != null && !BcrPosition.STREET_DEFINES_CENTER_SYMBOL.equals(street) ? "," + street : ""));
             tomTomPositions.add(tomTomPosition);
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);

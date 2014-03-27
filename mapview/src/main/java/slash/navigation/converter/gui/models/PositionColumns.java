@@ -36,4 +36,5 @@ public interface PositionColumns {
     int DISTANCE_COLUMN_INDEX = 6;
     int ELEVATION_ASCEND_COLUMN_INDEX = 7;
     int ELEVATION_DESCEND_COLUMN_INDEX = 8;
+    int ELEVATION_DIFFERENCE_COLUMN_INDEX = 9;
 }

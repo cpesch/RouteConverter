@@ -21,6 +21,7 @@
 package slash.navigation.catalog.local;
 
 import slash.common.io.Files;
+import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
 import java.io.File;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import static java.lang.String.format;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.encodeFileName;
 
 /**
  * Represents a route in the file system.
@@ -42,7 +45,7 @@ public class LocalRoute implements Route {
     public LocalRoute(LocalCatalog catalog, File file, String name) {
         this.catalog = catalog;
         this.file = file;
-        this.name = name;
+        this.name = decodeUri(name);
     }
 
     public LocalRoute(LocalCatalog catalog, File file) {
@@ -77,9 +80,9 @@ public class LocalRoute implements Route {
         return file.toURI().toURL();
     }
 
-    public void update(String categoryUrl, String description) throws IOException {
-        File category = Files.toFile(new URL(categoryUrl));
-        File newName = new File(category, description);
+    public void update(Category parent, String description) throws IOException {
+        File category = Files.toFile(new URL(parent.getUrl()));
+        File newName = new File(category, encodeFileName(description));
         if (!file.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", file, newName));
         file = newName;

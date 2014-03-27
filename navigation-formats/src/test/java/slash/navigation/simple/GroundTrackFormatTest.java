@@ -64,7 +64,7 @@ public class GroundTrackFormatTest {
         String expected = dateFormat.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(CompactCalendar.fromCalendar(expectedCal), position.getTime());
-        assertEquals("83", position.getComment());
+        assertEquals("83", position.getDescription());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class GroundTrackFormatTest {
         String expected = dateFormat.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(CompactCalendar.fromCalendar(expectedCal), position.getTime());
-        assertEquals("158", position.getComment());
+        assertEquals("158", position.getDescription());
     }
 
 }

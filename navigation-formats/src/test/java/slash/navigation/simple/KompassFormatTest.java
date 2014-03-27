@@ -51,7 +51,7 @@ public class KompassFormatTest {
         assertDoubleEquals(7.0508300, position.getLongitude());
         assertDoubleEquals(51.0450383, position.getLatitude());
         assertDoubleEquals(124.5, position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -60,6 +60,6 @@ public class KompassFormatTest {
         assertDoubleEquals(7.0508300, position.getLongitude());
         assertDoubleEquals(51.0450383, position.getLatitude());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

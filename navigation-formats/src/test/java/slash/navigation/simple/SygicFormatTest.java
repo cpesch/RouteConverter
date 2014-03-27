@@ -45,7 +45,7 @@ public class SygicFormatTest extends NavigationTestCase {
         assertEquals(17.556660, position.getLongitude());
         assertEquals(54.758830, position.getLatitude());
         assertNull(position.getElevation());
-        assertEquals("Leba Lebska +48598662069", position.getComment());
+        assertEquals("Leba Lebska +48598662069", position.getDescription());
     }
 
     public void testParsePositionWithoutElevation() {
@@ -53,6 +53,6 @@ public class SygicFormatTest extends NavigationTestCase {
         assertEquals(2.324360, position.getLongitude());
         assertEquals(48.82676, position.getLatitude());
         assertNull(position.getElevation());
-        assertEquals("Rue Antoine Chantin(14ème Arrondissement Paris), Paris", position.getComment());
+        assertEquals("Rue Antoine Chantin(14ème Arrondissement Paris), Paris", position.getDescription());
     }
 }

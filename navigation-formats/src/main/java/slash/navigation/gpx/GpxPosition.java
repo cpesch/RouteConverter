@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.RouteComments.parseComment;
+import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
@@ -48,20 +48,20 @@ import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 public class GpxPosition extends Wgs84Position {
     private String reason;
 
-    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        this(longitude, latitude, elevation, speed, time, comment, null);
+    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        this(longitude, latitude, elevation, speed, time, description, null);
     }
 
-    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment, Object origin) {
-        super(longitude, latitude, elevation, speed, time, comment, origin);
+    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description, Object origin) {
+        super(longitude, latitude, elevation, speed, time, description, origin);
     }
 
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
-                       Double heading, CompactCalendar time, String comment, BigDecimal hdop, BigDecimal pdop,
+                       Double heading, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
                        BigDecimal vdop, BigInteger satellites, Object origin) {
         this(formatDouble(longitude), formatDouble(latitude),
-                formatDouble(elevation), speed, time, comment, origin);
-        // avoid overwriting values determined by setComment() with a null value
+                formatDouble(elevation), speed, time, description, origin);
+        // avoid overwriting values determined by setDescription() with a null value
         if (heading != null)
             setHeading(heading);
         setHdop(formatDouble(hdop));
@@ -70,35 +70,35 @@ public class GpxPosition extends Wgs84Position {
         setSatellites(formatInt(satellites));
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
         this.reason = null;
-        if (comment == null)
+        if (description == null)
             return;
 
-        parseComment(this, comment);
+        parseDescription(this, description);
 
         // TODO move this logic up
-        Matcher matcher = TRIPMASTER_REASON_PATTERN.matcher(this.comment);
+        Matcher matcher = TRIPMASTER_REASON_PATTERN.matcher(this.description);
         if (matcher.matches()) {
             this.reason = trim(matcher.group(1));
-            this.comment = trim(matcher.group(3));
+            this.description = trim(matcher.group(3));
 
             Double heading = parseTripmasterHeading(reason);
             if (heading != null)
                 this.heading = heading;
         } /* TODO think about how to solve this with that much errors
           else {
-            matcher = GpxFormat.TRIPMASTER_DESCRIPTION_PATTERN.matcher(comment);
+            matcher = GpxFormat.TRIPMASTER_DESCRIPTION_PATTERN.matcher(description);
             if (matcher.matches()) {
-                this.comment = trim(matcher.group(1));
+                this.description = trim(matcher.group(1));
                 this.reason = trim(matcher.group(2));
             }
         } */
     }
 
     public String getCity() {
-        return comment;
+        return description;
     }
 
     public String getReason() {
@@ -106,7 +106,7 @@ public class GpxPosition extends Wgs84Position {
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
         position.setWaypointType(UserWaypoint);
         WptType wptType = getOrigin(WptType.class);
         if (wptType != null) {
@@ -119,9 +119,9 @@ public class GpxPosition extends Wgs84Position {
                 if (name != null && name.length() >= 2)
                     position.setCountryCode(CountryCode.fromValue(name.substring(0, 2)));
             }
-            String comment = trim(wptType.getCmt());
-            if (comment != null) {
-                position.setComment(comment);
+            String description = trim(wptType.getCmt());
+            if (description != null) {
+                position.setDescription(description);
             }
         }
         return position;
@@ -137,7 +137,7 @@ public class GpxPosition extends Wgs84Position {
 
         GpxPosition that = (GpxPosition) o;
 
-        return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+        return !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
@@ -155,7 +155,7 @@ public class GpxPosition extends Wgs84Position {
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         result = 31 * result + (hdop != null ? hdop.hashCode() : 0);
         result = 31 * result + (pdop != null ? pdop.hashCode() : 0);

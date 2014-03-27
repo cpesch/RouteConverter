@@ -19,8 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.http.client.methods.HttpPut;
 
 /**
  * Wrapper to initiate an HTTP PUT Request.
@@ -29,13 +28,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
  */
 
 public class Put extends MultipartRequest {
-
     public Put(String url, Credentials credentials) {
-        super(new PutMethod(url), credentials);
-    }
-
-    public String getLocation() {
-        Header header = method.getResponseHeader("Location");
-        return header != null ? header.getValue() : null;
+        super(new HttpPut(url), credentials);
     }
 }

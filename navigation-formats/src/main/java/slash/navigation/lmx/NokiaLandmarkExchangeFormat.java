@@ -21,7 +21,7 @@
 package slash.navigation.lmx;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -41,8 +41,8 @@ import java.util.List;
 
 import static slash.common.io.Transfer.formatFloat;
 import static slash.navigation.common.NavigationConversion.formatDouble;
-import static slash.navigation.common.NavigationConversion.formatTime;
-import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -133,7 +133,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             LandmarkType landmarkType = position.getOrigin(LandmarkType.class);
             if (landmarkType == null)
                 landmarkType = objectFactory.createLandmarkType();
-            landmarkType.setName(position.getComment());
+            landmarkType.setName(position.getDescription());
 
             CoordinatesType coordinatesType = landmarkType.getCoordinates();
             if (coordinatesType == null)

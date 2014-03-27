@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -114,7 +114,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String street = trim(lineMatcher.group(7));
         String houseNo = trim(lineMatcher.group(8));
         String time = lineMatcher.group(9);
-        String comment = (organization != null ? organization + ": " : "") +
+        String description = (organization != null ? organization + ": " : "") +
                 (postalCode != null ? postalCode + " " : "") +
                 (city != null ? city + ", " : "") +
                 (street != null ? street + " " : "") +
@@ -122,7 +122,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
         CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                null, null, calendar, comment);
+                null, null, calendar, description);
         position.setStartDate(startDate);
         return position;
     }

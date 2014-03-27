@@ -24,14 +24,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.navigation.jaxb.JaxbUtils.*;
 
 class TcxUtil {
     private static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
@@ -68,7 +65,7 @@ class TcxUtil {
     public static void marshal1(slash.navigation.tcx.binding1.TrainingCenterDatabaseT trainingCenterDatabaseT, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller1().marshal(new JAXBElement<slash.navigation.tcx.binding1.TrainingCenterDatabaseT>(new QName(TCX_1_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding1.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), out);
+                newMarshaller1().marshal(new slash.navigation.tcx.binding1.ObjectFactory().createTrainingCenterDatabase(trainingCenterDatabaseT), out);
             }
             finally {
                 out.flush();
@@ -94,7 +91,7 @@ class TcxUtil {
     public static void marshal2(slash.navigation.tcx.binding2.TrainingCenterDatabaseT trainingCenterDatabaseT, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller2().marshal(new JAXBElement<slash.navigation.tcx.binding2.TrainingCenterDatabaseT>(new QName(TCX_2_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding2.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), out);
+                newMarshaller2().marshal(new slash.navigation.tcx.binding2.ObjectFactory().createTrainingCenterDatabase(trainingCenterDatabaseT), out);
             }
             finally {
                 out.flush();

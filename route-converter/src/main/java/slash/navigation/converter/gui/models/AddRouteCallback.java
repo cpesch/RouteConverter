@@ -24,7 +24,7 @@ import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.model.RouteModel;
 
 /**
- * Allows to asynchonously retrieve a created {@link Route}.
+ * Allows to asynchronously retrieve a created {@link Route}.
  *
  * @author Christian Pesch
  */

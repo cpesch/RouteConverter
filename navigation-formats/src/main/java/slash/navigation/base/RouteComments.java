@@ -22,6 +22,8 @@ package slash.navigation.base;
 
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.itn.TomTomPosition;
 
@@ -38,7 +40,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.parseDate;
 
 /**
- * Helpers for processing of comments of positions
+ * Helpers for processing the description of positions
  *
  * @author Christian Pesch
  */
@@ -60,7 +62,7 @@ public abstract class RouteComments {
 
     public static String createRouteName(List<? extends NavigationPosition> positions) {
         if (positions.size() > 0)
-            return positions.get(0).getComment() + " to " + positions.get(positions.size() - 1).getComment();
+            return positions.get(0).getDescription() + " to " + positions.get(positions.size() - 1).getDescription();
         else
             return "?";
     }
@@ -112,25 +114,25 @@ public abstract class RouteComments {
     public static void commentPositions(List<? extends NavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             NavigationPosition position = positions.get(i);
-            String original = position.getComment();
+            String original = position.getDescription();
             String modified = getPositionComment(position, i);
             if (original == null || !original.equals(modified))
-                position.setComment(modified);
+                position.setDescription(modified);
         }
     }
 
     private static String getPositionComment(NavigationPosition position, int index) {
-        if (position.getComment() == null || "(null)".equals(position.getComment())) {
+        if (position.getDescription() == null || "(null)".equals(position.getDescription())) {
             return getPositionComment(index);
         } else {
-            Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
+            Matcher matcher = POSITION_PATTERN.matcher(position.getDescription());
             if (matcher.matches()) {
                 String prefix = trim(matcher.group(1));
                 String postfix = trim(matcher.group(3));
                 return (prefix != null ? prefix : "") + getPositionComment(index) + (postfix != null ? postfix : "");
             }
         }
-        return position.getComment();
+        return position.getDescription();
     }
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\s*(\\d*)(.*)");
@@ -172,29 +174,29 @@ public abstract class RouteComments {
                     if (!position.hasCoordinates())
                         continue;
 
-                    if (position.getComment() != null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                    if (position.getDescription() != null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         if (comments.get(lal) == null) {
-                            comments.put(lal, position.getComment());
+                            comments.put(lal, position.getDescription());
                         }
                     }
 
                     if (position.getElevation() != null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         if (elevations.get(lal) == null) {
                             elevations.put(lal, position.getElevation());
                         }
                     }
 
                     if (position.getSpeed() != null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         if (speeds.get(lal) == null) {
                             speeds.put(lal, position.getSpeed());
                         }
                     }
 
                     if (position.hasTime()) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         if (times.get(lal) == null) {
                             times.put(lal, position.getTime());
                         }
@@ -207,16 +209,16 @@ public abstract class RouteComments {
                     if (!position.hasCoordinates())
                         continue;
 
-                    if (position.getComment() == null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                    if (position.getDescription() == null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         String comment = comments.get(lal);
                         if (comment != null) {
-                            position.setComment(comment);
+                            position.setDescription(comment);
                         }
                     }
 
                     if (position.getElevation() == null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         Double elevation = elevations.get(lal);
                         if (elevation != null) {
                             position.setElevation(elevation);
@@ -224,7 +226,7 @@ public abstract class RouteComments {
                     }
 
                     if (position.getSpeed() == null) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         Double speed = speeds.get(lal);
                         if (speed != null) {
                             position.setSpeed(speed);
@@ -232,7 +234,7 @@ public abstract class RouteComments {
                     }
 
                     if (!position.hasTime()) {
-                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
                         CompactCalendar time = times.get(lal);
                         if (time != null) {
                             position.setTime(time);
@@ -246,37 +248,6 @@ public abstract class RouteComments {
             commentPositions(route.getPositions());
         }
     }
-
-
-    private static class LongitudeAndLatitude {
-        public final double longitude, latitude;
-
-        public LongitudeAndLatitude(NavigationPosition position) {
-            this.longitude = position.getLongitude();
-            this.latitude = position.getLatitude();
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final LongitudeAndLatitude that = (LongitudeAndLatitude) o;
-
-            return Double.compare(that.latitude, latitude) == 0 &&
-                    Double.compare(that.longitude, longitude) == 0;
-        }
-
-        public int hashCode() {
-            int result;
-            long temp;
-            temp = longitude != +0.0d ? Double.doubleToLongBits(longitude) : 0L;
-            result = (int) (temp ^ (temp >>> 32));
-            temp = latitude != +0.0d ? Double.doubleToLongBits(latitude) : 0L;
-            result = 29 * result + (int) (temp ^ (temp >>> 32));
-            return result;
-        }
-    }
-
 
     public static final String TRIPMASTER_TIME = "HH:mm:ss";
     public static final String TRIPMASTER_DATE = "dd/MM/yyyy HH:mm:ss";
@@ -313,12 +284,12 @@ public abstract class RouteComments {
             "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
 
     /**
-     * logpos encoding of the comment:
-     * + looks like a planned position with a verbose comment
+     * logpos encoding of the description:
+     * + looks like a planned position with a verbose description
      * + Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @166.6m (s=60 d=34)
-     * - looks like a tracked position with a verbose comment
+     * - looks like a tracked position with a verbose description
      * - Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @162.6m (s=66 d=6)
-     * * is a coordinate comment
+     * * is a coordinate description
      * * 1000462:4889518 @365.8m (s=1 d=193)
      * = seems to be written if the position does not change for a time period
      * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
@@ -368,7 +339,7 @@ public abstract class RouteComments {
         return !isEmpty(aDouble) ? aDouble : null;
     }
 
-    public static void parseComment(NavigationPosition position, String comment) {
+    public static void parseDescription(NavigationPosition position, String comment) {
         Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(2)));

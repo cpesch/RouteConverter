@@ -23,10 +23,9 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsService;
@@ -36,7 +35,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -46,8 +44,13 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
@@ -68,14 +71,14 @@ public class FindPlaceDialog extends SimpleDialog {
         setTitle(RouteConverter.getBundle().getString("find-place-title"));
         setContentPane(contentPane);
 
-        JMenuHelper.setMnemonic(buttonSearchPositions, "search-position-mnemonic");
+        setMnemonic(buttonSearchPositions, "search-position-mnemonic");
         buttonSearchPositions.addActionListener(new DialogAction(this) {
             public void run() {
                 searchPositions();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonInsertPosition, "insert-mnemonic");
+        setMnemonic(buttonInsertPosition, "insert-mnemonic");
         buttonInsertPosition.addActionListener(new DialogAction(this) {
             public void run() {
                 insertPosition();
@@ -93,7 +96,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
 
@@ -102,7 +105,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 searchPositions();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
         listResult.addListSelectionListener(new ListSelectionListener() {
@@ -131,9 +134,9 @@ public class FindPlaceDialog extends SimpleDialog {
         listResult.setModel(listModel);
         GoogleMapsService service = new GoogleMapsService();
         try {
-            List<BasicPosition> positions = service.getPositionsFor(textFieldSearch.getText());
+            List<NavigationPosition> positions = service.getPositionsFor(textFieldSearch.getText());
             if (positions != null) {
-                for (BasicPosition position : positions) {
+                for (NavigationPosition position : positions) {
                     listModel.addElement(position);
                 }
                 if (listModel.getSize() > 0) {
@@ -142,7 +145,7 @@ public class FindPlaceDialog extends SimpleDialog {
                 }
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this,
+            showMessageDialog(this,
                     MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getLocalizedMessage()),
                     getTitle(), ERROR_MESSAGE);
         }
@@ -158,9 +161,9 @@ public class FindPlaceDialog extends SimpleDialog {
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         Object[] objects = listResult.getSelectedValues();
         for (int i = objects.length - 1; i >= 0; i -= 1) {
-            BasicPosition position = (BasicPosition) objects[i];
+            NavigationPosition position = (NavigationPosition) objects[i];
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
-                    position.getElevation(), null, null, position.getComment());
+                    position.getElevation(), null, null, position.getDescription());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow}, true);
 
             if (isEmpty(position.getElevation()))

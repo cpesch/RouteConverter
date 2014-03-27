@@ -20,19 +20,23 @@
 
 package slash.common.io;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.io.File.createTempFile;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.String.format;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
+import static slash.common.type.HexadecimalNumber.encodeBytes;
 
 /**
  * Provides file and file name functionality.
@@ -90,7 +94,7 @@ public class Files {
      * @param extension the new extension for the file name
      * @return the file name with the given extension
      */
-    private static String setExtension(String name, String extension) {
+    public static String setExtension(String name, String extension) {
         name = removeExtension(name);
         name += extension;
         return name;
@@ -259,7 +263,7 @@ public class Files {
     }
 
     public static File writeToTempFile(byte[] bytes) throws IOException {
-        File tempFile = File.createTempFile("routeconverter", ".xml");
+        File tempFile = createTempFile("catalog", ".xml", getTemporaryDirectory());
         tempFile.deleteOnExit();
         OutputStream outputStream = new FileOutputStream(tempFile);
         try {
@@ -272,6 +276,35 @@ public class Files {
 
     public static File writeToTempFile(String string) throws IOException {
         return writeToTempFile(string.getBytes());
+    }
+
+    private static final String DEFAULT_ALGORITHM = "SHA1";
+
+    public static String generateChecksum(InputStream inputStream) throws IOException {
+        MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance(DEFAULT_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException(format("Should no happen: algorithm %s not found", DEFAULT_ALGORITHM), e);
+        }
+
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        int read;
+
+        while (-1 != (read = inputStream.read(buffer))) {
+            messageDigest.update(buffer, 0, read);
+        }
+
+        return encodeBytes(messageDigest.digest());
+    }
+
+    public static String generateChecksum(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        try {
+            return generateChecksum(fis);
+        } finally {
+            closeQuietly(fis);
+        }
     }
 
     /**

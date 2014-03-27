@@ -29,13 +29,14 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Filter;
 import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import static java.util.logging.Level.ALL;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Allows to control log output
@@ -45,7 +46,7 @@ import static java.util.logging.Level.ALL;
 
 public class LoggingHelper {
     private static PrintStream stdout = System.out, stderr = System.err;
-    private static final int LOG_SIZE = 1024 * 1024;
+    private static final int LOG_SIZE = 5* 1024 * 1024;
     private static LoggingHelper instance;
 
     private LoggingHelper() {
@@ -143,11 +144,11 @@ public class LoggingHelper {
 
     private void redirectStdOutAndErrToLog() {
         Logger logger = Logger.getLogger("stdout");
-        LoggingOutputStream los = new LoggingOutputStream(logger, Level.INFO);
+        LoggingOutputStream los = new LoggingOutputStream(logger, INFO);
         System.setOut(new PrintStream(los, true));
 
         logger = Logger.getLogger("stderr");
-        los = new LoggingOutputStream(logger, Level.SEVERE);
+        los = new LoggingOutputStream(logger, SEVERE);
         System.setErr(new PrintStream(los, true));
     }
 

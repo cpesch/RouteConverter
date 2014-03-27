@@ -21,7 +21,7 @@
 package slash.navigation.fpl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;
@@ -155,7 +155,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             flightPlanRoute.getRoutePoint().add(routePoint);
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(position.getComment());
+            waypoint.setComment(position.getDescription());
             waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());

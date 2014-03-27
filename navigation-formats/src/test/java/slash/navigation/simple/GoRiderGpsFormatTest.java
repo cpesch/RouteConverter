@@ -60,7 +60,7 @@ public class GoRiderGpsFormatTest {
         Wgs84Position position = format.parsePosition("STREET=\"Tjardaweg\" PT=\"6.53616 53.24917\"", null);
         assertDoubleEquals(6.53616, position.getLongitude());
         assertDoubleEquals(53.24917, position.getLatitude());
-        assertEquals("Tjardaweg", position.getComment());
+        assertEquals("Tjardaweg", position.getDescription());
         assertNull(position.getElevation());
     }
 }

@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.renderer;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 
 /**
  * Renders the distance column of the positions table.

@@ -21,41 +21,14 @@
 package slash.navigation.common;
 
 import slash.common.io.Transfer;
-import slash.common.type.CompactCalendar;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.prefs.Preferences;
 
 import static java.lang.Double.NaN;
-import static java.lang.Math.PI;
-import static java.lang.Math.atan;
-import static java.lang.Math.ceil;
-import static java.lang.Math.cos;
-import static java.lang.Math.exp;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.tan;
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MILLISECOND;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
+import static java.lang.Math.*;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.roundFraction;
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.common.UnitConversion.feetToMeters;
 import static slash.navigation.common.UnitConversion.meterToFeets;
 
@@ -66,8 +39,6 @@ import static slash.navigation.common.UnitConversion.meterToFeets;
  */
 
 public class NavigationConversion {
-    private static DatatypeFactory datatypeFactory = null;
-
     private NavigationConversion() {}
 
     private static final Preferences preferences = Preferences.userNodeForPackage(NavigationConversion.class);
@@ -376,39 +347,5 @@ public class NavigationConversion {
 
     public static BigDecimal formatSpeed(Double speed) {
         return formatBigDecimal(speed, 2);
-    }
-
-    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
-        if (calendar == null)
-            return null;
-        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
-        return fromMillis(gregorianCalendar.getTimeInMillis());
-    }
-
-    private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
-        if (datatypeFactory == null) {
-            datatypeFactory = DatatypeFactory.newInstance();
-        }
-        return datatypeFactory;
-    }
-
-    @SuppressWarnings("MagicConstant")
-    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
-        if (time == null)
-            return null;
-        try {
-            GregorianCalendar gregorianCalendar = new GregorianCalendar(UTC, Locale.getDefault());
-            gregorianCalendar.clear();
-            Calendar calendar = time.getCalendar();
-            gregorianCalendar.set(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DATE),
-                    calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
-            gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
-            XMLGregorianCalendar result = getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
-            if (preferences.getBoolean("reduceTimeToSecondPrecision", false))
-                result.setFractionalSecond(null);
-            return result;
-        } catch (DatatypeConfigurationException e) {
-            return null;
-        }
     }
 }

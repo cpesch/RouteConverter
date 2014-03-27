@@ -73,7 +73,9 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
                         handleUpdate(e.getFirstRow(), e.getLastRow(), e.getColumn());
                         break;
                     case DELETE:
-                        handleDelete(e.getFirstRow(), e.getLastRow());
+                        if (getPositions().isContinousRange())
+                            return;
+                        handleRemove(e.getFirstRow(), e.getLastRow());
                         break;
                 }
             }
@@ -125,7 +127,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    protected void handleDelete(int firstRow, int lastRow) {
+    protected void handleRemove(int firstRow, int lastRow) {
         series.delete(firstRow, lastRow);
     }
 }

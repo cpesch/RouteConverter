@@ -21,13 +21,13 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.events.Range;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -35,9 +35,10 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.base.Positions.center;
+import static slash.common.io.Transfer.toArray;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.events.Range.revert;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -66,10 +67,10 @@ public class AddPositionAction extends FrameAction {
         NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return center(asList(second, position));
+        return new BoundingBox(asList(second, position)).getCenter();
     }
 
-    private String getRouteComment() {
+    private String getDescription() {
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(positionsModel.getRowCount() + 1);
         String description = RouteConverter.getBundle().getString("new-position-name");
@@ -78,13 +79,13 @@ public class AddPositionAction extends FrameAction {
 
     private NavigationPosition insertRow(int row, NavigationPosition position) {
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                position.getSpeed(), position.getTime(), getRouteComment());
+                position.getSpeed(), position.getTime(), getDescription());
         return positionsModel.getPosition(row);
     }
 
     private void complementRow(int row, NavigationPosition position) {
         RouteConverter r = RouteConverter.getInstance();
-        r.complementComment(row, position.getLongitude(), position.getLatitude());
+        r.complementDescription(row, position.getLongitude(), position.getLatitude());
         r.complementElevation(row, position.getLongitude(), position.getLatitude());
         r.complementTime(row, position.getTime());
     }
@@ -94,9 +95,9 @@ public class AddPositionAction extends FrameAction {
 
         boolean hasInsertedRowInMapCenter = false;
         List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
-        int[] rowIndices = Range.revert(table.getSelectedRows());
+        int[] rowIndices = revert(table.getSelectedRows());
         // append to table if there is nothing selected
-        boolean areRowsSelected = rowIndices.length > 0;
+        boolean areRowsSelected = rowIndices.length > 0;                        // TODO complicated logic, unify with BaseMapView#getAddRow
         if (!areRowsSelected)
             rowIndices = new int[]{table.getRowCount()};
         for (int row : rowIndices) {
@@ -123,7 +124,7 @@ public class AddPositionAction extends FrameAction {
                 complementRow(index, position);
             }
 
-            final int[] rows = Range.asInt(insertedRows);
+            final int[] rows = toArray(insertedRows);
             final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
             invokeLater(new Runnable() {
                 public void run() {

@@ -1,4 +1,4 @@
 /**
- * Contains the Google Earth formats.
+ * The Google Earth formats.
  */
 package slash.navigation.kml;

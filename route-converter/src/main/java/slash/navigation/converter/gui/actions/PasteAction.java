@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserResult;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -40,7 +40,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.dnd.PositionSelection.stringFlavor;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.
