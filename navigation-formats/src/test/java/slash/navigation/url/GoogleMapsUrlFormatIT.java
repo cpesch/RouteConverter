@@ -25,7 +25,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class GoogleMapsUrlFormatIT {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
         assertEquals(9, route.getPositionCount());
         NavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
-        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getComment());
+        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getDescription());
         assertNotNull(position.getLongitude());
         assertNotNull(position.getLatitude());
     }

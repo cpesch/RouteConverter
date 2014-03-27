@@ -105,7 +105,7 @@ public class Kml21Format extends KmlFormat {
 
         if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
-            String placemarkName = asComment(trim(placemarkType.getName()),
+            String placemarkName = asDescription(trim(placemarkType.getName()),
                     trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkType.getGeometry());
@@ -142,7 +142,7 @@ public class Kml21Format extends KmlFormat {
         List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
-            String placemarkName = asComment(trim(placemarkTypeValue.getName()),
+            String placemarkName = asDescription(trim(placemarkTypeValue.getName()),
                     trim(placemarkTypeValue.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getGeometry());
@@ -221,8 +221,8 @@ public class Kml21Format extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getFeature().add(objectFactory.createPlacemark(placemarkType));
-            placemarkType.setName(asName(isWriteName() ? position.getComment() : null));
-            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
+            placemarkType.setName(asName(isWriteName() ? position.getDescription() : null));
+            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             placemarkType.setVisibility(Boolean.FALSE);
             if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();

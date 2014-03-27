@@ -74,7 +74,7 @@ public class UserIT extends RouteCatalogClientBase {
         assertTrue(result.contains("created"));
         String location = request.getLocation();
         assertTrue(location.contains("/catalog/users/"));
-        assertEquals(201, request.getResult());
+        assertEquals(201, request.getStatusCode());
         assertTrue(request.isSuccessful());
     }
 
@@ -86,7 +86,7 @@ public class UserIT extends RouteCatalogClientBase {
         assertTrue(result.contains("created"));
         String location = request.getLocation();
         assertTrue(location.contains("/catalog/users/"));
-        assertEquals(201, request.getResult());
+        assertEquals(201, request.getStatusCode());
         assertTrue(request.isSuccessful());
     }
 
@@ -107,7 +107,7 @@ public class UserIT extends RouteCatalogClientBase {
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = readUser(key);
         String result2 = request2.execute();
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
         GpxType gpxType = GpxUtil.unmarshal11(result2);
@@ -134,11 +134,11 @@ public class UserIT extends RouteCatalogClientBase {
         HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD);
         String result2 = request2.execute();
         assertEquals("user alif updated", result2);
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readUser("alif");
         String result3 = request3.execute();
-        assertEquals(200, request3.getResult());
+        assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
 
         GpxType gpxType = GpxUtil.unmarshal11(result3);
@@ -163,7 +163,7 @@ public class UserIT extends RouteCatalogClientBase {
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", "user-does-not-exist", "password-is-wrong");
         assertNull(request2.execute());
-        assertEquals(401, request2.getResult());
+        assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
     }
@@ -176,7 +176,7 @@ public class UserIT extends RouteCatalogClientBase {
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = updateUser(key, "userstest.gpx", "alif", "topr");
         request2.execute();
-        assertEquals(403, request2.getResult());
+        assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
     }
@@ -189,12 +189,12 @@ public class UserIT extends RouteCatalogClientBase {
         HttpRequest request2 = deleteUser(key);
         String result2 = request2.execute();
         assertEquals("user ivan deleted", result2);
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readUser(key);
         String result3 = request3.execute();
         assertNotNull(result3);
-        assertEquals(404, request3.getResult());
+        assertEquals(404, request3.getStatusCode());
         assertFalse(request3.isSuccessful());
     }
 
@@ -205,7 +205,7 @@ public class UserIT extends RouteCatalogClientBase {
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = deleteUser(key, "user-does-not-exist", "password-is-wrong");
         assertNull(request2.execute());
-        assertEquals(401, request2.getResult());
+        assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
     }
@@ -218,7 +218,7 @@ public class UserIT extends RouteCatalogClientBase {
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = deleteUser(key, "alif", "stop");
         request2.execute();
-        assertEquals(403, request2.getResult());
+        assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
     }

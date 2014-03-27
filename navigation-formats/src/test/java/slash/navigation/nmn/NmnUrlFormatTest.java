@@ -71,7 +71,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position = format.parsePosition("address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851");
         assertDoubleEquals(7.23153, position.getLongitude());
         assertDoubleEquals(51.43851, position.getLatitude());
-        assertEquals("44797 Bochum, Unterm Kolm 11", position.getComment());
+        assertEquals("44797 Bochum, Unterm Kolm 11", position.getDescription());
     }
 
     private List<Wgs84Position> parsePositions(String text) {
@@ -88,7 +88,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position6 = positions.get(5);
         assertDoubleEquals(7.506969, position6.getLongitude());
         assertDoubleEquals(51.42231, position6.getLatitude());
-        assertNull(position6.getComment());
+        assertNull(position6.getDescription());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(7.40361, position2.getLongitude());
         assertDoubleEquals(51.49144, position2.getLatitude());
-        assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getComment());
+        assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getDescription());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position4 = positions.get(4);
         assertDoubleEquals(8.44719, position4.getLongitude());
         assertDoubleEquals(46.72941, position4.getLatitude());
-        assertEquals("3863 Gadmen, Sustenpass", position4.getComment());
+        assertEquals("3863 Gadmen, Sustenpass", position4.getDescription());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(-115.13997, position2.getLongitude());
         assertDoubleEquals(36.17191, position2.getLatitude());
-        assertEquals("Nv 89101 Las Vegas", position2.getComment());
+        assertEquals("Nv 89101 Las Vegas", position2.getDescription());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class NmnUrlFormatTest {
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(7.40361, position2.getLongitude());
         assertDoubleEquals(51.49144, position2.getLatitude());
-        assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getComment());
+        assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getDescription());
     }
 
     @Test

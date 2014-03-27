@@ -192,27 +192,27 @@ public class UnitConversion {
         return meter / METER_OF_A_FEET;
     }
 
-    public static double nauticMilesToKilometer(double miles) {
+    public static double nauticMilesToKiloMeter(double miles) {
         return miles * KILOMETER_OF_A_NAUTIC_MILE;
     }
 
-    public static double kilometerToNauticMiles(double kilometer) {
-        return kilometer / KILOMETER_OF_A_NAUTIC_MILE;
+    public static double kiloMeterToNauticMiles(double kiloMeter) {
+        return kiloMeter / KILOMETER_OF_A_NAUTIC_MILE;
     }
 
-    public static double statuteMilesToKilometer(double miles) {
+    public static double statuteMilesToKiloMeter(double miles) {
         return miles * KILOMETER_OF_A_STATUTE_MILE;
     }
 
-    public static double kilometerToStatuteMiles(double kilometer) {
-        return kilometer / KILOMETER_OF_A_STATUTE_MILE;
+    public static double kiloMeterToStatuteMiles(double kiloMeter) {
+        return kiloMeter / KILOMETER_OF_A_STATUTE_MILE;
     }
 
     public static double msToKmh(double metersPerSecond) {
         return metersPerSecond * SECONDS_OF_AN_HOUR / METERS_OF_A_KILOMETER;
     }
 
-    public static double kmhToMs(double kilometersPerHour) {
-        return kilometersPerHour * METERS_OF_A_KILOMETER / SECONDS_OF_AN_HOUR;
+    public static double kmhToMs(double kiloMetersPerHour) {
+        return kiloMetersPerHour * METERS_OF_A_KILOMETER / SECONDS_OF_AN_HOUR;
     }
 }

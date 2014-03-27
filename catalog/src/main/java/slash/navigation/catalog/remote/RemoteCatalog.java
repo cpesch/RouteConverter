@@ -262,7 +262,6 @@ public class RemoteCatalog implements Catalog {
     private Post prepareAddRoute(String categoryUrl, String description, String fileUrl) throws IOException {
         log.fine("Adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
-        System.out.print(xml);
         Post request = new Post(getRoutesUrl(), credentials);
         request.addFile("file", writeToTempFile(xml));
         return request;

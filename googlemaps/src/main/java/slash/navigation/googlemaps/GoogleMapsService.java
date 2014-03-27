@@ -20,7 +20,10 @@
 
 package slash.navigation.googlemaps;
 
-import slash.navigation.common.BasicPosition;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -36,7 +39,7 @@ import java.util.prefs.Preferences;
 
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
-import static slash.common.util.Bearing.calculateBearing;
+import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
 
 /**
@@ -45,11 +48,15 @@ import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
  * @author Christian Pesch
  */
 
-public class GoogleMapsService {
+public class GoogleMapsService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
     private static final String GOOGLE_MAPS_API_URL_PREFERENCE = "googleMapsApiUrl";
     private static final String OK = "OK";
     private static final String OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
+
+    public String getName() {
+        return "Google Maps";
+    }
 
     private static String getGoogleMapsApiUrl(String api, String payload) {
         String language = Locale.getDefault().getLanguage();
@@ -108,12 +115,12 @@ public class GoogleMapsService {
         return resultsArray[0].getFormattedAddress();
     }
 
-    public BasicPosition getPositionFor(String address) throws IOException {
-        List<BasicPosition> positions = getPositionsFor(address);
+    public NavigationPosition getPositionFor(String address) throws IOException {
+        List<NavigationPosition> positions = getPositionsFor(address);
         return positions != null && positions.size() > 0 ? positions.get(0) : null;
     }
 
-    public List<BasicPosition> getPositionsFor(String address) throws IOException {
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
         String result = get.execute();
@@ -135,11 +142,11 @@ public class GoogleMapsService {
         return null;
     }
 
-    private List<BasicPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
-        List<BasicPosition> result = new ArrayList<BasicPosition>(responses.size());
+    private List<NavigationPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(responses.size());
         for (GeocodeResponse.Result response : responses) {
             GeocodeResponse.Result.Geometry.Location location = response.getGeometry().getLocation();
-            result.add(new BasicPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
+            result.add(new SimpleNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
                     0.0d, response.getFormattedAddress()));
         }
         return result;
@@ -175,5 +182,9 @@ public class GoogleMapsService {
             results.add(response.getElevation().doubleValue());
         }
         return results;
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        // noop for online services
     }
 }

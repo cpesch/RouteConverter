@@ -37,6 +37,6 @@ public class MagicMaps2GoFormatTest extends NavigationTestCase {
         assertNearBy(52.4135141, position.getLatitude());
         assertEquals(40.8000000, position.getElevation());
         assertEquals(calendar(2009, 5, 31, 7, 5, 58).getTime(), position.getTime().getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

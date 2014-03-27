@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.UpdateChecker;
+import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.gui.actions.FrameAction;
 
 /**

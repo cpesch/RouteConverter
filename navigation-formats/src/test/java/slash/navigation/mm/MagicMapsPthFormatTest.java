@@ -46,10 +46,10 @@ public class MagicMapsPthFormatTest extends NavigationTestCase {
         assertEquals(5829944.10, position.getHeight());
         assertNull(position.getElevation());
         assertNull(position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
-    public void testParsePositionWithComment() {
+    public void testParsePositionWithdescription() {
         GkPosition position = format.parsePosition("3799444.14 \t 5829944.10 \tHamburg/Uhlenhorst");
         assertNotNull(position);
         assertNearBy(13.4115129, position.getLongitude());
@@ -58,6 +58,6 @@ public class MagicMapsPthFormatTest extends NavigationTestCase {
         assertEquals(5829944.10, position.getHeight());
         assertNull(position.getElevation());
         assertNull(position.getTime());
-        assertEquals("Hamburg/Uhlenhorst", position.getComment());
+        assertEquals("Hamburg/Uhlenhorst", position.getDescription());
     }
 }

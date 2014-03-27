@@ -6,51 +6,49 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.11-SNAPSHOT</version>
+        <version>2.12-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
-    <profiles>
-        <profile>
-            <id>routeconverter</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>webstart-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jnlp</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <dependencies>
-                                <excludes>
-                                    <exclude>slash.navigation:route-converter-license</exclude>
-                                </excludes>
-                            </dependencies>
-                            <jnlp>
-                                <outputFile>${project.name}.jnlp</outputFile>
-                                <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
-                            </jnlp>
-                            <sign>
-                                <keystore>${keystorePath}</keystore>
-                                <alias>${keystoreAlias}</alias>
-                                <storepass>${keystorePassword}</storepass>
-                                <keystoreConfig>
-                                    <delete>false</delete>
-                                    <gen>false</gen>
-                                </keystoreConfig>
-                            </sign>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <profiles><profile><id>routeconverter</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>webstart-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jnlp</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <dependencies>
+                            <excludes>
+                                <exclude>slash.navigation:route-converter-license</exclude>
+                            </excludes>
+                        </dependencies>
+                        <jnlp>
+                            <outputFile>${project.name}.jnlp</outputFile>
+                            <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                        </jnlp>
+                        <sign>
+                            <keystore>${keystorePath}</keystore>
+                            <alias>${keystoreAlias}</alias>
+                            <storepass>${keystorePassword}</storepass>
+                            <keystoreConfig>
+                                <delete>false</delete>
+                                <gen>false</gen>
+                            </keystoreConfig>
+                        </sign>
+                        <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile></profiles>
 
     <dependencies>
         <dependency>
@@ -58,19 +56,7 @@
             <artifactId>RouteConverterBase</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- mvn package does not need this but mvn release:perform stops claiming there's no artifact
-             containing the main class if this is omitted -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>swt-mapview</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>jna</artifactId>

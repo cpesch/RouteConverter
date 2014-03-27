@@ -54,19 +54,19 @@ public class BcrPosition extends MercatorPosition {
     }
 
     private long altitude;
-    private String zipCode, street, type; // comment = city
+    private String zipCode, street, type; // description = city
 
-    public BcrPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+    public BcrPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        super(longitude, latitude, elevation, speed, time, description);
         this.altitude = asAltitude(elevation);
     }
 
-    public BcrPosition(long x, long y, Double elevation, String comment) {
-        this(x, y, asAltitude(elevation), comment);
+    public BcrPosition(long x, long y, Double elevation, String description) {
+        this(x, y, asAltitude(elevation), description);
     }
 
-    public BcrPosition(long x, long y, long altitude, String comment) {
-        super(x, y, null, null, null, comment);
+    public BcrPosition(long x, long y, long altitude, String description) {
+        super(x, y, null, null, null, description);
         this.altitude = altitude;
     }
 
@@ -87,31 +87,31 @@ public class BcrPosition extends MercatorPosition {
         return getZipCode() == null && getStreet() == null && getType() == null;
     }
 
-    public String getComment() {
+    public String getDescription() {
         String result = (getZipCode() != null ? getZipCode() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "");
         return result.length() > 0 ? result : null;
     }
 
-    public void setComment(String comment) {
+    public void setDescription(String description) {
         this.zipCode = null;
-        this.comment = comment;
+        this.description = description;
         this.street = null;
         this.type = null;
 
-        if (comment == null)
+        if (description == null)
             return;
 
-        Matcher matcher = MTP0809Format.DESCRIPTION_PATTERN.matcher(comment);
+        Matcher matcher = MTP0809Format.DESCRIPTION_PATTERN.matcher(description);
         if (matcher.matches()) {
             zipCode = trim(matcher.group(1));
             if (ZIPCODE_DEFINES_NOTHING.equals(zipCode)) {
                 zipCode = null;
             }
-            this.comment = trim(matcher.group(2));
-            if (zipCode != null && this.comment == null) {
-                this.comment = zipCode;
+            this.description = trim(matcher.group(2));
+            if (zipCode != null && this.description == null) {
+                this.description = zipCode;
                 zipCode = null;
             }
             street = trim(matcher.group(3));
@@ -130,7 +130,7 @@ public class BcrPosition extends MercatorPosition {
     }
 
     public String getCity() {
-        return comment;
+        return description;
     }
 
     public String getStreet() {
@@ -164,7 +164,7 @@ public class BcrPosition extends MercatorPosition {
         return altitude == that.altitude &&
                 !(x != null ? !x.equals(that.x) : that.x != null) &&
                 !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
                 !(type != null ? !type.equals(that.type) : that.type != null) &&
                 !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null);
@@ -176,7 +176,7 @@ public class BcrPosition extends MercatorPosition {
         result = 31 * result + (y != null ? y.hashCode() : 0);
         result = 31 * result + (int) (altitude ^ (altitude >>> 32));
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;

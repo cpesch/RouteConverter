@@ -38,7 +38,7 @@ public class TourRoute extends SimpleRoute<TourPosition, TourFormat> {
         super(new TourFormat(), Waypoints, name, positions);
     }
 
-    public TourPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new TourPosition(longitude, latitude, elevation, speed, time, comment);
+    public TourPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new TourPosition(longitude, latitude, elevation, speed, time, description);
     }
 }

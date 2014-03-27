@@ -35,7 +35,7 @@ public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
         super(format, characteristics, positions);
     }
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new Wgs84Position(longitude, latitude, elevation, speed, time, description);
     }
 }

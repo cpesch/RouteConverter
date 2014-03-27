@@ -21,20 +21,32 @@ package slash.navigation.hgt;
 
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.download.DownloadManager;
+import slash.navigation.download.datasources.File;
+import slash.navigation.download.datasources.Fragment;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 
 public class HgtFilesIT {
-    private HgtFiles files = new HgtFiles();
+    private DownloadManager downloadManager = new DownloadManager();
+    private Map<String, Fragment> archiveMap = new HashMap<String, Fragment>();
+    private Map<String, File> fileMap = new HashMap<String, File>();
+    private HgtFiles files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test",
+            archiveMap, fileMap, downloadManager);
+    {
+        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
+        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
+    }
 
     @Before
     public void setUp() throws Exception {
-        HgtFileCache hgtFileCache = new HgtFileCache();
-        hgtFileCache.clear();
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
     }
 
     @Test
@@ -42,15 +54,9 @@ public class HgtFilesIT {
         Double elevation1 = files.getElevationFor(11.2, 59.0);
         assertNotNull(elevation1);
         assertEquals(40, elevation1.intValue());
-        Double elevation2 = files.getElevationFor(11.2, 60.0);
+        Double elevation2 = files.getElevationFor(12.0, 60.2);
         assertNotNull(elevation2);
-        assertEquals(190, elevation2.intValue());
+        assertEquals(211, elevation2.intValue());
         assertNull(files.getElevationFor(11.2, 61.0));
-
-        assertEquals(77, files.getElevationFor(-68.0, -54.0).intValue());
-        assertEquals(455, files.getElevationFor(-68.0, -55.0).intValue());
-        assertEquals(null, files.getElevationFor(-68.0, -56.0));
-        assertEquals(null, files.getElevationFor(-68.0, -56.1));
-        assertEquals(null, files.getElevationFor(-68.0, -57.0));
     }
 }

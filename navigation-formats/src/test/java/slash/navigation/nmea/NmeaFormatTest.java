@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.common.UnitConversion.nauticMilesToKilometer;
+import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 
 public class NmeaFormatTest {
     private NmeaFormat format = new NmeaFormat();
@@ -211,7 +211,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -225,7 +225,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -239,8 +239,8 @@ public class NmeaFormatTest {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
-        assertDoubleEquals(nauticMilesToKilometer(14.32), position.getSpeed());
+        assertNull(position.getDescription());
+        assertDoubleEquals(nauticMilesToKiloMeter(14.32), position.getSpeed());
     }
 
     @Test
@@ -250,7 +250,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(53.5694833, position.getLatitude());
         assertNull(position.getTime());
         assertNull(position.getElevation());
-        assertEquals("STATN1", position.getComment());
+        assertEquals("STATN1", position.getDescription());
     }
 
     @Test
@@ -264,7 +264,7 @@ public class NmeaFormatTest {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertNull(position.getSpeed());
     }
 
@@ -275,7 +275,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(32.19, position.getHeading());
         assertNull(position.getTime());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -310,7 +310,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -338,7 +338,7 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Position 3", position.getComment());
+        assertEquals("Position 3", position.getDescription());
     }
 
     @Test
@@ -363,16 +363,15 @@ public class NmeaFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
 
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
-        String expectedLines =
-                "$GPZDA,134012.000,26,07,2007,,*55" + eol +
-                "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
-                "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
+        String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
+                "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
+                "$GPZDA,134012.000,26,07,2007,,*55" + eol +
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
@@ -389,7 +388,7 @@ public class NmeaFormatTest {
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());
-        assertNull(position2.getComment());
+        assertNull(position2.getDescription());
     }
 
     @Test

@@ -1,4 +1,4 @@
 /**
- * Contains the MagicMaps formats.
+ * The MagicMaps formats.
  */
 package slash.navigation.mm;

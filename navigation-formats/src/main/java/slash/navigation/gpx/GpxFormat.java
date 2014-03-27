@@ -21,7 +21,7 @@
 package slash.navigation.gpx;
 
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;
 
@@ -76,28 +76,28 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return buffer.toString();
     }
 
-    protected String asWayPointComment(String name, String description) {
-        return asComment(name, description);
+    protected String asWayPointDescription(String name, String description) {
+        return asDescription(name, description);
     }
 
-    protected Double parseSpeed(String comment) {
-        if (comment != null) {
-            Matcher tripMasterMatcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
+    protected Double parseSpeed(String description) {
+        if (description != null) {
+            Matcher tripMasterMatcher = TRIPMASTER_SPEED_PATTERN.matcher(description);
             if (tripMasterMatcher.matches())
                 return parseDouble(tripMasterMatcher.group(1));
-            Matcher qstartzMatcher = QSTARTZ_SPEED_PATTERN.matcher(comment);
+            Matcher qstartzMatcher = QSTARTZ_SPEED_PATTERN.matcher(description);
             if (qstartzMatcher.matches())
                 return parseDouble(qstartzMatcher.group(1));
-            Matcher sportsTrackerMatcher = SPORTSTRACKER_SPEED_PATTERN.matcher(comment);
+            Matcher sportsTrackerMatcher = SPORTSTRACKER_SPEED_PATTERN.matcher(description);
             if (sportsTrackerMatcher.matches())
                 return parseDouble(sportsTrackerMatcher.group(1));
         }
         return null;
     }
 
-    protected Double parseHeading(String comment) {
-        if (comment != null) {
-            Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(comment);
+    protected Double parseHeading(String description) {
+        if (description != null) {
+            Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(description);
             if (qstartzPattern.matches())
                 return parseDouble(qstartzPattern.group(3));
         }
@@ -110,10 +110,10 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return msToKmh(metersPerSecond);
     }
 
-    protected Double asMs(Double kilometersPerHour) {
-        if (kilometersPerHour == null)
+    protected Double asMs(Double kiloMetersPerHour) {
+        if (kiloMetersPerHour == null)
             return null;
-        return kmhToMs(kilometersPerHour);
+        return kmhToMs(kiloMetersPerHour);
     }
 
     protected boolean isWriteAccuracy() {
@@ -138,5 +138,9 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
 
     protected boolean isWriteTime() {
         return preferences.getBoolean("writeTime", true);
+    }
+
+    protected boolean isWriteMetaData() {
+        return preferences.getBoolean("writeMetaData", true);
     }
 }

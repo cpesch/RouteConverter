@@ -31,14 +31,17 @@ public class ColumbusV900ProfessionalFormatTest extends NavigationTestCase {
 
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
+        assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,ALTITUDE,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
         assertTrue(format.isValidLine("1150  ,T,090522,150532,48.206931N,016.372713E,-5   ,0   ,0  ,3D,SPS ,2.3  ,2.1  ,1.0  ,"));
         assertTrue(format.isValidLine("2852\u0000\u0000\u0000\u0000\u0000,T,120811,141223,50.149103N,008.570144E,196\u0000\u0000,0\u0000\u0000\u0000,0\u0000\u0000,3D,SPS ,1.6\u0000\u0000,1.3\u0000\u0000,0.9\u0000\u0000,\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"));
+        assertTrue(format.isValidLine("1,T,130830,145806,50.636938N,008.141175E,643,0,0,,,,,,"));
 
         assertFalse(format.isValidLine("2852\u0000\u0000\u0000\u0000\u0000,G,120811,141223,50.149103N,008.570144E,196\u0000\u0000,0\u0000\u0000\u0000,0\u0000\u0000,3D,SPS ,1.6\u0000\u0000,1.3\u0000\u0000,0.9\u0000\u0000,\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"));
     }
 
     public void testIsPosition() {
         assertTrue(format.isPosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971"));
+        assertTrue(format.isPosition("1,T,130830,145806,50.636938N,008.141175E,643,0,0,,,,,,"));
 
         assertFalse(format.isPosition("5     ,T,090421,061057,47.797281N,013.049743E,504  ,0   ,206,         "));
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
@@ -59,6 +62,6 @@ public class ColumbusV900ProfessionalFormatTest extends NavigationTestCase {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("VOX02971", position.getComment());
+        assertEquals("VOX02971", position.getDescription());
     }
 }

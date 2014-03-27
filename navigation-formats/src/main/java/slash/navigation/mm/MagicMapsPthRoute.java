@@ -42,7 +42,7 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         this(new MagicMapsPthFormat(), characteristics, positions);
     }
 
-    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new GkPosition(longitude, latitude, elevation, speed, time, comment);
+    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new GkPosition(longitude, latitude, elevation, speed, time, description);
     }
 }

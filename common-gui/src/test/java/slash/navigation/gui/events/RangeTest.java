@@ -25,51 +25,60 @@ import org.junit.Test;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertIntArrayEquals;
+import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
+import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
+import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
+import static slash.navigation.gui.events.Range.asRange;
 
 public class RangeTest {
+    @Test
+    public void testAsRange() {
+        assertIntArrayEquals(new int[]{2}, asRange(2, 2));
+        assertIntArrayEquals(new int[]{0, 1}, asRange(0, 1));
+    }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyIncreasingRanges() {
-        assertEquals(asList(asList(0, 1)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1}));
-        assertEquals(asList(asList(0), asList(2)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 2}));
-        assertEquals(asList(asList(0), asList(2, 3), asList(5, 6, 7)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{6, 0, 5, 2, 7, 3}));
+        assertEquals(asList(asList(0, 1)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1}));
+        assertEquals(asList(asList(0), asList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 2}));
+        assertEquals(asList(asList(0), asList(2, 3), asList(5, 6, 7)), asContinuousMonotonicallyIncreasingRanges(new int[]{6, 0, 5, 2, 7, 3}));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyIncreasingRangesWithLimit() {
-        assertEquals(asList(asList(0), asList(1), asList(2)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2}, 1));
-        assertEquals(asList(asList(0, 1), asList(2, 3), asList(4)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2, 3, 4}, 2));
-        assertEquals(asList(asList(0, 1), asList(3), asList(5, 6)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 3, 5, 6}, 2));
+        assertEquals(asList(asList(0), asList(1), asList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2}, 1));
+        assertEquals(asList(asList(0, 1), asList(2, 3), asList(4)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2, 3, 4}, 2));
+        assertEquals(asList(asList(0, 1), asList(3), asList(5, 6)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 3, 5, 6}, 2));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyDecreasingRanges() {
-        assertEquals(asList(asList(1, 0)), Range.asContinuousMonotonicallyDecreasingRanges(new int[]{0, 1}));
-        assertEquals(asList(asList(2), asList(0)), Range.asContinuousMonotonicallyDecreasingRanges(new int[]{0, 2}));
-        assertEquals(asList(asList(7, 6, 5), asList(3, 2), asList(0)), Range.asContinuousMonotonicallyDecreasingRanges(new int[]{3, 6, 0, 7, 5, 2}));
+        assertEquals(asList(asList(1, 0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 1}));
+        assertEquals(asList(asList(2), asList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 2}));
+        assertEquals(asList(asList(7, 6, 5), asList(3, 2), asList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{3, 6, 0, 7, 5, 2}));
     }
 
     @Test
     public void testAllButEveryNthAndFirstAndLast() {
-        assertIntArrayEquals(new int[]{}, Range.allButEveryNthAndFirstAndLast(0, 1));
-        assertIntArrayEquals(new int[]{}, Range.allButEveryNthAndFirstAndLast(0, 100));
-        assertIntArrayEquals(new int[]{}, Range.allButEveryNthAndFirstAndLast(1, 1));
-        assertIntArrayEquals(new int[]{}, Range.allButEveryNthAndFirstAndLast(1, 100));
-        assertIntArrayEquals(new int[]{}, Range.allButEveryNthAndFirstAndLast(2, 1));
-        assertIntArrayEquals(new int[]{1}, Range.allButEveryNthAndFirstAndLast(2, 2));
-        assertIntArrayEquals(new int[]{1}, Range.allButEveryNthAndFirstAndLast(2, 3));
-        assertIntArrayEquals(new int[]{1}, Range.allButEveryNthAndFirstAndLast(2, 100));
-        assertIntArrayEquals(new int[]{1}, Range.allButEveryNthAndFirstAndLast(3, 2));
-        assertIntArrayEquals(new int[]{1, 2}, Range.allButEveryNthAndFirstAndLast(3, 3));
-        assertIntArrayEquals(new int[]{1, 2}, Range.allButEveryNthAndFirstAndLast(3, 4));
-        assertIntArrayEquals(new int[]{1, 2}, Range.allButEveryNthAndFirstAndLast(3, 100));
-        assertIntArrayEquals(new int[]{1, 3, 5}, Range.allButEveryNthAndFirstAndLast(6, 2));
-        assertIntArrayEquals(new int[]{1, 2, 4, 5}, Range.allButEveryNthAndFirstAndLast(6, 3));
-        assertIntArrayEquals(new int[]{1, 3, 5, 7, 9}, Range.allButEveryNthAndFirstAndLast(10, 2));
-        assertIntArrayEquals(new int[]{1, 2, 4, 5, 7, 8}, Range.allButEveryNthAndFirstAndLast(10, 3));
-        assertIntArrayEquals(new int[]{1, 2, 3, 5, 6, 7, 9}, Range.allButEveryNthAndFirstAndLast(10, 4));
+        assertIntArrayEquals(new int[]{}, allButEveryNthAndFirstAndLast(0, 1));
+        assertIntArrayEquals(new int[]{}, allButEveryNthAndFirstAndLast(0, 100));
+        assertIntArrayEquals(new int[]{}, allButEveryNthAndFirstAndLast(1, 1));
+        assertIntArrayEquals(new int[]{}, allButEveryNthAndFirstAndLast(1, 100));
+        assertIntArrayEquals(new int[]{}, allButEveryNthAndFirstAndLast(2, 1));
+        assertIntArrayEquals(new int[]{1}, allButEveryNthAndFirstAndLast(2, 2));
+        assertIntArrayEquals(new int[]{1}, allButEveryNthAndFirstAndLast(2, 3));
+        assertIntArrayEquals(new int[]{1}, allButEveryNthAndFirstAndLast(2, 100));
+        assertIntArrayEquals(new int[]{1}, allButEveryNthAndFirstAndLast(3, 2));
+        assertIntArrayEquals(new int[]{1, 2}, allButEveryNthAndFirstAndLast(3, 3));
+        assertIntArrayEquals(new int[]{1, 2}, allButEveryNthAndFirstAndLast(3, 4));
+        assertIntArrayEquals(new int[]{1, 2}, allButEveryNthAndFirstAndLast(3, 100));
+        assertIntArrayEquals(new int[]{1, 3, 5}, allButEveryNthAndFirstAndLast(6, 2));
+        assertIntArrayEquals(new int[]{1, 2, 4, 5}, allButEveryNthAndFirstAndLast(6, 3));
+        assertIntArrayEquals(new int[]{1, 3, 5, 7, 9}, allButEveryNthAndFirstAndLast(10, 2));
+        assertIntArrayEquals(new int[]{1, 2, 4, 5, 7, 8}, allButEveryNthAndFirstAndLast(10, 3));
+        assertIntArrayEquals(new int[]{1, 2, 3, 5, 6, 7, 9}, allButEveryNthAndFirstAndLast(10, 4));
     }
 }

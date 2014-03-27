@@ -27,7 +27,7 @@ import java.text.Collator;
 import java.util.Comparator;
 
 /**
- * Compares categories by name.
+ * Compares {@link Category}s by their name.
  *
  * @author Christian Pesch
  */

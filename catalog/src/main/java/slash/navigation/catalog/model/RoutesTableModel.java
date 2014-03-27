@@ -56,22 +56,31 @@ public class RoutesTableModel extends AbstractTableModel {
     }
 
     public void addRoute(RouteModel route) {
-        routes.add(route);
+        if(!routes.add(route))
+            throw new IllegalArgumentException("Route " + route + " not added to " + routes);
+
         int index = routes.indexOf(route);
-        assert index != -1;
+        if (index == -1)
+            throw new IllegalArgumentException("Route " + route + " not found in " + routes);
+
         fireTableRowsInserted(index, index);
     }
 
     public void updateRoute(RouteModel route) {
         int index = routes.indexOf(route);
-        assert index != -1;
+        if (index == -1)
+            throw new IllegalArgumentException("Route " + route + " not found in " + routes);
         fireTableRowsUpdated(index, index);
     }
 
     public void removeRoute(RouteModel route) {
         int index = routes.indexOf(route);
-        assert index != -1;
-        routes.remove(route);
+        if (index == -1)
+            throw new IllegalArgumentException("Route " + route + " not found in " + routes);
+
+        if(!routes.remove(route))
+            throw new IllegalArgumentException("Route " + route + " not removed from " + routes);
+
         fireTableRowsDeleted(index, index);
     }
 }

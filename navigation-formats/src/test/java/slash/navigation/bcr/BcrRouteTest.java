@@ -63,8 +63,8 @@ public class BcrRouteTest {
         List<BcrPosition> actual = route.getPositions();
         assertEquals(expected.length, actual.size());
         for (int i = 0; i < expected.length; i++)
-            assertEquals("at index:" + i + " expected:" + expected[i].getComment() +
-                    " but was:" + actual.get(i).getComment(), expected[i], actual.get(i));
+            assertEquals("at index:" + i + " expected:" + expected[i].getDescription() +
+                    " but was:" + actual.get(i).getDescription(), expected[i], actual.get(i));
     }
 
     @Test
@@ -435,25 +435,25 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testCommentPositions() {
+    public void testdescriptionPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
             positions.add(new BcrPosition(i, i, i, null));
         }
 
         for (int i = 0; i < 10; i++) {
-            assertNull(positions.get(i).getComment());
+            assertNull(positions.get(i).getDescription());
         }
 
         commentPositions(positions);
 
         for (int i = 0; i < 10; i++) {
-            assertEquals("Position " + (i + 1), positions.get(i).getComment());
+            assertEquals("Position " + (i + 1), positions.get(i).getDescription());
         }
     }
 
     @Test
-    public void testCommentAndRenumberPositions() {
+    public void testdescriptionAndRenumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
             positions.add(new BcrPosition(i, i, i, null));
@@ -461,9 +461,9 @@ public class BcrRouteTest {
 
         commentPositions(positions);
 
-        positions.get(9).setComment("Position 7: Hamburg");
-        positions.get(7).setComment("Hamburg (Position 7)");
-        positions.get(3).setComment("Hamburg");
+        positions.get(9).setDescription("Position 7: Hamburg");
+        positions.get(7).setDescription("Hamburg (Position 7)");
+        positions.get(3).setDescription("Hamburg");
         positions.remove(8);
         positions.remove(6);
         positions.remove(4);
@@ -472,11 +472,11 @@ public class BcrRouteTest {
 
         commentPositions(positions);
 
-        assertEquals("Position 1", positions.get(0).getComment());
-        assertEquals("Hamburg", positions.get(1).getComment());
-        assertEquals("Position 3", positions.get(2).getComment());
-        assertEquals("Hamburg (Position 4)", positions.get(3).getComment());
-        assertEquals("Position 5: Hamburg", positions.get(4).getComment());
+        assertEquals("Position 1", positions.get(0).getDescription());
+        assertEquals("Hamburg", positions.get(1).getDescription());
+        assertEquals("Position 3", positions.get(2).getDescription());
+        assertEquals("Hamburg (Position 4)", positions.get(3).getDescription());
+        assertEquals("Position 5: Hamburg", positions.get(4).getDescription());
     }
 
     @Test
@@ -514,16 +514,16 @@ public class BcrRouteTest {
     public void testNumberPositionsWithGetNumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
-            positions.add(new BcrPosition(i, i, i, "Comment"));
+            positions.add(new BcrPosition(i, i, i, "description"));
         }
 
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 0, Number_Directly_Followed_By_Description));
+            position.setDescription(getNumberedPosition(position, i, 0, Number_Directly_Followed_By_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals((i + 1) + "Comment", positions.get(i).getComment());
+            assertEquals((i + 1) + "description", positions.get(i).getDescription());
         }
 
         positions.remove(8);
@@ -532,11 +532,11 @@ public class BcrRouteTest {
         // check renumbering, add space
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 0, Number_Space_Then_Description));
+            position.setDescription(getNumberedPosition(position, i, 0, Number_Space_Then_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals((i + 1) + " Comment", positions.get(i).getComment());
+            assertEquals((i + 1) + " description", positions.get(i).getDescription());
         }
 
         positions.remove(5);
@@ -545,11 +545,11 @@ public class BcrRouteTest {
         // check renumbering, check remove space again but have 2 digits and leading zeros
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(getNumberedPosition(position, i, 2, Number_Directly_Followed_By_Description));
+            position.setDescription(getNumberedPosition(position, i, 2, Number_Directly_Followed_By_Description));
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals(formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
+            assertEquals(formatIntAsString(i + 1, 2) + "description", positions.get(i).getDescription());
         }
     }
 

@@ -26,7 +26,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.nmea.NmeaPosition;
 
-import static slash.navigation.base.RouteComments.parseComment;
+import static slash.navigation.base.RouteComments.parseDescription;
 
 /**
  * Represents a position in a Tom Tom Route (.itn) file.
@@ -44,20 +44,20 @@ public class TomTomPosition extends BaseNavigationPosition {
     private Double speed;
     private CompactCalendar time;
 
-    public TomTomPosition(Integer longitude, Integer latitude, String comment) {
+    public TomTomPosition(Integer longitude, Integer latitude, String description) {
         this.longitude = longitude;
         this.latitude = latitude;
-        setComment(comment);
+        setDescription(description);
     }
 
-    public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+    public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         setElevation(elevation);
         setSpeed(speed);
         setTime(time);
         setLongitude(longitude);
         setLatitude(latitude);
-        setComment(comment);
-        // there could be an elevation/time already parsed from comment or one given as a parameter
+        setDescription(description);
+        // there could be an elevation/time already parsed from description or one given as a parameter
         if (getElevation() == null || elevation != null)
             setElevation(elevation);
         if (!hasTime() || time != null)
@@ -80,17 +80,17 @@ public class TomTomPosition extends BaseNavigationPosition {
         this.latitude = asInt(latitude);
     }
 
-    public String getComment() {
+    public String getDescription() {
         return city;
     }
 
-    public void setComment(String comment) {
-        this.city = comment;
+    public void setDescription(String description) {
+        this.city = description;
         this.reason = null;
-        if (comment == null)
+        if (description == null)
             return;
 
-        parseComment(this, comment);
+        parseDescription(this, description);
     }
 
     public Double getElevation() {

@@ -31,8 +31,8 @@ import slash.navigation.base.Wgs84Position;
 
 public class KmlPosition extends Wgs84Position {
 
-    public KmlPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+    public KmlPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        super(longitude, latitude, elevation, speed, time, description);
     }
 
     public KmlPosition asKmlPosition() {
@@ -46,7 +46,7 @@ public class KmlPosition extends Wgs84Position {
         KmlPosition that = (KmlPosition) o;
 
         return !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
@@ -58,7 +58,7 @@ public class KmlPosition extends Wgs84Position {
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 }

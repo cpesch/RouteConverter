@@ -20,8 +20,6 @@
 
 package slash.common.io;
 
-import slash.common.system.Platform;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -34,6 +32,7 @@ import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import static java.lang.Long.MAX_VALUE;
+import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.copy;
 
 /**
@@ -44,21 +43,12 @@ import static slash.common.io.InputOutput.copy;
 
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
-    private static final File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator +
-            "routeconverter" + (!Platform.isWindows() ? "-" + System.getProperty("user.name") : ""));
-
-    public synchronized static File getTempDirectory() {
-        if (!tempDirectory.exists())
-            if (!tempDirectory.mkdirs())
-                log.severe("Could not create temp directory " + tempDirectory);
-        return tempDirectory;
-    }
 
     private static File getTempFile(String fileName) {
         int index = fileName.lastIndexOf('/');
         if (index != -1)
             fileName = fileName.substring(index);
-        return new File(getTempDirectory(), fileName);
+        return new File(getTemporaryDirectory(), fileName);
     }
 
     private static long getLastModified(String fileName) throws IOException {

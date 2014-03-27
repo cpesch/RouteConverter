@@ -56,7 +56,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return string;
     }
 
-    protected String asComment(String name, String description) {
+    protected String asDescription(String name, String description) {
         if (name == null && description == null)
             return null;
         if (description == null)
@@ -68,28 +68,28 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trimLineFeeds(name + "; " + description);
     }
 
-    protected String asName(String comment) {
-        if (comment == null)
+    protected String asName(String description) {
+        if (description == null)
             return null;
-        int index = comment.indexOf(';');
+        int index = description.indexOf(';');
         if (index != -1)
-            comment = comment.substring(0, index);
-        return trim(comment);
+            description = description.substring(0, index);
+        return trim(description);
     }
 
-    protected String asDesc(String comment) {
-        if (comment == null)
+    protected String asDesc(String description) {
+        if (description == null)
             return null;
-        int index = comment.indexOf(';');
+        int index = description.indexOf(';');
         if (index != -1) {
-            comment = comment.substring(index + 1);
-            return trim(comment);
+            description = description.substring(index + 1);
+            return trim(description);
         } else
             return null;
     }
 
-    protected String asDesc(String comment, String defaultValue) {
-        String result = asDesc(comment);
+    protected String asDesc(String description, String defaultValue) {
+        String result = asDesc(description);
         if (result == null)
             result = trim(defaultValue);
         return result;

@@ -30,7 +30,7 @@ import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatParserListener;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserCallback;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
@@ -62,16 +62,14 @@ import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
-import slash.navigation.converter.gui.helper.AbstractDocumentListener;
-import slash.navigation.converter.gui.helper.AbstractListDataListener;
-import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
-import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.helper.JTableHelper;
-import slash.navigation.converter.gui.helper.LengthCalculator;
-import slash.navigation.converter.gui.helper.MergePositionListMenu;
-import slash.navigation.converter.gui.helper.NavigationFormatFileFilter;
-import slash.navigation.converter.gui.helper.TableHeaderMenu;
-import slash.navigation.converter.gui.helper.TablePopupMenu;
+import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
+import slash.navigation.converter.gui.helpers.AbstractListDataListener;
+import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
+import slash.navigation.converter.gui.helpers.LengthCalculator;
+import slash.navigation.converter.gui.helpers.MergePositionListMenu;
+import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
+import slash.navigation.converter.gui.helpers.TableHeaderMenu;
+import slash.navigation.converter.gui.helpers.TablePopupMenu;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
@@ -99,6 +97,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
+import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
@@ -181,14 +180,17 @@ import static slash.navigation.base.NavigationFormats.getWriteFormatsWithPreferr
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
-import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.increment;
 import static slash.navigation.gui.events.Range.revert;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -238,6 +240,7 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
+    private TableHeaderMenu tableHeaderMenu;
 
     public ConvertPanel() {
         initialize();
@@ -351,6 +354,9 @@ public class ConvertPanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+
                 handlePositionsUpdate();
             }
         });
@@ -392,13 +398,19 @@ public class ConvertPanel implements PanelInTab {
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                if (!isFirstToLastRow(e))
+                    return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+
                 handlePositionsUpdate();
             }
         });
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
-        JPopupMenu menu = new TablePopupMenu(tablePositions).createMenu();
+        tableHeaderMenu = new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(),
+                tableColumnModel, actionManager);
+        JPopupMenu menu = new TablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
@@ -431,9 +443,9 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
         actionManager.register("export-positionlist", new ExportPositionListAction(this));
 
-        JMenuHelper.registerKeyStroke(tablePositions, "copy");
-        JMenuHelper.registerKeyStroke(tablePositions, "cut");
-        JMenuHelper.registerKeyStroke(tablePositions, "paste");
+        registerKeyStroke(tablePositions, "copy");
+        registerKeyStroke(tablePositions, "cut");
+        registerKeyStroke(tablePositions, "paste");
 
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -664,16 +676,23 @@ public class ConvertPanel implements PanelInTab {
                             countRead(result.getFormat());
 
                             final String finalPath = path;
-                            final int finalRow = row > 0 ? row : getPositionsModel().getRowCount();
                             // avoid parallelism to ensure the URLs are processed in order
                             invokeAndWait(new Runnable() {
                                 public void run() {
-                                    try {
-                                        getPositionsModel().add(finalRow, result.getTheRoute());
-                                    } catch (FileNotFoundException e) {
-                                        r.handleFileNotFound(finalPath);
-                                    } catch (IOException e) {
-                                        r.handleOpenError(e, finalPath);
+                                    if (getFormatAndRoutesModel().getFormat().isSupportsMultipleRoutes()) {
+                                        for (BaseRoute route : result.getAllRoutes()) {
+                                            int appendIndex = getFormatAndRoutesModel().getSize();
+                                            getFormatAndRoutesModel().addPositionList(appendIndex, route);
+                                        }
+                                    } else {
+                                        try {
+                                            int appendRow = row > 0 ? row : getPositionsModel().getRowCount();
+                                            getPositionsModel().add(appendRow, result.getTheRoute());
+                                        } catch (FileNotFoundException e) {
+                                            r.handleFileNotFound(finalPath);
+                                        } catch (IOException e) {
+                                            r.handleOpenError(e, finalPath);
+                                        }
                                     }
                                 }
                             });
@@ -772,7 +791,8 @@ public class ConvertPanel implements PanelInTab {
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
                             shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
-                    r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
+                    r.getFrame().getTitle(), YES_NO_CANCEL_OPTION
+            );
             switch (confirm) {
                 case YES_OPTION:
                     break;
@@ -976,6 +996,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
+        tableHeaderMenu.enable(existsMoreThanOnePosition);
         //noinspection ConstantConditions
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
@@ -983,19 +1004,19 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-elevation-profile", existsAPosition);
     }
 
-    private int[] selectedPositionIndices = null;
+    private int[] selectedPositions = null;
 
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
         // avoid firing events of the selection hasn't changed
-        if (Arrays.equals(this.selectedPositionIndices, selectedRows))
+        if (Arrays.equals(this.selectedPositions, selectedRows))
             return;
 
-        this.selectedPositionIndices = selectedRows;
+        this.selectedPositions = selectedRows;
 
-        boolean existsASelectedPosition = selectedRows.length > 0;
-        boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
-        boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
+        boolean existsASelectedPosition = selectedPositions.length > 0;
+        boolean allPositionsSelected = selectedPositions.length == tablePositions.getRowCount();
+        boolean firstRowNotSelected = existsASelectedPosition && selectedPositions[0] != 0;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
@@ -1003,7 +1024,7 @@ public class ConvertPanel implements PanelInTab {
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
-        boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+        boolean lastRowNotSelected = existsASelectedPosition && selectedPositions[selectedPositions.length - 1] != tablePositions.getRowCount() - 1;
         buttonMovePositionDown.setEnabled(lastRowNotSelected);
         buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
 
@@ -1013,7 +1034,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("copy", existsASelectedPosition);
         actionManager.enable("delete", existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
-        JMenuHelper.findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
+        findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
         actionManager.enable("add-elevation", existsASelectedPosition);
         actionManager.enable("add-postal-address", existsASelectedPosition);
@@ -1025,11 +1046,12 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
+        tableHeaderMenu.enable(existsMoreThanOnePosition);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
         actionManager.enable("print-elevation-profile", existsAPosition);
 
-        r.selectPositions(selectedRows, tablePositions.getSelectionModel().getLeadSelectionIndex());
+        r.selectPositions(selectedPositions, tablePositions.getSelectionModel().getLeadSelectionIndex());
     }
 
     // helpers

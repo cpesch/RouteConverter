@@ -43,13 +43,12 @@ import java.io.StringWriter;
 import static java.lang.Integer.parseInt;
 import static org.junit.Assert.assertTrue;
 import static slash.common.io.InputOutput.readBytes;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 
 public abstract class RouteCatalogClientBase {
     protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
-    // protected static final String HOST = "www.routeconverter.com";
-    protected static final String HOST = "localhost:8000";
-    protected static final String CATALOG = "http://" + HOST + "/catalog/";
-    protected static final String FEEDBACK = "http://" + HOST + "/feedback/";
+    protected static final String CATALOG = System.getProperty("catalog", "http://localhost:8000/catalog/");
+    protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
 
@@ -60,6 +59,7 @@ public abstract class RouteCatalogClientBase {
     protected static final String POST_USERS_URL = FEEDBACK + "users/";
     protected static final String GPX_URL_POSTFIX = ".gpx";
     protected static final String FILE_URL_POSTFIX = "/";
+    protected static final String UMLAUTS = "äöüßÄÖÜ\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     private File tempFile;
     private ObjectFactory gpxFactory = new ObjectFactory();
@@ -81,7 +81,7 @@ public abstract class RouteCatalogClientBase {
     }
 
     protected String readFileToString(String fileName) throws IOException {
-        return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), "ISO-8859-1");
+        return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), UTF8_ENCODING);
     }
 
     protected File writeToTempFile(String string) throws IOException {

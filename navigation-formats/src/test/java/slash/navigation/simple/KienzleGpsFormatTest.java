@@ -62,7 +62,7 @@ public class KienzleGpsFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("PHE I: 53119 Bonn, Oppelner Str. 126", position.getComment());
+        assertEquals("PHE I: 53119 Bonn, Oppelner Str. 126", position.getDescription());
     }
 
     @Test

@@ -21,7 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.FindPlaceDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
  * Find a place via geocoding to insert it into the position list.
@@ -29,11 +30,8 @@ import slash.navigation.gui.actions.FrameAction;
  * @author Christian Pesch
  */
 
-public class FindPlaceAction extends FrameAction {
-    public void run() {
-        FindPlaceDialog dialog = new FindPlaceDialog();
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+public class FindPlaceAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new FindPlaceDialog();
     }
 }

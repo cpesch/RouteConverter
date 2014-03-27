@@ -34,10 +34,11 @@ import static slash.common.io.Transfer.toArray;
  */
 
 public class Range {
-    public static int[] asInt(List<Integer> indices) {
-        int[] result = new int[indices.size()];
-        for (int i = 0; i < indices.size(); i++) {
-            result[i] = indices.get(i);
+    public static int[] asRange(int firstIndex, int lastIndex) {
+        int count = lastIndex - firstIndex + 1;
+        int[] result = new int[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = firstIndex + i;
         }
         return result;
     }

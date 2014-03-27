@@ -24,10 +24,12 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.table.TableModel;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -46,12 +48,12 @@ public interface PositionsModel extends TableModel {
     List<NavigationPosition> getPositions(int[] rowIndices);
     List<NavigationPosition> getPositions(int firstIndex, int lastIndex);
 
-    int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner);
+    int[] getContainedPositions(BoundingBox boundingBox);
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);
 
-    void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
+    void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
     void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
     void add(int rowIndex, List<BaseNavigationPosition> positions);
 
@@ -60,6 +62,7 @@ public interface PositionsModel extends TableModel {
     void remove(int firstIndex, int lastIndex);
     void remove(int[] rowIndices);
 
+    void sort(Comparator<NavigationPosition> comparator);
     void revert();
 
     void top(int[] rowIndices);
@@ -67,5 +70,6 @@ public interface PositionsModel extends TableModel {
     void down(int[] rowIndices, int delta);
     void bottom(int[] rowIndices);
 
+    boolean isContinousRange();
     void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);
 }

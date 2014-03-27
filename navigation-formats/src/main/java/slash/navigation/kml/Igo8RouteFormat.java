@@ -98,8 +98,8 @@ public class Igo8RouteFormat extends Kml22Format {
             KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
-            placemarkType.setName(trimLineFeedsAndCommas(asName(isWriteName() ? position.getComment() : null)));
-            placemarkType.setDescription(trimLineFeedsAndCommas(asDesc(isWriteDesc() ? position.getComment() : null)));
+            placemarkType.setName(trimLineFeedsAndCommas(asName(isWriteName() ? position.getDescription() : null)));
+            placemarkType.setDescription(trimLineFeedsAndCommas(asDesc(isWriteDesc() ? position.getDescription() : null)));
             PointType pointType = objectFactory.createPointType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
             pointType.getCoordinates().add(createCoordinates(position, false));

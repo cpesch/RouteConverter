@@ -98,8 +98,8 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         positions.add(index, position);
     }
 
-    public GarminFlightPlanPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new GarminFlightPlanPosition(longitude, latitude, elevation, comment);
+    public GarminFlightPlanPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new GarminFlightPlanPosition(longitude, latitude, elevation, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {

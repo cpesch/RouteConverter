@@ -50,7 +50,7 @@ public class MagellanExploristFormatTest {
         assertTrue(format.isValidLine("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
         assertTrue(format.isValidLine("$PMGNTRK,4348.1258,N,08735.0978,E,000000,M,,A,???,*E1"));
 
-        assertFalse(format.isValidLine("# Comment"));
+        assertFalse(format.isValidLine("# Description"));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MagellanExploristFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Kllertal-Radweg", position.getComment());
+        assertEquals("Kllertal-Radweg", position.getDescription());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class MagellanExploristFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Kllertal-Radweg", position.getComment());
+        assertEquals("Kllertal-Radweg", position.getDescription());
 
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
