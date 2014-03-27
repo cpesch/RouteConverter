@@ -25,7 +25,10 @@ import slash.navigation.maps.Map;
 import javax.swing.*;
 import java.awt.*;
 
+import static java.text.MessageFormat.format;
 import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.shortenName;
+import static slash.navigation.maps.MapManager.DOWNLOAD_MAP;
+import static slash.navigation.maps.MapManager.SEPARATOR_TO_DOWNLOAD_MAP;
 
 /**
  * Renders the {@link Map} labels of the map and theme selector combo box.
@@ -34,18 +37,26 @@ import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRende
  */
 
 public class MapListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Map map = (Map) value;
+    private static final JSeparator SEPARATOR = new JSeparator();
 
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        if (SEPARATOR_TO_DOWNLOAD_MAP.equals(value))
+            return SEPARATOR;
+
+        Map map = (Map) value;
         String text = "?";
         String tooltip = "";
-        if (map != null) {
+        if (DOWNLOAD_MAP.equals(value)) {
+            text = Application.getInstance().getContext().getBundle().getString("download-map-text");
+            tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
+        } else if (map != null) {
             text = shortenName(map.getDescription());
             if (map.isRenderer())
-                text += " " + Application.getInstance().getContext().getBundle().getString("renderer-map");
+                text = format(Application.getInstance().getContext().getBundle().getString("renderer-map"), text);
             tooltip = map.getUrl();
         }
+
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         label.setText(text);
         label.setToolTipText(tooltip);
         return label;

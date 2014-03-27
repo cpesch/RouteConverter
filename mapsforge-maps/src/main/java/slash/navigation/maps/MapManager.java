@@ -25,7 +25,13 @@ import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.maps.models.*;
+import slash.navigation.maps.models.DownloadMap;
+import slash.navigation.maps.models.ItemModel;
+import slash.navigation.maps.models.MapsTableModel;
+import slash.navigation.maps.models.RendererMap;
+import slash.navigation.maps.models.ResourcesTableModel;
+import slash.navigation.maps.models.ThemeImpl;
+import slash.navigation.maps.models.ThemesTableModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +60,10 @@ import static slash.navigation.download.Action.Extract;
 public class MapManager {
     private static final Logger log = Logger.getLogger(MapManager.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(MapManager.class);
+    public static final Map SEPARATOR_TO_DOWNLOAD_MAP = new DownloadMap(null, null, null);
+    public static final Map DOWNLOAD_MAP = new DownloadMap(null, null, null);
+    public static final Theme SEPARATOR_TO_DOWNLOAD_THEME = new ThemeImpl(null, null, null);
+    public static final Theme DOWNLOAD_THEME = new ThemeImpl(null, null, null);
     private static final String MAP_DIRECTORY_PREFERENCE = "mapDirectory";
     private static final String THEME_DIRECTORY_PREFERENCE = "themeDirectory";
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
@@ -130,6 +140,8 @@ public class MapManager {
 
         for (File file : mapFilesArray)
             mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file));
+        mapsModel.addOrUpdateMap(SEPARATOR_TO_DOWNLOAD_MAP);
+        mapsModel.addOrUpdateMap(DOWNLOAD_MAP);
 
         themesModel.clear();
         themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
@@ -141,6 +153,8 @@ public class MapManager {
 
         for (File file : themeFilesArray)
             themesModel.addOrUpdateTheme(new ThemeImpl(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
+        themesModel.addOrUpdateTheme(SEPARATOR_TO_DOWNLOAD_THEME);
+        themesModel.addOrUpdateTheme(DOWNLOAD_THEME);
     }
 
     private static String removePrefix(File root, File file) {
@@ -182,9 +196,9 @@ public class MapManager {
 
     private File getDirectory(RemoteResource resource) {
         String subDirectory = resource.getSubDirectory();
-        if(subDirectory.startsWith("maps/"))
+        if (subDirectory.startsWith("maps/"))
             return ensureDirectory(getMapsDirectory() + separator + resource.getSubDirectory().substring(5));
-        else if(subDirectory.startsWith("themes/"))
+        else if (subDirectory.startsWith("themes/"))
             return ensureDirectory(getThemesDirectory() + separator + resource.getSubDirectory().substring(7));
         return getApplicationDirectory(resource.getSubDirectory());
     }

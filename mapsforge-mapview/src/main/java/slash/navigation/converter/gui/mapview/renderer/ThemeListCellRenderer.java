@@ -19,10 +19,14 @@
 */
 package slash.navigation.converter.gui.mapview.renderer;
 
+import slash.navigation.gui.Application;
 import slash.navigation.maps.Theme;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static slash.navigation.maps.MapManager.DOWNLOAD_THEME;
+import static slash.navigation.maps.MapManager.SEPARATOR_TO_DOWNLOAD_THEME;
 
 /**
  * Renders the {@link Theme} labels of the map and theme selector combo box.
@@ -31,18 +35,25 @@ import java.awt.*;
  */
 
 public class ThemeListCellRenderer extends DefaultListCellRenderer {
+    private static final JSeparator SEPARATOR = new JSeparator();
     private static final int MAXIMUM_NAME_LENGTH = 40;
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Theme theme = (Theme) value;
+        if (SEPARATOR_TO_DOWNLOAD_THEME.equals(value))
+            return SEPARATOR;
 
+        Theme theme = (Theme) value;
         String text = "?";
         String tooltip = "";
-        if (theme != null) {
+        if (DOWNLOAD_THEME.equals(value)) {
+            text = Application.getInstance().getContext().getBundle().getString("download-theme-text");
+            tooltip = Application.getInstance().getContext().getBundle().getString("download-theme-tooltip");
+        } else if (theme != null) {
             text = shortenName(theme.getDescription());
             tooltip = theme.getUrl();
         }
+
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         label.setText(text);
         label.setToolTipText(tooltip);
         return label;
