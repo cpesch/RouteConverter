@@ -96,7 +96,7 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        zoomToMousePosition((byte) -e.getWheelRotation(), e);
+        zoomToMousePosition((byte) -e.getWheelRotation(), e.getX(), e.getY());
     }
 
     private static final int TOTAL_STEPS = 25;
@@ -123,18 +123,18 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void zoomToMousePosition(byte zoomLevelDiff) {
-        zoomToMousePosition(zoomLevelDiff, popupMouseEvent);
+        zoomToMousePosition(zoomLevelDiff, popupMouseEvent.getX(), popupMouseEvent.getY());
     }
 
-    public void zoomToMousePosition(byte zoomLevelDiff, MouseEvent e) {
+    public void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
         Dimension dimension = mapView.getDimension();
         MapViewProjection projection = new MapViewProjection(mapView);
-        LatLong mouse = projection.fromPixels(e.getX(), e.getY());
+        LatLong mouse = projection.fromPixels(mouseX, mouseY);
         LatLong center = projection.fromPixels(dimension.width / 2, dimension.height / 2);
         org.mapsforge.core.model.Point mousePoint = projection.toPixels(mouse);
         org.mapsforge.core.model.Point centerPoint = projection.toPixels(center);
-        int horizontalDiff = (int) (centerPoint.x - mousePoint.x) / 2;
-        int verticalDiff = (int) (centerPoint.y - mousePoint.y) / 2;
+        int horizontalDiff = (int) ((centerPoint.x - mousePoint.x) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+        int verticalDiff = (int) ((centerPoint.y - mousePoint.y) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
         mapView.getModel().mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
     }
 
