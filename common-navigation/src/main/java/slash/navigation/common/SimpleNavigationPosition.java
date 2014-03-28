@@ -163,4 +163,8 @@ public class SimpleNavigationPosition implements NavigationPosition {
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
     }
+
+    public String toString() {
+        return super.toString() + "[longitude=" + longitude + ", latitude=" + latitude + "]";
+    }
 }
