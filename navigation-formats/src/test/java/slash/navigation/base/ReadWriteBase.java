@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import slash.common.io.Files;
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.GarminPcx5Format;
@@ -29,9 +28,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static java.io.File.createTempFile;
+import static org.junit.Assert.*;
+import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
 import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 
@@ -48,7 +47,7 @@ public abstract class ReadWriteBase {
         assertNotNull(result.getAllRoutes());
         assertTrue(result.getAllRoutes().size() > 0);
 
-        File target = File.createTempFile("target", Files.getExtension(source));
+        File target = createTempFile("target", getExtension(source));
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
         if (result.getFormat().isSupportsMultipleRoutes() || result.getFormat() instanceof AlanWaypointsAndRoutesFormat)
             parser.write(result.getAllRoutes(), (MultipleRoutesFormat) result.getFormat(), target);

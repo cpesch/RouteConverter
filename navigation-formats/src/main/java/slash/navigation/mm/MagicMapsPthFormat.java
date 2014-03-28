@@ -22,7 +22,7 @@ package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.GkPosition;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -109,8 +109,8 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
             throw new IllegalArgumentException("'" + line + "' does not match");
         Double right = parseDouble(lineMatcher.group(1));
         Double height = parseDouble(lineMatcher.group(2));
-        String comment = trim(lineMatcher.group(3));
-        return new GkPosition(right, height, comment);
+        String description = trim(lineMatcher.group(3));
+        return new GkPosition(right, height, description);
     }
 
     public void write(MagicMapsPthRoute route, PrintWriter writer, int startIndex, int endIndex) {

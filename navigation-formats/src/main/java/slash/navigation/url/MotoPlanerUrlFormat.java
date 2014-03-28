@@ -1,0 +1,144 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.url;
+
+import slash.navigation.base.*;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
+import static slash.navigation.base.RouteCharacteristics.Route;
+
+/**
+ * Reads and writes MotoPlaner URLs from/to files.
+ *
+ * @author Christian Pesch
+ */
+
+public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
+    private static final Preferences preferences = Preferences.userNodeForPackage(MotoPlanerUrlFormat.class);
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://www.motoplaner.de/#([^\\s]+).*");
+
+    public String getExtension() {
+        return ".url";
+    }
+
+    public String getName() {
+        return "MotoPlaner URL (*" + getExtension() + ")";
+    }
+
+    public int getMaximumPositionCount() {
+        return preferences.getInt("maximumMotoPlanerUrlPositionCount", 100);
+    }
+
+    public static boolean isMotoPlanerUrl(URL url) {
+        String found = internalFindUrl(url.toExternalForm());
+        return found != null;
+    }
+
+    protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    private Wgs84Position parsePosition(String data) {
+        StringTokenizer tokenizer = new StringTokenizer(data, ",");
+        if (tokenizer.countTokens() != 2)
+            return null;
+
+        String latitude = tokenizer.nextToken();
+        String longitude = tokenizer.nextToken();
+        return asWgs84Position(parseDouble(longitude), parseDouble(latitude));
+    }
+
+    List<Wgs84Position> parsePositions(String data) {
+        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        StringTokenizer tokenizer = new StringTokenizer(data, ";");
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            if (token.startsWith("1,"))
+                token = token.substring(2);
+            Wgs84Position position = parsePosition(token);
+            if (position != null)
+                result.add(position);
+        }
+        return result;
+    }
+
+    private List<Wgs84Position> parseMatrixParameters(String data) {
+        if (data == null || data.length() == 0)
+            return null;
+        return parsePositions(data);
+    }
+
+    protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
+        List<Wgs84Position> positions = parseMatrixParameters(url);
+        if (positions.size() > 0)
+            context.appendRoute(createRoute(Route, null, positions));
+    }
+
+    protected String findURL(String text) {
+        return internalFindUrl(text);
+    }
+
+    private static String internalFindUrl(String text) {
+        text = replaceLineFeeds(text, "");
+        Matcher urlMatcher = URL_PATTERN.matcher(text);
+        if (!urlMatcher.matches())
+            return null;
+        return trim(urlMatcher.group(1));
+    }
+
+    String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
+        StringBuilder buffer = new StringBuilder("http://www.motoplaner.de/#");
+        for (int i = startIndex; i < endIndex; i++) {
+            Wgs84Position position = positions.get(i);
+            String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;
+            String latitude = position.getLatitude() != null ? formatDoubleAsString(position.getLatitude(), 6) : null;
+            if (longitude != null && latitude != null)
+                buffer.append(latitude).append(",").append(longitude).append(";1");
+            if (i < endIndex - 1)
+                buffer.append(",");
+        }
+        return buffer.toString();
+    }
+
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
+        List<Wgs84Position> positions = route.getPositions();
+        writer.println("[InternetShortcut]");
+        // idea from forum: add start point from previous route section since your not at the
+        // last position of the previous segment heading for the first position of the next segment
+        startIndex = Math.max(startIndex - 1, 0);
+        writer.println("URL=" + createURL(positions, startIndex, endIndex));
+        writer.println();
+    }
+}

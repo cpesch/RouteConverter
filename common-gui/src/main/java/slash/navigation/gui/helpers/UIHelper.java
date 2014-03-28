@@ -24,11 +24,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 
 /**
  * Helpers used throughout the UI
@@ -37,8 +41,8 @@ import static java.awt.Cursor.WAIT_CURSOR;
  */
 
 public class UIHelper {
-    private static final Preferences preferences = Preferences.userNodeForPackage(UIHelper.class);
-    private static final Logger log = Logger.getLogger(UIHelper.class.getName());
+    private static final Preferences preferences = userNodeForPackage(UIHelper.class);
+    private static final Logger log = getLogger(UIHelper.class.getName());
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
     // for language support which is not defined by a constant in Locale
@@ -55,7 +59,7 @@ public class UIHelper {
     public static void setLookAndFeel() {
         try {
             String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
-            if("default".equals(lookAndFeelClass))
+            if ("default".equals(lookAndFeelClass))
                 lookAndFeelClass = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(lookAndFeelClass);
         } catch (Exception e) {
@@ -95,17 +99,38 @@ public class UIHelper {
         try {
             try {
                 chooser = new JFileChooser();
-            }
-            catch (NullPointerException npe) {
+            } catch (NullPointerException npe) {
                 log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
                 UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
                 chooser = new JFileChooser();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857 by using restricted file system view");
             chooser = new JFileChooser(new RestrictedFileSystemView());
         }
         return chooser;
+    }
+
+    public static void patchUIManager(ResourceBundle bundle, String... keys) {
+        for (String key : keys) {
+            try {
+                String text = bundle.getString(key);
+                if (text != null)
+                    UIManager.getDefaults().put(key, text);
+            } catch (MissingResourceException e) {
+                // intentionally left empty
+            }
+        }
+    }
+
+    private static FontMetrics fontMetrics = null;
+
+    public static int getMaxWidth(String string, int extraWidth) {
+        if (fontMetrics == null) {
+            JLabel label = new JLabel();
+            fontMetrics = label.getFontMetrics(label.getFont());
+        }
+        int width = fontMetrics.stringWidth(string);
+        return width + extraWidth;
     }
 }

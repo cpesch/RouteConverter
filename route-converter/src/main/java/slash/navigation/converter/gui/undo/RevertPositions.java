@@ -28,7 +28,7 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for adding positions to {@link PositionsModel}.
+ * Acts as a {@link UndoableEdit} for reverting the positions of a {@link PositionsModel}.
  *
  * @author Christian Pesch
  */

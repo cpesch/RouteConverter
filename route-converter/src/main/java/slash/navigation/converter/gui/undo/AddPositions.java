@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;

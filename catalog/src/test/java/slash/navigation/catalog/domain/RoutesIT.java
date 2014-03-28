@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
+import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -33,11 +34,11 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
     @Test
     public void testAddRoute() throws Exception {
-        String name = "Category " + System.currentTimeMillis();
+        String name = "Category " + currentTimeMillis();
         Category root = catalog.getRootCategory();
         Category category = root.create(name);
 
-        String description = "Route " + System.currentTimeMillis();
+        String description = "Route " + currentTimeMillis();
         Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());
@@ -50,11 +51,11 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
     @Test
     public void testAddRouteWithUmlauts() throws Exception {
-        String name = "Category äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
+        String name = "Category with Umlauts " + UMLAUTS + " " + currentTimeMillis();
         Category root = catalog.getRootCategory();
         Category category = root.create(name);
 
-        String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
+        String description = "Route with Umlauts " + UMLAUTS + " " + currentTimeMillis();
         Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());
@@ -67,11 +68,11 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
     @Test
     public void testUpdateRouteViaCategory() throws Exception {
-        String sourceName = "Source Category " + System.currentTimeMillis();
+        String sourceName = "Source Category " + currentTimeMillis();
         Category root = catalog.getRootCategory();
         Category source = root.create(sourceName);
 
-        String sourceDescription = "Route " + System.currentTimeMillis();
+        String sourceDescription = "Route " + currentTimeMillis();
         Route route = source.createRoute(sourceDescription, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(sourceDescription, route.getDescription());
@@ -79,7 +80,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertTrue(routesBefore.contains(route));
 
         String targetDescription = "NEW Description";
-        route.update(source.getUrl(), targetDescription);
+        route.update(source, targetDescription);
 
         List<Route> afterDescriptionChange = source.getRoutes();
         assertTrue(afterDescriptionChange.contains(route));
@@ -87,15 +88,15 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertTrue(afterDescriptionChange.contains(route));
         assertEquals(targetDescription, route.getDescription());
 
-        String targetName = "Target Category " + System.currentTimeMillis();
+        String targetName = "Target Category " + currentTimeMillis();
         Category target = root.create(targetName);
-        route.update(target.getUrl(), targetDescription);
+        route.update(target, targetDescription);
 
         List<Route> sourceAfterCategoryChange = source.getRoutes();
         assertFalse(sourceAfterCategoryChange.contains(route));
 
         List<Route> targetAfterCategoryChange = target.getRoutes();
-        assertTrue(targetAfterCategoryChange.contains(route));
+        assertFalse(targetAfterCategoryChange.contains(route));
         route = targetAfterCategoryChange.get(0);
         assertTrue(targetAfterCategoryChange.contains(route));
         assertEquals(targetDescription, route.getDescription());
@@ -103,32 +104,32 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
     @Test
     public void testDeleteRouteViaCategory() throws Exception {
-         String name = "Category " + System.currentTimeMillis();
-         Category root = catalog.getRootCategory();
-         Category category = root.create(name);
-
-         String description = "Route " + System.currentTimeMillis();
-         Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
-         assertNotNull(route);
-         assertEquals(description, route.getDescription());
-         List<Route> routesBefore = category.getRoutes();
-         assertTrue(routesBefore.contains(route));
-
-        route.delete();
-
-         List<Route> routesAfter = category.getRoutes();
-         assertFalse(routesAfter.contains(route));
-
-         // TODO check if file still exists
-     }
-
-    @Test
-     public void testDeleteRouteDirectly() throws Exception {
-        String name = "Category " + System.currentTimeMillis();
+        String name = "Category " + currentTimeMillis();
         Category root = catalog.getRootCategory();
         Category category = root.create(name);
 
-        String description = "Route " + System.currentTimeMillis();
+        String description = "Route " + currentTimeMillis();
+        Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
+        assertNotNull(route);
+        assertEquals(description, route.getDescription());
+        List<Route> routesBefore = category.getRoutes();
+        assertTrue(routesBefore.contains(route));
+
+        route.delete();
+
+        List<Route> routesAfter = category.getRoutes();
+        assertFalse(routesAfter.contains(route));
+
+        // TODO check if file still exists
+    }
+
+    @Test
+    public void testDeleteRouteDirectly() throws Exception {
+        String name = "Category " + currentTimeMillis();
+        Category root = catalog.getRootCategory();
+        Category category = root.create(name);
+
+        String description = "Route " + currentTimeMillis();
         Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());

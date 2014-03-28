@@ -20,6 +20,8 @@
 
 package slash.navigation.base;
 
+import slash.navigation.common.NavigationPosition;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -134,25 +136,25 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         return result;
     }
 
-    protected String decodeComment(String string) {
-        if (string == null)
+    protected String decodeDescription(String description) {
+        if (description == null)
             return "";
         try {
-            return URLDecoder.decode(string, UTF8_ENCODING);
+            return URLDecoder.decode(description, UTF8_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            return string;
+            return description;
         }
     }
 
-    protected String encodeComment(String string) {
-        if (string == null)
+    protected String encodeDescription(String description) {
+        if (description == null)
             return "";
         try {
-            string = URLEncoder.encode(string, UTF8_ENCODING);
-            string = string.replace("%2C", ",");
-            return string;
+            description = URLEncoder.encode(description, UTF8_ENCODING);
+            description = description.replace("%2C", ",");
+            return description;
         } catch (UnsupportedEncodingException e) {
-            return string;
+            return description;
         }
     }
 }

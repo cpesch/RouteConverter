@@ -37,11 +37,11 @@ import java.util.Set;
 
 public class TourPosition extends MercatorPosition {
     private boolean home = false;
-    private String name, zipCode, street, houseNo; // comment = city
+    private String name, zipCode, street, houseNo; // description = city
     private Map<String, String> nameValues = new HashMap<String, String>();
 
-    public TourPosition(Double longitude, Double latitude,  Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+    public TourPosition(Double longitude, Double latitude,  Double elevation, Double speed, CompactCalendar time, String description) {
+        super(longitude, latitude, elevation, speed, time, description);
     }
 
     public TourPosition(Long x, Long y, String zipCode, String city, String street, String houseNo, String name, boolean home, Map<String, String> nameValues) {
@@ -54,7 +54,7 @@ public class TourPosition extends MercatorPosition {
         this.nameValues = nameValues;
     }
 
-    public String getComment() {
+    public String getDescription() {
         String result = (getZipCode() != null ? getZipCode() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
@@ -64,13 +64,13 @@ public class TourPosition extends MercatorPosition {
         return result.length() > 0 ? result : null;
     }
 
-    public void setComment(String comment) {
+    public void setDescription(String description) {
         this.name = null;
         this.zipCode = null;
-        this.comment = comment;
+        this.description = description;
         this.street = null;
         this.houseNo = null;
-        // TODO parse comment like BcrPosition#setComment
+        // TODO parse description like BcrPosition#setdescription
     }
 
     public String getName() {
@@ -82,7 +82,7 @@ public class TourPosition extends MercatorPosition {
     }
 
     public String getCity() {
-        return comment;
+        return description;
     }
 
     public String getStreet() {
@@ -111,7 +111,7 @@ public class TourPosition extends MercatorPosition {
 
 
     public BcrPosition asMTPPosition() {
-        return new BcrPosition(getX(), getY(), getElevation(), getComment());
+        return new BcrPosition(getX(), getY(), getElevation(), getDescription());
     }
 
     public GoPalPosition asGoPalRoutePosition() {
@@ -139,7 +139,7 @@ public class TourPosition extends MercatorPosition {
                 !(y != null ? !y.equals(that.y) : that.y != null) &&
                 !(name != null ? !name.equals(that.name) : that.name != null) &&
                 !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
-                !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
                 !(houseNo != null ? !houseNo.equals(that.houseNo) : that.houseNo != null) &&
                 !(nameValues != null ? !nameValues.equals(that.nameValues) : that.nameValues != null);
@@ -151,7 +151,7 @@ public class TourPosition extends MercatorPosition {
         result = 31 * result + (y != null ? y.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (houseNo != null ? houseNo.hashCode() : 0);
         result = 31 * result + (nameValues != null ? nameValues.hashCode() : 0);

@@ -22,7 +22,7 @@ package slash.navigation.wbt;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR_OF_DAY;
@@ -110,13 +111,13 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         if (source.read(header) == getHeaderSize()) {
 
             // copy headerbytes in ByteBuffer, because header contains little endian int
-            ByteBuffer headerBuffer = ByteBuffer.allocate(getHeaderSize());
+            ByteBuffer headerBuffer = allocate(getHeaderSize());
             headerBuffer.position(0);
             headerBuffer.put(header);
 
             if (checkFormatDescriptor(headerBuffer)) {
                 // read whole file in ByteBuffer with a size limit of about 2 MB
-                ByteBuffer sourceData = ByteBuffer.allocate(header.length + source.available());
+                ByteBuffer sourceData = allocate(header.length + source.available());
                 int available = source.available();
                 byte[] data = new byte[available];
                 if (source.read(data) != available)
@@ -236,14 +237,14 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         calendar.set(SECOND, second);
         calendar.set(MILLISECOND, 0);
 
-        String comment;
+        String description;
         if (isTrackpoint)
-            comment = "Trackpoint " + String.valueOf(pointNo);
+            description = "Trackpoint " + String.valueOf(pointNo);
         else
-            comment = "Pushpoint " + String.valueOf(pointNo);
+            description = "Pushpoint " + String.valueOf(pointNo);
 
         return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null,
-                fromCalendar(calendar), comment);
+                fromCalendar(calendar), description);
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {

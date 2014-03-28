@@ -54,6 +54,6 @@ public class Nmn6FavoritesFormatTest {
         Wgs84Position position = format.parsePosition("[P HALLENEU CINEMAXX||][0][10]|11.92517,51.47558|06122|11.92417|51.47978[8]|NEUSTAEDTER PASSAGE|06122|11.92978|51.48097[7]|NEUSTADT|[6]|HALLE (SAALE)|06108|11.99546|51.49129[3]|HALLE (SAALE)|[2]|Sachsen-Anhalt||4366[0]|Deutschland||4", null);
         assertDoubleEquals(11.92417, position.getLongitude());
         assertDoubleEquals(51.47978, position.getLatitude());
-        assertEquals("P Halleneu Cinemaxx, Neustaedter Passage", position.getComment());
+        assertEquals("P Halleneu Cinemaxx, Neustaedter Passage", position.getDescription());
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Contains IO helpers.
+ * The IO helpers.
  * <p>
  * This package facilitates helpers for lots of input and output purposes.
  */

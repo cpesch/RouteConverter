@@ -111,8 +111,8 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         positions.add(index, position);
     }
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new Wgs84Position(longitude, latitude, elevation, speed, time, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {

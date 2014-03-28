@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="GraphHopper" baseUrl="http://download.geofabrik.de/" directory="graphhopper">
+        <file uri="europe/germany/hamburg-latest.osm.pbf"/>
+    </datasource>
+</datasources>

@@ -21,7 +21,7 @@
 package slash.navigation.common;
 
 /**
- * Enumeration of the ways to add numbers to the comments of positions.
+ * Enumeration of the ways to add numbers to the descriptions of positions.
  *
  * Description_Only: Hamburg
  *

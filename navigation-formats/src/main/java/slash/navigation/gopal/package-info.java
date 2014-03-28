@@ -1,4 +1,4 @@
 /**
- * Contains the GoPal formats.
+ * The GoPal formats.
  */
 package slash.navigation.gopal;

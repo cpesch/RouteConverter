@@ -35,10 +35,10 @@ import java.util.HashMap;
 
 public class GoPalPosition extends MercatorPosition { // TODO eliminate this class
     private Short country, houseNumber;
-    private String state, zipCode, suburb, street, sideStreet; // comment = city
+    private String state, zipCode, suburb, street, sideStreet; // description = city
 
-    public GoPalPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(longitude, latitude, elevation, speed, time, comment);
+    public GoPalPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        super(longitude, latitude, elevation, speed, time, description);
     }
 
     public GoPalPosition(Long x, Long y, Short country, String state, String zipCode, String city, String suburb, String street, String sideStreet, Short houseNo) {
@@ -52,7 +52,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         this.houseNumber = houseNo;
     }
 
-    public String getComment() {
+    public String getDescription() {
         String result = (getZipCode() != null ? getZipCode() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
@@ -60,16 +60,16 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         return result.length() > 0 ? result : null;
     }
 
-    public void setComment(String comment) {
+    public void setDescription(String description) {
         this.state = null;
         this.country = null;
         this.zipCode = null;
-        this.comment = comment;
+        this.description = description;
         this.suburb = null;
         this.street = null;
         this.sideStreet = null;
         this.houseNumber = null;
-        // TODO parse comment like BcrPosition#setComment
+        // TODO parse description like BcrPosition#setDescription
     }
 
     public Short getCountry() {
@@ -85,7 +85,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     }
 
     public String getCity() {
-        return comment;
+        return description;
     }
 
     public String getSuburb() {
@@ -106,7 +106,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
 
 
     public BcrPosition asMTPPosition() {
-        return new BcrPosition(getX(), getY(), getElevation(), getComment());
+        return new BcrPosition(getX(), getY(), getElevation(), getDescription());
     }
 
     public GoPalPosition asGoPalRoutePosition() {
@@ -128,7 +128,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
                 !(y != null ? !y.equals(that.y) : that.y != null) &&
                 !(country != null ? !country.equals(that.country) : that.country != null) &&
                 !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
-                !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(suburb != null ? !suburb.equals(that.suburb) : that.suburb != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
                 !(sideStreet != null ? !sideStreet.equals(that.sideStreet) : that.sideStreet != null) &&
@@ -141,7 +141,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         result = 31 * result + (y != null ? y.hashCode() : 0);
         result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (suburb != null ? suburb.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (sideStreet != null ? sideStreet.hashCode() : 0);

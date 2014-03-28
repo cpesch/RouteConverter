@@ -72,7 +72,7 @@ public class ColumbusV900StandardFormatTest {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("VOX00006", position.getComment());
+        assertEquals("VOX00006", position.getDescription());
     }
 
     @Test
@@ -81,12 +81,12 @@ public class ColumbusV900StandardFormatTest {
         assertDoubleEquals(-13.049739, position.getLongitude());
         assertDoubleEquals(-47.797278, position.getLatitude());
         assertDoubleEquals(-102.0, position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
     public void testParsePOIPosition() {
         Wgs84Position position = format.parsePosition("6     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
-        assertEquals("POI 6", position.getComment());
+        assertEquals("POI 6", position.getDescription());
     }
 }

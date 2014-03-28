@@ -21,14 +21,13 @@
 package slash.navigation.converter.gui.mapview;
 
 import org.junit.Test;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static slash.navigation.base.Positions.asPosition;
 
 public class PositionReducerTest {
     private PositionReducer reducer = new PositionReducer(new PositionReducer.Callback() {
@@ -45,15 +44,19 @@ public class PositionReducerTest {
 
     });
 
+    private NavigationPosition asPosition(double longitude, double latitude) {
+        return new SimpleNavigationPosition(longitude, latitude);
+    }
+
     private void filterEveryNthPosition(int positionCount, int maximumPositionCount) {
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
-        Wgs84Position first = asPosition(0.0, 0.0);
+        NavigationPosition first = asPosition(0.0, 0.0);
         positions.add(first);
 
         for (int i = 1; i < positionCount - 1; i++)
             positions.add(asPosition(i, 0.0));
 
-        Wgs84Position last = asPosition(positionCount - 1, 0.0);
+        NavigationPosition last = asPosition(positionCount - 1, 0.0);
         positions.add(last);
 
         List<NavigationPosition> result = reducer.filterEveryNthPosition(positions, maximumPositionCount);
@@ -81,17 +84,17 @@ public class PositionReducerTest {
     @Test
     public void testFilterVisiblePosition() throws Exception {
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
-        Wgs84Position one = asPosition(0.0, 0.0);
+        NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);
-        Wgs84Position two = asPosition(0.1, 0.1);
+        NavigationPosition two = asPosition(0.1, 0.1);
         positions.add(two);
-        Wgs84Position threeNotVisible = asPosition(45.0, 45.0);
+        NavigationPosition threeNotVisible = asPosition(45.0, 45.0);
         positions.add(threeNotVisible);
-        Wgs84Position fourNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fourNotVisible = asPosition(45.1, 45.1);
         positions.add(fourNotVisible);
-        Wgs84Position fiveNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fiveNotVisible = asPosition(45.1, 45.1);
         positions.add(fiveNotVisible);
-        Wgs84Position six = asPosition(0.2, 0.2);
+        NavigationPosition six = asPosition(0.2, 0.2);
         positions.add(six);
 
         List<NavigationPosition> result = reducer.filterVisiblePositions(positions, 1.0, false);
@@ -106,19 +109,19 @@ public class PositionReducerTest {
     @Test
     public void testFilterVisiblePositionIncludingFirstAndLast() throws Exception {
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
-        Wgs84Position one = asPosition(0.0, 0.0);
+        NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);
-        Wgs84Position two = asPosition(0.1, 0.1);
+        NavigationPosition two = asPosition(0.1, 0.1);
         positions.add(two);
-        Wgs84Position threeNotVisible = asPosition(45.0, 45.0);
+        NavigationPosition threeNotVisible = asPosition(45.0, 45.0);
         positions.add(threeNotVisible);
-        Wgs84Position fourNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fourNotVisible = asPosition(45.1, 45.1);
         positions.add(fourNotVisible);
-        Wgs84Position fiveNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fiveNotVisible = asPosition(45.1, 45.1);
         positions.add(fiveNotVisible);
-        Wgs84Position six = asPosition(0.2, 0.2);
+        NavigationPosition six = asPosition(0.2, 0.2);
         positions.add(six);
-        Wgs84Position seven = asPosition(0.3, 0.3);
+        NavigationPosition seven = asPosition(0.3, 0.3);
         positions.add(seven);
 
         List<NavigationPosition> result = reducer.filterVisiblePositions(positions, 1.0, true);

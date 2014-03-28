@@ -72,21 +72,21 @@ public class Nmn6Format extends NmnFormat {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String comment = lineMatcher.group(1);
+        String description = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), (Double)null, null, null, trim(comment));
+        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), (Double)null, null, null, trim(description));
     }
 
-    private static String formatComment(String string) {
+    private static String escapeBraces(String string) {
         return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + REGEX_SEPARATOR + "|\\" + RIGHT_BRACE + "]", ";") : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatPositionAsString(position.getLongitude());
         String latitude = formatPositionAsString(position.getLatitude());
-        String comment = formatComment(position.getComment());
-        writer.println(LEFT_BRACE + comment + SEPARATOR + RIGHT_BRACE +
+        String description = escapeBraces(position.getDescription());
+        writer.println(LEFT_BRACE + description + SEPARATOR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +
                 SEPARATOR + SEPARATOR + SEPARATOR +
                 longitude + SEPARATOR + latitude + SEPARATOR + SEPARATOR);

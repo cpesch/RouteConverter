@@ -75,15 +75,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
-        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 4);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(5);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
@@ -159,8 +158,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (isEmpty(position.getComment()) && !isEmpty(toBeMergedInto.getComment()))
-            position.setComment(toBeMergedInto.getComment());
+        if (isEmpty(position.getDescription()) && !isEmpty(toBeMergedInto.getDescription()))
+            position.setDescription(toBeMergedInto.getDescription());
         if (isEmpty(position.getElevation()) && !isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
         if (isEmpty(position.getSpeed()) && !isEmpty(toBeMergedInto.getSpeed()))

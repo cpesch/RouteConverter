@@ -52,8 +52,8 @@ import java.util.Set;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatTime;
-import static slash.navigation.common.NavigationConversion.parseTime;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.tcx.TcxUtil.marshal2;
 
 /**

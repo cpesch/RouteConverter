@@ -36,13 +36,13 @@ public class Route66FormatTest extends NavigationTestCase {
         Wgs84Position position = format.parsePosition("11.107167,49.375783,\"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5\"", null);
         assertEquals(11.107167, position.getLongitude());
         assertEquals(49.375783, position.getLatitude());
-        assertEquals("Holsteinbruch Bei Worzeldorf B - Gc13vv5", position.getComment());
+        assertEquals("Holsteinbruch Bei Worzeldorf B - Gc13vv5", position.getDescription());
     }
 
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("-8.6180900,-50.2175100,\"ABC\"", null);
         assertEquals(-8.618090, position.getLongitude());
         assertEquals(-50.217510, position.getLatitude());
-        assertEquals("Abc", position.getComment());
+        assertEquals("Abc", position.getDescription());
     }
 }

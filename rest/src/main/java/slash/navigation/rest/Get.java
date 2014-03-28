@@ -19,11 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.GetMethod;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Wrapper to initiate an HTTP GET Request.
@@ -32,30 +28,18 @@ import java.util.regex.Pattern;
  */
 
 public class Get extends HttpRequest {
-    private static final Pattern CONTENT_DISPOSITION_PATTERN = Pattern.compile(".*filename=\"(.+)\"");
-
     public Get(String url, Credentials credentials) {
-        super(new GetMethod(url), credentials);
+        super(new HttpGet(url), credentials);
     }
 
     public Get(String url) {
-        super(new GetMethod(url));
+        super(new HttpGet(url));
     }
 
-    public String getContentDisposition() {
-        Header header = method.getResponseHeader("Content-Disposition");
-        return header != null ? header.getValue() : null;
-    }
-
-    public String getAttachmentFileName() {
-        String contentDisposition = getContentDisposition();
-        if (contentDisposition != null) {
-            Matcher matcher = CONTENT_DISPOSITION_PATTERN.matcher(contentDisposition);
-            if (matcher.matches())
-                return matcher.group(1);
-            else
-                return contentDisposition;
-        }
-        return null;
+    public void setRange(long startIndex, Long endIndex) {
+        // avoid GZIP'ed range
+        disableContentCompression();
+        // Apache accepts just bytes=1234-1235 while the spec says bytes 1234-1235/1236
+        setHeader("Range", "bytes=" + startIndex + "-" + (endIndex != null ? endIndex : ""));
     }
 }

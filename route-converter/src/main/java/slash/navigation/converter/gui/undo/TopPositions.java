@@ -28,7 +28,7 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} upwards.
+ * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} to the top.
  *
  * @author Christian Pesch
  */

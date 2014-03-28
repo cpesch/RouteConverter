@@ -1,4 +1,4 @@
 /**
- * Contains the Training Center Database formats.
+ * The Training Center Database formats.
  */
 package slash.navigation.tcx;

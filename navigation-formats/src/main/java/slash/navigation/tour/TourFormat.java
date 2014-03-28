@@ -22,7 +22,7 @@ package slash.navigation.tour;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.IniFileFormat;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -211,7 +211,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
             if (name == null)
                 name = position.getCity();
             if (name == null)
-                name = position.getComment();
+                name = position.getDescription();
             writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + name);
             writer.println(POSITION_IN_LIST + TOUR_FORMAT_NAME_VALUE_SEPARATOR + Integer.toString(i));
             if (position.getZipCode() != null)

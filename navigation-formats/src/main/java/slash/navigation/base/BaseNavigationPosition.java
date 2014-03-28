@@ -21,8 +21,9 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.common.util.Bearing;
+import slash.navigation.common.Bearing;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
@@ -43,8 +44,8 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.util.Bearing.EARTH_RADIUS;
-import static slash.common.util.Bearing.calculateBearing;
+import static slash.navigation.common.Bearing.EARTH_RADIUS;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * The base of all navigation positions.
@@ -60,6 +61,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public boolean hasTime() {
         return getTime() != null;
+    }
+
+    public boolean hasSpeed() {
+        return getSpeed() != null;
     }
 
     public void setStartDate(CompactCalendar startDate) {
@@ -179,11 +184,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
     }
 
     public GkPosition asGkPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -197,7 +202,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -216,7 +221,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public GpxPosition asGpxPosition() {
-        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -235,7 +240,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public KmlPosition asKmlPosition() {
-        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -280,11 +285,16 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     @SuppressWarnings("UnusedDeclaration")
     public GkPosition asMagicMapsPthPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asMotoPlanerUrlPosition() {
+        return asWgs84Position();
     }
 
     public BcrPosition asMTPPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -293,7 +303,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public NmeaPosition asNmeaPosition() {
-        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -302,7 +312,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public NmnPosition asNmnPosition() {
-        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -346,15 +356,15 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public TomTomPosition asTomTomRoutePosition() {
-        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")

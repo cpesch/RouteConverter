@@ -20,10 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.converter.gui.helper.JTableHelper;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
+
+import static javax.swing.event.TableModelEvent.UPDATE;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the route format name from the selected route
@@ -46,7 +47,10 @@ public class PositionsCountToJLabelAdapter extends PositionsModelToDocumentAdapt
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for row count
-        if (e.getType() == TableModelEvent.UPDATE && !JTableHelper.isFirstToLastRow(e))
+        if (e.getType() == UPDATE &&
+                !isFirstToLastRow(e))
+            return;
+        if (getDelegate().isContinousRange())
             return;
 
         label.setText(Integer.toString(getDelegate().getRowCount()));

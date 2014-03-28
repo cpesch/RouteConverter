@@ -21,12 +21,8 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.base.*;
+import slash.navigation.common.NavigationPosition;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -52,6 +48,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
@@ -122,8 +119,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return new Wgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE),
-                null, null, null, null);
+        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE));
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {

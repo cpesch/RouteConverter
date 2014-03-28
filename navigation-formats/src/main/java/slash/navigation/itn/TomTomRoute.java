@@ -96,18 +96,18 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         positions.add(index, position);
     }
 
-    public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new TomTomPosition(longitude, latitude, elevation, speed, time, comment);
+    public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new TomTomPosition(longitude, latitude, elevation, speed, time, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (TomTomPosition tomTomPosition : positions) {
             BcrPosition bcrPosition = tomTomPosition.asMTPPosition();
-            // shortens comment to better fit to Map&Guide Tourenplaner station list
+            // shortens description to better fit to Map&Guide Tourenplaner station list
             String location = tomTomPosition.getCity();
             if (location != null)
-                bcrPosition.setComment(location);
+                bcrPosition.setDescription(location);
             bcrPositions.add(bcrPosition);
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);

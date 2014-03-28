@@ -134,7 +134,7 @@ public class KmlFormatIT {
         for (int i = 0; i < firstPositions.size(); i++) {
             KmlPosition first = firstPositions.get(i);
             KmlPosition second = secondPositions.get(i);
-            assertEquals(first.getComment(), second.getComment());
+            assertEquals(first.getDescription(), second.getDescription());
             assertEquals(first.getElevation(), second.getElevation());
             assertEquals(first.getLatitude(), second.getLatitude());
             assertEquals(first.getLongitude(), second.getLongitude());
