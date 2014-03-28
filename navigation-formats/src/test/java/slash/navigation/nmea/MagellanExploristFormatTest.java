@@ -92,8 +92,8 @@ public class MagellanExploristFormatTest {
         assertDoubleEquals(651.208, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(6.8534666, position.getLongitude());
-        assertDoubleEquals(49.2494499, position.getLatitude());
+        assertDoubleEquals(6.8534666667, position.getLongitude());
+        assertDoubleEquals(49.24945, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
@@ -119,8 +119,8 @@ public class MagellanExploristFormatTest {
         assertDoubleEquals(651.2081, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(6.8534683, position.getLongitude());
-        assertDoubleEquals(49.2494533, position.getLatitude());
+        assertDoubleEquals(6.8534683333, position.getLongitude());
+        assertDoubleEquals(49.2494533333, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
