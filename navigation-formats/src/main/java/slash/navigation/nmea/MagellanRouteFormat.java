@@ -62,14 +62,15 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
     static {
+        int MaximumFractionDigits = preferences.getInt("magellanPositionMaximumFractionDigits", 5);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(5);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
