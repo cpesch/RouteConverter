@@ -62,7 +62,7 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[|][0][10]|||8.8128300|49.0006140[0]||", null);
         assertDoubleEquals(8.8128300, position.getLongitude());
         assertDoubleEquals(49.0006140, position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[|][0][10]|||-8.8128300|-49.0006140[0]||", null);
         assertDoubleEquals(-8.8128300, position.getLongitude());
         assertDoubleEquals(-49.0006140, position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949", null);
         assertDoubleEquals(10.03200, position.getLongitude());
         assertDoubleEquals(53.56949, position.getLatitude());
-        assertEquals("D 22081,Hamburg/Uhlenhorst,Finkenau,0,", position.getComment());
+        assertEquals("D 22081,Hamburg/Uhlenhorst,Finkenau,0,", position.getDescription());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub|][0][10]|||7.74957|50.09721", null);
         assertDoubleEquals(7.74957, position.getLongitude());
         assertDoubleEquals(50.09721, position.getLatitude());
-        assertEquals("Rheinuferstr. bei Kaub", position.getComment());
+        assertEquals("Rheinuferstr. bei Kaub", position.getDescription());
     }
 
     @Test
@@ -94,12 +94,12 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertDoubleEquals(7.74957, position.getLongitude());
         assertDoubleEquals(50.09721, position.getLatitude());
-        assertEquals("Rheinuferstr. bei Kaub", position.getComment());
+        assertEquals("Rheinuferstr. bei Kaub", position.getDescription());
 
         Wgs84Position position2 = format.parsePosition("[||][0][10]|B42|56348|7.65285|50.17757[6]|KESTERT|56348|7.64715|50.18503[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertDoubleEquals(7.65285, position2.getLongitude());
         assertDoubleEquals(50.17757, position2.getLatitude());
-        assertNull(position2.getComment());
+        assertNull(position2.getDescription());
     }
 
     @Test
@@ -107,6 +107,6 @@ public class Nmn6FormatTest {
         Wgs84Position position = format.parsePosition("[||][0][10]|B42|56112|7.62424|50.29042[7]|OBERLAHNSTEIN|[6]|LAHNSTEIN|56112|7.60183|50.31752[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertDoubleEquals(7.62424, position.getLongitude());
         assertDoubleEquals(50.29042, position.getLatitude());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

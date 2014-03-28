@@ -22,12 +22,15 @@ package slash.navigation.gui.events;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
 import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
 
 /**
  * Allows to perform customizable {@link RangeOperation}s on indexed elements
  * with another customizable operation after a continuous range.
- * Use to reduce the number of notifications that Swing UI Models fire.
+ * Used to reduce the number of notifications that Swing UI Models fire.
  *
  * @author Christian Pesch
  * @see RangeOperation
@@ -51,7 +54,7 @@ public class ContinousRange {
     }
 
     public void performMonotonicallyDecreasing() {
-        perform(Range.asContinuousMonotonicallyDecreasingRanges(indices));
+        perform(asContinuousMonotonicallyDecreasingRanges(indices));
     }
 
     private void perform(List<List<Integer>> ranges) {
@@ -65,8 +68,8 @@ public class ContinousRange {
                 continue;
             int firstValue = range.get(0);
             int lastValue = range.get(range.size() - 1);
-            int from = Math.min(firstValue, lastValue);
-            int to = Math.max(firstValue, lastValue);
+            int from = min(firstValue, lastValue);
+            int to = max(firstValue, lastValue);
             operation.performOnRange(from, to);
             if (operation.isInterrupted())
                 return;

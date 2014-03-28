@@ -25,10 +25,10 @@ import slash.navigation.gui.Application;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.*;
 import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Open the {@link HelpSet help}.
@@ -47,7 +47,7 @@ public class HelpTopicsAction extends FrameAction {
             e.printStackTrace();
             String message = "Could not initialize help: " + e.getLocalizedMessage();
             log.severe(message);
-            JOptionPane.showMessageDialog(null, message, "Error", ERROR_MESSAGE);
+            showMessageDialog(null, message, "Error", ERROR_MESSAGE);
         }
     }
 }

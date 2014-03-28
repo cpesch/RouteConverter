@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.IOException;
 import java.io.InputStream;

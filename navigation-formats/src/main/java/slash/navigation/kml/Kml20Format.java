@@ -24,21 +24,8 @@ import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.BasicPosition;
-import slash.navigation.kml.binding20.Document;
-import slash.navigation.kml.binding20.Folder;
-import slash.navigation.kml.binding20.GeometryCollection;
-import slash.navigation.kml.binding20.Kml;
-import slash.navigation.kml.binding20.LineString;
-import slash.navigation.kml.binding20.LineStyle;
-import slash.navigation.kml.binding20.MultiGeometry;
-import slash.navigation.kml.binding20.NetworkLink;
-import slash.navigation.kml.binding20.ObjectFactory;
-import slash.navigation.kml.binding20.Placemark;
-import slash.navigation.kml.binding20.Point;
-import slash.navigation.kml.binding20.Style;
-import slash.navigation.kml.binding20.TimeInstant;
-import slash.navigation.kml.binding20.TimePeriod;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.kml.binding20.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -52,8 +39,8 @@ import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.BasicPosition.parsePosition;
-import static slash.navigation.common.BasicPosition.parsePositions;
+import static slash.navigation.common.PositionParser.parsePosition;
+import static slash.navigation.common.PositionParser.parsePositions;
 import static slash.navigation.kml.KmlUtil.marshal20;
 import static slash.navigation.kml.KmlUtil.unmarshal20;
 
@@ -195,7 +182,7 @@ public class Kml20Format extends KmlFormat {
     private void extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, CompactCalendar startDate, ParserContext<KmlRoute> context) {
         List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (Placemark placemark : placemarks) {
-            String placemarkName = asComment(extractName(placemark.getDescriptionOrNameOrSnippet()),
+            String placemarkName = asDescription(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
 
             List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
@@ -229,7 +216,7 @@ public class Kml20Format extends KmlFormat {
 
     private List<KmlPosition> extractPositions(LineString lineString) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (BasicPosition position : parsePositions(lineString.getCoordinates())) {
+        for (NavigationPosition position : parsePositions(lineString.getCoordinates())) {
             result.add(asKmlPosition(position));
         }
         return result;
@@ -269,8 +256,8 @@ public class Kml20Format extends KmlFormat {
             Placemark placemark = objectFactory.createPlacemark();
             folderList.add(placemark);
             List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-            placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getComment() : null)));
-            placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getComment() : null)));
+            placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getDescription() : null)));
+            placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getDescription() : null)));
             placemarkList.add(objectFactory.createVisibility(Boolean.FALSE));
             if (position.hasTime())
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));

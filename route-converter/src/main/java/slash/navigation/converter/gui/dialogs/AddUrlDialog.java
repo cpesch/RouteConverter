@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.DialogAction;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
@@ -103,21 +103,21 @@ public class AddUrlDialog extends SimpleDialog {
     private void addUrl() {
         String url = textFieldUrl.getText();
         if (trim(url) == null) {
-            labelResult.setText("No url given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-url-error"));
             pack();
             return;
         }
 
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            labelResult.setText("No description given!"); // TODO make nicer
+            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-description-error"));
             pack();
             return;
         }
 
         catalogModel.addRoute(category, description, null, url, new AddRouteCallback());
 
-        labelResult.setText("Successfully added url!"); // TODO make nicer
+        labelResult.setText(RouteConverter.getBundle().getString("add-route-by-url-success"));
         pack();
         dispose();
     }

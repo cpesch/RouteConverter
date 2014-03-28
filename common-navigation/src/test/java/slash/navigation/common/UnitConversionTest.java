@@ -35,7 +35,7 @@ import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
 import static slash.navigation.common.UnitConversion.ddmmss2longitude;
 import static slash.navigation.common.UnitConversion.feetToMeters;
-import static slash.navigation.common.UnitConversion.kilometerToStatuteMiles;
+import static slash.navigation.common.UnitConversion.kiloMeterToStatuteMiles;
 import static slash.navigation.common.UnitConversion.kmhToMs;
 import static slash.navigation.common.UnitConversion.latitude2ddmm;
 import static slash.navigation.common.UnitConversion.latitude2ddmmss;
@@ -53,29 +53,29 @@ public class UnitConversionTest {
     }
 
     @Test
-    public void testMilesToKilometers() {
-        assertDoubleEquals(6.2137119223733395, kilometerToStatuteMiles(10));
+    public void testMilesToKiloMeters() {
+        assertDoubleEquals(6.2137119223733395, kiloMeterToStatuteMiles(10));
     }
 
     @Test
-    public void testMetersPerSecondToKilometersPerHour() {
+    public void testMetersPerSecondToKiloMetersPerHour() {
         assertDoubleEquals(3.6, msToKmh(1.0));
         assertDoubleEquals(20.0, kmhToMs(72.0));
     }
 
     @Test
     public void testDegrees2Nmea() {
-        assertEquals(new ValueAndOrientation(4837.437396, North), latitude2nmea(48.6239566));
-        assertEquals(new ValueAndOrientation(903.403596, East), longitude2nmea(9.0567266));
+        assertEquals(new ValueAndOrientation(4837.4374, North), latitude2nmea(48.6239566));
+        assertEquals(new ValueAndOrientation(903.4036, East), longitude2nmea(9.0567266));
         assertEquals(new ValueAndOrientation(5047.5656, South), latitude2nmea(-50.79276));
-        assertEquals(new ValueAndOrientation(927.1962, West), longitude2nmea(-9.45327));
+        assertEquals(new ValueAndOrientation(927.1961, West), longitude2nmea(-9.45327));
     }
 
     @Test
     public void testNmea2Degrees() {
-        assertDoubleEquals(48.6239566667, nmea2degrees(new ValueAndOrientation(4837.4374, East)));
-        assertDoubleEquals(9.0567266667, nmea2degrees(new ValueAndOrientation(903.4036, North)));
-        assertDoubleEquals(-50.7927616667, nmea2degrees(new ValueAndOrientation(5047.5657, West)));
+        assertDoubleEquals(48.6239566, nmea2degrees(new ValueAndOrientation(4837.4374, East)));
+        assertDoubleEquals(9.0567266, nmea2degrees(new ValueAndOrientation(903.4036, North)));
+        assertDoubleEquals(-50.7927616, nmea2degrees(new ValueAndOrientation(5047.5657, West)));
         assertDoubleEquals(-9.45327, nmea2degrees(new ValueAndOrientation(927.1962, South)));
     }
 

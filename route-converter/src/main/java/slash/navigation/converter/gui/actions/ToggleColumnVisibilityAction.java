@@ -25,13 +25,13 @@ import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.gui.actions.FrameAction;
 
 /**
- * Toggles the visibilty of {@link PositionTableColumn} of a {@link PositionsTableColumnModel}.
+ * Toggles the visibility of {@link PositionTableColumn} of a {@link PositionsTableColumnModel}.
  *
  * @author Christian Pesch
  */
 
 public class ToggleColumnVisibilityAction extends FrameAction {
-    private PositionTableColumn column;
+    private final PositionTableColumn column;
 
     public ToggleColumnVisibilityAction(PositionTableColumn column) {
         this.column = column;

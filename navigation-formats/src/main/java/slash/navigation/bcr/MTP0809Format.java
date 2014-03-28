@@ -65,7 +65,7 @@ public class MTP0809Format extends BcrFormat {
         if (STREET_DEFINES_CENTER_NAME.equals(street))
             street = STREET_DEFINES_CENTER_SYMBOL;
         String type = trim(position.getType()) != null ? position.getType() : "0";
-        String comment = zipCode + VALUE_SEPARATOR + city + VALUE_SEPARATOR + street + VALUE_SEPARATOR + type + VALUE_SEPARATOR;
-        writer.println(STATION_PREFIX + index + NAME_VALUE_SEPARATOR + comment);
+        String description = zipCode + VALUE_SEPARATOR + city + VALUE_SEPARATOR + street + VALUE_SEPARATOR + type + VALUE_SEPARATOR;
+        writer.println(STATION_PREFIX + index + NAME_VALUE_SEPARATOR + description);
     }
 }

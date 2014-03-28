@@ -50,7 +50,7 @@ public class NavigatingPoiWarnerFormatTest {
         Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\"", null);
         assertDoubleEquals(8.6180901, position.getLongitude());
         assertDoubleEquals(50.2175101, position.getLatitude());
-        assertEquals("[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]", position.getComment());
+        assertEquals("[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]", position.getDescription());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class NavigatingPoiWarnerFormatTest {
         Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"", null);
         assertDoubleEquals(-8.6180901, position.getLongitude());
         assertDoubleEquals(-50.2175101, position.getLatitude());
-        assertEquals("ABC", position.getComment());
+        assertEquals("ABC", position.getDescription());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class NavigatingPoiWarnerFormatTest {
             Wgs84Position position = format.parsePosition("1.2,3.4,\"äöüßA" + c + "Z+*$%\"", null);
             assertDoubleEquals(1.2, position.getLongitude());
             assertDoubleEquals(3.4, position.getLatitude());
-            assertEquals("äöüßAZ+*$%", position.getComment());
+            assertEquals("äöüßAZ+*$%", position.getDescription());
         }
     }
 }

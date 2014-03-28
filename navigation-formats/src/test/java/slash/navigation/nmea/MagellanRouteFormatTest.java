@@ -48,7 +48,7 @@ public class MagellanRouteFormatTest {
         assertTrue(format.isValidLine("$PMGNRTE,3,2,c,1,Muenchen_Route,Engl-Garten-2,a,Ifflandstrasse,a*1B"));
         assertTrue(format.isValidLine("$PMGNCMD,END*3D"));
 
-        assertFalse(format.isValidLine("# Comment"));
+        assertFalse(format.isValidLine("# Description"));
     }
 
     @Test
@@ -93,11 +93,11 @@ public class MagellanRouteFormatTest {
         assertDoubleEquals(1135.84141, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(11.5973568333, position.getLongitude());
-        assertDoubleEquals(48.1497101667, position.getLatitude());
+        assertDoubleEquals(11.5973568, position.getLongitude());
+        assertDoubleEquals(48.1497101, position.getLatitude());
         assertDoubleEquals(54.5, position.getElevation());
         assertNull(position.getTime());
-        assertEquals("Ifflandstrasse", position.getComment());
+        assertEquals("Ifflandstrasse", position.getDescription());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class MagellanRouteFormatTest {
         NmeaPosition position = route.getPositions().get(0);
         assertDoubleEquals(11.561737, position.getLongitude());
         assertDoubleEquals(48.2744105, position.getLatitude());
-        assertEquals("1-startpunkt", position.getComment());
+        assertEquals("1-startpunkt", position.getDescription());
 
         route.setName("ush-rte");
 

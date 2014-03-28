@@ -50,7 +50,7 @@ public class MagellanExploristFormatTest {
         assertTrue(format.isValidLine("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
         assertTrue(format.isValidLine("$PMGNTRK,4348.1258,N,08735.0978,E,000000,M,,A,???,*E1"));
 
-        assertFalse(format.isValidLine("# Comment"));
+        assertFalse(format.isValidLine("# Description"));
     }
 
     @Test
@@ -92,15 +92,15 @@ public class MagellanExploristFormatTest {
         assertDoubleEquals(651.208, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(6.8534666667, position.getLongitude());
-        assertDoubleEquals(49.24945, position.getLatitude());
+        assertDoubleEquals(6.8534666, position.getLongitude());
+        assertDoubleEquals(49.2494499, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Kllertal-Radweg", position.getComment());
+        assertEquals("Kllertal-Radweg", position.getDescription());
     }
 
     @Test
@@ -119,15 +119,15 @@ public class MagellanExploristFormatTest {
         assertDoubleEquals(651.2081, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(6.8534683333, position.getLongitude());
-        assertDoubleEquals(49.2494533333, position.getLatitude());
+        assertDoubleEquals(6.8534683, position.getLongitude());
+        assertDoubleEquals(49.2494533, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("Kllertal-Radweg", position.getComment());
+        assertEquals("Kllertal-Radweg", position.getDescription());
 
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);

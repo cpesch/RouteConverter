@@ -21,7 +21,7 @@
 package slash.navigation.url;
 
 import slash.navigation.base.BaseUrlFormat;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Route;

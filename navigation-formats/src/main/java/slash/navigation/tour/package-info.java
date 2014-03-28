@@ -1,4 +1,4 @@
 /**
- * Contains the Falk Navigator formats.
+ * The Falk Navigator formats.
  */
 package slash.navigation.tour;

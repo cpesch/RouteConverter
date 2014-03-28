@@ -20,6 +20,7 @@
 
 package slash.navigation.catalog.remote;
 
+import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;
@@ -64,9 +65,8 @@ public class RemoteRoute implements Route {
     }
 
     private synchronized GpxType getGpx() throws IOException {
-        if (gpx == null) {
+        if (gpx == null)
             gpx = getCatalog().fetchGpx(getUrl());
-        }
         return gpx;
     }
 
@@ -80,7 +80,8 @@ public class RemoteRoute implements Route {
     }
 
     private RteType getRte() throws IOException {
-        return getGpx().getRte().get(0);
+        GpxType gpx = getGpx();
+        return gpx != null ? gpx.getRte().get(0) : null;
     }
 
     public synchronized String getName() throws IOException {
@@ -102,16 +103,19 @@ public class RemoteRoute implements Route {
     }
 
     private String getRteLinkHref() throws IOException {
-        return getRte().getLink().get(0).getHref();
+        RteType rte = getRte();
+        return rte != null ? rte.getLink().get(0).getHref() : null;
     }
 
     public URL getDataUrl() throws IOException {
-        return new URL(getRteLinkHref());
+        String rteLinkHref = getRteLinkHref();
+        return rteLinkHref != null ? new URL(rteLinkHref) : null;
     }
 
-    public void update(String categoryUrl, String description) throws IOException {
-        getCatalog().updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
+    public void update(Category parent, String description) throws IOException {
+        getCatalog().updateRoute(parent.getUrl(), getUrl(), description, getRteLinkHref());
         invalidate();
+        ((RemoteCategory)parent).invalidate();
     }
 
     public void delete() throws IOException {

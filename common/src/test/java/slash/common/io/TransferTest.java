@@ -25,6 +25,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.common.io.Transfer.formatIntAsString;
@@ -110,5 +112,13 @@ public class TransferTest {
         assertEquals("05:05:05", formatDuration((5 * 60 * 60 + 5 * 60 + 5) * 1000));
         assertEquals(formatDuration((25 * 60 * 60 + 5 * 60 + 5) * 1000), "25:05:05");
         assertEquals("125:05:05", formatDuration((125 * 60 * 60 + 5 * 60 + 5) * 1000));
+    }
+
+    @Test
+    public void testEncodeFileName() {
+        String original = ".A/B\\C:D.дцья";
+        String expected = "%2eA%2fB%5cC%3aD.дцья";
+        assertEquals(expected, encodeFileName(original));
+        assertEquals(original, decodeUri(expected));
     }
 }

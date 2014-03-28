@@ -25,24 +25,29 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.PositionHelper;
+import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.sort;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
@@ -50,21 +55,12 @@ import static slash.navigation.common.UnitConversion.ddmm2latitude;
 import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
 import static slash.navigation.common.UnitConversion.ddmmss2longitude;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractTime;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLatitude;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -96,7 +92,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         NavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                return extractComment(position);
+                return position.getDescription();
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
@@ -123,6 +119,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
                 return getRoute().getElevationDescend(0, rowIndex);
+            case ELEVATION_DIFFERENCE_COLUMN_INDEX:
+                return getRoute().getElevationDelta(rowIndex);
         }
         return getPosition(rowIndex);
     }
@@ -150,8 +148,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
-    public int[] getContainedPositions(NavigationPosition northEastCorner, NavigationPosition southWestCorner) {
-        return getRoute().getContainedPositions(northEastCorner, southWestCorner);
+    public int[] getContainedPositions(BoundingBox boundingBox) {
+        return getRoute().getContainedPositions(boundingBox);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -205,7 +203,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                position.setComment(string);
+                position.setDescription(string);
                 break;
             case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(value, string));
@@ -292,8 +290,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return null;
     }
 
-    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
         add(rowIndex, asList(position));
     }
 
@@ -350,6 +348,20 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }).performMonotonicallyDecreasing();
     }
 
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<NavigationPosition> comparator) {
+        getRoute().sort(comparator);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void order(List<NavigationPosition> positions) {
+        getRoute().order(positions);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
+    }
+
     public void revert() {
         getRoute().revert();
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
@@ -357,7 +369,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void top(int[] rowIndices) {
-        sort(rowIndices);
+        Arrays.sort(rowIndices);
 
         for (int i = 0; i < rowIndices.length; i++) {
             getRoute().top(rowIndices[i], i);
@@ -375,7 +387,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void up(int[] rowIndices, int delta) {
-        sort(rowIndices);
+        Arrays.sort(rowIndices);
 
         for (int row : rowIndices) {
             getRoute().up(row, row - delta);
@@ -402,7 +414,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void bottomUp(int[] rows) {
-        sort(rows);
+        Arrays.sort(rows);
 
         for (int i = 0; i < rows.length; i++) {
             getRoute().up(getRowCount() - rows.length + i, rows[i]);
@@ -410,9 +422,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
     }
 
+    private TableModelEvent currentEvent;
+
     public void fireTableChanged(TableModelEvent e) {
+        this.currentEvent = e;
         distanceCache = null;
         super.fireTableChanged(e);
+        this.currentEvent = null;
+    }
+
+    public boolean isContinousRange() {
+        return currentEvent != null && currentEvent instanceof ContinousRangeTableModelEvent;
+    }
+
+    public void fireTableRowsDeletedInContinousRange(int firstRow, int lastRow) {
+        fireTableChanged(new ContinousRangeTableModelEvent(this, firstRow, lastRow, ALL_COLUMNS, DELETE));
+    }
+
+    private static class ContinousRangeTableModelEvent extends TableModelEvent {
+        @SuppressWarnings("MagicConstant")
+        public ContinousRangeTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
+            super(source, firstRow, lastRow, column, type);
+        }
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

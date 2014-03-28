@@ -1,4 +1,4 @@
 /**
- * Contains the Garmin G1000 Flight Plan format.
+ * The Garmin G1000 Flight Plan format.
  */
 package slash.navigation.fpl;

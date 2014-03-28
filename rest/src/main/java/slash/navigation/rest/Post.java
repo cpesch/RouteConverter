@@ -19,8 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Wrapper to initiate an HTTP POST Request.
@@ -29,18 +28,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
  */
 
 public class Post extends MultipartRequest {
-
     public Post(String url, Credentials credentials) {
-        super(new PostMethod(url), credentials);
-    }
-
-    public String getHeader(String name) {
-        Header header = method.getResponseHeader(name);
-        return header != null ? header.getValue() : null;
-    }
-
-    public String getLocation() {
-        // for the 201 result code
-        return getHeader("Location");
+        super(new HttpPost(url), credentials);
     }
 }

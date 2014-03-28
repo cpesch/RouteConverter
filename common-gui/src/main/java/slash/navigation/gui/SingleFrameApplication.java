@@ -34,6 +34,8 @@ import static java.awt.Frame.MAXIMIZED_VERT;
 import static java.awt.Frame.NORMAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
@@ -46,8 +48,8 @@ import static slash.navigation.gui.helpers.UIHelper.loadIcon;
  */
 
 public abstract class SingleFrameApplication extends Application {
-    private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
-    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private static final Logger log = getLogger(SingleFrameApplication.class.getName());
+    private final Preferences preferences = userNodeForPackage(getClass());
 
     static final String X_PREFERENCE = "x";
     static final String Y_PREFERENCE = "y";

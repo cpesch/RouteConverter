@@ -46,7 +46,7 @@ public class Nmn5FormatTest {
         NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|9.60476|48.47282|-|-|9.68246|48.48852|", null);
         assertDoubleEquals(9.60476, position.getLongitude());
         assertDoubleEquals(48.47282, position.getLatitude());
-        assertEquals("Laichingen", position.getComment());
+        assertEquals("Laichingen", position.getDescription());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class Nmn5FormatTest {
         NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|-9.60476|-48.47282|-|-|9.68246|48.48852|", null);
         assertDoubleEquals(-9.60476, position.getLongitude());
         assertDoubleEquals(-48.47282, position.getLatitude());
-        assertEquals("Laichingen", position.getComment());
+        assertEquals("Laichingen", position.getDescription());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class Nmn5FormatTest {
         NmnPosition position = format.parsePosition("-|-|17|4353|89601|SCHELKLINGEN|89601|Marktstrasse|20|-|-|9.73374|48.37512|-|-|9.73416|48.37679|", null);
         assertDoubleEquals(9.73374, position.getLongitude());
         assertDoubleEquals(48.37512, position.getLatitude());
-        assertEquals("Schelklingen, Marktstrasse 20", position.getComment());
+        assertEquals("Schelklingen, Marktstrasse 20", position.getDescription());
         assertNull(position.getZip());
         assertEquals("Schelklingen", position.getCity());
         assertEquals("Marktstrasse", position.getStreet());
@@ -78,23 +78,23 @@ public class Nmn5FormatTest {
         assertNull(position.getCity());
         assertNull(position.getStreet());
         assertNull(position.getNumber());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertTrue(position.isUnstructured());
-        position.setComment(null);
-        assertNull(position.getComment());
+        position.setDescription(null);
+        assertNull(position.getDescription());
         
-        position.setComment("87451 Schelklingen, Marktstrasse 20");
+        position.setDescription("87451 Schelklingen, Marktstrasse 20");
         assertEquals("87451", position.getZip());
         assertEquals("Schelklingen", position.getCity());
         assertEquals("Marktstrasse", position.getStreet());
         assertEquals("20", position.getNumber());
-        assertEquals("87451 Schelklingen, Marktstrasse 20", position.getComment());
+        assertEquals("87451 Schelklingen, Marktstrasse 20", position.getDescription());
 
-        position.setComment("92845 Bad Urach, Shell");
+        position.setDescription("92845 Bad Urach, Shell");
         assertEquals("92845", position.getZip());
         assertEquals("Bad Urach", position.getCity());
         assertEquals("Shell", position.getStreet());
         assertNull(position.getNumber());
-        assertEquals("92845 Bad Urach, Shell", position.getComment());
+        assertEquals("92845 Bad Urach, Shell", position.getDescription());
     }
 }

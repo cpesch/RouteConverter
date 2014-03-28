@@ -1,5 +1,5 @@
 /**
- * Contains systems helpers.
+ * The system helpers.
  * <p>
  * This package facilitates helpers for determining platform and versions
  */

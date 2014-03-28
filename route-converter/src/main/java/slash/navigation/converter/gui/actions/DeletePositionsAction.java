@@ -21,7 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.DeletePositionsDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
  * Delete positions from the position list
@@ -29,11 +30,8 @@ import slash.navigation.gui.actions.FrameAction;
  * @author Christian Pesch
  */
 
-public class DeletePositionsAction extends FrameAction {
-    public void run() {
-        DeletePositionsDialog dialog = new DeletePositionsDialog();
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+public class DeletePositionsAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new DeletePositionsDialog();
     }
 }

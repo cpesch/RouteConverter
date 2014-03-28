@@ -20,7 +20,8 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.base.NavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 
 import java.util.ArrayList;
@@ -34,10 +35,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
-import static slash.navigation.base.Positions.contains;
-import static slash.navigation.base.Positions.getSignificantPositions;
-import static slash.navigation.base.Positions.northEast;
-import static slash.navigation.base.Positions.southWest;
+import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -75,7 +73,7 @@ class PositionReducer {
 
     private final Callback callback;
     private final Map<Integer, List<NavigationPosition>> reducedPositions = new HashMap<Integer, List<NavigationPosition>>(THRESHOLD_PER_ZOOM.length);
-    private NavigationPosition visibleNorthEast, visibleSouthWest;
+    private BoundingBox visible;
 
     PositionReducer(Callback callback) {
         this.callback = callback;
@@ -116,20 +114,18 @@ class PositionReducer {
     }
 
     public boolean hasFilteredVisibleArea() {
-        return visibleNorthEast != null && visibleSouthWest != null;
+        return visible != null;
     }
 
     public boolean isWithinVisibleArea(NavigationPosition northEastCorner,
                                        NavigationPosition southWestCorner) {
         return !hasFilteredVisibleArea() ||
-                contains(visibleNorthEast, visibleSouthWest, northEastCorner) &&
-                        contains(visibleNorthEast, visibleSouthWest, southWestCorner);
+                visible.contains(northEastCorner) && visible.contains(southWestCorner);
     }
 
     public void clear() {
         reducedPositions.clear();
-        visibleNorthEast = null;
-        visibleSouthWest = null;
+        visible = null;
     }
 
     interface Callback {
@@ -173,11 +169,9 @@ class PositionReducer {
             double visiblePositionAreaFactor = preferences.getDouble("visiblePositionAreaFactor", 3.0);
             double factor = max(visiblePositionAreaFactor * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * visiblePositionAreaFactor;
             result = filterVisiblePositions(result, factor, false);
-            visibleNorthEast = northEast(result);
-            visibleSouthWest = southWest(result);
+            visible = new BoundingBox(result);
         } else {
-            visibleNorthEast = null;
-            visibleSouthWest = null;
+            visible = null;
         }
 
         // reduce the number of result by selecting every Nth to limit significance computation time
@@ -253,6 +247,7 @@ class PositionReducer {
         northEast.setLatitude(northEast.getLatitude() + height);
         southWest.setLongitude(southWest.getLongitude() - width);
         southWest.setLatitude(southWest.getLatitude() - height);
+        BoundingBox boundingBox = new BoundingBox(northEast, southWest);
 
         List<NavigationPosition> result = new ArrayList<NavigationPosition>();
 
@@ -263,11 +258,11 @@ class PositionReducer {
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
 
         NavigationPosition previousPosition = positions.get(firstIndex);
-        boolean previousPositionVisible = contains(northEast, southWest, previousPosition);
+        boolean previousPositionVisible = boundingBox.contains(previousPosition);
 
         for (int i = firstIndex; i < lastIndex; i += 1) {
             NavigationPosition position = positions.get(i);
-            boolean visible = contains(northEast, southWest, position);
+            boolean visible = boundingBox.contains(position);
             if (visible) {
                 // if the previous position was not visible but the current position is visible:
                 // add the previous position to render transition from non-visible to visible area

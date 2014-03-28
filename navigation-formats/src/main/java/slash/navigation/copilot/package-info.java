@@ -1,4 +1,4 @@
 /**
- * Contains the CoPilot formats.
+ * The CoPilot formats.
  */
 package slash.navigation.copilot;

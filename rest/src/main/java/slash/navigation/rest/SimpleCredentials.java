@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.rest;
 
 /**
@@ -26,7 +25,7 @@ package slash.navigation.rest;
  * @author Christian Pesch
  */
 public class SimpleCredentials implements Credentials {
-    private String userName, password;
+    private final String userName, password;
 
     public SimpleCredentials(String userName, String password) {
         this.userName = userName;
