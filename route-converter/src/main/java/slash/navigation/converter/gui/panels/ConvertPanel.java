@@ -356,7 +356,6 @@ public class ConvertPanel implements PanelInTab {
                     return;
                 if (getPositionsModel().isContinousRange())
                     return;
-
                 handlePositionsUpdate();
             }
         });

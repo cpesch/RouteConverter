@@ -107,4 +107,24 @@ public class BoundingBox {
         }
         return new SimpleNavigationPosition(longitude, latitude, time);
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BoundingBox that = (BoundingBox) o;
+
+        return !(northEast != null ? !northEast.equals(that.northEast) : that.northEast != null) &&
+                !(southWest != null ? !southWest.equals(that.southWest) : that.southWest != null);
+    }
+
+    public int hashCode() {
+        int result = northEast != null ? northEast.hashCode() : 0;
+        result = 31 * result + (southWest != null ? southWest.hashCode() : 0);
+        return result;
+    }
+
+    public String toString() {
+        return super.toString() + "[northEast=" + northEast + ", southWest=" + southWest + "]";
+    }
 }
