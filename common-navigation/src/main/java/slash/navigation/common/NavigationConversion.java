@@ -314,38 +314,47 @@ public class NavigationConversion {
     }
 
     public static String formatPositionAsString(Double longitudeOrLatitude) {
-        return formatDoubleAsString(longitudeOrLatitude, 7);
+        int MaximumFractionDigits = preferences.getInt("positionAsStringMaximumFractionDigits", 7);
+        return formatDoubleAsString(longitudeOrLatitude, MaximumFractionDigits);
     }
 
     public static String formatElevationAsString(Double elevation) {
-        return formatDoubleAsString(elevation, 2);
+        int MaximumFractionDigits = preferences.getInt("elevationAsStringMaximumFractionDigits", 2);
+        return formatDoubleAsString(elevation, MaximumFractionDigits);
     }
 
     public static String formatAccuracyAsString(Double elevation) {
-        return formatDoubleAsString(elevation, 6);
+        int MaximumFractionDigits = preferences.getInt("accuracyAsStringMaximumFractionDigits", 6);
+        return formatDoubleAsString(elevation, MaximumFractionDigits);
     }
 
     public static String formatHeadingAsString(Double elevation) {
-        return formatDoubleAsString(elevation, 1);
+        int MaximumFractionDigits = preferences.getInt("headingAsStringMaximumFractionDigits", 1);
+        return formatDoubleAsString(elevation, MaximumFractionDigits);
     }
 
     public static String formatSpeedAsString(Double speed) {
-        return formatDoubleAsString(speed, 2);
+        int MaximumFractionDigits = preferences.getInt("speedAsStringMaximumFractionDigits", 2);
+        return formatDoubleAsString(speed, MaximumFractionDigits);
     }
 
     public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        return formatBigDecimal(longitudeOrLatitude, 7);
+        int MaximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 7);
+        return formatBigDecimal(longitudeOrLatitude, MaximumFractionDigits);
     }
 
     public static BigDecimal formatElevation(Double elevation) {
-        return formatBigDecimal(elevation, 1);
+        int MaximumFractionDigits = preferences.getInt("elevationMaximumFractionDigits", 1);
+        return formatBigDecimal(elevation, MaximumFractionDigits);
     }
 
     public static BigDecimal formatHeading(Double heading) {
-        return formatBigDecimal(heading, 1);
+        int MaximumFractionDigits = preferences.getInt("headingMaximumFractionDigits", 1);
+        return formatBigDecimal(heading, MaximumFractionDigits);
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        return formatBigDecimal(speed, 2);
+        int MaximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 2);
+        return formatBigDecimal(speed, MaximumFractionDigits);
     }
 }
