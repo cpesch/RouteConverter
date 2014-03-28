@@ -135,6 +135,7 @@ public class MapViewMouseEventListener extends MouseAdapter {
         org.mapsforge.core.model.Point centerPoint = projection.toPixels(center);
         int horizontalDiff = (int) ((centerPoint.x - mousePoint.x) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
         int verticalDiff = (int) ((centerPoint.y - mousePoint.y) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+        mapView.getModel().mapViewPosition.setPivot(mouse);
         mapView.getModel().mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
     }
 
