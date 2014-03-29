@@ -87,7 +87,7 @@ public class UndoPositionsModel implements PositionsModel {
         edit(rowIndex, columnIndex, aValue, -1, null, true, true);
     }
 
-    public String getStringAt(int rowIndex, int columnIndex) {
+    private String getStringAt(int rowIndex, int columnIndex) {
         return delegate.getStringAt(rowIndex, columnIndex);
     }
 
