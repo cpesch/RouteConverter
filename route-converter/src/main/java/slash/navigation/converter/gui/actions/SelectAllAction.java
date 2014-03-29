@@ -38,6 +38,6 @@ public class SelectAllAction extends FrameAction {
     }
 
     public void run() {
-        table.getSelectionModel().addSelectionInterval(0, table.getRowCount() - 1);
+        table.selectAll();
     }
 }
