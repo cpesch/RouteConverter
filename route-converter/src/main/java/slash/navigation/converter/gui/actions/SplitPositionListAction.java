@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import static java.lang.Math.max;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.RouteComments.getRouteName;
 
 /**
@@ -79,7 +80,7 @@ public class SplitPositionListAction extends FrameAction {
             }
 
             final int selectedRow = max(selectedRows[selectedRows.length - 1] - 1, 0);
-            SwingUtilities.invokeLater(new Runnable() {
+            invokeLater(new Runnable() {
                 public void run() {
                     table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
                 }
