@@ -42,7 +42,6 @@ public interface PositionsModel extends TableModel {
     BaseRoute getRoute();
     void setRoute(BaseRoute route);
 
-    String getStringAt(int rowIndex, int columnIndex);
     NavigationPosition getPosition(int rowIndex);
     int getIndex(NavigationPosition position);
     List<NavigationPosition> getPositions(int[] rowIndices);
