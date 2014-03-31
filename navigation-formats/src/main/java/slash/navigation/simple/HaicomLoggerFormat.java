@@ -21,19 +21,18 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +56,6 @@ import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
  */
 
 public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final Logger log = Logger.getLogger(HaicomLoggerFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(HaicomLoggerFormat.class);
 
     private static final String SEPARATOR = ",";
@@ -70,14 +68,14 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
     static {
-        int MaximumFractionDigits = preferences.getInt("haicomPositionMaximumFractionDigits", 5);
+        int maximumFractionDigits = preferences.getInt("haicomPositionMaximumFractionDigits", 5);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
     }
 

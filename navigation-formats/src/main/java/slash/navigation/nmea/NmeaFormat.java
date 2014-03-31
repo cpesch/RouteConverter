@@ -60,10 +60,10 @@ public class NmeaFormat extends BaseNmeaFormat {
 
     private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
-        int MaximumFractionDigits = preferences.getInt("altitudeSpeedMaximumFractionDigits", 1);
+        int maximumFractionDigits = preferences.getInt("altitudeSpeedMaximumFractionDigits", 1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setGroupingUsed(false);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumFractionDigits(1);
-        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(MaximumFractionDigits);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumIntegerDigits(1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumIntegerDigits(6);
     }
