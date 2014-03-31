@@ -316,7 +316,7 @@ public class NmeaFormatTest {
     @Test
     public void testMerging2() throws IOException {
         StringReader reader = new StringReader(
-                "$GPZDA,100436,29,07,2013,,*6B\n" +
+                "$GPZDA,100436,29,07,2013,,*44\n" +
                         "$GPRMC,100436,A,4300.898329,N,00948.227878,E,0.0000,,290713,,A*4F\n" +
                         "$GPGGA,100436,4300.898329,N,00948.227878,E,1,,,203.0821,M,,M,,*4B\n" +
                         "$GPWPL,4300.898329,N,00948.227878,E,Position 3*62\n" +
