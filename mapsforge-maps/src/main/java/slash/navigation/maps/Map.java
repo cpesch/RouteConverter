@@ -20,6 +20,7 @@
 package slash.navigation.maps;
 
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import slash.navigation.common.BoundingBox;
 
 import java.io.File;
 
@@ -37,4 +38,5 @@ public interface Map extends LocalResource {
     boolean isRenderer();
     File getFile();
     AbstractTileSource getTileSource();
+    BoundingBox getBoundingBox();
 }

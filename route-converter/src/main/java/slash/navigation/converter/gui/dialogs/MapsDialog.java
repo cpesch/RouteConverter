@@ -27,7 +27,6 @@ import slash.navigation.converter.gui.renderer.MapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ResourcesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.Map;
@@ -36,7 +35,13 @@ import slash.navigation.maps.RemoteResource;
 import slash.navigation.maps.Theme;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -48,7 +53,6 @@ import java.util.concurrent.ExecutorService;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -105,6 +109,23 @@ public class MapsDialog extends SimpleDialog {
             }
         });
         tableAvailableMaps.setRowSorter(sorterAvailableMaps);
+        Map selectedMap = getMapManager().getDisplayedMapModel().getItem();
+        if (selectedMap != null) {
+            int selectedMapIndex = getMapManager().getMapsModel().getIndex(selectedMap);
+            if (selectedMapIndex != -1) {
+                int selectedRow = tableAvailableMaps.convertRowIndexToView(selectedMapIndex);
+                tableAvailableMaps.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
+            }
+        }
+        tableAvailableMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
+                Map map = getMapManager().getMapsModel().getMap(selectedRow);
+                RouteConverter.getInstance().setSelectedMap(map);
+            }
+        });
 
         buttonDisplay.addActionListener(new DialogAction(this) {
             public void run() {
@@ -128,6 +149,14 @@ public class MapsDialog extends SimpleDialog {
             }
         });
         tableAvailableThemes.setRowSorter(sorterAvailableThemes);
+        Theme selectedTheme = getMapManager().getAppliedThemeModel().getItem();
+        if (selectedTheme != null) {
+            int selectedThemeIndex = getMapManager().getThemesModel().getIndex(selectedTheme);
+            if (selectedThemeIndex != -1) {
+                int selectedRow = tableAvailableThemes.convertRowIndexToView(selectedThemeIndex);
+                tableAvailableThemes.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
+            }
+        }
 
         buttonApply.addActionListener(new DialogAction(this) {
             public void run() {
@@ -171,6 +200,17 @@ public class MapsDialog extends SimpleDialog {
             }
         });
         tableResources.setRowSorter(sorterResources);
+        tableResources.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                int selectedRow = tableResources.convertRowIndexToView(tableResources.getSelectedRow());
+                RemoteResource resource = getMapManager().getResourcesModel().getResource(selectedRow);
+                // TODO fix this
+                // if(resource.isMap())
+                //  RouteConverter.getInstance().setSelectedMap(map);
+            }
+        });
 
         buttonDownload.addActionListener(new DialogAction(this) {
             public void run() {
@@ -242,6 +282,7 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void close() {
+        RouteConverter.getInstance().setSelectedMap(null);
         dispose();
     }
 

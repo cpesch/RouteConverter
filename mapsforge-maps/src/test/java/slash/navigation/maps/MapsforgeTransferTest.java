@@ -17,41 +17,24 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.models;
+package slash.navigation.maps;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import org.junit.Test;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.maps.Map;
+import slash.navigation.common.SimpleNavigationPosition;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.asBoundingBox;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
 
-/**
- * A {@link Map} that is downloaded on request from an online service.
- *
- * @author Christian Pesch
- */
+public class MapsforgeTransferTest {
 
-public class DownloadMap extends LocaleResourceImpl implements Map {
-    private final AbstractTileSource tileSource;
-
-    public DownloadMap(String description, String url, AbstractTileSource tileSource) {
-        super(description, url);
-        this.tileSource = tileSource;
-    }
-
-    public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
-    }
-
-    public File getFile() {
-        throw new UnsupportedOperationException();
-    }
-
-    public AbstractTileSource getTileSource() {
-        return tileSource;
-    }
-
-    public boolean isRenderer() {
-        return false;
+    @Test
+    public void testBoundingBox() {
+        BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.18587, 53.49249), new SimpleNavigationPosition(10.06767, 53.40451));
+        assertEquals(from, from);
+        org.mapsforge.core.model.BoundingBox to = asBoundingBox(from);
+        BoundingBox roundtrip = toBoundingBox(to);
+        assertEquals(roundtrip, from);
     }
 }

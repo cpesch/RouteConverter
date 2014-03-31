@@ -33,7 +33,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.*;
@@ -46,6 +46,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.*;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -682,6 +683,10 @@ public abstract class BaseMapView implements MapView {
         this.avoidTolls = avoidTolls;
         if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
+    }
+
+    public void setSelectedMap(slash.navigation.maps.Map map) {
+        throw new UnsupportedOperationException();
     }
 
     protected void setCoordinates() {

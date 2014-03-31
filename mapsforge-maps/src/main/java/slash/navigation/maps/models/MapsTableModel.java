@@ -68,11 +68,15 @@ public class MapsTableModel extends AbstractTableModel {
         return null;
     }
 
+    public int getIndex(Map map) {
+        return maps.indexOf(map);
+    }
+
     private void addMap(Map map) {
         if (!maps.add(map))
             throw new IllegalArgumentException("Map " + map + " not added to " + maps);
 
-        final int index = maps.indexOf(map);
+        final int index = getIndex(map);
         if (index == -1)
             throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 
@@ -84,7 +88,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     void updateMap(Map map) {
-        final int index = maps.indexOf(map);
+        final int index = getIndex(map);
         if (index == -1)
             throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 
@@ -96,7 +100,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     public void addOrUpdateMap(Map map) {
-        int index = maps.indexOf(map);
+        int index = getIndex(map);
         if (index == -1)
             addMap(map);
         else
@@ -104,7 +108,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     private void removeMap(Map map) {
-        final int index = maps.indexOf(map);
+        final int index = getIndex(map);
         if (index == -1)
             throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 

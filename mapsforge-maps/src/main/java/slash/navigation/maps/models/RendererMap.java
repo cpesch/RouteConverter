@@ -20,6 +20,7 @@
 package slash.navigation.maps.models;
 
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.Map;
 
 import java.io.File;
@@ -32,10 +33,16 @@ import java.io.File;
 
 public class RendererMap extends LocaleResourceImpl implements Map {
     private final File file;
+    private final BoundingBox boundingBox;
 
-    public RendererMap(String description, String url, File file) {
+    public RendererMap(String description, String url, BoundingBox boundingBox, File file) {
         super(description, url);
+        this.boundingBox = boundingBox;
         this.file = file;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
     public File getFile() {

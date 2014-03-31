@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.maps.Map;
 import slash.navigation.maps.MapManager;
 
 import java.awt.*;
@@ -61,6 +62,7 @@ public interface MapView extends PositionsSelectionModel {
     void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
     void setAvoidTolls(boolean avoidTolls);
+    void setSelectedMap(Map map);
 
     NavigationPosition getCenter();
     void setCenter(NavigationPosition center);

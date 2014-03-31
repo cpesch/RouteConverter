@@ -66,11 +66,15 @@ public class ThemesTableModel extends AbstractTableModel {
         return null;
     }
 
+    public int getIndex(Theme theme) {
+        return themes.indexOf(theme);
+    }
+
     private void addTheme(Theme theme) {
         if (!themes.add(theme))
             throw new IllegalArgumentException("Theme " + theme + " not added to " + themes);
 
-        final int index = themes.indexOf(theme);
+        final int index = getIndex(theme);
         if (index == -1)
             throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
 
@@ -82,7 +86,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     void updateTheme(Theme theme) {
-        final int index = themes.indexOf(theme);
+        final int index = getIndex(theme);
         if (index == -1)
             throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
 
@@ -94,7 +98,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     public void addOrUpdateTheme(Theme theme) {
-        int index = themes.indexOf(theme);
+        int index = getIndex(theme);
         if (index == -1)
             addTheme(theme);
         else
@@ -102,7 +106,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     private void removeTheme(Theme theme) {
-        final int index = themes.indexOf(theme);
+        final int index = getIndex(theme);
         if (index == -1)
             throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
 

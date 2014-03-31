@@ -836,6 +836,11 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.setAvoidTolls(avoidTolls);
     }
 
+    public void setSelectedMap(slash.navigation.maps.Map map) {
+        if (mapView != null)
+            mapView.setSelectedMap(map);
+    }
+
     // elevation view related helpers
 
     public PositionsModel getPositionsModel() {

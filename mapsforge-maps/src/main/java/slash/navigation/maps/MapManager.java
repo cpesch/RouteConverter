@@ -21,7 +21,9 @@ package slash.navigation.maps;
 
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
+import org.mapsforge.map.reader.MapDatabase;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -50,6 +52,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
 
 /**
  * Manages {@link Map}s and {@link Theme}s
@@ -138,8 +141,13 @@ public class MapManager {
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory);
 
-        for (File file : mapFilesArray)
-            mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file));
+        for (File file : mapFilesArray) {
+            MapDatabase mapDatabase = new MapDatabase();
+            mapDatabase.openFile(file);                                           // TODO cache this?
+            BoundingBox boundingBox = toBoundingBox(mapDatabase.getMapFileInfo().boundingBox);
+            mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), boundingBox, file));
+            mapDatabase.closeFile();
+        }
         mapsModel.addOrUpdateMap(SEPARATOR_TO_DOWNLOAD_MAP);
         mapsModel.addOrUpdateMap(DOWNLOAD_MAP);
 

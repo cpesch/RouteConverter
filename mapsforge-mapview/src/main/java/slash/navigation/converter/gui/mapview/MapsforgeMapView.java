@@ -43,7 +43,6 @@ import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.mapview.helpers.MapViewComponentListener;
 import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
@@ -82,6 +81,7 @@ import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -105,6 +105,10 @@ import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COL
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.asBoundingBox;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.asLatLong;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.asNavigationPosition;
+import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -132,8 +136,7 @@ public class MapsforgeMapView implements MapView {
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
 
-    private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls;
-    private TravelMode travelMode;
+    private boolean recenterAfterZooming;
     private PositionAugmenter positionAugmenter;
     private RoutingService routingService;
     private MapManager mapManager;
@@ -167,11 +170,6 @@ public class MapsforgeMapView implements MapView {
         this.routingService = bRouter; // TODO need to make this configurable
 
         this.recenterAfterZooming = recenterAfterZooming;
-        this.showCoordinates = showCoordinates;
-        this.showWaypointDescription = showWaypointDescription;
-        this.travelMode = travelMode;
-        this.avoidHighways = avoidHighways;
-        this.avoidTolls = avoidTolls;
     }
 
     private void initializeActions() {
@@ -482,15 +480,8 @@ public class MapsforgeMapView implements MapView {
                         boolean allRowsChanged = isFirstToLastRow(e);
                         if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
-
-                        if (allRowsChanged) {
-                            List<BaseNavigationPosition> positions = getPositionsModel().getRoute().getPositions();
-                            if (positions.size() > 0) {
-                                BoundingBox boundingBox = new BoundingBox(positions);
-                                setCenter(boundingBox.getCenter());
-                                zoomToBounds(boundingBox);
-                            }
-                        }
+                        if (allRowsChanged)
+                            centerAndZoom();
 
                         break;
                     case DELETE:
@@ -507,42 +498,26 @@ public class MapsforgeMapView implements MapView {
         Layers layers = getLayerManager().getLayers();
 
         // remove old map
-        boolean restoreView = false;
         for(Map map : mapsToLayers.keySet()) {
             Layer layer = mapsToLayers.get(map);
             layers.remove(layer);
-            restoreView = true;
         }
         mapsToLayers.clear();
 
         // add new map with a theme
         Map map = mapManager.getDisplayedMapModel().getItem();
         Theme theme = mapManager.getAppliedThemeModel().getItem();
-        Layer layer;
-
-        if (map.isRenderer()) {
-            TileRendererLayer tileRendererLayer = createTileRendererLayer(map, theme);
-            layer = tileRendererLayer;
-
-            if (!restoreView) {
-                org.mapsforge.core.model.BoundingBox boundingBox = tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox;
-                setCenter(boundingBox.getCenterPoint());
-                zoomToBounds(boundingBox);
-            }
-
-        } else {
-            layer = createTileDownloadLayer(map.getTileSource());
-        }
+        Layer layer = map.isRenderer() ? createTileRendererLayer(map, theme) :createTileDownloadLayer(map.getTileSource());
         mapsToLayers.put(map, layer);
 
         // add map as the first to be behind all additional layers
         layers.add(0, layer);
 
+        // then start download layer threads
         if (layer instanceof TileDownloadLayer)
             ((TileDownloadLayer) layer).start();
 
-        getLayerManager().redrawLayers();
-
+        centerAndZoom();
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
@@ -588,7 +563,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private PositionsModel getPositionsModel() {
-        return MapsforgeMapView.this.positionsModel;
+        return positionsModel;
     }
 
     public boolean isSupportedPlatform() {
@@ -627,40 +602,90 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        this.showCoordinates = showCoordinates;
+        // TODO implement me
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
-        this.showWaypointDescription = showWaypointDescription;
+        // TODO implement me
     }
 
     public void setTravelMode(TravelMode travelMode) {
-        this.travelMode = travelMode;
+        // TODO implement me
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
-        this.avoidHighways = avoidHighways;
+        // TODO implement me
     }
 
     public void setAvoidTolls(boolean avoidTolls) {
-        this.avoidTolls = avoidTolls;
+        // TODO implement me
     }
 
+    private Polyline mapBorder, routeBorder;
 
-    private NavigationPosition asNavigationPosition(LatLong latLong) {
-        return new SimpleNavigationPosition(latLong.longitude, latLong.latitude);
-    }
-
-    private LatLong asLatLong(NavigationPosition position) {
-        return new LatLong(position.getLatitude(), position.getLongitude());
-    }
-
-    private List<LatLong> asLatLong(List<NavigationPosition> positions) {
-        List<LatLong> result = new ArrayList<>();
-        for (NavigationPosition position : positions) {
-            result.add(asLatLong(position));
+    public void setSelectedMap(slash.navigation.maps.Map map) {
+        if (mapBorder != null) {
+            getLayerManager().getLayers().remove(mapBorder);
+            mapBorder = null;
         }
-        return result;
+        if (routeBorder != null) {
+            getLayerManager().getLayers().remove(routeBorder);
+            routeBorder = null;
+        }
+
+        if (map == null)
+            return;
+
+        if(map.isRenderer())
+            mapBorder = drawBorder(map.getBoundingBox());
+
+        List<BaseNavigationPosition> positions = getPositionsModel().getRoute().getPositions();
+        if (positions.size() > 0)
+            routeBorder = drawBorder(new BoundingBox(positions));
+
+        centerAndZoom();
+    }
+
+    private Polyline drawBorder(BoundingBox boundingBox) {
+        Paint paint = GRAPHIC_FACTORY.createPaint();
+        paint.setColor(org.mapsforge.core.graphics.Color.BLUE);
+        paint.setStrokeWidth(3);
+        paint.setDashPathEffect(new float[]{3, 12});
+        Polyline polyline = new Polyline(asLatLong(boundingBox), paint, mapView.getModel().displayModel.getTileSize());
+        getLayerManager().getLayers().add(polyline);
+        return polyline;
+    }
+
+    private BoundingBox getMapBoundingBox() {
+        Collection<Layer> values = mapsToLayers.values();
+        if(!values.isEmpty()) {
+            Layer layer = values.iterator().next();
+            if(layer instanceof TileRendererLayer) {
+                TileRendererLayer tileRendererLayer = (TileRendererLayer) layer;
+                return toBoundingBox(tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox);
+            }
+        }
+        return null;
+    }
+
+    private void centerAndZoom() {
+        if (getPositionsModel() == null)
+            return;
+
+        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        BoundingBox routeBoundingBox = new BoundingBox(getPositionsModel().getRoute().getPositions());
+        positions.add(routeBoundingBox.getNorthEast());
+        positions.add(routeBoundingBox.getSouthWest());
+
+        BoundingBox mapBoundingBox = getMapBoundingBox();
+        if (mapBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
+            positions.add(mapBoundingBox.getNorthEast());
+            positions.add(mapBoundingBox.getSouthWest());
+        }
+
+        BoundingBox both = new BoundingBox(positions);
+        internalSetCenter(both.getCenter());
+        zoomToBounds(both);
     }
 
     private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
@@ -677,16 +702,6 @@ public class MapsforgeMapView implements MapView {
     }
 
 
-    private org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
-        return new org.mapsforge.core.model.BoundingBox(
-                boundingBox.getSouthWest().getLatitude(),
-                boundingBox.getSouthWest().getLongitude(),
-                boundingBox.getNorthEast().getLatitude(),
-                boundingBox.getNorthEast().getLongitude()
-        );
-    }
-
-
     public NavigationPosition getCenter() {
         return asNavigationPosition(mapView.getModel().mapViewPosition.getCenter());
     }
@@ -695,8 +710,13 @@ public class MapsforgeMapView implements MapView {
         mapView.getModel().mapViewPosition.animateTo(center);
     }
 
-    public void setCenter(NavigationPosition center) {
+    private void internalSetCenter(NavigationPosition center) {
         setCenter(asLatLong(center));
+    }
+
+    public void setCenter(NavigationPosition center) {
+        if (recenterAfterZooming) // TODO actually insertion
+            setCenter(asLatLong(center));
     }
 
     private int getZoom() {
