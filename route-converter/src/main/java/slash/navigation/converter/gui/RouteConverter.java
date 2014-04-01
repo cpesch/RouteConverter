@@ -1099,7 +1099,11 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDownloadManager() {
-        getDownloadManager().loadQueue();
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().loadQueue();
+            }
+        }, "DownloadManagerInitializer").start();
     }
 
     private class PrintMapAction extends FrameAction {
