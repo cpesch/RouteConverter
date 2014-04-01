@@ -47,8 +47,8 @@ public class BoundingBox {
     }
 
     public BoundingBox(List<? extends NavigationPosition> positions) {
-        double maximumLongitude = -180.0, maximumLatitude = -180.0,
-                minimumLongitude = 180.0, minimumLatitude = 180.0;
+        double maximumLongitude = -180.0, maximumLatitude = -90.0,
+                minimumLongitude = 180.0, minimumLatitude = 90.0;
         CompactCalendar maximumTime = null, minimumTime = null;
 
         for (NavigationPosition position : positions) {
@@ -86,12 +86,25 @@ public class BoundingBox {
         return southWest;
     }
 
+    public NavigationPosition getSouthEast() {
+        return new SimpleNavigationPosition(northEast.getLongitude(), southWest.getLatitude());
+    }
+
+    public NavigationPosition getNorthWest() {
+        return new SimpleNavigationPosition(southWest.getLongitude(), northEast.getLatitude());
+    }
+
     public boolean contains(NavigationPosition position) {
         boolean result = position.getLongitude() > southWest.getLongitude();
         result = result && (position.getLongitude() < northEast.getLongitude());
         result = result && (position.getLatitude() > southWest.getLatitude());
         result = result && (position.getLatitude() < northEast.getLatitude());
         return result;
+    }
+
+    public boolean contains(BoundingBox boundingBox) {
+        return contains(boundingBox.getNorthEast()) && contains(boundingBox.getSouthEast()) &&
+                contains(boundingBox.getSouthWest()) && contains(boundingBox.getNorthWest());
     }
 
     private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
