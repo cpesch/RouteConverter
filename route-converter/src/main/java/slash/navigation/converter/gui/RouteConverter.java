@@ -219,7 +219,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
-    private DownloadManager downloadManager = new DownloadManager();
+    private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -1099,7 +1099,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDownloadManager() {
-        getDownloadManager().setQueue(getDownloadQueueFile());
+        getDownloadManager().loadQueue();
     }
 
     private class PrintMapAction extends FrameAction {
