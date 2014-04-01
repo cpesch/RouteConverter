@@ -70,15 +70,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
                     if (key != null) {
                         System.out.println(getClass().getSimpleName() + ": " + key + " maps to " + uri);
 
-                        String checksum = generateChecksum(zipInputStream);
-
-                        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-                        fragmentType.setKey(key);
-                        fragmentType.setUri(uri);
-                        fragmentType.setSize(entry.getSize());
-                        fragmentType.setChecksum(checksum);
-                        fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
-                        fragmentTypes.add(fragmentType);
+                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();
@@ -90,6 +82,18 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
             if (zipInputStream != null)
                 closeQuietly(zipInputStream);
         }
+    }
+
+    private FragmentType createFragmentType(String key, String uri, ZipEntry entry, ZipInputStream inputStream) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.setUri(uri);
+        if(INCLUDE_VALIDATION_INFORMATION) {
+            fragmentType.setSize(entry.getSize());
+            fragmentType.setChecksum(generateChecksum(inputStream));
+            fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
+        }
+        return fragmentType;
     }
 
     public static void main(String[] args) throws Exception {

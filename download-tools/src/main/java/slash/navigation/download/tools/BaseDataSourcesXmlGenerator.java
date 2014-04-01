@@ -19,7 +19,11 @@
 */
 package slash.navigation.download.tools;
 
-import slash.navigation.download.datasources.binding.*;
+import slash.navigation.download.datasources.binding.DatasourceType;
+import slash.navigation.download.datasources.binding.DatasourcesType;
+import slash.navigation.download.datasources.binding.FileType;
+import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -47,6 +51,7 @@ import static slash.navigation.download.datasources.DataSourcesUtil.marshal;
  */
 
 public abstract class BaseDataSourcesXmlGenerator {
+    protected static final boolean INCLUDE_VALIDATION_INFORMATION = false;
     private List<DatasourceType> datasourceTypes = new ArrayList<DatasourceType>();
 
     public void run(String[] args) throws Exception {
@@ -130,14 +135,13 @@ public abstract class BaseDataSourcesXmlGenerator {
     }
 
     protected FileType createFileType(String uri, File file) throws IOException {
-        String fileChecksum = generateChecksum(file);
-
         FileType fileType = new ObjectFactory().createFileType();
         fileType.setUri(uri);
-        fileType.setSize(file.length());
-        fileType.setChecksum(fileChecksum);
-        fileType.setTimestamp(formatTime(fromMillis(file.lastModified()), true));
-
+        if (INCLUDE_VALIDATION_INFORMATION) {
+            fileType.setSize(file.length());
+            fileType.setChecksum(generateChecksum(file));
+            fileType.setTimestamp(formatTime(fromMillis(file.lastModified()), true));
+        }
         return fileType;
     }
 
