@@ -221,7 +221,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
-    private DownloadManager downloadManager = new DownloadManager();
+    private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private MapManager mapManager = new MapManager(downloadManager);
     private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
@@ -1120,7 +1120,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDownloadManager() {
         new Thread(new Runnable() {
             public void run() {
-                getDownloadManager().setQueue(getDownloadQueueFile());
+                getDownloadManager().loadQueue();
             }
         }, "DownloadManagerInitializer").start();
     }

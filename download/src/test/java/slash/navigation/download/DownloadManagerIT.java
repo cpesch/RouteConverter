@@ -58,7 +58,7 @@ public class DownloadManagerIT {
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
 
     private DownloadManager manager;
-    private File target;
+    private File target, queueFile;
 
     private String readFileToString(File file) throws IOException {
         return new String(readBytes(new FileInputStream(file)), UTF8_ENCODING);
@@ -79,7 +79,8 @@ public class DownloadManagerIT {
 
     @Before
     public void setUp() throws IOException {
-        manager = new DownloadManager();
+        queueFile = createTempFile("queueFile", ".xml");
+        manager = new DownloadManager(queueFile);
         target = createTempFile("local", ".txt");
         delete("first/second/447bytes.txt");
         delete("first/second");
@@ -91,6 +92,8 @@ public class DownloadManagerIT {
     public void tearDown() {
         if (target.exists())
             assertTrue(target.delete());
+        if (queueFile.exists())
+            assertTrue(queueFile.delete());
         manager.dispose();
     }
 

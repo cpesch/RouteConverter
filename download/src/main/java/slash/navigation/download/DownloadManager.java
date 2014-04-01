@@ -50,26 +50,26 @@ import static slash.navigation.download.State.*;
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
     static final int WAIT_TIMEOUT = 15 * 1000;
-    private static final long QUEUE_FILE_SAVE_INTERVAL = 5 * 1000;
+    private static final long QUEUE_FILE_SAVE_INTERVAL = 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
     private final DownloadTableModel model = new DownloadTableModel();
     private final ThreadPoolExecutor pool;
     private File queueFile;
 
-    public DownloadManager() {
+    public DownloadManager(File queueFile) {
+        this.queueFile = queueFile;
         BlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(1, new DownloadExecutorComparator());
         pool = new ThreadPoolExecutor(PARALLEL_DOWNLOAD_COUNT, PARALLEL_DOWNLOAD_COUNT * 2, 60, SECONDS, queue);
         pool.allowCoreThreadTimeOut(true);
     }
 
-    public void setQueue(File file) {
-        this.queueFile = file;
+    public void loadQueue() {
         try {
-            List<Download> downloads = new QueuePersister(file).load();
+            List<Download> downloads = new QueuePersister(queueFile).load();
             if (downloads != null)
                 model.setDownloads(downloads);
         } catch (Exception e) {
-            log.severe(format("Could not load '%s': %s", file, e.getMessage()));
+            log.severe(format("Could not load download queue from '%s': %s", queueFile, e.getMessage()));
         }
 
         restartDownloadsWithState(Resuming);
@@ -91,7 +91,7 @@ public class DownloadManager {
         try {
             new QueuePersister(queueFile).save(model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d downloads to '%s': %s", model.getRowCount(), queueFile, e.getMessage()));
+            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e.getMessage()));
         }
     }
     public void dispose() {

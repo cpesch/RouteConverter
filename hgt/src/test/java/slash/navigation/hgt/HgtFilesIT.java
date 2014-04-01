@@ -30,15 +30,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class HgtFilesIT {
-    private DownloadManager downloadManager = new DownloadManager();
     private Map<String, Fragment> archiveMap = new HashMap<String, Fragment>();
     private Map<String, File> fileMap = new HashMap<String, File>();
-    private HgtFiles files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test",
-            archiveMap, fileMap, downloadManager);
+    private HgtFiles files;
     {
         archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
         archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
@@ -46,6 +47,8 @@ public class HgtFilesIT {
 
     @Before
     public void setUp() throws Exception {
+        files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test", archiveMap, fileMap,
+                new DownloadManager(createTempFile("queueFile", ".xml")));
         files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
     }
 
