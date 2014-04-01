@@ -37,9 +37,9 @@
         </xsd:annotation>
         <xsd:attribute name="description" type="xsd:string" use="required"/>
         <xsd:attribute name="url" type="xsd:string" use="required"/>
-        <xsd:attribute name="size" type="xsd:long" use="required"/>
-        <xsd:attribute name="checksum" type="xsd:string" use="required"/>
-        <xsd:attribute name="timestamp" type="xsd:dateTime" use="required"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
 
         <!-- what to do with the download -->
         <xsd:attribute name="action" type="xsd:string" use="required"/>
