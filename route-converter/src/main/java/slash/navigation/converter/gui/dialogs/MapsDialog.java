@@ -123,7 +123,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
                 Map map = getMapManager().getMapsModel().getMap(selectedRow);
-                RouteConverter.getInstance().setSelectedMap(map);
+                RouteConverter.getInstance().showMapBorder(map.getBoundingBox());
             }
         });
 
@@ -206,9 +206,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableResources.convertRowIndexToView(tableResources.getSelectedRow());
                 RemoteResource resource = getMapManager().getResourcesModel().getResource(selectedRow);
-                // TODO fix this
-                // if(resource.isMap())
-                //  RouteConverter.getInstance().setSelectedMap(map);
+                RouteConverter.getInstance().showMapBorder(resource.getFile().getBoundingBox());
             }
         });
 
@@ -282,7 +280,7 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void close() {
-        RouteConverter.getInstance().setSelectedMap(null);
+        RouteConverter.getInstance().showMapBorder(null);
         dispose();
     }
 

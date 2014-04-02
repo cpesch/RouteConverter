@@ -33,20 +33,36 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.maps.*;
+import slash.navigation.maps.MapManager;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -65,13 +81,28 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -685,7 +716,7 @@ public abstract class BaseMapView implements MapView {
             update(false);
     }
 
-    public void setSelectedMap(slash.navigation.maps.Map map) {
+    public void showMapBorder(BoundingBox mapBoundingBox) {
         throw new UnsupportedOperationException();
     }
 

@@ -481,7 +481,7 @@ public class MapsforgeMapView implements MapView {
                         if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
                         if (allRowsChanged)
-                            centerAndZoom();
+                            centerAndZoom(getMapBoundingBox());
 
                         break;
                     case DELETE:
@@ -517,7 +517,7 @@ public class MapsforgeMapView implements MapView {
         if (layer instanceof TileDownloadLayer)
             ((TileDownloadLayer) layer).start();
 
-        centerAndZoom();
+        centerAndZoom(getMapBoundingBox());
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
@@ -623,7 +623,7 @@ public class MapsforgeMapView implements MapView {
 
     private Polyline mapBorder, routeBorder;
 
-    public void setSelectedMap(slash.navigation.maps.Map map) {
+    public void showMapBorder(BoundingBox mapBoundingBox) {
         if (mapBorder != null) {
             getLayerManager().getLayers().remove(mapBorder);
             mapBorder = null;
@@ -633,17 +633,14 @@ public class MapsforgeMapView implements MapView {
             routeBorder = null;
         }
 
-        if (map == null)
-            return;
-
-        if(map.isRenderer())
-            mapBorder = drawBorder(map.getBoundingBox());
+        if (mapBoundingBox != null)
+            mapBorder = drawBorder(mapBoundingBox);
 
         List<BaseNavigationPosition> positions = getPositionsModel().getRoute().getPositions();
         if (positions.size() > 0)
             routeBorder = drawBorder(new BoundingBox(positions));
 
-        centerAndZoom();
+        centerAndZoom(mapBoundingBox);
     }
 
     private Polyline drawBorder(BoundingBox boundingBox) {
@@ -668,7 +665,7 @@ public class MapsforgeMapView implements MapView {
         return null;
     }
 
-    private void centerAndZoom() {
+    private void centerAndZoom(BoundingBox mapBoundingBox) {
         if (getPositionsModel() == null)
             return;
 
@@ -677,7 +674,6 @@ public class MapsforgeMapView implements MapView {
         positions.add(routeBoundingBox.getNorthEast());
         positions.add(routeBoundingBox.getSouthWest());
 
-        BoundingBox mapBoundingBox = getMapBoundingBox();
         if (mapBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
             positions.add(mapBoundingBox.getNorthEast());
             positions.add(mapBoundingBox.getSouthWest());

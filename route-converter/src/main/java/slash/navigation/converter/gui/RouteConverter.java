@@ -28,6 +28,7 @@ import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -836,9 +837,9 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.setAvoidTolls(avoidTolls);
     }
 
-    public void setSelectedMap(slash.navigation.maps.Map map) {
+    public void showMapBorder(BoundingBox mapBoundingBox) {
         if (mapView != null)
-            mapView.setSelectedMap(map);
+            mapView.showMapBorder(mapBoundingBox);
     }
 
     // elevation view related helpers
