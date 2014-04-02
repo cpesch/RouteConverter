@@ -25,7 +25,7 @@ import slash.navigation.converter.gui.mapview.models.TableModelToComboBoxModelAd
 import slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer;
 import slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer;
 import slash.navigation.gui.Application;
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.Theme;
 
@@ -52,7 +52,7 @@ import static slash.navigation.maps.MapManager.DOWNLOAD_THEME;
 public class MapSelector {
     private JPanel contentPane;
     private JLabel labelZoom;
-    private JComboBox<Map> comboBoxMap;
+    private JComboBox<LocalMap> comboBoxMap;
     private JComboBox<Theme> comboBoxTheme;
     private JPanel mapViewPanel;
 
@@ -62,20 +62,20 @@ public class MapSelector {
                 SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, false));
 
-        comboBoxMap.setModel(new TableModelToComboBoxModelAdapter<Map>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()));
+        comboBoxMap.setModel(new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()));
         comboBoxMap.setRenderer(new MapListCellRenderer());
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                Map map = (Map) e.getItem();
+                LocalMap map = (LocalMap) e.getItem();
                 comboBoxTheme.setEnabled(map.isRenderer());
             }
         });
 
         comboBoxTheme.setModel(new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
-        comboBoxTheme.setEnabled(((Map) comboBoxMap.getSelectedItem()).isRenderer());
+        comboBoxTheme.setEnabled(((LocalMap) comboBoxMap.getSelectedItem()).isRenderer());
     }
 
     public void zoomChanged(int zoomLevel) {
@@ -87,7 +87,7 @@ public class MapSelector {
     }
 
     private void createUIComponents() {
-        comboBoxMap = new JComboBox<Map>() {
+        comboBoxMap = new JComboBox<LocalMap>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_MAP.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("select-maps");

@@ -20,7 +20,7 @@
 package slash.navigation.maps;
 
 import slash.navigation.download.datasources.File;
-import slash.navigation.download.datasources.Fragment;
+import slash.navigation.maps.models.RemoteMapImpl;
 import slash.navigation.maps.models.RemoteResourceImpl;
 
 import java.util.ArrayList;
@@ -39,16 +39,16 @@ public class MapFiles {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
 
     private final String name, baseUrl, subDirectory;
-    private final Map<String, Fragment> archiveMap;
     private final Map<String, File> fileMap;
+    private final Map<String, slash.navigation.download.datasources.Map> mapMap;
 
     public MapFiles(String name, String baseUrl, String subDirectory,
-                    Map<String, Fragment> archiveMap, Map<String, File> fileMap) {
+                    Map<String, File> fileMap, Map<String, slash.navigation.download.datasources.Map> mapMap) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.subDirectory = subDirectory;
-        this.archiveMap = archiveMap;
         this.fileMap = fileMap;
+        this.mapMap = mapMap;
     }
 
     private String getName() {
@@ -68,8 +68,8 @@ public class MapFiles {
         for(final File file : fileMap.values()) {
             result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), file));
         }
-        for(final Fragment fragment : archiveMap.values()) {
-            result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), fragment));
+        for(final slash.navigation.download.datasources.Map map : mapMap.values()) {
+            result.add(new RemoteMapImpl(getName(), getBaseUrl(), getSubDirectory(), map));
         }
         return result;
     }

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="GraphHopper" baseUrl="http://download.geofabrik.de/" directory="graphhopper">
-        <file uri="europe/germany/baden-wuerttemberg-latest.osm.pbf" size="284695125" checksum="2219A91EB7F2D7EC0AB95A0D3E6BA681F2B0E570" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/bayern-latest.osm.pbf" size="383523265" checksum="6B6194BFC914C3829EB01416D2742DCF5B47AF97" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/berlin-latest.osm.pbf" size="29439513" checksum="5D02B69F8A17283C3F1F4AF090C2C53FBD771853" timestamp="2014-03-21T04:22:20Z"/>
-        <file uri="europe/germany/brandenburg-latest.osm.pbf" size="96431085" checksum="48B4C6EDBCACDCCCF9CB7C13B67EC1F5DE94DFA0" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/bremen-latest.osm.pbf" size="10712494" checksum="67AE35DD53914C817AF2D9C9F252F0FA7CCF5DE8" timestamp="2014-03-21T04:12:11Z"/>
-        <file uri="europe/germany/hamburg-latest.osm.pbf" size="25125552" checksum="63E727B2F8928CC2453B10DC80EEC8EF44A481C0" timestamp="2014-03-21T04:12:10Z"/>
-        <file uri="europe/germany/hessen-latest.osm.pbf" size="149944293" checksum="474D99BE629F333EC8736181579BDFEF4093DB96" timestamp="2014-03-21T04:12:10Z"/>
-        <file uri="europe/germany/mecklenburg-vorpommern-latest.osm.pbf" size="52624412" checksum="D1D0C07C8CACA5F06FD0A9FB2AE27A8269852EDF" timestamp="2014-03-21T04:12:11Z"/>
-        <file uri="europe/germany/niedersachsen-latest.osm.pbf" size="203144809" checksum="D4D97909F6C19BC97A3256D369EE30CD58240A7F" timestamp="2014-03-21T04:12:10Z"/>
-        <file uri="europe/germany/nordrhein-westfalen-latest.osm.pbf" size="392067694" checksum="3E9B93CF6ADDABFF4121CEB392D715689AD8B7FB" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/rheinland-pfalz-latest.osm.pbf" size="93510349" checksum="CB81648F045416060AB34900F85A0825264157CC" timestamp="2014-03-21T04:22:20Z"/>
-        <file uri="europe/germany/saarland-latest.osm.pbf" size="21436782" checksum="C75F831D614C58AE65387FA931ED18AACFD6FF2D" timestamp="2014-03-21T04:22:20Z"/>
-        <file uri="europe/germany/sachsen-anhalt-latest.osm.pbf" size="61619028" checksum="53A57375FF16CA68640DA1408FBDB02E8EF874F9" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/sachsen-latest.osm.pbf" size="110124867" checksum="AD7EBCCA74DBD0AD7ED9DC67A7FB8388C6192920" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/schleswig-holstein-latest.osm.pbf" size="71475871" checksum="77FFD57330B712673E53F8450B4763835DBD507D" timestamp="2014-03-21T04:22:19Z"/>
-        <file uri="europe/germany/thueringen-latest.osm.pbf" size="64218865" checksum="F5D5181ADB117C2604E9CA31499FF16C65669AE1" timestamp="2014-03-21T04:22:19Z"/>
+        <file uri="europe/germany/baden-wuerttemberg-latest.osm.pbf"/>
+        <file uri="europe/germany/bayern-latest.osm.pbf"/>
+        <file uri="europe/germany/berlin-latest.osm.pbf"/>
+        <file uri="europe/germany/brandenburg-latest.osm.pbf"/>
+        <file uri="europe/germany/bremen-latest.osm.pbf"/>
+        <file uri="europe/germany/hamburg-latest.osm.pbf"/>
+        <file uri="europe/germany/hessen-latest.osm.pbf"/>
+        <file uri="europe/germany/mecklenburg-vorpommern-latest.osm.pbf"/>
+        <file uri="europe/germany/niedersachsen-latest.osm.pbf"/>
+        <file uri="europe/germany/nordrhein-westfalen-latest.osm.pbf"/>
+        <file uri="europe/germany/rheinland-pfalz-latest.osm.pbf"/>
+        <file uri="europe/germany/saarland-latest.osm.pbf"/>
+        <file uri="europe/germany/sachsen-anhalt-latest.osm.pbf"/>
+        <file uri="europe/germany/sachsen-latest.osm.pbf"/>
+        <file uri="europe/germany/schleswig-holstein-latest.osm.pbf"/>
+        <file uri="europe/germany/thueringen-latest.osm.pbf"/>
     </datasource>
 </datasources>

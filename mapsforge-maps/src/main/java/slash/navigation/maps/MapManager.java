@@ -55,7 +55,7 @@ import static slash.navigation.download.Action.Extract;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
- * Manages {@link Map}s and {@link Theme}s
+ * Manages {@link LocalMap}s and {@link Theme}s
  *
  * @author Christian Pesch
  */
@@ -63,8 +63,8 @@ import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 public class MapManager {
     private static final Logger log = Logger.getLogger(MapManager.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(MapManager.class);
-    public static final Map SEPARATOR_TO_DOWNLOAD_MAP = new DownloadMap(null, null, null);
-    public static final Map DOWNLOAD_MAP = new DownloadMap(null, null, null);
+    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new DownloadMap(null, null, null);
+    public static final LocalMap DOWNLOAD_MAP = new DownloadMap(null, null, null);
     public static final Theme SEPARATOR_TO_DOWNLOAD_THEME = new ThemeImpl(null, null, null);
     public static final Theme DOWNLOAD_THEME = new ThemeImpl(null, null, null);
     private static final String MAP_DIRECTORY_PREFERENCE = "mapDirectory";
@@ -79,12 +79,12 @@ public class MapManager {
     private ThemesTableModel themesModel = new ThemesTableModel();
     private ResourcesTableModel resourcesModel = new ResourcesTableModel();
 
-    private ItemModel<Map> displayedMapModel = new ItemModel<Map>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
-        protected Map stringToItem(String url) {
+    private ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
+        protected LocalMap stringToItem(String url) {
             return getMapsModel().getMap(url);
         }
 
-        protected String itemToString(Map map) {
+        protected String itemToString(LocalMap map) {
             return map.getUrl();
         }
     };
@@ -107,7 +107,7 @@ public class MapManager {
         return mapsModel;
     }
 
-    public ItemModel<Map> getDisplayedMapModel() {
+    public ItemModel<LocalMap> getDisplayedMapModel() {
         return displayedMapModel;
     }
 
@@ -214,7 +214,7 @@ public class MapManager {
 
     private File getDirectory(RemoteResource resource) {
         String subDirectory = resource.getSubDirectory();
-        if (subDirectory.startsWith("maps/"))
+        if (resource instanceof RemoteMap)
             return ensureDirectory(getMapsDirectory() + separator + resource.getSubDirectory().substring(5));
         else if (subDirectory.startsWith("themes/"))
             return ensureDirectory(getThemesDirectory() + separator + resource.getSubDirectory().substring(7));

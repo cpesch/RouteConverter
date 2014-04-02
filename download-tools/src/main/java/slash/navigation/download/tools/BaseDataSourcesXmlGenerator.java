@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static java.io.File.separatorChar;
 import static java.lang.System.currentTimeMillis;
@@ -88,7 +90,7 @@ public abstract class BaseDataSourcesXmlGenerator {
         writeXml(writeXmlFile);
 
         long end = currentTimeMillis();
-        System.out.println(getClass().getSimpleName() + ": Took " + (end - start) + " ms to collect " + fragmentTypes.size() + " fragments and " + fileTypes.size() + " files");
+        System.out.println(getClass().getSimpleName() + ": Took " + ((end - start) / 1000) + " seconds to collect " + fragmentTypes.size() + " fragments and " + fileTypes.size() + " files");
         System.exit(0);
     }
 
@@ -134,15 +136,28 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(fileTypesArray);
     }
 
-    protected FileType createFileType(String uri, File file) throws IOException {
+    protected FileType createFileType(String uri, File file, boolean includeSize, boolean includeChecksumAndTimestamp) throws IOException {
         FileType fileType = new ObjectFactory().createFileType();
         fileType.setUri(uri);
-        if (INCLUDE_VALIDATION_INFORMATION) {
+        if (includeSize)
             fileType.setSize(file.length());
+        if (includeChecksumAndTimestamp) {
             fileType.setChecksum(generateChecksum(file));
             fileType.setTimestamp(formatTime(fromMillis(file.lastModified()), true));
         }
         return fileType;
+    }
+
+    protected FragmentType createFragmentType(String key, String uri, ZipEntry entry, ZipInputStream inputStream, boolean includeValidationInformation) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.setUri(uri);
+        if(includeValidationInformation) {
+            fragmentType.setSize(entry.getSize());
+            fragmentType.setChecksum(generateChecksum(inputStream));
+            fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
+        }
+        return fragmentType;
     }
 
     private void writeXml(File file) throws JAXBException, FileNotFoundException {

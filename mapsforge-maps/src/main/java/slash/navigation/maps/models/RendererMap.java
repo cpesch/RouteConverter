@@ -21,17 +21,17 @@ package slash.navigation.maps.models;
 
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 
 import java.io.File;
 
 /**
- * A {@link Map} that is rendered from a data set.
+ * A {@link LocalMap} that is rendered from a data set.
  *
  * @author Christian Pesch
  */
 
-public class RendererMap extends LocaleResourceImpl implements Map {
+public class RendererMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
     private final BoundingBox boundingBox;
 

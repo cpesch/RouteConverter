@@ -20,7 +20,7 @@
 package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ import static slash.navigation.maps.MapManager.DOWNLOAD_MAP;
 import static slash.navigation.maps.MapManager.SEPARATOR_TO_DOWNLOAD_MAP;
 
 /**
- * Renders the {@link Map} labels of the map and theme selector combo box.
+ * Renders the {@link LocalMap} labels of the map and theme selector combo box.
  *
  * @author Christian Pesch
  */
@@ -43,7 +43,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
         if (SEPARATOR_TO_DOWNLOAD_MAP.equals(value))
             return SEPARATOR;
 
-        Map map = (Map) value;
+        LocalMap map = (LocalMap) value;
         String text = "?";
         String tooltip = "";
         if (DOWNLOAD_MAP.equals(value)) {

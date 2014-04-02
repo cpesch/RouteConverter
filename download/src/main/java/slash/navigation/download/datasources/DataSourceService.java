@@ -23,11 +23,11 @@ package slash.navigation.download.datasources;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.download.datasources.binding.BoundingBoxType;
 import slash.navigation.download.datasources.binding.DatasourceType;
 import slash.navigation.download.datasources.binding.DatasourcesType;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.MapType;
 import slash.navigation.download.datasources.binding.PositionType;
 
 import javax.xml.bind.JAXBException;
@@ -65,7 +65,7 @@ public class DataSourceService {
         return null;
     }
 
-    public Map<String, Fragment> getArchives(String dataSourceName) {
+    public Map<String, Fragment> getFragments(String dataSourceName) {
         DatasourceType datasourceType = getDataSource(dataSourceName);
         Map<String, Fragment> result = new HashMap<String, Fragment>();
         for (FragmentType fragmentType : datasourceType.getFragment()) {
@@ -75,7 +75,7 @@ public class DataSourceService {
     }
 
     private Fragment asFragment(FragmentType fragmentType) {
-        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum(), parseTime(fragmentType.getTimestamp()), null);
+        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum(), parseTime(fragmentType.getTimestamp()));
     }
 
     public Map<String, File> getFiles(String dataSourceName) {
@@ -88,15 +88,25 @@ public class DataSourceService {
     }
 
     private File asFile(FileType fileType) {
-        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()), asBoundingBox(fileType.getBoundingBox()));
+        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()));
     }
 
-    private BoundingBox asBoundingBox(BoundingBoxType boundingBoxType) {
-        if(boundingBoxType == null)
-            return null;
+    public Map<String, slash.navigation.download.datasources.Map> getMaps(String dataSourceName) {
+        DatasourceType datasourceType = getDataSource(dataSourceName);
+        Map<String, slash.navigation.download.datasources.Map> result = new HashMap<String, slash.navigation.download.datasources.Map>();
+        for (MapType mapType : datasourceType.getMap()) {
+            result.put(mapType.getUri(), asMap(mapType));
+        }
+        return result;
+    }
 
-        PositionType northEast = boundingBoxType.getNorthEast();
-        PositionType southWest = boundingBoxType.getSouthWest();
+    private slash.navigation.download.datasources.Map asMap(MapType mapType) {
+        return new slash.navigation.download.datasources.Map(mapType.getUri(), mapType.getSize(), mapType.getChecksum(), parseTime(mapType.getTimestamp()), asBoundingBox(mapType.getNorthEast(), mapType.getSouthWest()));
+    }
+
+    private BoundingBox asBoundingBox(PositionType northEast, PositionType southWest) {
+        if(northEast == null || southWest == null)
+            return null;
         return new BoundingBox(asPosition(northEast), asPosition(southWest));
     }
 

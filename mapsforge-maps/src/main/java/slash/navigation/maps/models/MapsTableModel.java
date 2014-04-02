@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.models;
 
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 
 import javax.swing.table.AbstractTableModel;
@@ -31,16 +31,16 @@ import java.util.prefs.Preferences;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
- * Acts as a {@link TableModel} for the {@link Map}s of the {@link MapManager}.
+ * Acts as a {@link TableModel} for the {@link LocalMap}s of the {@link MapManager}.
  *
  * @author Christian Pesch
  */
 
 public class MapsTableModel extends AbstractTableModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsTableModel.class);
-    private List<Map> maps = new ArrayList<Map>();
+    private List<LocalMap> maps = new ArrayList<LocalMap>();
 
-    public List<Map> getMaps() {
+    public List<LocalMap> getMaps() {
         return maps;
     }
 
@@ -56,23 +56,23 @@ public class MapsTableModel extends AbstractTableModel {
         return getMap(rowIndex);
     }
 
-    public Map getMap(int rowIndex) {
+    public LocalMap getMap(int rowIndex) {
         return maps.get(rowIndex);
     }
 
-    public Map getMap(String url) {
-        for (Map map : new ArrayList<Map>(maps)) {
+    public LocalMap getMap(String url) {
+        for (LocalMap map : new ArrayList<LocalMap>(maps)) {
             if (map.getUrl().equals(url))
                 return map;
         }
         return null;
     }
 
-    public int getIndex(Map map) {
+    public int getIndex(LocalMap map) {
         return maps.indexOf(map);
     }
 
-    private void addMap(Map map) {
+    private void addMap(LocalMap map) {
         if (!maps.add(map))
             throw new IllegalArgumentException("Map " + map + " not added to " + maps);
 
@@ -87,7 +87,7 @@ public class MapsTableModel extends AbstractTableModel {
         });
     }
 
-    void updateMap(Map map) {
+    void updateMap(LocalMap map) {
         final int index = getIndex(map);
         if (index == -1)
             throw new IllegalArgumentException("Map " + map + " not found in " + maps);
@@ -99,7 +99,7 @@ public class MapsTableModel extends AbstractTableModel {
         });
     }
 
-    public void addOrUpdateMap(Map map) {
+    public void addOrUpdateMap(LocalMap map) {
         int index = getIndex(map);
         if (index == -1)
             addMap(map);
@@ -107,7 +107,7 @@ public class MapsTableModel extends AbstractTableModel {
             updateMap(map);
     }
 
-    private void removeMap(Map map) {
+    private void removeMap(LocalMap map) {
         final int index = getIndex(map);
         if (index == -1)
             throw new IllegalArgumentException("Map " + map + " not found in " + maps);
@@ -123,7 +123,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        this.maps = new ArrayList<Map>();
+        this.maps = new ArrayList<LocalMap>();
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {

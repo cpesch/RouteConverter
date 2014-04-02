@@ -19,39 +19,21 @@
 */
 package slash.navigation.maps.models;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.maps.LocalMap;
-
-import java.io.File;
+import slash.navigation.download.datasources.Map;
+import slash.navigation.maps.RemoteMap;
 
 /**
- * A {@link LocalMap} that is downloaded on request from an online service.
+ * The implementation of a {@link RemoteMap}.
  *
  * @author Christian Pesch
  */
-
-public class DownloadMap extends LocaleResourceImpl implements LocalMap {
-    private final AbstractTileSource tileSource;
-
-    public DownloadMap(String description, String url, AbstractTileSource tileSource) {
-        super(description, url);
-        this.tileSource = tileSource;
+public class RemoteMapImpl extends RemoteResourceImpl implements RemoteMap {
+    public RemoteMapImpl(String datasource, String baseUrl, String subDirectory, Map map) {
+        super(datasource, baseUrl, subDirectory, map);
     }
 
     public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
-    }
-
-    public File getFile() {
-        throw new UnsupportedOperationException();
-    }
-
-    public AbstractTileSource getTileSource() {
-        return tileSource;
-    }
-
-    public boolean isRenderer() {
-        return false;
+        return ((Map)getFile()).getBoundingBox();
     }
 }

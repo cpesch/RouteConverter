@@ -29,8 +29,9 @@ import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
+import slash.navigation.maps.RemoteMap;
 import slash.navigation.maps.RemoteResource;
 import slash.navigation.maps.Theme;
 
@@ -61,7 +62,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
- * Dialog to show maps of the program.
+ * Dialog to show maps, themes and resources of the program.
  *
  * @author Christian Pesch
  */
@@ -98,18 +99,18 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<TableModel>(tableAvailableMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(0, new Comparator<Map>() {
-            public int compare(Map m1, Map m2) {
+        sorterAvailableMaps.setComparator(0, new Comparator<LocalMap>() {
+            public int compare(LocalMap m1, LocalMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
         });
-        sorterAvailableMaps.setComparator(1, new Comparator<Map>() {
-            public int compare(Map m1, Map m2) {
+        sorterAvailableMaps.setComparator(1, new Comparator<LocalMap>() {
+            public int compare(LocalMap m1, LocalMap m2) {
                 return m1.isRenderer() ? m2.isRenderer() ? 0 : -1 : 1;
             }
         });
         tableAvailableMaps.setRowSorter(sorterAvailableMaps);
-        Map selectedMap = getMapManager().getDisplayedMapModel().getItem();
+        LocalMap selectedMap = getMapManager().getDisplayedMapModel().getItem();
         if (selectedMap != null) {
             int selectedMapIndex = getMapManager().getMapsModel().getIndex(selectedMap);
             if (selectedMapIndex != -1) {
@@ -122,8 +123,8 @@ public class MapsDialog extends SimpleDialog {
                 if (e.getValueIsAdjusting())
                     return;
                 int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
-                Map map = getMapManager().getMapsModel().getMap(selectedRow);
-                RouteConverter.getInstance().showMapBorder(map.getBoundingBox());
+                LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
+                RouteConverter.getInstance().showMapBorder(map.isRenderer() ? map.getBoundingBox() : null);
             }
         });
 
@@ -206,7 +207,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableResources.convertRowIndexToView(tableResources.getSelectedRow());
                 RemoteResource resource = getMapManager().getResourcesModel().getResource(selectedRow);
-                RouteConverter.getInstance().showMapBorder(resource.getFile().getBoundingBox());
+                RouteConverter.getInstance().showMapBorder(resource instanceof RemoteMap ? ((RemoteMap) resource).getBoundingBox() : null);
             }
         });
 
@@ -242,7 +243,7 @@ public class MapsDialog extends SimpleDialog {
 
     private void display() {
         int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
-        Map map = getMapManager().getMapsModel().getMap(selectedRow);
+        LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
     }
 

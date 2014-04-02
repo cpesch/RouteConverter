@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.Map;
+import slash.navigation.maps.LocalMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +36,7 @@ public class MapsTableCellRenderer extends AlternatingColorTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        Map map = (Map) value;
+        LocalMap map = (LocalMap) value;
         switch (columnIndex) {
             case 0:
                 JLabel label = (JLabel) component;

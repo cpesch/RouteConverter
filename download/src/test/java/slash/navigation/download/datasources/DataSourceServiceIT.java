@@ -69,9 +69,9 @@ public class DataSourceServiceIT {
         checkDatasourceType(service.getDataSource("2"), "2", "http://local2/2/", "dir2/dir3");
         checkDatasourceType(datasourceTypes.get(2), "3", "http://local3/3/", "dir4");
 
-        checkArchives(service.getArchives("1"), "a", "x/y/z.data");
-        checkArchives(service.getArchives("3"));
-        checkArchives(service.getArchives("2"), "b", "x/y/z.data", "c", "z/y/x.data");
+        checkArchives(service.getFragments("1"), "a", "x/y/z.data");
+        checkArchives(service.getFragments("3"));
+        checkArchives(service.getFragments("2"), "b", "x/y/z.data", "c", "z/y/x.data");
 
         checkFiles(service.getFiles("1"), "x/y/z.data", "x");
         checkFiles(service.getFiles("3"));

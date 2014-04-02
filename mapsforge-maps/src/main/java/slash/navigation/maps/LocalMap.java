@@ -17,41 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.models;
+package slash.navigation.maps;
 
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.maps.LocalMap;
 
 import java.io.File;
 
 /**
- * A {@link LocalMap} that is downloaded on request from an online service.
+ * Represents a locally stored mapsforge map.
  *
  * @author Christian Pesch
  */
 
-public class DownloadMap extends LocaleResourceImpl implements LocalMap {
-    private final AbstractTileSource tileSource;
-
-    public DownloadMap(String description, String url, AbstractTileSource tileSource) {
-        super(description, url);
-        this.tileSource = tileSource;
-    }
-
-    public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
-    }
-
-    public File getFile() {
-        throw new UnsupportedOperationException();
-    }
-
-    public AbstractTileSource getTileSource() {
-        return tileSource;
-    }
-
-    public boolean isRenderer() {
-        return false;
-    }
+public interface LocalMap extends LocalResource {
+    /**
+     * Return if this map is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
+     * @return true, if this map is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
+     */
+    boolean isRenderer();
+    File getFile();
+    AbstractTileSource getTileSource();
+    BoundingBox getBoundingBox();
 }

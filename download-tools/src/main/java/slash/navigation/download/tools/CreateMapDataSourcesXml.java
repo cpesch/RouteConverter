@@ -20,11 +20,9 @@
 package slash.navigation.download.tools;
 
 import slash.navigation.common.BoundingBox;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.download.datasources.binding.BoundingBoxType;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.PositionType;
+import slash.navigation.download.datasources.binding.MapType;
 import slash.navigation.maps.helpers.MapUtil;
 
 import java.io.File;
@@ -49,11 +47,11 @@ import static slash.common.io.Files.getExtension;
  */
 
 public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
-    private static final int DEFAULT_BUFFER_SIZE = 32768;
+    private static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
 
-    private BoundingBoxType extractBoundingBox(InputStream inputStream) throws IOException {
+    private BoundingBox extractBoundingBox(InputStream inputStream) throws IOException {
         File file = extractFile(inputStream);
-        BoundingBoxType result = extractBoundingBox(file);
+        BoundingBox result = MapUtil.extractBoundingBox(file);
         if(!file.delete())
             throw new IOException(format("Could not delete temporary map file '%s'", file));
         return result;
@@ -67,33 +65,13 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
         return file;
     }
 
-    private BoundingBoxType extractBoundingBox(File file) {
-        return createBoundingBoxType(MapUtil.extractBoundingBox(file));
-    }
-
-    private BoundingBoxType createBoundingBoxType(BoundingBox boundingBox) {
-        BoundingBoxType result = new BoundingBoxType();
-        result.setNorthEast(createPositionType(boundingBox.getNorthEast()));
-        result.setSouthWest(createPositionType(boundingBox.getSouthWest()));
-        return result;
-    }
-
-    private PositionType createPositionType(NavigationPosition position) {
-        PositionType result = new PositionType();
-        result.setLongitude(position.getLongitude());
-        result.setLatitude(position.getLatitude());
-        return result;
-    }
-
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
 
         String extension = getExtension(file);
         if(".map".equals(extension)) {
             System.out.println(getClass().getSimpleName() + ": " + uri);
-            FileType fileType = createFileType(uri, file);
-            fileType.setBoundingBox(extractBoundingBox(file));
-            fileTypes.add(fileType);
+            mapTypes.add(createMapType(uri, file, MapUtil.extractBoundingBox(file), true, false));
 
         } else if (".zip".endsWith(extension)) {
             ZipInputStream zipInputStream = null;
@@ -103,9 +81,7 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
                 while (entry != null) {
                     if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
                         System.out.println(getClass().getSimpleName() + ": " + entry.getName() + " maps to " + uri);
-                        FileType fileType = createFileType(uri, file);
-                        fileType.setBoundingBox(extractBoundingBox(zipInputStream));
-                        fileTypes.add(fileType);
+                        mapTypes.add(createMapType(uri, file, extractBoundingBox(zipInputStream), true, false));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

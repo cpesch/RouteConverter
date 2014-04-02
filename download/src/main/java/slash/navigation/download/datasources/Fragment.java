@@ -21,7 +21,6 @@
 package slash.navigation.download.datasources;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.BoundingBox;
 
 /**
  * A fragment that is part of an archive that may be downloaded
@@ -32,8 +31,8 @@ import slash.navigation.common.BoundingBox;
 public class Fragment extends File {
     private final String key;
 
-    public Fragment(String key, String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
-        super(uri, size, checksum, timestamp, boundingBox);
+    public Fragment(String key, String uri, Long size, String checksum, CompactCalendar timestamp) {
+        super(uri, size, checksum, timestamp);
         this.key = key;
     }
 

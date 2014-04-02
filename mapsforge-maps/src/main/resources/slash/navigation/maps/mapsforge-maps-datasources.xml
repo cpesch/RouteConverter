@@ -1,197 +1,773 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="Mapsforge Maps" baseUrl="http://download.mapsforge.org/maps/" directory="maps/mapsforge">
-        <file uri="africa.map" size="298567866" checksum="659406463C9D35153EFE918DA1C680D34BEAB565" timestamp="2012-10-15T11:00:44Z"/>
-        <file uri="asia/azerbaijan.map" size="3148151" checksum="8D0B63E8D626EEF403345A1BBDC427FE4320A88B" timestamp="2013-07-26T09:33:27Z"/>
-        <file uri="asia/china.map" size="136265345" checksum="05D5A8AA18FAA56255563B31E7281C0DD34EB1EC" timestamp="2013-07-26T10:11:36Z"/>
-        <file uri="asia/gaza.map" size="669890" checksum="679A4BD5724F05BC3C4D46B8E6D1787E06755424" timestamp="2013-07-26T10:16:42Z"/>
-        <file uri="asia/gcc_states.map" size="29934801" checksum="826CB25524D7B8E1C292F64E7D8AAE8573CDCBF0" timestamp="2013-07-26T10:22:49Z"/>
-        <file uri="asia/india.map" size="115199500" checksum="CC3B2B54E81FB45B92079E3D4095F60053E3B6D0" timestamp="2013-07-26T10:38:25Z"/>
-        <file uri="asia/indonesia.map" size="75694351" checksum="550F3921A6462D26EDDAE49357505571ADD61FF6" timestamp="2013-07-26T10:48:50Z"/>
-        <file uri="asia/iran.map" size="21756953" checksum="359A55537BDA1F0D5464D609F403E6FF90F896C9" timestamp="2013-07-26T10:55:04Z"/>
-        <file uri="asia/iraq.map" size="5394094" checksum="38458F27F8FE0509824714E7F3D7CB9FA482E5B8" timestamp="2013-07-26T10:59:45Z"/>
-        <file uri="asia/israel_and_palestine.map" size="19061972" checksum="3D7BF509D903F45A248434A1B066956FBFA4BBA3" timestamp="2013-07-26T11:04:44Z"/>
-        <file uri="asia/japan.map" size="507750518" checksum="467DE3F6465B62B20996487F6175A6480600204D" timestamp="2013-07-26T20:21:48Z"/>
-        <file uri="asia/kazakhstan.map" size="35444871" checksum="59B6832987AC5B0A9E495E0E7DD818B203290ABA" timestamp="2013-07-26T20:40:35Z"/>
-        <file uri="asia/kyrgyzstan.map" size="12406640" checksum="9AC4832F7BEDB5275A6311DA234582D42BFE33DC" timestamp="2013-07-26T20:46:28Z"/>
-        <file uri="asia/malaysia_singapore_brunei.map" size="14644353" checksum="F95CF958C4014185116057C0A8315B1042D39F4F" timestamp="2013-07-26T20:51:50Z"/>
-        <file uri="asia/mongolia.map" size="13416456" checksum="04933DA4621D448A1A0D380369ABEB9C73CADD9E" timestamp="2013-07-26T20:57:01Z"/>
-        <file uri="asia/pakistan.map" size="11684612" checksum="34528C3850FE834A97DE3A9A160594FA95D1DC68" timestamp="2013-07-26T21:01:56Z"/>
-        <file uri="asia/philippines.map" size="33100924" checksum="901A5A35F81D4AED55BAC0E414413584CE44C322" timestamp="2013-07-26T21:08:02Z"/>
-        <file uri="asia/taiwan.map" size="10920749" checksum="B2BF3B4D9590EC5CF1003800F203DB3690EFC011" timestamp="2013-07-26T21:12:35Z"/>
-        <file uri="asia/turkmenistan.map" size="4016276" checksum="51AF37B396DCD9A972872BAB80CFE27A1B866726" timestamp="2013-07-26T21:16:50Z"/>
-        <file uri="asia/uzbekistan.map" size="12933366" checksum="5CE6B2F3B168A07DFD6B80586A143F06950F2172" timestamp="2013-07-26T21:21:45Z"/>
-        <file uri="asia/vietnam.map" size="15106950" checksum="05269EE99AF45F7034BC3A51B9FF98B378D4E5E9" timestamp="2013-07-26T21:27:10Z"/>
-        <file uri="australia-oceania.map" size="263132592" checksum="FBA73DA0B7D0D2DCF16793523D6DC62C372B7AF7" timestamp="2012-10-22T23:06:38Z"/>
-        <file uri="central-america.map" size="155199948" checksum="A856619FE82952C1E9F473BBE332B07ACE534344" timestamp="2013-07-26T08:32:35Z"/>
-        <file uri="europe/albania.map" size="3709245" checksum="C51318743F1B0B109E8C3DD89C4A7ACDC1D3DBB4" timestamp="2013-07-24T04:57:35Z"/>
-        <file uri="europe/andorra.map" size="301601" checksum="200C402D0F94CD58F7E4C7FC4007BC45A3DB245F" timestamp="2013-07-24T05:14:26Z"/>
-        <file uri="europe/austria.map" size="166082407" checksum="B694D182C2B5635DA6E2DBB83FBCF2E8C1A37767" timestamp="2013-07-24T05:53:36Z"/>
-        <file uri="europe/azores.map" size="1551726" checksum="B4CE82D66786E53CC7265B509E43751B9CB30592" timestamp="2013-07-24T06:09:59Z"/>
-        <file uri="europe/belarus.map" size="54719828" checksum="9DEF94BDE83BF0EE63F1673F4FB255D806C6DC7D" timestamp="2013-07-24T06:38:31Z"/>
-        <file uri="europe/belgium.map" size="105815204" checksum="06299905A3C4B503389C20A771E27BE4DA8143CF" timestamp="2013-07-24T07:17:04Z"/>
-        <file uri="europe/bosnia-herzegovina.map" size="38215883" checksum="8C37CC2CFB98EEBAF3FDD0602D8C8D2EC238ED2E" timestamp="2013-07-24T07:38:39Z"/>
-        <file uri="europe/bulgaria.map" size="22676273" checksum="9A313B5E6F81D3D9E00DA3EA8E1608F27F0EBB7B" timestamp="2013-07-24T07:58:41Z"/>
-        <file uri="europe/croatia.map" size="27944945" checksum="77B431191E5B9FB5E9FB82912C6A6688D5454B13" timestamp="2013-07-24T08:20:46Z"/>
-        <file uri="europe/cyprus.map" size="4148264" checksum="5AD0E8DBF4961E6E32FCDD9B51A71405813B46D7" timestamp="2013-07-24T08:37:33Z"/>
-        <file uri="europe/czech_republic.map" size="205716884" checksum="A1C237F820243EAF1AB0FDAA578D907A40130A92" timestamp="2013-07-24T09:18:04Z"/>
-        <file uri="europe/denmark.map" size="90471992" checksum="3B8AE82EC1392EE1F2FD5D37FD2156AF0F078D95" timestamp="2013-07-24T09:40:42Z"/>
-        <file uri="europe/estonia.map" size="38572113" checksum="7A928366B81D362EB2705F4F8F68CEE11D47551C" timestamp="2013-07-24T09:59:54Z"/>
-        <file uri="europe/faroe_islands.map" size="868904" checksum="4AD5D36C48A5F8274A6771B2A0CFD04615BC1B03" timestamp="2013-07-24T10:15:54Z"/>
-        <file uri="europe/finland.map" size="130847975" checksum="887AC0118CD8B49AF6EBB1822155A6BE4BA851AF" timestamp="2013-07-24T10:55:29Z"/>
-        <file uri="europe/france/alsace.map" size="54666637" checksum="085188B5B3EC10486AF547C75534BEAFAC0A26F1" timestamp="2013-07-23T02:22:17Z"/>
-        <file uri="europe/france/aquitaine.map" size="89776239" checksum="500D22B8441CD062D9755F83B8A70C095C96D99F" timestamp="2013-07-23T02:34:57Z"/>
-        <file uri="europe/france/auvergne.map" size="48442492" checksum="8D5D6F4B0A69A066A0D7149DDE5FC9CEEE067420" timestamp="2013-07-23T02:44:19Z"/>
-        <file uri="europe/france/basse-normandie.map" size="35799254" checksum="3A7A3D0659FB4EE862FA6528E116ABC59050E78D" timestamp="2013-07-23T02:52:16Z"/>
-        <file uri="europe/france/bourgogne.map" size="50777505" checksum="86D53040818D693189EDEAEDDAB4CDBBAE0D2A7B" timestamp="2013-07-23T03:02:32Z"/>
-        <file uri="europe/france/bretagne.map" size="107144383" checksum="7A01A45BB0DA9C139E3BEB713D7BDA3FE61E86F8" timestamp="2013-07-23T03:14:07Z"/>
-        <file uri="europe/france/centre.map" size="62489989" checksum="52E1D213AD258DA02AF4446CA0C348FCF331662B" timestamp="2013-07-23T03:27:04Z"/>
-        <file uri="europe/france/champagne-ardenne.map" size="26936216" checksum="989498FB2DA4F9BF826926A4B7438F4C6E75EECE" timestamp="2013-07-23T03:34:22Z"/>
-        <file uri="europe/france/franche-comte.map" size="35875526" checksum="C09B4FD519C33DA5D579137B90477169ED9E5DCE" timestamp="2013-07-23T03:41:37Z"/>
-        <file uri="europe/france/haute-normandie.map" size="30478005" checksum="D5E12F1BBA42B1E083AE7031C1DDE28307E21073" timestamp="2013-07-23T03:49:09Z"/>
-        <file uri="europe/france/ile-de-france.map" size="114694838" checksum="8AB4158FD8BBDBBBB53D49D2E6093904C8840EE1" timestamp="2013-07-23T04:03:06Z"/>
-        <file uri="europe/france/languedoc-roussillon.map" size="74894417" checksum="EA75EE7D143CD917665EC70609E9B5D8655E4963" timestamp="2013-07-23T04:14:13Z"/>
-        <file uri="europe/france/limousin.map" size="27535421" checksum="F87CE36DF275AD5F4C34BD49A8646CF7F652FE9D" timestamp="2013-07-23T04:20:43Z"/>
-        <file uri="europe/france/lorraine.map" size="55318439" checksum="76AF6988C92EFA7DEDD4B4F351820F1DA6046E92" timestamp="2013-07-23T04:29:47Z"/>
-        <file uri="europe/france/midi-pyrenees.map" size="99285248" checksum="448BFE2D5C16D2C9F36C584591CE866CF5F4166C" timestamp="2013-07-23T04:45:03Z"/>
-        <file uri="europe/france/nord-pas-de-calais.map" size="84192382" checksum="CEA9FFB0B2A70F1AFA6DDCCA4C00D4955ABAE899" timestamp="2013-07-23T04:54:56Z"/>
-        <file uri="europe/france/pays-de-la-loire.map" size="113679257" checksum="E68699FD5D8A502E9DD72160082DC28697A6F697" timestamp="2013-07-23T05:10:20Z"/>
-        <file uri="europe/france/picardie.map" size="35883680" checksum="FD3F167BBA180E4000521B687EEC8725CCFCC1B0" timestamp="2013-07-23T05:19:22Z"/>
-        <file uri="europe/france/poitou-charentes.map" size="95110977" checksum="54974F66D2D1A200E186A0EEC8417D651C455A9A" timestamp="2013-07-23T05:34:33Z"/>
-        <file uri="europe/france/provence-alpes-cote-d-azur.map" size="124520821" checksum="069472A29D7A3524889AE5C50A92250D21E576A9" timestamp="2013-07-23T05:48:06Z"/>
-        <file uri="europe/france/rhone-alpes.map" size="150319168" checksum="E28EB4AF0E70A41BF390A638BCC8E9E4F46D3350" timestamp="2013-07-23T06:05:54Z"/>
-        <file uri="europe/germany.map" size="989597126" checksum="67823B5C1FF26FCF7AA51CE16E413B531B4BADBA" timestamp="2013-07-22T22:31:52Z"/>
-        <file uri="europe/germany/baden-wuerttemberg.map" size="137271484" checksum="0219E247ECABFF7DE07C2425E2D594B6E01F95F8" timestamp="2013-07-22T22:44:06Z"/>
-        <file uri="europe/germany/bayern.map" size="191704930" checksum="4C5D67D6ED9C5A2A77E59F5BB5C06206317087AD" timestamp="2013-07-22T23:02:58Z"/>
-        <file uri="europe/germany/berlin.map" size="14376004" checksum="A69149E3603705F44E5717EA82D49E86C8BDA9A3" timestamp="2013-07-22T23:06:39Z"/>
-        <file uri="europe/germany/brandenburg.map" size="51629910" checksum="299931CC1631DE30D1D1913DB9D2CD96EF1EA093" timestamp="2013-07-22T23:12:32Z"/>
-        <file uri="europe/germany/bremen.map" size="4549828" checksum="7B9E15F597287A0F2A0FDD75EBDDCFFC2E8FAFAF" timestamp="2013-07-22T23:15:30Z"/>
-        <file uri="europe/germany/hamburg.map" size="13035450" checksum="BAD4081FA7419A7CDE8EA50C0EC15AA61F83C177" timestamp="2013-07-22T23:18:50Z"/>
-        <file uri="europe/germany/hessen.map" size="77714126" checksum="FCF7E5750C388036D8D12DFE50D7DA48C8574250" timestamp="2013-07-22T23:27:04Z"/>
-        <file uri="europe/germany/mecklenburg-vorpommern.map" size="31279359" checksum="D1F8B5BA901E759E70054E60EC15E30F1D24A547" timestamp="2013-07-22T23:31:29Z"/>
-        <file uri="europe/germany/niedersachsen.map" size="107487346" checksum="421F8891D23A41B3C86090C0EC725BFE3270C51B" timestamp="2013-07-22T23:41:18Z"/>
-        <file uri="europe/germany/nordrhein-westfalen.map" size="180266904" checksum="6EA2238FDB5CA4B343CBB60519729673CCA4E36A" timestamp="2013-07-22T23:54:57Z"/>
-        <file uri="europe/germany/rheinland-pfalz.map" size="46519374" checksum="4F5A408EF46DD3F355F626CAFD92C0DCD0B6E91E" timestamp="2013-07-23T00:01:07Z"/>
-        <file uri="europe/germany/saarland.map" size="11056698" checksum="080D34323ACD80FA981665E4322A98EA30A07FE0" timestamp="2013-07-23T00:04:18Z"/>
-        <file uri="europe/germany/sachsen-anhalt.map" size="34646816" checksum="AAB1122EFAB6CBFEA783C8F808A513D2C2FA3C40" timestamp="2013-07-23T00:09:05Z"/>
-        <file uri="europe/germany/sachsen.map" size="57294465" checksum="C71A8F445D54C50FA991FD5E0EE8E8BF06C09D7C" timestamp="2013-07-23T00:15:40Z"/>
-        <file uri="europe/germany/schleswig-holstein.map" size="36021944" checksum="BD7B39B2ABA8C2669D04C45210F12231B26A65B7" timestamp="2013-07-23T00:20:18Z"/>
-        <file uri="europe/germany/thueringen.map" size="33768072" checksum="307FA842F4F8EDDCD2C38F5D813FF2BE8823E864" timestamp="2013-07-23T00:25:26Z"/>
-        <file uri="europe/great_britain.map" size="321153874" checksum="6B26CF24EC4E6F5CDA12BE6240CDF2EE3A0827A8" timestamp="2013-05-07T20:29:24Z"/>
-        <file uri="europe/great_britain/england.map" size="262700651" checksum="270C1622985EE85B528F65351744022B0BD7DDDE" timestamp="2013-07-24T04:32:57Z"/>
-        <file uri="europe/great_britain/greater_london.map" size="19234490" checksum="D4A6752B56EFAB6CEC3A6738D1A36B1F4CF6A6EC" timestamp="2013-07-24T04:35:12Z"/>
-        <file uri="europe/great_britain/scotland.map" size="48405478" checksum="2C409AED437DBE819D45FE23B42D157E92709858" timestamp="2013-07-24T04:38:49Z"/>
-        <file uri="europe/great_britain/wales.map" size="16757149" checksum="517257E773B301416C6AB8CCE49BB51B18C48D97" timestamp="2013-07-24T04:40:40Z"/>
-        <file uri="europe/greece.map" size="50356720" checksum="07E3817C01632AEBD65CCC1CA00961C480B7D74A" timestamp="2013-07-24T11:16:14Z"/>
-        <file uri="europe/hungary.map" size="36241472" checksum="E2A6B2949706521AF759363656997397CFC3E467" timestamp="2013-07-24T11:42:10Z"/>
-        <file uri="europe/iceland.map" size="10739670" checksum="2A0A3E988A3435DC99E929FD67CD75B6B5ED2ABA" timestamp="2013-07-24T11:59:28Z"/>
-        <file uri="europe/ireland.map" size="39743511" checksum="4BF5281B1CA09B02D7EEAE744C9A90914F8CB5DD" timestamp="2013-07-24T12:20:00Z"/>
-        <file uri="europe/isle_of_man.map" size="1063339" checksum="E897FA516E1DFFEC6BA2E4EC8F533FF8409A7254" timestamp="2013-07-24T12:36:23Z"/>
-        <file uri="europe/italy.map" size="379007422" checksum="DEA285EE3FDC915853D5C103C97575B5307B107B" timestamp="2013-05-08T11:25:32Z"/>
-        <file uri="europe/kosovo.map" size="3035905" checksum="FFEC7A0557530FEE75D48B1B287AC1BE632273BF" timestamp="2013-07-24T13:06:47Z"/>
-        <file uri="europe/latvia.map" size="28532792" checksum="73FC3AF661A85C0894BE75E05BCF09810C8305F5" timestamp="2013-07-24T13:27:11Z"/>
-        <file uri="europe/liechtenstein.map" size="319930" checksum="17D3BCAC71BAA00EC388CBB6A5B53461C4D6C193" timestamp="2013-07-24T13:43:36Z"/>
-        <file uri="europe/lithuania.map" size="29198388" checksum="21453BCF31E37D1DCA294F470671FC7F70811DAA" timestamp="2013-07-24T14:04:11Z"/>
-        <file uri="europe/luxembourg.map" size="6766098" checksum="C891C97E547972F2045DEA9683356285D1FF9422" timestamp="2013-07-24T14:21:51Z"/>
-        <file uri="europe/macedonia.map" size="7010972" checksum="595E6AB32CDED2E2BD939B7C0CD7CF0BAE3185DF" timestamp="2013-07-24T14:39:12Z"/>
-        <file uri="europe/madeira.map" size="1087818" checksum="84EA033922AEFE6580F0C4DEE6AE5762EACF98BD" timestamp="2012-10-13T18:37:11Z"/>
-        <file uri="europe/malta.map" size="936757" checksum="B63C3C30766E546E737AC07CAFBAA777F87F1810" timestamp="2013-07-24T14:55:57Z"/>
-        <file uri="europe/moldova.map" size="10347349" checksum="AF28E84C822785055488E69F544FBC181B33BED7" timestamp="2013-07-24T15:13:56Z"/>
-        <file uri="europe/monaco.map" size="102816" checksum="FC55087540503A397B4CB9B4AD6CE06D39ABB176" timestamp="2013-07-24T15:30:01Z"/>
-        <file uri="europe/montenegro.map" size="3771522" checksum="D24C118F910E1363ADE57E3F8A97AD44B0DEF02B" timestamp="2013-07-24T15:46:58Z"/>
-        <file uri="europe/netherlands.map" size="352363498" checksum="A083F39D55168AA0062ECC15B76514A15040B7A4" timestamp="2013-07-24T21:09:17Z"/>
-        <file uri="europe/norway.map" size="89568327" checksum="BE4FD966A27B2A8751E327F96081D56950CB80A4" timestamp="2013-07-24T21:36:37Z"/>
-        <file uri="europe/poland.map" size="202810142" checksum="FD67ECC53FC009B9C1C788F8895EC848435AFC74" timestamp="2013-07-24T22:11:06Z"/>
-        <file uri="europe/portugal.map" size="39145598" checksum="98476313E07D8178E68DC5D698C9BDC049C38752" timestamp="2013-07-24T22:31:53Z"/>
-        <file uri="europe/romania.map" size="98639212" checksum="FD8B9FFE57B6AD0559FFC9D6F9D12F29366AF5EE" timestamp="2013-07-24T23:31:18Z"/>
-        <file uri="europe/russia.map" size="444440020" checksum="F112C261968FEE7E0973F229465E26751F7904BE" timestamp="2013-05-09T00:12:23Z"/>
-        <file uri="europe/serbia.map" size="16561585" checksum="980A5486E8EB42944443FACEC196CACCB103CCEB" timestamp="2013-07-25T00:07:44Z"/>
-        <file uri="europe/slovakia.map" size="83221043" checksum="7433D1B8169A76F7C026A369D0D331E4E5559A14" timestamp="2013-07-25T00:33:44Z"/>
-        <file uri="europe/slovenia.map" size="11935290" checksum="4D4F977D2E0B20F6DAB4CDCB04FE6FCEA8444B17" timestamp="2013-07-25T00:52:40Z"/>
-        <file uri="europe/spain.map" size="217794728" checksum="27C50C06EC97D83ED12941C20C883694A4A96059" timestamp="2013-07-25T02:13:16Z"/>
-        <file uri="europe/sweden.map" size="139290823" checksum="A26EDEA8FD2F95594FD0A9C96F5A07090F028390" timestamp="2013-07-25T02:58:57Z"/>
-        <file uri="europe/switzerland.map" size="98242137" checksum="012816F83F6708B13BA7E08F32C88D3C04FCB115" timestamp="2013-07-25T03:33:12Z"/>
-        <file uri="europe/turkey.map" size="69261679" checksum="7A016A64CC069BC7ED88CC89DF5FA5084BACDFCA" timestamp="2013-07-25T03:57:38Z"/>
-        <file uri="europe/ukraine.map" size="102855287" checksum="F7EE930BAD023878396C08F2DDE257978E3F978A" timestamp="2013-07-25T04:39:41Z"/>
-        <file uri="north-america/canada/alberta.map" size="50072373" checksum="6E3F919BF923FC460AFE6C94C0A3548DE2227674" timestamp="2013-07-25T18:31:26Z"/>
-        <file uri="north-america/canada/british-columbia.map" size="204629002" checksum="BB996D35B068F645ED52555B4437FA95125769B5" timestamp="2013-07-25T19:14:41Z"/>
-        <file uri="north-america/canada/manitoba.map" size="119849688" checksum="C009CB895AD55C3EE8A67935969D5DEAD0208C6F" timestamp="2013-07-25T19:48:08Z"/>
-        <file uri="north-america/canada/new-brunswick.map" size="37012066" checksum="AB04F54342534CA6E20794CD3DA06A0643139A3E" timestamp="2013-07-25T19:57:10Z"/>
-        <file uri="north-america/canada/newfoundland-and-labrador.map" size="233602443" checksum="3D582E5632EB0C93EBB432E6441687F6CB5D309D" timestamp="2013-07-25T21:03:59Z"/>
-        <file uri="north-america/canada/northwest-territories.map" size="62557483" checksum="67C47AE535111D77FF1F04A1C306984F3553A6C9" timestamp="2013-07-26T03:49:52Z"/>
-        <file uri="north-america/canada/nova-scotia.map" size="32385496" checksum="E9D0805D0D5904F10A2142B48B363FCA1461A89D" timestamp="2013-07-26T03:56:30Z"/>
-        <file uri="north-america/canada/nunavut.map" size="142026989" checksum="60E489C93C08F652AA9FA3996B456B66B56AC155" timestamp="2012-10-15T04:49:44Z"/>
-        <file uri="north-america/canada/ontario.map" size="171089286" checksum="E8698A41B044A942DC5A36FA98B6EC62AC4418F9" timestamp="2013-07-26T05:00:49Z"/>
-        <file uri="north-america/canada/prince-edward-island.map" size="5420173" checksum="7F109BE26608E84535C05812A459E81F3FB2A6D5" timestamp="2013-07-26T05:04:12Z"/>
-        <file uri="north-america/canada/quebec.map" size="223245691" checksum="28D9417B4E93E486D02F37D52783CF9FF5CC8581" timestamp="2013-07-26T05:49:29Z"/>
-        <file uri="north-america/canada/saskatchewan.map" size="31857688" checksum="742BE2EC84C3D6B1782A51F36EC188C44F073B12" timestamp="2013-07-26T05:56:16Z"/>
-        <file uri="north-america/canada/yukon.map" size="28907951" checksum="41B80296B515669D7F1BAB0CCCE2A9FFF17C5E68" timestamp="2013-07-26T06:05:11Z"/>
-        <file uri="north-america/us/alabama.map" size="34584384" checksum="4B6A6A0609A7BE50299909D5ECF7AEA6E9174B5C" timestamp="2013-07-25T12:32:51Z"/>
-        <file uri="north-america/us/arizona.map" size="40356341" checksum="F841F60C5BC0F36C38CC7F0ABA5BA3CFE59B26AA" timestamp="2013-07-25T05:25:22Z"/>
-        <file uri="north-america/us/arkansas.map" size="24775527" checksum="1779F870E3C038FC76ABF77F550857FE6853CF74" timestamp="2013-07-25T12:37:38Z"/>
-        <file uri="north-america/us/california.map" size="236092188" checksum="FC33C2DD61DC4ED3DE680A623452ECFD48C699BB" timestamp="2013-07-25T08:12:27Z"/>
-        <file uri="north-america/us/colorado.map" size="71717012" checksum="E5698272FAE071A58B8FB328FD7DC65EE6D5E6EF" timestamp="2013-07-25T08:18:13Z"/>
-        <file uri="north-america/us/connecticut.map" size="10649507" checksum="42BC568197806B867AF087454DB806C8831880D4" timestamp="2013-07-25T15:26:30Z"/>
-        <file uri="north-america/us/delaware.map" size="3771986" checksum="01EF8AF146CF0764EEE63233FA8010DB21387BB6" timestamp="2013-07-25T12:40:32Z"/>
-        <file uri="north-america/us/district-of-columbia.map" size="6035515" checksum="FCDE8FEB63F59E500E76276F9931A47AF7DA5D71" timestamp="2013-07-25T12:43:43Z"/>
-        <file uri="north-america/us/florida.map" size="66299681" checksum="47C32344F4713DCFBFFC3A4AB9CE653EB1DADE59" timestamp="2013-07-25T12:52:27Z"/>
-        <file uri="north-america/us/georgia.map" size="91987122" checksum="DD955F41BEF3876E16BD55ECD170775629A5F9FB" timestamp="2013-07-25T13:03:59Z"/>
-        <file uri="north-america/us/hawaii.map" size="10752317" checksum="11DE646B472E1D66411D5C0482DC8ACC748119C1" timestamp="2013-07-25T17:08:41Z"/>
-        <file uri="north-america/us/idaho.map" size="28619846" checksum="C14A3DD3550E1243803D2FCF93BCEC77D3E9EFB4" timestamp="2013-07-25T08:21:47Z"/>
-        <file uri="north-america/us/illinois.map" size="86249330" checksum="A2972E2E42EBB3655848CE472F5C490CD0A5C6B7" timestamp="2013-07-25T10:06:29Z"/>
-        <file uri="north-america/us/indiana.map" size="28079102" checksum="264AF856C68DB7DC02153DE04A47B0982BE8DB14" timestamp="2013-07-25T10:10:30Z"/>
-        <file uri="north-america/us/iowa.map" size="47576395" checksum="33C4F297A33B40D38979F51808F814B34D806F6E" timestamp="2013-07-25T10:17:18Z"/>
-        <file uri="north-america/us/kansas.map" size="29108816" checksum="AD18D3AC23F09A3EABF199D4BBCD39B0F9931EF6" timestamp="2013-07-25T10:21:25Z"/>
-        <file uri="north-america/us/kentucky.map" size="33111538" checksum="0D36D405BFA25134BDE67E6DA6AB58103FE5B6CB" timestamp="2013-07-25T13:08:49Z"/>
-        <file uri="north-america/us/louisiana.map" size="49937636" checksum="5343C5931F7C0D49C59CA1642B7D5E96DC126B1E" timestamp="2013-07-25T13:18:34Z"/>
-        <file uri="north-america/us/maine.map" size="17969721" checksum="53B189A6208AAE17EBA21385C26085879BF45F88" timestamp="2013-07-25T15:29:00Z"/>
-        <file uri="north-america/us/maryland.map" size="27900605" checksum="76B81A72B144184CEFF1B5659D45900524988611" timestamp="2013-07-25T13:24:03Z"/>
-        <file uri="north-america/us/massachusetts.map" size="125367655" checksum="45918754AB35BCE0F6D0AA0DDAAA1FA2A4E7B3F0" timestamp="2013-07-25T15:39:12Z"/>
-        <file uri="north-america/us/michigan.map" size="55173478" checksum="75BB6B3B0FFC1432AD7BEDA33528F593AC783701" timestamp="2013-07-25T10:28:52Z"/>
-        <file uri="north-america/us/minnesota.map" size="84006844" checksum="2394C3458FD8CA9B3ADDEC32C09108E1F046E43C" timestamp="2013-07-25T10:41:04Z"/>
-        <file uri="north-america/us/mississippi.map" size="34140917" checksum="41239AE0FDD46E157DAFB6EEB56C00E2472F1607" timestamp="2013-07-25T13:29:26Z"/>
-        <file uri="north-america/us/missouri.map" size="41755561" checksum="B8B80480B54311979E887B63C0C9B7D9A1FFB002" timestamp="2013-07-25T10:47:13Z"/>
-        <file uri="north-america/us/montana.map" size="30961501" checksum="EAEC0373CF33A1F5859DFD73D756B5096E95B201" timestamp="2013-07-25T08:25:48Z"/>
-        <file uri="north-america/us/nebraska.map" size="27823353" checksum="7FBF031858CFFD59758279619FA49883FE812A0E" timestamp="2013-07-25T10:51:52Z"/>
-        <file uri="north-america/us/nevada.map" size="18327479" checksum="43D6E11FB1F5BD57CBBD0C18224F8B3DA715CE89" timestamp="2013-07-25T08:28:40Z"/>
-        <file uri="north-america/us/new-hampshire.map" size="15191348" checksum="AA2AB81404BECAFDA0D2788230D8EBC8BAC859EC" timestamp="2013-07-25T15:41:30Z"/>
-        <file uri="north-america/us/new-jersey.map" size="35773829" checksum="184F019137F45C44F99FC8F8FD1808BA62EBFF4C" timestamp="2013-07-25T15:45:16Z"/>
-        <file uri="north-america/us/new-mexico.map" size="30950968" checksum="9A19583D24302DAC9207F9037B87AEA3186E7663" timestamp="2013-07-25T08:31:58Z"/>
-        <file uri="north-america/us/new-york.map" size="49330253" checksum="D0AEFB7117C6CFBAA35A6C92960EE1D8EFAF3FAB" timestamp="2013-07-25T15:50:53Z"/>
-        <file uri="north-america/us/north-carolina.map" size="121403412" checksum="372288A90247FED933CBD4E96B55EAB0EA6E11CD" timestamp="2013-07-25T13:45:27Z"/>
-        <file uri="north-america/us/north-dakota.map" size="48219566" checksum="F705C8E147C9C5322DCBA1407E19593BE80D899F" timestamp="2013-07-25T10:58:16Z"/>
-        <file uri="north-america/us/ohio.map" size="45173545" checksum="6AE19C5E1C0F28EBDB32F7D90BF9DA7EA5547F7A" timestamp="2013-07-25T11:02:58Z"/>
-        <file uri="north-america/us/oklahoma.map" size="56925426" checksum="AB6719474C1346F12A6B66C3FA178578BD5A76AA" timestamp="2013-07-25T13:53:26Z"/>
-        <file uri="north-america/us/oregon.map" size="44731922" checksum="70FCC18257D9846E511ED6E076E782A2DBE713B7" timestamp="2013-07-25T08:35:57Z"/>
-        <file uri="north-america/us/pennsylvania.map" size="57031448" checksum="E8ED5656780C93AB7C226A99B03D5CAFEBF6924F" timestamp="2013-07-25T15:59:42Z"/>
-        <file uri="north-america/us/rhode-island.map" size="3327352" checksum="881F9501E711D5C2329EF892672A1BD75B01FAE7" timestamp="2013-07-25T16:00:57Z"/>
-        <file uri="north-america/us/south-carolina.map" size="47571606" checksum="087FC60F99854138D5EE205A15B94F7DEE9C6CE8" timestamp="2013-07-25T13:59:51Z"/>
-        <file uri="north-america/us/south-dakota.map" size="18059591" checksum="BD7BAD86362790B5F4B25E495DB5534DE900518A" timestamp="2013-07-25T11:06:36Z"/>
-        <file uri="north-america/us/tennessee.map" size="34967804" checksum="72863DE285EC1F0673529A206FB3FB863F4E526E" timestamp="2013-07-25T14:05:43Z"/>
-        <file uri="north-america/us/texas.map" size="122901943" checksum="FE083821F78EE0C5608E2C98356462687F826640" timestamp="2013-07-25T14:21:27Z"/>
-        <file uri="north-america/us/us-pacific.map" size="78075580" checksum="18FA736601DE71C013A2CAC031E0977C0324B134" timestamp="2013-05-09T13:47:39Z"/>
-        <file uri="north-america/us/utah.map" size="23160680" checksum="8F9AB5BA72BADD1BEB0068D5B832B2C589A4E7C1" timestamp="2013-07-25T08:39:40Z"/>
-        <file uri="north-america/us/vermont.map" size="8155059" checksum="BEAAD76BFDC3BF56B3145543AF36E3D62274B507" timestamp="2013-07-25T16:02:43Z"/>
-        <file uri="north-america/us/virginia.map" size="86624113" checksum="C103F9115B9D6156AC2A3B18C015D037E45A88D0" timestamp="2013-07-25T14:31:34Z"/>
-        <file uri="north-america/us/washington.map" size="50380198" checksum="F03A9FB32675EBA932B771ECFB354DBDC9E50402" timestamp="2013-07-25T08:43:58Z"/>
-        <file uri="north-america/us/west-virginia.map" size="14200344" checksum="9406D90627AFA8D4A261474A0A1F9D61B827AC22" timestamp="2013-07-25T14:36:08Z"/>
-        <file uri="north-america/us/wisconsin.map" size="45993279" checksum="C7B1387FBDBD150FC65305C383CBBD81ABE43211" timestamp="2013-07-25T11:13:36Z"/>
-        <file uri="north-america/us/wyoming.map" size="21102084" checksum="D72DA904BD073CE451F79D78D12B9CD6306FE556" timestamp="2013-07-25T08:46:43Z"/>
-        <file uri="south-america/argentina.map" size="64877026" checksum="3AF164CAD0585B992E5032D6D20FC7F9D2D9C06D" timestamp="2013-07-26T06:55:42Z"/>
-        <file uri="south-america/bolivia.map" size="14385645" checksum="D9328460CC92B887B75E90D4F1C7246D63225D21" timestamp="2013-07-26T06:58:50Z"/>
-        <file uri="south-america/brazil.map" size="136016184" checksum="D424DB146EA7B4A59D28CB6030519AB8928D8DA4" timestamp="2013-07-26T07:21:22Z"/>
-        <file uri="south-america/chile.map" size="70463586" checksum="181C9005159E517BB52C993167AC7A69896ED707" timestamp="2013-07-26T07:27:04Z"/>
-        <file uri="south-america/colombia.map" size="36368759" checksum="4CAC270F0AC90C1C29EA9D26748CD8D25CD858ED" timestamp="2013-07-26T07:33:25Z"/>
-        <file uri="south-america/ecuador.map" size="13063620" checksum="A28800113D538ED2D7D7EB449C97225B9B5827F4" timestamp="2013-07-26T07:35:37Z"/>
-        <file uri="test-coastline/canary_islands.map" size="9188018" checksum="9991846BF12F966864A4127EEACDA7C406A3AC48" timestamp="2012-08-31T22:38:12Z"/>
-        <file uri="test-coastline/central-america.map" size="324860666" checksum="2B505A9379A16E858E56CD416FBA8DC136AB678D" timestamp="2012-09-04T22:56:47Z"/>
-        <file uri="test-coastline/corse.map" size="5930846" checksum="9C1A2E6D7D91BDE0C9B6E676FA23EAEC077F70C6" timestamp="2012-08-31T22:38:20Z"/>
-        <file uri="test-coastline/great_britain.map" size="299392532" checksum="77FB6704C0D902C4DCBCAEB9D3DA32C955DA770B" timestamp="2012-10-16T19:32:32Z"/>
-        <file uri="test-coastline/greece.map" size="46426373" checksum="6AE99AEFE2F94E254FC3709AADA7395990ECDFAA" timestamp="2012-08-31T22:15:38Z"/>
-        <file uri="test-coastline/haiti-and-domrep.map" size="13765754" checksum="25163FD2CDE6673A4D6895338684241122A4727F" timestamp="2012-08-31T22:25:36Z"/>
-        <file uri="test-coastline/italy.map" size="307994743" checksum="DC96CCC7C6EACF27FB53A21EE8D6060DAEDF7441" timestamp="2012-09-02T12:54:13Z"/>
-        <file uri="test-coastline/malta.map" size="841215" checksum="E2091BFD422DCBF511FA658D5300A6978DF089D5" timestamp="2012-08-31T22:38:26Z"/>
-        <file uri="test-coastline/nova-scotia.map" size="35049590" checksum="1329A0294A54B1EC49A61D95D768DEC69FC09CF7" timestamp="2012-09-01T06:43:57Z"/>
-        <file uri="test-coastline/taiwan.map" size="8909424" checksum="2D76C0EF2D74A803AD7D13176462B339C53007DF" timestamp="2012-08-31T22:31:35Z"/>
+        <map uri="africa.map" size="298567866">
+            <northEast longitude="61.62511" latitude="38.34997"/>
+            <southWest longitude="-30.8363" latitude="-36.1181"/>
+        </map>
+        <map uri="asia/azerbaijan.map" size="3148151">
+            <northEast longitude="51.6407" latitude="42.3201"/>
+            <southWest longitude="44.7877" latitude="38.38874"/>
+        </map>
+        <map uri="asia/china.map" size="136265345">
+            <northEast longitude="134.7716" latitude="53.54544"/>
+            <southWest longitude="73.5577" latitude="15.88717"/>
+        </map>
+        <map uri="asia/gaza.map" size="669890">
+            <northEast longitude="34.56804" latitude="31.60916"/>
+            <southWest longitude="34.20074" latitude="31.21916"/>
+        </map>
+        <map uri="asia/gcc_states.map" size="29934801">
+            <northEast longitude="60.94748" latitude="32.299149"/>
+            <southWest longitude="34.44492" latitude="15.24752"/>
+        </map>
+        <map uri="asia/india.map" size="115199500">
+            <northEast longitude="97.44461" latitude="35.53098"/>
+            <southWest longitude="66.40558" latitude="6.230604"/>
+        </map>
+        <map uri="asia/indonesia.map" size="75694351">
+            <northEast longitude="141.0126" latitude="6.519292"/>
+            <southWest longitude="92.76481" latitude="-11.60655"/>
+        </map>
+        <map uri="asia/iran.map" size="21756953">
+            <northEast longitude="63.34049" latitude="39.79134"/>
+            <southWest longitude="44.05222" latitude="24.50552"/>
+        </map>
+        <map uri="asia/iraq.map" size="5394094">
+            <northEast longitude="48.57591" latitude="37.37804"/>
+            <southWest longitude="38.80408" latitude="29.10305"/>
+        </map>
+        <map uri="asia/israel_and_palestine.map" size="19061972">
+            <northEast longitude="35.92745" latitude="33.398339"/>
+            <southWest longitude="34.00842" latitude="29.32535"/>
+        </map>
+        <map uri="asia/japan.map" size="507750518">
+            <northEast longitude="154.4709" latitude="45.80245"/>
+            <southWest longitude="122.5607" latitude="20.08228"/>
+        </map>
+        <map uri="asia/kazakhstan.map" size="35444871">
+            <northEast longitude="87.35359" latitude="55.50799"/>
+            <southWest longitude="46.42304" latitude="40.5348"/>
+        </map>
+        <map uri="asia/kyrgyzstan.map" size="12406640">
+            <northEast longitude="80.28261" latitude="43.23824"/>
+            <southWest longitude="69.27662" latitude="39.17514"/>
+        </map>
+        <map uri="asia/malaysia_singapore_brunei.map" size="14644353">
+            <northEast longitude="119.6106" latitude="7.650157"/>
+            <southWest longitude="99.25611" latitude="0.849789"/>
+        </map>
+        <map uri="asia/mongolia.map" size="13416456">
+            <northEast longitude="119.9889" latitude="52.17016"/>
+            <southWest longitude="87.70255" latitude="41.54893"/>
+        </map>
+        <map uri="asia/pakistan.map" size="11684612">
+            <northEast longitude="77.83562" latitude="37.09664"/>
+            <southWest longitude="60.8786" latitude="23.32744"/>
+        </map>
+        <map uri="asia/philippines.map" size="33100924">
+            <northEast longitude="127.8003" latitude="21.55277"/>
+            <southWest longitude="115.6329" latitude="4.424338"/>
+        </map>
+        <map uri="asia/taiwan.map" size="10920749">
+            <northEast longitude="122.9312" latitude="26.60305"/>
+            <southWest longitude="118.2509" latitude="20.72799"/>
+        </map>
+        <map uri="asia/turkmenistan.map" size="4016276">
+            <northEast longitude="66.70892" latitude="42.86081"/>
+            <southWest longitude="51.83271" latitude="35.12355"/>
+        </map>
+        <map uri="asia/uzbekistan.map" size="12933366">
+            <northEast longitude="73.17463" latitude="45.598"/>
+            <southWest longitude="55.97708" latitude="37.16636"/>
+        </map>
+        <map uri="asia/vietnam.map" size="15106950">
+            <northEast longitude="111.6685" latitude="23.47731"/>
+            <southWest longitude="102.0409" latitude="7.730748"/>
+        </map>
+        <map uri="australia-oceania.map" size="263132592">
+            <northEast longitude="179.7427" latitude="7.214906"/>
+            <southWest longitude="89.89405" latitude="-57.34168"/>
+        </map>
+        <map uri="central-america.map" size="155199948">
+            <northEast longitude="-44.936669" latitude="32.72067"/>
+            <southWest longitude="-122.495" latitude="-5.507016"/>
+        </map>
+        <map uri="europe/albania.map" size="3709245">
+            <northEast longitude="21.06846" latitude="42.66562"/>
+            <southWest longitude="19.13709" latitude="39.59972"/>
+        </map>
+        <map uri="europe/andorra.map" size="301601">
+            <northEast longitude="1.780386" latitude="42.65717"/>
+            <southWest longitude="1.422104" latitude="42.43509"/>
+        </map>
+        <map uri="europe/austria.map" size="166082407">
+            <northEast longitude="17.16273" latitude="49.02403"/>
+            <southWest longitude="9.52678" latitude="46.36851"/>
+        </map>
+        <map uri="europe/azores.map" size="1551726">
+            <northEast longitude="-24.71814" latitude="40.0757"/>
+            <southWest longitude="-31.57293" latitude="36.67791"/>
+        </map>
+        <map uri="europe/belarus.map" size="54719828">
+            <northEast longitude="32.82244" latitude="56.18162"/>
+            <southWest longitude="23.16722" latitude="51.2593"/>
+        </map>
+        <map uri="europe/belgium.map" size="105815204">
+            <northEast longitude="6.403867" latitude="51.50544"/>
+            <southWest longitude="2.546947" latitude="49.49361"/>
+        </map>
+        <map uri="europe/bosnia-herzegovina.map" size="38215883">
+            <northEast longitude="19.62176" latitude="45.26595"/>
+            <southWest longitude="15.73639" latitude="42.56583"/>
+        </map>
+        <map uri="europe/bulgaria.map" size="22676273">
+            <northEast longitude="28.99421" latitude="44.21765"/>
+            <southWest longitude="22.37116" latitude="41.24207"/>
+        </map>
+        <map uri="europe/croatia.map" size="27944945">
+            <northEast longitude="19.45501" latitude="46.55832"/>
+            <southWest longitude="13.19778" latitude="42.143"/>
+        </map>
+        <map uri="europe/cyprus.map" size="4148264">
+            <northEast longitude="34.96147" latitude="36.00323"/>
+            <southWest longitude="31.95244" latitude="34.23374"/>
+        </map>
+        <map uri="europe/czech_republic.map" size="205716884">
+            <northEast longitude="18.86321" latitude="51.06426"/>
+            <southWest longitude="12.08477" latitude="48.54292"/>
+        </map>
+        <map uri="europe/denmark.map" size="90471992">
+            <northEast longitude="15.52582" latitude="58.02074"/>
+            <southWest longitude="7.7011" latitude="54.37361"/>
+        </map>
+        <map uri="europe/estonia.map" size="38572113">
+            <northEast longitude="28.21478" latitude="59.82138"/>
+            <southWest longitude="21.61172" latitude="57.51619"/>
+        </map>
+        <map uri="europe/faroe_islands.map" size="868904">
+            <northEast longitude="-6.0" latitude="63.0"/>
+            <southWest longitude="-8.0" latitude="61.3"/>
+        </map>
+        <map uri="europe/finland.map" size="130847975">
+            <northEast longitude="31.60089" latitude="70.09959"/>
+            <southWest longitude="19.02427" latitude="59.28783"/>
+        </map>
+        <map uri="europe/france/alsace.map" size="54666637">
+            <northEast longitude="8.42737" latitude="49.12297"/>
+            <southWest longitude="6.841326" latitude="47.31678"/>
+        </map>
+        <map uri="europe/france/aquitaine.map" size="89776239">
+            <northEast longitude="1.448794" latitude="45.70819"/>
+            <southWest longitude="-2.219565" latitude="42.4889"/>
+        </map>
+        <map uri="europe/france/auvergne.map" size="48442492">
+            <northEast longitude="4.4903" latitude="46.8043"/>
+            <southWest longitude="2.064798" latitude="44.61689"/>
+        </map>
+        <map uri="europe/france/basse-normandie.map" size="35799254">
+            <northEast longitude="0.979819" latitude="49.9317"/>
+            <southWest longitude="-2.035189" latitude="48.1801"/>
+        </map>
+        <map uri="europe/france/bourgogne.map" size="50777505">
+            <northEast longitude="5.53012" latitude="48.40399"/>
+            <southWest longitude="2.847819" latitude="46.15759"/>
+        </map>
+        <map uri="europe/france/bretagne.map" size="107144383">
+            <northEast longitude="-1.014489" latitude="48.93599"/>
+            <southWest longitude="-5.53263" latitude="46.99838"/>
+        </map>
+        <map uri="europe/france/centre.map" size="62489989">
+            <northEast longitude="3.133909" latitude="48.94103"/>
+            <southWest longitude="0.055806" latitude="46.33819"/>
+        </map>
+        <map uri="europe/france/champagne-ardenne.map" size="26936216">
+            <northEast longitude="5.892394" latitude="50.23305"/>
+            <southWest longitude="3.39232" latitude="47.57948"/>
+        </map>
+        <map uri="europe/france/franche-comte.map" size="35875526">
+            <northEast longitude="7.783779" latitude="48.02238"/>
+            <southWest longitude="5.249478" latitude="46.26439"/>
+        </map>
+        <map uri="europe/france/haute-normandie.map" size="30478005">
+            <northEast longitude="1.805531" latitude="50.11988"/>
+            <southWest longitude="-0.16705" latitude="48.66427"/>
+        </map>
+        <map uri="europe/france/ile-de-france.map" size="114694838">
+            <northEast longitude="3.558616" latitude="49.2405"/>
+            <southWest longitude="1.446244" latitude="48.1218"/>
+        </map>
+        <map uri="europe/france/languedoc-roussillon.map" size="74894417">
+            <northEast longitude="4.84459" latitude="44.96979"/>
+            <southWest longitude="1.580796" latitude="42.29584"/>
+        </map>
+        <map uri="europe/france/limousin.map" size="27535421">
+            <northEast longitude="2.609385" latitude="46.4482"/>
+            <southWest longitude="0.631183" latitude="44.92369"/>
+        </map>
+        <map uri="europe/france/lorraine.map" size="55318439">
+            <northEast longitude="7.666133" latitude="49.67667"/>
+            <southWest longitude="4.894016" latitude="47.81575"/>
+        </map>
+        <map uri="europe/france/midi-pyrenees.map" size="99285248">
+            <northEast longitude="3.453404" latitude="45.04729"/>
+            <southWest longitude="-0.322117" latitude="42.2315"/>
+        </map>
+        <map uri="europe/france/nord-pas-de-calais.map" size="84192382">
+            <northEast longitude="4.44014" latitude="51.26167"/>
+            <southWest longitude="1.470577" latitude="49.96953"/>
+        </map>
+        <map uri="europe/france/pays-de-la-loire.map" size="113679257">
+            <northEast longitude="0.915109" latitude="48.56681"/>
+            <southWest longitude="-2.829494" latitude="46.25045"/>
+        </map>
+        <map uri="europe/france/picardie.map" size="35883680">
+            <northEast longitude="4.25994" latitude="50.37541"/>
+            <southWest longitude="1.303386" latitude="48.84059"/>
+        </map>
+        <map uri="europe/france/poitou-charentes.map" size="95110977">
+            <northEast longitude="1.207386" latitude="47.1759"/>
+            <southWest longitude="-1.641057" latitude="45.08971"/>
+        </map>
+        <map uri="europe/france/provence-alpes-cote-d-azur.map" size="124520821">
+            <northEast longitude="7.941068" latitude="45.13019"/>
+            <southWest longitude="4.260811" latitude="42.9559"/>
+        </map>
+        <map uri="europe/france/rhone-alpes.map" size="150319168">
+            <northEast longitude="7.828302" latitude="46.59041"/>
+            <southWest longitude="3.695992" latitude="44.11848"/>
+        </map>
+        <map uri="europe/germany.map" size="989597126">
+            <northEast longitude="15.050779" latitude="55.14777"/>
+            <southWest longitude="5.864417" latitude="47.26543"/>
+        </map>
+        <map uri="europe/germany/baden-wuerttemberg.map" size="137271484">
+            <northEast longitude="10.52081" latitude="49.80469"/>
+            <southWest longitude="7.372278" latitude="47.26543"/>
+        </map>
+        <map uri="europe/germany/bayern.map" size="191704930">
+            <northEast longitude="13.84947" latitude="50.57129"/>
+            <southWest longitude="8.968345" latitude="47.26543"/>
+        </map>
+        <map uri="europe/germany/berlin.map" size="14376004">
+            <northEast longitude="13.76136" latitude="52.6783"/>
+            <southWest longitude="13.08283" latitude="52.33446"/>
+        </map>
+        <map uri="europe/germany/brandenburg.map" size="51629910">
+            <northEast longitude="14.77917" latitude="53.5784"/>
+            <southWest longitude="11.22404" latitude="51.35252"/>
+        </map>
+        <map uri="europe/germany/bremen.map" size="4549828">
+            <northEast longitude="8.990601" latitude="53.61092"/>
+            <southWest longitude="8.481593" latitude="53.01104"/>
+        </map>
+        <map uri="europe/germany/hamburg.map" size="13035450">
+            <northEast longitude="10.33637" latitude="53.7465"/>
+            <southWest longitude="9.613465" latitude="53.38581"/>
+        </map>
+        <map uri="europe/germany/hessen.map" size="77714126">
+            <northEast longitude="10.24398" latitude="51.66252"/>
+            <southWest longitude="7.76757" latitude="49.39089"/>
+        </map>
+        <map uri="europe/germany/mecklenburg-vorpommern.map" size="31279359">
+            <northEast longitude="14.43422" latitude="54.99857"/>
+            <southWest longitude="10.58766" latitude="53.09723"/>
+        </map>
+        <map uri="europe/germany/niedersachsen.map" size="107487346">
+            <northEast longitude="11.64342" latitude="54.17288"/>
+            <southWest longitude="6.45099" latitude="51.28559"/>
+        </map>
+        <map uri="europe/germany/nordrhein-westfalen.map" size="180266904">
+            <northEast longitude="9.468311" latitude="52.5397"/>
+            <southWest longitude="5.864416" latitude="50.311706"/>
+        </map>
+        <map uri="europe/germany/rheinland-pfalz.map" size="46519374">
+            <northEast longitude="8.513735" latitude="50.95293"/>
+            <southWest longitude="6.108849" latitude="48.96259"/>
+        </map>
+        <map uri="europe/germany/saarland.map" size="11056698">
+            <northEast longitude="7.40979" latitude="49.64072"/>
+            <southWest longitude="6.35017" latitude="49.10868"/>
+        </map>
+        <map uri="europe/germany/sachsen-anhalt.map" size="34646816">
+            <northEast longitude="13.21268" latitude="53.0566"/>
+            <southWest longitude="10.54725" latitude="50.92887"/>
+        </map>
+        <map uri="europe/germany/sachsen.map" size="57294465">
+            <northEast longitude="15.050779" latitude="51.6838"/>
+            <southWest longitude="11.86685" latitude="50.15843"/>
+        </map>
+        <map uri="europe/germany/schleswig-holstein.map" size="36021944">
+            <northEast longitude="11.92753" latitude="55.14634"/>
+            <southWest longitude="7.46458" latitude="53.35408"/>
+        </map>
+        <map uri="europe/germany/thueringen.map" size="33768072">
+            <northEast longitude="12.67491" latitude="51.65237"/>
+            <southWest longitude="9.863176" latitude="50.19971"/>
+        </map>
+        <map uri="europe/great_britain.map" size="321153874">
+            <northEast longitude="2.25" latitude="61.299999"/>
+            <southWest longitude="-8.92" latitude="48.899999"/>
+        </map>
+        <map uri="europe/great_britain/england.map" size="262700651">
+            <northEast longitude="2.25" latitude="56.08932"/>
+            <southWest longitude="-7.74803" latitude="48.97894"/>
+        </map>
+        <map uri="europe/great_britain/greater_london.map" size="19234490">
+            <northEast longitude="0.334912" latitude="51.69254"/>
+            <southWest longitude="-0.511495" latitude="51.28549"/>
+        </map>
+        <map uri="europe/great_britain/scotland.map" size="48405478">
+            <northEast longitude="-0.201906" latitude="61.299999"/>
+            <southWest longitude="-8.08299" latitude="54.54001"/>
+        </map>
+        <map uri="europe/great_britain/wales.map" size="16757149">
+            <northEast longitude="-2.653815" latitude="53.55413"/>
+            <southWest longitude="-5.513934" latitude="51.33201"/>
+        </map>
+        <map uri="europe/greece.map" size="50356720">
+            <northEast longitude="28.31412" latitude="41.75741"/>
+            <southWest longitude="19.30788" latitude="34.04351"/>
+        </map>
+        <map uri="europe/hungary.map" size="36241472">
+            <northEast longitude="22.90201" latitude="48.58766"/>
+            <southWest longitude="16.11262" latitude="45.73218"/>
+        </map>
+        <map uri="europe/iceland.map" size="10739670">
+            <northEast longitude="-12.41708" latitude="67.50085"/>
+            <southWest longitude="-25.74085" latitude="62.84553"/>
+        </map>
+        <map uri="europe/ireland.map" size="39743511">
+            <northEast longitude="-5.059265" latitude="55.70299"/>
+            <southWest longitude="-11.4" latitude="51.07948"/>
+        </map>
+        <map uri="europe/isle_of_man.map" size="1063339">
+            <northEast longitude="-3.688718" latitude="54.6706"/>
+            <southWest longitude="-5.434554" latitude="53.73236"/>
+        </map>
+        <map uri="europe/italy.map" size="379007422">
+            <northEast longitude="19.12499" latitude="47.10169"/>
+            <southWest longitude="6.602696" latitude="35.07638"/>
+        </map>
+        <map uri="europe/kosovo.map" size="3035905">
+            <northEast longitude="21.80058" latitude="43.27236"/>
+            <southWest longitude="20.07227" latitude="41.85343"/>
+        </map>
+        <map uri="europe/latvia.map" size="28532792">
+            <northEast longitude="28.24116" latitude="58.08231"/>
+            <southWest longitude="20.79407" latitude="55.66886"/>
+        </map>
+        <map uri="europe/liechtenstein.map" size="319930">
+            <northEast longitude="9.63219" latitude="47.27354"/>
+            <southWest longitude="9.477816" latitude="47.05659"/>
+        </map>
+        <map uri="europe/lithuania.map" size="29198388">
+            <northEast longitude="26.83873" latitude="56.45106"/>
+            <southWest longitude="20.63822" latitude="53.89605"/>
+        </map>
+        <map uri="europe/luxembourg.map" size="6766098">
+            <northEast longitude="6.532249" latitude="50.18496"/>
+            <southWest longitude="5.733033" latitude="49.44553"/>
+        </map>
+        <map uri="europe/macedonia.map" size="7010972">
+            <northEast longitude="23.03814" latitude="42.38455"/>
+            <southWest longitude="20.46468" latitude="40.86164"/>
+        </map>
+        <map uri="europe/madeira.map" size="1087818">
+            <northEast longitude="-16.205735" latitude="33.172623"/>
+            <southWest longitude="-17.510494" latitude="32.312825"/>
+        </map>
+        <map uri="europe/malta.map" size="936757">
+            <northEast longitude="14.61755" latitude="36.11909"/>
+            <southWest longitude="14.0988" latitude="35.77776"/>
+        </map>
+        <map uri="europe/moldova.map" size="10347349">
+            <northEast longitude="30.16374" latitude="48.490169"/>
+            <southWest longitude="26.61889" latitude="45.4689"/>
+        </map>
+        <map uri="europe/monaco.map" size="102816">
+            <northEast longitude="7.448637" latitude="43.75169"/>
+            <southWest longitude="7.409205" latitude="43.72335"/>
+        </map>
+        <map uri="europe/montenegro.map" size="3771522">
+            <northEast longitude="20.3608" latitude="43.55611"/>
+            <southWest longitude="18.11101" latitude="41.68887"/>
+        </map>
+        <map uri="europe/netherlands.map" size="352363498">
+            <northEast longitude="7.2276" latitude="53.6299"/>
+            <southWest longitude="3.2123" latitude="50.7504"/>
+        </map>
+        <map uri="europe/norway.map" size="89568327">
+            <northEast longitude="31.517899" latitude="71.65157"/>
+            <southWest longitude="3.789598" latitude="57.58925"/>
+        </map>
+        <map uri="europe/poland.map" size="202810142">
+            <northEast longitude="24.16522" latitude="55.09949"/>
+            <southWest longitude="14.0998" latitude="48.98568"/>
+        </map>
+        <map uri="europe/portugal.map" size="39145598">
+            <northEast longitude="-6.18269" latitude="42.14565"/>
+            <southWest longitude="-17.93724" latitude="32.03126"/>
+        </map>
+        <map uri="europe/romania.map" size="98639212">
+            <northEast longitude="30.1408" latitude="48.26694"/>
+            <southWest longitude="20.26995" latitude="43.58724"/>
+        </map>
+        <map uri="europe/russia.map" size="444440020">
+            <northEast longitude="45.0" latitude="75.0"/>
+            <southWest longitude="19.3951" latitude="42.42469"/>
+        </map>
+        <map uri="europe/serbia.map" size="16561585">
+            <northEast longitude="23.00617" latitude="46.19125"/>
+            <southWest longitude="18.82347" latitude="42.24909"/>
+        </map>
+        <map uri="europe/slovakia.map" size="83221043">
+            <northEast longitude="22.56866" latitude="49.61444"/>
+            <southWest longitude="16.83226" latitude="47.73064"/>
+        </map>
+        <map uri="europe/slovenia.map" size="11935290">
+            <northEast longitude="16.60924" latitude="46.87248"/>
+            <southWest longitude="13.38305" latitude="45.4256"/>
+        </map>
+        <map uri="europe/spain.map" size="217794728">
+            <northEast longitude="5.098525" latitude="44.14855"/>
+            <southWest longitude="-9.779014" latitude="35.91539"/>
+        </map>
+        <map uri="europe/sweden.map" size="139290823">
+            <northEast longitude="24.22472" latitude="69.06643"/>
+            <southWest longitude="10.54138" latitude="55.02652"/>
+        </map>
+        <map uri="europe/switzerland.map" size="98242137">
+            <northEast longitude="10.49584" latitude="47.81126"/>
+            <southWest longitude="5.952882" latitude="45.81617"/>
+        </map>
+        <map uri="europe/turkey.map" size="69261679">
+            <northEast longitude="44.83384" latitude="42.45132"/>
+            <southWest longitude="25.59553" latitude="35.71373"/>
+        </map>
+        <map uri="europe/ukraine.map" size="102855287">
+            <northEast longitude="40.2174" latitude="52.37537"/>
+            <southWest longitude="22.1289" latitude="44.00715"/>
+        </map>
+        <map uri="north-america/canada/alberta.map" size="50072373">
+            <northEast longitude="-110.0018" latitude="60.00254"/>
+            <southWest longitude="-120.0043" latitude="48.311"/>
+        </map>
+        <map uri="north-america/canada/british-columbia.map" size="204629002">
+            <northEast longitude="-114.049" latitude="60.00678"/>
+            <southWest longitude="-141.7761" latitude="45.388595"/>
+        </map>
+        <map uri="north-america/canada/manitoba.map" size="119849688">
+            <northEast longitude="-88.12183" latitude="60.00845"/>
+            <southWest longitude="-102.014" latitude="48.98947"/>
+        </map>
+        <map uri="north-america/canada/new-brunswick.map" size="37012066">
+            <northEast longitude="-63.34767" latitude="48.38075"/>
+            <southWest longitude="-69.19022" latitude="44.29659"/>
+        </map>
+        <map uri="north-america/canada/newfoundland-and-labrador.map" size="233602443">
+            <northEast longitude="-51.66101" latitude="60.90223"/>
+            <southWest longitude="-67.8659" latitude="46.2535"/>
+        </map>
+        <map uri="north-america/canada/northwest-territories.map" size="62557483">
+            <northEast longitude="-101.976" latitude="81.65483"/>
+            <southWest longitude="-136.6845" latitude="59.98882"/>
+        </map>
+        <map uri="north-america/canada/nova-scotia.map" size="32385496">
+            <northEast longitude="-58.22593" latitude="47.42182"/>
+            <southWest longitude="-67.51297" latitude="42.01893"/>
+        </map>
+        <map uri="north-america/canada/nunavut.map" size="142026989">
+            <northEast longitude="-49.16037" latitude="84.953919"/>
+            <southWest longitude="-120.7756" latitude="51.06002"/>
+        </map>
+        <map uri="north-america/canada/ontario.map" size="171089286">
+            <northEast longitude="-74.30998" latitude="56.88862"/>
+            <southWest longitude="-95.19436" latitude="41.6377"/>
+        </map>
+        <map uri="north-america/canada/prince-edward-island.map" size="5420173">
+            <northEast longitude="-61.15594" latitude="47.89282"/>
+            <southWest longitude="-64.60505" latitude="45.91017"/>
+        </map>
+        <map uri="north-america/canada/quebec.map" size="223245691">
+            <northEast longitude="-57.03236" latitude="63.13454"/>
+            <southWest longitude="-81.20556" latitude="44.85106"/>
+        </map>
+        <map uri="north-america/canada/saskatchewan.map" size="31857688">
+            <northEast longitude="-101.3598" latitude="60.00052"/>
+            <southWest longitude="-110.0069" latitude="48.32644"/>
+        </map>
+        <map uri="north-america/canada/yukon.map" size="28907951">
+            <northEast longitude="-123.8021" latitude="70.16906"/>
+            <southWest longitude="-141.3557" latitude="59.99739"/>
+        </map>
+        <map uri="north-america/us/alabama.map" size="34584384">
+            <northEast longitude="-84.8892" latitude="35.00872"/>
+            <southWest longitude="-88.47493" latitude="30.10403"/>
+        </map>
+        <map uri="north-america/us/arizona.map" size="40356341">
+            <northEast longitude="-109.0437" latitude="37.00596"/>
+            <southWest longitude="-114.8325" latitude="31.326589"/>
+        </map>
+        <map uri="north-america/us/arkansas.map" size="24775527">
+            <northEast longitude="-89.63987" latitude="36.55212"/>
+            <southWest longitude="-94.62217" latitude="33.0038"/>
+        </map>
+        <map uri="north-america/us/california.map" size="236092188">
+            <northEast longitude="-114.1291" latitude="42.01618"/>
+            <southWest longitude="-125.8935" latitude="32.48171"/>
+        </map>
+        <map uri="north-america/us/colorado.map" size="71717012">
+            <northEast longitude="-102.040999" latitude="41.003922"/>
+            <southWest longitude="-109.0631" latitude="36.857063"/>
+        </map>
+        <map uri="north-america/us/connecticut.map" size="10649507">
+            <northEast longitude="-71.7853" latitude="42.05229"/>
+            <southWest longitude="-73.72889" latitude="40.96401"/>
+        </map>
+        <map uri="north-america/us/delaware.map" size="3771986">
+            <northEast longitude="-74.96121" latitude="40.03221"/>
+            <southWest longitude="-75.78974" latitude="38.45043"/>
+        </map>
+        <map uri="north-america/us/district-of-columbia.map" size="6035515">
+            <northEast longitude="-76.90906" latitude="38.99603"/>
+            <southWest longitude="-77.1201" latitude="38.79134"/>
+        </map>
+        <map uri="north-america/us/florida.map" size="66299681">
+            <northEast longitude="-77.900574" latitude="31.00293"/>
+            <southWest longitude="-88.641663" latitude="24.02672"/>
+        </map>
+        <map uri="north-america/us/georgia.map" size="91987122">
+            <northEast longitude="-80.74313" latitude="35.00356"/>
+            <southWest longitude="-85.6068" latitude="30.35365"/>
+        </map>
+        <map uri="north-america/us/hawaii.map" size="10752317">
+            <northEast longitude="-137.649537" latitude="29.09624"/>
+            <southWest longitude="-179.766255" latitude="15.92097"/>
+        </map>
+        <map uri="north-america/us/idaho.map" size="28619846">
+            <northEast longitude="-111.0431" latitude="49.13466"/>
+            <southWest longitude="-117.246" latitude="41.98306"/>
+        </map>
+        <map uri="north-america/us/illinois.map" size="86249330">
+            <northEast longitude="-87.49264" latitude="42.50941"/>
+            <southWest longitude="-91.51608" latitude="36.96731"/>
+        </map>
+        <map uri="north-america/us/indiana.map" size="28079102">
+            <northEast longitude="-84.50399" latitude="41.76101"/>
+            <southWest longitude="-88.0615" latitude="37.62705"/>
+        </map>
+        <map uri="north-america/us/iowa.map" size="47576395">
+            <northEast longitude="-90.13581" latitude="43.50182"/>
+            <southWest longitude="-96.6426" latitude="40.37266"/>
+        </map>
+        <map uri="north-america/us/kansas.map" size="29108816">
+            <northEast longitude="-94.58926" latitude="40.004919"/>
+            <southWest longitude="-104.0588" latitude="35.971069"/>
+        </map>
+        <map uri="north-america/us/kentucky.map" size="33111538">
+            <northEast longitude="-81.95512" latitude="39.20518"/>
+            <southWest longitude="-89.61845" latitude="36.49325"/>
+        </map>
+        <map uri="north-america/us/louisiana.map" size="49937636">
+            <northEast longitude="-88.66684" latitude="33.020249"/>
+            <southWest longitude="-94.04376" latitude="28.14452"/>
+        </map>
+        <map uri="north-america/us/maine.map" size="17969721">
+            <northEast longitude="-66.875759" latitude="47.484229"/>
+            <southWest longitude="-71.45045" latitude="42.85443"/>
+        </map>
+        <map uri="north-america/us/maryland.map" size="27900605">
+            <northEast longitude="-75.03785" latitude="40.17054"/>
+            <southWest longitude="-79.48857" latitude="37.88396"/>
+        </map>
+        <map uri="north-america/us/massachusetts.map" size="125367655">
+            <northEast longitude="-68.71948" latitude="42.88768"/>
+            <southWest longitude="-73.51096" latitude="40.82573"/>
+        </map>
+        <map uri="north-america/us/michigan.map" size="55173478">
+            <northEast longitude="-80.50521" latitude="49.32486"/>
+            <southWest longitude="-90.41981" latitude="41.69439"/>
+        </map>
+        <map uri="north-america/us/minnesota.map" size="84006844">
+            <northEast longitude="-89.36208" latitude="49.407139"/>
+            <southWest longitude="-97.258515" latitude="43.49909"/>
+        </map>
+        <map uri="north-america/us/mississippi.map" size="34140917">
+            <northEast longitude="-88.09292" latitude="35.00055"/>
+            <southWest longitude="-91.65857" latitude="30.04168"/>
+        </map>
+        <map uri="north-america/us/missouri.map" size="41755561">
+            <northEast longitude="-88.87132" latitude="40.61664"/>
+            <southWest longitude="-95.77751" latitude="35.99466"/>
+        </map>
+        <map uri="north-america/us/montana.map" size="30961501">
+            <northEast longitude="-102.688404" latitude="49.456049"/>
+            <southWest longitude="-116.0518" latitude="44.35556"/>
+        </map>
+        <map uri="north-america/us/nebraska.map" size="27823353">
+            <northEast longitude="-95.30703" latitude="43.00172"/>
+            <southWest longitude="-104.0588" latitude="40.00015"/>
+        </map>
+        <map uri="north-america/us/nevada.map" size="18327479">
+            <northEast longitude="-114.0379" latitude="42.00391"/>
+            <southWest longitude="-120.0074" latitude="35.00053"/>
+        </map>
+        <map uri="north-america/us/new-hampshire.map" size="15191348">
+            <northEast longitude="-70.48692" latitude="45.44612"/>
+            <southWest longitude="-72.5588" latitude="42.69669"/>
+        </map>
+        <map uri="north-america/us/new-jersey.map" size="35773829">
+            <northEast longitude="-73.67898" latitude="41.35807"/>
+            <southWest longitude="-75.83509" latitude="38.77178"/>
+        </map>
+        <map uri="north-america/us/new-mexico.map" size="30950968">
+            <northEast longitude="-102.040999" latitude="37.00184"/>
+            <southWest longitude="-109.0504" latitude="31.326589"/>
+        </map>
+        <map uri="north-america/us/new-york.map" size="49330253">
+            <northEast longitude="-70.49625" latitude="45.07133"/>
+            <southWest longitude="-79.82402" latitude="40.03666"/>
+        </map>
+        <map uri="north-america/us/north-carolina.map" size="121403412">
+            <northEast longitude="-73.7396" latitude="36.58979"/>
+            <southWest longitude="-84.32219" latitude="32.55781"/>
+        </map>
+        <map uri="north-america/us/north-dakota.map" size="48219566">
+            <northEast longitude="-96.55292" latitude="49.407139"/>
+            <southWest longitude="-104.0588" latitude="45.93448"/>
+        </map>
+        <map uri="north-america/us/ohio.map" size="45173545">
+            <northEast longitude="-80.50521" latitude="43.195576"/>
+            <southWest longitude="-84.8219" latitude="38.09861"/>
+        </map>
+        <map uri="north-america/us/oklahoma.map" size="56925426">
+            <northEast longitude="-94.42821" latitude="37.32622"/>
+            <southWest longitude="-103.3556" latitude="33.61358"/>
+        </map>
+        <map uri="north-america/us/oregon.map" size="44731922">
+            <northEast longitude="-116.4545" latitude="46.30349"/>
+            <southWest longitude="-126.3879" latitude="41.9634"/>
+        </map>
+        <map uri="north-america/us/pennsylvania.map" size="57031448">
+            <northEast longitude="-74.68884" latitude="42.51533"/>
+            <southWest longitude="-80.52632" latitude="38.926373"/>
+        </map>
+        <map uri="north-america/us/rhode-island.map" size="3327352">
+            <northEast longitude="-71.10885" latitude="42.01938"/>
+            <southWest longitude="-71.9125" latitude="40.99017"/>
+        </map>
+        <map uri="north-america/us/south-carolina.map" size="47571606">
+            <northEast longitude="-78.51867" latitude="35.2184"/>
+            <southWest longitude="-83.35622" latitude="32.02967"/>
+        </map>
+        <map uri="north-america/us/south-dakota.map" size="18059591">
+            <northEast longitude="-96.43595" latitude="45.94831"/>
+            <southWest longitude="-104.0588" latitude="42.47744"/>
+        </map>
+        <map uri="north-america/us/tennessee.map" size="34967804">
+            <northEast longitude="-81.64416" latitude="36.680749"/>
+            <southWest longitude="-90.31329" latitude="34.98269"/>
+        </map>
+        <map uri="north-america/us/texas.map" size="122901943">
+            <northEast longitude="-93.01897" latitude="36.525861"/>
+            <southWest longitude="-106.6494" latitude="25.667923"/>
+        </map>
+        <map uri="north-america/us/us-pacific.map" size="78075580">
+            <northEast longitude="-129.7998" latitude="72.98845"/>
+            <southWest longitude="-179.9965" latitude="15.92097"/>
+        </map>
+        <map uri="north-america/us/utah.map" size="23160680">
+            <northEast longitude="-109.0394" latitude="42.00323"/>
+            <southWest longitude="-114.0556" latitude="36.9963"/>
+        </map>
+        <map uri="north-america/us/vermont.map" size="8155059">
+            <northEast longitude="-71.46476" latitude="45.01781"/>
+            <southWest longitude="-73.43943" latitude="42.72526"/>
+        </map>
+        <map uri="north-america/us/virginia.map" size="86624113">
+            <northEast longitude="-74.29751" latitude="39.46901"/>
+            <southWest longitude="-83.67841" latitude="36.53798"/>
+        </map>
+        <map uri="north-america/us/washington.map" size="50380198">
+            <northEast longitude="-116.9145" latitude="49.00708"/>
+            <southWest longitude="-126.7423" latitude="45.54326"/>
+        </map>
+        <map uri="north-america/us/west-virginia.map" size="14200344">
+            <northEast longitude="-77.7141" latitude="40.64636"/>
+            <southWest longitude="-82.64965" latitude="37.19858"/>
+        </map>
+        <map uri="north-america/us/wisconsin.map" size="45993279">
+            <northEast longitude="-86.77557" latitude="47.41451"/>
+            <southWest longitude="-92.89089" latitude="42.48899"/>
+        </map>
+        <map uri="north-america/us/wyoming.map" size="21102084">
+            <northEast longitude="-102.040999" latitude="45.501324"/>
+            <southWest longitude="-111.0576" latitude="40.99415"/>
+        </map>
+        <map uri="south-america/argentina.map" size="64877026">
+            <northEast longitude="-53.63647" latitude="-21.72221"/>
+            <southWest longitude="-73.64277" latitude="-55.35943"/>
+        </map>
+        <map uri="south-america/bolivia.map" size="14385645">
+            <northEast longitude="-57.4581" latitude="-9.680567"/>
+            <southWest longitude="-69.64076" latitude="-22.87356"/>
+        </map>
+        <map uri="south-america/brazil.map" size="136016184">
+            <northEast longitude="-25.496939" latitude="5.462072"/>
+            <southWest longitude="-73.94801" latitude="-36.44178"/>
+        </map>
+        <map uri="south-america/chile.map" size="70463586">
+            <northEast longitude="-65.5141" latitude="-17.45743"/>
+            <southWest longitude="-113.2233" latitude="-58.45195"/>
+        </map>
+        <map uri="south-america/colombia.map" size="36368759">
+            <northEast longitude="-66.869829" latitude="13.122159"/>
+            <southWest longitude="-79.68074" latitude="-4.230484"/>
+        </map>
+        <map uri="south-america/ecuador.map" size="13063620">
+            <northEast longitude="-75.18251" latitude="2.843487"/>
+            <southWest longitude="-93.56487" latitude="-5.024173"/>
+        </map>
+        <map uri="test-coastline/canary_islands.map" size="9188018">
+            <northEast longitude="-12.83619" latitude="29.94093"/>
+            <southWest longitude="-18.63903" latitude="26.57014"/>
+        </map>
+        <map uri="test-coastline/central-america.map" size="324860666">
+            <northEast longitude="-44.93667" latitude="32.72067"/>
+            <southWest longitude="-122.495" latitude="2.997543"/>
+        </map>
+        <map uri="test-coastline/corse.map" size="5930846">
+            <northEast longitude="9.751243" latitude="43.16589"/>
+            <southWest longitude="8.317882" latitude="41.31103"/>
+        </map>
+        <map uri="test-coastline/great_britain.map" size="299392532">
+            <northEast longitude="2.25" latitude="61.3"/>
+            <southWest longitude="-8.92" latitude="48.9"/>
+        </map>
+        <map uri="test-coastline/greece.map" size="46426373">
+            <northEast longitude="28.31412" latitude="41.75741"/>
+            <southWest longitude="19.30788" latitude="34.043509"/>
+        </map>
+        <map uri="test-coastline/haiti-and-domrep.map" size="13765754">
+            <northEast longitude="-68.161739" latitude="20.46002"/>
+            <southWest longitude="-74.82529" latitude="17.38275"/>
+        </map>
+        <map uri="test-coastline/italy.map" size="307994743">
+            <northEast longitude="19.12499" latitude="47.10169"/>
+            <southWest longitude="6.602696" latitude="35.07638"/>
+        </map>
+        <map uri="test-coastline/malta.map" size="841215">
+            <northEast longitude="14.61755" latitude="36.11909"/>
+            <southWest longitude="14.0988" latitude="35.77776"/>
+        </map>
+        <map uri="test-coastline/nova-scotia.map" size="35049590">
+            <northEast longitude="-58.22593" latitude="47.42182"/>
+            <southWest longitude="-67.512969" latitude="42.01893"/>
+        </map>
+        <map uri="test-coastline/taiwan.map" size="8909424">
+            <northEast longitude="122.9312" latitude="26.60305"/>
+            <southWest longitude="118.2509" latitude="20.72799"/>
+        </map>
     </datasource>
 </datasources>

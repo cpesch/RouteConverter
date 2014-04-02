@@ -17,26 +17,27 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+package slash.navigation.download.datasources;
+
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
 
-import java.io.File;
-
 /**
- * Represents a mapsforge map.
+ * A map that may be downloaded
  *
  * @author Christian Pesch
  */
 
-public interface Map extends LocalResource {
-    /**
-     * Return if this map is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
-     * @return true, if this map is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
-     */
-    boolean isRenderer();
-    File getFile();
-    AbstractTileSource getTileSource();
-    BoundingBox getBoundingBox();
+public class Map extends File {
+    private final BoundingBox boundingBox;
+
+    public Map(String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
+        super(uri, size, checksum, timestamp);
+        this.boundingBox = boundingBox;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
 }

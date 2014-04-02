@@ -21,7 +21,6 @@ package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.ObjectFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +33,6 @@ import java.util.zip.ZipInputStream;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static slash.common.io.Files.generateChecksum;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * Creates a HGT data sources XML from file system mirror.
@@ -58,7 +54,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        fileTypes.add(createFileType(uri, file));
+        fileTypes.add(createFileType(uri, file, true, true));
 
         ZipInputStream zipInputStream = null;
         try {
@@ -69,8 +65,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
                     String key = extractKey(entry.getName());
                     if (key != null) {
                         System.out.println(getClass().getSimpleName() + ": " + key + " maps to " + uri);
-
-                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream));
+                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream, false));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();
@@ -82,18 +77,6 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
             if (zipInputStream != null)
                 closeQuietly(zipInputStream);
         }
-    }
-
-    private FragmentType createFragmentType(String key, String uri, ZipEntry entry, ZipInputStream inputStream) throws IOException {
-        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setKey(key);
-        fragmentType.setUri(uri);
-        if(INCLUDE_VALIDATION_INFORMATION) {
-            fragmentType.setSize(entry.getSize());
-            fragmentType.setChecksum(generateChecksum(inputStream));
-            fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
-        }
-        return fragmentType;
     }
 
     public static void main(String[] args) throws Exception {
