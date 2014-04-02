@@ -21,9 +21,7 @@ package slash.navigation.maps;
 
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
-import org.mapsforge.map.reader.MapDatabase;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -36,6 +34,7 @@ import slash.navigation.maps.models.ThemeImpl;
 import slash.navigation.maps.models.ThemesTableModel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +42,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.io.File.separator;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
@@ -52,7 +52,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
+import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
  * Manages {@link Map}s and {@link Theme}s
@@ -132,6 +132,13 @@ public class MapManager {
     }
 
     public synchronized void scanDirectories() throws IOException {
+        scanMaps();
+        scanThemes();
+    }
+
+    private void scanMaps() {
+        long start = currentTimeMillis();
+
         mapsModel.clear();
         mapsModel.addOrUpdateMap(new DownloadMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
         mapsModel.addOrUpdateMap(new DownloadMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
@@ -139,17 +146,18 @@ public class MapManager {
         File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
-        log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory);
 
-        for (File file : mapFilesArray) {
-            MapDatabase mapDatabase = new MapDatabase();
-            mapDatabase.openFile(file);                                           // TODO cache this?
-            BoundingBox boundingBox = toBoundingBox(mapDatabase.getMapFileInfo().boundingBox);
-            mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), boundingBox, file));
-            mapDatabase.closeFile();
-        }
+        for (File file : mapFilesArray)
+            mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
         mapsModel.addOrUpdateMap(SEPARATOR_TO_DOWNLOAD_MAP);
         mapsModel.addOrUpdateMap(DOWNLOAD_MAP);
+
+        long end = currentTimeMillis();
+        log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory + " in " + (end - start) + " milliseconds");
+    }
+
+    private void scanThemes() throws FileNotFoundException {
+        long start = currentTimeMillis();
 
         themesModel.clear();
         themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
@@ -157,12 +165,14 @@ public class MapManager {
         File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
-        log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory);
 
         for (File file : themeFilesArray)
             themesModel.addOrUpdateTheme(new ThemeImpl(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
         themesModel.addOrUpdateTheme(SEPARATOR_TO_DOWNLOAD_THEME);
         themesModel.addOrUpdateTheme(DOWNLOAD_THEME);
+
+        long end = currentTimeMillis();
+        log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory + " in " + (end-start) + " milliseconds");
     }
 
     private static String removePrefix(File root, File file) {
