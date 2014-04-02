@@ -41,8 +41,8 @@ public class HgtFilesIT {
     private Map<String, File> fileMap = new HashMap<String, File>();
     private HgtFiles files;
     {
-        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
-        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
+        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null, null));
+        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null, null));
     }
 
     @Before

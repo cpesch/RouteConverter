@@ -20,10 +20,15 @@
 
 package slash.navigation.download.datasources;
 
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.download.datasources.binding.BoundingBoxType;
 import slash.navigation.download.datasources.binding.DatasourceType;
 import slash.navigation.download.datasources.binding.DatasourcesType;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.PositionType;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -70,7 +75,7 @@ public class DataSourceService {
     }
 
     private Fragment asFragment(FragmentType fragmentType) {
-        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum(), parseTime(fragmentType.getTimestamp()));
+        return new Fragment(fragmentType.getKey(), fragmentType.getUri(), fragmentType.getSize(), fragmentType.getChecksum(), parseTime(fragmentType.getTimestamp()), null);
     }
 
     public Map<String, File> getFiles(String dataSourceName) {
@@ -83,6 +88,19 @@ public class DataSourceService {
     }
 
     private File asFile(FileType fileType) {
-        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()));
+        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()), asBoundingBox(fileType.getBoundingBox()));
+    }
+
+    private BoundingBox asBoundingBox(BoundingBoxType boundingBoxType) {
+        if(boundingBoxType == null)
+            return null;
+
+        PositionType northEast = boundingBoxType.getNorthEast();
+        PositionType southWest = boundingBoxType.getSouthWest();
+        return new BoundingBox(asPosition(northEast), asPosition(southWest));
+    }
+
+    private NavigationPosition asPosition(PositionType positionType) {
+        return new SimpleNavigationPosition(positionType.getLongitude(), positionType.getLatitude());
     }
 }

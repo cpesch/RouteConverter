@@ -73,9 +73,34 @@
                 a file contains the size, checksum and uri for a file relative to the base url
             </xsd:documentation>
         </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
         <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
         <xsd:attribute name="timestamp" type="xsd:dateTime"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="boundingBoxType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a bounding box is an area defined by north east and south west positions
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="northEast" type="positionType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="positionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a position is a point on the globe defined by longitude and latitude
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="longitude" type="xsd:double" use="required"/>
+        <xsd:attribute name="latitude" type="xsd:double" use="required"/>
     </xsd:complexType>
 </xsd:schema>
