@@ -17,29 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
+package slash.navigation.maps;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
+import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import slash.navigation.common.BoundingBox;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * Represents a locally stored mapsforge map.
  *
  * @author Christian Pesch
  */
 
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
-
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, false, false));
-    }
-
-    public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
-    }}
+public interface LocalMap extends LocalResource {
+    /**
+     * Return if this map is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
+     * @return true, if this map is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
+     */
+    boolean isRenderer();
+    File getFile();
+    AbstractTileSource getTileSource();
+    BoundingBox getBoundingBox();
+}

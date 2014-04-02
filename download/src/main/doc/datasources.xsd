@@ -41,9 +41,15 @@
                     <xsd:field xpath="@key"/>
                 </xsd:unique>
             </xsd:element>
-            <xsd:element name="file" type="fileType" minOccurs="1" maxOccurs="unbounded">
-                <xsd:unique name="unique-uri">
+            <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-file-uri">
                     <xsd:selector xpath="file"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="map" type="mapType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-map-uri">
+                    <xsd:selector xpath="map"/>
                     <xsd:field xpath="@uri"/>
                 </xsd:unique>
             </xsd:element>
@@ -53,11 +59,22 @@
         <xsd:attribute name="directory" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:complexType name="fileType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a file contains the size, checksum and uri for a file relative to the base url
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
+    </xsd:complexType>
+
     <xsd:complexType name="fragmentType">
         <xsd:annotation>
             <xsd:documentation>
-                an fragment contains a key for the fragment of an fragment plus
-                the size, checksum and uri for ab fragment relative to the base url
+                a fragment is a key within a file
             </xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="key" type="xsd:string" use="required"/>
@@ -67,31 +84,20 @@
         <xsd:attribute name="timestamp" type="xsd:dateTime"/>
     </xsd:complexType>
 
-    <xsd:complexType name="fileType">
+    <xsd:complexType name="mapType">
         <xsd:annotation>
             <xsd:documentation>
-                a file contains the size, checksum and uri for a file relative to the base url
+                a map is a file with a north east and a south west position that form a bounding box
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="northEast" type="positionType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
         <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>
         <xsd:attribute name="timestamp" type="xsd:dateTime"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="boundingBoxType">
-        <xsd:annotation>
-            <xsd:documentation>
-                a bounding box is an area defined by north east and south west positions
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:sequence>
-            <xsd:element name="northEast" type="positionType" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="southWest" type="positionType" minOccurs="1" maxOccurs="1"/>
-        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="positionType">

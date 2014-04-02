@@ -17,29 +17,43 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
+package slash.navigation.maps.models;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
+import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.maps.LocalMap;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * A {@link LocalMap} that is rendered from a data set.
  *
  * @author Christian Pesch
  */
 
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
+public class RendererMap extends LocaleResourceImpl implements LocalMap {
+    private final File file;
+    private final BoundingBox boundingBox;
 
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, false, false));
+    public RendererMap(String description, String url, BoundingBox boundingBox, File file) {
+        super(description, url);
+        this.boundingBox = boundingBox;
+        this.file = file;
     }
 
-    public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
-    }}
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public AbstractTileSource getTileSource() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isRenderer() {
+        return true;
+    }
+}

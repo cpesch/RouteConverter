@@ -18,18 +18,21 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * 
- *                 a fragment is a key within a file
+ *                 a map is a file with a north east and a south west position that form a bounding box
  *             
  * 
- * <p>Java class for fragmentType complex type.
+ * <p>Java class for mapType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="fragmentType">
+ * &lt;complexType name="mapType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;sequence>
+ *         &lt;element name="northEast" type="{http://www.routeconverter.de/xmlschemas/Datasources/1.0}positionType" minOccurs="0"/>
+ *         &lt;element name="southWest" type="{http://www.routeconverter.de/xmlschemas/Datasources/1.0}positionType" minOccurs="0"/>
+ *       &lt;/sequence>
  *       &lt;attribute name="uri" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="size" type="{http://www.w3.org/2001/XMLSchema}long" />
  *       &lt;attribute name="checksum" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -42,11 +45,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "fragmentType")
-public class FragmentType {
+@XmlType(name = "mapType", propOrder = {
+    "northEast",
+    "southWest"
+})
+public class MapType {
 
-    @XmlAttribute(name = "key", required = true)
-    protected String key;
+    protected PositionType northEast;
+    protected PositionType southWest;
     @XmlAttribute(name = "uri", required = true)
     protected String uri;
     @XmlAttribute(name = "size")
@@ -58,27 +64,51 @@ public class FragmentType {
     protected XMLGregorianCalendar timestamp;
 
     /**
-     * Gets the value of the key property.
+     * Gets the value of the northEast property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link PositionType }
      *     
      */
-    public String getKey() {
-        return key;
+    public PositionType getNorthEast() {
+        return northEast;
     }
 
     /**
-     * Sets the value of the key property.
+     * Sets the value of the northEast property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link PositionType }
      *     
      */
-    public void setKey(String value) {
-        this.key = value;
+    public void setNorthEast(PositionType value) {
+        this.northEast = value;
+    }
+
+    /**
+     * Gets the value of the southWest property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PositionType }
+     *     
+     */
+    public PositionType getSouthWest() {
+        return southWest;
+    }
+
+    /**
+     * Sets the value of the southWest property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PositionType }
+     *     
+     */
+    public void setSouthWest(PositionType value) {
+        this.southWest = value;
     }
 
     /**

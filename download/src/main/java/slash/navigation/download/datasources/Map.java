@@ -17,29 +17,27 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
+package slash.navigation.download.datasources;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import slash.common.type.CompactCalendar;
+import slash.navigation.common.BoundingBox;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * A map that may be downloaded
  *
  * @author Christian Pesch
  */
 
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
+public class Map extends File {
+    private final BoundingBox boundingBox;
 
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, false, false));
+    public Map(String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
+        super(uri, size, checksum, timestamp);
+        this.boundingBox = boundingBox;
     }
 
-    public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
-    }}
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+}

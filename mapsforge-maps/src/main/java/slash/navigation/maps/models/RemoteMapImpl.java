@@ -17,29 +17,23 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
+package slash.navigation.maps.models;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.download.datasources.Map;
+import slash.navigation.maps.RemoteMap;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * The implementation of a {@link RemoteMap}.
  *
  * @author Christian Pesch
  */
-
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
-
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, false, false));
+public class RemoteMapImpl extends RemoteResourceImpl implements RemoteMap {
+    public RemoteMapImpl(String datasource, String baseUrl, String subDirectory, Map map) {
+        super(datasource, baseUrl, subDirectory, map);
     }
 
-    public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
-    }}
+    public BoundingBox getBoundingBox() {
+        return ((Map)getFile()).getBoundingBox();
+    }
+}

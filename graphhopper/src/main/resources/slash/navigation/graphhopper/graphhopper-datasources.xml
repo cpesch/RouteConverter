@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="GraphHopper" baseUrl="http://download.geofabrik.de/" directory="graphhopper">
+        <file uri="europe/germany/baden-wuerttemberg-latest.osm.pbf"/>
+        <file uri="europe/germany/bayern-latest.osm.pbf"/>
+        <file uri="europe/germany/berlin-latest.osm.pbf"/>
+        <file uri="europe/germany/brandenburg-latest.osm.pbf"/>
+        <file uri="europe/germany/bremen-latest.osm.pbf"/>
         <file uri="europe/germany/hamburg-latest.osm.pbf"/>
+        <file uri="europe/germany/hessen-latest.osm.pbf"/>
+        <file uri="europe/germany/mecklenburg-vorpommern-latest.osm.pbf"/>
+        <file uri="europe/germany/niedersachsen-latest.osm.pbf"/>
+        <file uri="europe/germany/nordrhein-westfalen-latest.osm.pbf"/>
+        <file uri="europe/germany/rheinland-pfalz-latest.osm.pbf"/>
+        <file uri="europe/germany/saarland-latest.osm.pbf"/>
+        <file uri="europe/germany/sachsen-anhalt-latest.osm.pbf"/>
+        <file uri="europe/germany/sachsen-latest.osm.pbf"/>
+        <file uri="europe/germany/schleswig-holstein-latest.osm.pbf"/>
+        <file uri="europe/germany/thueringen-latest.osm.pbf"/>
     </datasource>
 </datasources>

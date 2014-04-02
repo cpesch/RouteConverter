@@ -19,17 +19,25 @@
 */
 package slash.navigation.download.tools;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.MapType;
+import slash.navigation.maps.helpers.MapUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.io.File.createTempFile;
+import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copyLarge;
 import static slash.common.io.Files.getExtension;
 
 /**
@@ -39,14 +47,31 @@ import static slash.common.io.Files.getExtension;
  */
 
 public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
+    private static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
 
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
+    private BoundingBox extractBoundingBox(InputStream inputStream) throws IOException {
+        File file = extractFile(inputStream);
+        BoundingBox result = MapUtil.extractBoundingBox(file);
+        if(!file.delete())
+            throw new IOException(format("Could not delete temporary map file '%s'", file));
+        return result;
+    }
+
+    private File extractFile(InputStream inputStream) throws IOException {
+        File file = createTempFile("mapfromzip", ".map");
+        FileOutputStream outputStream = new FileOutputStream(file);
+        copyLarge(inputStream, outputStream, new byte[DEFAULT_BUFFER_SIZE]);
+        closeQuietly(outputStream);
+        return file;
+    }
+
+    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
 
         String extension = getExtension(file);
         if(".map".equals(extension)) {
             System.out.println(getClass().getSimpleName() + ": " + uri);
-            fileTypes.add(createFileType(uri, file));
+            mapTypes.add(createMapType(uri, file, MapUtil.extractBoundingBox(file), true, false));
 
         } else if (".zip".endsWith(extension)) {
             ZipInputStream zipInputStream = null;
@@ -56,7 +81,7 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
                 while (entry != null) {
                     if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
                         System.out.println(getClass().getSimpleName() + ": " + entry.getName() + " maps to " + uri);
-                        fileTypes.add(createFileType(uri, file));
+                        mapTypes.add(createMapType(uri, file, extractBoundingBox(zipInputStream), true, false));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

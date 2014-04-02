@@ -59,7 +59,7 @@ public class MapFilesService {
         for (DatasourceType datasourceType : service.getDatasourceTypes()) {
             String name = datasourceType.getName();
             mapFiles.add(new MapFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getArchives(name), service.getFiles(name)));
+                    service.getFiles(name), service.getMaps(name)));
         }
     }
 
