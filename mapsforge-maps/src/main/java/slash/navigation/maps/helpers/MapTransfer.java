@@ -30,12 +30,12 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Provides mapsforge transfer functionality.
+ * Provides mapsforge map data transfer functionality.
  *
  * @author Christian Pesch
  */
 
-public class MapsforgeTransfer {
+public class MapTransfer {
     public static BoundingBox toBoundingBox(org.mapsforge.core.model.BoundingBox boundingBox) {
         return new BoundingBox(
                 boundingBox.maxLongitude,

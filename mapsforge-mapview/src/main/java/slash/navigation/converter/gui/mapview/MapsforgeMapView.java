@@ -105,10 +105,10 @@ import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COL
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.asBoundingBox;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.asLatLong;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.asNavigationPosition;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
+import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
+import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map

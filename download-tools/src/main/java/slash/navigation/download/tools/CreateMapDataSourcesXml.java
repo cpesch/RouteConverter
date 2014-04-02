@@ -19,17 +19,27 @@
 */
 package slash.navigation.download.tools;
 
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.download.datasources.binding.BoundingBoxType;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.PositionType;
+import slash.navigation.maps.helpers.MapUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.io.File.createTempFile;
+import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copyLarge;
 import static slash.common.io.Files.getExtension;
 
 /**
@@ -39,6 +49,41 @@ import static slash.common.io.Files.getExtension;
  */
 
 public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
+    private static final int DEFAULT_BUFFER_SIZE = 32768;
+
+    private BoundingBoxType extractBoundingBox(InputStream inputStream) throws IOException {
+        File file = extractFile(inputStream);
+        BoundingBoxType result = extractBoundingBox(file);
+        if(!file.delete())
+            throw new IOException(format("Could not delete temporary map file '%s'", file));
+        return result;
+    }
+
+    private File extractFile(InputStream inputStream) throws IOException {
+        File file = createTempFile("mapfromzip", ".map");
+        FileOutputStream outputStream = new FileOutputStream(file);
+        copyLarge(inputStream, outputStream, new byte[DEFAULT_BUFFER_SIZE]);
+        closeQuietly(outputStream);
+        return file;
+    }
+
+    private BoundingBoxType extractBoundingBox(File file) {
+        return createBoundingBoxType(MapUtil.extractBoundingBox(file));
+    }
+
+    private BoundingBoxType createBoundingBoxType(BoundingBox boundingBox) {
+        BoundingBoxType result = new BoundingBoxType();
+        result.setNorthEast(createPositionType(boundingBox.getNorthEast()));
+        result.setSouthWest(createPositionType(boundingBox.getSouthWest()));
+        return result;
+    }
+
+    private PositionType createPositionType(NavigationPosition position) {
+        PositionType result = new PositionType();
+        result.setLongitude(position.getLongitude());
+        result.setLatitude(position.getLatitude());
+        return result;
+    }
 
     protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
@@ -46,7 +91,9 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
         String extension = getExtension(file);
         if(".map".equals(extension)) {
             System.out.println(getClass().getSimpleName() + ": " + uri);
-            fileTypes.add(createFileType(uri, file));
+            FileType fileType = createFileType(uri, file);
+            fileType.setBoundingBox(extractBoundingBox(file));
+            fileTypes.add(fileType);
 
         } else if (".zip".endsWith(extension)) {
             ZipInputStream zipInputStream = null;
@@ -56,7 +103,9 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
                 while (entry != null) {
                     if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
                         System.out.println(getClass().getSimpleName() + ": " + entry.getName() + " maps to " + uri);
-                        fileTypes.add(createFileType(uri, file));
+                        FileType fileType = createFileType(uri, file);
+                        fileType.setBoundingBox(extractBoundingBox(zipInputStream));
+                        fileTypes.add(fileType);
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

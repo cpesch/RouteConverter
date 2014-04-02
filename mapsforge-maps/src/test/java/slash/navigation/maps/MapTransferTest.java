@@ -24,10 +24,10 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import static org.junit.Assert.assertEquals;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.asBoundingBox;
-import static slash.navigation.maps.helpers.MapsforgeTransfer.toBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
 
-public class MapsforgeTransferTest {
+public class MapTransferTest {
 
     @Test
     public void testBoundingBox() {
