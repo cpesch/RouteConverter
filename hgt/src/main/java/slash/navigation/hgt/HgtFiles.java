@@ -51,18 +51,18 @@ public class HgtFiles implements ElevationService {
 
     private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<java.io.File, RandomAccessFile>();
     private final String name, baseUrl, directory;
-    private final Map<String, Fragment> archiveMap;
     private final Map<String, File> fileMap;
+    private final Map<String, Fragment> fragmentMap;
     private final DownloadManager downloadManager;
 
     public HgtFiles(String name, String baseUrl, String directory,
-                    Map<String, Fragment> archiveMap, Map<String, File> fileMap,
+                    Map<String, File> fileMap, Map<String, Fragment> fragmentMap,
                     DownloadManager downloadManager) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.directory = directory;
-        this.archiveMap = archiveMap;
         this.fileMap = fileMap;
+        this.fragmentMap = fragmentMap;
         this.downloadManager = downloadManager;
     }
 
@@ -133,7 +133,7 @@ public class HgtFiles implements ElevationService {
 
         Set<FragmentAndTarget> fragments = new HashSet<FragmentAndTarget>();
         for (String key : keys) {
-            Fragment fragment = archiveMap.get(key);
+            Fragment fragment = fragmentMap.get(key);
             if (fragment != null)
                 fragments.add(new FragmentAndTarget(fragment, createFile(key)));
         }

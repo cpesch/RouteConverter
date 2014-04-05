@@ -21,6 +21,7 @@ package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.MapType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +53,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
         return matcher.group(1).toUpperCase();
     }
 
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
         fileTypes.add(createFileType(uri, file, true, true));
 

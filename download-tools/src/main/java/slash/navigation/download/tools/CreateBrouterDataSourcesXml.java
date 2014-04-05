@@ -21,6 +21,7 @@ package slash.navigation.download.tools;
 
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.MapType;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
-    protected void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
         System.out.println(getClass().getSimpleName() + ": " + uri);
         fileTypes.add(createFileType(uri, file, false, false));

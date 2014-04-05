@@ -107,11 +107,13 @@ public class BoundingBox {
                 contains(boundingBox.getSouthWest()) && contains(boundingBox.getNorthWest());
     }
 
-    private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
-
     public NavigationPosition getCenter() {
-        double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
-        double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
+        double longitude = southWest.getLongitude() + northEast.getLongitude();
+        if(longitude != 0.0)
+            longitude /=2;
+        double latitude = southWest.getLatitude() + northEast.getLatitude();
+        if (latitude != 0.0)
+            latitude /=2;
         CompactCalendar time = null;
         if (northEast.hasTime() && southWest.hasTime()) {
             long millis = northEast.getTime().getTimeInMillis() +
