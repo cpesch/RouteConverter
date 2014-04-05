@@ -1050,7 +1050,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
         actionManager.enable("print-elevation-profile", existsAPosition);
 
-        r.selectPositions(selectedPositions, tablePositions.getSelectionModel().getLeadSelectionIndex());
+        r.selectPositions(selectedPositions);
     }
 
     // helpers

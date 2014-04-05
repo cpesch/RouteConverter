@@ -686,14 +686,9 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().getCharacteristicsModel().setSelectedItem(characteristics);
     }
 
-    public void selectPositions(int[] selectedPositions, int centerPosition) {
-        if (isMapViewAvailable()) {
-            if (centerPosition >= 0 && centerPosition < getPositionsModel().getRowCount()) {
-                NavigationPosition center = getPositionsModel().getPosition(centerPosition);
-                mapView.setCenter(center);
-            }
+    public void selectPositions(int[] selectedPositions) {
+        if (isMapViewAvailable())
             mapView.setSelectedPositions(selectedPositions, true);
-        }
         if (profileView != null)
             profileView.setSelectedPositions(selectedPositions, true);
     }
