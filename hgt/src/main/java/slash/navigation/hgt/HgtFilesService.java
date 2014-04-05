@@ -58,7 +58,7 @@ public class HgtFilesService {
         for (DatasourceType datasourceType : service.getDatasourceTypes()) {
             String name = datasourceType.getName();
             hgtFiles.add(new HgtFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getArchives(name), service.getFiles(name), downloadManager));
+                    service.getFiles(name), service.getFragments(name), downloadManager));
         }
     }
 

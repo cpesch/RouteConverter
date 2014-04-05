@@ -19,11 +19,15 @@
 */
 package slash.navigation.download.tools;
 
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.download.datasources.binding.DatasourceType;
 import slash.navigation.download.datasources.binding.DatasourcesType;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
+import slash.navigation.download.datasources.binding.MapType;
 import slash.navigation.download.datasources.binding.ObjectFactory;
+import slash.navigation.download.datasources.binding.PositionType;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -53,7 +57,6 @@ import static slash.navigation.download.datasources.DataSourcesUtil.marshal;
  */
 
 public abstract class BaseDataSourcesXmlGenerator {
-    protected static final boolean INCLUDE_VALIDATION_INFORMATION = false;
     private List<DatasourceType> datasourceTypes = new ArrayList<DatasourceType>();
 
     public void run(String[] args) throws Exception {
@@ -78,19 +81,23 @@ public abstract class BaseDataSourcesXmlGenerator {
         }
         collectFiles(scanDirectory, files);
 
-        List<FragmentType> fragmentTypes = new ArrayList<FragmentType>();
         List<FileType> fileTypes = new ArrayList<FileType>();
+        List<FragmentType> fragmentTypes = new ArrayList<FragmentType>();
+        List<MapType> mapTypes = new ArrayList<MapType>();
 
-        parseFiles(files, fragmentTypes, fileTypes, scanDirectory);
+        parseFiles(files, fileTypes, fragmentTypes, mapTypes, scanDirectory);
 
-        datasourceType.getFragment().addAll(sortFragmentTypes(fragmentTypes));
         datasourceType.getFile().addAll(sortFileTypes(fileTypes));
+        datasourceType.getFragment().addAll(sortFragmentTypes(fragmentTypes));
+        datasourceType.getMap().addAll(sortMapTypes(mapTypes));
 
         File writeXmlFile = new File(args[4]);
         writeXml(writeXmlFile);
 
         long end = currentTimeMillis();
-        System.out.println(getClass().getSimpleName() + ": Took " + ((end - start) / 1000) + " seconds to collect " + fragmentTypes.size() + " fragments and " + fileTypes.size() + " files");
+        System.out.println(getClass().getSimpleName() + ": Took " + ((end - start) / 1000) + " seconds to collect " +
+                fileTypes.size() + " files " + fragmentTypes.size() + " fragments and " +
+                mapTypes.size() + " maps");
         System.exit(0);
     }
 
@@ -104,16 +111,26 @@ public abstract class BaseDataSourcesXmlGenerator {
         }
     }
 
-    protected void parseFiles(List<File> files, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException {
+    protected void parseFiles(List<File> files, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         System.out.println(getClass().getSimpleName() + ": Parsing " + files.size() + " files in " + baseDirectory);
         for (File file : files)
-            parseFile(file, fragmentTypes, fileTypes, baseDirectory);
+            parseFile(file, fileTypes, fragmentTypes, mapTypes, baseDirectory);
     }
 
-    protected abstract void parseFile(File file, List<FragmentType> fragmentTypes, List<FileType> fileTypes, File baseDirectory) throws IOException;
+    protected abstract void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException;
 
     protected String relativizeUri(File file, File baseDirectory) {
         return file.getAbsolutePath().substring(baseDirectory.getAbsolutePath().length() + 1).replace(separatorChar, '/');
+    }
+
+    private List<FileType> sortFileTypes(List<FileType> fileTypes) {
+        FileType[] fileTypesArray = fileTypes.toArray(new FileType[fileTypes.size()]);
+        sort(fileTypesArray, new Comparator<FileType>() {
+            public int compare(FileType ft1, FileType ft2) {
+                return ft1.getUri().compareTo(ft2.getUri());
+            }
+        });
+        return asList(fileTypesArray);
     }
 
     private List<FragmentType> sortFragmentTypes(List<FragmentType> fragmentTypes) {
@@ -126,14 +143,14 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(fragmentTypesArray);
     }
 
-    private List<FileType> sortFileTypes(List<FileType> fileTypes) {
-        FileType[] fileTypesArray = fileTypes.toArray(new FileType[fileTypes.size()]);
-        sort(fileTypesArray, new Comparator<FileType>() {
-            public int compare(FileType ft1, FileType ft2) {
-                return ft1.getUri().compareTo(ft2.getUri());
+    private List<MapType> sortMapTypes(List<MapType> mapTypes) {
+        MapType[] mapTypesArray = mapTypes.toArray(new MapType[mapTypes.size()]);
+        sort(mapTypesArray, new Comparator<MapType>() {
+            public int compare(MapType mt1, MapType mt2) {
+                return mt1.getUri().compareTo(mt2.getUri());
             }
         });
-        return asList(fileTypesArray);
+        return asList(mapTypesArray);
     }
 
     protected FileType createFileType(String uri, File file, boolean includeSize, boolean includeChecksumAndTimestamp) throws IOException {
@@ -152,12 +169,35 @@ public abstract class BaseDataSourcesXmlGenerator {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
         fragmentType.setKey(key);
         fragmentType.setUri(uri);
-        if(includeValidationInformation) {
+        if (includeValidationInformation) {
             fragmentType.setSize(entry.getSize());
             fragmentType.setChecksum(generateChecksum(inputStream));
             fragmentType.setTimestamp(formatTime(fromMillis(entry.getTime()), true));
         }
         return fragmentType;
+    }
+
+    protected MapType createMapType(String uri, File file, BoundingBox boundingBox, boolean includeSize, boolean includeChecksumAndTimestamp) throws IOException {
+        MapType mapType = new ObjectFactory().createMapType();
+        mapType.setUri(uri);
+        if (boundingBox != null) {
+            mapType.setNorthEast(createPositionType(boundingBox.getNorthEast()));
+            mapType.setSouthWest(createPositionType(boundingBox.getSouthWest()));
+        }
+        if (includeSize)
+            mapType.setSize(file.length());
+        if (includeChecksumAndTimestamp) {
+            mapType.setChecksum(generateChecksum(file));
+            mapType.setTimestamp(formatTime(fromMillis(file.lastModified()), true));
+        }
+        return mapType;
+    }
+
+    private PositionType createPositionType(NavigationPosition position) {
+        PositionType result = new PositionType();
+        result.setLongitude(position.getLongitude());
+        result.setLatitude(position.getLatitude());
+        return result;
     }
 
     private void writeXml(File file) throws JAXBException, FileNotFoundException {

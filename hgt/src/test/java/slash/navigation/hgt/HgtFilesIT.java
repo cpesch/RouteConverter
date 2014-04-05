@@ -41,13 +41,13 @@ public class HgtFilesIT {
     private Map<String, File> fileMap = new HashMap<String, File>();
     private HgtFiles files;
     {
-        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null, null));
-        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null, null));
+        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
+        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
     }
 
     @Before
     public void setUp() throws Exception {
-        files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test", archiveMap, fileMap,
+        files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test", fileMap, archiveMap,
                 new DownloadManager(createTempFile("queueFile", ".xml")));
         files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
     }
