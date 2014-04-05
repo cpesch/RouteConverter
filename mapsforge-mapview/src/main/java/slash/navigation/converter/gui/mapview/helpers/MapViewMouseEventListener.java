@@ -47,8 +47,7 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public class MapViewMouseEventListener extends MouseAdapter {
     private final AwtGraphicMapView mapView;
     private final JPopupMenu popupMenu;
-    private Point lastDragPoint;
-    private MouseEvent popupMouseEvent;
+    private Point lastMousePressPoint;
 
     public MapViewMouseEventListener(AwtGraphicMapView mapView, JPopupMenu popupMenu) {
         this.mapView = mapView;
@@ -58,21 +57,19 @@ public class MapViewMouseEventListener extends MouseAdapter {
     public void mouseDragged(MouseEvent e) {
         if (isLeftMouseButton(e)) {
             Point point = e.getPoint();
-            if (lastDragPoint != null) {
-                int moveHorizontal = point.x - lastDragPoint.x;
-                int moveVertical = point.y - lastDragPoint.y;
+            if (lastMousePressPoint != null) {
+                int moveHorizontal = point.x - lastMousePressPoint.x;
+                int moveVertical = point.y - lastMousePressPoint.y;
                 mapView.getModel().mapViewPosition.moveCenter(moveHorizontal, moveVertical);
             }
-            lastDragPoint = point;
+            lastMousePressPoint = point;
         }
     }
 
     public void mousePressed(MouseEvent e) {
-        popupMouseEvent = e;
+        lastMousePressPoint = e.getPoint();
 
         if (isLeftMouseButton(e)) {
-            lastDragPoint = e.getPoint();
-
             boolean shiftKey = e.isShiftDown();
             boolean altKey = e.isAltDown();
             boolean ctrlKey = e.isControlDown();
@@ -92,7 +89,7 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void mouseReleased(MouseEvent e) {
-        lastDragPoint = null;
+        lastMousePressPoint = null;
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -105,8 +102,8 @@ public class MapViewMouseEventListener extends MouseAdapter {
         new Thread(new Runnable() {
             public void run() {
                 Dimension dimension = mapView.getDimension();
-                int horizontalDiff = dimension.width / 2 - popupMouseEvent.getX();
-                int verticalDiff = dimension.height / 2 - popupMouseEvent.getY();
+                int horizontalDiff = dimension.width / 2 - lastMousePressPoint.x;
+                int verticalDiff = dimension.height / 2 - lastMousePressPoint.y;
 
                 double stepSizeX = horizontalDiff / TOTAL_STEPS;
                 double stepSizeY = verticalDiff / TOTAL_STEPS;
@@ -123,7 +120,7 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public void zoomToMousePosition(byte zoomLevelDiff) {
-        zoomToMousePosition(zoomLevelDiff, popupMouseEvent.getX(), popupMouseEvent.getY());
+        zoomToMousePosition(zoomLevelDiff, lastMousePressPoint.x, lastMousePressPoint.y);
     }
 
     public void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
@@ -137,6 +134,6 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     public Point getMousePosition() {
-        return popupMouseEvent != null ? popupMouseEvent.getPoint() : null;
+        return lastMousePressPoint != null ? lastMousePressPoint : null;
     }
 }
