@@ -29,6 +29,6 @@ import java.util.List;
  */
 
 public interface SelectionOperation {
-  void add(List<PositionWithLayer> positionWithLayers);
-  void remove(List<PositionWithLayer> positionWithLayers);
+    void add(List<PositionWithLayer> positionWithLayers);
+    void remove(List<PositionWithLayer> positionWithLayers);
 }

@@ -52,11 +52,10 @@ public class PositionWithLayer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PositionWithLayer positionWithLayer = (PositionWithLayer) o;
+        PositionWithLayer that = (PositionWithLayer) o;
 
-        return !(layer != null ? !layer.equals(positionWithLayer.layer) : positionWithLayer.layer != null) &&
-                position.equals(positionWithLayer.position);
-
+        return position.equals(that.position) &&
+                !(layer != null ? !layer.equals(that.layer) : that.layer != null);
     }
 
     public int hashCode() {

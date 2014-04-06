@@ -20,7 +20,7 @@
 package slash.navigation.converter.gui.mapview.updater;
 
 /**
- * Reduces the number of interactions between event listener and map UI.
+ * Abstracts from route, track or waypoint updating strategies.
  *
  * @author Christian Pesch
  */

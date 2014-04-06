@@ -71,9 +71,8 @@ public class WaypointUpdater implements EventMapUpdater {
         List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
         for (int i = validLastRow; i >= firstRow; i--) {
-            PositionWithLayer positionWithLayer = positionWithLayers.get(i);
+            removed.add(positionWithLayers.get(i));
             positionWithLayers.remove(i);
-            removed.add(positionWithLayer);
         }
 
         if (!removed.isEmpty())
