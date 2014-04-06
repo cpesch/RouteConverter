@@ -34,5 +34,8 @@ import java.util.List;
 public interface ElevationService {
     String getName();
     Double getElevationFor(double longitude, double latitude) throws IOException;
+    boolean isDownload();
+    String getPath();
+    void setPath(String path);
     void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

@@ -103,6 +103,18 @@ public class CompletePositionService implements ElevationService {
         return description;
     }
 
+    public boolean isDownload() {
+        return getElevationService().isDownload();
+    }
+
+    public String getPath() {
+        return getElevationService().getPath();
+    }
+
+    public void setPath(String path) {
+        getElevationService().setPath(path);
+    }
+
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         getElevationService().downloadElevationDataFor(longitudeAndLatitudes);
     }

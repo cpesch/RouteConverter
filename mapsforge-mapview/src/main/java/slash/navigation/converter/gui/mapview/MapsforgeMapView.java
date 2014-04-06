@@ -84,6 +84,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -286,7 +287,7 @@ public class MapsforgeMapView implements MapView {
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
-            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
+            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new IdentityHashMap<NavigationPosition, Marker>();
 
             public void add(List<NavigationPosition> positions) {
                 for (NavigationPosition position : positions) {
@@ -441,7 +442,7 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.waypointUpdater = new WaypointUpdater(positionsModel, new WaypointOperation() {
-            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new HashMap<NavigationPosition, Marker>();
+            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new IdentityHashMap<NavigationPosition, Marker>();
 
             public void add(List<NavigationPosition> positions) {
                 for (NavigationPosition position : positions) {
