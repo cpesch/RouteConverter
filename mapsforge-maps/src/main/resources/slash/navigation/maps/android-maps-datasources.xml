@@ -600,7 +600,7 @@
             <northEast longitude="-5.059265" latitude="55.70299"/>
             <southWest longitude="-11.4" latitude="51.07948"/>
         </map>
-        <map uri="home-nations/isle-of-man.map" size="1116354">
+        <map uri="home-nations/isle-of-man.map" size="1116257">
             <northEast longitude="-3.688718" latitude="54.6706"/>
             <southWest longitude="-5.434554" latitude="53.73236"/>
         </map>
@@ -661,34 +661,185 @@
             <northEast longitude="-114.1291" latitude="42.01618"/>
             <southWest longitude="-125.8935" latitude="32.48171"/>
         </map>
-        <map uri="usa/colorado.map" size="7559405"/>
-        <map uri="usa/connecticut.map" size="11296432">
+        <map uri="usa/colorado.map" size="77651778">
+            <northEast longitude="-100.4637" latitude="41.00403"/>
+            <southWest longitude="-109.0631" latitude="36.56774"/>
+        </map>
+        <map uri="usa/connecticut.map" size="11309437">
             <northEast longitude="-71.7853" latitude="42.05229"/>
             <southWest longitude="-73.72889" latitude="40.96401"/>
         </map>
-        <map uri="usa/delaware.map" size="4032420">
+        <map uri="usa/delaware.map" size="4036506">
             <northEast longitude="-74.96121" latitude="40.03221"/>
             <southWest longitude="-75.78974" latitude="38.45043"/>
         </map>
-        <map uri="usa/district-of-columbia.map" size="6205967">
+        <map uri="usa/district-of-columbia.map" size="6207021">
             <northEast longitude="-76.90906" latitude="38.99603"/>
             <southWest longitude="-77.1201" latitude="38.79134"/>
         </map>
-        <map uri="usa/hawaii.map" size="12985653">
+        <map uri="usa/florida.map" size="70926397">
+            <northEast longitude="-77.72359" latitude="31.00293"/>
+            <southWest longitude="-88.70372" latitude="23.68312"/>
+        </map>
+        <map uri="usa/georgia.map" size="93686187">
+            <northEast longitude="-80.74313" latitude="35.00356"/>
+            <southWest longitude="-85.6068" latitude="30.35365"/>
+        </map>
+        <map uri="usa/hawaii.map" size="13009885">
             <northEast longitude="-137.5228" latitude="29.09624"/>
             <southWest longitude="-179.8483" latitude="10.83575"/>
         </map>
-        <map uri="usa/indiana.map" size="29931093">
+        <map uri="usa/idaho.map" size="29621150">
+            <northEast longitude="-111.0431" latitude="49.13466"/>
+            <southWest longitude="-117.246" latitude="41.98306"/>
+        </map>
+        <map uri="usa/illinois.map" size="89655164">
+            <northEast longitude="-87.49264" latitude="42.50941"/>
+            <southWest longitude="-91.51608" latitude="36.96731"/>
+        </map>
+        <map uri="usa/indiana.map" size="29970778">
             <northEast longitude="-84.50399" latitude="41.76101"/>
             <southWest longitude="-88.0615" latitude="37.62705"/>
         </map>
-        <map uri="usa/kansas.map" size="30638775">
+        <map uri="usa/iowa.map" size="48618033">
+            <northEast longitude="-90.13581" latitude="43.50182"/>
+            <southWest longitude="-96.6426" latitude="40.37266"/>
+        </map>
+        <map uri="usa/kansas.map" size="30508230">
             <northEast longitude="-94.58926" latitude="40.00681"/>
             <southWest longitude="-107.3034" latitude="33.40115"/>
         </map>
-        <map uri="usa/maine.map" size="19527840">
+        <map uri="usa/kentucky.map" size="34661130">
+            <northEast longitude="-81.95512" latitude="39.20518"/>
+            <southWest longitude="-89.61845" latitude="36.49325"/>
+        </map>
+        <map uri="usa/louisiana.map" size="50608647">
+            <northEast longitude="-88.66684" latitude="33.020249"/>
+            <southWest longitude="-94.04376" latitude="28.14452"/>
+        </map>
+        <map uri="usa/maine.map" size="19605175">
             <northEast longitude="-65.889669" latitude="48.15552"/>
             <southWest longitude="-71.45045" latitude="42.85443"/>
+        </map>
+        <map uri="usa/maryland.map" size="29948058">
+            <northEast longitude="-75.03785" latitude="40.17054"/>
+            <southWest longitude="-79.48857" latitude="37.88396"/>
+        </map>
+        <map uri="usa/massachusetts.map" size="128520522">
+            <northEast longitude="-68.71948" latitude="42.88768"/>
+            <southWest longitude="-73.51096" latitude="40.82573"/>
+        </map>
+        <map uri="usa/michigan.map" size="58911054">
+            <northEast longitude="-79.04667" latitude="49.32486"/>
+            <southWest longitude="-90.41981" latitude="41.69439"/>
+        </map>
+        <map uri="usa/minnesota.map" size="86083031">
+            <northEast longitude="-89.36208" latitude="49.99714"/>
+            <southWest longitude="-97.27158" latitude="43.49909"/>
+        </map>
+        <map uri="usa/mississippi.map" size="34857181">
+            <northEast longitude="-88.09292" latitude="35.00055"/>
+            <southWest longitude="-91.65857" latitude="30.04168"/>
+        </map>
+        <map uri="usa/missouri.map" size="43660179">
+            <northEast longitude="-88.87132" latitude="40.61664"/>
+            <southWest longitude="-95.77751" latitude="35.99466"/>
+        </map>
+        <map uri="usa/montana.map" size="32469411">
+            <northEast longitude="-102.685" latitude="49.69326"/>
+            <southWest longitude="-116.0518" latitude="44.35556"/>
+        </map>
+        <map uri="usa/nebraska.map" size="28132760">
+            <northEast longitude="-95.30703" latitude="43.00172"/>
+            <southWest longitude="-104.7301" latitude="40.00015"/>
+        </map>
+        <map uri="usa/nevada.map" size="19056914">
+            <northEast longitude="-114.0379" latitude="42.00391"/>
+            <southWest longitude="-120.0074" latitude="35.00053"/>
+        </map>
+        <map uri="usa/new-hampshire.map" size="16655966">
+            <northEast longitude="-70.48692" latitude="45.44612"/>
+            <southWest longitude="-72.5588" latitude="42.69669"/>
+        </map>
+        <map uri="usa/new-jersey.map" size="37434016">
+            <northEast longitude="-73.67898" latitude="41.35807"/>
+            <southWest longitude="-75.83509" latitude="38.55502"/>
+        </map>
+        <map uri="usa/new-mexico.map" size="33361509">
+            <northEast longitude="-96.11707" latitude="37.00184"/>
+            <southWest longitude="-109.0504" latitude="27.02788"/>
+        </map>
+        <map uri="usa/new-york.map" size="72677993">
+            <northEast longitude="-70.49625" latitude="45.07133"/>
+            <southWest longitude="-79.82402" latitude="40.03666"/>
+        </map>
+        <map uri="usa/north-dakota.map" size="49746698">
+            <northEast longitude="-96.55292" latitude="49.70865"/>
+            <southWest longitude="-105.0844" latitude="45.93448"/>
+        </map>
+        <map uri="usa/ohio.map" size="47954292">
+            <northEast longitude="-79.89951" latitude="43.48236"/>
+            <southWest longitude="-84.8219" latitude="38.09861"/>
+        </map>
+        <map uri="usa/oklahoma.map" size="58637629">
+            <northEast longitude="-94.42821" latitude="37.32622"/>
+            <southWest longitude="-103.3556" latitude="33.61358"/>
+        </map>
+        <map uri="usa/oregon.map" size="48025671">
+            <northEast longitude="-116.4545" latitude="46.30349"/>
+            <southWest longitude="-126.3879" latitude="41.9634"/>
+        </map>
+        <map uri="usa/pennsylvania.map" size="60622583">
+            <northEast longitude="-74.68884" latitude="42.51533"/>
+            <southWest longitude="-81.37832" latitude="38.92139"/>
+        </map>
+        <map uri="usa/rhode-island.map" size="3537360">
+            <northEast longitude="-71.10885" latitude="42.01938"/>
+            <southWest longitude="-71.9125" latitude="40.99017"/>
+        </map>
+        <map uri="usa/south-carolina.map" size="49150987">
+            <northEast longitude="-78.51867" latitude="35.2184"/>
+            <southWest longitude="-83.35622" latitude="32.02967"/>
+        </map>
+        <map uri="usa/south-dakota.map" size="19062408">
+            <northEast longitude="-96.43595" latitude="45.94831"/>
+            <southWest longitude="-104.9132" latitude="42.47744"/>
+        </map>
+        <map uri="usa/tennessee.map" size="36865853">
+            <northEast longitude="-81.64416" latitude="36.68075"/>
+            <southWest longitude="-90.31329" latitude="34.98269"/>
+        </map>
+        <map uri="usa/texas.map" size="126817517">
+            <northEast longitude="-93.01897" latitude="36.52618"/>
+            <southWest longitude="-106.9125" latitude="25.66764"/>
+        </map>
+        <map uri="usa/utah.map" size="24257689">
+            <northEast longitude="-109.0394" latitude="42.00323"/>
+            <southWest longitude="-114.0556" latitude="36.9963"/>
+        </map>
+        <map uri="usa/vermont.map" size="8878637">
+            <northEast longitude="-71.46476" latitude="45.01781"/>
+            <southWest longitude="-73.43943" latitude="42.72526"/>
+        </map>
+        <map uri="usa/virginia.map" size="89555812">
+            <northEast longitude="-74.29751" latitude="39.46901"/>
+            <southWest longitude="-83.67841" latitude="36.53798"/>
+        </map>
+        <map uri="usa/washington.map" size="55906087">
+            <northEast longitude="-116.9145" latitude="49.00708"/>
+            <southWest longitude="-126.7423" latitude="45.54326"/>
+        </map>
+        <map uri="usa/west-virginia.map" size="15005094">
+            <northEast longitude="-77.7141" latitude="40.92069"/>
+            <southWest longitude="-82.64965" latitude="37.19858"/>
+        </map>
+        <map uri="usa/wisconsin.map" size="50724557">
+            <northEast longitude="-86.20021" latitude="47.41451"/>
+            <southWest longitude="-92.89089" latitude="42.48899"/>
+        </map>
+        <map uri="usa/wyoming.map" size="23082416">
+            <northEast longitude="-101.6424" latitude="45.5894"/>
+            <southWest longitude="-111.0576" latitude="40.99415"/>
         </map>
     </datasource>
 </datasources>
