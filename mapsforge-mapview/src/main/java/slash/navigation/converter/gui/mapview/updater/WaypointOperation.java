@@ -25,11 +25,11 @@ import java.util.List;
  * Operations to perform on a waypoint list.
  *
  * @author Christian Pesch
- * @see Waypoint
+ * @see WaypointUpdater
  */
 
 public interface WaypointOperation {
-    void add(List<Waypoint> waypoints);
-    void update(List<Waypoint> waypoints);
-    void remove(List<Waypoint> waypoints);
+    void add(List<PositionWithLayer> positionWithLayers);
+    void update(List<PositionWithLayer> positionWithLayers);
+    void remove(List<PositionWithLayer> positionWithLayers);
 }

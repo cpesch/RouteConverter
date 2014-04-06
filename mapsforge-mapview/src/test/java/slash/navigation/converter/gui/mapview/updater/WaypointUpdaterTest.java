@@ -39,10 +39,10 @@ public class WaypointUpdaterTest {
     private NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
     private NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
 
-    private Waypoint w1 = new Waypoint(p1);
-    private Waypoint w2 = new Waypoint(p2);
-    private Waypoint w3 = new Waypoint(p3);
-    private Waypoint w4 = new Waypoint(p4);
+    private PositionWithLayer w1 = new PositionWithLayer(p1);
+    private PositionWithLayer w2 = new PositionWithLayer(p2);
+    private PositionWithLayer w3 = new PositionWithLayer(p3);
+    private PositionWithLayer w4 = new PositionWithLayer(p4);
 
 
     @Test
@@ -52,9 +52,9 @@ public class WaypointUpdaterTest {
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
 
-        assertTrue(waypointUpdater.getCurrentWaypoints().isEmpty());
-        verify(waypointOperation, never()).add(new ArrayList<Waypoint>());
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        assertTrue(waypointUpdater.getPositionWithLayers().isEmpty());
+        verify(waypointOperation, never()).add(new ArrayList<PositionWithLayer>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
     @Test
@@ -66,9 +66,9 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 0);
 
-        assertEquals(asList(w1), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
     @Test
@@ -81,9 +81,9 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 1);
 
-        assertEquals(asList(w1, w2), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
     @Test
@@ -97,14 +97,14 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 1);
 
-        assertEquals(asList(w1, w2), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2));
 
         waypointUpdater.handleAdd(2, 2);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w3));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
     @Test
@@ -119,15 +119,15 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 3);
 
-        assertEquals(asList(w1, w2, w3, w4), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3, w4), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3, w4));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
         waypointUpdater.handleRemove(1, 2);
 
-        assertEquals(asList(w1, w4), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w4), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).remove(asList(w3, w2));
-        verify(waypointOperation, never()).add(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).add(new ArrayList<PositionWithLayer>());
     }
 
     @Test
@@ -141,14 +141,14 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 2);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
         waypointUpdater.handleRemove(0, MAX_VALUE);
 
-        assertEquals(new ArrayList<Waypoint>(), waypointUpdater.getCurrentWaypoints());
-        verify(waypointOperation, never()).add(new ArrayList<Waypoint>());
+        assertEquals(new ArrayList<PositionWithLayer>(), waypointUpdater.getPositionWithLayers());
+        verify(waypointOperation, never()).add(new ArrayList<PositionWithLayer>());
         verify(waypointOperation, times(1)).remove(asList(w3, w2, w1));
     }
 
@@ -164,15 +164,15 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 2);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
         waypointUpdater.handleUpdate(1, 1);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
-        verify(waypointOperation, never()).add(new ArrayList<Waypoint>());
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
+        verify(waypointOperation, never()).add(new ArrayList<PositionWithLayer>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
         verify(waypointOperation, times(1)).update(asList(w2));
     }
 
@@ -188,13 +188,13 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 2);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3));
-        verify(waypointOperation, never()).remove(new ArrayList<Waypoint>());
+        verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
         waypointUpdater.handleUpdate(0, MAX_VALUE);
 
-        assertEquals(asList(w1, w2, w3), waypointUpdater.getCurrentWaypoints());
+        assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3));
         verify(waypointOperation, never()).remove(asList(w1, w2, w3));
         verify(waypointOperation, times(1)).update(asList(w1, w2, w3));

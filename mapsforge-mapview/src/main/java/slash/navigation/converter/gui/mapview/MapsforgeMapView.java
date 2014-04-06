@@ -50,11 +50,11 @@ import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
 import slash.navigation.converter.gui.mapview.updater.EventMapUpdater;
 import slash.navigation.converter.gui.mapview.updater.PositionPair;
+import slash.navigation.converter.gui.mapview.updater.PositionWithLayer;
 import slash.navigation.converter.gui.mapview.updater.SelectionOperation;
 import slash.navigation.converter.gui.mapview.updater.SelectionUpdater;
 import slash.navigation.converter.gui.mapview.updater.TrackOperation;
 import slash.navigation.converter.gui.mapview.updater.TrackUpdater;
-import slash.navigation.converter.gui.mapview.updater.Waypoint;
 import slash.navigation.converter.gui.mapview.updater.WaypointOperation;
 import slash.navigation.converter.gui.mapview.updater.WaypointUpdater;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -85,7 +85,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -288,24 +287,22 @@ public class MapsforgeMapView implements MapView {
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
-            private java.util.Map<NavigationPosition, Marker> positionsToMarkers = new IdentityHashMap<NavigationPosition, Marker>();
-
-            public void add(List<NavigationPosition> positions) {
-                for (NavigationPosition position : positions) {
-                    Marker marker = new Marker(asLatLong(position), markerIcon, 8, -16);
+            public void add(List<PositionWithLayer> positionWithLayers) {
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), markerIcon, 8, -16);
+                    positionWithLayer.setLayer(marker);
                     getLayerManager().getLayers().add(marker);
-                    positionsToMarkers.put(position, marker);
                 }
             }
 
-            public void remove(List<NavigationPosition> positions) {
-                for (NavigationPosition position : positions) {
-                    Marker marker = positionsToMarkers.get(position);
-                    if (marker != null) {
-                        getLayerManager().getLayers().remove(marker);
-                        positionsToMarkers.remove(position);
-                    } else
-                        System.out.println("Could not find layer for position");
+            public void remove(List<PositionWithLayer> positionWithLayers) {
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    Layer layer = positionWithLayer.getLayer();
+                    if (layer != null)
+                        getLayerManager().getLayers().remove(layer);
+                    else
+                        log.warning("Could not find layer for selection position " + positionWithLayer);
+                    positionWithLayer.setLayer(null);
                 }
             }
         });
@@ -443,40 +440,41 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.waypointUpdater = new WaypointUpdater(positionsModel, new WaypointOperation() {
-            public void add(List<Waypoint> waypoints) {
-                for (Waypoint waypoint : waypoints) {
-                    Marker marker = new Marker(asLatLong(waypoint.getPosition()), waypointIcon, 1, 0);
-                    waypoint.setLayer(marker);
-                    getLayerManager().getLayers().add(marker);
+            public void add(List<PositionWithLayer> positionWithLayers) {
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    internalAdd(positionWithLayer);
                 }
             }
 
-            public void update(List<Waypoint> waypoints) {
-                for (Waypoint waypoint : waypoints) {
-                    Layer layer = waypoint.getLayer();
-                    if (layer != null)
-                        getLayerManager().getLayers().remove(layer);
-                    else
-                        System.out.println("Could not find layer for waypoint");
-
-                    Marker marker = new Marker(asLatLong(waypoint.getPosition()), waypointIcon, 1, 0);
-                    waypoint.setLayer(marker);
-                    getLayerManager().getLayers().add(marker);
+            public void update(List<PositionWithLayer> positionWithLayers) {
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    interalRemove(positionWithLayer);
+                    internalAdd(positionWithLayer);
                 }
             }
 
-            public void remove(List<Waypoint> waypoints) {
+            public void remove(List<PositionWithLayer> positionWithLayers) {
                 List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
-                for (Waypoint waypoint : waypoints) {
-                    Layer layer = waypoint.getLayer();
-                    if (layer != null)
-                        getLayerManager().getLayers().remove(layer);
-                    else
-                        System.out.println("Could not find layer for waypoint");
-                    waypoint.setLayer(null);
-                    removed.add(waypoint.getPosition());
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    interalRemove(positionWithLayer);
+                    removed.add(positionWithLayer.getPosition());
                 }
                 selectionUpdater.removedPositions(removed);
+            }
+
+            private void internalAdd(PositionWithLayer positionWithLayer) {
+                Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
+                positionWithLayer.setLayer(marker);
+                getLayerManager().getLayers().add(marker);
+            }
+
+            private void interalRemove(PositionWithLayer positionWithLayer) {
+                Layer layer = positionWithLayer.getLayer();
+                if (layer != null)
+                    getLayerManager().getLayers().remove(layer);
+                else
+                    log.warning("Could not find layer for position " + positionWithLayer);
+                positionWithLayer.setLayer(null);
             }
         });
 
@@ -848,8 +846,8 @@ public class MapsforgeMapView implements MapView {
 
     private class AddPositionAction extends FrameAction {
         private int getAddRow() { // TODO same as in BaseMapView
-            List<NavigationPosition> lastSelectedPositions = selectionUpdater.getCurrentSelection();
-            NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+            List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
+            NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
             // quite crude logic to be as robust as possible on failures
             if (position == null && positionsModel.getRowCount() > 0)
                 position = positionsModel.getPosition(positionsModel.getRowCount() - 1);

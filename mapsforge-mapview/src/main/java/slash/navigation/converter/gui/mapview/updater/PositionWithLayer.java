@@ -23,17 +23,16 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 
 /**
- * A waypoint.
+ * A {@link NavigationPosition} with it's {@link Layer} component.
  *
  * @author Christian Pesch
- * @see WaypointOperation
  */
 
-public class Waypoint {
+public class PositionWithLayer {
     private final NavigationPosition position;
     private Layer layer;
 
-    public Waypoint(NavigationPosition position) {
+    public PositionWithLayer(NavigationPosition position) {
         this.position = position;
     }
 
@@ -53,10 +52,10 @@ public class Waypoint {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Waypoint waypoint = (Waypoint) o;
+        PositionWithLayer positionWithLayer = (PositionWithLayer) o;
 
-        return !(layer != null ? !layer.equals(waypoint.layer) : waypoint.layer != null) &&
-                position.equals(waypoint.position);
+        return !(layer != null ? !layer.equals(positionWithLayer.layer) : positionWithLayer.layer != null) &&
+                position.equals(positionWithLayer.position);
 
     }
 

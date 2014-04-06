@@ -23,9 +23,8 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static java.util.Collections.EMPTY_LIST;
 
 /**
  * Stores the current selection state and minimizes {@link SelectionOperation}s.
@@ -38,7 +37,7 @@ import static java.util.Collections.EMPTY_LIST;
 public class SelectionUpdater {
     private final PositionsModel positionsModel;
     private final SelectionOperation selectionOperation;
-    private final List<NavigationPosition> currentSelection = new ArrayList<NavigationPosition>();
+    private final List<PositionWithLayer> positionWithLayers = new ArrayList<PositionWithLayer>();
 
     public SelectionUpdater(PositionsModel positionsModel, SelectionOperation selectionOperation) {
         this.positionsModel = positionsModel;
@@ -54,52 +53,58 @@ public class SelectionUpdater {
     }
 
     public void removedPositions(List<NavigationPosition> positions) {
-        applyDelta(EMPTY_LIST, positions);
-    }
-
-    public List<NavigationPosition> getCurrentSelection() {
-        return currentSelection;
+        List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
+        // quadratic complexity, using probably smaller set for inner loop
+        for (NavigationPosition position : positions) {
+            for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                if (positionWithLayer.getPosition().equals(position))
+                    removed.add(positionWithLayer);
+            }
+        }
+        applyDelta(Collections.<PositionWithLayer>emptyList(), removed);
     }
 
     private void replaceSelection(int[] selectedPositions) {
-        List<NavigationPosition> added = asPositions(selectedPositions);
-        applyDelta(added, currentSelection);
+        applyDelta(asPositionWithLayers(selectedPositions), positionWithLayers);
     }
 
     private void updateSelection(int[] selectedPositions) {
-        List<NavigationPosition> positions = asPositions(selectedPositions);
+        List<PositionWithLayer> selected = asPositionWithLayers(selectedPositions);
 
-        List<NavigationPosition> added = new ArrayList<NavigationPosition>();
-        for (NavigationPosition position : positions) {
-            if (!currentSelection.contains(position))
-                added.add(position);
+        List<PositionWithLayer> added = new ArrayList<PositionWithLayer>();
+        for (PositionWithLayer positionWithLayer : selected) {
+            if (!positionWithLayers.contains(positionWithLayer))
+                added.add(positionWithLayer);
         }
-        List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
-        for (NavigationPosition position : currentSelection) {
-            if (!positions.contains(position))
-                removed.add(position);
+        List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+            if (!selected.contains(positionWithLayer))
+                removed.add(positionWithLayer);
         }
 
         applyDelta(added, removed);
     }
 
-    private List<NavigationPosition> asPositions(int[] indices) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+    private void applyDelta(List<PositionWithLayer> added, List<PositionWithLayer> removed) {
+        if (!removed.isEmpty()) {
+            selectionOperation.remove(removed);
+            positionWithLayers.removeAll(removed);
+        }
+        if (!added.isEmpty()) {
+            selectionOperation.add(added);
+            positionWithLayers.addAll(added);
+        }
+    }
+
+    private List<PositionWithLayer> asPositionWithLayers(int[] indices) {
+        List<PositionWithLayer> result = new ArrayList<PositionWithLayer>();
         for (int selectedPosition : indices) {
-            NavigationPosition position = positionsModel.getPosition(selectedPosition);
-            result.add(position);
+            result.add(new PositionWithLayer(positionsModel.getPosition(selectedPosition)));
         }
         return result;
     }
 
-    private void applyDelta(List<NavigationPosition> added, List<NavigationPosition> removed) {
-        if (!removed.isEmpty()) {
-            selectionOperation.remove(removed);
-            currentSelection.removeAll(removed);
-        }
-        if (!added.isEmpty()) {
-            selectionOperation.add(added);
-            currentSelection.addAll(added);
-        }
+    public List<PositionWithLayer> getPositionWithLayers() {
+        return positionWithLayers;
     }
 }

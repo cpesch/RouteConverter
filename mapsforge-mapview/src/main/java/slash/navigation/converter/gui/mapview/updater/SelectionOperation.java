@@ -19,8 +19,6 @@
 */
 package slash.navigation.converter.gui.mapview.updater;
 
-import slash.navigation.common.NavigationPosition;
-
 import java.util.List;
 
 /**
@@ -31,6 +29,6 @@ import java.util.List;
  */
 
 public interface SelectionOperation {
-  void add(List<NavigationPosition> positions);
-  void remove(List<NavigationPosition> positions);
+  void add(List<PositionWithLayer> positionWithLayers);
+  void remove(List<PositionWithLayer> positionWithLayers);
 }
