@@ -195,7 +195,19 @@ public class GeoNamesService implements ElevationService {
         return result.size() > 1 ? new double[]{result.get(0), result.get(1)} : null;
     }
 
+    public boolean isDownload() {
+        return false;
+    }
+
+    public String getPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        // noop for online services
+        throw new UnsupportedOperationException();
     }
 }

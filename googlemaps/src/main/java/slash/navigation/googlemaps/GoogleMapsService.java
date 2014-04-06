@@ -184,7 +184,19 @@ public class GoogleMapsService implements ElevationService {
         return results;
     }
 
+    public boolean isDownload() {
+        return false;
+    }
+
+    public String getPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        // noop for online services
+        throw new UnsupportedOperationException();
     }
 }

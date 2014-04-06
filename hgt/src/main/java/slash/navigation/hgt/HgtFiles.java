@@ -74,8 +74,23 @@ public class HgtFiles implements ElevationService {
         return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
     }
 
+    public boolean isDownload() {
+        return true;
+    }
+
+    public String getPath() {
+        return preferences.get(DIRECTORY_PREFERENCE + getName(), "");
+    }
+
+    public void setPath(String path) {
+        preferences.put(DIRECTORY_PREFERENCE + getName(), path);
+    }
+
     private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE, getApplicationDirectory(directory).getAbsolutePath());
+        String directoryName = getPath();
+        java.io.File f = new java.io.File(directoryName);
+        if(!f.exists())
+            directoryName = getApplicationDirectory(directory).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
@@ -89,7 +104,7 @@ public class HgtFiles implements ElevationService {
     }
 
     private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), format("%s%s", key, ".hgt"));
+        return new java.io.File(getPath(), format("%s%s", key, ".hgt"));
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
