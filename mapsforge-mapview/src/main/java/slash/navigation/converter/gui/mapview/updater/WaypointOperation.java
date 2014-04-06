@@ -19,18 +19,17 @@
 */
 package slash.navigation.converter.gui.mapview.updater;
 
-import slash.navigation.common.NavigationPosition;
-
 import java.util.List;
 
 /**
  * Operations to perform on a waypoint list.
  *
  * @author Christian Pesch
- * @see WaypointUpdater
+ * @see Waypoint
  */
 
 public interface WaypointOperation {
-  void add(List<NavigationPosition> positions);
-  void remove(List<NavigationPosition> positions);
+    void add(List<Waypoint> waypoints);
+    void update(List<Waypoint> waypoints);
+    void remove(List<Waypoint> waypoints);
 }

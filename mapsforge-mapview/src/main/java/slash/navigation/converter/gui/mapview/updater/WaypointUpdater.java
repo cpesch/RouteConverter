@@ -19,7 +19,6 @@
 */
 package slash.navigation.converter.gui.mapview.updater;
 
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import static java.lang.Math.min;
 public class WaypointUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final WaypointOperation waypointOperation;
-    private final List<NavigationPosition> currentWaypoints = new ArrayList<NavigationPosition>();
+    private final List<Waypoint> currentWaypoints = new ArrayList<Waypoint>();
 
     public WaypointUpdater(PositionsModel positionsModel, WaypointOperation waypointOperation) {
         this.positionsModel = positionsModel;
@@ -46,11 +45,11 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleAdd(int firstRow, int lastRow) {
-        List<NavigationPosition> added = new ArrayList<NavigationPosition>();
+        List<Waypoint> added = new ArrayList<Waypoint>();
         for (int i = firstRow; i <= lastRow; i++) {
-            NavigationPosition position = positionsModel.getPosition(i);
-            added.add(position);
-            currentWaypoints.add(i, position);
+            Waypoint waypoint = new Waypoint(positionsModel.getPosition(i));
+            currentWaypoints.add(i, waypoint);
+            added.add(waypoint);
         }
 
         if (!added.isEmpty())
@@ -58,35 +57,30 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleUpdate(int firstRow, int lastRow) {
-        List<NavigationPosition> added = new ArrayList<NavigationPosition>();
-        List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
+        List<Waypoint> updated = new ArrayList<Waypoint>();
         int endIndex = min(lastRow, positionsModel.getRowCount() - 1);
         for (int i = firstRow; i <= endIndex; i++) {
-            NavigationPosition position = positionsModel.getPosition(i);
-            added.add(position);
-            removed.add(position);
+            updated.add(currentWaypoints.get(i));
         }
 
-        if (!removed.isEmpty())
-            waypointOperation.remove(removed);
-        if (!added.isEmpty())
-            waypointOperation.add(added);
+        if (!updated.isEmpty())
+            waypointOperation.update(updated);
     }
 
     public void handleRemove(int firstRow, int lastRow) {
-        List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
+        List<Waypoint> removed = new ArrayList<Waypoint>();
         int validLastRow = min(lastRow, currentWaypoints.size() - 1);
         for (int i = validLastRow; i >= firstRow; i--) {
-            NavigationPosition position = currentWaypoints.get(i);
-            removed.add(position);
+            Waypoint waypoint = currentWaypoints.get(i);
             currentWaypoints.remove(i);
+            removed.add(waypoint);
         }
 
         if (!removed.isEmpty())
             waypointOperation.remove(removed);
     }
 
-    List<NavigationPosition> getCurrentWaypoints() {
+    List<Waypoint> getCurrentWaypoints() {
         return currentWaypoints;
     }
 }
