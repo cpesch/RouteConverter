@@ -25,6 +25,8 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
+
 /**
  * Stores the current selection state and minimizes {@link SelectionOperation}s.
  * Used to reduce the number of interactions between event listener and map UI.
@@ -49,6 +51,10 @@ public class SelectionUpdater {
         } else {
             updateSelection(selectedPositions);
         }
+    }
+
+    public void removedPositions(List<NavigationPosition> positions) {
+        applyDelta(EMPTY_LIST, positions);
     }
 
     public List<NavigationPosition> getCurrentSelection() {

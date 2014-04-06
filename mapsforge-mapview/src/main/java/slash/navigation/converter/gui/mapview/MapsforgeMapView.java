@@ -83,7 +83,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -300,7 +302,8 @@ public class MapsforgeMapView implements MapView {
                     if (marker != null) {
                         getLayerManager().getLayers().remove(marker);
                         positionsToMarkers.remove(position);
-                    }
+                    } else
+                        System.out.println("Could not find layer for position");
                 }
             }
         });
@@ -314,19 +317,19 @@ public class MapsforgeMapView implements MapView {
                 final DownloadFuture future = routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairs));
                 if (future.isRequiresDownload()) {
                     drawBeeline(pairs);
-                    fireDistance();
+                    fireDistanceAndTime();
 
                     executor.execute(new Runnable() {
                         public void run() {
                             future.download();
                             removeLines(pairs);
                             drawRoute(pairs);
-                            fireDistance();
+                            fireDistanceAndTime();
                         }
                     });
                 } else {
                     drawRoute(pairs);
-                    fireDistance();
+                    fireDistanceAndTime();
                 }
             }
 
@@ -352,7 +355,8 @@ public class MapsforgeMapView implements MapView {
                         pairsToLines.remove(pair);
                         pairsToDistances.remove(pair);
                         pairsToTimes.remove(pair);
-                    }
+                    } else
+                        System.out.println("Could not find layer for position");
                 }
             }
 
@@ -380,18 +384,29 @@ public class MapsforgeMapView implements MapView {
                 return latLongs;
             }
 
-            private void fireDistance() {
-                double sum = 0.0;
+            private void fireDistanceAndTime() {
+                double totalDistance = 0.0;
                 for (Double distance : pairsToDistances.values()) {
                     if (distance != null)
-                        sum += distance;
+                        totalDistance += distance;
                 }
-                fireCalculatedDistance((int) sum, 0);
+                long totalTime = 0;
+                for (Long time : pairsToTimes.values()) {
+                    if (time != null)
+                        totalTime += time;
+                }
+                fireCalculatedDistance((int) totalDistance, (int)(totalTime > 0 ? totalTime / 1000 : 0));
             }
 
             public void remove(List<PositionPair> pairs) {
                 removeLines(pairs);
-                fireDistance();
+                fireDistanceAndTime();
+                Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
+                for (PositionPair pair : pairs) {
+                    removed.add(pair.getFirst());
+                    removed.add(pair.getSecond());
+                }
+                selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
             }
         });
 
@@ -409,13 +424,18 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void remove(List<PositionPair> pairs) {
+                Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
                 for (PositionPair pair : pairs) {
                     Line line = pairsToLines.get(pair);
                     if (line != null) {
                         getLayerManager().getLayers().remove(line);
                         pairsToLines.remove(pair);
-                    }
+                    } else
+                        System.out.println("Could not find layer for position");
+                    removed.add(pair.getFirst());
+                    removed.add(pair.getSecond());
                 }
+                selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
                 // TODO fireCalculatedDistance((int)sum, 0);
             }
         });
@@ -437,8 +457,10 @@ public class MapsforgeMapView implements MapView {
                     if (marker != null) {
                         getLayerManager().getLayers().remove(marker);
                         positionsToMarkers.remove(position);
-                    }
+                    } else
+                        System.out.println("Could not find layer for position");
                 }
+                selectionUpdater.removedPositions(positions);
             }
         });
 
