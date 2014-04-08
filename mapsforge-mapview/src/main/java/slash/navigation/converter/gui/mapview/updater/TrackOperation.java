@@ -29,6 +29,7 @@ import java.util.List;
  */
 
 public interface TrackOperation {
-  void add(List<PositionPair> pairs);
-  void remove(List<PositionPair> pairs);
+    void add(List<PairWithLayer> pairWithLayers);
+    void update(List<PairWithLayer> pairWithLayers);
+    void remove(List<PairWithLayer> pairWithLayers);
 }

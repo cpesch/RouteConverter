@@ -49,7 +49,7 @@ import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
 import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
 import slash.navigation.converter.gui.mapview.updater.EventMapUpdater;
-import slash.navigation.converter.gui.mapview.updater.PositionPair;
+import slash.navigation.converter.gui.mapview.updater.PairWithLayer;
 import slash.navigation.converter.gui.mapview.updater.PositionWithLayer;
 import slash.navigation.converter.gui.mapview.updater.SelectionOperation;
 import slash.navigation.converter.gui.mapview.updater.SelectionUpdater;
@@ -308,79 +308,98 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private java.util.Map<PositionPair, Layer> pairsToLines = new HashMap<PositionPair, Layer>();
-            private java.util.Map<PositionPair, Double> pairsToDistances = new HashMap<PositionPair, Double>();
-            private java.util.Map<PositionPair, Long> pairsToTimes = new HashMap<PositionPair, Long>();
+            private java.util.Map<PairWithLayer, Double> pairsToDistances = new HashMap<PairWithLayer, Double>();
+            private java.util.Map<PairWithLayer, Long> pairsToTimes = new HashMap<PairWithLayer, Long>();
 
-            public void add(final List<PositionPair> pairs) {
-                final DownloadFuture future = routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairs));
+            public void add(final List<PairWithLayer> pairWithLayers) {
+                internalAdd(pairWithLayers);
+            }
+
+            public void update(List<PairWithLayer> pairWithLayers) {
+                internalRemove(pairWithLayers);
+                internalAdd(pairWithLayers);
+            }
+
+            public void remove(List<PairWithLayer> pairWithLayers) {
+                internalRemove(pairWithLayers);
+                updateSelectionAfterRemove(pairWithLayers);
+            }
+
+            private void internalAdd(final List<PairWithLayer> pairWithLayers) {
+                final DownloadFuture future = routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
                 if (future.isRequiresDownload()) {
-                    drawBeeline(pairs);
+                    drawBeeline(pairWithLayers);
                     fireDistanceAndTime();
 
                     executor.execute(new Runnable() {
                         public void run() {
                             future.download();
-                            removeLines(pairs);
-                            drawRoute(pairs);
+                            removeLines(pairWithLayers);
+                            drawRoute(pairWithLayers);
                             fireDistanceAndTime();
                         }
                     });
                 } else {
-                    drawRoute(pairs);
+                    drawRoute(pairWithLayers);
                     fireDistanceAndTime();
                 }
             }
 
-            private void drawBeeline(List<PositionPair> pairs) {
+            private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
-                for (PositionPair pair : pairs) {
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
+                for (PairWithLayer pairWithLayer : pairsWithLayer) {
+                    Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
+                    pairWithLayer.setLayer(line);
                     getLayerManager().getLayers().add(line);
-                    pairsToLines.put(pair, line);
 
-                    Double distance = pair.getFirst().calculateDistance(pair.getSecond());
-                    pairsToDistances.put(pair, distance);
-                    Long time = pair.getFirst().calculateTime(pair.getSecond());
-                    pairsToTimes.put(pair, time);
+                    Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
+                    pairsToDistances.put(pairWithLayer, distance);
+                    Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
+                    pairsToTimes.put(pairWithLayer, time);
                 }
             }
 
-            private void removeLines(List<PositionPair> pairs) {
-                for (PositionPair pair : pairs) {
-                    Layer line = pairsToLines.get(pair);
-                    if (line != null) {
-                        getLayerManager().getLayers().remove(line);
-                        pairsToLines.remove(pair);
-                        pairsToDistances.remove(pair);
-                        pairsToTimes.remove(pair);
-                    } else
-                        System.out.println("Could not find layer for position");
+            private void removeLines(List<PairWithLayer> pairWithLayers) {
+                for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    Layer layer = pairWithLayer.getLayer();
+                    if (layer != null)
+                        getLayerManager().getLayers().remove(layer);
+                    else
+                        log.warning("Could not find layer for route pair " + pairWithLayer);
+                    pairWithLayer.setLayer(null);
+
+                    pairsToDistances.remove(pairWithLayer);
+                    pairsToTimes.remove(pairWithLayer);
                 }
             }
 
-            private void drawRoute(List<PositionPair> pairs) {
+            private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
-                for (PositionPair pair : pairs) {
-                    List<LatLong> latLongs = calculateRoute(pair);
+                for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    List<LatLong> latLongs = calculateRoute(pairWithLayer);
 
-                    Polyline line = new Polyline(latLongs, ROUTE_PAINT, tileSize);
-                    getLayerManager().getLayers().add(line);
-                    pairsToLines.put(pair, line);
+                    Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
+                    pairWithLayer.setLayer(polyline);
+                    getLayerManager().getLayers().add(polyline);
                 }
             }
 
-            private List<LatLong> calculateRoute(PositionPair pair) {
+            private List<LatLong> calculateRoute(PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<LatLong>();
-                latLongs.add(asLatLong(pair.getFirst()));
-                RoutingResult intermediate = routingService.getRouteBetween(pair.getFirst(), pair.getSecond());
+                latLongs.add(asLatLong(pairWithLayer.getFirst()));
+                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
                 if (intermediate != null) {
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
-                    pairsToDistances.put(pair, intermediate.getDistance());
-                    pairsToTimes.put(pair, intermediate.getTime());
+                    pairsToDistances.put(pairWithLayer, intermediate.getDistance());
+                    pairsToTimes.put(pairWithLayer, intermediate.getTime());
                 }
-                latLongs.add(asLatLong(pair.getSecond()));
+                latLongs.add(asLatLong(pairWithLayer.getSecond()));
                 return latLongs;
+            }
+
+            private void internalRemove(List<PairWithLayer> pairWithLayers) {
+                removeLines(pairWithLayers);
+                fireDistanceAndTime();
             }
 
             private void fireDistanceAndTime() {
@@ -396,46 +415,41 @@ public class MapsforgeMapView implements MapView {
                 }
                 fireCalculatedDistance((int) totalDistance, (int) (totalTime > 0 ? totalTime / 1000 : 0));
             }
-
-            public void remove(List<PositionPair> pairs) {
-                removeLines(pairs);
-                fireDistanceAndTime();
-                Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
-                for (PositionPair pair : pairs) {
-                    removed.add(pair.getFirst());
-                    removed.add(pair.getSecond());
-                }
-                selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
-            }
         });
 
         this.trackUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private java.util.Map<PositionPair, Line> pairsToLines = new HashMap<PositionPair, Line>();
-
-            public void add(List<PositionPair> pairs) {
-                int tileSize = mapView.getModel().displayModel.getTileSize();
-                for (PositionPair pair : pairs) {
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), TRACK_PAINT, tileSize);
-                    getLayerManager().getLayers().add(line);
-                    pairsToLines.put(pair, line);
-                }
-                // TODO fireCalculatedDistance((int)sum, 0);
+            public void add(List<PairWithLayer> pairWithLayers) {
+                internalAdd(pairWithLayers);
             }
 
-            public void remove(List<PositionPair> pairs) {
-                Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
-                for (PositionPair pair : pairs) {
-                    Line line = pairsToLines.get(pair);
-                    if (line != null) {
-                        getLayerManager().getLayers().remove(line);
-                        pairsToLines.remove(pair);
-                    } else
-                        System.out.println("Could not find layer for position");
-                    removed.add(pair.getFirst());
-                    removed.add(pair.getSecond());
+            public void update(List<PairWithLayer> pairWithLayers) {
+                internalRemove(pairWithLayers);
+                internalAdd(pairWithLayers);
+            }
+
+            public void remove(List<PairWithLayer> pairWithLayers) {
+                internalRemove(pairWithLayers);
+                updateSelectionAfterRemove(pairWithLayers);
+            }
+
+            private void internalAdd(List<PairWithLayer> pairWithLayers) {
+                int tileSize = mapView.getModel().displayModel.getTileSize();
+                for (PairWithLayer pair : pairWithLayers) {
+                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), TRACK_PAINT, tileSize);
+                    pair.setLayer(line);
+                    getLayerManager().getLayers().add(line);
                 }
-                selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
-                // TODO fireCalculatedDistance((int)sum, 0);
+            }
+
+            private void internalRemove(List<PairWithLayer> pairWithLayers) {
+                for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    Layer layer = pairWithLayer.getLayer();
+                    if (layer != null)
+                        getLayerManager().getLayers().remove(layer);
+                    else
+                        log.warning("Could not find layer for track pair " + pairWithLayer);
+                    pairWithLayer.setLayer(null);
+                }
             }
         });
 
@@ -448,7 +462,7 @@ public class MapsforgeMapView implements MapView {
 
             public void update(List<PositionWithLayer> positionWithLayers) {
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    interalRemove(positionWithLayer);
+                    internalRemove(positionWithLayer);
                     internalAdd(positionWithLayer);
                 }
             }
@@ -456,7 +470,7 @@ public class MapsforgeMapView implements MapView {
             public void remove(List<PositionWithLayer> positionWithLayers) {
                 List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    interalRemove(positionWithLayer);
+                    internalRemove(positionWithLayer);
                     removed.add(positionWithLayer.getPosition());
                 }
                 selectionUpdater.removedPositions(removed);
@@ -468,7 +482,7 @@ public class MapsforgeMapView implements MapView {
                 getLayerManager().getLayers().add(marker);
             }
 
-            private void interalRemove(PositionWithLayer positionWithLayer) {
+            private void internalRemove(PositionWithLayer positionWithLayer) {
                 Layer layer = positionWithLayer.getLayer();
                 if (layer != null)
                     getLayerManager().getLayers().remove(layer);
@@ -520,6 +534,15 @@ public class MapsforgeMapView implements MapView {
                 }
             }
         });
+    }
+
+    private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {
+        Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
+        for (PairWithLayer pair : pairWithLayers) {
+            removed.add(pair.getFirst());
+            removed.add(pair.getSecond());
+        }
+        selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
     }
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<LocalMap, Layer>();
@@ -718,9 +741,9 @@ public class MapsforgeMapView implements MapView {
         return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
     }
 
-    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PositionPair> pairs) {
+    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairs) {
         List<LongitudeAndLatitude> result = new ArrayList<>();
-        for (PositionPair pair : pairs) {
+        for (PairWithLayer pair : pairs) {
             result.add(asLongitudeAndLatitude(pair.getFirst()));
             result.add(asLongitudeAndLatitude(pair.getSecond()));
         }

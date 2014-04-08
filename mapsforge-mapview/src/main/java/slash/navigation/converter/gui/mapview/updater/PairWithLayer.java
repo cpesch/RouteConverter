@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.mapview.updater;
 
+import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 
 /**
@@ -27,11 +28,12 @@ import slash.navigation.common.NavigationPosition;
  * @author Christian Pesch
  */
 
-public class PositionPair {
+public class PairWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
+    private Layer layer;
 
-    public PositionPair(NavigationPosition first, NavigationPosition second) {
+    public PairWithLayer(NavigationPosition first, NavigationPosition second) {
         this.first = first;
         this.second = second;
     }
@@ -44,18 +46,28 @@ public class PositionPair {
         return second;
     }
 
+    public Layer getLayer() {
+        return layer;
+    }
+
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PositionPair positionPair = (PositionPair) o;
+        PairWithLayer that = (PairWithLayer) o;
 
-        return first.equals(positionPair.first) && second.equals(positionPair.second);
+        return first.equals(that.first) && second.equals(that.second) &&
+                !(layer != null ? !layer.equals(that.layer) : that.layer != null);
     }
 
     public int hashCode() {
         int result = first.hashCode();
         result = 31 * result + second.hashCode();
+        result = 31 * result + (layer != null ? layer.hashCode() : 0);
         return result;
     }
 }

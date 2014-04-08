@@ -19,7 +19,6 @@
 */
 package slash.navigation.converter.gui.mapview.updater;
 
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import static java.lang.Math.min;
 public class TrackUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final TrackOperation trackOperation;
-    private final List<NavigationPosition> currentTrack = new ArrayList<NavigationPosition>();
+    private final List<PairWithLayer> pairWithLayers = new ArrayList<PairWithLayer>();
 
     public TrackUpdater(PositionsModel positionsModel, TrackOperation trackOperation) {
         this.positionsModel = positionsModel;
@@ -46,20 +45,19 @@ public class TrackUpdater implements EventMapUpdater {
     }
 
     public void handleAdd(int firstRow, int lastRow) {
-        for (int i = firstRow; i <= lastRow; i++)
-            currentTrack.add(i, positionsModel.getPosition(i));
+        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
+        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : lastRow;
 
-        int startIndex = firstRow > 0 ? firstRow - 1 : firstRow;
-        int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : lastRow;
-        // TODO endIndex = min(endIndex, currentTrack.size() - 1);
+        List<PairWithLayer> removed = new ArrayList<PairWithLayer>();
+        if (beforeFirstRow < pairWithLayers.size())
+            removed.add(pairWithLayers.remove(beforeFirstRow));
 
-        List<PositionPair> added = new ArrayList<PositionPair>();
-        for (int i = startIndex; i < endIndex; i++)
-            added.add(new PositionPair(positionsModel.getPosition(i), positionsModel.getPosition(i + 1)));
-
-        List<PositionPair> removed = new ArrayList<PositionPair>();
-        if (firstRow > 0 && lastRow < currentTrack.size() - 1)
-            removed.add(new PositionPair(positionsModel.getPosition(firstRow - 1), positionsModel.getPosition(lastRow + 1)));
+        List<PairWithLayer> added = new ArrayList<PairWithLayer>();
+        for (int i = beforeFirstRow; i < afterLastRow; i++) {
+            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1));
+            pairWithLayers.add(i, pairWithLayer);
+            added.add(pairWithLayer);
+        }
 
         if (!removed.isEmpty())
             trackOperation.remove(removed);
@@ -68,38 +66,34 @@ public class TrackUpdater implements EventMapUpdater {
     }
 
     public void handleUpdate(int firstRow, int lastRow) {
-        int startIndex = firstRow > 0 ? firstRow - 1 : firstRow;
-        int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : min(lastRow, positionsModel.getRowCount() - 1);
+        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
+        // handle first to MAX_VALUE update events
+        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
+        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 
-        List<PositionPair> removed = new ArrayList<PositionPair>();
-        for (int i = startIndex; i < endIndex; i++)
-            removed.add(new PositionPair(positionsModel.getPosition(i), positionsModel.getPosition(i + 1)));
+        List<PairWithLayer> updated = new ArrayList<PairWithLayer>();
+        for (int i = beforeFirstRow; i < afterLastRow; i++)
+            updated.add(pairWithLayers.get(i));
 
-        List<PositionPair> added = new ArrayList<PositionPair>();
-        for (int i = startIndex; i < endIndex; i++)
-            added.add(new PositionPair(positionsModel.getPosition(i), positionsModel.getPosition(i + 1)));
-
-        if (!removed.isEmpty())
-            trackOperation.remove(removed);
-        if (!added.isEmpty())
-            trackOperation.add(added);
+        if (!updated.isEmpty())
+            trackOperation.update(updated);
     }
 
     public void handleRemove(int firstRow, int lastRow) {
-        int startIndex = firstRow > 0 ? firstRow - 1 : firstRow;
-        int validLastRow = min(lastRow, currentTrack.size() - 1);
-        int endIndex = lastRow < currentTrack.size() - 1 ? lastRow + 1 : validLastRow;
+        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
+        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
+        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 
-        List<PositionPair> removed = new ArrayList<PositionPair>();
-        for (int i = startIndex; i < endIndex; i++)
-            removed.add(new PositionPair(currentTrack.get(i), currentTrack.get(i + 1)));
+        List<PairWithLayer> removed = new ArrayList<PairWithLayer>();
+        for (int i = afterLastRow; i > beforeFirstRow; i--)
+            removed.add(pairWithLayers.remove(i - 1));
 
-        List<PositionPair> added = new ArrayList<PositionPair>();
-        if (firstRow > 0 && lastRow < currentTrack.size() - 1)
-            added.add(new PositionPair(currentTrack.get(firstRow - 1), currentTrack.get(lastRow + 1)));
-
-        for (int i = validLastRow; i >= firstRow; i--)
-            currentTrack.remove(i);
+        List<PairWithLayer> added = new ArrayList<PairWithLayer>();
+        if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1) {
+            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(beforeFirstRow), positionsModel.getPosition(afterLastRow));
+            pairWithLayers.add(beforeFirstRow, pairWithLayer);
+            added.add(pairWithLayer);
+        }
 
         if (!added.isEmpty())
             trackOperation.add(added);
@@ -107,15 +101,7 @@ public class TrackUpdater implements EventMapUpdater {
             trackOperation.remove(removed);
     }
 
-    List<PositionPair> getCurrentTrack() {
-        List<PositionPair> pairs = new ArrayList<PositionPair>();
-        for (int i = 0; i < currentTrack.size(); i++) {
-            NavigationPosition first = currentTrack.get(i);
-            if (i + 1 < currentTrack.size()) {
-                NavigationPosition second = currentTrack.get(i + 1);
-                pairs.add(new PositionPair(first, second));
-            }
-        }
-        return pairs;
+    List<PairWithLayer> getPairWithLayers() {
+        return pairWithLayers;
     }
 }
