@@ -75,7 +75,8 @@ public class MapSelector {
 
         comboBoxTheme.setModel(new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
-        comboBoxTheme.setEnabled(((LocalMap) comboBoxMap.getSelectedItem()).isRenderer());
+        LocalMap map = (LocalMap) comboBoxMap.getSelectedItem();
+        comboBoxTheme.setEnabled(map == null || map.isRenderer());
     }
 
     public void zoomChanged(int zoomLevel) {
