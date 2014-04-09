@@ -288,11 +288,16 @@ public class MapsforgeMapView implements MapView {
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             public void add(List<PositionWithLayer> positionWithLayers) {
+                LatLong center = null;
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), markerIcon, 8, -16);
+                    LatLong position = asLatLong(positionWithLayer.getPosition());
+                    Marker marker = new Marker(position, markerIcon, 8, -16);
                     positionWithLayer.setLayer(marker);
                     getLayerManager().getLayers().add(marker);
+                    center = position;
                 }
+                if (center != null)
+                    setCenter(center);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
@@ -522,10 +527,12 @@ public class MapsforgeMapView implements MapView {
                             return;
 
                         boolean allRowsChanged = isFirstToLastRow(e);
-                        if (!allRowsChanged)
-                            eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
-                        if (allRowsChanged)
+                        if (allRowsChanged) {
+                            eventMapUpdater.handleRemove(0, MAX_VALUE);
+                            eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
                             centerAndZoom(getMapBoundingBox());
+                        } else
+                            eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
 
                         break;
                     case DELETE:
