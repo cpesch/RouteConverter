@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.12-SNAPSHOT</version>
+        <version>2.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -17,7 +17,6 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>CreateHgtDataSourcesXml</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -48,72 +47,6 @@
                             </filters>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>CreateBrouterDataSourcesXml</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>CreateBrouterDataSourcesXml</finalName>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Specification-Title>CreateBrouterDataSourcesXml for ${project.name}</Specification-Title>
-                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
-                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Download-At>http://www.routeconverter.com</Download-At>
-                                        <Main-Class>slash.navigation.download.tools.CreateBrouterDataSourcesXml</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.txt</exclude>
-                                        <exclude>META-INF/LICENSE*</exclude>
-                                        <exclude>META-INF/NOTICE*</exclude>
-                                        <exclude>META-INF/maven/</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>CreateMapDataSourcesXml</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>CreateMapDataSourcesXml</finalName>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Specification-Title>CreateMapDataSourcesXml for ${project.name}</Specification-Title>
-                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
-                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Download-At>http://www.routeconverter.com</Download-At>
-                                        <Main-Class>slash.navigation.download.tools.CreateMapDataSourcesXml</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.txt</exclude>
-                                        <exclude>META-INF/LICENSE*</exclude>
-                                        <exclude>META-INF/NOTICE*</exclude>
-                                        <exclude>META-INF/maven/</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -123,11 +56,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>download</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mapsforge-maps</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

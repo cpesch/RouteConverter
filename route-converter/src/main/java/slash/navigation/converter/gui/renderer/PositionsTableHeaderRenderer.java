@@ -29,16 +29,13 @@ import java.awt.*;
 
 import static javax.swing.SwingConstants.LEFT;
 
-import static javax.swing.SwingConstants.LEFT;
-
 /**
  * Renders the column headers of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class PositionsTableCellHeaderRenderer extends DefaultTableCellRenderer {
-
+public class PositionsTableHeaderRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(LEFT);

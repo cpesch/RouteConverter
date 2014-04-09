@@ -60,15 +60,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -127,6 +119,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
                 return getRoute().getElevationDescend(0, rowIndex);
+            case ELEVATION_DIFFERENCE_COLUMN_INDEX:
+                return getRoute().getElevationDelta(rowIndex);
         }
         return getPosition(rowIndex);
     }

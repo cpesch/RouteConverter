@@ -53,10 +53,13 @@ public class TableHeaderMenu {
     private final JPopupMenu popupMenu = new JPopupMenu();
     private final PositionsModel positionsModel;
     private final PositionsTableColumnModel columnModel;
+    private final ActionManager actionManager;
 
-    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel, PositionsTableColumnModel columnModel) {
+    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
+                           PositionsTableColumnModel columnModel, ActionManager actionManager) {
         this.positionsModel = positionsModel;
         this.columnModel = columnModel;
+        this.actionManager = actionManager;
 
         initializeShowColumn(findMenu(menuBar, "view", "show-column"));
         initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"));
@@ -73,8 +76,8 @@ public class TableHeaderMenu {
     }
 
     private void initializeSortPositions(JMenu sortPositionListMenu) {
-        JMenu sortPositionsPopupMenu = createMenu("sort-positions");
-        popupMenu.add(sortPositionsPopupMenu);
+        // JMenu sortPositionsPopupMenu = createMenu("sort-positions");
+        // popupMenu.add(sortPositionsPopupMenu);
 
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
@@ -85,9 +88,9 @@ public class TableHeaderMenu {
             SortColumnAction action = new SortColumnAction(positionsModel, column);
             actionManager.register("sort-column-" + column.getName(), action);
 
-            JMenuItem popupItem = new JMenuItem(action);
-            popupItem.setText(menuItemText);
-            sortPositionsPopupMenu.add(popupItem);
+            // JMenuItem popupItem = new JMenuItem(action);
+            // popupItem.setText(menuItemText);
+            // sortPositionsPopupMenu.add(popupItem);
 
             JMenuItem menuBarItem = new JMenuItem(action);
             menuBarItem.setText(menuItemText);
@@ -97,8 +100,8 @@ public class TableHeaderMenu {
     }
 
     private void initializeShowColumn(JMenu showColumnMenu) {
-        JMenu showColumnPopupMenu = createMenu("show-column-popup");
-        popupMenu.add(showColumnPopupMenu);
+        // JMenu showColumnPopupMenu = createMenu("show-column-popup");
+        // popupMenu.add(showColumnPopupMenu);
 
         VisibleListener visibleListener = new VisibleListener();
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
@@ -111,7 +114,7 @@ public class TableHeaderMenu {
 
             JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(menuItemText);
             popupItem.setModel(new PositionTableColumnButtonModel(column, action));
-            showColumnPopupMenu.add(popupItem);
+            popupMenu.add(popupItem);
 
             JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuItemText);
             menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
@@ -154,6 +157,12 @@ public class TableHeaderMenu {
             if (action.isSelected())
                 action.setEnabled(false);
         }
+    }
+
+    public void enable(boolean enable) {
+        for (PositionTableColumn column : columnModel.getPreparedColumns())
+            if (column.getComparator() != null)
+                actionManager.enable("sort-column-" + column.getName(), enable);
     }
 
     private class VisibleListener implements PropertyChangeListener {

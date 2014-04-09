@@ -21,26 +21,26 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCalculations.extrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Helps to augment a newly created position with elevation, postal address
@@ -78,6 +78,8 @@ public class SinglePositionAugmenter implements PositionAugmenter {
     public void complementElevation(final int row, final Double longitude, final Double latitude) {
         executorService.execute(new Runnable() {
             public void run() {
+                completePositionService.downloadElevationDataFor(asList(new LongitudeAndLatitude(longitude, latitude)));
+
                 final Double[] elevation = new Double[1];
                 try {
                     elevation[0] = completePositionService.getElevationFor(longitude, latitude);
@@ -86,7 +88,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 }
 
                 if (elevation[0] != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
+                    invokeLater(new Runnable() {
                         public void run() {
                             if (!isEmpty(elevation[0])) {
                                 positionsModel.edit(row, ELEVATION_COLUMN_INDEX, elevation[0], -1, null, true, false);
@@ -109,7 +111,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 }
 
                 if (description[0] != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
+                    invokeLater(new Runnable() {
                         public void run() {
                             if (description[0] != null) {
                                 String newDescription = createDescription(row + 1, description[0]);

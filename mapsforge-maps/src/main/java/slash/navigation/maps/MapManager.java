@@ -166,6 +166,12 @@ public class MapManager {
     private void scanThemes() throws FileNotFoundException {
         long start = currentTimeMillis();
 
+<<<<<<< HEAD
+=======
+        themesModel.clear();
+        themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
+
+>>>>>>> remotes/origin/master
         File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);

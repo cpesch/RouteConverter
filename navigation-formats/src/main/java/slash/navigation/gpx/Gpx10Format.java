@@ -235,7 +235,7 @@ public class Gpx10Format extends GpxFormat {
         else
             rte = objectFactory.createGpxRte();
 
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             rte.setName(asRouteName(route.getName()));
             rte.setDesc(asDescription(route.getDescription()));
         }
@@ -281,7 +281,7 @@ public class Gpx10Format extends GpxFormat {
         else
             trk = objectFactory.createGpxTrk();
 
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             trk.setName(asRouteName(route.getName()));
             trk.setDesc(asDescription(route.getDescription()));
         }
@@ -327,7 +327,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private void createMetaData(GpxRoute route, Gpx gpx) {
-        if (isWriteName()) {
+        if (isWriteMetaData()) {
             gpx.setName(asRouteName(route.getName()));
             gpx.setDesc(asDescription(route.getDescription()));
         }

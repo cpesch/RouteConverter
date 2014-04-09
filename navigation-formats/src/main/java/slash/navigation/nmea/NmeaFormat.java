@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,12 +56,14 @@ public class NmeaFormat extends BaseNmeaFormat {
     static {
         log = Logger.getLogger(NmeaFormat.class.getName());
     }
+    private static final Preferences preferences = Preferences.userNodeForPackage(NmeaFormat.class);
 
     private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
+        int maximumFractionDigits = preferences.getInt("altitudeSpeedMaximumFractionDigits", 1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setGroupingUsed(false);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumFractionDigits(1);
-        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(1);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumIntegerDigits(1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumIntegerDigits(6);
     }

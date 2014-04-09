@@ -117,6 +117,7 @@ public abstract class BaseMapView implements MapView {
 
     protected static final String MAP_TYPE_PREFERENCE = "mapType";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
+    private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
     private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
@@ -1520,6 +1521,7 @@ public abstract class BaseMapView implements MapView {
 
         boolean moveCompleteSelection = preferences.getBoolean(MOVE_COMPLETE_SELECTION_PREFERENCE, true);
         boolean cleanElevation = preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false);
+        boolean complementElevation = preferences.getBoolean(COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE, true);
         boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
         boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false);
 
@@ -1545,6 +1547,9 @@ public abstract class BaseMapView implements MapView {
 
             if (cleanElevation)
                 positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
+            if (complementElevation)
+                positionAugmenter.complementElevation(row, position.getLongitude(), position.getLatitude());
+
             if (cleanTime)
                 positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)

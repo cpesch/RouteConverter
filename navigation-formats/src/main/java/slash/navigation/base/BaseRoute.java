@@ -456,6 +456,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public double getElevationDelta(int index) {
+        List<P> positions = getPositions();
+        NavigationPosition previous = index > 0 ? positions.get(index - 1) : null;
+        NavigationPosition current = index < positions.size() ? positions.get(index) : null;
+        if(previous != null && current != null) {
+            Double elevation = previous.calculateElevation(current);
+            if(elevation != null)
+                return elevation;
+        }
+        return 0;
+    }
+
     public void sort(Comparator<P> comparator) {
         List<P> positions = getPositions();
         @SuppressWarnings({"SuspiciousToArrayCall", "unchecked"})

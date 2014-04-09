@@ -1118,26 +1118,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 getDownloadManager().loadQueue();
             }
-        }, "DownloadManagerInitializer").start();
-    }
-
-    private void initializeMapManager() {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    getMapManager().initialize();
-                    getMapManager().scanDirectories();
-                } catch (final IOException e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            showMessageDialog(frame,
-                                    MessageFormat.format(getBundle().getString("scan-error"), e.getMessage()), frame.getTitle(),
-                                    ERROR_MESSAGE);
-                        }
-                    });
-                }
-            }
-        }, "MapManagerInitializer").start();
+        });
     }
 
     private class PrintMapAction extends FrameAction {

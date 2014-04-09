@@ -93,8 +93,8 @@ public class MagellanRouteFormatTest {
         assertDoubleEquals(1135.84141, position.getLongitudeAsValueAndOrientation().getValue());
         assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
         assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
-        assertDoubleEquals(11.5973568, position.getLongitude());
-        assertDoubleEquals(48.1497101, position.getLatitude());
+        assertDoubleEquals(11.5973568333, position.getLongitude());
+        assertDoubleEquals(48.1497101667, position.getLatitude());
         assertDoubleEquals(54.5, position.getElevation());
         assertNull(position.getTime());
         assertEquals("Ifflandstrasse", position.getDescription());
