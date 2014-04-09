@@ -382,10 +382,11 @@ public class MapsforgeMapView implements MapView {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     List<LatLong> latLongs = calculateRoute(pairWithLayer);
-
-                    Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
-                    pairWithLayer.setLayer(polyline);
-                    getLayerManager().getLayers().add(polyline);
+                    if(latLongs != null) {
+                        Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
+                        pairWithLayer.setLayer(polyline);
+                        getLayerManager().getLayers().add(polyline);
+                    }
                 }
             }
 
@@ -527,12 +528,10 @@ public class MapsforgeMapView implements MapView {
                             return;
 
                         boolean allRowsChanged = isFirstToLastRow(e);
-                        if (allRowsChanged) {
-                            eventMapUpdater.handleRemove(0, MAX_VALUE);
-                            eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
-                            centerAndZoom(getMapBoundingBox());
-                        } else
+                        if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
+                        if (allRowsChanged)
+                            centerAndZoom(getMapBoundingBox());
 
                         break;
                     case DELETE:
