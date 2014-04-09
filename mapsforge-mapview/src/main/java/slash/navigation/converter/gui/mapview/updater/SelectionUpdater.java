@@ -54,12 +54,10 @@ public class SelectionUpdater {
 
     public void removedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
-        // quadratic complexity, using probably smaller set for inner loop
-        for (NavigationPosition position : positions) {
-            for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                if (positionWithLayer.getPosition().equals(position))
-                    removed.add(positionWithLayer);
-            }
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+            NavigationPosition position = positionWithLayer.getPosition();
+            if (positions.contains(position) && positionsModel.getIndex(position) == -1)
+                removed.add(positionWithLayer);
         }
         applyDelta(Collections.<PositionWithLayer>emptyList(), removed);
     }
