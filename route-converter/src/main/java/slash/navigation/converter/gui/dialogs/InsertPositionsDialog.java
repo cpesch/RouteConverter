@@ -23,6 +23,8 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.helpers.JMenuHelper;
@@ -44,7 +46,7 @@ import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
- * Dialog for inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */

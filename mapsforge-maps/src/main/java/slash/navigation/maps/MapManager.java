@@ -101,6 +101,7 @@ public class MapManager {
 
     public MapManager(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
+        initializeDefaults();
     }
 
     public MapsTableModel getMapsModel() {
@@ -132,16 +133,22 @@ public class MapManager {
     }
 
     public synchronized void scanDirectories() throws IOException {
+        initializeDefaults();
         scanMaps();
         scanThemes();
     }
 
-    private void scanMaps() {
-        long start = currentTimeMillis();
-
+    private void initializeDefaults() {
         mapsModel.clear();
         mapsModel.addOrUpdateMap(new DownloadMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
         mapsModel.addOrUpdateMap(new DownloadMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
+
+        themesModel.clear();
+        themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
+    }
+
+    private void scanMaps() {
+        long start = currentTimeMillis();
 
         File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
@@ -158,9 +165,6 @@ public class MapManager {
 
     private void scanThemes() throws FileNotFoundException {
         long start = currentTimeMillis();
-
-        themesModel.clear();
-        themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
 
         File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
