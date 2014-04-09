@@ -39,7 +39,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 

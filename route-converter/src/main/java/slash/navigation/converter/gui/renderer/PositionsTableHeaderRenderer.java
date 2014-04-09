@@ -27,8 +27,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-import static javax.swing.SwingConstants.LEFT;
-
 /**
  * Renders the column headers of the positions table.
  *

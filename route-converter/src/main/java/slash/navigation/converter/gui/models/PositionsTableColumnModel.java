@@ -24,28 +24,53 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.comparators.TimeComparator;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
+import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
+import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.prefs.Preferences;
 
-import static java.text.DateFormat.*;
+import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.*;
+import static java.text.DateFormat.getDateTimeInstance;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
 import static java.util.Locale.US;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
@@ -78,11 +103,11 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         for (int i = 0; i < predefinedColumns.size(); i++) {
             PositionTableColumn column = predefinedColumns.get(i);
             int index = preferences.getInt(ORDER_PREFERENCE + column.getName(), i);
-            if(columns[index] == null)
+            if (columns[index] == null)
                 columns[index] = column;
             else if (columns[i] == null)
                 columns[i] = column;
-            else if(column.isVisible())
+            else if (column.isVisible())
                 column.toggleVisibility();
 
             column.addPropertyChangeListener(visibleListener);
