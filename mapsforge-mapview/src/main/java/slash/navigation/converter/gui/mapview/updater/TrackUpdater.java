@@ -82,11 +82,11 @@ public class TrackUpdater implements EventMapUpdater {
     public void handleRemove(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, pairWithLayers.size() - 1);
-        int afterLastRow = lastRow < pairWithLayers.size() - 1 ? lastRow + 1 : validLastRow;
+        int afterLastRow = lastRow < pairWithLayers.size() ? lastRow + 1 : validLastRow;
 
         List<PairWithLayer> removed = new ArrayList<PairWithLayer>();
-        for (int i = afterLastRow; i > beforeFirstRow; i--)
-            removed.add(pairWithLayers.remove(i - 1));
+        for (int i = validLastRow; i >= beforeFirstRow; i--)
+            removed.add(pairWithLayers.remove(i));
 
         List<PairWithLayer> added = new ArrayList<PairWithLayer>();
         if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1) {

@@ -125,6 +125,7 @@ public class SelectionUpdaterTest {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(1)).thenReturn(p1);
         when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getIndex(p1)).thenReturn(-1);
         SelectionOperation selectionOperation = mock(SelectionOperation.class);
 
         SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
