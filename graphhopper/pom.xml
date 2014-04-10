@@ -16,8 +16,7 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-            <classifier>tests</classifier>
-            <type>test-jar</type> <!-- for http://youtrack.jetbrains.net/issue/IDEA-54254 -->
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
