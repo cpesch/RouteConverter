@@ -44,7 +44,7 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
  * @author Christian Pesch
  */
 
-public class CompletePositionService implements ElevationService {
+public class CompletePositionService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
     private static final String ELEVATION_SERVICE = "elevationService";
@@ -101,18 +101,6 @@ public class CompletePositionService implements ElevationService {
         if (description == null)
             description = geoNamesService.getNearByFor(longitude, latitude);
         return description;
-    }
-
-    public boolean isDownload() {
-        return getElevationService().isDownload();
-    }
-
-    public String getPath() {
-        return getElevationService().getPath();
-    }
-
-    public void setPath(String path) {
-        getElevationService().setPath(path);
     }
 
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
