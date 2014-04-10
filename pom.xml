@@ -230,6 +230,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>brouter</module>
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
@@ -241,6 +242,7 @@
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
         <module>jaxb6</module>
@@ -250,6 +252,7 @@
         <module>navigation-formats</module>
         <module>profileview</module>
         <module>rest</module>
+        <module>routing-service</module>
         <module>swt-mapview</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>
