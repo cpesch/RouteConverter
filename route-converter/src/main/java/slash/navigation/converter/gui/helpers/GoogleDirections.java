@@ -17,26 +17,44 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.routing;
+package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.routing.DownloadFuture;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.RoutingService;
 
 import java.util.List;
 
 /**
- * Interface for a service that determines the routing between two given positions.
+ * Encapsulates access to Google Directions service.
  *
  * @author Christian Pesch
  */
 
-public interface RoutingService {
-    String getName();
-    boolean isDownload();
-    String getPath();
-    void setPath(String path);
+public class GoogleDirections implements RoutingService {
+    public String getName() {
+        return "Google Directions";
+    }
 
-    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to);
-    DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    public boolean isDownload() {
+        return false;
+    }
+
+    public String getPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+        throw new UnsupportedOperationException();
+    }
+
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        throw new UnsupportedOperationException();
+    }
 }

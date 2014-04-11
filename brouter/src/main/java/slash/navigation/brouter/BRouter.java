@@ -20,11 +20,7 @@
 
 package slash.navigation.brouter;
 
-import btools.router.OsmNodeNamed;
-import btools.router.OsmPathElement;
-import btools.router.OsmTrack;
-import btools.router.RoutingContext;
-import btools.router.RoutingEngine;
+import btools.router.*;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -39,12 +35,7 @@ import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -68,12 +59,17 @@ public class BRouter implements RoutingService {
     private static final int MAX_RUNNING_TIME = 1000;
     private static final String DATASOURCE_URL = "brouter-datasources.xml";
 
+    private final DownloadManager downloadManager;
+    private final RoutingContext routingContext = new RoutingContext();
     private Map<String, File> fileMap;
     private String baseUrl, directory;
-    private DownloadManager downloadManager;
-    private final RoutingContext routingContext = new RoutingContext();
 
-    public BRouter() {
+    public BRouter(DownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
+        initialize();
+    }
+
+    private void initialize() {
         DataSourceService service = new DataSourceService();
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
@@ -83,26 +79,23 @@ public class BRouter implements RoutingService {
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
         this.directory = service.getDataSource(getName()).getDirectory();
-    }
 
-    public void setDownloadManager(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
-    }
-
-    public void initialize() throws IOException {
-        extractFile("slash/navigation/brouter/car-test.brf");
-        extractFile("slash/navigation/brouter/fastbike.brf");
-        extractFile("slash/navigation/brouter/lookups.dat");
-        extractFile("slash/navigation/brouter/moped.brf");
-        extractFile("slash/navigation/brouter/safety.brf");
-        extractFile("slash/navigation/brouter/shortest.brf");
-        java.io.File profileFile = extractFile("slash/navigation/brouter/trekking.brf");
-        extractFile("slash/navigation/brouter/trekking-ignore-cr.brf");
-        extractFile("slash/navigation/brouter/trekking-noferries.brf");
-        extractFile("slash/navigation/brouter/trekking-nosteps.brf");
-        extractFile("slash/navigation/brouter/trekking-steep.brf");
-
-        routingContext.localFunction = profileFile.getPath();
+        try {
+            extractFile("slash/navigation/brouter/car-test.brf");
+            extractFile("slash/navigation/brouter/fastbike.brf");
+            extractFile("slash/navigation/brouter/lookups.dat");
+            extractFile("slash/navigation/brouter/moped.brf");
+            extractFile("slash/navigation/brouter/safety.brf");
+            extractFile("slash/navigation/brouter/shortest.brf");
+            routingContext.localFunction = extractFile("slash/navigation/brouter/trekking.brf").getPath();
+            extractFile("slash/navigation/brouter/trekking-ignore-cr.brf");
+            extractFile("slash/navigation/brouter/trekking-noferries.brf");
+            extractFile("slash/navigation/brouter/trekking-nosteps.brf");
+            extractFile("slash/navigation/brouter/trekking-steep.brf");
+        }
+        catch(IOException e) {
+            log.warning("Cannot initialize: " + e.getMessage());
+        }
     }
 
     public String getName() {
@@ -111,6 +104,26 @@ public class BRouter implements RoutingService {
 
     private String getBaseUrl() {
         return preferences.get(BASE_URL_PREFERENCE, baseUrl);
+    }
+
+    public boolean isDownload() {
+        return true;
+    }
+
+    public String getPath() {
+        return preferences.get(DIRECTORY_PREFERENCE, "");
+    }
+
+    public void setPath(String path) {
+        preferences.put(DIRECTORY_PREFERENCE, path);
+    }
+
+    private java.io.File getDirectory() {
+        String directoryName = getPath();
+        java.io.File f = new java.io.File(directoryName);
+        if(!f.exists())
+            directoryName = getApplicationDirectory(directory).getAbsolutePath();
+        return ensureDirectory(directoryName);
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
@@ -125,11 +138,6 @@ public class BRouter implements RoutingService {
         OsmTrack track = routingEngine.getFoundTrack();
         int distance = routingEngine.getDistance();
         return new RoutingResult(asPositions(track), distance, 0);
-    }
-
-    private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE, getApplicationDirectory(directory).getAbsolutePath());
-        return ensureDirectory(directoryName);
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {

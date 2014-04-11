@@ -37,12 +37,7 @@ import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -66,12 +61,17 @@ public class GraphHopper implements RoutingService {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final String DATASOURCE_URL = "graphhopper-datasources.xml";
 
+    private final DownloadManager downloadManager;
+    private final com.graphhopper.GraphHopper hopper = new com.graphhopper.GraphHopper().forDesktop();
     private Map<String, File> fileMap;
     private String baseUrl, directory;
-    private com.graphhopper.GraphHopper hopper;
-    private DownloadManager downloadManager;
 
-    public GraphHopper() {
+    public GraphHopper(DownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
+        initialize();
+    }
+
+    private void initialize() {
         DataSourceService service = new DataSourceService();
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
@@ -81,13 +81,7 @@ public class GraphHopper implements RoutingService {
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
         this.directory = service.getDataSource(getName()).getDirectory();
-    }
 
-    public void setDownloadManager(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
-    }
-
-    public void initialize() throws IOException { // TODO have to do this before routing
         String folder = new java.io.File(getDirectory(), "europe/germany/").getAbsolutePath();
         ensureDirectory(folder);
         String[] args = new String[]{
@@ -96,8 +90,11 @@ public class GraphHopper implements RoutingService {
                 // osmreader.acceptWay= CAR FOOT
         };
 
-        hopper = new com.graphhopper.GraphHopper().forDesktop();
-        hopper.init(read(args));
+        try {
+            hopper.init(read(args));
+        } catch (IOException e) {
+            log.warning("Cannot initialize: " + e.getMessage());
+        }
         hopper.importOrLoad();
     }
 
@@ -107,6 +104,18 @@ public class GraphHopper implements RoutingService {
 
     private String getBaseUrl() {
         return preferences.get(BASE_URL_PREFERENCE, baseUrl);
+    }
+
+    public boolean isDownload() {
+        return true;
+    }
+
+    public String getPath() {
+        return preferences.get(DIRECTORY_PREFERENCE, "");
+    }
+
+    public void setPath(String path) {
+        preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
@@ -123,7 +132,10 @@ public class GraphHopper implements RoutingService {
     }
 
     private java.io.File getDirectory() {
-        String directoryName = preferences.get(DIRECTORY_PREFERENCE, getApplicationDirectory(directory).getAbsolutePath());
+        String directoryName = getPath();
+        java.io.File f = new java.io.File(directoryName);
+        if(!f.exists())
+            directoryName = getApplicationDirectory(directory).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 

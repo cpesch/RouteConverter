@@ -27,8 +27,10 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -46,25 +48,15 @@ import slash.navigation.converter.gui.actions.SendErrorReportAction;
 import slash.navigation.converter.gui.actions.ShowAboutAction;
 import slash.navigation.converter.gui.actions.ShowDownloadsAction;
 import slash.navigation.converter.gui.actions.ShowOptionsAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.helpers.CompletePositionService;
-import slash.navigation.converter.gui.helpers.FrameMenu;
-import slash.navigation.converter.gui.helpers.MergePositionListMenu;
-import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.helpers.SinglePositionAugmenter;
-import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.UpdateChecker;
+import slash.navigation.converter.gui.helpers.*;
+import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
@@ -80,6 +72,8 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.maps.MapManager;
 import slash.navigation.rest.Credentials;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -97,49 +91,26 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.common.io.Files.findExistingPath;
-import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.shortenPath;
-import static slash.common.io.Files.toUrls;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
-import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.io.Files.*;
+import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
@@ -147,17 +118,7 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrows
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
-import static slash.navigation.gui.helpers.UIHelper.CROATIA;
-import static slash.navigation.gui.helpers.UIHelper.CZECH;
-import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
-import static slash.navigation.gui.helpers.UIHelper.POLAND;
-import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
-import static slash.navigation.gui.helpers.UIHelper.SERBIA;
-import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
-import static slash.navigation.gui.helpers.UIHelper.SPAIN;
-import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -225,6 +186,7 @@ public class RouteConverter extends SingleFrameApplication {
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private MapManager mapManager = new MapManager(downloadManager);
     private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
+    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -364,6 +326,9 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
+
+            if (mapView instanceof BaseMapView)
+                getRoutingServiceFacade().getRoutingServices().add(0, new GoogleDirections());
         } else {
             mapPanel.setVisible(false);
         }
@@ -702,24 +667,78 @@ public class RouteConverter extends SingleFrameApplication {
             profileView.setSelectedPositions(selectedPositions, true);
     }
 
-    public void insertAllWaypoints() {
-        if (isMapViewAvailable()) {
-            int[] selectedRows = getPositionsView().getSelectedRows();
-            getConvertPanel().clearSelection();
-            mapView.insertAllWaypoints(selectedRows);
-        }
-    }
-
-    public void insertOnlyTurnpoints() {
-        if (isMapViewAvailable()) {
-            int[] selectedRows = getPositionsView().getSelectedRows();
-            getConvertPanel().clearSelection();
-            mapView.insertOnlyTurnpoints(selectedRows);
-        }
-    }
-
     public CompletePositionService getCompletePositionService() {
         return completePositionService;
+    }
+
+    public RoutingServiceFacade getRoutingServiceFacade() {
+        return routingServiceFacade;
+    }
+
+    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
+        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
+    }
+
+    public void insertAllWaypoints() {
+        int[] selectedRows = getPositionsView().getSelectedRows();
+        getConvertPanel().clearSelection();
+
+        RoutingService routingService = getRoutingServiceFacade().getRoutingService();
+        if (routingService instanceof GoogleDirections && isMapViewAvailable()) {
+            mapView.insertAllWaypoints(selectedRows);
+            return;
+        }
+
+        insertWithRoutingService(routingService, selectedRows);
+    }
+
+    public void insertOnlyTurnpoints() { // TODO make this an insertion mode enum
+        int[] selectedRows = getPositionsView().getSelectedRows();
+        getConvertPanel().clearSelection();
+
+        RoutingService routingService = getRoutingServiceFacade().getRoutingService();
+        if (routingService instanceof GoogleDirections && isMapViewAvailable()) {
+            mapView.insertOnlyTurnpoints(selectedRows);
+            return;
+        }
+
+        insertWithRoutingService(routingService, selectedRows);
+    }
+
+    private void insertWithRoutingService(RoutingService routingService, int[] selectedRows) {
+        List<NavigationPosition> selectedPositions = new ArrayList<NavigationPosition>();
+        for (int i = 0; i < selectedRows.length; i++)
+            selectedPositions.add(getPositionsModel().getPosition(i));
+
+        if (routingService.isDownload()) {
+            List<LongitudeAndLatitude> lal = new ArrayList<LongitudeAndLatitude>();
+            for (NavigationPosition position : selectedPositions) {
+                lal.add(asLongitudeAndLatitude(position));
+            }
+            routingService.downloadRoutingDataFor(lal);
+        }
+
+        for (int i = 0; i < selectedPositions.size(); i++) {
+            // skip the very last position without successor
+            if (i == getPositionsModel().getRowCount() - 1 || i == selectedPositions.size() - 1)
+                continue;
+
+            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1));
+            if (result != null) {
+                List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+                for (NavigationPosition position : result.getPositions()) {
+                    positions.add(getPositionsModel().getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
+                }
+                int insertRow = getPositionsModel().getIndex(selectedPositions.get(i));
+                getPositionsModel().add(insertRow, positions);
+
+                for (int j = 0; j < positions.size(); j++) {    // TODO unify with BaseMapView#complementPositions
+                    NavigationPosition position = positions.get(j);
+                    positionAugmenter.complementElevation(insertRow + j, position.getLongitude(), position.getLatitude());
+                    positionAugmenter.complementTime(insertRow + j, position.getTime(), false);
+                }
+            }
+        }
     }
 
     public DownloadManager getDownloadManager() {
