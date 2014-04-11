@@ -23,7 +23,7 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 
 /**
- * A pair of {@link NavigationPosition}s.
+ * A pair of {@link NavigationPosition}s with a {@link Layer}.
  *
  * @author Christian Pesch
  */
