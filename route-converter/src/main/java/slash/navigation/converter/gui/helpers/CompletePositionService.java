@@ -46,7 +46,7 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
 
 public class CompletePositionService {
     private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
-    protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
@@ -61,10 +61,6 @@ public class CompletePositionService {
         elevationServices.add(geoNamesService);
         elevationServices.add(googleMapsService);
         elevationServices.add(new EarthToolsService());
-    }
-
-    public String getName() {
-        return "Complete Position Facade";
     }
 
     public void dispose() {

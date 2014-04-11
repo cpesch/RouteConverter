@@ -28,7 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link ElevationService} labels of the elevation lookup service combo box.
+ * Renders the {@link ElevationService} labels of the elevation service combo box.
  *
  * @author Christian Pesch
  */
@@ -36,8 +36,8 @@ import java.awt.*;
 public class ElevationServiceListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        ElevationService unitSystem = ElevationService.class.cast(value);
-        label.setText(unitSystem.getName());
+        ElevationService service = ElevationService.class.cast(value);
+        label.setText(service.getName());
         return label;
     }
 }
