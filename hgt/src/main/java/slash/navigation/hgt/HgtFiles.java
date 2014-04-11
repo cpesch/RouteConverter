@@ -104,7 +104,7 @@ public class HgtFiles implements ElevationService {
     }
 
     private java.io.File createFile(String key) {
-        return new java.io.File(getPath(), format("%s%s", key, ".hgt"));
+        return new java.io.File(getDirectory(), format("%s%s", key, ".hgt"));
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
