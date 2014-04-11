@@ -26,6 +26,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -976,24 +977,6 @@ public abstract class BaseMapView implements MapView {
         executeScript(buffer.toString());
     }
 
-    private static class PositionPair {
-        private NavigationPosition from;
-        private NavigationPosition to;
-
-        private PositionPair(NavigationPosition from, NavigationPosition to) {
-            this.from = from;
-            this.to = to;
-        }
-
-        private NavigationPosition getFrom() {
-            return from;
-        }
-
-        private NavigationPosition getTo() {
-            return to;
-        }
-    }
-
     private final Map<Integer, PositionPair> insertWaypointsQueue = new LinkedHashMap<Integer, PositionPair>();
     private final ExecutorService insertWaypointsExecutor = newSingleThreadExecutor();
 
@@ -1017,8 +1000,8 @@ public abstract class BaseMapView implements MapView {
             public void run() {
                 for (Integer key : addToQueue.keySet()) {
                     PositionPair pair = addToQueue.get(key);
-                    NavigationPosition origin = pair.getFrom();
-                    NavigationPosition destination = pair.getTo();
+                    NavigationPosition origin = pair.getFirst();
+                    NavigationPosition destination = pair.getSecond();
                     StringBuilder buffer = new StringBuilder();
                     buffer.append(mode).append("({");
                     buffer.append("origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
@@ -1330,8 +1313,8 @@ public abstract class BaseMapView implements MapView {
             if (coordinates.size() < 5 || pair == null)
                 return true;
 
-            final NavigationPosition before = pair.getFrom();
-            NavigationPosition after = pair.getTo();
+            final NavigationPosition before = pair.getFirst();
+            NavigationPosition after = pair.getSecond();
             final BaseRoute route = parseRoute(coordinates, before, after);
             synchronized (notificationMutex) {
                 int row = positions.indexOf(before) + 1;

@@ -17,26 +17,28 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.elevation;
-
-import slash.navigation.common.LongitudeAndLatitude;
-
-import java.io.IOException;
-import java.util.List;
+package slash.navigation.common;
 
 /**
- * Interface for a service that looks up the elevation for a given position.
+ * A pair of {@link NavigationPosition}s.
  *
  * @author Christian Pesch
  */
 
-public interface ElevationService {
-    String getName();
-    boolean isDownload();
-    String getPath();
-    void setPath(String path);
+public class PositionPair {
+    private final NavigationPosition first;
+    private final NavigationPosition second;
 
-    Double getElevationFor(double longitude, double latitude) throws IOException;
-    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    public PositionPair(NavigationPosition first, NavigationPosition second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    public NavigationPosition getFirst() {
+        return first;
+    }
+
+    public NavigationPosition getSecond() {
+        return second;
+    }
 }
