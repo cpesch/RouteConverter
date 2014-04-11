@@ -21,7 +21,6 @@
 package slash.navigation.download;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.download.actions.Validator;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
@@ -120,8 +119,7 @@ public class DownloadManager {
             if(ChecksumError.equals(queued.getState()) ||
                     SizeError.equals(queued.getState()) ||
                     TimestampError.equals(queued.getState()) ||
-                    Failed.equals(queued.getState()) ||
-                    !new Validator(download.getTarget()).existsFile())
+                    Failed.equals(queued.getState()))                       // TODO fails if file has been deleted
                 startExecutor(download);
             return queued;
         }

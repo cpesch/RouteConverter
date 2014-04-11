@@ -38,13 +38,10 @@ public class GraphHopperIT {
 
     @Before
     public void setUp() throws IOException {
-        router = new GraphHopper();
-        router.setDownloadManager(new DownloadManager(createTempFile("queueFile", ".xml")));
+        router = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
         DownloadFuture future = router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
-        router.initialize();
-
     }
 
     @Test

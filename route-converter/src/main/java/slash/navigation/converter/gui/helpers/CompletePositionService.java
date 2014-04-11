@@ -79,8 +79,8 @@ public class CompletePositionService {
                 return service;
         }
 
-        log.warning(format("Failed to find elevation service %s; using GeoNames", lookupServiceName));
-        return geoNamesService;
+        log.warning(format("Failed to find elevation service %s; using first", lookupServiceName));
+        return elevationServices.get(0);
     }
 
     public void setElevationService(ElevationService service) {
