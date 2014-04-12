@@ -228,14 +228,17 @@ public class MapsforgeMapView implements MapView {
         byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
 
-        ChangeListener mapAndThemeChangeListener = new ChangeListener() {
+        mapManager.getDisplayedMapModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                handleMapAndThemeUpdate();
+                handleMapAndThemeUpdate(true);
             }
-        };
-        mapManager.getDisplayedMapModel().addChangeListener(mapAndThemeChangeListener);
-        mapManager.getAppliedThemeModel().addChangeListener(mapAndThemeChangeListener);
-        handleMapAndThemeUpdate();
+        });
+        mapManager.getAppliedThemeModel().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleMapAndThemeUpdate(false);
+            }
+        });
+        handleMapAndThemeUpdate(false);
     }
 
     private AwtGraphicMapView createMapView() {
@@ -531,7 +534,7 @@ public class MapsforgeMapView implements MapView {
                         if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
                         if (allRowsChanged)
-                            centerAndZoom(getMapBoundingBox());
+                            centerAndZoom(getMapBoundingBox(), true);
 
                         break;
                     case DELETE:
@@ -553,7 +556,7 @@ public class MapsforgeMapView implements MapView {
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<LocalMap, Layer>();
 
-    private void handleMapAndThemeUpdate() {
+    private void handleMapAndThemeUpdate(boolean centerAndZoom) {
         Layers layers = getLayerManager().getLayers();
 
         // remove old map
@@ -576,7 +579,8 @@ public class MapsforgeMapView implements MapView {
         if (layer instanceof TileDownloadLayer)
             ((TileDownloadLayer) layer).start();
 
-        centerAndZoom(getMapBoundingBox());
+        if (centerAndZoom)
+            centerAndZoom(getMapBoundingBox(), false);
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
@@ -699,7 +703,7 @@ public class MapsforgeMapView implements MapView {
         if (positions.size() > 0)
             routeBorder = drawBorder(new BoundingBox(positions));
 
-        centerAndZoom(mapBoundingBox);
+        centerAndZoom(mapBoundingBox, true);
     }
 
     private Polyline drawBorder(BoundingBox boundingBox) {
@@ -724,23 +728,28 @@ public class MapsforgeMapView implements MapView {
         return null;
     }
 
-    private void centerAndZoom(BoundingBox mapBoundingBox) {
+    private void centerAndZoom(BoundingBox mapBoundingBox, boolean centerAndZoom) {
         if (getPositionsModel() == null)
             return;
 
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
         BoundingBox routeBoundingBox = new BoundingBox(getPositionsModel().getRoute().getPositions());
-        positions.add(routeBoundingBox.getNorthEast());
-        positions.add(routeBoundingBox.getSouthWest());
-
+        if(centerAndZoom) {
+            positions.add(routeBoundingBox.getNorthEast());
+            positions.add(routeBoundingBox.getSouthWest());
+        }
         if (mapBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
+            positions.add(routeBoundingBox.getNorthEast());
+            positions.add(routeBoundingBox.getSouthWest());
             positions.add(mapBoundingBox.getNorthEast());
             positions.add(mapBoundingBox.getSouthWest());
         }
 
-        BoundingBox both = new BoundingBox(positions);
-        zoomToBounds(both);
-        setCenter(both.getCenter());
+        if(positions.size() > 0) {
+            BoundingBox both = new BoundingBox(positions);
+            zoomToBounds(both);
+            setCenter(both.getCenter());
+        }
     }
 
     private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
