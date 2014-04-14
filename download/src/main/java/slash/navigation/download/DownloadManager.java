@@ -115,12 +115,13 @@ public class DownloadManager {
 
     public Download queueForDownload(Download download) {
         Download queued = getModel().getDownload(download.getUrl());
-        if(queued != null) {
-            if(ChecksumError.equals(queued.getState()) ||
-                    SizeError.equals(queued.getState()) ||
-                    TimestampError.equals(queued.getState()) ||
-                    Failed.equals(queued.getState()))                       // TODO fails if file has been deleted
-                startExecutor(download);
+        if (queued != null) {
+            if (!(Queued.equals(queued.getState()) ||
+                    Running.equals(queued.getState()) ||
+                    Resuming.equals(queued.getState()) ||
+                    Downloading.equals(queued.getState()) ||
+                    Processing.equals(queued.getState())))
+                startExecutor(queued);
             return queued;
         }
 

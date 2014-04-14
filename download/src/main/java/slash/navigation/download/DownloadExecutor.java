@@ -39,15 +39,7 @@ import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.CompactCalendar.now;
-import static slash.navigation.download.State.ChecksumError;
-import static slash.navigation.download.State.Downloading;
-import static slash.navigation.download.State.Failed;
-import static slash.navigation.download.State.NoFileError;
-import static slash.navigation.download.State.Processing;
-import static slash.navigation.download.State.Resuming;
-import static slash.navigation.download.State.SizeError;
-import static slash.navigation.download.State.Succeeded;
-import static slash.navigation.download.State.TimestampError;
+import static slash.navigation.download.State.*;
 
 /**
  * Performs the {@link Download} of an URL to local file.
@@ -64,6 +56,7 @@ public class DownloadExecutor implements Runnable {
     public DownloadExecutor(Download download, DownloadTableModel model) {
         this.download = download;
         this.model = model;
+        updateState(download, Queued);
     }
 
     public Download getDownload() {
@@ -71,6 +64,7 @@ public class DownloadExecutor implements Runnable {
     }
 
     public void run() {
+        updateState(download, Running);
         try {
             boolean success = true;
             if (head())
