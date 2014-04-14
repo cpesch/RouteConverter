@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
-    <datasource name="Freizeitkarte Maps" baseUrl="http://download.freizeitkarte-osm.de/Experimental/MapsForge/Beta6/" directory="maps/freizeitkarte">
+    <datasource name="Freizeitkarte Maps" baseUrl="http://download.freizeitkarte-osm.de/android/1404/" directory="maps/freizeitkarte">
         <map uri="freizeitkarte_alps_east.map.zip" size="642494391">
             <northEast longitude="17.6" latitude="49.3"/>
             <southWest longitude="9.3" latitude="45.299999"/>

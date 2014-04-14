@@ -29,25 +29,20 @@ import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteMap;
-import slash.navigation.maps.RemoteResource;
-import slash.navigation.maps.Theme;
+import slash.navigation.maps.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
@@ -59,6 +54,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -76,6 +72,8 @@ public class MapsDialog extends SimpleDialog {
     private JTable tableResources;
     private JButton buttonDownload;
     private JButton buttonClose;
+    private JLabel labelMessage;
+
     private ExecutorService executor = newCachedThreadPool();
 
     public MapsDialog() {
@@ -245,25 +243,29 @@ public class MapsDialog extends SimpleDialog {
         int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
         LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
+        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()));
     }
 
     private void apply() {
         int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
         Theme theme = getMapManager().getThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
+        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()));
     }
 
     private void download() {
-        final int[] selectedRows = tableResources.getSelectedRows();
-        for (int i = 0; i < selectedRows.length; i++) {
-            selectedRows[i] = tableResources.convertRowIndexToModel(selectedRows[i]);
+        final List<RemoteResource> selectedResources = new ArrayList<RemoteResource>();
+        List<String> selectedResourcesNames = new ArrayList<String>();
+        for (int selectedRow : tableResources.getSelectedRows()) {
+            RemoteResource resource = getMapManager().getResourcesModel().getResource(tableResources.convertRowIndexToModel(selectedRow));
+            selectedResources.add(resource);
+            selectedResourcesNames.add(resource.getUrl());
         }
+        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedResourcesNames.toArray())));
 
         executor.execute(new Runnable() {
             public void run() {
-                for (int selectedRow : selectedRows) {
-                    getMapManager().queueForDownload(getMapManager().getResourcesModel().getResource(selectedRow));
-                }
+                getMapManager().queueForDownload(selectedResources);
 
                 try {
                     getMapManager().scanDirectories();
@@ -301,7 +303,7 @@ public class MapsDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
@@ -370,7 +372,7 @@ public class MapsDialog extends SimpleDialog {
         contentPane.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel10, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel10.add(spacer4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
@@ -379,6 +381,8 @@ public class MapsDialog extends SimpleDialog {
         buttonClose = new JButton();
         this.$$$loadButtonText$$$(buttonClose, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("close"));
         panel11.add(buttonClose, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelMessage = new JLabel();
+        contentPane.add(labelMessage, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

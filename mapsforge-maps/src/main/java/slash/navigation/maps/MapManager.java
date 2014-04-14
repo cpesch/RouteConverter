@@ -25,17 +25,12 @@ import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.maps.models.DownloadMap;
-import slash.navigation.maps.models.ItemModel;
-import slash.navigation.maps.models.MapsTableModel;
-import slash.navigation.maps.models.RendererMap;
-import slash.navigation.maps.models.ResourcesTableModel;
-import slash.navigation.maps.models.ThemeImpl;
-import slash.navigation.maps.models.ThemesTableModel;
+import slash.navigation.maps.models.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -43,7 +38,6 @@ import java.util.prefs.Preferences;
 
 import static java.io.File.separator;
 import static java.lang.System.currentTimeMillis;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.common.io.Directories.ensureDirectory;
@@ -176,7 +170,7 @@ public class MapManager {
         themesModel.addOrUpdateTheme(DOWNLOAD_THEME);
 
         long end = currentTimeMillis();
-        log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory + " in " + (end-start) + " milliseconds");
+        log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory + " in " + (end - start) + " milliseconds");
     }
 
     private static String removePrefix(File root, File file) {
@@ -203,13 +197,17 @@ public class MapManager {
             resourcesModel.addOrUpdateResource(resource);
     }
 
-    public void queueForDownload(RemoteResource resource) {
-        slash.navigation.download.datasources.File file = resource.getFile();
-        Action action = resource.getFile().getUri().endsWith(".zip") ? Extract : Copy;
-        File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
-        Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(), resource.getUrl(),
-                file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
-        downloadManager.waitForCompletion(asList(download));
+    public void queueForDownload(List<RemoteResource> resources) {
+        List<Download> downloads = new ArrayList<Download>();
+        for (RemoteResource resource : resources) {
+            slash.navigation.download.datasources.File file = resource.getFile();
+            Action action = resource.getFile().getUri().endsWith(".zip") ? Extract : Copy;
+            File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
+            Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(),
+                    resource.getUrl(), file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
+            downloads.add(download);
+        }
+        downloadManager.waitForCompletion(downloads);
     }
 
     private File getFile(RemoteResource resource) {
