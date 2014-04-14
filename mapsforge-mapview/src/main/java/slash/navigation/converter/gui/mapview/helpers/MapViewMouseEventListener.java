@@ -88,12 +88,9 @@ public class MapViewMouseEventListener extends MouseAdapter {
         }
     }
 
-    public void mouseReleased(MouseEvent e) {
-        lastMousePressPoint = null;
-    }
-
     public void mouseWheelMoved(MouseWheelEvent e) {
-        zoomToMousePosition((byte) -e.getWheelRotation(), e.getX(), e.getY());
+        lastMousePressPoint = e.getPoint();
+        zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
     private static final int TOTAL_STEPS = 25;
@@ -123,7 +120,7 @@ public class MapViewMouseEventListener extends MouseAdapter {
         zoomToMousePosition(zoomLevelDiff, lastMousePressPoint.x, lastMousePressPoint.y);
     }
 
-    public void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
+    private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
         LatLong mouse = new MapViewProjection(mapView).fromPixels(mouseX, mouseY);
         mapView.getModel().mapViewPosition.setPivot(mouse);
 
