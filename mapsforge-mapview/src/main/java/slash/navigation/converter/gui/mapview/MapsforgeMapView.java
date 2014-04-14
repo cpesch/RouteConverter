@@ -160,10 +160,10 @@ public class MapsforgeMapView implements MapView {
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
         this.mapManager = mapManager;
+        this.positionAugmenter = positionAugmenter;
+        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
-        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
-        this.positionAugmenter = positionAugmenter;
         BRouter bRouter = new BRouter();
         bRouter.setDownloadManager(downloadManager);
         try {
@@ -238,7 +238,7 @@ public class MapsforgeMapView implements MapView {
                 handleMapAndThemeUpdate(false);
             }
         });
-        handleMapAndThemeUpdate(false);
+        handleMapAndThemeUpdate(true);
     }
 
     private AwtGraphicMapView createMapView() {
@@ -580,7 +580,7 @@ public class MapsforgeMapView implements MapView {
             ((TileDownloadLayer) layer).start();
 
         if (centerAndZoom)
-            centerAndZoom(getMapBoundingBox(), false);
+            centerAndZoom(getMapBoundingBox(), true);
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
@@ -729,18 +729,20 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void centerAndZoom(BoundingBox mapBoundingBox, boolean centerAndZoom) {
-        if (getPositionsModel() == null)
-            return;
-
         List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
-        BoundingBox routeBoundingBox = new BoundingBox(getPositionsModel().getRoute().getPositions());
-        if(centerAndZoom) {
+
+        BaseRoute route = getPositionsModel().getRoute();
+        BoundingBox routeBoundingBox = route != null && route.getPositions().size() > 0 ?
+                new BoundingBox(route.getPositions()) : null;
+        if (centerAndZoom && routeBoundingBox != null) {
             positions.add(routeBoundingBox.getNorthEast());
             positions.add(routeBoundingBox.getSouthWest());
         }
-        if (mapBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
-            positions.add(routeBoundingBox.getNorthEast());
-            positions.add(routeBoundingBox.getSouthWest());
+        if (mapBoundingBox != null) {
+            if(routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
+                positions.add(routeBoundingBox.getNorthEast());
+                positions.add(routeBoundingBox.getSouthWest());
+            }
             positions.add(mapBoundingBox.getNorthEast());
             positions.add(mapBoundingBox.getSouthWest());
         }
@@ -771,6 +773,9 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setCenter(LatLong center) {
+        if(mapView.getModel().frameBufferModel.getMapPosition() == null)
+            return;
+
         MapViewProjection projection = new MapViewProjection(mapView);
         LatLong upperLeft = projection.fromPixels(0, 0);
         Dimension dimension = mapView.getDimension();
