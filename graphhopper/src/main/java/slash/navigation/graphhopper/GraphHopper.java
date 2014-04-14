@@ -92,10 +92,10 @@ public class GraphHopper implements RoutingService {
 
         try {
             hopper.init(read(args));
-        } catch (IOException e) {
+            hopper.importOrLoad();
+        } catch (Exception e) {
             log.warning("Cannot initialize: " + e.getMessage());
         }
-        hopper.importOrLoad();
     }
 
     public String getName() {

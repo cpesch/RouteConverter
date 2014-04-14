@@ -164,15 +164,7 @@ public class MapsforgeMapView implements MapView {
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
-        BRouter bRouter = new BRouter();
-        bRouter.setDownloadManager(downloadManager);
-        try {
-            bRouter.initialize();
-        } catch (IOException e) {
-            log.severe("Cannot initialize BRouter: " + e.getMessage());
-        }
-        this.routingService = bRouter; // TODO need to make this configurable
-
+        this.routingService = new BRouter(downloadManager); // TODO need to make this configurable
         this.recenterAfterZooming = recenterAfterZooming;
     }
 
@@ -777,9 +769,9 @@ public class MapsforgeMapView implements MapView {
             return;
 
         MapViewProjection projection = new MapViewProjection(mapView);
-        LatLong upperLeft = projection.fromPixels(0, 0);
+        LatLong upperLeft = projection.fromPixels(20, 20);
         Dimension dimension = mapView.getDimension();
-        LatLong lowerRight = projection.fromPixels(dimension.width, dimension.height);
+        LatLong lowerRight = projection.fromPixels(dimension.width - 20, dimension.height - 20);
         if (upperLeft == null || lowerRight == null || recenterAfterZooming ||
                 !new org.mapsforge.core.model.BoundingBox(lowerRight.latitude, upperLeft.longitude, upperLeft.latitude, lowerRight.longitude).contains(center))
             mapView.getModel().mapViewPosition.animateTo(center);
