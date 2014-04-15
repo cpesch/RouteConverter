@@ -56,7 +56,7 @@ public class DownloadExecutor implements Runnable {
     public DownloadExecutor(Download download, DownloadTableModel model) {
         this.download = download;
         this.model = model;
-        updateState(download, Queued);
+        download.setState(Queued);
     }
 
     public Download getDownload() {
@@ -70,7 +70,8 @@ public class DownloadExecutor implements Runnable {
             if (head())
                 success = resume();
 
-            boolean tempFileComplete = download.getContentLength().equals(download.getTempFile().length());
+            boolean tempFileComplete = download.getContentLength() != null &&
+                    download.getContentLength().equals(download.getTempFile().length());
             if (!tempFileComplete)
                 success = download();
 
