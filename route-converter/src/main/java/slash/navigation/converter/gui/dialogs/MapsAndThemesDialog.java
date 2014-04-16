@@ -63,7 +63,7 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
  * @author Christian Pesch
  */
 
-public class MapsDialog extends SimpleDialog {
+public class MapsAndThemesDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTable tableAvailableMaps;
     private JButton buttonDisplay;
@@ -76,7 +76,7 @@ public class MapsDialog extends SimpleDialog {
 
     private ExecutorService executor = newCachedThreadPool();
 
-    public MapsDialog() {
+    public MapsAndThemesDialog() {
         super(RouteConverter.getInstance().getFrame(), "maps");
         setTitle(RouteConverter.getBundle().getString("maps-title"));
         setContentPane(contentPane);

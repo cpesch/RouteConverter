@@ -17,21 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.MapsDialog;
+import slash.navigation.converter.gui.dialogs.MapsAndThemesDialog;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Select maps and themes for display.
+ * Show maps and themes of the program.
  *
  * @author Christian Pesch
  */
 
-public class SelectMapsAction extends SingletonDialogAction {
+public class ShowMapsAndThemesAction extends SingletonDialogAction {
     protected SimpleDialog createDialog() {
-        return new MapsDialog();
+        return new MapsAndThemesDialog();
     }
 }
