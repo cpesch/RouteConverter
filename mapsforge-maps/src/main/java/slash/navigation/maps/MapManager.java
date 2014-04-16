@@ -57,10 +57,6 @@ import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 public class MapManager {
     private static final Logger log = Logger.getLogger(MapManager.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(MapManager.class);
-    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new DownloadMap(null, null, null);
-    public static final LocalMap DOWNLOAD_MAP = new DownloadMap(null, null, null);
-    public static final Theme SEPARATOR_TO_DOWNLOAD_THEME = new ThemeImpl(null, null, null);
-    public static final Theme DOWNLOAD_THEME = new ThemeImpl(null, null, null);
     private static final String MAP_DIRECTORY_PREFERENCE = "mapDirectory";
     private static final String THEME_DIRECTORY_PREFERENCE = "themeDirectory";
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
@@ -147,11 +143,8 @@ public class MapManager {
         File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
-
         for (File file : mapFilesArray)
             mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
-        mapsModel.addOrUpdateMap(SEPARATOR_TO_DOWNLOAD_MAP);
-        mapsModel.addOrUpdateMap(DOWNLOAD_MAP);
 
         long end = currentTimeMillis();
         log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory + " in " + (end - start) + " milliseconds");
@@ -163,11 +156,8 @@ public class MapManager {
         File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
-
         for (File file : themeFilesArray)
             themesModel.addOrUpdateTheme(new ThemeImpl(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
-        themesModel.addOrUpdateTheme(SEPARATOR_TO_DOWNLOAD_THEME);
-        themesModel.addOrUpdateTheme(DOWNLOAD_THEME);
 
         long end = currentTimeMillis();
         log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory + " in " + (end - start) + " milliseconds");

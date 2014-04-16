@@ -21,12 +21,10 @@ package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.maps.Theme;
+import slash.navigation.maps.models.ThemeImpl;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static slash.navigation.maps.MapManager.DOWNLOAD_THEME;
-import static slash.navigation.maps.MapManager.SEPARATOR_TO_DOWNLOAD_THEME;
 
 /**
  * Renders the {@link Theme} labels of the map and theme selector combo box.
@@ -35,6 +33,8 @@ import static slash.navigation.maps.MapManager.SEPARATOR_TO_DOWNLOAD_THEME;
  */
 
 public class ThemeListCellRenderer extends DefaultListCellRenderer {
+    public static final Theme SEPARATOR_TO_DOWNLOAD_THEME = new ThemeImpl(null, null, null);
+    public static final Theme DOWNLOAD_THEME = new ThemeImpl(null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
     private static final int MAXIMUM_NAME_LENGTH = 40;
 

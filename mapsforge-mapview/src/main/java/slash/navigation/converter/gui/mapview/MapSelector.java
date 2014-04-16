@@ -21,6 +21,7 @@ package slash.navigation.converter.gui.mapview;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import slash.navigation.converter.gui.mapview.models.JoinedListComboBoxModel;
 import slash.navigation.converter.gui.mapview.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer;
 import slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer;
@@ -35,13 +36,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ResourceBundle;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
-import static slash.navigation.maps.MapManager.DOWNLOAD_MAP;
-import static slash.navigation.maps.MapManager.DOWNLOAD_THEME;
+import static java.util.Arrays.asList;
+import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.DOWNLOAD_MAP;
+import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
+import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
+import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME;
 
 /**
  * The map and theme chooser panel of the mapsforge map view.
@@ -62,7 +63,10 @@ public class MapSelector {
                 SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, false));
 
-        comboBoxMap.setModel(new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()));
+        comboBoxMap.setModel(new JoinedListComboBoxModel<LocalMap>(
+                        new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
+                        asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
+        );
         comboBoxMap.setRenderer(new MapListCellRenderer());
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -73,7 +77,10 @@ public class MapSelector {
             }
         });
 
-        comboBoxTheme.setModel(new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()));
+        comboBoxTheme.setModel(new JoinedListComboBoxModel<Theme>(
+                        new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
+                        asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
+        );
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
         comboBoxTheme.setEnabled(((LocalMap) comboBoxMap.getSelectedItem()).isRenderer());
     }
