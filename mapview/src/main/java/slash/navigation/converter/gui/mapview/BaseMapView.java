@@ -79,6 +79,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
@@ -522,7 +523,7 @@ public abstract class BaseMapView implements MapView {
             log.severe(message);
             invokeLater(new Runnable() {
                 public void run() {
-                    showMessageDialog(getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(getComponent(), message, "Error", ERROR_MESSAGE);
                 }
             });
         }

@@ -122,12 +122,16 @@ public class MapViewMouseEventListener extends MouseAdapter {
 
     private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
         LatLong mouse = new MapViewProjection(mapView).fromPixels(mouseX, mouseY);
-        mapView.getModel().mapViewPosition.setPivot(mouse);
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        mapViewPosition.setPivot(mouse);
 
-        Dimension dimension = mapView.getDimension();
-        int horizontalDiff = (int) ((dimension.width / 2 - mouseX) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
-        int verticalDiff = (int) ((dimension.height / 2 - mouseY) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
-        mapView.getModel().mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
+        if (mapViewPosition.getZoomLevel() + zoomLevelDiff <= mapViewPosition.getZoomLevelMax() &&
+                mapViewPosition.getZoomLevel() + zoomLevelDiff >= mapViewPosition.getZoomLevelMin()) {
+            Dimension dimension = mapView.getDimension();
+            int horizontalDiff = (int) ((dimension.width / 2 - mouseX) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            int verticalDiff = (int) ((dimension.height / 2 - mouseY) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
+        }
     }
 
     public Point getMousePosition() {

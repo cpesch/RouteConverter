@@ -81,12 +81,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -94,7 +91,10 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.abs;
+import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
@@ -212,13 +212,22 @@ public class MapsforgeMapView implements MapView {
                 mapSelector.zoomChanged(mapViewPosition.getZoomLevel());
             }
         });
-        mapViewPosition.setZoomLevelMin((byte) 2);
-        mapViewPosition.setZoomLevelMax((byte) 22);
 
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
+
+        mapView.getModel().mapViewDimension.addObserver(new Observer() {
+            private boolean initialized = false;
+
+            public void onChange() {
+                if (!initialized) {
+                    limitZoomLevel();
+                    initialized = true;
+                }
+            }
+        });
 
         mapManager.getDisplayedMapModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -377,7 +386,7 @@ public class MapsforgeMapView implements MapView {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     List<LatLong> latLongs = calculateRoute(pairWithLayer);
-                    if(latLongs != null) {
+                    if (latLongs != null) {
                         Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
                         pairWithLayer.setLayer(polyline);
                         getLayerManager().getLayers().add(polyline);
@@ -551,21 +560,26 @@ public class MapsforgeMapView implements MapView {
     private void handleMapAndThemeUpdate(boolean centerAndZoom) {
         Layers layers = getLayerManager().getLayers();
 
-        // remove old map
-        for (LocalMap map : mapsToLayers.keySet()) {
-            Layer layer = mapsToLayers.get(map);
-            layers.remove(layer);
-        }
-        mapsToLayers.clear();
-
         // add new map with a theme
         LocalMap map = mapManager.getDisplayedMapModel().getItem();
         Theme theme = mapManager.getAppliedThemeModel().getItem();
-        Layer layer = map.isRenderer() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
-        mapsToLayers.put(map, layer);
+        Layer layer;
+        try {
+            layer = map.isRenderer() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
+        } catch (Exception e) {
+            showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
+                    getString("cannot-load-map"), map.getDescription(), e.getMessage()), "Error", ERROR_MESSAGE);
+            return;
+        }
+
+        // remove old map
+        for (LocalMap localMap : mapsToLayers.keySet())
+            layers.remove(mapsToLayers.get(localMap));
+        mapsToLayers.clear();
 
         // add map as the first to be behind all additional layers
         layers.add(0, layer);
+        mapsToLayers.put(map, layer);
 
         // then start download layer threads
         if (layer instanceof TileDownloadLayer)
@@ -573,6 +587,7 @@ public class MapsforgeMapView implements MapView {
 
         if (centerAndZoom)
             centerAndZoom(getMapBoundingBox(), true);
+        limitZoomLevel();
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
     }
 
@@ -731,7 +746,7 @@ public class MapsforgeMapView implements MapView {
             positions.add(routeBoundingBox.getSouthWest());
         }
         if (mapBoundingBox != null) {
-            if(routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
+            if (routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) {
                 positions.add(routeBoundingBox.getNorthEast());
                 positions.add(routeBoundingBox.getSouthWest());
             }
@@ -739,11 +754,25 @@ public class MapsforgeMapView implements MapView {
             positions.add(mapBoundingBox.getSouthWest());
         }
 
-        if(positions.size() > 0) {
+        if (positions.size() > 0) {
             BoundingBox both = new BoundingBox(positions);
             zoomToBounds(both);
             setCenter(both.getCenter());
         }
+    }
+
+    private void limitZoomLevel() {
+        // limit minimum zoom to prevent zooming out too much and losing the map
+        byte zoomLevelMin = 2;
+        LocalMap map = mapsToLayers.keySet().iterator().next();
+        if (map.isRenderer() && mapView.getModel().mapViewDimension.getDimension() != null)
+            zoomLevelMin = (byte) (zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
+                    asBoundingBox(map.getBoundingBox()), mapView.getModel().displayModel.getTileSize()) - 3);
+        mapView.getModel().mapViewPosition.setZoomLevelMin(zoomLevelMin);
+
+        // limit maximum to prevent zooming in to grey area
+        byte zoomLevelMax = (byte) (map.isRenderer() ? 22 : 18);
+        mapView.getModel().mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }
 
     private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
@@ -765,10 +794,11 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setCenter(LatLong center) {
-        if(mapView.getModel().frameBufferModel.getMapPosition() == null)
+        if (mapView.getModel().frameBufferModel.getMapPosition() == null)
             return;
 
         MapViewProjection projection = new MapViewProjection(mapView);
+        // 20 pixel border where the map is recentered anyway
         LatLong upperLeft = projection.fromPixels(20, 20);
         Dimension dimension = mapView.getDimension();
         LatLong lowerRight = projection.fromPixels(dimension.width - 20, dimension.height - 20);
