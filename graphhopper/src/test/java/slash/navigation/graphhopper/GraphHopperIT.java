@@ -34,19 +34,19 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class GraphHopperIT {
-    private GraphHopper router;
+    private GraphHopper hopper;
 
     @Before
     public void setUp() throws IOException {
-        router = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
-        DownloadFuture future = router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
+        hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
+        DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
     }
 
     @Test
     public void testGetRouteBetween() {
-        RoutingResult result = router.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
+        RoutingResult result = hopper.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
                 new SimpleNavigationPosition(10.06767, 53.49249));
         assertEquals(147, result.getPositions().size());
         assertEquals(13633.0, result.getDistance(), 5.0);
