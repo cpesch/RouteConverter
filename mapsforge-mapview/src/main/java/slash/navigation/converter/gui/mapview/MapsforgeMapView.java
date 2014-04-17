@@ -807,10 +807,6 @@ public class MapsforgeMapView implements MapView {
         setCenter(asLatLong(center), alwaysRecenter);
     }
 
-    public void setCenter(NavigationPosition center) {
-        throw new UnsupportedOperationException();
-    }
-
     private int getZoom() {
         return mapView.getModel().mapViewPosition.getZoomLevel();
     }
