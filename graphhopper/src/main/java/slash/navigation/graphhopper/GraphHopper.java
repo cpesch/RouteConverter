@@ -36,7 +36,6 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -62,7 +61,7 @@ public class GraphHopper implements RoutingService {
     private static final String DATASOURCE_URL = "graphhopper-datasources.xml";
 
     private final DownloadManager downloadManager;
-    private final com.graphhopper.GraphHopper hopper = new com.graphhopper.GraphHopper().forDesktop();
+    private com.graphhopper.GraphHopper hopper;
     private Map<String, File> fileMap;
     private String baseUrl, directory;
 
@@ -81,21 +80,6 @@ public class GraphHopper implements RoutingService {
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
         this.directory = service.getDataSource(getName()).getDirectory();
-
-        String folder = new java.io.File(getDirectory(), "europe/germany/").getAbsolutePath();
-        ensureDirectory(folder);
-        String[] args = new String[]{
-                "graph.location=" + folder,
-                "osmreader.osm=" + folder + separator + "hamburg-latest.osm.pbf"
-                // osmreader.acceptWay= CAR FOOT
-        };
-
-        try {
-            hopper.init(read(args));
-            hopper.importOrLoad();
-        } catch (Exception e) {
-            log.warning("Cannot initialize: " + e.getMessage());
-        }
     }
 
     public String getName() {
@@ -154,6 +138,22 @@ public class GraphHopper implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        String folder = new java.io.File(getDirectory(), "europe/germany/").getAbsolutePath();
+        ensureDirectory(folder);
+        String[] args = new String[]{
+                "graph.location=" + folder,
+                "osmreader.osm=" + folder + separator + "hamburg-latest.osm.pbf"
+                // osmreader.acceptWay= CAR FOOT
+        };
+
+        try {
+            hopper = new com.graphhopper.GraphHopper().forDesktop();
+            hopper.init(read(args));
+            hopper.importOrLoad();
+        } catch (Exception e) {
+            log.warning("Cannot initialize: " + e.getMessage());
+        }
+
         Set<String> keys = new HashSet<String>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add("europe/germany/hamburg-latest.osm.pbf"); // TODO too simple, need to determine from bounding box
