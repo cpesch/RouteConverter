@@ -65,7 +65,6 @@ public interface MapView extends PositionsSelectionModel {
     void showMapBorder(BoundingBox mapBoundingBox);
 
     NavigationPosition getCenter();
-    void setCenter(NavigationPosition center);
     void print(String title, boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);

@@ -132,7 +132,6 @@ public abstract class BaseMapView implements MapView {
     private PositionsSelectionModel positionsSelectionModel;
     private List<NavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
-    private NavigationPosition center;
     private int lastZoom = -1;
 
     private ServerSocket callbackListenerServerSocket;
@@ -408,7 +407,7 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     List<NavigationPosition> render = positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices);
-                    NavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
+                    NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
                     selectPositions(render, recenter ? centerPosition : null);
                     log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
                     lastTime = currentTimeMillis();
@@ -736,10 +735,6 @@ public abstract class BaseMapView implements MapView {
             return getCurrentMapCenter();
         else
             return getLastMapCenter();
-    }
-
-    public void setCenter(NavigationPosition center) {
-        this.center = center;
     }
 
     private int getZoom() {
