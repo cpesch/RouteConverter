@@ -67,6 +67,7 @@ public class MapSelector {
                         new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
+        comboBoxMap.setPrototypeDisplayValue(mapManager.getMapsModel().getMap(1));
         comboBoxMap.setRenderer(new MapListCellRenderer());
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -81,6 +82,7 @@ public class MapSelector {
                         new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
+        comboBoxTheme.setPrototypeDisplayValue(mapManager.getThemesModel().getTheme(0));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
         comboBoxTheme.setEnabled(((LocalMap) comboBoxMap.getSelectedItem()).isRenderer());
     }

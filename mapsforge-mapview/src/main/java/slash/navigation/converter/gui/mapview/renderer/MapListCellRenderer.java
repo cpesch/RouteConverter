@@ -51,7 +51,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
             text = Application.getInstance().getContext().getBundle().getString("download-map-text");
             tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
         } else if (map != null) {
-            text = shortenName(map.getDescription());
+            text = map.getDescription();
             if (map.isRenderer())
                 text = format(Application.getInstance().getContext().getBundle().getString("renderer-map"), text);
             tooltip = map.getUrl();

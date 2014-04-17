@@ -49,7 +49,7 @@ public class ThemeListCellRenderer extends DefaultListCellRenderer {
             text = Application.getInstance().getContext().getBundle().getString("download-theme-text");
             tooltip = Application.getInstance().getContext().getBundle().getString("download-theme-tooltip");
         } else if (theme != null) {
-            text = shortenName(theme.getDescription());
+            text = theme.getDescription();
             tooltip = theme.getUrl();
         }
 
