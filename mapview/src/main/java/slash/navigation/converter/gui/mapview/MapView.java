@@ -60,7 +60,6 @@ public interface MapView extends PositionsSelectionModel {
     void setAvoidTolls(boolean avoidTolls);
 
     NavigationPosition getCenter();
-    void setCenter(NavigationPosition center);
     void print(String title, boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);
