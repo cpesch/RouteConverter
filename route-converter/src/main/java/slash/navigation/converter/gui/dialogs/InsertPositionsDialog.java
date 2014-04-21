@@ -26,9 +26,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.gui.helpers.JMenuHelper;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -44,6 +43,7 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
@@ -60,47 +60,35 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonInsertAllWaypoints;
     private JButton buttonInsertOnlyTurnpoints;
 
-    private ListSelectionListener listSelectionListener = new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-            if (e.getValueIsAdjusting())
-                return;
-            handlePositionsUpdate();
-        }
-    };
-
-    private TableModelListener tableModelListener = new TableModelListener() {
-        public void tableChanged(TableModelEvent e) {
-            handlePositionsUpdate();
-        }
-    };
-
     public InsertPositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "insert-positions");
         setTitle(RouteConverter.getBundle().getString("insert-positions-title"));
         setContentPane(contentPane);
 
-        JMenuHelper.setMnemonic(buttonSelectAll, "select-all-action-mnemonic");
+        RouteConverter r = RouteConverter.getInstance();
+
+        setMnemonic(buttonSelectAll, "select-all-action-mnemonic");
         buttonSelectAll.addActionListener(new DialogAction(this) {
             public void run() {
                 selectAll();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
+        setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
         buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
                 clearSelection();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonInsertAllWaypoints, "insert-all-waypoints-mnemonic");
+        setMnemonic(buttonInsertAllWaypoints, "insert-all-waypoints-mnemonic");
         buttonInsertAllWaypoints.addActionListener(new DialogAction(this) {
             public void run() {
                 insertAllWaypoints();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonInsertOnlyTurnpoints, "insert-only-turnpoints-mnemonic");
+        setMnemonic(buttonInsertOnlyTurnpoints, "insert-only-turnpoints-mnemonic");
         buttonInsertOnlyTurnpoints.addActionListener(new DialogAction(this) {
             public void run() {
                 insertOnlyTurnpoints();
@@ -120,9 +108,18 @@ public class InsertPositionsDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
 
-        RouteConverter r = RouteConverter.getInstance();
-        r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);
-        r.getPositionsModel().addTableModelListener(tableModelListener);
+        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
+        r.getPositionsModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                handlePositionsUpdate();
+            }
+        });
 
         handlePositionsUpdate();
     }
@@ -162,9 +159,6 @@ public class InsertPositionsDialog extends SimpleDialog {
     }
 
     private void close() {
-        RouteConverter r = RouteConverter.getInstance();
-        r.getPositionsView().getSelectionModel().removeListSelectionListener(listSelectionListener);
-        r.getPositionsModel().removeTableModelListener(tableModelListener);
         dispose();
     }
 
