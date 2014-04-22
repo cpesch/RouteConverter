@@ -63,8 +63,13 @@
         <xsd:annotation>
             <xsd:documentation>
                 a file contains the size, checksum and uri for a file relative to the base url
+                and optionally a north east and a south west position that form a bounding box
             </xsd:documentation>
         </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="northEast" type="positionType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
         <xsd:attribute name="uri" type="xsd:string" use="required"/>
         <xsd:attribute name="size" type="xsd:long"/>
         <xsd:attribute name="checksum" type="xsd:string"/>

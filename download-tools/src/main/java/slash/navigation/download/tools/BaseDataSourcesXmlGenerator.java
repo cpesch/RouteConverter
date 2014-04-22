@@ -153,9 +153,13 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(mapTypesArray);
     }
 
-    protected FileType createFileType(String uri, File file, boolean includeSize, boolean includeChecksumAndTimestamp) throws IOException {
+    protected FileType createFileType(String uri, File file, BoundingBox boundingBox, boolean includeSize, boolean includeChecksumAndTimestamp) throws IOException {
         FileType fileType = new ObjectFactory().createFileType();
         fileType.setUri(uri);
+        if (boundingBox != null) {
+            fileType.setNorthEast(createPositionType(boundingBox.getNorthEast()));
+            fileType.setSouthWest(createPositionType(boundingBox.getSouthWest()));
+        }
         if (includeSize)
             fileType.setSize(file.length());
         if (includeChecksumAndTimestamp) {

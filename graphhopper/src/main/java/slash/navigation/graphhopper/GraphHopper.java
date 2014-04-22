@@ -17,12 +17,12 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.graphhopper;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.util.PointList;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -31,20 +31,24 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
+import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.xml.bind.JAXBException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.graphhopper.util.CmdArgs.read;
-import static java.io.File.separator;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.removeExtension;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -64,6 +68,7 @@ public class GraphHopper implements RoutingService {
     private com.graphhopper.GraphHopper hopper;
     private Map<String, File> fileMap;
     private String baseUrl, directory;
+    private java.io.File osmPbfFile = null;
 
     public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
@@ -103,8 +108,37 @@ public class GraphHopper implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
-        GHResponse response = hopper.route(new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude()));
+        if(osmPbfFile == null)
+            return null;
+        initializeHopper();
+
+        GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
+        request.setVehicle("car"); // TODO make configurable
+        GHResponse response = hopper.route(request);
         return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis());
+    }
+
+    private void initializeHopper() {
+        if (hopper != null && hopper.getGraphHopperLocation().equals(createPath(osmPbfFile)))
+            return;
+
+        String[] args = new String[]{
+                "graph.location=" + createPath(osmPbfFile),
+                "osmreader.osm=" + osmPbfFile.getAbsolutePath()
+        };
+        try {
+            if (hopper != null)
+                hopper.close();
+            hopper = new com.graphhopper.GraphHopper().forDesktop();
+            hopper.init(read(args));
+            hopper.importOrLoad();
+        } catch (Exception e) {
+            log.warning("Cannot initialize GraphHopper: " + e.getMessage());
+        }
+    }
+
+    private String createPath(java.io.File osmPbfFile) {
+        return removeExtension(removeExtension(osmPbfFile.getAbsolutePath()));
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
@@ -118,79 +152,68 @@ public class GraphHopper implements RoutingService {
     private java.io.File getDirectory() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
+        if (!f.exists())
             directoryName = getApplicationDirectory(directory).getAbsolutePath();
         return ensureDirectory(directoryName);
+    }
+
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
+
+        String keyForSmallestBoundingBox = null;
+        BoundingBox smallestBoundingBox = null;
+        for (String key : fileMap.keySet()) {
+            File file = fileMap.get(key);
+            BoundingBox fileBoundingBox = file.getBoundingBox();
+            if (fileBoundingBox.contains(routeBoundingBox)) {
+                if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
+                    keyForSmallestBoundingBox = key;
+                    smallestBoundingBox = fileBoundingBox;
+                }
+            }
+        }
+
+        final FileAndTarget fileAndTarget = createFileAndTarget(keyForSmallestBoundingBox);
+        this.osmPbfFile = fileAndTarget != null ? fileAndTarget.target : null;
+
+        return new DownloadFuture() {
+            public boolean isRequiresDownload() {
+                return fileAndTarget != null && !new Validator(fileAndTarget.target).existsFile();
+            }
+
+            public void download() {
+                if (fileAndTarget != null)
+                    downloadFile(fileAndTarget);
+            }
+        };
+    }
+
+    private BoundingBox createBoundingBox(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+        }
+        return new BoundingBox(positions);
+    }
+
+    private FileAndTarget createFileAndTarget(String keyForSmallestBoundingBox) {
+        if (keyForSmallestBoundingBox != null) {
+            File catalog = fileMap.get(keyForSmallestBoundingBox);
+            if (catalog != null) {
+                java.io.File file = createFile(keyForSmallestBoundingBox);
+                return new FileAndTarget(catalog, file);
+            }
+        }
+        return null;
     }
 
     private java.io.File createFile(String key) {
         return new java.io.File(getDirectory(), key);
     }
 
-    private static class FileAndTarget { // TODO same as in BRouter
-        public final File file;
-        public final java.io.File target;
-
-        private FileAndTarget(File file, java.io.File target) {
-            this.file = file;
-            this.target = target;
-        }
-    }
-
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        String folder = new java.io.File(getDirectory(), "europe/germany/").getAbsolutePath();
-        ensureDirectory(folder);
-        String[] args = new String[]{
-                "graph.location=" + folder,
-                "osmreader.osm=" + folder + separator + "hamburg-latest.osm.pbf"
-                // osmreader.acceptWay= CAR FOOT
-        };
-
-        try {
-            hopper = new com.graphhopper.GraphHopper().forDesktop();
-            hopper.init(read(args));
-            hopper.importOrLoad();
-        } catch (Exception e) {
-            log.warning("Cannot initialize: " + e.getMessage());
-        }
-
-        Set<String> keys = new HashSet<String>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add("europe/germany/hamburg-latest.osm.pbf"); // TODO too simple, need to determine from bounding box
-        }
-
-        Set<FileAndTarget> files = new HashSet<FileAndTarget>();                          // TODO from here same as BRouter
-        for (String key : keys) {
-            File catalog = fileMap.get(key);
-            if (catalog != null)
-                files.add(new FileAndTarget(catalog, createFile(key)));
-        }
-
-        final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
-        for (FileAndTarget file : files) {
-            if (new Validator(file.target).existsFile())
-                continue;
-            notExistingFiles.add(file);
-        }
-
-        return new DownloadFuture() {
-            public boolean isRequiresDownload() {
-                return !notExistingFiles.isEmpty();
-            }
-
-            public void download() {
-                downloadFiles(notExistingFiles);
-            }
-        };
-    }
-
-    private void downloadFiles(Set<FileAndTarget> retrieve) {
-        Collection<Download> downloads = new HashSet<Download>();
-        for (FileAndTarget file : retrieve)
-            downloads.add(initiateDownload(file));
-
-        if (!downloads.isEmpty())
-            downloadManager.waitForCompletion(downloads);
+    private void downloadFile(FileAndTarget retrieve) {
+        Download download = initiateDownload(retrieve);
+        downloadManager.waitForCompletion(asList(download));
     }
 
     private Download initiateDownload(FileAndTarget file) {
@@ -199,4 +222,5 @@ public class GraphHopper implements RoutingService {
         return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
                 file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
     }
+
 }
