@@ -22,25 +22,26 @@ package slash.navigation.download.tools;
 import slash.navigation.download.datasources.binding.FileType;
 import slash.navigation.download.datasources.binding.FragmentType;
 import slash.navigation.download.datasources.binding.MapType;
+import slash.navigation.graphhopper.PbfUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * Creates a GraphHopper data sources XML from file system mirror.
  *
  * @author Christian Pesch
  */
 
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
+public class CreateGraphHopperDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
         System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, null, false, false));
+        fileTypes.add(createFileType(uri, file, PbfUtil.extractBoundingBox(file), false, false));
     }
 
     public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
+        new CreateGraphHopperDataSourcesXml().run(args);
     }}

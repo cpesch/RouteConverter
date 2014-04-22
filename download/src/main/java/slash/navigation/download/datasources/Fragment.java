@@ -28,15 +28,39 @@ import slash.common.type.CompactCalendar;
  * @author Christian Pesch
  */
 
-public class Fragment extends File {
+public class Fragment {
     private final String key;
+    private final String uri;
+    private final Long size;
+    private final String checksum;
+    private final CompactCalendar timestamp;
 
     public Fragment(String key, String uri, Long size, String checksum, CompactCalendar timestamp) {
-        super(uri, size, checksum, timestamp);
         this.key = key;
+        this.uri = uri;
+        this.size = size;
+        this.checksum = checksum;
+        this.timestamp = timestamp;
     }
 
     public String getKey() {
         return key;
     }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public CompactCalendar getTimestamp() {
+        return timestamp;
+    }
 }
+

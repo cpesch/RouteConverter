@@ -55,7 +55,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
     protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        fileTypes.add(createFileType(uri, file, true, true));
+        fileTypes.add(createFileType(uri, file, null, true, true));
 
         ZipInputStream zipInputStream = null;
         try {

@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.brouter;
 
 import btools.router.*;
@@ -29,6 +28,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.DataSourceService;
 import slash.navigation.download.datasources.File;
+import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -87,14 +87,14 @@ public class BRouter implements RoutingService {
             extractFile("slash/navigation/brouter/moped.brf");
             extractFile("slash/navigation/brouter/safety.brf");
             extractFile("slash/navigation/brouter/shortest.brf");
-            routingContext.localFunction = extractFile("slash/navigation/brouter/trekking.brf").getPath();
+            routingContext.localFunction = extractFile("slash/navigation/brouter/trekking.brf").getPath(); // TODO make configurable
             extractFile("slash/navigation/brouter/trekking-ignore-cr.brf");
             extractFile("slash/navigation/brouter/trekking-noferries.brf");
             extractFile("slash/navigation/brouter/trekking-nosteps.brf");
             extractFile("slash/navigation/brouter/trekking-steep.brf");
         }
         catch(IOException e) {
-            log.warning("Cannot initialize: " + e.getMessage());
+            log.warning("Cannot initialize BRouter: " + e.getMessage());
         }
     }
 
@@ -183,6 +183,35 @@ public class BRouter implements RoutingService {
         return (latitude / 1000000.0) - 90.0;
     }
 
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        Set<String> keys = createKeys(longitudeAndLatitudes);
+
+        Set<FileAndTarget> files = createFileAndTargets(keys);
+
+        final Set<FileAndTarget> notExistingFiles = createNotExistingFiles(files);
+
+        return new DownloadFuture() {
+            public boolean isRequiresDownload() {
+                return !notExistingFiles.isEmpty();
+            }
+            public void download() {
+                downloadFiles(notExistingFiles);
+            }
+        };
+    }
+
+    private Set<String> createKeys(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        Set<String> keys = new HashSet<String>();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+        }
+        return keys;
+    }
+
+    private java.io.File createFile(String key) {
+        return new java.io.File(getDirectory(), format("%s%s", key, ".rd5"));
+    }
+
     String createFileKey(double longitude, double latitude) {
         int longitudeAsInteger = ((int) longitude / 5) * 5;
         int latitudeAsInteger = ((int) latitude / 5) * 5;
@@ -193,49 +222,24 @@ public class BRouter implements RoutingService {
                 latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
     }
 
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), format("%s%s", key, ".rd5"));
-    }
-
-    private static class FileAndTarget {
-        public final File file;
-        public final java.io.File target;
-
-        private FileAndTarget(File file, java.io.File target) {
-            this.file = file;
-            this.target = target;
-        }
-    }
-
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<String> keys = new HashSet<String>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
-        }
-
+    private Set<FileAndTarget> createFileAndTargets(Set<String> keys) {
         Set<FileAndTarget> files = new HashSet<FileAndTarget>();
         for (String key : keys) {
             File catalog = fileMap.get(key + ".rd5");
             if (catalog != null)
                 files.add(new FileAndTarget(catalog, createFile(key)));
         }
+        return files;
+    }
 
+    private Set<FileAndTarget> createNotExistingFiles(Set<FileAndTarget> files) {
         final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
         for (FileAndTarget file : files) {
             if (new Validator(file.target).existsFile())
                 continue;
             notExistingFiles.add(file);
         }
-
-        return new DownloadFuture() {
-            public boolean isRequiresDownload() {
-                return !notExistingFiles.isEmpty();
-            }
-
-            public void download() {
-                downloadFiles(notExistingFiles);
-            }
-        };
+        return notExistingFiles;
     }
 
     private void downloadFiles(Set<FileAndTarget> retrieve) {

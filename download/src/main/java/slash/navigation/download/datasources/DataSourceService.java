@@ -88,7 +88,7 @@ public class DataSourceService {
     }
 
     private File asFile(FileType fileType) {
-        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()));
+        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()), asBoundingBox(fileType.getNorthEast(), fileType.getSouthWest()));
     }
 
     public Map<String, slash.navigation.download.datasources.Map> getMaps(String dataSourceName) {

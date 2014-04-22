@@ -48,8 +48,10 @@ public class GraphHopperIT {
     public void testGetRouteBetween() {
         RoutingResult result = hopper.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
                 new SimpleNavigationPosition(10.06767, 53.49249));
-        assertEquals(147, result.getPositions().size());
+        assertEquals(149, result.getPositions().size());
         assertEquals(13633.0, result.getDistance(), 5.0);
-        assertEquals(981243, result.getTime(), 100);
+        assertEquals(980824, result.getTime(), 100);
+        RoutingResult r2 = hopper.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
+                new SimpleNavigationPosition(10.06767, 53.49249));
     }
 }

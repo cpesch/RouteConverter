@@ -29,12 +29,35 @@ import slash.navigation.common.BoundingBox;
  * @author Christian Pesch
  */
 
-public class Map extends File {
+public class Map {
+    private final String uri;
+    private final Long size;
+    private final String checksum;
+    private final CompactCalendar timestamp;
     private final BoundingBox boundingBox;
 
     public Map(String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
-        super(uri, size, checksum, timestamp);
+        this.uri = uri;
+        this.size = size;
+        this.checksum = checksum;
+        this.timestamp = timestamp;
         this.boundingBox = boundingBox;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public CompactCalendar getTimestamp() {
+        return timestamp;
     }
 
     public BoundingBox getBoundingBox() {
