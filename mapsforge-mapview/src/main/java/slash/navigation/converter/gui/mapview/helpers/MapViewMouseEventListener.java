@@ -121,6 +121,9 @@ public class MapViewMouseEventListener extends MouseAdapter {
     }
 
     private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
+        if(zoomLevelDiff == 0)
+            return;
+
         LatLong mouse = new MapViewProjection(mapView).fromPixels(mouseX, mouseY);
         MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setPivot(mouse);
