@@ -34,6 +34,6 @@ public class RemoteMapImpl extends RemoteResourceImpl implements RemoteMap {
     }
 
     public BoundingBox getBoundingBox() {
-        return ((Map)getFile()).getBoundingBox();
+        return getFile().getBoundingBox();
     }
 }
