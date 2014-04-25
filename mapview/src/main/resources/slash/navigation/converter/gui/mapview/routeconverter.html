@@ -128,6 +128,8 @@
        else
            style.appendChild(rules);
        head.appendChild(style);
+
+       latLngControl.set('visible', show ? false : _showCoordinates);
    }
 
    function resize(width, height) {
