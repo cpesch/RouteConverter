@@ -30,10 +30,7 @@ import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -115,6 +112,11 @@ public class InsertPositionsDialog extends SimpleDialog {
                 handlePositionsUpdate();
             }
         });
+        r.getRoutingServiceFacade().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handlePositionsUpdate();
+            }
+        });
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 handlePositionsUpdate();
@@ -131,7 +133,7 @@ public class InsertPositionsDialog extends SimpleDialog {
 
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
-        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition);
+        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition && r.getRoutingServiceFacade().getRoutingService().isSupportTurnpoints());
         buttonClearSelection.setEnabled(existsSelectedPosition);
 
         boolean notAllPositionsSelected = r.getPositionsView().getRowCount() > selectedRowCount;
@@ -151,11 +153,11 @@ public class InsertPositionsDialog extends SimpleDialog {
     }
 
     private void insertAllWaypoints() {
-        RouteConverter.getInstance().insertAllWaypoints();
+        RouteConverter.getInstance().getInsertPositionFacade().insertAllWaypoints();
     }
 
     private void insertOnlyTurnpoints() {
-        RouteConverter.getInstance().insertOnlyTurnpoints();
+        RouteConverter.getInstance().getInsertPositionFacade().insertOnlyTurnpoints();
     }
 
     private void close() {
@@ -178,7 +180,7 @@ public class InsertPositionsDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 20, 20), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

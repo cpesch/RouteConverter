@@ -36,6 +36,6 @@ public class ConvertRouteToTrackAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         r.setRouteCharacteristics(Track);
         r.getContext().getActionManager().run("select-all");
-        r.insertAllWaypoints();
+        r.getInsertPositionFacade().insertAllWaypoints();
     }
 }

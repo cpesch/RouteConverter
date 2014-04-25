@@ -22,9 +22,11 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.brouter.BRouter;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.routing.RoutingService;
 import slash.navigation.graphhopper.GraphHopper;
+import slash.navigation.routing.RoutingService;
 
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,7 +35,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 
 /**
- * Helps to insert positions.
+ * Helps to route between positions.
  *
  * @author Christian Pesch
  */
@@ -44,6 +46,7 @@ public class RoutingServiceFacade {
     private static final String ROUTING_SERVICE = "routingService";
 
     private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public RoutingServiceFacade(DownloadManager downloadManager) {
         routingServices.add(new BRouter(downloadManager));
@@ -68,5 +71,19 @@ public class RoutingServiceFacade {
 
     public void setRoutingService(RoutingService service) {
         preferences.put(ROUTING_SERVICE, service.getName());
+        fireChanged();
+    }
+
+    protected void fireChanged() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                ((ChangeListener) listeners[i + 1]).stateChanged(null);
+            }
+        }
+    }
+
+    public void addChangeListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
     }
 }
