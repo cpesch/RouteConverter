@@ -121,7 +121,7 @@ public class LengthCalculator {
             return;
         }
 
-        if (getCharacteristics().equals(Route) && RouteConverter.getInstance().isMapViewAvailable())
+        if (getCharacteristics().equals(Route) && RouteConverter.getInstance().isMapViewInitialized())
             return;
 
         synchronized (notificationMutex) {
