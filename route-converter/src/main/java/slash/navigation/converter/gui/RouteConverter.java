@@ -422,7 +422,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void shutdown() {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
         getCompletePositionService().dispose();
@@ -683,7 +683,7 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().clearSelection();
 
         RoutingService routingService = getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && isMapViewAvailable()) {
+        if (routingService instanceof GoogleDirections && isMapViewInitialized()) {
             mapView.insertAllWaypoints(selectedRows);
             return;
         }
@@ -696,7 +696,7 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().clearSelection();
 
         RoutingService routingService = getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && isMapViewAvailable()) {
+        if (routingService instanceof GoogleDirections && isMapViewInitialized()) {
             mapView.insertOnlyTurnpoints(selectedRows);
             return;
         }
@@ -807,46 +807,50 @@ public class RouteConverter extends SingleFrameApplication {
     // map view related helpers
 
     public boolean isMapViewAvailable() {
-        return mapView != null && mapView.isInitialized();
+        return mapView != null;
+    }
+
+    public boolean isMapViewInitialized() {
+        return isMapViewAvailable() && mapView.isInitialized();
     }
 
     public NavigationPosition getMapCenter() {
-        return mapView != null ? mapView.getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
+        return isMapViewAvailable() ? mapView.getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.addMapViewListener(mapViewListener);
     }
 
     public void setTravelMode(TravelMode travelMode) {
         preferences.put(TRAVEL_MODE_PREFERENCE, travelMode.toString());
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setTravelMode(travelMode);
     }
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setRecenterAfterZooming(recenterAfterZooming);
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setShowCoordinates(showCoordinates);
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setShowWaypointDescription(showWaypointDescription);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setAvoidHighways(avoidHighways);
     }
 
     public void setAvoidTolls(boolean avoidTolls) {
-        if (mapView != null)
+        if (isMapViewAvailable())
             mapView.setAvoidTolls(avoidTolls);
     }
 
