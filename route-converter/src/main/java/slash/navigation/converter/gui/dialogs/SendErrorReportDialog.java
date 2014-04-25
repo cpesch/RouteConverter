@@ -61,7 +61,7 @@ public class SendErrorReportDialog extends SimpleDialog {
     private JButton buttonCancel;
 
     public SendErrorReportDialog() {
-        super(RouteConverter.getInstance().getFrame(), "senderrorreport");
+        super(RouteConverter.getInstance().getFrame(), "send-error-report");
         setTitle(RouteConverter.getBundle().getString("send-error-report-title"));
         setContentPane(contentPane);
         setModal(true);

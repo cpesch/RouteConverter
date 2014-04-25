@@ -77,7 +77,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private int index = 0;
 
     public CompleteFlightPlanDialog(GarminFlightPlanRoute routeToComplete) {
-        super(RouteConverter.getInstance().getFrame(), "completeflightplan");
+        super(RouteConverter.getInstance().getFrame(), "complete-flightplan");
         this.route = routeToComplete;
         setTitle(RouteConverter.getBundle().getString("complete-flight-plan-title"));
         setContentPane(contentPane);
