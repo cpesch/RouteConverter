@@ -99,6 +99,10 @@ public class GraphHopper implements RoutingService {
         return true;
     }
 
+    public boolean isSupportTurnpoints() {
+        return false;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }

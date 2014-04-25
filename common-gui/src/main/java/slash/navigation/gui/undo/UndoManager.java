@@ -35,8 +35,8 @@ import java.util.prefs.Preferences;
 
 public class UndoManager {
     private static final Preferences preferences = Preferences.userNodeForPackage(UndoManager.class);
-    private javax.swing.undo.UndoManager delegate = new javax.swing.undo.UndoManager();
-    private EventListenerList listenerList = new EventListenerList();
+    private final javax.swing.undo.UndoManager delegate = new javax.swing.undo.UndoManager();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public UndoManager() {
         delegate.setLimit(preferences.getInt("undoLimit", -1));

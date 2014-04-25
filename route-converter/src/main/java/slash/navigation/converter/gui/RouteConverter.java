@@ -27,9 +27,7 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -56,8 +54,6 @@ import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -170,6 +166,7 @@ public class RouteConverter extends SingleFrameApplication {
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
+    private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -302,14 +299,17 @@ public class RouteConverter extends SingleFrameApplication {
 
         // if (isJavaFX())
         //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
-        if (mapView == null)
+        if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+            if (mapView instanceof BaseMapView)
+                getRoutingServiceFacade().getRoutingServices().add(0, new GoogleDirections(mapView));
+        }
+        // if (mapView == null)
+        //    mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
-
-            if (mapView instanceof BaseMapView)
-                getRoutingServiceFacade().getRoutingServices().add(0, new GoogleDirections());
         } else {
             mapPanel.setVisible(false);
         }
@@ -649,74 +649,12 @@ public class RouteConverter extends SingleFrameApplication {
         return completePositionService;
     }
 
+    public InsertPositionFacade getInsertPositionFacade() {
+        return insertPositionFacade;
+    }
+
     public RoutingServiceFacade getRoutingServiceFacade() {
         return routingServiceFacade;
-    }
-
-    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
-        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
-    }
-
-    public void insertAllWaypoints() {
-        int[] selectedRows = getPositionsView().getSelectedRows();
-        getConvertPanel().clearSelection();
-
-        RoutingService routingService = getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && isMapViewInitialized()) {
-            mapView.insertAllWaypoints(selectedRows);
-            return;
-        }
-
-        insertWithRoutingService(routingService, selectedRows);
-    }
-
-    public void insertOnlyTurnpoints() { // TODO make this an insertion mode enum
-        int[] selectedRows = getPositionsView().getSelectedRows();
-        getConvertPanel().clearSelection();
-
-        RoutingService routingService = getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && isMapViewInitialized()) {
-            mapView.insertOnlyTurnpoints(selectedRows);
-            return;
-        }
-
-        insertWithRoutingService(routingService, selectedRows);
-    }
-
-    private void insertWithRoutingService(RoutingService routingService, int[] selectedRows) {
-        List<NavigationPosition> selectedPositions = new ArrayList<NavigationPosition>();
-        for (int i = 0; i < selectedRows.length; i++)
-            selectedPositions.add(getPositionsModel().getPosition(i));
-
-        if (routingService.isDownload()) {
-            List<LongitudeAndLatitude> lal = new ArrayList<LongitudeAndLatitude>();
-            for (NavigationPosition position : selectedPositions) {
-                lal.add(asLongitudeAndLatitude(position));
-            }
-            routingService.downloadRoutingDataFor(lal);
-        }
-
-        for (int i = 0; i < selectedPositions.size(); i++) {
-            // skip the very last position without successor
-            if (i == getPositionsModel().getRowCount() - 1 || i == selectedPositions.size() - 1)
-                continue;
-
-            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1));
-            if (result != null) {
-                List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
-                for (NavigationPosition position : result.getPositions()) {
-                    positions.add(getPositionsModel().getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
-                }
-                int insertRow = getPositionsModel().getIndex(selectedPositions.get(i));
-                getPositionsModel().add(insertRow, positions);
-
-                for (int j = 0; j < positions.size(); j++) {    // TODO unify with BaseMapView#complementPositions
-                    NavigationPosition position = positions.get(j);
-                    positionAugmenter.complementElevation(insertRow + j, position.getLongitude(), position.getLatitude());
-                    positionAugmenter.complementTime(insertRow + j, position.getTime(), false);
-                }
-            }
-        }
     }
 
     public DownloadManager getDownloadManager() {
@@ -754,8 +692,8 @@ public class RouteConverter extends SingleFrameApplication {
         getPositionAugmenter().complementDescription(row, longitude, latitude);
     }
 
-    public void complementTime(int row, CompactCalendar time) {
-        getPositionAugmenter().complementTime(row, time, true);
+    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) {
+        getPositionAugmenter().complementTime(row, time, allowCurrentTime);
     }
 
     public JTable getPositionsView() {

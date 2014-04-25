@@ -168,7 +168,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
             if (isEmpty(position.getElevation()))
                 r.complementElevation(insertRow, position.getLongitude(), position.getLatitude());
-            r.complementTime(insertRow, null);
+            r.complementTime(insertRow, null, true);
         }
     }
 

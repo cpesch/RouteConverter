@@ -87,7 +87,7 @@ public class AddPositionAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         r.complementDescription(row, position.getLongitude(), position.getLatitude());
         r.complementElevation(row, position.getLongitude(), position.getLatitude());
-        r.complementTime(row, position.getTime());
+        r.complementTime(row, position.getTime(), true);
     }
 
     public void run() {

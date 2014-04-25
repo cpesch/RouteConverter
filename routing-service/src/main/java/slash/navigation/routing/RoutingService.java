@@ -34,6 +34,7 @@ import java.util.List;
 public interface RoutingService {
     String getName();
     boolean isDownload();
+    boolean isSupportTurnpoints();
     String getPath();
     void setPath(String path);
 
