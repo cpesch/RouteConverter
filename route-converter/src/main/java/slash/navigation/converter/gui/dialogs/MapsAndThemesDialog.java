@@ -36,6 +36,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -55,6 +57,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForHomepage;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -81,6 +84,8 @@ public class MapsAndThemesDialog extends SimpleDialog {
         setTitle(RouteConverter.getBundle().getString("maps-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
+
+        final RouteConverter r = RouteConverter.getInstance();
 
         tableAvailableMaps.setModel(getMapManager().getMapsModel());
         tableAvailableMaps.setDefaultRenderer(Object.class, new MapsTableCellRenderer());
@@ -122,7 +127,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
                 LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
-                RouteConverter.getInstance().showMapBorder(map.isRenderer() ? map.getBoundingBox() : null);
+                r.showMapBorder(map.isRenderer() ? map.getBoundingBox() : null);
             }
         });
 
@@ -205,7 +210,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableResources.convertRowIndexToView(tableResources.getSelectedRow());
                 RemoteResource resource = getMapManager().getResourcesModel().getResource(selectedRow);
-                RouteConverter.getInstance().showMapBorder(resource instanceof RemoteMap ? ((RemoteMap) resource).getBoundingBox() : null);
+                r.showMapBorder(resource instanceof RemoteMap ? ((RemoteMap) resource).getBoundingBox() : null);
             }
         });
 
@@ -218,6 +223,12 @@ public class MapsAndThemesDialog extends SimpleDialog {
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
                 close();
+            }
+        });
+
+        labelMessage.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                r.getContext().getActionManager().run("show-downloads");
             }
         });
 
@@ -303,7 +314,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(6, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
@@ -368,11 +379,11 @@ public class MapsAndThemesDialog extends SimpleDialog {
         tableResources.setPreferredScrollableViewportSize(new Dimension(450, 100));
         scrollPane3.setViewportView(tableResources);
         final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(10, 0, 0, 0), -1, -1));
+        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
         contentPane.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel10, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel10.add(spacer4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
@@ -383,6 +394,9 @@ public class MapsAndThemesDialog extends SimpleDialog {
         panel11.add(buttonClose, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelMessage = new JLabel();
         contentPane.add(labelMessage, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel12 = new JPanel();
+        panel12.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        contentPane.add(panel12, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     }
 
     /**
