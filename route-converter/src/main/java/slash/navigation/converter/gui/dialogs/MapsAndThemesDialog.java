@@ -58,6 +58,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForHomepage;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -119,6 +120,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
             if (selectedMapIndex != -1) {
                 int selectedRow = tableAvailableMaps.convertRowIndexToView(selectedMapIndex);
                 tableAvailableMaps.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
+                scrollToPosition(tableAvailableMaps, selectedRow);
             }
         }
         tableAvailableMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -159,6 +161,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
             if (selectedThemeIndex != -1) {
                 int selectedRow = tableAvailableThemes.convertRowIndexToView(selectedThemeIndex);
                 tableAvailableThemes.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
+                scrollToPosition(tableAvailableThemes, selectedRow);
             }
         }
 
@@ -379,7 +382,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         tableResources.setPreferredScrollableViewportSize(new Dimension(450, 100));
         scrollPane3.setViewportView(tableResources);
         final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
         contentPane.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -395,7 +398,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         labelMessage = new JLabel();
         contentPane.add(labelMessage, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel12 = new JPanel();
-        panel12.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        panel12.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
         contentPane.add(panel12, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     }
 
