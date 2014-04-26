@@ -829,7 +829,7 @@ public class RouteConverter extends SingleFrameApplication {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         profileSplitPane = new JSplitPane();
         profileSplitPane.setContinuousLayout(true);
         profileSplitPane.setDividerLocation(888);
@@ -837,7 +837,7 @@ public class RouteConverter extends SingleFrameApplication {
         profileSplitPane.setOneTouchExpandable(true);
         profileSplitPane.setOrientation(0);
         profileSplitPane.setResizeWeight(0.0);
-        contentPane.add(profileSplitPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(profileSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         mapSplitPane = new JSplitPane();
         mapSplitPane.setContinuousLayout(true);
         mapSplitPane.setDividerLocation(341);
@@ -848,7 +848,7 @@ public class RouteConverter extends SingleFrameApplication {
         mapSplitPane.setResizeWeight(1.0);
         profileSplitPane.setLeftComponent(mapSplitPane);
         mapPanel = new JPanel();
-        mapPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
         mapPanel.setPreferredSize(new Dimension(300, 560));
         mapSplitPane.setLeftComponent(mapPanel);
@@ -862,7 +862,7 @@ public class RouteConverter extends SingleFrameApplication {
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
         elevationPanel = new JPanel();
-        elevationPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        elevationPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         elevationPanel.setMinimumSize(new Dimension(0, 0));
         elevationPanel.setPreferredSize(new Dimension(0, 0));
         elevationPanel.setVisible(false);
