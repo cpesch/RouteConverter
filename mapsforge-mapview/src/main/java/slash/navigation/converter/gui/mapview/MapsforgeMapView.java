@@ -565,8 +565,8 @@ public class MapsforgeMapView implements MapView {
         BoundingBox mapBoundingBox = getMapBoundingBox();
         BoundingBox routeBoundingBox = getRouteBoundingBox();
         if (centerAndZoom &&
-                (mapBoundingBox != null && routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) ||
-                routeBoundingBox == null) {
+                ((mapBoundingBox != null && routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) ||
+                        routeBoundingBox == null)) {
             centerAndZoom(mapBoundingBox, routeBoundingBox, alwaysRecenter);
         }
         limitZoomLevel();
