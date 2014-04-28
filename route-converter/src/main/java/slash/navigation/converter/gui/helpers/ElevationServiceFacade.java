@@ -39,27 +39,25 @@ import static java.lang.String.format;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 
 /**
- * Helps to complement positions with elevation, postal address and populated place information.
+ * Helps to complement positions with elevation.
  *
  * @author Christian Pesch
  */
 
-public class CompletePositionService {
-    private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
+public class ElevationServiceFacade {
+    private static final Logger log = Logger.getLogger(ElevationServiceFacade.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(ElevationServiceFacade.class);
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
     private final HgtFilesService hgtFilesService;
-    private final GeoNamesService geoNamesService = new GeoNamesService();
-    private final GoogleMapsService googleMapsService = new GoogleMapsService();
 
-    public CompletePositionService(DownloadManager downloadManager) {
+    public ElevationServiceFacade(DownloadManager downloadManager) {
         hgtFilesService = new HgtFilesService(downloadManager);
         for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
             elevationServices.add(hgtFile);
-        elevationServices.add(geoNamesService);
-        elevationServices.add(googleMapsService);
+        elevationServices.add(new GeoNamesService());
+        elevationServices.add(new GoogleMapsService());
         elevationServices.add(new EarthToolsService());
     }
 
@@ -90,13 +88,6 @@ public class CompletePositionService {
     public Double getElevationFor(double longitude, double latitude) throws IOException {
         Double elevation = getElevationService().getElevationFor(longitude, latitude);
         return elevation != null ? formatElevation(elevation).doubleValue() : null;
-    }
-
-    public String getDescriptionFor(double longitude, double latitude) throws IOException {
-        String description = googleMapsService.getLocationFor(longitude, latitude);
-        if (description == null)
-            description = geoNamesService.getNearByFor(longitude, latitude);
-        return description;
     }
 
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {

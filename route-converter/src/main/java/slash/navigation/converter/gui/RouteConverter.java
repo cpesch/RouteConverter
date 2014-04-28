@@ -164,7 +164,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
-    private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
+    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
@@ -404,7 +404,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
-        getCompletePositionService().dispose();
+        getElevationServiceFacade().dispose();
         getDownloadManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();
@@ -645,8 +645,8 @@ public class RouteConverter extends SingleFrameApplication {
             profileView.setSelectedPositions(selectedPositions, true);
     }
 
-    public CompletePositionService getCompletePositionService() {
-        return completePositionService;
+    public ElevationServiceFacade getElevationServiceFacade() {
+        return elevationServiceFacade;
     }
 
     public InsertPositionFacade getInsertPositionFacade() {
@@ -669,7 +669,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
         if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(frame, getCompletePositionService());
+            batchPositionAugmenter = new BatchPositionAugmenter(frame);
         }
         return batchPositionAugmenter;
     }

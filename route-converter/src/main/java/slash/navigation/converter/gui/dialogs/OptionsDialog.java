@@ -243,9 +243,9 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         DefaultComboBoxModel elevationServiceModel = new DefaultComboBoxModel();
-        for (ElevationService service : r.getCompletePositionService().getElevationServices())
+        for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
             elevationServiceModel.addElement(service);
-        elevationServiceModel.setSelectedItem(r.getCompletePositionService().getElevationService());
+        elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
         comboBoxElevationService.setModel(elevationServiceModel);
         comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
@@ -253,14 +253,14 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED)
                     return;
                 ElevationService service = ElevationService.class.cast(e.getItem());
-                r.getCompletePositionService().setElevationService(service);
+                r.getElevationServiceFacade().setElevationService(service);
                 handleElevationServiceUpdate();
             }
         });
 
         textFieldElevationServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                r.getCompletePositionService().getElevationService().setPath(textFieldElevationServicePath.getText());
+                r.getElevationServiceFacade().getElevationService().setPath(textFieldElevationServicePath.getText());
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -348,7 +348,7 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleElevationServiceUpdate() {
-        ElevationService service = RouteConverter.getInstance().getCompletePositionService().getElevationService();
+        ElevationService service = RouteConverter.getInstance().getElevationServiceFacade().getElevationService();
         textFieldElevationServicePath.setEnabled(service.isDownload());
         textFieldElevationServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseElevationServicePath.setEnabled(service.isDownload());
@@ -393,7 +393,7 @@ public class OptionsDialog extends SimpleDialog {
         RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-elevation-service-path"));
-        chooser.setSelectedFile(new File(r.getCompletePositionService().getElevationService().getPath()));
+        chooser.setSelectedFile(new File(r.getElevationServiceFacade().getElevationService().getPath()));
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(r.getFrame());
