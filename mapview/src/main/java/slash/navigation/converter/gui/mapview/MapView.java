@@ -42,7 +42,6 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     MapViewCallback mapViewCallback,
-                    PositionAugmenter positionAugmenter,
                     DownloadManager downloadManager, MapManager mapManager,
                     boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,

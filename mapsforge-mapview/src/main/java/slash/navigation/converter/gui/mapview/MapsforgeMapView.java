@@ -42,7 +42,6 @@ import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.mapview.helpers.MapViewComponentListener;
 import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
 import slash.navigation.converter.gui.mapview.lines.Line;
@@ -109,6 +108,9 @@ public class MapsforgeMapView implements MapView {
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
+    private MapViewCallback mapViewCallback;
+    private RoutingService routingService;
+    private MapManager mapManager;
     private UnitSystemModel unitSystemModel;
 
     private MapSelector mapSelector;
@@ -116,28 +118,25 @@ public class MapsforgeMapView implements MapView {
     private MapViewMouseEventListener mapViewMouseEventListener;
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
-
-    private boolean recenterAfterZooming;
-    private PositionAugmenter positionAugmenter;
-    private RoutingService routingService;
-    private MapManager mapManager;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private ExecutorService executor = newSingleThreadExecutor();
+
+    private boolean recenterAfterZooming;
 
     // initialization
 
     public void initialize(PositionsModel positionsModel,
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
-                           PositionAugmenter positionAugmenter,
+                           MapViewCallback mapViewCallback,
                            DownloadManager downloadManager, MapManager mapManager,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
         this.mapManager = mapManager;
-        this.positionAugmenter = positionAugmenter;
+        this.mapViewCallback = mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
@@ -915,13 +914,13 @@ public class MapsforgeMapView implements MapView {
             return position != null ? positionsModel.getIndex(position) + 1 : 0;
         }
 
-        private void insertPosition(int row, Double longitude, Double latitude) { // TODO unify with different code path from AddPositionAction
-            positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createDescription(positionsModel.getRowCount() + 1));
+        private void insertPosition(int row, Double longitude, Double latitude) {
+            positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
-            positionAugmenter.complementDescription(row, longitude, latitude);
-            positionAugmenter.complementElevation(row, longitude, latitude);
-            positionAugmenter.complementTime(row, null, true);
+            mapViewCallback.complementDescription(row, longitude, latitude);
+            mapViewCallback.complementElevation(row, longitude, latitude);
+            mapViewCallback.complementTime(row, null, true);
         }
 
         public void run() {
