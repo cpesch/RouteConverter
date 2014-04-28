@@ -33,7 +33,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
-import slash.navigation.converter.gui.augment.PositionAugmenter;
+import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.BaseMapView;
@@ -350,6 +350,7 @@ public class RouteConverter extends SingleFrameApplication {
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
+                        getMapViewCallback(),
                         getPositionAugmenter(),
                         getDownloadManager(),
                         getMapManager(),
@@ -683,28 +684,19 @@ public class RouteConverter extends SingleFrameApplication {
         return batchPositionAugmenter;
     }
 
-    private SinglePositionAugmenter positionAugmenter = null;
+    private MapViewCallbackImpl mapViewCallback = null;
 
-    private synchronized PositionAugmenter getPositionAugmenter() {
-        if (positionAugmenter == null) {
-            positionAugmenter = new SinglePositionAugmenter(getPositionsModel(), getCompletePositionService());
+    private synchronized MapViewCallback getMapViewCallback() {
+        if (mapViewCallback == null) {
+            mapViewCallback = new MapViewCallbackImpl(getPositionsModel());
         }
-        return positionAugmenter;
-    }
-
-
-    public void complementElevation(int row, Double longitude, Double latitude) {
-        getPositionAugmenter().complementElevation(row, longitude, latitude);
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void complementDescription(int row, Double longitude, Double latitude) {
-        getPositionAugmenter().complementDescription(row, longitude, latitude);
+        return mapViewCallback;
     }
 
     public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) {
-        getPositionAugmenter().complementTime(row, time, allowCurrentTime);
+        getMapViewCallback().complementTime(row, time, allowCurrentTime);
     }
+
 
     public JTable getPositionsView() {
         return getConvertPanel().getPositionsView();

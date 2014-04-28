@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.mapview;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -42,6 +41,7 @@ public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
+                    MapViewCallback mapViewCallback,
                     PositionAugmenter positionAugmenter,
                     DownloadManager downloadManager, MapManager mapManager,
                     boolean recenterAfterZooming,
