@@ -1412,11 +1412,12 @@ public abstract class BaseMapView implements MapView {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void complementPositions(int row, BaseRoute route) { // TODO same as
+    private void complementPositions(int row, BaseRoute route) {
         List<NavigationPosition> positions = route.getPositions();
         int index = row;
         for (NavigationPosition position : positions) {
             // do not complement description since this is limited to 2500 calls/day
+            // mapViewCallback.complementDescription(index, position.getLongitude(), position.getLatitude());
             mapViewCallback.complementElevation(index, position.getLongitude(), position.getLatitude());
             mapViewCallback.complementTime(index, position.getTime(), false);
             index++;
