@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -44,13 +44,9 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.intrapolateTime;
+import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -361,6 +357,49 @@ public class BatchPositionAugmenter {
     }
 
 
+    private void addDescriptions(final JTable positionsTable,
+                                 final PositionsModel positionsModel,
+                                 final int[] rows,
+                                 final OverwritePredicate predicate) {
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
+                new Operation() {
+                    private GoogleMapsService googleMapsService = new GoogleMapsService();
+                    private GeoNamesService geonamesService = new GeoNamesService();
+
+                    public String getName() {
+                        return "DescriptionPositionAugmenter";
+                    }
+
+                    public int getColumnIndex() {
+                        return DESCRIPTION_COLUMN_INDEX;
+                    }
+
+                    public void performOnStart() {
+                    }
+
+                    public boolean run(int index, NavigationPosition position) throws Exception {
+                        String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+                        if (description == null)
+                            description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+                        if (description != null) {
+                            description = createDescription(index + 1, description);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                        }
+                        return description != null;
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-description-error");
+                    }
+                }
+        );
+    }
+
+    public void addDescriptions(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        addDescriptions(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    }
+
+
     private void processSpeeds(final JTable positionsTable,
                                final PositionsModel positionsModel,
                                final int[] rows,
@@ -502,5 +541,13 @@ public class BatchPositionAugmenter {
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         processNumbers(positionsTable, positionsModel, selectedRows, digitCount, numberPattern, COORDINATE_PREDICATE);
+    }
+
+    public String createDescription(int index, String description) {
+        if (description == null)
+            description = RouteConverter.getBundle().getString("new-position-name");
+        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
+        String number = Integer.toString(index);
+        return formatNumberedPosition(numberPattern, number, description);
     }
 }

@@ -28,7 +28,6 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -113,7 +112,7 @@ public abstract class BaseMapView implements MapView {
     private TravelMode travelMode;
     private UnitSystemModel unitSystemModel;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    private PositionAugmenter positionAugmenter;
+    private MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
     private int overQueryLimitCount = 0;
@@ -123,14 +122,14 @@ public abstract class BaseMapView implements MapView {
     public void initialize(PositionsModel positionsModel,
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
-                           PositionAugmenter positionAugmenter,
+                           MapViewCallback mapViewCallback,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
-        this.positionAugmenter = positionAugmenter;
+        this.mapViewCallback = mapViewCallback;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
@@ -553,9 +552,6 @@ public abstract class BaseMapView implements MapView {
             running = false;
             notificationMutex.notifyAll();
         }
-
-        if (positionAugmenter != null)
-            positionAugmenter.interrupt();
 
         if (selectionUpdater != null) {
             try {
@@ -1397,7 +1393,7 @@ public abstract class BaseMapView implements MapView {
                 time = fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            String description = instructions != null ? instructions : positionAugmenter.createDescription(positionNumber);
+            String description = instructions != null ? instructions : mapViewCallback.createDescription(positionNumber, null);
             BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, description);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
@@ -1416,24 +1412,24 @@ public abstract class BaseMapView implements MapView {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void complementPositions(int row, BaseRoute route) {
+    private void complementPositions(int row, BaseRoute route) { // TODO same as
         List<NavigationPosition> positions = route.getPositions();
         int index = row;
         for (NavigationPosition position : positions) {
             // do not complement description since this is limited to 2500 calls/day
-            positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
-            positionAugmenter.complementTime(index, position.getTime(), false);
+            mapViewCallback.complementElevation(index, position.getLongitude(), position.getLatitude());
+            mapViewCallback.complementTime(index, position.getTime(), false);
             index++;
         }
     }
 
-    private void insertPosition(int row, Double longitude, Double latitude) { // TODO unify with different code path from AddPositionAction
-        positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createDescription(positionsModel.getRowCount() + 1));
+    private void insertPosition(int row, Double longitude, Double latitude) {
+        positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
-        positionAugmenter.complementDescription(row, longitude, latitude);
-        positionAugmenter.complementElevation(row, longitude, latitude);
-        positionAugmenter.complementTime(row, null, true);
+        mapViewCallback.complementDescription(row, longitude, latitude);
+        mapViewCallback.complementElevation(row, longitude, latitude);
+        mapViewCallback.complementTime(row, null, true);
     }
 
     private int getAddRow() {
@@ -1462,7 +1458,7 @@ public abstract class BaseMapView implements MapView {
         boolean cleanElevation = preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false);
         boolean complementElevation = preferences.getBoolean(COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE, true);
         boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
-        boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false);
+        boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true);
 
         int minimum = row;
         for (int index : selectedPositionIndices) {
@@ -1487,12 +1483,12 @@ public abstract class BaseMapView implements MapView {
             if (cleanElevation)
                 positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
             if (complementElevation)
-                positionAugmenter.complementElevation(row, position.getLongitude(), position.getLatitude());
+                mapViewCallback.complementElevation(row, position.getLongitude(), position.getLatitude());
 
             if (cleanTime)
                 positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)
-                positionAugmenter.complementTime(index, null, true);
+                mapViewCallback.complementTime(index, null, true);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

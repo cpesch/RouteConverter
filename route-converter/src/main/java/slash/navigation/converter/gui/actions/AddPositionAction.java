@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -36,7 +35,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.toArray;
-import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
@@ -70,24 +68,19 @@ public class AddPositionAction extends FrameAction {
         return new BoundingBox(asList(second, position)).getCenter();
     }
 
-    private String getDescription() {
-        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-        String number = Integer.toString(positionsModel.getRowCount() + 1);
-        String description = RouteConverter.getBundle().getString("new-position-name");
-        return formatNumberedPosition(numberPattern, number, description);
-    }
-
     private NavigationPosition insertRow(int row, NavigationPosition position) {
+        String description = RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(positionsModel.getRowCount() + 1, null);
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                position.getSpeed(), position.getTime(), getDescription());
+                position.getSpeed(), position.getTime(), description);
         return positionsModel.getPosition(row);
     }
 
     private void complementRow(int row, NavigationPosition position) {
         RouteConverter r = RouteConverter.getInstance();
-        r.complementDescription(row, position.getLongitude(), position.getLatitude());
-        r.complementElevation(row, position.getLongitude(), position.getLatitude());
+        r.getBatchPositionAugmenter().addDescriptions(table, positionsModel, new int[]{row});
+        r.getBatchPositionAugmenter().addElevations(table, positionsModel, new int[]{row});
         r.complementTime(row, position.getTime(), true);
+        // TODO r.getBatchPositionAugmenter().addTimes(table, positionsModel, new int[]{row});
     }
 
     public void run() {
