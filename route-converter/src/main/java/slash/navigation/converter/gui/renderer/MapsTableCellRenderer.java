@@ -45,7 +45,7 @@ public class MapsTableCellRenderer extends AlternatingColorTableCellRenderer {
                 break;
             case 1:
                 checkBox.setBackground(component.getBackground());
-                checkBox.setSelected(map.isRenderer());
+                checkBox.setSelected(map.isVector());
                 component = checkBox;
                 break;
             default:

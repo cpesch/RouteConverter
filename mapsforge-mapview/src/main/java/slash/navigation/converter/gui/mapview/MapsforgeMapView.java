@@ -540,7 +540,7 @@ public class MapsforgeMapView implements MapView {
         Theme theme = mapManager.getAppliedThemeModel().getItem();
         Layer layer;
         try {
-            layer = map.isRenderer() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
+            layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
             showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
                     getString("cannot-load-map"), map.getDescription(), e.getMessage()), "Error", ERROR_MESSAGE);
@@ -762,13 +762,13 @@ public class MapsforgeMapView implements MapView {
         // limit minimum zoom to prevent zooming out too much and losing the map
         byte zoomLevelMin = 2;
         LocalMap map = mapsToLayers.keySet().iterator().next();
-        if (map.isRenderer() && mapView.getModel().mapViewDimension.getDimension() != null)
+        if (map.isVector() && mapView.getModel().mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) (zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), mapView.getModel().displayModel.getTileSize()) - 3);
         mapView.getModel().mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
         // limit maximum to prevent zooming in to grey area
-        byte zoomLevelMax = (byte) (map.isRenderer() ? 22 : 18);
+        byte zoomLevelMax = (byte) (map.isVector() ? 22 : 18);
         mapView.getModel().mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }
 

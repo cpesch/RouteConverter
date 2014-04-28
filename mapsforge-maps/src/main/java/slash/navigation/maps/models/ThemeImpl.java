@@ -23,7 +23,7 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.maps.Theme;
 
 /**
- * A {@link Theme} that is used when rendering a {@link RendererMap}.
+ * A {@link Theme} that is used when rendering a {@link VectorMap}.
  *
  * @author Christian Pesch
  */

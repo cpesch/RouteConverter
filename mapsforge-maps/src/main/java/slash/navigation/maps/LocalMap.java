@@ -32,10 +32,10 @@ import java.io.File;
 
 public interface LocalMap extends LocalResource {
     /**
-     * Return if this map is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
-     * @return true, if this map is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
+     * Return if this is a vector map that is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
+     * @return true, if this is a vector map that is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
      */
-    boolean isRenderer();
+    boolean isVector();
     File getFile();
     AbstractTileSource getTileSource();
     BoundingBox getBoundingBox();

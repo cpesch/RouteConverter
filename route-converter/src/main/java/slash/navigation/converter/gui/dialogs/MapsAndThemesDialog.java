@@ -57,7 +57,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForHomepage;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
@@ -110,7 +109,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         });
         sorterAvailableMaps.setComparator(1, new Comparator<LocalMap>() {
             public int compare(LocalMap m1, LocalMap m2) {
-                return m1.isRenderer() ? m2.isRenderer() ? 0 : -1 : 1;
+                return m1.isVector() ? m2.isVector() ? 0 : -1 : 1;
             }
         });
         tableAvailableMaps.setRowSorter(sorterAvailableMaps);
@@ -129,7 +128,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                     return;
                 int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
                 LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
-                r.showMapBorder(map.isRenderer() ? map.getBoundingBox() : null);
+                r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
             }
         });
 

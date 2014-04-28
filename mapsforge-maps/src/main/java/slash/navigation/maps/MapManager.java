@@ -130,8 +130,8 @@ public class MapManager {
 
     private void initializeDefaults() {
         mapsModel.clear();
-        mapsModel.addOrUpdateMap(new DownloadMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
-        mapsModel.addOrUpdateMap(new DownloadMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
         themesModel.clear();
         themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
@@ -144,7 +144,7 @@ public class MapManager {
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         for (File file : mapFilesArray)
-            mapsModel.addOrUpdateMap(new RendererMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+            mapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
 
         long end = currentTimeMillis();
         log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory + " in " + (end - start) + " milliseconds");

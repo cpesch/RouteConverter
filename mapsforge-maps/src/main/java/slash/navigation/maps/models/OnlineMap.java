@@ -31,10 +31,10 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-public class DownloadMap extends LocaleResourceImpl implements LocalMap {
+public class OnlineMap extends LocaleResourceImpl implements LocalMap {
     private final AbstractTileSource tileSource;
 
-    public DownloadMap(String description, String url, AbstractTileSource tileSource) {
+    public OnlineMap(String description, String url, AbstractTileSource tileSource) {
         super(description, url);
         this.tileSource = tileSource;
     }
@@ -51,7 +51,7 @@ public class DownloadMap extends LocaleResourceImpl implements LocalMap {
         return tileSource;
     }
 
-    public boolean isRenderer() {
+    public boolean isVector() {
         return false;
     }
 }

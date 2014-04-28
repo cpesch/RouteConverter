@@ -26,16 +26,16 @@ import slash.navigation.maps.LocalMap;
 import java.io.File;
 
 /**
- * A {@link LocalMap} that is rendered from a data set.
+ * A {@link LocalMap} that is rendered from a local vector data set.
  *
  * @author Christian Pesch
  */
 
-public class RendererMap extends LocaleResourceImpl implements LocalMap {
+public class VectorMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
     private final BoundingBox boundingBox;
 
-    public RendererMap(String description, String url, BoundingBox boundingBox, File file) {
+    public VectorMap(String description, String url, BoundingBox boundingBox, File file) {
         super(description, url);
         this.boundingBox = boundingBox;
         this.file = file;
@@ -53,7 +53,7 @@ public class RendererMap extends LocaleResourceImpl implements LocalMap {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isRenderer() {
+    public boolean isVector() {
         return true;
     }
 }

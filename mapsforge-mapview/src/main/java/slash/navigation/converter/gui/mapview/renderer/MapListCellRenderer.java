@@ -21,13 +21,12 @@ package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.models.DownloadMap;
+import slash.navigation.maps.models.OnlineMap;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static java.text.MessageFormat.format;
-import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.shortenName;
 
 /**
  * Renders the {@link LocalMap} labels of the map and theme selector combo box.
@@ -36,8 +35,8 @@ import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRende
  */
 
 public class MapListCellRenderer extends DefaultListCellRenderer {
-    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new DownloadMap(null, null, null);
-    public static final LocalMap DOWNLOAD_MAP = new DownloadMap(null, null, null);
+    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new OnlineMap(null, null, null);
+    public static final LocalMap DOWNLOAD_MAP = new OnlineMap(null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -52,7 +51,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
             tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
         } else if (map != null) {
             text = map.getDescription();
-            if (map.isRenderer())
+            if (map.isVector())
                 text = format(Application.getInstance().getContext().getBundle().getString("renderer-map"), text);
             tooltip = map.getUrl();
         }
