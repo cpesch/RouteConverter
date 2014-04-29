@@ -114,19 +114,17 @@ public class GraphHopper implements RoutingService {
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
         if(osmPbfFile == null)
             return null;
-        initializeHopper();
-
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
         request.setVehicle("car"); // TODO make configurable
         GHResponse response = hopper.route(request);
         return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis());
     }
 
-    private void initializeHopper() {
-        if (hopper != null && hopper.getGraphHopperLocation().equals(createPath(osmPbfFile)))
-            return;
-
+    private void initializeHopper(FileAndTarget fileAndTarget) {
+        this.osmPbfFile = fileAndTarget.target;
         String[] args = new String[]{
+                "prepare.doPrepare=false",
+                "prepare.chShortcuts=false",
                 "graph.location=" + createPath(osmPbfFile),
                 "osmreader.osm=" + osmPbfFile.getAbsolutePath()
         };
@@ -178,16 +176,18 @@ public class GraphHopper implements RoutingService {
         }
 
         final FileAndTarget fileAndTarget = createFileAndTarget(keyForSmallestBoundingBox);
-        this.osmPbfFile = fileAndTarget != null ? fileAndTarget.target : null;
-
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
                 return fileAndTarget != null && !new Validator(fileAndTarget.target).existsFile();
             }
-
+            public boolean isRequiresProcessing() {
+                return fileAndTarget != null && !new Validator(new java.io.File(createPath(fileAndTarget.target), "edges")).existsFile();
+            }
             public void download() {
-                if (fileAndTarget != null)
-                    downloadFile(fileAndTarget);
+                downloadFile(fileAndTarget);
+            }
+            public void process() {
+                initializeHopper(fileAndTarget);
             }
         };
     }

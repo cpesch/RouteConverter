@@ -301,25 +301,27 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
-                final DownloadFuture future = mapViewCallback.getRoutingService().downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-                if (future.isRequiresDownload()) {
-                    drawBeeline(pairWithLayers);
-                    fireDistanceAndTime();
+                executor.execute(new Runnable() {
+                    public void run() {
+                        final DownloadFuture future = mapViewCallback.getRoutingService().downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
+                        if (future.isRequiresDownload() || future.isRequiresProcessing()) {
+                            drawBeeline(pairWithLayers);
+                            fireDistanceAndTime();
 
-                    executor.execute(new Runnable() {
-                        public void run() {
-                            future.download();
-                            // TODO for GraphHopper draw before removing
-                            removeLines(pairWithLayers);
+                            if (future.isRequiresDownload())
+                                future.download();
+                            if (future.isRequiresProcessing())
+                                future.process();
+
+                            removeLines(pairWithLayers, true);
+                            drawRoute(pairWithLayers);
+                            fireDistanceAndTime();
+                        } else {
                             drawRoute(pairWithLayers);
                             fireDistanceAndTime();
                         }
-                    });
-                } else {
-                    // TODO use executor since GraphHopper might be extracting
-                    drawRoute(pairWithLayers);
-                    fireDistanceAndTime();
-                }
+                    }
+                });
             }
 
             private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
@@ -336,7 +338,7 @@ public class MapsforgeMapView implements MapView {
                 }
             }
 
-            private void removeLines(List<PairWithLayer> pairWithLayers) {
+            private void removeLines(List<PairWithLayer> pairWithLayers, boolean removeDistancesAndTimes) {
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     Layer layer = pairWithLayer.getLayer();
                     if (layer != null)
@@ -345,8 +347,10 @@ public class MapsforgeMapView implements MapView {
                         log.warning("Could not find layer for route pair " + pairWithLayer);
                     pairWithLayer.setLayer(null);
 
-                    pairsToDistances.remove(pairWithLayer);
-                    pairsToTimes.remove(pairWithLayer);
+                    if(removeDistancesAndTimes) {
+                        pairsToDistances.remove(pairWithLayer);
+                        pairsToTimes.remove(pairWithLayer);
+                    }
                 }
             }
 
@@ -376,7 +380,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                removeLines(pairWithLayers);
+                removeLines(pairWithLayers, true);
                 fireDistanceAndTime();
             }
 

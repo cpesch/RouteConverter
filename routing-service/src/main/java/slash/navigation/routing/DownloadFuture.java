@@ -28,5 +28,7 @@ package slash.navigation.routing;
 
 public interface DownloadFuture {
     boolean isRequiresDownload();
+    boolean isRequiresProcessing();
     void download();
+    void process();
 }
