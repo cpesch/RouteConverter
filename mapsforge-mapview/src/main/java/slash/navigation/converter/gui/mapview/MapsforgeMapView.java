@@ -313,7 +313,7 @@ public class MapsforgeMapView implements MapView {
                             if (future.isRequiresProcessing())
                                 future.process();
 
-                            removeLines(pairWithLayers, true);
+                            removeLines(pairWithLayers);
                             drawRoute(pairWithLayers);
                             fireDistanceAndTime();
                         } else {
@@ -338,7 +338,7 @@ public class MapsforgeMapView implements MapView {
                 }
             }
 
-            private void removeLines(List<PairWithLayer> pairWithLayers, boolean removeDistancesAndTimes) {
+            private void removeLines(List<PairWithLayer> pairWithLayers) {
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     Layer layer = pairWithLayer.getLayer();
                     if (layer != null)
@@ -347,10 +347,8 @@ public class MapsforgeMapView implements MapView {
                         log.warning("Could not find layer for route pair " + pairWithLayer);
                     pairWithLayer.setLayer(null);
 
-                    if(removeDistancesAndTimes) {
-                        pairsToDistances.remove(pairWithLayer);
-                        pairsToTimes.remove(pairWithLayer);
-                    }
+                    pairsToDistances.remove(pairWithLayer);
+                    pairsToTimes.remove(pairWithLayer);
                 }
             }
 
@@ -380,7 +378,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                removeLines(pairWithLayers, true);
+                removeLines(pairWithLayers);
                 fireDistanceAndTime();
             }
 
