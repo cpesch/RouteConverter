@@ -21,6 +21,8 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.maps.MapManager;
+import slash.navigation.routing.RoutingService;
 
 /**
  * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
@@ -33,4 +35,7 @@ public interface MapViewCallback {
     void complementDescription(int row, Double longitude, Double latitude);
     void complementElevation(int row, Double longitude, Double latitude);
     void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
+
+    MapManager getMapManager();
+    RoutingService getRoutingService();
 }

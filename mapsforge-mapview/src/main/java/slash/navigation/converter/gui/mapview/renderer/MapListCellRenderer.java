@@ -52,7 +52,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
         } else if (map != null) {
             text = map.getDescription();
             if (map.isVector())
-                text = format(Application.getInstance().getContext().getBundle().getString("renderer-map"), text);
+                text = format(Application.getInstance().getContext().getBundle().getString("vector-map"), text);
             tooltip = map.getUrl();
         }
 

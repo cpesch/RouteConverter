@@ -39,8 +39,8 @@ import java.util.ResourceBundle;
 import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.util.Arrays.asList;
-import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.ONLINE_MAP;
-import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.SEPARATOR_TO_ONLINE_MAP;
+import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.DOWNLOAD_MAP;
+import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
 import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
 import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME;
 
@@ -65,7 +65,7 @@ public class MapSelector {
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<LocalMap>(
                         new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
-                        asList(SEPARATOR_TO_ONLINE_MAP, ONLINE_MAP))
+                        asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
         comboBoxMap.setPrototypeDisplayValue(mapManager.getMapsModel().getMap(1));
         comboBoxMap.setRenderer(new MapListCellRenderer());
@@ -98,7 +98,7 @@ public class MapSelector {
     private void createUIComponents() {
         comboBoxMap = new JComboBox<LocalMap>() {
             public void setSelectedItem(Object anObject) {
-                if (ONLINE_MAP.equals(anObject)) {
+                if (DOWNLOAD_MAP.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("select-maps");
                     return;
                 }

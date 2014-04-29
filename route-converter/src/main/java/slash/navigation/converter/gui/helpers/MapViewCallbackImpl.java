@@ -25,6 +25,8 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.maps.MapManager;
+import slash.navigation.routing.RoutingService;
 
 import java.util.Calendar;
 import java.util.logging.Logger;
@@ -73,5 +75,13 @@ public class MapViewCallbackImpl implements MapViewCallback {
         if (interpolated == null && allowCurrentTime)
             interpolated = fromCalendar(Calendar.getInstance(UTC));
         positionsModel.edit(row, TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
+    }
+
+    public MapManager getMapManager() {
+        return RouteConverter.getInstance().getMapManager();
+    }
+
+    public RoutingService getRoutingService() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
     }
 }

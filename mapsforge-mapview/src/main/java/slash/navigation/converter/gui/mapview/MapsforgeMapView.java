@@ -38,7 +38,6 @@ import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
@@ -51,16 +50,13 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.MapManager;
 import slash.navigation.maps.Theme;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -109,8 +105,6 @@ public class MapsforgeMapView implements MapView {
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
     private MapViewCallback mapViewCallback;
-    private RoutingService routingService;
-    private MapManager mapManager;
     private UnitSystemModel unitSystemModel;
 
     private MapSelector mapSelector;
@@ -130,17 +124,14 @@ public class MapsforgeMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           DownloadManager downloadManager, MapManager mapManager,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
-        this.mapManager = mapManager;
         this.mapViewCallback = mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
-        this.routingService = new BRouter(downloadManager); // TODO need to make this configurable
         this.recenterAfterZooming = recenterAfterZooming;
     }
 
@@ -180,7 +171,7 @@ public class MapsforgeMapView implements MapView {
         ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
-        mapSelector = new MapSelector(mapManager, mapView);
+        mapSelector = new MapSelector(mapViewCallback.getMapManager(), mapView);
 
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(new Observer() {
@@ -205,12 +196,12 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        mapManager.getDisplayedMapModel().addChangeListener(new ChangeListener() {
+        mapViewCallback.getMapManager().getDisplayedMapModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 handleMapAndThemeUpdate(true, !isVisible(mapView.getModel().mapViewPosition.getCenter(), 20));
             }
         });
-        mapManager.getAppliedThemeModel().addChangeListener(new ChangeListener() {
+        mapViewCallback.getMapManager().getAppliedThemeModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 handleMapAndThemeUpdate(false, false);
             }
@@ -310,7 +301,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
-                final DownloadFuture future = routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
+                final DownloadFuture future = mapViewCallback.getRoutingService().downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
                 if (future.isRequiresDownload()) {
                     drawBeeline(pairWithLayers);
                     fireDistanceAndTime();
@@ -318,12 +309,14 @@ public class MapsforgeMapView implements MapView {
                     executor.execute(new Runnable() {
                         public void run() {
                             future.download();
+                            // TODO for GraphHopper draw before removing
                             removeLines(pairWithLayers);
                             drawRoute(pairWithLayers);
                             fireDistanceAndTime();
                         }
                     });
                 } else {
+                    // TODO use executor since GraphHopper might be extracting
                     drawRoute(pairWithLayers);
                     fireDistanceAndTime();
                 }
@@ -372,7 +365,7 @@ public class MapsforgeMapView implements MapView {
             private List<LatLong> calculateRoute(PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<LatLong>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
-                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
+                RoutingResult intermediate = mapViewCallback.getRoutingService().getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
                 if (intermediate != null) {
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
                     pairsToDistances.put(pairWithLayer, intermediate.getDistance());
@@ -536,8 +529,8 @@ public class MapsforgeMapView implements MapView {
         Layers layers = getLayerManager().getLayers();
 
         // add new map with a theme
-        LocalMap map = mapManager.getDisplayedMapModel().getItem();
-        Theme theme = mapManager.getAppliedThemeModel().getItem();
+        LocalMap map = mapViewCallback.getMapManager().getDisplayedMapModel().getItem();
+        Theme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
         Layer layer;
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());

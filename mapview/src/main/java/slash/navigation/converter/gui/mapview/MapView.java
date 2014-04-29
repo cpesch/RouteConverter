@@ -28,6 +28,7 @@ import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.maps.MapManager;
+import slash.navigation.routing.RoutingService;
 
 import java.awt.*;
 
@@ -42,7 +43,6 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     MapViewCallback mapViewCallback,
-                    DownloadManager downloadManager, MapManager mapManager,
                     boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,
                     TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,

@@ -351,8 +351,6 @@ public class RouteConverter extends SingleFrameApplication {
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getMapViewCallback(),
-                        getDownloadManager(),
-                        getMapManager(),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
