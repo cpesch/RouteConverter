@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
     <datasource name="GraphHopper" baseUrl="http://download.geofabrik.de/" directory="graphhopper">
+        <file uri="europe/austria-latest.osm.pbf">
+            <northEast longitude="17.16273" latitude="49.02403"/>
+            <southWest longitude="9.52678" latitude="46.36851"/>
+        </file>
+        <file uri="europe/germany-latest.osm.pbf">
+            <northEast longitude="15.05078" latitude="55.14777"/>
+            <southWest longitude="5.864417" latitude="47.26543"/>
+        </file>
         <file uri="europe/germany/baden-wuerttemberg-latest.osm.pbf">
             <northEast longitude="10.52081" latitude="49.80469"/>
             <southWest longitude="7.372216" latitude="47.18741"/>
@@ -64,6 +72,10 @@
         <file uri="europe/germany/thueringen-latest.osm.pbf">
             <northEast longitude="12.67491" latitude="51.65237"/>
             <southWest longitude="9.863176" latitude="50.19971"/>
+        </file>
+        <file uri="europe/netherlands-latest.osm.pbf">
+            <northEast longitude="7.230455" latitude="54.01786"/>
+            <southWest longitude="2.992192" latitude="50.74753"/>
         </file>
     </datasource>
 </datasources>

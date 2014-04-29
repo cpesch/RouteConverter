@@ -198,8 +198,14 @@ public class BRouter implements RoutingService {
             public boolean isRequiresDownload() {
                 return !notExistingFiles.isEmpty();
             }
+            public boolean isRequiresProcessing() {
+                return false;
+            }
             public void download() {
                 downloadFiles(notExistingFiles);
+            }
+            public void process() {
+                // intentionally do nothing
             }
         };
     }
