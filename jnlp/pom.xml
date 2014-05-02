@@ -12,15 +12,11 @@
 
     <dependencies>
         <dependency>
-            <!--suppress MavenModelInspection -->
-            <groupId>javax.jnlp</groupId>
-            <!--suppress MavenModelInspection -->
-            <artifactId>jnlp-api</artifactId>
-            <!--suppress MavenModelInspection -->
-            <version>6.0</version>
-            <!--suppress MavenModelInspection -->
-            <systemPath>${java.home}/lib/javaws.jar</systemPath>
-            <scope>system</scope>
+            <groupId>com.sun</groupId>
+            <artifactId>javaws</artifactId>
+            <version>jdk6</version>
+            <scope>provided</scope>
+            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>
