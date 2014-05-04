@@ -1,4 +1,4 @@
 /**
- * Contains the URL reading formats.
+ * The URL reading formats: Google Maps URL, MotoPlaner URL
  */
 package slash.navigation.url;

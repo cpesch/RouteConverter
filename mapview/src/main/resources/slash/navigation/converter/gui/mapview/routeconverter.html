@@ -1,13 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <title>RouteConverter MapView</title>
-    <script src="http://${mapserver}/maps/api/js?v=3.8&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script src="http://${mapserver}/maps/api/js?v=3.15&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenu.js" type="text/javascript"></script>
     <script src="./keydragzoom.js" type="text/javascript"></script>
+    <script src="./label.js" type="text/javascript"></script>
     <script src="./latlngcontrol.js" type="text/javascript"></script>
     <style type="text/css">
         html { overflow: hidden }
@@ -49,6 +51,22 @@
         }
         .ContextMenu li.separator div {
             border-top: solid 1px #cccccc;
+        }
+        .Label {
+            position: relative;
+            left: 7px;
+            top: -10px;
+            white-space: nowrap;
+            border: 0px;
+            font-family: arial;
+            font-size: 9px;
+            padding: 2px;
+            background-color: #fff;
+            opacity: .75;
+            filter: alpha(opacity = 75);
+            -ms-filter: "alpha(opacity=75)";
+            -khtml-opacity: .75;
+            -moz-opacity: .75;
         }
         #LatLngControl {
             background: #ffc;
@@ -110,6 +128,8 @@
        else
            style.appendChild(rules);
        head.appendChild(style);
+
+       latLngControl.set('visible', show ? false : _showCoordinates);
    }
 
    function resize(width, height) {
@@ -135,6 +155,16 @@
    function fitBounds(southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude) {
        map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(southWestLatitude, southWestLongitude),
                new google.maps.LatLng(northEastLatitude, northEastLongitude)));
+   }
+
+   var _showCoordinates = false;
+
+   function setShowCoordinates(showCoordinates) {
+       _showCoordinates = showCoordinates;
+   }
+
+   function setDegreeFormat(degreeFormat) {
+       latLngControl.setDegreeFormat(degreeFormat);
    }
 
    var callbackQueue = [];
@@ -188,9 +218,9 @@
    var oldSelectedPositions = new Array();
    var newSelectedPositions = new Array();
 
-   function selectPosition(latitude, longitude, comment, index) {
+   function selectPosition(latitude, longitude, description, index) {
        var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
-           title:comment, draggable:true, zIndex:1000});
+           title:description, draggable:true, zIndex:1000});
        marker.index_ = index;
        addListener(marker);
        newSelectedPositions.push(marker);
@@ -206,14 +236,18 @@
    }
 
    function addPolyline(latlngs, color, weight) {
-       addOverlay(new google.maps.Polyline({path:latlngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false}));
+       addOverlay(new google.maps.Polyline({path:latlngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false, geodesic:true}));
    }
 
    var markerIcon;
 
-   function addMarker(latitude, longitude, comment) {
-       addOverlay(new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
-           title:comment, clickable:false, icon:markerIcon}));
+   function addMarker(latitude, longitude, description, showWaypointDescription) {
+       if (showWaypointDescription)
+           addOverlay(new MarkerWithLabel({position: new google.maps.LatLng(latitude, longitude),
+               title: description, clickable: false, icon: markerIcon}));
+       else
+           addOverlay(new google.maps.Marker({position: new google.maps.LatLng(latitude, longitude),
+               title: description, clickable: false, icon:markerIcon}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {
@@ -229,8 +263,8 @@
                            for (var l = 0; l < path.length - 1; l++) {
                                waypoints.push(path[l].lat());
                                waypoints.push(path[l].lng());
-                               waypoints.push(l == path.length - 2 ? steps[k].distance.value : 0);
-                               waypoints.push(l == path.length - 2 ? steps[k].duration.value : 0);
+                               waypoints.push(l == 0 ? steps[k].distance.value : 0);
+                               waypoints.push(l == 0 ? steps[k].duration.value : 0);
                                waypoints.push(l == 0 ? removeTags(steps[k].instructions) : "-");
                            }
                        }
@@ -269,8 +303,8 @@
                        for (var k = 0; k < steps.length; k++) {
                            turnpoints.push(steps[k].end_location.lat());
                            turnpoints.push(steps[k].end_location.lng());
-                           turnpoints.push(steps[k].distance.value);
-                           turnpoints.push(steps[k].duration.value);
+                           turnpoints.push(k < steps.length - 1 ? steps[k + 1].distance.value : 0);
+                           turnpoints.push(k < steps.length - 1 ? steps[k + 1].duration.value : 0);
                            turnpoints.push(k < steps.length - 1 ? removeTags(steps[k + 1].instructions) : "-");
                        }
                    }
@@ -335,6 +369,8 @@
 
                if (lastSegment)
                    removeDirections();
+           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+               callJava("over-query-limit");
            } else {
                setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
@@ -456,7 +492,7 @@
        return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
-   var initialized, map, directionsService, xmlhttp;
+   var initialized, map, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;
@@ -511,7 +547,7 @@
                    return "http://" + getOpenStreetMapServerIndex() + ".tile.openstreetmap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 18,
+               maxZoom: 19,
                alt: "Mapnik rendering of OpenStreetMap data",
                name: MAPNIK_MAPTYPE_ID
            }));
@@ -672,13 +708,16 @@
                });
                addDebug("3. created menu: " + menu);
            } catch (e) {
-               setError("<p>Sorry, could not initialize ContextMenu.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize context menu.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            try {
-               var latLngControl = new LatLngControl(map);
+               latLngControl = new LatLngControl(map);
                google.maps.event.addListener(map, 'mouseover', function (event) {
-                   latLngControl.set('visible', true);
+                   latLngControl.set('visible', _showCoordinates);
                });
                google.maps.event.addListener(map, 'mouseout', function (event) {
                    latLngControl.set('visible', false);
@@ -687,7 +726,10 @@
                    latLngControl.updatePosition(event.latLng);
                });
            } catch (e) {
-               setError("<p>Sorry, could not initialize LatLngControl.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize GPS coordinate display.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            google.maps.event.addListener(map, "zoom_changed", function() {
@@ -732,11 +774,15 @@
                    addDebug("6. created Microsoft XMLHttpRequest");
                    initialized = true;
                } else {
-                   setError("<p>Sorry, could not find XMLHttpRequest or Microsoft.XMLHTTP.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+                   setError("<h1>Could find XMLHttpRequest or Microsoft.XMLHTTP.</h1>" +
+                           "<p><a href='javascript:self.location.reload()'>Retry</a></p>");
                }
            }
            catch (e) {
-               setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not initialize AJAX callbacks.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
            try {
@@ -757,10 +803,23 @@
                    });
                }
            } catch (e) {
-               setError("<p>Sorry, could not disable ctrl-f.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               setError("<h1>Could not disable ctrl-f.</h1>" +
+                       "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                       "<h2>Details</h2>" +
+                       "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
        } catch (e) {
-           setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+           setError("<h1>Could not initialize map.</h1>" +
+                   "<h2>Possible solutions:</h2>" +
+                   "<ol>" +
+                   "<li>Your machine is not connected to the Internet. Check the connection.</li>" +
+                   "<li>A personal firewall or proxy blocks the access for RouteConverter. Allow access for RouteConverter.</li>" +
+                   "<li>Windows: The Internet Explorer browser fails or is not configured properly. Check the FAQ for help.</li>" +
+                   "<li>Something blocks the access to ${mapserver}. Remove the block.</li>" +
+                   "</ol>" +
+                   "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
+                   "<h2>Details</h2>" +
+                   "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
        }
    }
 </script>

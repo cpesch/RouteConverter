@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
 
 /**
  * Renders the elevation column of the positions table.
@@ -37,11 +37,11 @@ public class ElevationColumnTableCellEditor extends PositionsTableCellEditor {
         super(RIGHT);
     }
 
-    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+    protected void formatCell(JLabel label, NavigationPosition position) {
         label.setText(extractValue(position));
     }
 
-    protected String extractValue(BaseNavigationPosition position) {
+    protected String extractValue(NavigationPosition position) {
         return extractElevation(position);
     }
 }

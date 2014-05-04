@@ -33,7 +33,11 @@ import static org.apache.commons.codec.binary.Hex.encodeHex;
 
 public class HexadecimalNumber {
     public static String encodeByte(byte aByte) {
-        return new String(encodeHex(new byte[]{aByte})).toUpperCase();
+        return encodeBytes(new byte[]{aByte});
+    }
+
+    public static String encodeBytes(byte[] bytes) {
+        return new String(encodeHex(bytes)).toUpperCase();
     }
 
     public static byte[] decodeBytes(String string) {

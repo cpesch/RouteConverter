@@ -21,44 +21,27 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
-import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
-import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.comparators.DescriptionComparator;
+import slash.navigation.converter.gui.comparators.TimeComparator;
+import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
+import slash.navigation.converter.gui.renderer.*;
 
-import javax.swing.*;
 import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import javax.swing.table.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static java.text.DateFormat.*;
+import static java.text.DateFormat.SHORT;
+import static java.util.Calendar.*;
+import static java.util.Locale.US;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
@@ -74,16 +57,17 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
 
     public PositionsTableColumnModel() {
-        PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
-        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer);
-        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
+        PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
+        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
+        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
+        predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 84, true, new LatitudeColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ELEVATION_COLUMN_INDEX, "elevation", getMaxWidth("9999 m", 5), true, new ElevationColumnTableCellEditor(), headerRenderer);
         predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
-        predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 68, true, new LongitudeColumnTableCellEditor(), headerRenderer);
-        predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 68, true, new LatitudeColumnTableCellEditor(), headerRenderer);
-        predefineColumn(ELEVATION_COLUMN_INDEX, "elevation", getMaxWidth("9999 m", 5), true, new ElevationColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ELEVATION_DIFFERENCE_COLUMN_INDEX, "elevation-difference", getMaxWidth("999 m", 4), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
 
         VisibleListener visibleListener = new VisibleListener();
         PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
@@ -106,38 +90,38 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    private int getMaxWidth(String string, int extraWidth) {
-        JLabel label = new JLabel();
-        FontMetrics fm = label.getFontMetrics(label.getFont());
-        int width = fm.stringWidth(string);
-        return width + extraWidth;
-    }
-
     private String getExampleDateFromCurrentLocale() {
-        Calendar calendar = Calendar.getInstance(Locale.US);
-        calendar.set(Calendar.YEAR, 2030);
-        calendar.set(Calendar.MONTH, 11);
-        calendar.set(Calendar.DAY_OF_MONTH, 22);
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 33);
-        calendar.set(Calendar.SECOND, 44);
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(new Date(calendar.getTimeInMillis()));
+        Calendar calendar = Calendar.getInstance(US);
+        calendar.set(YEAR, 2030);
+        calendar.set(MONTH, 11);
+        calendar.set(DAY_OF_MONTH, 22);
+        calendar.set(HOUR_OF_DAY, 22);
+        calendar.set(MINUTE, 33);
+        calendar.set(SECOND, 44);
+        return getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
                                  TableCellRenderer cellRenderer, TableCellRenderer headerRenderer) {
-        predefineColumn(modelIndex, name, maxWidth, visiblityDefault, cellRenderer, null, headerRenderer);
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellRenderer, null, headerRenderer, null);
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
                                  PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer) {
-        predefineColumn(modelIndex, name, maxWidth, visiblityDefault, cellEditor, cellEditor, headerRenderer);
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellEditor, headerRenderer, null);
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
-                                 TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer) {
-        boolean visible = preferences.getBoolean(VISIBLE_PREFERENCE + name, visiblityDefault);
-        PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, cellEditor);
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
+                                 PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                 Comparator<NavigationPosition> comparator) {
+        predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellEditor, cellEditor, headerRenderer, comparator);
+    }
+
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
+                                 TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                 Comparator<NavigationPosition> comparator) {
+        boolean visible = preferences.getBoolean(VISIBLE_PREFERENCE + name, visibilityDefault);
+        PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, cellEditor, comparator);
         column.setHeaderRenderer(headerRenderer);
         if (maxWidth != null) {
             column.setMaxWidth(maxWidth * 2);

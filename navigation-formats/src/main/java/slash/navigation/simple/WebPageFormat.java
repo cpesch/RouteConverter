@@ -21,25 +21,19 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.Positions.northEast;
-import static slash.navigation.util.Positions.southWest;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * Writes a Web Page (*.html).
@@ -70,12 +64,16 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
@@ -84,36 +82,42 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
 
         StringBuilder routeBuffer = new StringBuilder();
         if (route.getCharacteristics() == Route) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 routeBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("),");
+                        append(position.getLongitude()).append(")");
+                if (i < positions.size() - 1)
+                    routeBuffer.append(",");
             }
         }
 
         StringBuilder trackBuffer = new StringBuilder();
         if (route.getCharacteristics() == Track) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 trackBuffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("),");
+                        append(position.getLongitude()).append(")");
+                if (i < positions.size() - 1)
+                    trackBuffer.append(",");
             }
         }
 
         StringBuilder waypointsBuffer = new StringBuilder();
         if (route.getCharacteristics() == Waypoints) {
-            for (Wgs84Position position : positions) {
+            for (int i = 0; i < positions.size(); i++) {
+                Wgs84Position position = positions.get(i);
                 waypointsBuffer.append("new google.maps.Marker({position:new google.maps.LatLng(").
                         append(position.getLatitude()).append(",").append(position.getLongitude()).append("), title: \")").
-                        append(position.getComment()).append("\", clickable:false, icon:markerIcon}),");
+                        append(position.getDescription()).append("\", clickable:false, icon:markerIcon})");
+                if (i < positions.size() - 1)
+                    waypointsBuffer.append(",");
             }
         }
 
-        BaseNavigationPosition southWest = southWest(positions);
-        String southWestBuffer = "new google.maps.LatLng(" + southWest.getLatitude() + "," + southWest.getLongitude() + ")";
-        BaseNavigationPosition northEast = northEast(positions);
-        String northEastBuffer = "new google.maps.LatLng(" + northEast.getLatitude() + "," + northEast.getLongitude() + ")";
-
-        BaseNavigationPosition center = center(positions);
-        String centerBuffer = "new google.maps.LatLng(" + center.getLatitude() + "," + center.getLongitude() + ")";
+        BoundingBox boundingBox = new BoundingBox(positions);
+        String southWestBuffer = "new google.maps.LatLng(" + boundingBox.getSouthWest().getLatitude() + "," + boundingBox.getSouthWest().getLongitude() + ")";
+        String northEastBuffer = "new google.maps.LatLng(" + boundingBox.getNorthEast().getLatitude() + "," + boundingBox.getNorthEast().getLongitude() + ")";
+        String centerBuffer = "new google.maps.LatLng(" + boundingBox.getCenter().getLatitude() + "," + boundingBox.getCenter().getLongitude() + ")";
 
         String output = template.replaceAll("INSERT_ROUTENAME", route.getName()).
                 replaceAll("INSERT_TRACK", routeBuffer.toString()).

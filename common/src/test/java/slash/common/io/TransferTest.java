@@ -22,12 +22,11 @@ package slash.common.io;
 
 import org.junit.Test;
 
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.common.io.Transfer.formatIntAsString;
@@ -107,25 +106,19 @@ public class TransferTest {
     }
 
     @Test
-    public void testFormatDoubleAsBigDecimal() {
-        assertEquals(new BigDecimal("1.0"), formatBigDecimal(1.0, 5));
-        assertEquals(new BigDecimal("1.5"), formatBigDecimal(1.5, 5));
-        assertEquals(new BigDecimal("1.05"), formatBigDecimal(1.05, 5));
-        assertEquals(new BigDecimal("1.005"), formatBigDecimal(1.005, 5));
-        assertEquals(new BigDecimal("1.00004"), formatBigDecimal(1.00004, 5));
-        assertEquals(new BigDecimal("1.00044"), formatBigDecimal(1.00044, 5));
-        assertEquals(new BigDecimal("1.00045"), formatBigDecimal(1.00045, 5));
-        assertEquals(new BigDecimal("1.00005"), formatBigDecimal(1.00005, 5));
-        assertEquals(new BigDecimal("1.000004"), formatBigDecimal(1.000004, 6));
-        assertEquals(new BigDecimal("1.000005"), formatBigDecimal(1.000005, 6));
-    }
-
-    @Test
     public void testFormatDuration() {
         assertEquals("00:00:05", formatDuration(5 * 1000));
         assertEquals("00:05:05", formatDuration((5 * 60 + 5) * 1000));
         assertEquals("05:05:05", formatDuration((5 * 60 * 60 + 5 * 60 + 5) * 1000));
         assertEquals(formatDuration((25 * 60 * 60 + 5 * 60 + 5) * 1000), "25:05:05");
         assertEquals("125:05:05", formatDuration((125 * 60 * 60 + 5 * 60 + 5) * 1000));
+    }
+
+    @Test
+    public void testEncodeFileName() {
+        String original = ".A/B\\C:D.äöüß";
+        String expected = "%2eA%2fB%5cC%3aD.äöüß";
+        assertEquals(expected, encodeFileName(original));
+        assertEquals(original, decodeUri(expected));
     }
 }

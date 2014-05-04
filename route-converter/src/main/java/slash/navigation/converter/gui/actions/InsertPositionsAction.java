@@ -21,7 +21,8 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.InsertPositionsDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
  * Insert positions into the position list
@@ -29,11 +30,8 @@ import slash.navigation.gui.actions.FrameAction;
  * @author Christian Pesch
  */
 
-public class InsertPositionsAction extends FrameAction {
-    public void run() {
-        InsertPositionsDialog dialog = new InsertPositionsDialog();
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+public class InsertPositionsAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new InsertPositionsDialog();
     }
 }

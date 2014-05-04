@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -70,7 +71,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -79,7 +80,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return line.startsWith(HEADER) || isPosition(line);
+        return isPosition(line) || line.startsWith(HEADER);
     }
 
     protected boolean isPosition(String line) {
@@ -91,10 +92,10 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String comment = lineMatcher.group(2);
+        String description = lineMatcher.group(2);
         Double longitude = parseDouble(lineMatcher.group(4));
         Double latitude = parseDouble(lineMatcher.group(5));
-        return new Wgs84Position(longitude, latitude, null, null, null, comment);
+        return asWgs84Position(longitude, latitude, description);
     }
 
     protected void writeHeader(PrintWriter writer, SimpleRoute route) {
@@ -103,15 +104,15 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 " NAME" + NAME_VALUE_SEPARATOR + QUOTE + route.getName() + QUOTE);
     }
 
-    private static String formatComment(String string) {
+    private static String formatDescription(String string) {
         return escape(string, QUOTE, ';').replaceAll("<", " ").replaceAll(">", " ");
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String latitude = formatDoubleAsString(position.getLatitude(), 5);
         String longitude = formatDoubleAsString(position.getLongitude(), 5);
-        String comment = formatComment(position.getComment());
-        writer.println(STREET + NAME_VALUE_SEPARATOR + QUOTE + comment + QUOTE + " " +
+        String description = formatDescription(position.getDescription());
+        writer.println(STREET + NAME_VALUE_SEPARATOR + QUOTE + description + QUOTE + " " +
                 PT + NAME_VALUE_SEPARATOR + QUOTE + longitude + " " + latitude + QUOTE);
     }
 }

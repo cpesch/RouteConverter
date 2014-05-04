@@ -32,7 +32,7 @@ import javax.swing.*;
  */
 
 public class ImportPositionListAction extends FrameAction {
-    private final ConvertPanel convertPanel;
+    private ConvertPanel convertPanel;
 
     public ImportPositionListAction(ConvertPanel convertPanel) {
         this.convertPanel = convertPanel;

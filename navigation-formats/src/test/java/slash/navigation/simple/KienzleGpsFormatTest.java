@@ -20,21 +20,30 @@
 
 package slash.navigation.simple;
 
+import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class KienzleGpsFormatTest extends NavigationTestCase {
-    KienzleGpsFormat format = new KienzleGpsFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class KienzleGpsFormatTest {
+    private KienzleGpsFormat format = new KienzleGpsFormat();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("101;7.0894440000;50.7405550000;;;53111;Bonn;Dorotheenstr.;103;16:10;"));
         assertTrue(format.isValidLine("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;"));
         assertTrue(format.isValidLine("Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;"));
         assertTrue(format.isPosition("103;7.0997220000;50.7494440000;;;53117;Bonn;Am Jesuitenhof/Am Römerlager;;16:16;"));
@@ -42,22 +51,24 @@ public class KienzleGpsFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
-        assertEquals(7.0475000000, position.getLongitude());
-        assertEquals(50.7500000000, position.getLatitude());
+        assertDoubleEquals(7.0475000000, position.getLongitude());
+        assertDoubleEquals(50.7500000000, position.getLatitude());
         assertNull(position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 49, 0);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("PHE I: 53119 Bonn, Oppelner Str. 126", position.getComment());
+        assertEquals("PHE I: 53119 Bonn, Oppelner Str. 126", position.getDescription());
     }
 
+    @Test
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("113;-7.0475000000;-50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
-        assertEquals(-7.0475000000, position.getLongitude());
-        assertEquals(-50.7500000000, position.getLatitude());
+        assertDoubleEquals(-7.0475000000, position.getLongitude());
+        assertDoubleEquals(-50.7500000000, position.getLatitude());
     }
 }

@@ -21,8 +21,8 @@
 package slash.navigation.tour;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -32,14 +32,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.parseLong;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -90,7 +91,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TourRoute(name, (List<TourPosition>) positions);
     }
 
@@ -148,7 +149,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private List<TourPosition> sortPositions(List<TourPosition> positions) {
         TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
         sort(positionArray, new PositionInListComparator());
-        return new ArrayList<TourPosition>(Arrays.asList(positionArray));
+        return new ArrayList<TourPosition>(asList(positionArray));
     }
 
     boolean isSectionTitle(String line) {
@@ -210,7 +211,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
             if (name == null)
                 name = position.getCity();
             if (name == null)
-                name = position.getComment();
+                name = position.getDescription();
             writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + name);
             writer.println(POSITION_IN_LIST + TOUR_FORMAT_NAME_VALUE_SEPARATOR + Integer.toString(i));
             if (position.getZipCode() != null)

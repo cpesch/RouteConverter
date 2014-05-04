@@ -21,7 +21,7 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding3.ObjectFactory;
@@ -44,7 +44,7 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal3;
  * @author Christian Pesch
  */
 
-public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
+public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
     private static final String VERSION_PREFIX = "v3";
 
@@ -57,26 +57,26 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> GoPal3Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new GoPal3Route(name, (List<GoPalPosition>) positions);
+    public <P extends NavigationPosition> GoPalRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new GoPalRoute(this, name, (List<GoPalPosition>) positions);
     }
 
-    private GoPal3Route process(Tour tour) {
+    private GoPalRoute process(Tour tour) {
         List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
         for (Tour.Dest dest : tour.getDest()) {
             Short country = dest.getCountry() != 0 ? dest.getCountry() : null;
             positions.add(new GoPalPosition(dest.getLongitude(), dest.getLatitude(), country, null, dest.getZip(), dest.getCity(), null, dest.getStreet(), null, dest.getHouse()));
         }
-        return new GoPal3Route(null, tour.getOptions(), positions);
+        return new GoPalRoute(this, null, tour.getOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal3Route> context) throws Exception {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPalRoute> context) throws Exception {
         Tour tour = unmarshal3(source);
         context.appendRoute(process(tour));
     }
 
-    private Tour.Options createOptions(GoPal3Route route) {
-        Tour.Options options = route.getOptions();
+    private Tour.Options createOptions(GoPalRoute route) {
+        Tour.Options options = route.getOptions(Tour.Options.class);
         if (options == null) {
             options = new ObjectFactory().createTourOptions();
             options.setType((short) preferences.getInt(VERSION_PREFIX + "type", 3)); // Fahrzeugtyp: 0=PKW 1=Fussgaenger 2=Fahrrad 3=Motorrad
@@ -95,7 +95,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         return options;
     }
 
-    private Tour createGoPal(GoPal3Route route, int startIndex, int endIndex) {
+    private Tour createGoPal(GoPalRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Tour tour = objectFactory.createTour();
         tour.setOptions(createOptions(route));
@@ -120,7 +120,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         return tour;
     }
 
-    public void write(GoPal3Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(GoPalRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             marshal3(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {

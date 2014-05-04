@@ -24,7 +24,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.Arrays.asList;
 import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
 
 /**
@@ -54,7 +54,7 @@ public class JaxbUtils {
     }
 
     public static JAXBContext newContext(Class<?>... classes) {
-        List<Class<?>> key = Arrays.asList(classes);
+        List<Class<?>> key = asList(classes);
         JAXBContext context = classesToContext.get(key);
         if (context == null) {
             try {

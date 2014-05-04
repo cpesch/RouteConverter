@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="Jonathan de Ferranti DEM 1" baseUrl="http://www.viewfinderpanoramas.org/dem1/" directory="ferranti1">
+        <fragment key="N40W004" uri="n40w004.zip"/>
+        <fragment key="N40W005" uri="n40w005.zip"/>
+        <fragment key="N40W006" uri="n40w006.zip"/>
+        <fragment key="N43E005" uri="N43E005.zip"/>
+        <fragment key="N43E006" uri="N43E006.zip"/>
+        <fragment key="N43E007" uri="N43E007.zip"/>
+        <fragment key="N44E005" uri="N44E005.zip"/>
+        <fragment key="N44E006" uri="N44E006.zip"/>
+        <fragment key="N44E007" uri="N44E007.zip"/>
+        <fragment key="N45E005" uri="N45E005.zip"/>
+        <fragment key="N45E006" uri="N45E006.zip"/>
+        <fragment key="N45E007" uri="N45E007.zip"/>
+        <fragment key="N45E008" uri="N45E008.zip"/>
+        <fragment key="N45E009" uri="N45E009.zip"/>
+        <fragment key="N45E010" uri="N45E010.zip"/>
+        <fragment key="N45E011" uri="N45E011.zip"/>
+        <fragment key="N46E005" uri="N46E005.zip"/>
+        <fragment key="N46E006" uri="N46E006.zip"/>
+        <fragment key="N46E007" uri="N46E007.zip"/>
+        <fragment key="N46E008" uri="N46E008.zip"/>
+        <fragment key="N46E009" uri="N46E009.zip"/>
+        <fragment key="N46E010" uri="N46E010.zip"/>
+        <fragment key="N46E011" uri="N46E011.zip"/>
+        <fragment key="N46E012" uri="N46E012.zip"/>
+        <fragment key="N46E013" uri="N46E013.zip"/>
+        <fragment key="N46E014" uri="N46E014.zip"/>
+        <fragment key="N46E015" uri="N46E015.zip"/>
+        <fragment key="N47E006" uri="N47E006.zip"/>
+        <fragment key="N47E007" uri="N47E007.zip"/>
+        <fragment key="N47E008" uri="N47E008.zip"/>
+        <fragment key="N47E009" uri="N47E009.zip"/>
+        <fragment key="N47E010" uri="N47E010.zip"/>
+        <fragment key="N47E011" uri="N47E011.zip"/>
+        <fragment key="N47E012" uri="N47E012.zip"/>
+        <fragment key="N47E013" uri="N47E013.zip"/>
+        <fragment key="N47E014" uri="N47E014.zip"/>
+        <fragment key="N47E015" uri="N47E015.zip"/>
+        <fragment key="N49E019" uri="TATRA.zip"/>
+        <fragment key="N49E020" uri="TATRA.zip"/>
+        <fragment key="N57W007" uri="n57w007.zip"/>
+        <fragment key="N57W009" uri="n57w009.zip"/>
+        <fragment key="N61E007" uri="NOR.zip"/>
+        <fragment key="N61E007" uri="NOR.zip"/>
+        <fragment key="N61E008" uri="NOR.zip"/>
+        <fragment key="N61E008" uri="NOR.zip"/>
+        <fragment key="N61W007" uri="P29-1.zip"/>
+        <fragment key="N61W008" uri="P29-1.zip"/>
+        <fragment key="N62E006" uri="NOR.zip"/>
+        <fragment key="N62E006" uri="NOR.zip"/>
+        <fragment key="N62E007" uri="NOR.zip"/>
+        <fragment key="N62E007" uri="NOR.zip"/>
+        <fragment key="N62E008" uri="NOR.zip"/>
+        <fragment key="N62E008" uri="NOR.zip"/>
+        <fragment key="N62E009" uri="NOR.zip"/>
+        <fragment key="N62E009" uri="NOR.zip"/>
+        <fragment key="N62W007" uri="P29-1.zip"/>
+        <fragment key="N62W008" uri="P29-1.zip"/>
+        <file uri="N43E005.zip" size="5747827" checksum="CD9785D5BE67FC0B4571FFE2701955ECC6580BA5" timestamp="2013-01-20T17:49:17Z"/>
+        <file uri="N43E006.zip" size="7436349" checksum="D4A4366B741AA7C0C695F8A1033065558880C610" timestamp="2013-01-20T17:49:34Z"/>
+        <file uri="N43E007.zip" size="3809621" checksum="FBB13848A6FE2D57A2ABA0B2A08C70C9F03C1EDD" timestamp="2013-01-20T17:49:42Z"/>
+        <file uri="N44E005.zip" size="12836045" checksum="7A28BFED5A261F606F61A3B4FDE4C565D1256D55" timestamp="2013-01-20T17:49:36Z"/>
+        <file uri="N44E006.zip" size="16100488" checksum="E715598CC68F2968FBE33A23D5E3632AE3179908" timestamp="2013-01-20T17:49:44Z"/>
+        <file uri="N44E007.zip" size="11284695" checksum="0592F379BA4EA7DA2C4447F940B3C6E45F6A88C1" timestamp="2013-01-20T17:49:34Z"/>
+        <file uri="N45E005.zip" size="8699925" checksum="5A56FAF7255E15879B4624AE5E1A8CAFE54A6AE5" timestamp="2013-01-20T17:49:45Z"/>
+        <file uri="N45E006.zip" size="15516907" checksum="A2DAEBE16B05B65384BD0C7DA2AF514D5AC83718" timestamp="2013-01-20T17:49:19Z"/>
+        <file uri="N45E007.zip" size="13549300" checksum="E25063D7E84FFE635C063225852F8B97EA23551C" timestamp="2013-01-20T17:49:20Z"/>
+        <file uri="N45E008.zip" size="6496336" checksum="DD261E0FFA5B1F5A620B1B93F1105D318AF48EDA" timestamp="2013-01-20T17:49:06Z"/>
+        <file uri="N45E009.zip" size="6739621" checksum="DBD2570988F1F14A77AA733DCDC610B3F3EB555B" timestamp="2013-01-20T17:49:33Z"/>
+        <file uri="N45E010.zip" size="8850474" checksum="DF51E90E6BA4784DA70BB442AB34D36DD867C89D" timestamp="2013-01-20T17:49:09Z"/>
+        <file uri="N45E011.zip" size="8271754" checksum="73C23C830FC122CDC38B2D4736934A878DAE8004" timestamp="2013-01-20T17:49:19Z"/>
+        <file uri="N46E005.zip" size="5731159" checksum="1096A913B0BB21A954FE4212BCAFAD929F8E7053" timestamp="2013-01-20T17:49:21Z"/>
+        <file uri="N46E006.zip" size="8617574" checksum="9F6498384F44EDDC61335DBCFFCA6BA4D9AD2029" timestamp="2013-01-20T17:49:44Z"/>
+        <file uri="N46E007.zip" size="14011446" checksum="8B1C2FF5616C0FB3077A9958734DFDD1FACF5FC4" timestamp="2013-01-20T17:49:12Z"/>
+        <file uri="N46E008.zip" size="16102329" checksum="CBEFA532047B4728FCCB02C55F12B1097A21BEFD" timestamp="2013-01-20T17:49:47Z"/>
+        <file uri="N46E009.zip" size="16017771" checksum="9B3EFBE80D58021D97F4EDACCE9655A27D83D011" timestamp="2013-01-20T17:49:05Z"/>
+        <file uri="N46E010.zip" size="16985198" checksum="A57E25AE1DEEB688A3972939A52BCDE7B48B9C0E" timestamp="2013-01-20T17:49:46Z"/>
+        <file uri="N46E011.zip" size="15975045" checksum="1362A51B6B6791BC111F64852A7E77779D4910B1" timestamp="2013-01-20T17:49:54Z"/>
+        <file uri="N46E012.zip" size="14431693" checksum="DA015CAC63868998E9CEA6D50AB9FD5A4C29DCE9" timestamp="2013-01-20T17:49:23Z"/>
+        <file uri="N46E013.zip" size="13488221" checksum="2BDE8186CFF66E0D50F7593058643D126CD7770E" timestamp="2013-01-20T17:49:21Z"/>
+        <file uri="N46E014.zip" size="11995813" checksum="B274ABDDBBCBE2E38A3C1C90EF8309F70B0BC859" timestamp="2013-01-20T17:49:08Z"/>
+        <file uri="N46E015.zip" size="10749155" checksum="DE9C03565AD0E1ED6E1D35DF67910D6EFDD6781D" timestamp="2013-01-20T17:49:09Z"/>
+        <file uri="N47E006.zip" size="6614900" checksum="74882D7196F2E63C36DB0326B8C684822FA63953" timestamp="2013-01-20T17:49:10Z"/>
+        <file uri="N47E007.zip" size="6871947" checksum="088C0818DB7B8DD0A555C6463C41FE5A550D3693" timestamp="2013-01-20T17:49:32Z"/>
+        <file uri="N47E008.zip" size="8067291" checksum="7F8CF73738974C52E52DBB71E1673CE1A895F138" timestamp="2013-01-20T17:49:42Z"/>
+        <file uri="N47E009.zip" size="8233762" checksum="087F10933FF8D087B4997D1BD41C8C769962816B" timestamp="2013-01-20T17:49:11Z"/>
+        <file uri="N47E010.zip" size="11092963" checksum="F853D04ADC2C75C9F36AE606D970A12587D4DE05" timestamp="2013-01-20T17:49:07Z"/>
+        <file uri="N47E011.zip" size="12208771" checksum="F1A99D5A9884920A099690865A481155132F8248" timestamp="2013-01-20T17:49:52Z"/>
+        <file uri="N47E012.zip" size="12696344" checksum="C637295B9A89090966691FF51452DE120CCACA07" timestamp="2013-01-20T17:49:10Z"/>
+        <file uri="N47E013.zip" size="13281155" checksum="D181E529FDE3C6216E14850DD2CF13800B7D4AA3" timestamp="2013-01-20T17:49:55Z"/>
+        <file uri="N47E014.zip" size="13054847" checksum="7D3C8710F8FE29204E0B22DB723502F6524633A3" timestamp="2013-01-20T17:49:50Z"/>
+        <file uri="N47E015.zip" size="12396098" checksum="9816B87D53BDE4F78D17CFBEC48D48A24D35582D" timestamp="2013-01-20T17:49:41Z"/>
+        <file uri="NOR.zip" size="54602901" checksum="4FCFA81E77A17D07285EF97185015EDD3F257FCB" timestamp="2013-01-20T17:49:15Z"/>
+        <file uri="P29-1.zip" size="3133741" checksum="B943946E82A8FB8840877D0F9DCEE2AA5C4B1C18" timestamp="2013-01-20T17:49:10Z"/>
+        <file uri="TATRA.zip" size="21819487" checksum="094337503B702C7AA7FBF728F696E86B0CD83D69" timestamp="2013-01-20T17:49:32Z"/>
+        <file uri="n40w004.zip" size="7090314" checksum="1CAF9DA3CCAA5C9970A1D543F1D509257D56B674" timestamp="2013-01-20T17:49:50Z"/>
+        <file uri="n40w005.zip" size="7779022" checksum="7E7BED3368ABE06667BF64E68EF36227D308246D" timestamp="2013-01-20T17:49:20Z"/>
+        <file uri="n40w006.zip" size="8239960" checksum="5BC7EE6FA27913DDACBC871C65FFC367CFE8919D" timestamp="2013-01-20T17:49:13Z"/>
+        <file uri="n57w007.zip" size="2426219" checksum="D863E94C39CABD1147EE730664EA58824F71A733" timestamp="2013-01-20T17:49:36Z"/>
+        <file uri="n57w009.zip" size="52080" checksum="43A5D782CB2E98AB7480DDD80A94EE5008159AA8" timestamp="2013-01-20T17:49:36Z"/>
+    </datasource>
+</datasources>

@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.converter.gui.augment.PositionAugmenter;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 
 import java.awt.*;
 
@@ -38,9 +38,11 @@ public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
-                    PositionAugmenter positionAugmenter,
+                    MapViewCallback mapViewCallback,
                     boolean recenterAfterZooming,
-                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls);
+                    boolean showCoordinates, boolean showWaypointDescription,
+                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
+                    UnitSystemModel unitSystemModel);
     boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
@@ -50,11 +52,13 @@ public interface MapView extends PositionsSelectionModel {
 
     void resize();
     void setRecenterAfterZooming(boolean recenterAfterZooming);
+    void setShowCoordinates(boolean showCoordinates);
+    void setShowWaypointDescription(boolean showWaypointDescription);
     void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
     void setAvoidTolls(boolean avoidTolls);
-    BaseNavigationPosition getCenter();
-    void setCenter(BaseNavigationPosition center);
+
+    NavigationPosition getCenter();
     void print(String title, boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);

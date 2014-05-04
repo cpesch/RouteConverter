@@ -20,13 +20,13 @@
 
 package slash.navigation.zip;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.Files;
 import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -77,7 +77,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         throw new UnsupportedOperationException();
     }
 
-    public <P extends BaseNavigationPosition> BaseRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> BaseRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         throw new UnsupportedOperationException();
     }
 

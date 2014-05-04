@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Represents a section in a Top50 OVL ASCII (.ovl) file,
@@ -76,7 +77,7 @@ class OvlSection extends IniFileSection {
         String indexKey = getPositionCount() > 1 ? Integer.toString(index) : "";
         String xValue = trim(get(X_POSITION + indexKey));
         String yValue = trim(get(Y_POSITION + indexKey));
-        String comment = getPositionCount() == 1 ? trim(getText()) : null;
+        String description = getPositionCount() == 1 ? trim(getText()) : null;
         // for the strange format of EasyGPS
         if (yValue == null && xValue != null) {
             Matcher matcher = EASY_GPS_PATTERN.matcher(xValue);
@@ -87,7 +88,7 @@ class OvlSection extends IniFileSection {
         }
         x = parseDouble(xValue);
         y = parseDouble(yValue);
-        return new Wgs84Position(x, y, null, null, null, comment);
+        return asWgs84Position(x, y, description);
     }
 
     void removePositions() {

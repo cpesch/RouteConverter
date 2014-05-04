@@ -32,21 +32,27 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.PatchedXYSeries;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.ProfileModeModel;
 import slash.navigation.converter.gui.models.ProfileModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
-import slash.navigation.util.Unit;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
-import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
+import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
@@ -68,14 +74,31 @@ public class ProfileView implements PositionsSelectionModel {
     private ProfileModel profileModel;
 
     public void initialize(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel,
-                           Unit unit, ProfileMode profileMode) {
+                           final UnitSystemModel unitSystemModel, final ProfileModeModel profileModeModel) {
         this.positionsModel = positionsModel;
         PatchedXYSeries series = new PatchedXYSeries("Profile");
-        this.profileModel = new ProfileModel(positionsModel, series, unit, profileMode);
+        this.profileModel = new ProfileModel(positionsModel, series, unitSystemModel.getUnitSystem(), profileModeModel.getProfileMode());
         XYSeriesCollection dataset = new XYSeriesCollection(series);
+
+        unitSystemModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                setUnitSystem(unitSystemModel.getUnitSystem());
+            }
+        });
+        profileModeModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                setProfileMode(profileModeModel.getProfileMode());
+            }
+        });
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
+
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        for (ProfileMode mode : ProfileMode.values())
+            actionManager.register("show-" + mode.name().toLowerCase(), new ToggleProfileModeAction(profileModeModel, mode));
+        // since JFreeChart is not very nice to extensions - constructors calling protected methods...
+        LazyToolTipChartPanel.profileModeModel = profileModeModel;
         chartPanel = new LazyToolTipChartPanel(chart, false, true, true, true, true);
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseClicked(ChartMouseEvent e) {
@@ -110,12 +133,12 @@ public class ProfileView implements PositionsSelectionModel {
         plot.setRangeGridlinesVisible(preferences.getBoolean(Y_GRID_PREFERENCE, true));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setStandardTickUnits(createStandardTickUnits());
+        rangeAxis.setStandardTickUnits(createIntegerTickUnits());
         Font font = new JLabel().getFont();
         rangeAxis.setLabelFont(font);
 
         NumberAxis valueAxis = (NumberAxis) plot.getDomainAxis();
-        valueAxis.setStandardTickUnits(createStandardTickUnits());
+        valueAxis.setStandardTickUnits(createIntegerTickUnits());
         valueAxis.setLowerMargin(0.0);
         valueAxis.setUpperMargin(0.0);
         valueAxis.setLabelFont(font);
@@ -128,27 +151,27 @@ public class ProfileView implements PositionsSelectionModel {
         return chartPanel;
     }
 
-    public void setUnit(Unit unit) {
-        profileModel.setUnit(unit);
+    private void setUnitSystem(UnitSystem unitSystem) {
+        profileModel.setUnitSystem(unitSystem);
         updateAxis();
     }
 
-    public void setProfileMode(ProfileMode profileMode) {
+    private void setProfileMode(ProfileMode profileMode) {
         profileModel.setProfileMode(profileMode);
         updateAxis();
     }
 
     private void updateAxis() {
-        Unit unit = profileModel.getUnit();
+        UnitSystem unitSystem = profileModel.getUnitSystem();
         ProfileMode profileMode = profileModel.getProfileMode();
 
-        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unit.getDistanceName()));
-        String yAxisUnit = profileMode.equals(Elevation) ? unit.getElevationName() : unit.getSpeedName();
+        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unitSystem.getDistanceName()));
+        String yAxisUnit = profileMode.equals(Elevation) ? unitSystem.getElevationName() : unitSystem.getSpeedName();
         String yAxisKey = profileMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
-                "{2} " + yAxisUnit + " @ {1} " + unit.getDistanceName(),
+                "{2} " + yAxisUnit + " @ {1} " + unitSystem.getDistanceName(),
                 getIntegerInstance(), getIntegerInstance()));
     }
 
@@ -166,5 +189,19 @@ public class ProfileView implements PositionsSelectionModel {
 
     public void print() {
         chartPanel.createChartPrintJob();
+    }
+
+    private static class ToggleProfileModeAction extends FrameAction {
+        private final ProfileModeModel profileModeModel;
+        private final ProfileMode profileMode;
+
+        public ToggleProfileModeAction(ProfileModeModel profileModeModel, ProfileMode profileMode) {
+            this.profileModeModel = profileModeModel;
+            this.profileMode = profileMode;
+        }
+
+        public void run() {
+            profileModeModel.setProfileMode(profileMode);
+        }
     }
 }

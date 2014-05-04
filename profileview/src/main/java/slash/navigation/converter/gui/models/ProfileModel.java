@@ -21,10 +21,10 @@
 package slash.navigation.converter.gui.models;
 
 import org.jfree.data.xy.XYSeries;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.profileview.ProfileMode;
-import slash.navigation.util.Unit;
 
 import static java.lang.String.format;
 
@@ -35,12 +35,12 @@ import static java.lang.String.format;
  */
 
 public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
-    private Unit unit;
+    private UnitSystem unitSystem;
     private ProfileMode profileMode;
 
-    public ProfileModel(PositionsModel positions, PatchedXYSeries series, Unit unit, ProfileMode profileMode) {
+    public ProfileModel(PositionsModel positions, PatchedXYSeries series, UnitSystem unitSystem, ProfileMode profileMode) {
         super(positions, series);
-        this.unit = unit;
+        this.unitSystem = unitSystem;
         this.profileMode = profileMode;
     }
 
@@ -65,7 +65,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    protected void handleDelete(int firstRow, int lastRow) {
+    protected void handleRemove(int firstRow, int lastRow) {
         recomputeEverythingAfter(firstRow);
     }
 
@@ -92,7 +92,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    private Double formatValue(BaseNavigationPosition position) {
+    private Double formatValue(NavigationPosition position) {
         switch(profileMode) {
             case Elevation:
                 return formatElevation(position.getElevation());
@@ -104,23 +104,23 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     public double formatDistance(double distance) {
-        return unit.distanceToUnit(distance / 1000.0);
+        return unitSystem.distanceToUnit(distance / 1000.0);
     }
 
     private Double formatElevation(Double elevation) {
-        return unit.valueToUnit(elevation);
+        return unitSystem.valueToUnit(elevation);
     }
 
     private Double formatSpeed(Double speed) {
-        return unit.valueToUnit(speed);
+        return unitSystem.distanceToUnit(speed);
     }
 
-    public Unit getUnit() {
-        return unit;
+    public UnitSystem getUnitSystem() {
+        return unitSystem;
     }
 
-    public void setUnit(Unit unit) {
-        this.unit = unit;
+    public void setUnitSystem(UnitSystem unitSystem) {
+        this.unitSystem = unitSystem;
         handleFullUpdate();
     }
 

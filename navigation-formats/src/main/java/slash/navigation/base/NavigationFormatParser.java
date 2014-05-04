@@ -20,17 +20,19 @@
 
 package slash.navigation.base;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
+import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.MotoPlanerUrlFormat;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -49,18 +51,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import static java.io.File.separatorChar;
+import static java.lang.Math.min;
 import static java.lang.String.format;
+import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
-import static slash.navigation.util.RouteComments.commentPositions;
-import static slash.navigation.util.RouteComments.commentRouteName;
-import static slash.navigation.util.RouteComments.commentRoutePositions;
-import static slash.navigation.util.RouteComments.createRouteName;
+import static slash.navigation.base.RouteComments.commentPositions;
+import static slash.navigation.base.RouteComments.commentRouteName;
+import static slash.navigation.base.RouteComments.commentRoutePositions;
+import static slash.navigation.base.RouteComments.createRouteName;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
+import static slash.navigation.url.MotoPlanerUrlFormat.isMotoPlanerUrl;
 
 /**
  * Parses byte streams with navigation information via {@link NavigationFormat} classes.
@@ -247,7 +252,7 @@ public class NavigationFormatParser {
         }
     }
 
-    private CompactCalendar getStartDate(File file) throws IOException {
+    private CompactCalendar getStartDate(File file) {
         Calendar startDate = Calendar.getInstance(UTC);
         startDate.setTimeInMillis(file.lastModified());
         return fromCalendar(startDate);
@@ -265,10 +270,21 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (isGoogleMapsUrl(url)) {
+        if (isGoogleMapsProfileUrl(url)) {
+            url = new URL(url.toExternalForm() + "&output=kml");
+            formats = new ArrayList<NavigationFormat>(formats);
+            formats.add(0, new Kml22Format());
+
+        } else if (isGoogleMapsLinkUrl(url)) {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
+
+        } else if (isMotoPlanerUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
+            readFormats.add(0, new MotoPlanerUrlFormat());
             return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
         }
 
@@ -309,7 +325,7 @@ public class NavigationFormatParser {
         int startIndex = 0;
         for (int i = 0; i < targets.length; i++) {
             OutputStream target = targets[i];
-            int endIndex = Math.min(startIndex + writeInOneChunk, positionsToWrite);
+            int endIndex = min(startIndex + writeInOneChunk, positionsToWrite);
             renameRoute(route, routeToWrite, startIndex, endIndex, i, targets);
             format.write(routeToWrite, target, startIndex, endIndex);
             log.info("Wrote position list from " + startIndex + " to " + endIndex);
@@ -362,7 +378,7 @@ public class NavigationFormatParser {
     }
 
     private void postProcessRoute(BaseRoute routeToWrite, NavigationFormat format, boolean duplicateFirstPosition) {
-        if (format instanceof NmnFormat && duplicateFirstPosition)
+        if ((format instanceof NmnFormat || format instanceof CoPilotFormat) && duplicateFirstPosition)
             routeToWrite.remove(0);
     }
 

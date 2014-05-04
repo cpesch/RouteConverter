@@ -4,7 +4,6 @@ import org.junit.Test;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.rest.Get;
-import slash.navigation.rest.Helper;
 import slash.navigation.rest.HttpRequest;
 import slash.navigation.rest.Post;
 import slash.navigation.rest.Put;
@@ -19,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static slash.common.io.Transfer.encodeUri;
 
 public class CategoryIT extends RouteCatalogClientBase {
 
@@ -37,7 +37,7 @@ public class CategoryIT extends RouteCatalogClientBase {
                                 String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Post request = new Post(CATEGORIES_URL + Helper.encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Post request = new Post(CATEGORIES_URL + encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -46,15 +46,15 @@ public class CategoryIT extends RouteCatalogClientBase {
         return createCategory(parent, name, USERNAME, PASSWORD);
     }
 
-    private Get readCategory(String key) throws IOException {
-        return new Get(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX);
+    private Get readCategory(String key) {
+        return new Get(CATEGORIES_URL + encodeUri(key) + GPX_URL_POSTFIX);
     }
 
     private Put updateCategory(String key, String name,
                                String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Put request = new Put(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Put request = new Put(CATEGORIES_URL + encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -71,7 +71,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertTrue(result.contains("created"));
         String location = request2.getLocation();
         assertTrue(location.contains("/catalog/categories/"));
-        assertEquals(201, request2.getResult());
+        assertEquals(201, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
     }
 
@@ -85,7 +85,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertTrue(result.contains("created"));
         String location = request2.getLocation();
         assertTrue(location.contains("/catalog/categories/"));
-        assertEquals(201, request2.getResult());
+        assertEquals(201, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
     }
 
@@ -99,7 +99,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertTrue(result.contains("created"));
         String location = request2.getLocation();
         assertTrue(location.contains("/catalog/categories/"));
-        assertEquals(201, request2.getResult());
+        assertEquals(201, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
     }
 
@@ -111,7 +111,7 @@ public class CategoryIT extends RouteCatalogClientBase {
 
         HttpRequest request2 = readCategory(key);
         String result2 = request2.execute();
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
         GpxType gpxType = GpxUtil.unmarshal11(result2);
@@ -127,7 +127,7 @@ public class CategoryIT extends RouteCatalogClientBase {
     public void testReadRoot() throws Exception {
         HttpRequest request1 = readCategory("");
         String result1 = request1.execute();
-        assertEquals(200, request1.getResult());
+        assertEquals(200, request1.getStatusCode());
         assertTrue(request1.isSuccessful());
 
         GpxType gpxType = GpxUtil.unmarshal11(result1);
@@ -148,7 +148,7 @@ public class CategoryIT extends RouteCatalogClientBase {
 
         HttpRequest request2 = readCategory(key);
         String result2 = request2.execute();
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
         GpxType gpxType = GpxUtil.unmarshal11(result2);
@@ -169,12 +169,12 @@ public class CategoryIT extends RouteCatalogClientBase {
         Put request2 = updateCategory(key, newName);
         String result2 = request2.execute();
         assertEquals("category /Upload/" + newName + " updated", result2);
-        assertEquals(201, request2.getResult());
+        assertEquals(201, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         String newKey = parseCategoryKey(request2.getLocation());
         HttpRequest request3 = readCategory(newKey);
         String result3 = request3.execute();
-        assertEquals(200, request3.getResult());
+        assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
         GpxType gpxType = GpxUtil.unmarshal11(result3);
         assertNotNull(gpxType);
@@ -187,7 +187,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "user-does-not-exist", "password-is-wrong");
         assertNull(request2.execute());
-        assertEquals(401, request2.getResult());
+        assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
     }
@@ -200,7 +200,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "alif", "topr");
         request2.execute();
-        assertEquals(403, request2.getResult());
+        assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
     }
@@ -213,12 +213,12 @@ public class CategoryIT extends RouteCatalogClientBase {
         HttpRequest request2 = deleteCategory(key);
         String result2 = request2.execute();
         assertEquals("category /" + key + " deleted", result2);
-        assertEquals(200, request2.getResult());
+        assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readCategory(key);
         String result3 = request3.execute();
         assertNotNull(result3);
-        assertEquals(404, request3.getResult());
+        assertEquals(404, request3.getStatusCode());
         assertFalse(request3.isSuccessful());
     }
 
@@ -229,7 +229,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = deleteCategory(key, "user-does-not-exist", "password-is-wrong");
         assertNull(request2.execute());
-        assertEquals(401, request2.getResult());
+        assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
     }
@@ -242,7 +242,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = deleteCategory(key, "alif", "toup");
         request2.execute();
-        assertEquals(403, request2.getResult());
+        assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
     }

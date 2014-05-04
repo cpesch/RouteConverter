@@ -25,12 +25,13 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
@@ -77,8 +78,8 @@ public class TomTomRouteFormatIT {
     private static final char EURO = '\u20ac';
 
     static void checkUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abc" + UMLAUTS_ae_oe_ue_sz + EURO, first.getComment());
+        NavigationPosition first = route.getPositions().get(0);
+        assertEquals("abc" + UMLAUTS_ae_oe_ue_sz + EURO, first.getDescription());
     }
 
     @Test
@@ -104,12 +105,12 @@ public class TomTomRouteFormatIT {
     private static final String LUEBECK = "L\u00fcbeck";
 
     static void checkPlaceNamesWithUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals(SCHEESSEL, first.getComment());
-        BaseNavigationPosition second = route.getPositions().get(1);
-        assertEquals(MOELLN, second.getComment());
-        BaseNavigationPosition third = route.getPositions().get(2);
-        assertEquals(LUEBECK, third.getComment());
+        NavigationPosition first = route.getPositions().get(0);
+        assertEquals(SCHEESSEL, first.getDescription());
+        NavigationPosition second = route.getPositions().get(1);
+        assertEquals(MOELLN, second.getDescription());
+        NavigationPosition third = route.getPositions().get(2);
+        assertEquals(LUEBECK, third.getDescription());
     }
 
     @Test

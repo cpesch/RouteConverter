@@ -21,12 +21,12 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.events.Range;
-import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.RouteComments.formatNumberedPosition;
+import static slash.common.io.Transfer.toArray;
+import static slash.navigation.gui.events.Range.revert;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -56,49 +56,47 @@ public class AddPositionAction extends FrameAction {
         this.positionsSelectionModel = positionsSelectionModel;
     }
 
-    private BaseNavigationPosition calculateCenter(int row) {
-        BaseNavigationPosition position = positionsModel.getPosition(row);
+    private NavigationPosition calculateCenter(int row) {
+        NavigationPosition position = positionsModel.getPosition(row);
         // if there is only one position or it is the first row, choose the map center
         if (row >= positionsModel.getRowCount() - 1)
             return null;
         // otherwise center between given positions
-        BaseNavigationPosition second = positionsModel.getPosition(row + 1);
+        NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return center(asList(second, position));
+        return new BoundingBox(asList(second, position)).getCenter();
     }
 
-    private String getRouteComment() {
-        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-        String number = Integer.toString(positionsModel.getRowCount() + 1);
-        String description = RouteConverter.getBundle().getString("new-position-name");
-        return formatNumberedPosition(numberPattern, number, description);
-    }
-
-    private BaseNavigationPosition insertRow(int row, BaseNavigationPosition position) {
+    private NavigationPosition insertRow(int row, NavigationPosition position) {
+        String description = RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(positionsModel.getRowCount() + 1, null);
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                position.getSpeed(), position.getTime(), getRouteComment());
+                position.getSpeed(), position.getTime(), description);
         return positionsModel.getPosition(row);
     }
 
-    private void complementRow(int row, BaseNavigationPosition position) {
+    private void complementRow(int row, NavigationPosition position) {
         RouteConverter r = RouteConverter.getInstance();
-        r.complementComment(row, position.getLongitude(), position.getLatitude());
-        r.complementElevation(row, position.getLongitude(), position.getLatitude());
-        r.complementTime(row, position.getTime());
+        r.getBatchPositionAugmenter().addDescriptions(table, positionsModel, new int[]{row});
+        r.getBatchPositionAugmenter().addElevations(table, positionsModel, new int[]{row});
+        r.complementTime(row, position.getTime(), true);
+        // TODO r.getBatchPositionAugmenter().addTimes(table, positionsModel, new int[]{row});
     }
 
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
         boolean hasInsertedRowInMapCenter = false;
-        List<BaseNavigationPosition> insertedPositions = new ArrayList<BaseNavigationPosition>();
-        int[] rowIndices = Range.revert(table.getSelectedRows());
-        for (int aReverted : rowIndices) {
-            int row = rowIndices.length > 0 ? aReverted : table.getRowCount();
+        List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
+        int[] rowIndices = revert(table.getSelectedRows());
+        // append to table if there is nothing selected
+        boolean areRowsSelected = rowIndices.length > 0;                        // TODO complicated logic, unify with BaseMapView#getAddRow
+        if (!areRowsSelected)
+            rowIndices = new int[]{table.getRowCount()};
+        for (int row : rowIndices) {
             int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
 
-            BaseNavigationPosition center = rowIndices.length > 0 ? calculateCenter(row) :
+            NavigationPosition center = areRowsSelected ? calculateCenter(row) :
                     positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
             if (center == null) {
                 // only insert row in map center once
@@ -113,13 +111,13 @@ public class AddPositionAction extends FrameAction {
 
         if (insertedPositions.size() > 0) {
             List<Integer> insertedRows = new ArrayList<Integer>();
-            for (BaseNavigationPosition position : insertedPositions) {
+            for (NavigationPosition position : insertedPositions) {
                 int index = positionsModel.getIndex(position);
                 insertedRows.add(index);
                 complementRow(index, position);
             }
 
-            final int[] rows = Range.asInt(insertedRows);
+            final int[] rows = toArray(insertedRows);
             final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
             invokeLater(new Runnable() {
                 public void run() {

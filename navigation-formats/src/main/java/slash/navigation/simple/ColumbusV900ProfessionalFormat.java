@@ -28,11 +28,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatAccuracyAsString;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
  * Reads and writes Columbus V900/V990 Professional (.csv) files.
@@ -45,7 +45,8 @@ import static slash.common.io.Transfer.trim;
 
 public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
-
+    private static final Pattern HEADER_PATTERN = Pattern.
+            compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -61,9 +62,9 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                     SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
 
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
 
@@ -71,12 +72,16 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         return "Columbus V900 Professional (*" + getExtension() + ")";
     }
 
+    protected Pattern getLinePattern() {
+        return LINE_PATTERN;
+    }
+
     protected String getHeader() {
         return HEADER_LINE;
     }
 
-    protected Pattern getPattern() {
-        return LINE_PATTERN;
+    protected Pattern getHeaderPattern() {
+        return HEADER_PATTERN;
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
@@ -100,20 +105,20 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String hdop = lineMatcher.group(13);
         String vdop = lineMatcher.group(14);
 
-        String comment = removeZeros(lineMatcher.group(15));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
-        if (commentSeparatorIndex != -1)
-            comment = comment.substring(commentSeparatorIndex + 1);
-        comment = trim(comment);
+        String description = removeZeros(lineMatcher.group(15));
+        int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
+        if (descriptionSeparatorIndex != -1)
+            description = description.substring(descriptionSeparatorIndex + 1);
+        description = trim(description);
 
         String lineType = trim(lineMatcher.group(2));
-        if (comment == null && POI_POSITION.equals(lineType)) {
+        if (description == null && POI_POSITION.equals(lineType)) {
             String lineNumber = lineMatcher.group(1);
-            comment = "POI " + trim(removeZeros(lineNumber));
+            description = "POI " + trim(removeZeros(lineNumber));
         }
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), comment);
+                parseDateAndTime(date, time), description);
         position.setHeading(parseDouble(heading));
         position.setPdop(parseDouble(pdop));
         position.setHdop(parseDouble(hdop));
@@ -134,10 +139,10 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "0.0", 5);
         String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "0.0", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "0.0", 5);
-        String comment = fillWithZeros(escape(position.getComment(), SEPARATOR, ';'), 8);
+        String description = fillWithZeros(escape(position.getDescription(), SEPARATOR, ';'), 8);
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatLineType(position.getComment()) + SEPARATOR +
+                formatLineType(position.getDescription()) + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + northOrSouth + SEPARATOR +
                 longitude + westOrEast + SEPARATOR +
@@ -149,6 +154,6 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                 pdop + SEPARATOR +
                 hdop + SEPARATOR +
                 vdop + SEPARATOR +
-                comment);
+                description);
     }
 }

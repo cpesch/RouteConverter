@@ -23,26 +23,24 @@ package slash.navigation.base;
 import org.junit.AfterClass;
 import org.junit.Test;
 import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.collectFiles;
-import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.assertNotNull;
-import static slash.navigation.base.NavigationTestCase.assertTrue;
+import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
@@ -77,9 +75,9 @@ public class ReadIT {
                 assertNotNull(result.getAllRoutes());
                 assertTrue(result.getAllRoutes().size() > 0);
                 for (BaseRoute route : result.getAllRoutes()) {
-                    List<BaseNavigationPosition> positions = route.getPositions();
-                    for (BaseNavigationPosition position : positions) {
-                        comments.add(position.getComment());
+                    List<NavigationPosition> positions = route.getPositions();
+                    for (NavigationPosition position : positions) {
+                        comments.add(position.getDescription());
                     }
                 }
                 if (!NO_NAME_DEFINED.contains(file.getName()) && !file.getName().endsWith(".axe") &&
@@ -97,9 +95,9 @@ public class ReadIT {
 
     @AfterClass
     public static void tearDown() throws IOException {
-        PrintStream out = new PrintStream(new FileOutputStream(File.createTempFile("comments", ".csv")));
+        PrintStream out = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
         String[] strings = comments.toArray(new String[comments.size()]);
-        Arrays.sort(strings);
+        sort(strings);
         for (String string : strings) {
             out.println(string);
         }

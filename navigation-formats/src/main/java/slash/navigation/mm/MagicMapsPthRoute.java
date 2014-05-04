@@ -23,12 +23,8 @@ package slash.navigation.mm;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,21 +42,7 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
         this(new MagicMapsPthFormat(), characteristics, positions);
     }
 
-
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
-        for (GkPosition position : positions) {
-            wgs84positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
-    }
-
-    public MagicMapsPthRoute asMagicMapsPthFormat() {
-        return this;
-    }
-
-
-    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new GkPosition(longitude, latitude, elevation, speed, time, comment);
+    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new GkPosition(longitude, latitude, elevation, speed, time, description);
     }
 }

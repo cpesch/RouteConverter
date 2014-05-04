@@ -1,13 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>slash.navigation</groupId>
     <artifactId>route-converter</artifactId>
     <packaging>jar</packaging>
     <name>The UI you see if you start the program</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <version>2.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -23,6 +22,16 @@
                         </goals>
                         <configuration>
                             <encoding>UTF8</encoding>
+                            <includes>
+                                <include>**/RouteConverter_ar.properties</include>
+                                <include>**/RouteConverter_cs.properties</include>
+                                <include>**/RouteConverter_hr.properties</include>
+                                <include>**/RouteConverter_pl.properties</include>
+                                <include>**/RouteConverter_ru.properties</include>
+                                <include>**/RouteConverter_sk.properties</include>
+                                <include>**/RouteConverter_sr.properties</include>
+                                <include>**/RouteConverter_zh.properties</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
@@ -31,6 +40,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>brouter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>catalog</artifactId>
@@ -55,7 +69,17 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>profileview</artifactId>
+            <artifactId>common-navigation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>download</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>earthtools</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -75,6 +99,16 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>graphhopper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>hgt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -85,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>position-completer</artifactId>
+            <artifactId>profileview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -95,19 +129,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>swt-mapview</artifactId>
+            <artifactId>routing-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>slash.feature</groupId>
             <artifactId>client</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.6</version>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
@@ -118,7 +146,6 @@
         <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <version>2.0.05</version>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>

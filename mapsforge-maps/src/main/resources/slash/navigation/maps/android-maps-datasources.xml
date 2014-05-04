@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="Androidmaps" baseUrl="http://www.androidmaps.co.uk/maps/" directory="maps/androidmaps">
+        <map uri="africa/botswana.map" size="5059237">
+            <northEast longitude="29.38549" latitude="-17.76871"/>
+            <southWest longitude="19.98745" latitude="-26.91539"/>
+        </map>
+        <map uri="africa/burkina-faso.map" size="4089824">
+            <northEast longitude="2.412483" latitude="15.09271"/>
+            <southWest longitude="-5.527409" latitude="9.384107"/>
+        </map>
+        <map uri="africa/cameroon.map" size="19873845">
+            <northEast longitude="16.20305" latitude="13.09278"/>
+            <southWest longitude="8.33" latitude="1.648733"/>
+        </map>
+        <map uri="africa/congo-democratic-republic.map" size="36441338">
+            <northEast longitude="31.40637" latitude="5.491719"/>
+            <southWest longitude="11.97894" latitude="-13.54984"/>
+        </map>
+        <map uri="africa/egypt.map" size="12701402">
+            <northEast longitude="36.68291" latitude="32.52518"/>
+            <southWest longitude="24.67954" latitude="21.94764"/>
+        </map>
+        <map uri="africa/ethiopia.map" size="12163557">
+            <northEast longitude="48.02163" latitude="14.92381"/>
+            <southWest longitude="32.93807" latitude="3.378665"/>
+        </map>
+        <map uri="africa/guinea-bissau.map" size="3254870">
+            <northEast longitude="-13.64192" latitude="12.68248"/>
+            <southWest longitude="-16.823799" latitude="10.14494"/>
+        </map>
+        <map uri="africa/guinea.map" size="6098144">
+            <northEast longitude="-7.631211" latitude="12.69263"/>
+            <southWest longitude="-15.41895" latitude="7.172085"/>
+        </map>
+        <map uri="africa/ivory-coast.map" size="3956912">
+            <northEast longitude="-2.476215" latitude="10.74769"/>
+            <southWest longitude="-8.665129" latitude="4.141916"/>
+        </map>
+        <map uri="africa/liberia.map" size="2567739">
+            <northEast longitude="-7.24572" latitude="8.60446"/>
+            <southWest longitude="-14.95454" latitude="-0.681003"/>
+        </map>
+        <map uri="africa/libya.map" size="8353925">
+            <northEast longitude="25.48516" latitude="33.57972"/>
+            <southWest longitude="9.374405" latitude="19.45087"/>
+        </map>
+        <map uri="africa/madagascar.map" size="23752808">
+            <northEast longitude="51.14843" latitude="-11.36225"/>
+            <southWest longitude="42.30124" latitude="-26.5823"/>
+        </map>
+        <map uri="africa/morocco.map" size="27016389">
+            <northEast longitude="-0.997533" latitude="36.16199"/>
+            <southWest longitude="-13.99471" latitude="27.6473"/>
+        </map>
+        <map uri="africa/nigeria.map" size="12828821">
+            <northEast longitude="14.67886" latitude="13.89545"/>
+            <southWest longitude="2.678891" latitude="2.674022"/>
+        </map>
+        <map uri="africa/sierra-leone.map" size="2875163">
+            <northEast longitude="-10.2558" latitude="10.0096"/>
+            <southWest longitude="-14.76451" latitude="5.391619"/>
+        </map>
+        <map uri="africa/somalia.map" size="11300132">
+            <northEast longitude="51.56723" latitude="12.14255"/>
+            <southWest longitude="40.97734" latitude="-1.927412"/>
+        </map>
+        <map uri="africa/south-africa-and-lesotho.map" size="48391537">
+            <northEast longitude="33.599539" latitude="-22.12661"/>
+            <southWest longitude="15.97668" latitude="-36.31217"/>
+        </map>
+        <map uri="africa/tanzania.map" size="9454432">
+            <northEast longitude="40.69487" latitude="-0.926912"/>
+            <southWest longitude="29.24395" latitude="-11.82113"/>
+        </map>
+        <map uri="asia/azerbaijan.map" size="4198875">
+            <northEast longitude="51.6407" latitude="42.3201"/>
+            <southWest longitude="44.7877" latitude="38.38874"/>
+        </map>
+        <map uri="asia/bangladesh.map" size="6270681">
+            <northEast longitude="92.69043" latitude="26.64677"/>
+            <southWest longitude="87.99765" latitude="18.58403"/>
+        </map>
+        <map uri="asia/china.map" size="165333168">
+            <northEast longitude="134.855899" latitude="53.65559"/>
+            <southWest longitude="73.41788" latitude="17.89595"/>
+        </map>
+        <map uri="asia/gcc-states.map" size="33423125">
+            <northEast longitude="60.94748" latitude="32.299149"/>
+            <southWest longitude="34.44492" latitude="15.24752"/>
+        </map>
+        <map uri="asia/india.map" size="137805156">
+            <northEast longitude="97.49344" latitude="35.773"/>
+            <southWest longitude="67.67457" latitude="5.896067"/>
+        </map>
+        <map uri="asia/indonesia.map" size="89859801">
+            <northEast longitude="141.0217" latitude="6.519293"/>
+            <southWest longitude="92.76481" latitude="-11.60655"/>
+        </map>
+        <map uri="asia/iran.map" size="25682847">
+            <northEast longitude="63.34049" latitude="39.79134"/>
+            <southWest longitude="44.05222" latitude="24.50552"/>
+        </map>
+        <map uri="asia/iraq.map" size="7288018">
+            <northEast longitude="48.90161" latitude="37.39063"/>
+            <southWest longitude="38.784" latitude="29.05167"/>
+        </map>
+        <map uri="asia/israel-and-palestine.map" size="20691116">
+            <northEast longitude="35.91531" latitude="33.35091"/>
+            <southWest longitude="34.07929" latitude="29.37711"/>
+        </map>
+        <map uri="asia/jordan.map" size="4266442">
+            <northEast longitude="39.31022" latitude="33.379219"/>
+            <southWest longitude="34.90415" latitude="29.18213"/>
+        </map>
+        <map uri="asia/kazakhstan.map" size="44703932">
+            <northEast longitude="87.35359" latitude="55.50799"/>
+            <southWest longitude="46.42304" latitude="40.5348"/>
+        </map>
+        <map uri="asia/kyrgyzstan.map" size="14286772">
+            <northEast longitude="80.28261" latitude="43.23824"/>
+            <southWest longitude="69.27662" latitude="39.17514"/>
+        </map>
+        <map uri="asia/lebanon.map" size="2535845">
+            <northEast longitude="36.62669" latitude="34.69405"/>
+            <southWest longitude="34.76799" latitude="33.04646"/>
+        </map>
+        <map uri="asia/malaysia-singapore-brunei.map" size="18310671">
+            <northEast longitude="119.6106" latitude="7.650157"/>
+            <southWest longitude="99.25611" latitude="0.849789"/>
+        </map>
+        <map uri="asia/mongolia.map" size="14790085">
+            <northEast longitude="119.9889" latitude="52.17016"/>
+            <southWest longitude="87.70255" latitude="41.54893"/>
+        </map>
+        <map uri="asia/pakistan.map" size="15886944">
+            <northEast longitude="77.83562" latitude="37.09664"/>
+            <southWest longitude="60.8786" latitude="23.32744"/>
+        </map>
+        <map uri="asia/philippines.map" size="61768053">
+            <northEast longitude="127.8003" latitude="21.55277"/>
+            <southWest longitude="115.6329" latitude="4.424338"/>
+        </map>
+        <map uri="asia/sri-lanka.map" size="6247110">
+            <northEast longitude="82.64612" latitude="10.07153"/>
+            <southWest longitude="79.16416" latitude="5.621275"/>
+        </map>
+        <map uri="asia/syria.map" size="9958276">
+            <northEast longitude="42.38383" latitude="37.32831"/>
+            <southWest longitude="35.48236" latitude="32.3066"/>
+        </map>
+        <map uri="asia/taiwan.map" size="14704415">
+            <northEast longitude="122.9312" latitude="26.60305"/>
+            <southWest longitude="118.2509" latitude="20.72799"/>
+        </map>
+        <map uri="asia/tajikistan.map" size="3665586">
+            <northEast longitude="75.15684" latitude="41.04937"/>
+            <southWest longitude="67.38213" latitude="36.66726"/>
+        </map>
+        <map uri="asia/thailand.map" size="39038598">
+            <northEast longitude="105.647" latitude="20.47466"/>
+            <southWest longitude="97.33396" latitude="5.625197"/>
+        </map>
+        <map uri="asia/turkmenistan.map" size="5062785">
+            <northEast longitude="66.70892" latitude="42.86081"/>
+            <southWest longitude="51.83271" latitude="35.12355"/>
+        </map>
+        <map uri="asia/uzbekistan.map" size="16832792">
+            <northEast longitude="73.17463" latitude="45.598"/>
+            <southWest longitude="55.97708" latitude="37.16636"/>
+        </map>
+        <map uri="asia/vietnam.map" size="17415416">
+            <northEast longitude="111.6685" latitude="23.47731"/>
+            <southWest longitude="102.0409" latitude="7.730748"/>
+        </map>
+        <map uri="australia-oceania/australia.map" size="168223301">
+            <northEast longitude="156.0377" latitude="-9.462762"/>
+            <southWest longitude="104.8717" latitude="-45.95665"/>
+        </map>
+        <map uri="australia-oceania/fiji.map" size="25119760">
+            <northEast longitude="180.0" latitude="-15.2"/>
+            <southWest longitude="-180.0" latitude="-21.3"/>
+        </map>
+        <map uri="australia-oceania/new-caledonia.map" size="5219160">
+            <northEast longitude="174.1" latitude="-16.899999"/>
+            <southWest longitude="157.9" latitude="-25.0"/>
+        </map>
+        <map uri="australia-oceania/new-zealand.map" size="89630889">
+            <northEast longitude="179.9999" latitude="-32.667"/>
+            <southWest longitude="162.096" latitude="-48.77"/>
+        </map>
+        <map uri="canada/alberta.map" size="57518723">
+            <northEast longitude="-110.0018" latitude="60.00254"/>
+            <southWest longitude="-120.0043" latitude="48.311"/>
+        </map>
+        <map uri="canada/british-columbia.map" size="216247589">
+            <northEast longitude="-114.049" latitude="60.00678"/>
+            <southWest longitude="-142.8716" latitude="45.385"/>
+        </map>
+        <map uri="canada/manitoba.map" size="125683570">
+            <northEast longitude="-88.12183" latitude="60.00845"/>
+            <southWest longitude="-102.014" latitude="48.98947"/>
+        </map>
+        <map uri="canada/new-brunswick.map" size="37120079">
+            <northEast longitude="-63.34767" latitude="48.38075"/>
+            <southWest longitude="-69.19022" latitude="44.29659"/>
+        </map>
+        <map uri="canada/newfoundland-and-labrador.map" size="87658332"/>
+        <map uri="canada/northwest-territories.map" size="9171508"/>
+        <map uri="canada/nova-scotia.map" size="40848524">
+            <northEast longitude="-58.22593" latitude="47.42182"/>
+            <southWest longitude="-67.512969" latitude="42.01893"/>
+        </map>
+        <map uri="canada/nunavut.map" size="8360473"/>
+        <map uri="canada/ontario-south.map" size="187385692">
+            <northEast longitude="-74.30998" latitude="47.4"/>
+            <southWest longitude="-85.1" latitude="41.6377"/>
+        </map>
+        <map uri="canada/ontario.map" size="221444861">
+            <northEast longitude="-74.30998" latitude="57.50826"/>
+            <southWest longitude="-95.15965" latitude="41.6377"/>
+        </map>
+        <map uri="canada/prince-edward-island.map" size="5459289">
+            <northEast longitude="-61.15594" latitude="47.89282"/>
+            <southWest longitude="-64.60505" latitude="45.91017"/>
+        </map>
+        <map uri="canada/quebec.map" size="239066029">
+            <northEast longitude="-57.03236" latitude="63.13454"/>
+            <southWest longitude="-81.20556" latitude="44.97713"/>
+        </map>
+        <map uri="canada/saskatchewan.map" size="69007482">
+            <northEast longitude="-101.3598" latitude="60.00052"/>
+            <southWest longitude="-110.0069" latitude="48.32644"/>
+        </map>
+        <map uri="canada/yukon.map" size="52305683">
+            <northEast longitude="-123.8021" latitude="70.16906"/>
+            <southWest longitude="-141.3557" latitude="59.99739"/>
+        </map>
+        <map uri="central-america/belize.map" size="1385395">
+            <northEast longitude="-86.85939" latitude="18.49701"/>
+            <southWest longitude="-89.21948" latitude="15.88696"/>
+        </map>
+        <map uri="central-america/cuba.map" size="9948881">
+            <northEast longitude="-73.70831" latitude="23.47253"/>
+            <southWest longitude="-85.10663" latitude="19.2533"/>
+        </map>
+        <map uri="central-america/guatemala.map" size="4749167">
+            <northEast longitude="-87.95177" latitude="17.81602"/>
+            <southWest longitude="-92.73303" latitude="12.93449"/>
+        </map>
+        <map uri="central-america/haiti-and-domrep.map" size="18258353">
+            <northEast longitude="-68.161739" latitude="20.46002"/>
+            <southWest longitude="-74.82529" latitude="17.38275"/>
+        </map>
+        <map uri="central-america/mexico.map" size="65323511">
+            <northEast longitude="-85.49087" latitude="33.64085"/>
+            <southWest longitude="-127.3542" latitude="6.88283"/>
+        </map>
+        <map uri="europe/albania.map" size="5160081">
+            <northEast longitude="21.06846" latitude="42.66562"/>
+            <southWest longitude="19.13709" latitude="39.59972"/>
+        </map>
+        <map uri="europe/andorra.map" size="369558">
+            <northEast longitude="1.787481" latitude="42.65717"/>
+            <southWest longitude="1.412368" latitude="42.4276"/>
+        </map>
+        <map uri="europe/austria.map" size="190221458">
+            <northEast longitude="17.16273" latitude="49.02403"/>
+            <southWest longitude="9.52678" latitude="46.36851"/>
+        </map>
+        <map uri="europe/azores.map" size="1716252">
+            <northEast longitude="-24.71814" latitude="40.0757"/>
+            <southWest longitude="-31.57293" latitude="36.67791"/>
+        </map>
+        <map uri="europe/belarus.map" size="64191483">
+            <northEast longitude="32.82244" latitude="56.18162"/>
+            <southWest longitude="23.16722" latitude="51.2593"/>
+        </map>
+        <map uri="europe/belgium.map" size="130716474">
+            <northEast longitude="6.411619" latitude="51.59839"/>
+            <southWest longitude="2.340725" latitude="49.49196"/>
+        </map>
+        <map uri="europe/bosnia-herzegovina.map" size="37874355">
+            <northEast longitude="19.62176" latitude="45.26595"/>
+            <southWest longitude="15.73639" latitude="42.56583"/>
+        </map>
+        <map uri="europe/bulgaria.map" size="28622315">
+            <northEast longitude="28.99421" latitude="44.21765"/>
+            <southWest longitude="22.37116" latitude="41.24207"/>
+        </map>
+        <map uri="europe/canary-islands.map" size="11381772">
+            <northEast longitude="-12.83619" latitude="29.94093"/>
+            <southWest longitude="-18.63903" latitude="26.57014"/>
+        </map>
+        <map uri="europe/croatia.map" size="35160827">
+            <northEast longitude="19.45911" latitude="46.56498"/>
+            <southWest longitude="13.08916" latitude="42.16483"/>
+        </map>
+        <map uri="europe/cyprus.map" size="4609141">
+            <northEast longitude="34.96147" latitude="36.00323"/>
+            <southWest longitude="31.95244" latitude="34.233739"/>
+        </map>
+        <map uri="europe/czech-republic.map" size="227197405">
+            <northEast longitude="18.86321" latitude="51.06426"/>
+            <southWest longitude="12.08477" latitude="48.54292"/>
+        </map>
+        <map uri="europe/denmark.map" size="96760420">
+            <northEast longitude="15.52582" latitude="58.02074"/>
+            <southWest longitude="7.7011" latitude="54.37361"/>
+        </map>
+        <map uri="europe/estonia.map" size="49418712">
+            <northEast longitude="28.21426" latitude="59.99705"/>
+            <southWest longitude="20.85166" latitude="57.49764"/>
+        </map>
+        <map uri="europe/faroe-islands.map" size="872274">
+            <northEast longitude="-6.0" latitude="63.0"/>
+            <southWest longitude="-8.0" latitude="61.3"/>
+        </map>
+        <map uri="europe/finland.map" size="142666307">
+            <northEast longitude="31.60089" latitude="70.09959"/>
+            <southWest longitude="19.02427" latitude="59.28783"/>
+        </map>
+        <map uri="europe/greece.map" size="58367995">
+            <northEast longitude="29.65683" latitude="41.74954"/>
+            <southWest longitude="19.15881" latitude="34.59111"/>
+        </map>
+        <map uri="europe/hungary.map" size="43207227">
+            <northEast longitude="22.90201" latitude="48.58766"/>
+            <southWest longitude="16.11262" latitude="45.73218"/>
+        </map>
+        <map uri="europe/iceland.map" size="11418203">
+            <northEast longitude="-12.41708" latitude="67.50085"/>
+            <southWest longitude="-25.74085" latitude="62.84553"/>
+        </map>
+        <map uri="europe/ireland-and-northern-ireland.map" size="46853369">
+            <northEast longitude="-5.059265" latitude="55.70299"/>
+            <southWest longitude="-11.4" latitude="51.07948"/>
+        </map>
+        <map uri="europe/isle-of-man.map" size="1116354">
+            <northEast longitude="-3.688718" latitude="54.6706"/>
+            <southWest longitude="-5.434554" latitude="53.73236"/>
+        </map>
+        <map uri="europe/italy.map" size="461443509">
+            <northEast longitude="19.12499" latitude="47.10169"/>
+            <southWest longitude="6.602696" latitude="35.07638"/>
+        </map>
+        <map uri="europe/kosovo.map" size="3362891">
+            <northEast longitude="21.80058" latitude="43.27236"/>
+            <southWest longitude="20.07227" latitude="41.85343"/>
+        </map>
+        <map uri="europe/latvia.map" size="31311878">
+            <northEast longitude="28.24116" latitude="58.08231"/>
+            <southWest longitude="20.79407" latitude="55.66886"/>
+        </map>
+        <map uri="europe/liechtenstein.map" size="417938">
+            <northEast longitude="9.636217" latitude="47.27128"/>
+            <southWest longitude="9.471078" latitude="47.04774"/>
+        </map>
+        <map uri="europe/lithuania.map" size="38082026">
+            <northEast longitude="26.83873" latitude="56.45106"/>
+            <southWest longitude="20.63822" latitude="53.89605"/>
+        </map>
+        <map uri="europe/luxembourg.map" size="7006777">
+            <northEast longitude="6.532249" latitude="50.18496"/>
+            <southWest longitude="5.733033" latitude="49.44553"/>
+        </map>
+        <map uri="europe/macedonia.map" size="8777579">
+            <northEast longitude="23.03814" latitude="42.38455"/>
+            <southWest longitude="20.46468" latitude="40.86164"/>
+        </map>
+        <map uri="europe/malta.map" size="1033901">
+            <northEast longitude="14.61755" latitude="36.11909"/>
+            <southWest longitude="14.0988" latitude="35.77776"/>
+        </map>
+        <map uri="europe/moldova.map" size="11470914">
+            <northEast longitude="30.16374" latitude="48.49017"/>
+            <southWest longitude="26.61889" latitude="45.4689"/>
+        </map>
+        <map uri="europe/monaco.map" size="113331">
+            <northEast longitude="7.448637" latitude="43.75169"/>
+            <southWest longitude="7.409205" latitude="43.72335"/>
+        </map>
+        <map uri="europe/montenegro.map" size="4919942">
+            <northEast longitude="20.36638" latitude="43.55504"/>
+            <southWest longitude="18.17282" latitude="41.61621"/>
+        </map>
+        <map uri="europe/netherlands.map" size="392941000">
+            <northEast longitude="7.230455" latitude="54.01786"/>
+            <southWest longitude="2.992192" latitude="50.74753"/>
+        </map>
+        <map uri="europe/norway.map" size="99734512">
+            <northEast longitude="31.5179" latitude="71.65157"/>
+            <southWest longitude="3.789598" latitude="57.58925"/>
+        </map>
+        <map uri="europe/poland.map" size="275567946">
+            <northEast longitude="24.16522" latitude="55.09949"/>
+            <southWest longitude="14.0998" latitude="48.98568"/>
+        </map>
+        <map uri="europe/portugal.map" size="46566355">
+            <northEast longitude="-6.18269" latitude="42.14565"/>
+            <southWest longitude="-17.93724" latitude="32.03126"/>
+        </map>
+        <map uri="europe/romania.map" size="106823854">
+            <northEast longitude="30.08531" latitude="48.27408"/>
+            <southWest longitude="20.25562" latitude="43.61606"/>
+        </map>
+        <map uri="europe/serbia.map" size="19086709">
+            <northEast longitude="23.00617" latitude="46.19125"/>
+            <southWest longitude="18.82347" latitude="42.24909"/>
+        </map>
+        <map uri="europe/slovakia.map" size="90459767">
+            <northEast longitude="22.57051" latitude="49.6186"/>
+            <southWest longitude="16.828399" latitude="47.72646"/>
+        </map>
+        <map uri="europe/slovenia.map" size="16355089">
+            <northEast longitude="16.61889" latitude="46.88667"/>
+            <southWest longitude="13.36653" latitude="45.41273"/>
+        </map>
+        <map uri="europe/spain.map" size="242520021">
+            <northEast longitude="5.098525" latitude="44.14855"/>
+            <southWest longitude="-9.779014" latitude="35.91539"/>
+        </map>
+        <map uri="europe/sweden.map" size="156936200">
+            <northEast longitude="24.22472" latitude="69.06643"/>
+            <southWest longitude="10.54138" latitude="55.02652"/>
+        </map>
+        <map uri="europe/switzerland.map" size="114873280">
+            <northEast longitude="10.49584" latitude="47.81126"/>
+            <southWest longitude="5.952882" latitude="45.81617"/>
+        </map>
+        <map uri="europe/turkey.map" size="82117698">
+            <northEast longitude="44.91345" latitude="42.397"/>
+            <southWest longitude="25.6071" latitude="35.717"/>
+        </map>
+        <map uri="europe/ukraine.map" size="130308977">
+            <northEast longitude="40.2174" latitude="52.37537"/>
+            <southWest longitude="22.1289" latitude="44.00715"/>
+        </map>
+        <map uri="france/alsace.map" size="57476191">
+            <northEast longitude="8.243929" latitude="49.08017"/>
+            <southWest longitude="6.838921" latitude="47.3845"/>
+        </map>
+        <map uri="france/aquitaine.map" size="98736771">
+            <northEast longitude="1.450577" latitude="45.71724"/>
+            <southWest longitude="-1.842771" latitude="42.61155"/>
+        </map>
+        <map uri="france/auvergne.map" size="52221934">
+            <northEast longitude="4.492907" latitude="46.80668"/>
+            <southWest longitude="2.060519" latitude="44.6146"/>
+        </map>
+        <map uri="france/basse-normandie.map" size="43309604">
+            <northEast longitude="0.979067" latitude="49.88523"/>
+            <southWest longitude="-2.087526" latitude="48.17802"/>
+        </map>
+        <map uri="france/bourgogne.map" size="62689057">
+            <northEast longitude="5.519965" latitude="48.40136"/>
+            <southWest longitude="2.843279" latitude="46.15484"/>
+        </map>
+        <map uri="france/bretagne.map" size="118359640">
+            <northEast longitude="-1.014537" latitude="49.19312"/>
+            <southWest longitude="-5.883925" latitude="47.07722"/>
+        </map>
+        <map uri="france/centre.map" size="69967668">
+            <northEast longitude="3.129925" latitude="48.9423"/>
+            <southWest longitude="0.051538" latitude="46.34591"/>
+        </map>
+        <map uri="france/champagne-ardenne.map" size="29966720">
+            <northEast longitude="5.892182" latitude="50.22065"/>
+            <southWest longitude="3.382419" latitude="47.57553"/>
+        </map>
+        <map uri="france/corse.map" size="6654589">
+            <northEast longitude="9.751243" latitude="43.16589"/>
+            <southWest longitude="8.317882" latitude="41.31103"/>
+        </map>
+        <map uri="france/franche-comte.map" size="41734924">
+            <northEast longitude="7.14439" latitude="48.02537"/>
+            <southWest longitude="5.25076" latitude="46.25975"/>
+        </map>
+        <map uri="france/haute-normandie.map" size="33432041">
+            <northEast longitude="1.803956" latitude="50.08769"/>
+            <southWest longitude="0.009482" latitude="48.66574"/>
+        </map>
+        <map uri="france/ile-de-france.map" size="120585168">
+            <northEast longitude="3.560409" latitude="49.24271"/>
+            <southWest longitude="1.445097" latitude="48.11918"/>
+        </map>
+        <map uri="france/languedoc-roussillon.map" size="81547273">
+            <northEast longitude="4.847979" latitude="44.97821"/>
+            <southWest longitude="1.686256" latitude="42.16658"/>
+        </map>
+        <map uri="france/limousin.map" size="30907466">
+            <northEast longitude="2.61384" latitude="46.45781"/>
+            <southWest longitude="0.627097" latitude="44.91842"/>
+        </map>
+        <map uri="france/lorraine.map" size="67251759">
+            <northEast longitude="7.689503" latitude="49.61949"/>
+            <southWest longitude="4.886022" latitude="47.81188"/>
+        </map>
+        <map uri="france/mayotte.map" size="316969">
+            <northEast longitude="45.45754" latitude="-12.46832"/>
+            <southWest longitude="44.85604" latitude="-13.1491"/>
+        </map>
+        <map uri="france/midi-pyrenees.map" size="111657937">
+            <northEast longitude="3.453264" latitude="45.04779"/>
+            <southWest longitude="-0.327537" latitude="42.53333"/>
+        </map>
+        <map uri="france/nord-pas-de-calais.map" size="105124069">
+            <northEast longitude="4.273287" latitude="51.28121"/>
+            <southWest longitude="1.278311" latitude="49.96764"/>
+        </map>
+        <map uri="france/pays-de-la-loire.map" size="138346093">
+            <northEast longitude="0.918996" latitude="48.57002"/>
+            <southWest longitude="-2.674666" latitude="46.21875"/>
+        </map>
+        <map uri="france/picardie.map" size="45230729">
+            <northEast longitude="4.256744" latitude="50.37125"/>
+            <southWest longitude="1.360085" latitude="48.83599"/>
+        </map>
+        <map uri="france/poitou-charentes.map" size="96893756">
+            <northEast longitude="1.214991" latitude="47.17837"/>
+            <southWest longitude="-1.898565" latitude="45.0868"/>
+        </map>
+        <map uri="france/rhone-alpes.map" size="163228676">
+            <northEast longitude="7.27726" latitude="46.57299"/>
+            <southWest longitude="3.686075" latitude="44.11274"/>
+        </map>
+        <map uri="germany/baden-wuerttemberg.map" size="155179803">
+            <northEast longitude="10.52081" latitude="49.80469"/>
+            <southWest longitude="7.372216" latitude="47.18741"/>
+        </map>
+        <map uri="germany/bayern.map" size="215292479">
+            <northEast longitude="14.09027" latitude="50.56779"/>
+            <southWest longitude="8.974646" latitude="47.22839"/>
+        </map>
+        <map uri="germany/berlin.map" size="16560337">
+            <northEast longitude="13.76136" latitude="52.6783"/>
+            <southWest longitude="13.08283" latitude="52.33446"/>
+        </map>
+        <map uri="germany/brandenburg.map" size="60817553">
+            <northEast longitude="14.77917" latitude="53.5784"/>
+            <southWest longitude="11.22404" latitude="51.35252"/>
+        </map>
+        <map uri="germany/bremen.map" size="5336028">
+            <northEast longitude="8.991268" latitude="53.61063"/>
+            <southWest longitude="8.480959" latitude="53.01034"/>
+        </map>
+        <map uri="germany/hamburg.map" size="14748318">
+            <northEast longitude="10.33637" latitude="53.7465"/>
+            <southWest longitude="9.613465" latitude="53.38581"/>
+        </map>
+        <map uri="germany/hessen.map" size="88200908">
+            <northEast longitude="10.24398" latitude="51.66252"/>
+            <southWest longitude="7.76757" latitude="49.39089"/>
+        </map>
+        <map uri="germany/mecklenburg-vorpommern.map" size="36062285">
+            <northEast longitude="14.43422" latitude="54.99857"/>
+            <southWest longitude="10.58766" latitude="53.09723"/>
+        </map>
+        <map uri="germany/niedersachsen.map" size="126071807">
+            <northEast longitude="11.64342" latitude="54.17288"/>
+            <southWest longitude="6.45099" latitude="51.28559"/>
+        </map>
+        <map uri="germany/nordrhein-westfalen.map" size="233285423">
+            <northEast longitude="9.468311" latitude="52.5397"/>
+            <southWest longitude="5.512685" latitude="50.31874"/>
+        </map>
+        <map uri="germany/rheinland-pfalz.map" size="54473874">
+            <northEast longitude="8.513735" latitude="50.95293"/>
+            <southWest longitude="6.108849" latitude="48.96259"/>
+        </map>
+        <map uri="germany/saarland.map" size="13249167">
+            <northEast longitude="7.40979" latitude="49.64072"/>
+            <southWest longitude="6.35017" latitude="49.10868"/>
+        </map>
+        <map uri="germany/sachsen-anhalt.map" size="40753943">
+            <northEast longitude="13.21268" latitude="53.0566"/>
+            <southWest longitude="10.54725" latitude="50.92887"/>
+        </map>
+        <map uri="germany/sachsen.map" size="66555330">
+            <northEast longitude="15.05234" latitude="51.6838"/>
+            <southWest longitude="11.86685" latitude="50.15843"/>
+        </map>
+        <map uri="germany/schleswig-holstein.map" size="42286241">
+            <northEast longitude="11.92753" latitude="55.14634"/>
+            <southWest longitude="7.46458" latitude="53.35408"/>
+        </map>
+        <map uri="germany/thueringen.map" size="39275646">
+            <northEast longitude="12.67491" latitude="51.65237"/>
+            <southWest longitude="9.863176" latitude="50.19971"/>
+        </map>
+        <map uri="home-nations/england.map" size="288041241">
+            <northEast longitude="2.361859" latitude="56.08932"/>
+            <southWest longitude="-7.74803" latitude="48.97894"/>
+        </map>
+        <map uri="home-nations/great-britain.map" size="362459900">
+            <northEast longitude="2.25" latitude="61.92858"/>
+            <southWest longitude="-9.667832" latitude="48.79409"/>
+        </map>
+        <map uri="home-nations/ireland-and-northern-ireland.map" size="47064163">
+            <northEast longitude="-5.059265" latitude="55.70299"/>
+            <southWest longitude="-11.4" latitude="51.07948"/>
+        </map>
+        <map uri="home-nations/isle-of-man.map" size="1116257">
+            <northEast longitude="-3.688718" latitude="54.6706"/>
+            <southWest longitude="-5.434554" latitude="53.73236"/>
+        </map>
+        <map uri="home-nations/scotland.map" size="55213846">
+            <northEast longitude="-0.201906" latitude="61.35131"/>
+            <southWest longitude="-8.08299" latitude="54.54001"/>
+        </map>
+        <map uri="home-nations/wales.map" size="18894715">
+            <northEast longitude="-2.653815" latitude="53.55413"/>
+            <southWest longitude="-5.513934" latitude="51.33201"/>
+        </map>
+        <map uri="south-america/argentina.map" size="77222295">
+            <northEast longitude="-53.63647" latitude="-21.72221"/>
+            <southWest longitude="-73.64277" latitude="-55.35943"/>
+        </map>
+        <map uri="south-america/bolivia.map" size="16801304">
+            <northEast longitude="-57.4581" latitude="-9.680567"/>
+            <southWest longitude="-69.64076" latitude="-22.87356"/>
+        </map>
+        <map uri="south-america/brazil.map" size="171711441">
+            <northEast longitude="-27.67249" latitude="5.522895"/>
+            <southWest longitude="-74.09056" latitude="-35.46552"/>
+        </map>
+        <map uri="south-america/chile.map" size="74401611">
+            <northEast longitude="-65.5141" latitude="-17.45743"/>
+            <southWest longitude="-113.2233" latitude="-58.45195"/>
+        </map>
+        <map uri="south-america/colombia.map" size="44711249">
+            <northEast longitude="-66.869829" latitude="13.14865"/>
+            <southWest longitude="-79.68074" latitude="-4.230483"/>
+        </map>
+        <map uri="south-america/ecuador.map" size="15114185">
+            <northEast longitude="-75.18251" latitude="2.843487"/>
+            <southWest longitude="-93.56487" latitude="-5.024173"/>
+        </map>
+        <map uri="south-america/peru.map" size="28745778">
+            <northEast longitude="-68.55439" latitude="0.060049"/>
+            <southWest longitude="-86.02509" latitude="-19.68055"/>
+        </map>
+        <map uri="south-america/uruguay.map" size="11938690">
+            <northEast longitude="-52.7723" latitude="-30.06385"/>
+            <southWest longitude="-58.48687" latitude="-35.43046"/>
+        </map>
+        <map uri="usa/alabama.map" size="35473537">
+            <northEast longitude="-84.8892" latitude="35.00872"/>
+            <southWest longitude="-88.47493" latitude="30.10403"/>
+        </map>
+        <map uri="usa/alaska.map" size="4573041"/>
+        <map uri="usa/arizona.map" size="43704202">
+            <northEast longitude="-109.0437" latitude="37.00596"/>
+            <southWest longitude="-114.8325" latitude="30.05891"/>
+        </map>
+        <map uri="usa/arkansas.map" size="25268631">
+            <northEast longitude="-89.63987" latitude="36.55212"/>
+            <southWest longitude="-94.62217" latitude="33.0038"/>
+        </map>
+        <map uri="usa/california.map" size="245470147">
+            <northEast longitude="-114.1291" latitude="42.01618"/>
+            <southWest longitude="-125.8935" latitude="32.48171"/>
+        </map>
+        <map uri="usa/colorado.map" size="77651778">
+            <northEast longitude="-100.4637" latitude="41.00403"/>
+            <southWest longitude="-109.0631" latitude="36.56774"/>
+        </map>
+        <map uri="usa/connecticut.map" size="11309437">
+            <northEast longitude="-71.7853" latitude="42.05229"/>
+            <southWest longitude="-73.72889" latitude="40.96401"/>
+        </map>
+        <map uri="usa/delaware.map" size="4036506">
+            <northEast longitude="-74.96121" latitude="40.03221"/>
+            <southWest longitude="-75.78974" latitude="38.45043"/>
+        </map>
+        <map uri="usa/district-of-columbia.map" size="6207021">
+            <northEast longitude="-76.90906" latitude="38.99603"/>
+            <southWest longitude="-77.1201" latitude="38.79134"/>
+        </map>
+        <map uri="usa/florida.map" size="70926397">
+            <northEast longitude="-77.72359" latitude="31.00293"/>
+            <southWest longitude="-88.70372" latitude="23.68312"/>
+        </map>
+        <map uri="usa/georgia.map" size="93686187">
+            <northEast longitude="-80.74313" latitude="35.00356"/>
+            <southWest longitude="-85.6068" latitude="30.35365"/>
+        </map>
+        <map uri="usa/hawaii.map" size="13009885">
+            <northEast longitude="-137.5228" latitude="29.09624"/>
+            <southWest longitude="-179.8483" latitude="10.83575"/>
+        </map>
+        <map uri="usa/idaho.map" size="29621150">
+            <northEast longitude="-111.0431" latitude="49.13466"/>
+            <southWest longitude="-117.246" latitude="41.98306"/>
+        </map>
+        <map uri="usa/illinois.map" size="89655164">
+            <northEast longitude="-87.49264" latitude="42.50941"/>
+            <southWest longitude="-91.51608" latitude="36.96731"/>
+        </map>
+        <map uri="usa/indiana.map" size="29970778">
+            <northEast longitude="-84.50399" latitude="41.76101"/>
+            <southWest longitude="-88.0615" latitude="37.62705"/>
+        </map>
+        <map uri="usa/iowa.map" size="48618033">
+            <northEast longitude="-90.13581" latitude="43.50182"/>
+            <southWest longitude="-96.6426" latitude="40.37266"/>
+        </map>
+        <map uri="usa/kansas.map" size="30508230">
+            <northEast longitude="-94.58926" latitude="40.00681"/>
+            <southWest longitude="-107.3034" latitude="33.40115"/>
+        </map>
+        <map uri="usa/kentucky.map" size="34661130">
+            <northEast longitude="-81.95512" latitude="39.20518"/>
+            <southWest longitude="-89.61845" latitude="36.49325"/>
+        </map>
+        <map uri="usa/louisiana.map" size="50608647">
+            <northEast longitude="-88.66684" latitude="33.020249"/>
+            <southWest longitude="-94.04376" latitude="28.14452"/>
+        </map>
+        <map uri="usa/maine.map" size="19605175">
+            <northEast longitude="-65.889669" latitude="48.15552"/>
+            <southWest longitude="-71.45045" latitude="42.85443"/>
+        </map>
+        <map uri="usa/maryland.map" size="29948058">
+            <northEast longitude="-75.03785" latitude="40.17054"/>
+            <southWest longitude="-79.48857" latitude="37.88396"/>
+        </map>
+        <map uri="usa/massachusetts.map" size="128520522">
+            <northEast longitude="-68.71948" latitude="42.88768"/>
+            <southWest longitude="-73.51096" latitude="40.82573"/>
+        </map>
+        <map uri="usa/michigan.map" size="58911054">
+            <northEast longitude="-79.04667" latitude="49.32486"/>
+            <southWest longitude="-90.41981" latitude="41.69439"/>
+        </map>
+        <map uri="usa/minnesota.map" size="86083031">
+            <northEast longitude="-89.36208" latitude="49.99714"/>
+            <southWest longitude="-97.27158" latitude="43.49909"/>
+        </map>
+        <map uri="usa/mississippi.map" size="34857181">
+            <northEast longitude="-88.09292" latitude="35.00055"/>
+            <southWest longitude="-91.65857" latitude="30.04168"/>
+        </map>
+        <map uri="usa/missouri.map" size="43660179">
+            <northEast longitude="-88.87132" latitude="40.61664"/>
+            <southWest longitude="-95.77751" latitude="35.99466"/>
+        </map>
+        <map uri="usa/montana.map" size="32469411">
+            <northEast longitude="-102.685" latitude="49.69326"/>
+            <southWest longitude="-116.0518" latitude="44.35556"/>
+        </map>
+        <map uri="usa/nebraska.map" size="28132760">
+            <northEast longitude="-95.30703" latitude="43.00172"/>
+            <southWest longitude="-104.7301" latitude="40.00015"/>
+        </map>
+        <map uri="usa/nevada.map" size="19056914">
+            <northEast longitude="-114.0379" latitude="42.00391"/>
+            <southWest longitude="-120.0074" latitude="35.00053"/>
+        </map>
+        <map uri="usa/new-hampshire.map" size="16655966">
+            <northEast longitude="-70.48692" latitude="45.44612"/>
+            <southWest longitude="-72.5588" latitude="42.69669"/>
+        </map>
+        <map uri="usa/new-jersey.map" size="37434016">
+            <northEast longitude="-73.67898" latitude="41.35807"/>
+            <southWest longitude="-75.83509" latitude="38.55502"/>
+        </map>
+        <map uri="usa/new-mexico.map" size="33361509">
+            <northEast longitude="-96.11707" latitude="37.00184"/>
+            <southWest longitude="-109.0504" latitude="27.02788"/>
+        </map>
+        <map uri="usa/new-york.map" size="72677993">
+            <northEast longitude="-70.49625" latitude="45.07133"/>
+            <southWest longitude="-79.82402" latitude="40.03666"/>
+        </map>
+        <map uri="usa/north-dakota.map" size="49746698">
+            <northEast longitude="-96.55292" latitude="49.70865"/>
+            <southWest longitude="-105.0844" latitude="45.93448"/>
+        </map>
+        <map uri="usa/ohio.map" size="47954292">
+            <northEast longitude="-79.89951" latitude="43.48236"/>
+            <southWest longitude="-84.8219" latitude="38.09861"/>
+        </map>
+        <map uri="usa/oklahoma.map" size="58637629">
+            <northEast longitude="-94.42821" latitude="37.32622"/>
+            <southWest longitude="-103.3556" latitude="33.61358"/>
+        </map>
+        <map uri="usa/oregon.map" size="48025671">
+            <northEast longitude="-116.4545" latitude="46.30349"/>
+            <southWest longitude="-126.3879" latitude="41.9634"/>
+        </map>
+        <map uri="usa/pennsylvania.map" size="60622583">
+            <northEast longitude="-74.68884" latitude="42.51533"/>
+            <southWest longitude="-81.37832" latitude="38.92139"/>
+        </map>
+        <map uri="usa/rhode-island.map" size="3537360">
+            <northEast longitude="-71.10885" latitude="42.01938"/>
+            <southWest longitude="-71.9125" latitude="40.99017"/>
+        </map>
+        <map uri="usa/south-carolina.map" size="49150987">
+            <northEast longitude="-78.51867" latitude="35.2184"/>
+            <southWest longitude="-83.35622" latitude="32.02967"/>
+        </map>
+        <map uri="usa/south-dakota.map" size="19062408">
+            <northEast longitude="-96.43595" latitude="45.94831"/>
+            <southWest longitude="-104.9132" latitude="42.47744"/>
+        </map>
+        <map uri="usa/tennessee.map" size="36865853">
+            <northEast longitude="-81.64416" latitude="36.68075"/>
+            <southWest longitude="-90.31329" latitude="34.98269"/>
+        </map>
+        <map uri="usa/texas.map" size="126817517">
+            <northEast longitude="-93.01897" latitude="36.52618"/>
+            <southWest longitude="-106.9125" latitude="25.66764"/>
+        </map>
+        <map uri="usa/utah.map" size="24257689">
+            <northEast longitude="-109.0394" latitude="42.00323"/>
+            <southWest longitude="-114.0556" latitude="36.9963"/>
+        </map>
+        <map uri="usa/vermont.map" size="8878637">
+            <northEast longitude="-71.46476" latitude="45.01781"/>
+            <southWest longitude="-73.43943" latitude="42.72526"/>
+        </map>
+        <map uri="usa/virginia.map" size="89555812">
+            <northEast longitude="-74.29751" latitude="39.46901"/>
+            <southWest longitude="-83.67841" latitude="36.53798"/>
+        </map>
+        <map uri="usa/washington.map" size="55906087">
+            <northEast longitude="-116.9145" latitude="49.00708"/>
+            <southWest longitude="-126.7423" latitude="45.54326"/>
+        </map>
+        <map uri="usa/west-virginia.map" size="15005094">
+            <northEast longitude="-77.7141" latitude="40.92069"/>
+            <southWest longitude="-82.64965" latitude="37.19858"/>
+        </map>
+        <map uri="usa/wisconsin.map" size="50724557">
+            <northEast longitude="-86.20021" latitude="47.41451"/>
+            <southWest longitude="-92.89089" latitude="42.48899"/>
+        </map>
+        <map uri="usa/wyoming.map" size="23082416">
+            <northEast longitude="-101.6424" latitude="45.5894"/>
+            <southWest longitude="-111.0576" latitude="40.99415"/>
+        </map>
+    </datasource>
+</datasources>

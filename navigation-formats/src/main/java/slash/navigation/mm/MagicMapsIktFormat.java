@@ -21,12 +21,8 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.base.*;
+import slash.navigation.common.NavigationPosition;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -45,13 +41,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
  * Reads and writes MagicMaps Project (.ikt) files.
@@ -100,7 +98,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> MagicMapsIktRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> MagicMapsIktRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new MagicMapsIktRoute(name, null, (List<Wgs84Position>) positions);
     }
 
@@ -121,8 +119,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return new Wgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE),
-                null, null, null, null);
+        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE));
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {
@@ -174,8 +171,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
                 if (ROOT_ELEMENT.equals(elementName)) {
                     return routes;
-                } else if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
-                    // ignore these
+                } else //noinspection StatementWithEmptyBody
+                    if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
                 } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
                     if (name == null)
                         name = projectName;
@@ -261,7 +258,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void write(MagicMapsIktRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        write(Arrays.asList(route), target);
+        write(asList(route), target);
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {

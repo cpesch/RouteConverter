@@ -28,23 +28,23 @@ import static org.junit.Assert.assertEquals;
 public class BaseNavigationFormatTest {
     Gpx10Format format = new Gpx10Format();
 
-    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc, String expectedDesc2) {
-        String comment = format.asComment(name, desc);
-        assertEquals(expectedComment, comment);
-        String actualName = format.asName(comment);
+    private void check(String name, String desc, String expectedDescription, String expectedName, String expectedDesc, String expectedDesc2) {
+        String description = format.asDescription(name, desc);
+        assertEquals(expectedDescription, description);
+        String actualName = format.asName(description);
         assertEquals(expectedName, actualName);
-        String actualDesc = format.asDesc(comment, desc);
+        String actualDesc = format.asDesc(description, desc);
         assertEquals(expectedDesc, actualDesc);
-        String actualDesc2 = format.asDesc(comment);
+        String actualDesc2 = format.asDesc(description);
         assertEquals(expectedDesc2, actualDesc2);
     }
 
-    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc) {
-        check(name, desc, expectedComment, expectedName, expectedDesc, expectedDesc);
+    private void check(String name, String desc, String expectedDescription, String expectedName, String expectedDesc) {
+        check(name, desc, expectedDescription, expectedName, expectedDesc, expectedDesc);
     }
 
-    private void check(String name, String desc, String expectedComment) {
-        check(name, desc, expectedComment, name, desc);
+    private void check(String name, String desc, String expectedDescription) {
+        check(name, desc, expectedDescription, name, desc);
     }
 
     @Test

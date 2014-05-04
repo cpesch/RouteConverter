@@ -22,12 +22,8 @@ package slash.navigation.nmea;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,41 +37,7 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         super(format, characteristics, positions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84positions = new ArrayList<Wgs84Position>();
-        for (NmeaPosition position : positions) {
-            wgs84positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84positions);
-    }
-
-    private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (NmeaPosition position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
-        }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
-    }
-
-    public NmeaRoute asMagellanExploristFormat() {
-        if (getFormat() instanceof MagellanExploristFormat)
-            return this;
-        return asNmeaFormat(new MagellanExploristFormat());
-    }
-
-    public NmeaRoute asMagellanRouteFormat() {
-        if (getFormat() instanceof MagellanRouteFormat)
-            return this;
-        return asNmeaFormat(new MagellanRouteFormat());
-    }
-
-    public NmeaRoute asNmeaFormat() {
-        if (getFormat() instanceof NmeaFormat)
-            return this;
-        return asNmeaFormat(new NmeaFormat());
-    }
-
-    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new NmeaPosition(longitude, latitude, elevation, speed, time, comment);
+    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new NmeaPosition(longitude, latitude, elevation, speed, time, description);
     }
 }

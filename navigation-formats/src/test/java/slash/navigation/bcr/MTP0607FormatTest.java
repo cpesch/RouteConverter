@@ -29,21 +29,21 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
 
 public class MTP0607FormatTest {
     private MTP0607Format format = new MTP0607Format();
-    private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
+    private BcrRoute route = new BcrRoute(format, "RouteName", asList("Description1", "Description2"), asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
 
     @Test
     public void testIsSectionTitle() {
@@ -143,7 +143,7 @@ public class MTP0607FormatTest {
     }
 
     @Test
-    public void testSetComment() {
+    public void testSetdescription() {
         BcrPosition position = format.parsePosition("TOWN,210845415855", "2115508,9081108", null);
         assertEquals(210845415855L, position.getAltitude());
         assertEquals(2115508, (long) position.getX());
@@ -152,10 +152,10 @@ public class MTP0607FormatTest {
         assertNull(position.getCity());
         assertNull(position.getStreet());
         assertNull(position.getType());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
         assertTrue(position.isUnstructured());
-        position.setComment(null);
-        assertNull(position.getComment());
+        position.setDescription(null);
+        assertNull(position.getDescription());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class MTP0607FormatTest {
     }
 
     @Test
-    public void testSetCommentForMTPFirstAndLastPosition() {
+    public void testSetdescriptionForMTPFirstAndLastPosition() {
         BcrPosition position = new BcrPosition(1, 2, 3, ",Hamburg/Uhlenhorst,,0,");
         assertNull(position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
@@ -193,24 +193,24 @@ public class MTP0607FormatTest {
     }
 
     @Test
-    public void testReadComment() throws IOException {
+    public void testReaddescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);
         List<BcrPosition> positions = route.getPositions();
         assertEquals(2, positions.size());
         BcrPosition position1 = positions.get(0);
-        assertEquals("Start", position1.getComment());
+        assertEquals("Start", position1.getDescription());
         BcrPosition position2 = positions.get(1);
-        assertEquals("End", position2.getComment());
+        assertEquals("End", position2.getDescription());
     }
 
     @Test
-    public void testWriteComment() {
+    public void testWritedescription() {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         assertTrue(writer.toString().contains("STATION1=Start"));

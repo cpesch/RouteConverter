@@ -25,6 +25,12 @@ import java.awt.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
+import static slash.navigation.gui.SingleFrameApplication.X_PREFERENCE;
+import static slash.navigation.gui.SingleFrameApplication.Y_PREFERENCE;
+import static slash.navigation.gui.SingleFrameApplication.crop;
+
 /**
  * The base of all simple {@link JDialog}s.
  *
@@ -32,8 +38,8 @@ import java.util.prefs.Preferences;
  */
 
 public abstract class SimpleDialog extends JDialog {
-    private static final Logger log = Logger.getLogger(SimpleDialog.class.getName());
-    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private static final Logger log = getLogger(SimpleDialog.class.getName());
+    private final Preferences preferences = userNodeForPackage(getClass());
 
     public SimpleDialog(Window owner, String name) {
         super(owner);
@@ -46,10 +52,10 @@ public abstract class SimpleDialog extends JDialog {
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getOwner().getGraphicsConfiguration());
         log.info("Insets are " + insets);
 
-        int x = SingleFrameApplication.crop(getName() + "-x", preferences.getInt(getName() + "-" + SingleFrameApplication.X_PREFERENCE, -1),
+        int x = crop(getName() + "-x", preferences.getInt(getName() + "-" + X_PREFERENCE, -1),
                 (int) bounds.getX() + insets.left,
                 (int) bounds.getX() + insets.left + (int) bounds.getWidth() - insets.right - getWidth());
-        int y = SingleFrameApplication.crop(getName() + "y", preferences.getInt(getName() + "-" + SingleFrameApplication.Y_PREFERENCE, -1),
+        int y = crop(getName() + "-y", preferences.getInt(getName() + "-" + Y_PREFERENCE, -1),
                 (int) bounds.getY() + insets.top,
                 (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - getHeight());
         if (x != -1 && y != -1)
@@ -60,10 +66,9 @@ public abstract class SimpleDialog extends JDialog {
     }
 
     public void dispose() {
+        preferences.putInt(getName() + "-" + X_PREFERENCE, getLocation().x);
+        preferences.putInt(getName() + "-" + Y_PREFERENCE, getLocation().y);
         log.info("Storing dialog " + getName() + " location as " + getLocation());
-        log.info("Storing dialog " + getName() + " size as " + getSize());
-        preferences.putInt(getName() + "-" + SingleFrameApplication.X_PREFERENCE, getLocation().x);
-        preferences.putInt(getName() + "-" + SingleFrameApplication.Y_PREFERENCE, getLocation().y);
         super.dispose();
     }
 }

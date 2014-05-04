@@ -35,7 +35,7 @@ public enum WaypointType {
 
     private String value;
 
-    WaypointType(String value) {
+    private WaypointType(String value) {
         this.value = value;
     }
 

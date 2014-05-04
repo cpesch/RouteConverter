@@ -1,7 +1,8 @@
 package slash.navigation.nmea;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -41,7 +42,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
                     "M" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time, hhmmss
                     "[A]" + SEPARATOR +
-                    "(.*)" + SEPARATOR +            // Comment,
+                    "(.*)" + SEPARATOR +            // description,
                     "(\\d*)" +                      // Date, ddmmyy
                     END_OF_LINE);
 
@@ -64,7 +65,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmeaRoute(this, characteristics, (List<NmeaPosition>) positions);
     }
 
@@ -82,10 +83,10 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
             String time = matcher.group(6);
-            String comment = toMixedCase(matcher.group(7));
+            String description = toMixedCase(matcher.group(7));
             String date = matcher.group(8);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    parseDouble(altitude), null, null, parseDateAndTime(date, time), trim(comment));
+                    parseDouble(altitude), null, null, parseDateAndTime(date, time), trim(description));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -101,12 +102,14 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         return ALTITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
-        String longitude = formatLongitude(position.getLongitudeAsDdmm());
-        String westOrEast = position.getEastOrWest();
-        String latitude = formatLatititude(position.getLatitudeAsDdmm());
-        String northOrSouth = position.getNorthOrSouth();
-        String comment = escape(position.getComment(), SEPARATOR, ';');
+    protected void writePosition(NmeaPosition position, PrintWriter writer) {
+        ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
+        String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
+        String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
+        ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
+        String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
+        String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
+        String description = escape(position.getDescription(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
@@ -114,7 +117,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String trk = "PMGNTRK" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
                 altitude + SEPARATOR + "M" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
-                comment + SEPARATOR + date;
+                description + SEPARATOR + date;
         writeSentence(writer, trk);
     }
 

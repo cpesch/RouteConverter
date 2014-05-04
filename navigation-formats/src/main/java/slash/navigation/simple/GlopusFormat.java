@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -77,7 +77,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -94,17 +94,15 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (commentMatcher.matches()) {
             String latitude = commentMatcher.group(1);
             String longitude = commentMatcher.group(2);
-            String comment = commentMatcher.group(3);
-            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                    null, null, null, trim(comment));
+            String description = commentMatcher.group(3);
+            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, trim(description));
         }
 
         Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
         if (simpleMatcher.matches()) {
             String latitude = simpleMatcher.group(1);
             String longitude = simpleMatcher.group(2);
-            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
-                    null, null, null, null);
+            return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -113,8 +111,8 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
-        String comment = escape(position.getComment(), SEPARATOR, ';');
-        comment = escape(comment, '\"', ';');
-        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + comment);
+        String description = escape(position.getDescription(), SEPARATOR, ';');
+        description = escape(description, '\"', ';');
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + description);
     }
 }

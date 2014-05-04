@@ -37,6 +37,9 @@ import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertCalendarEquals;
 import static slash.common.TestCase.localCalendar;
 import static slash.common.TestCase.utcCalendar;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
+import static slash.common.type.CompactCalendar.fromCalendar;
 
 public class TimeZoneTest {
 
@@ -67,7 +70,7 @@ public class TimeZoneTest {
         assertEquals(TimeZone.getTimeZone("GMT+00:00"), dateFormat.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
         assertEquals("6/7/07 2:04 PM", javaTime);
-        Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        Calendar parsed = parseTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         assertCalendarEquals(parsed, java);
     }
@@ -82,7 +85,7 @@ public class TimeZoneTest {
         dateFormat.setTimeZone(java.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
         assertEquals("6/7/07 2:04 PM", javaTime);
-        Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        Calendar parsed = parseTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         java.roll(Calendar.HOUR, 2);
         assertCalendarEquals(parsed, java);
@@ -95,7 +98,7 @@ public class TimeZoneTest {
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42Z", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(CompactCalendar.fromCalendar(java));
+        XMLGregorianCalendar formatted = formatTime(fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
@@ -106,7 +109,7 @@ public class TimeZoneTest {
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42+02:00", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(CompactCalendar.fromCalendar(java));
+        XMLGregorianCalendar formatted = formatTime(fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
@@ -114,9 +117,9 @@ public class TimeZoneTest {
     public void testTimeZone() {
         long now = System.currentTimeMillis();
         Calendar local = localCalendar(now).getCalendar();
-        CompactCalendar compactLocal = CompactCalendar.fromCalendar(local);
+        CompactCalendar compactLocal = fromCalendar(local);
         Calendar utc = utcCalendar(now).getCalendar();
-        CompactCalendar compactUtc = CompactCalendar.fromCalendar(utc);
+        CompactCalendar compactUtc = fromCalendar(utc);
 
         GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, compactLocal, "gpx");
         assertCalendarEquals(compactUtc, gpxPosition.getTime());

@@ -55,6 +55,6 @@ public class GlopusFormatTest {
         assertDoubleEquals(7.0508300, position.getLongitude());
         assertDoubleEquals(51.0450383, position.getLatitude());
         assertNull(position.getElevation());
-        assertEquals("Hofgeismar", position.getComment());
+        assertEquals("Hofgeismar", position.getDescription());
     }
 }

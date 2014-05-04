@@ -24,7 +24,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
-import slash.navigation.util.RouteComments;
+
+import static slash.navigation.base.RouteComments.parseDescription;
 
 /**
  * Represents a WGS84 position in a route.
@@ -34,14 +35,25 @@ import slash.navigation.util.RouteComments;
 
 public class Wgs84Position extends BaseNavigationPosition {
     protected Double longitude, latitude, heading, hdop, vdop, pdop;
-    protected String comment;
+    protected String description;
     protected Integer satellites;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
+    private Object origin;
 
-    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        this(longitude, latitude, elevation, speed, time, description, null);
+    }
+
+    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description, Object origin) {
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         this.longitude = longitude;
         this.latitude = latitude;
-        setComment(comment);
+        setDescription(description);
+        this.origin = origin;
     }
 
     public Double getLongitude() {
@@ -60,17 +72,42 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.latitude = latitude;
     }
 
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-        if (comment == null)
+    public void setDescription(String description) {
+        this.description = description;
+        if (description == null)
             return;
 
-        RouteComments.parseComment(this, comment);
+        parseDescription(this, description);
     }
+
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
+
 
     public Double getHeading() {
         return heading;
@@ -112,6 +149,16 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.satellites = satellites;
     }
 
+    public/* for tests */ Object getOrigin() {
+        return origin;
+    }
+
+    public <T> T getOrigin(Class<T> resultClass) {
+        if (resultClass.isInstance(origin))
+            return resultClass.cast(origin);
+        else
+            return null;
+    }
 
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
@@ -150,12 +197,12 @@ public class Wgs84Position extends BaseNavigationPosition {
 
         Wgs84Position that = (Wgs84Position) o;
 
-        return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+        return !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null) &&
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&
                 !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
                 !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
                 !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
@@ -168,8 +215,8 @@ public class Wgs84Position extends BaseNavigationPosition {
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         result = 31 * result + (hdop != null ? hdop.hashCode() : 0);
         result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
         result = 31 * result + (vdop != null ? vdop.hashCode() : 0);

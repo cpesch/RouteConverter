@@ -1,4 +1,4 @@
 /**
- * Contains the klickTel Routenplaner format.
+ * The klickTel Routenplaner format.
  */
 package slash.navigation.klicktel;

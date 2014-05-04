@@ -21,18 +21,20 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.helper.LengthCalculator;
-import slash.navigation.converter.gui.helper.LengthCalculatorListener;
+import slash.navigation.converter.gui.helpers.LengthCalculator;
+import slash.navigation.converter.gui.helpers.LengthCalculatorListener;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -54,7 +56,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
         lengthCalculator.addLengthCalculatorListener(new LengthCalculatorListener() {
             public void calculatedDistance(final int meters, final int seconds) {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         updateLabel(meters, seconds);
                     }
@@ -77,7 +79,10 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not displayed
         if (e.getType() == UPDATE &&
+                !isFirstToLastRow(e) &&
                 !(e.getColumn() == LONGITUDE_COLUMN_INDEX || e.getColumn() == LATITUDE_COLUMN_INDEX))
+            return;
+        if (getDelegate().isContinousRange())
             return;
 
         BaseRoute route = getDelegate().getRoute();

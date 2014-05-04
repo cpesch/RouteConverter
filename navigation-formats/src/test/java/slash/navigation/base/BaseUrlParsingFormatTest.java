@@ -35,7 +35,7 @@ public class BaseUrlParsingFormatTest {
 
     @Test
     public void testParseSingleURLParameters() {
-        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d", "ISO8859-1");
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d", "ISO-8859-1");
         assertNotNull(parameters);
         List<String> values = parameters.get("f");
         assertNotNull(values);
@@ -59,7 +59,7 @@ public class BaseUrlParsingFormatTest {
 
     @Test
     public void testParseSetURLParameters() {
-        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d&f=e", "ISO8859-1");
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d&f=e", "ISO-8859-1");
         assertNotNull(parameters);
         List<String> fValues = parameters.get("f");
         assertNotNull(fValues);

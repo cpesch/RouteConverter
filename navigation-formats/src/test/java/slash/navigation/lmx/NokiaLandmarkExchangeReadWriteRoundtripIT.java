@@ -23,8 +23,7 @@ package slash.navigation.lmx;
 import org.junit.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
-import slash.navigation.gpx.GpxPosition;
-import slash.navigation.gpx.GpxRoute;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.lmx.binding.LandmarkType;
 import slash.navigation.lmx.binding.Lmx;
 import slash.navigation.lmx.binding.MediaLinkType;
@@ -64,21 +63,21 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT {
     public void testNokiaLandmarkExchangeRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.lmx", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
-                GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
+                NokiaLandmarkExchangeRoute sourceWaypoints = (NokiaLandmarkExchangeRoute) source.getAllRoutes().get(0);
                 assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
-                assertNotNull(sourceWaypoints.getOrigins());
-                assertEquals(1, sourceWaypoints.getOrigins().size());
-                checkUnprocessed(sourceWaypoints.getOrigin(Lmx.class));
-                GpxPosition sourceWaypoint = sourceWaypoints.getPosition(0);
+                assertNotNull(sourceWaypoints.getLmx());
+                assertEquals(Lmx.class, sourceWaypoints.getLmx().getClass());
+                checkUnprocessed(sourceWaypoints.getLmx());
+                Wgs84Position sourceWaypoint = sourceWaypoints.getPosition(0);
                 assertNotNull(sourceWaypoint.getOrigin());
                 checkUnprocessed(sourceWaypoint.getOrigin(LandmarkType.class));
 
-                GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
+                NokiaLandmarkExchangeRoute targetWaypoints = (NokiaLandmarkExchangeRoute) source.getAllRoutes().get(0);
                 assertEquals(Waypoints, targetWaypoints.getCharacteristics());
-                assertNotNull(targetWaypoints.getOrigins());
-                assertEquals(1, targetWaypoints.getOrigins().size());
-                checkUnprocessed(targetWaypoints.getOrigin(Lmx.class));
-                GpxPosition targetWaypoint = targetWaypoints.getPosition(0);
+                assertNotNull(targetWaypoints.getLmx());
+                assertEquals(Lmx.class, targetWaypoints.getLmx().getClass());
+                checkUnprocessed(targetWaypoints.getLmx());
+                Wgs84Position targetWaypoint = targetWaypoints.getPosition(0);
                 assertNotNull(targetWaypoint.getOrigin());
                 checkUnprocessed(targetWaypoint.getOrigin(LandmarkType.class));
             }

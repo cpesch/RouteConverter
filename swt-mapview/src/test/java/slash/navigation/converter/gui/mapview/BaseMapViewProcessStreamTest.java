@@ -34,7 +34,7 @@ public class BaseMapViewProcessStreamTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
     private final Object LOCK = new Object();
 
-    private void processStream(final String lines) throws InterruptedException, IOException {
+    private void processStream(final String lines) throws InterruptedException {
         final int[] portCallback = new int[1];
         portCallback[0] = -1;
 

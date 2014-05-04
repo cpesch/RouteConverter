@@ -21,12 +21,14 @@ package slash.navigation.googlemaps;
 
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import static java.util.Arrays.asList;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,16 +56,16 @@ public class GoogleMapsServiceIT {
 
     @Test
     public void getPositionFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        GoogleMapsPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        NavigationPosition expected = new SimpleNavigationPosition(10.2004684, 50.0010183, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        NavigationPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
 
     @Test
     public void getPositionsFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        List<GoogleMapsPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        assertEquals(Arrays.asList(expected), actual);
+        NavigationPosition expected = new SimpleNavigationPosition(10.2004684, 50.0010183, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        assertEquals(asList(expected), actual);
     }
 
     @Test

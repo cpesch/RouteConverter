@@ -25,49 +25,30 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.local.LocalCatalog;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.CategoryTreeNodeImpl;
-import slash.navigation.catalog.model.RootTreeNode;
-import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesTableModel;
+import slash.navigation.catalog.model.*;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCategoryAction;
-import slash.navigation.converter.gui.actions.AddFileAction;
-import slash.navigation.converter.gui.actions.AddUrlAction;
-import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
-import slash.navigation.converter.gui.actions.RemoveRoutesAction;
-import slash.navigation.converter.gui.actions.RenameCategoryAction;
-import slash.navigation.converter.gui.actions.RenameRouteAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.converter.gui.helper.TreePathStringConversion;
+import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.TreePathStringConversion;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
+import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -87,22 +68,26 @@ import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
+import static java.awt.event.KeyEvent.*;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
+import static slash.navigation.base.RouteComments.createRouteDescription;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
-import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.util.RouteComments.createRouteDescription;
 
 /**
  * The browse panel of the route converter user interface.
@@ -110,7 +95,7 @@ import static slash.navigation.util.RouteComments.createRouteDescription;
  * @author Christian Pesch
  */
 
-public class BrowsePanel {
+public class BrowsePanel implements PanelInTab {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
@@ -195,33 +180,46 @@ public class BrowsePanel {
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                actionManager.run("remove-route");
+            }
+        }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                selectAndScrollToPosition(tableRoutes, 0, 0);
+            }
+        }, getKeyStroke(VK_HOME, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                selectAndScrollToPosition(tableRoutes, 0, tableRoutes.getSelectedRow());
+            }
+        }, getKeyStroke(VK_HOME, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                int lastRow = tableRoutes.getRowCount() - 1;
+                selectAndScrollToPosition(tableRoutes, lastRow, lastRow);
+            }
+        }, getKeyStroke(VK_END, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableRoutes.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                selectAndScrollToPosition(tableRoutes, tableRoutes.getRowCount() - 1, tableRoutes.getSelectedRow());
+            }
+        }, getKeyStroke(VK_END, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = tableRoutes.getSelectedRows();
-                if (e.getValueIsAdjusting() || selectedRows.length == 0)
+                if (e.getValueIsAdjusting())
                     return;
-
-                RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
-                URL url;
-                try {
-                    url = route.getRoute().getDataUrl();
-                    if (url == null)
-                        return;
-                } catch (Throwable t) {
-                    getOperator().handleServiceError(t);
-                    return;
-                }
-
-                r.openPositionList(asList(url));
+                handlePositionListUpdate();
             }
         });
-        TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
-        TableColumnModel routeColumns = tableRoutes.getColumnModel();
-        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
-            TableColumn column = routeColumns.getColumn(i);
-            column.setHeaderRenderer(routesHeaderRenderer);
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
+        TableColumnModel columns = tableRoutes.getColumnModel();
+        for (int i = 0; i < columns.getColumnCount(); i++) {
+            TableColumn column = columns.getColumn(i);
+            column.setHeaderRenderer(headerRenderer);
             if (i == 1) {
                 column.setPreferredWidth(80);
                 column.setMaxWidth(100);
@@ -236,7 +234,7 @@ public class BrowsePanel {
                 // would do it in the AWT EventQueue
                 catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
 
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         startWaitCursor(r.getFrame().getRootPane());
                         try {
@@ -270,6 +268,10 @@ public class BrowsePanel {
         return browsePanel;
     }
 
+    public JComponent getFocusComponent() {
+        return tableRoutes;
+    }
+
     public JButton getDefaultButton() {
         return buttonAddRouteFromFile;
     }
@@ -283,6 +285,23 @@ public class BrowsePanel {
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+    }
+
+    private void handlePositionListUpdate() {
+        int[] selectedRows = tableRoutes.getSelectedRows();
+        if (selectedRows.length == 0)
+            return;
+        RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
+        URL url;
+        try {
+            url = route.getRoute().getDataUrl();
+            if (url == null)
+                return;
+        } catch (Throwable t) {
+            getOperator().handleServiceError(t);
+            return;
+        }
+        RouteConverter.getInstance().openPositionList(asList(url));
     }
 
     private RoutesTableModel getRoutesListModel() {
@@ -402,7 +421,7 @@ public class BrowsePanel {
         this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
         panel1.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("categories"));
         browsePanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));

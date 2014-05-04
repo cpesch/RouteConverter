@@ -20,9 +20,9 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.common.type.CompactCalendar;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -53,10 +53,6 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return ".kmz";
     }
 
-    public int getMaximumPositionCount() {
-        return delegate.getMaximumPositionCount();
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return delegate.isSupportsMultipleRoutes();
     }
@@ -65,7 +61,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.isWritingRouteCharacteristics();
     }
 
-    public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return delegate.createRoute(characteristics, name, positions);
     }
 

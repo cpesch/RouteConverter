@@ -32,11 +32,8 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.max;
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.toMixedCase;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Navigon Mobile Navigator for iPhone/iPad URL from/to files.
@@ -78,19 +75,19 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
             String city = trim(addressPattern.group(2));
             String street = trim(addressPattern.group(3));
             String houseNumber = trim(addressPattern.group(4));
-            String comment = toMixedCase(decodeComment((zip != null ? zip + " " : "") +
+            String description = toMixedCase(decodeDescription((zip != null ? zip + " " : "") +
                     (city != null ? city : "") +
                     (street != null ? ", " + street : "") +
                     (houseNumber != null ? " " + houseNumber : "")));
             Double longitude = parseDouble(addressPattern.group(5));
             Double latitude = parseDouble(addressPattern.group(6));
-            return new Wgs84Position(longitude, latitude, null, null, null, trim(comment));
+            return asWgs84Position(longitude, latitude, trim(description));
         }
         Matcher coordinatesMatcher = COORDINATE_PATTERN.matcher(position);
         if (coordinatesMatcher.matches()) {
             Double longitude = parseDouble(coordinatesMatcher.group(1));
             Double latitude = parseDouble(coordinatesMatcher.group(2));
-            return new Wgs84Position(longitude, latitude, null, null, null, null);
+            return asWgs84Position(longitude, latitude);
         }
         throw new IllegalArgumentException("'" + position + "' does not match");
     }
@@ -109,13 +106,13 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
 
     private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
         String mapName = trim(preferences.get("navigonUrlMapName", null));
-        if(mapName != null)
+        if (mapName != null)
             return mapName;
 
         int westCount = 0;
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            if(position.getLongitude() < -27.0)
+            if (position.getLongitude() < -27.0)
                 westCount++;
         }
         int eastCount = endIndex - startIndex - westCount;
@@ -124,7 +121,10 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("navigon")./*append(calculateMapName(positions, startIndex, endIndex)).*/append("://route/?");
+        buffer.append("navigon");
+        if (false)
+            buffer.append(calculateMapName(positions, startIndex, endIndex));
+        buffer.append("://route/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = formatDoubleAsString(position.getLongitude(), 6);
@@ -140,7 +140,7 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
         List<Wgs84Position> positions = route.getPositions();
         // idea from forum: add start point from previous route section since your not at the
         // last position of the previous segment heading for the first position of the next segment
-        startIndex = max(startIndex - 1, 0);
+        // startIndex = max(startIndex - 1, 0);
         writer.println(createURL(positions, startIndex, endIndex));
         writer.println();
     }

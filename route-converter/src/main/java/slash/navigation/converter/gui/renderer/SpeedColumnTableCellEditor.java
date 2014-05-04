@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 
 /**
  * Renders the speed column of the positions table.
@@ -37,11 +37,11 @@ public class SpeedColumnTableCellEditor extends PositionsTableCellEditor {
         super(RIGHT);
     }
 
-    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+    protected void formatCell(JLabel label, NavigationPosition position) {
         label.setText(extractValue(position));
     }
 
-    protected String extractValue(BaseNavigationPosition position) {
+    protected String extractValue(NavigationPosition position) {
         return extractSpeed(position);
     }
 }

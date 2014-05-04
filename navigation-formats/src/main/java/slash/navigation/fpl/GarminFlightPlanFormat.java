@@ -21,7 +21,7 @@
 package slash.navigation.fpl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;
@@ -35,9 +35,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.io.Transfer.formatElevation;
-import static slash.common.io.Transfer.formatPosition;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;
@@ -62,16 +62,12 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return false;
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isWritingRouteCharacteristics() {
         return false;
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> GarminFlightPlanRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> GarminFlightPlanRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GarminFlightPlanRoute(name, null, (List<GarminFlightPlanPosition>) positions);
     }
 
@@ -159,7 +155,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             flightPlanRoute.getRoutePoint().add(routePoint);
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(position.getComment());
+            waypoint.setComment(position.getDescription());
             waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());
@@ -184,7 +180,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     @SuppressWarnings("UnusedParameters")
-    public void write(List<GarminFlightPlanRoute> routes, OutputStream target) throws IOException {
+    public void write(List<GarminFlightPlanRoute> routes, OutputStream target) {
         throw new UnsupportedOperationException();
     }
 }

@@ -20,14 +20,10 @@
 
 package slash.common.io;
 
-import org.apache.commons.io.IOUtils;
+import java.io.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copyLarge;
 
 /**
  * As a pipe reads from input and writes to output.
@@ -36,26 +32,28 @@ import java.io.Writer;
  */
 
 public class InputOutput {
+    public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
     public static void copy(InputStream input, OutputStream output) throws IOException {
         try {
-            IOUtils.copy(input, output);
+            copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
         } finally {
             try {
-                IOUtils.closeQuietly(input);
+                closeQuietly(input);
             } finally {
-                IOUtils.closeQuietly(output);
+                closeQuietly(output);
             }
         }
     }
 
     public static void copy(Reader reader, Writer writer) throws IOException {
         try {
-            IOUtils.copy(reader, writer);
+            copyLarge(reader, writer, new char[DEFAULT_BUFFER_SIZE]);
         } finally {
             try {
-                IOUtils.closeQuietly(reader);
+                closeQuietly(reader);
             } finally {
-                IOUtils.closeQuietly(writer);
+                closeQuietly(writer);
             }
         }
     }

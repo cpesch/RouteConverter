@@ -23,11 +23,14 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.DialogAction;
-import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.models.NumberDocument;
+import slash.navigation.converter.gui.models.DoubleDocument;
+import slash.navigation.converter.gui.models.IntegerDocument;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -35,7 +38,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -43,10 +45,14 @@ import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForDouglasPeucker;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForDouglasPeucker;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
- * Dialog for selecting and deleting {@link slash.navigation.base.BaseNavigationPosition}s from the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -64,28 +70,16 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
     private JLabel labelDouglasPeucker;
-    private NumberDocument distance;
-    private NumberDocument order;
-    private NumberDocument significance;
-
-    private ListSelectionListener listSelectionListener = new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-            if (e.getValueIsAdjusting())
-                return;
-            handlePositionsUpdate();
-        }
-    };
-
-    private TableModelListener tableModelListener = new TableModelListener() {
-        public void tableChanged(TableModelEvent e) {
-            handlePositionsUpdate();
-        }
-    };
+    private DoubleDocument distance;
+    private IntegerDocument order;
+    private DoubleDocument threshold;
 
     public DeletePositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "delete-positions");
         setTitle(RouteConverter.getBundle().getString("delete-positions-title"));
         setContentPane(contentPane);
+
+        final RouteConverter r = RouteConverter.getInstance();
 
         labelDouglasPeucker.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
@@ -93,35 +87,35 @@ public class DeletePositionsDialog extends SimpleDialog {
             }
         });
 
-        JMenuHelper.setMnemonic(buttonSelectByDistance, "select-mnemonic");
+        setMnemonic(buttonSelectByDistance, "select-mnemonic");
         buttonSelectByDistance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByDistance();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonSelectByOrder, "select-mnemonic");
+        setMnemonic(buttonSelectByOrder, "select-mnemonic");
         buttonSelectByOrder.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByOrder();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonSelectBySignificance, "select-mnemonic");
+        setMnemonic(buttonSelectBySignificance, "select-mnemonic");
         buttonSelectBySignificance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectBySignificance();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
+        setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
         buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
                 clearSelection();
             }
         });
 
-        JMenuHelper.setMnemonic(buttonDeletePositions, "delete-selected-positions-mnemonic");
+        setMnemonic(buttonDeletePositions, "delete-selected-positions-mnemonic");
         buttonDeletePositions.addActionListener(new DialogAction(this) {
             public void run() {
                 deletePositions();
@@ -139,18 +133,31 @@ public class DeletePositionsDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        RouteConverter r = RouteConverter.getInstance();
-        distance = new NumberDocument(r.getSelectByDistancePreference());
+        distance = new DoubleDocument(r.getSelectByDistancePreference());
         textFieldDistance.setDocument(distance);
-        order = new NumberDocument(r.getSelectByOrderPreference());
+        order = new IntegerDocument(r.getSelectByOrderPreference());
         textFieldOrder.setDocument(order);
-        significance = new NumberDocument(r.getSelectBySignificancePreference());
-        textFieldSignificance.setDocument(significance);
+        threshold = new DoubleDocument(r.getSelectBySignificancePreference());
+        textFieldSignificance.setDocument(threshold);
 
-        r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);
-        r.getPositionsModel().addTableModelListener(tableModelListener);
+        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                if (r.getPositionsModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
+        r.getPositionsModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                if (r.getPositionsModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
 
         handlePositionsUpdate();
     }
@@ -165,7 +172,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectByDistance() {
-        int distance = this.distance.getNumber();
+        double distance = this.distance.getDouble();
         if (distance >= 0) {
             int selectedRowCount = RouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distance);
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount, distance));
@@ -174,7 +181,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectByOrder() {
-        int order = this.order.getNumber();
+        int order = this.order.getInt();
         if (order >= 0) {
             int[] selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
@@ -183,10 +190,10 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectBySignificance() {
-        int significance = this.significance.getNumber();
-        if (significance >= 0) {
-            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(significance);
-            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, significance));
+        double threshold = this.threshold.getDouble();
+        if (threshold >= 0) {
+            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(threshold);
+            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, threshold));
             savePreferences();
         }
     }
@@ -197,21 +204,18 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        RouteConverter.getInstance().getContext().getActionManager().run("delete");
+        Application.getInstance().getContext().getActionManager().run("delete");
         handlePositionsUpdate();
     }
 
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();
-        r.setSelectByDistancePreference(distance.getNumber());
-        r.setSelectByOrderPreference(order.getNumber());
-        r.setSelectBySignificancePreference(significance.getNumber());
+        r.setSelectByDistancePreference(distance.getDouble());
+        r.setSelectByOrderPreference(order.getInt());
+        r.setSelectBySignificancePreference(threshold.getDouble());
     }
 
     private void close() {
-        RouteConverter r = RouteConverter.getInstance();
-        r.getPositionsView().getSelectionModel().removeListSelectionListener(listSelectionListener);
-        r.getPositionsModel().removeTableModelListener(tableModelListener);
         savePreferences();
         dispose();
     }
@@ -237,7 +241,7 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(7, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(7, 3, new Insets(0, 0, 10, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));

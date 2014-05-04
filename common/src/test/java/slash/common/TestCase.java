@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static slash.common.type.CompactCalendar.UTC;
+
 public abstract class TestCase extends junit.framework.TestCase {
     private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);
 
@@ -107,7 +109,7 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
-        return calendar(year, month, day, hour, minute, second, millisecond, CompactCalendar.UTC);
+        return calendar(year, month, day, hour, minute, second, millisecond, UTC);
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second) {
@@ -119,7 +121,7 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static CompactCalendar utcCalendar(long millisecond) {
-        return calendar(millisecond, CompactCalendar.UTC);
+        return calendar(millisecond, UTC);
     }
 
     private static CompactCalendar calendar(long millisecond, TimeZone timeZone) {

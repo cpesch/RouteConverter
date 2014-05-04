@@ -20,6 +20,7 @@
 
 package slash.navigation.nmn;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
@@ -27,11 +28,10 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
  * Reads and writes Navigon Mobile Navigator 4 (.rte) files.
@@ -102,17 +102,13 @@ public class Nmn4Format extends NmnFormat {
         return new NmnPosition(parseDouble(longitude), parseDouble(latitude), zip, city, street, null);
     }
 
-    private static String formatComment(String string) {
-        return string != null ? escape(string, SEPARATOR, ';') : "-";
-    }
-
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
         String longitude = formatPositionAsString(nmnPosition.getLongitude());
         String latitude = formatPositionAsString(nmnPosition.getLatitude());
-        String zip = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
-        String city = formatComment(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
-        String street = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet() + (nmnPosition.getNumber() != null ? " " + nmnPosition.getNumber() : ""));
+        String zip = escape(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
+        String city = escape(nmnPosition.isUnstructured() ? nmnPosition.getDescription() : nmnPosition.getCity());
+        String street = escape(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet() + (nmnPosition.getNumber() != null ? " " + nmnPosition.getNumber() : ""));
         writer.println(
                 "-" + SEPARATOR +
                 "-" + SEPARATOR +

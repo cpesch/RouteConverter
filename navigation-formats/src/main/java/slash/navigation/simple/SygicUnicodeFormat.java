@@ -29,6 +29,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import static slash.common.io.Transfer.UTF16LE_ENCODING;
+import static slash.common.io.Transfer.UTF16_ENCODING;
 import static slash.common.io.Transfer.formatDoubleAsString;
 
 /**
@@ -57,10 +59,6 @@ public class SygicUnicodeFormat extends SygicFormat {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 
-    private static String formatComment(String string) {
-        return string != null ? string.replaceAll(TAB, "    ") : "";
-    }
-
     protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         // with UTF-16LE no BOM is written, UnicodeLittle would write one by is not supported
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
@@ -72,17 +70,21 @@ public class SygicUnicodeFormat extends SygicFormat {
         writer.println();
     }
 
+    private static String escape(String string) {
+        return string != null ? string.replaceAll(TAB, "    ") : "";
+    }
+
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = formatDoubleAsString(position.getLongitude(), 6);
         String latitude = formatDoubleAsString(position.getLatitude(), 6);
-        String comment = formatComment(position.getComment());
+        String description = escape(position.getDescription());
         String phone = null;
-        int plus = comment.lastIndexOf('+');
+        int plus = description.lastIndexOf('+');
         if (plus != -1) {
-            phone = comment.substring(plus);
-            comment = comment.substring(0, plus - 1);
+            phone = description.substring(plus);
+            description = description.substring(0, plus - 1);
         }
-        writer.println(longitude + TAB + latitude + TAB + comment + (phone != null ? TAB + phone : ""));
+        writer.println(longitude + TAB + latitude + TAB + description + (phone != null ? TAB + phone : ""));
     }
 
     protected void writeFooter(PrintWriter writer, int positionCount) {

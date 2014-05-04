@@ -21,7 +21,7 @@
 package slash.navigation.klicktel;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -39,6 +39,7 @@ import java.util.List;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.klicktel.KlickTelUtil.unmarshal;
 
 /**
@@ -57,10 +58,6 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return "klickTel Routenplaner 2009 (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
@@ -70,7 +67,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> KlickTelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> KlickTelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KlickTelRoute(name, (List<Wgs84Position>) positions);
     }
 
@@ -78,13 +75,12 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         for (KDRoute.Stations.Station station : route.getStations().getStation()) {
             KDRoute.Stations.Station.Point point = station.getPoint();
-            String comment = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
+            String description = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
                     (station.getPostalCode() != null ? station.getPostalCode() + " " : "") +
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(new Wgs84Position(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()),
-                    null, null, null, trim(comment)));
+            positions.add(asWgs84Position(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()), trim(description)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
@@ -109,9 +105,9 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
             point.setLongitude(formatPosition(position.getLongitude()));
             point.setLatitude(formatPosition(position.getLatitude()));
             KDRoute.Stations.Station station = objectFactory.createKDRouteStationsStation();
-            station.setCity(position.getComment());
+            station.setCity(position.getDescription());
 
-            // TODO write decomposed comment
+            // TODO write decomposed description
             // <Street>Raiffeisenstr.</Street>
             // <HouseNumber>33</HouseNumber>
             // <PostalCode>47665</PostalCode>

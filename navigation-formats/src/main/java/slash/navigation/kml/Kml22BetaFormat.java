@@ -107,7 +107,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
         if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
-            String placemarkName = asComment(trim(placemarkType.getNameElement()),
+            String placemarkName = asDescription(trim(placemarkType.getNameElement()),
                     trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkType.getAbstractGeometryGroup());
@@ -144,7 +144,7 @@ public class Kml22BetaFormat extends KmlFormat {
         List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
-            String placemarkName = asComment(trim(placemarkTypeValue.getNameElement()),
+            String placemarkName = asDescription(trim(placemarkTypeValue.getNameElement()),
                     trim(placemarkTypeValue.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getAbstractGeometryGroup());
@@ -233,10 +233,10 @@ public class Kml22BetaFormat extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
-            placemarkType.setNameElement(asName(isWriteName() ? position.getComment() : null));
-            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
+            placemarkType.setNameElement(asName(isWriteName() ? position.getDescription() : null));
+            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             placemarkType.setVisibility(FALSE);
-            if (position.getTime() != null) {
+            if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
                 placemarkType.setAbstractTimePrimitiveGroup(objectFactory.createTimeStamp(timeStampType));

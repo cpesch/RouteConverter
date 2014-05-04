@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.unmodifiableList;
-
 /**
  * Implementation of a {@link ParserContext}.
  *

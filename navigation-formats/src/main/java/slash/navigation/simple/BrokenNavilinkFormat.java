@@ -34,6 +34,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.currentTimeMillis;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -74,7 +76,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         valid = valid && (position.getHeading() >= 0.0 &&
                 position.getHeading() <= 360.0);
         valid = valid && (position.getTime().getTimeInMillis() > MINIMUM_TIME_MILLISECONDS &&
-                position.getTime().getTimeInMillis() < System.currentTimeMillis());
+                position.getTime().getTimeInMillis() < currentTimeMillis());
 
         if (previous != null) {
             // valid = valid && (position.getTime().getTimeInMillis() > previous.getTime().getTimeInMillis());
@@ -142,7 +144,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
 
             if ((activeRoute == null || isTrackStart(sbpRecordByteBuffer)) && position != null) {
                 activeRoute = createRoute(Track,
-                        TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
+                        createDateFormat(TRACK_NAME_DATE_FORMAT).format(position.getTime().getTime()),
                         new ArrayList<BaseNavigationPosition>());
                 result.add(activeRoute);
             }

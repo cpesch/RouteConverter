@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -29,23 +29,20 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatElevationAsString;
-import static slash.common.io.Transfer.formatHeadingAsString;
-import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.NavigationConversion.formatElevationAsString;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 /**
  * Reads and writes i-Blue 747 (.csv) files.
@@ -67,8 +64,8 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
             compile(BEGIN_OF_LINE +
                     SPACE + "(\\d+)" + SPACE + SEPARATOR +
                     SPACE + "(\\p{Upper}+)" + SPACE + SEPARATOR +
-                    SPACE + "(\\d{4}/\\d{2}/\\d{2})" + SPACE + SEPARATOR +
-                    SPACE + "(\\d{2}:\\d{2}:\\d{2})" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{4}/\\d{2}/\\d{2})?" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{2}:\\d{2}:\\d{2})?" + SPACE + SEPARATOR +
                     SPACE + "(.+)" + SPACE + SEPARATOR +
 
                     SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR +
@@ -82,14 +79,9 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR + "]*" + SEPARATOR +
                     END_OF_LINE);
 
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-    static {
-        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
+    private static final String DATE_AND_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+    private static final String DATE_FORMAT = "yyyy/MM/dd";
+    private static final String TIME_FORMAT = "HH:mm:ss";
 
     public String getExtension() {
         return ".csv";
@@ -100,7 +92,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -109,10 +101,8 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        if(line.startsWith(HEADER_LINE))
-            return true;
         Matcher matcher = LINE_PATTERN.matcher(line);
-        return matcher.matches();
+        return matcher.matches() || line.startsWith(HEADER_LINE);
     }
 
     protected boolean isPosition(String line) {
@@ -129,13 +119,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
-        try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
@@ -169,13 +153,13 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     private String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return TIME_FORMAT.format(time.getTime());
+        return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
     private String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
-        return DATE_FORMAT.format(date.getTime());
+        return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
     private Wgs84Position previousPosition = null;

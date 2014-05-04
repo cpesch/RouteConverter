@@ -20,13 +20,10 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.helpers.UIHelper;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
@@ -36,8 +33,13 @@ import static java.awt.Frame.MAXIMIZED_HORIZ;
 import static java.awt.Frame.MAXIMIZED_VERT;
 import static java.awt.Frame.NORMAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.lang.Integer.MAX_VALUE;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
+import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -46,8 +48,8 @@ import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
  */
 
 public abstract class SingleFrameApplication extends Application {
-    private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
-    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private static final Logger log = getLogger(SingleFrameApplication.class.getName());
+    private final Preferences preferences = userNodeForPackage(getClass());
 
     static final String X_PREFERENCE = "x";
     static final String Y_PREFERENCE = "y";
@@ -78,7 +80,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(UIHelper.loadIcon(iconName).getImage());
+        frame.setIconImage(loadIcon(iconName).getImage());
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
@@ -100,7 +102,7 @@ public abstract class SingleFrameApplication extends Application {
             public void actionPerformed(ActionEvent e) {
                 exit(e);
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -146,11 +148,11 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     private int getPreferenceHeight() {
-        return crop("preferencesHeight", preferences.getInt(HEIGHT_PREFERENCE, -1), 0, Integer.MAX_VALUE);
+        return crop("preferencesHeight", preferences.getInt(HEIGHT_PREFERENCE, -1), 0, MAX_VALUE);
     }
 
     private int getPreferenceWidth() {
-        return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, Integer.MAX_VALUE);
+        return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, MAX_VALUE);
     }
 
     static int crop(String name, int position, int minimum, int maximum) {
@@ -163,9 +165,9 @@ public abstract class SingleFrameApplication extends Application {
     void closeFrame() {
         preferences.putInt(X_PREFERENCE, frame.getLocation().x);
         preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
+        log.info("Storing frame location as " + frame.getLocation());
         preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
         preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
-        log.info("Storing frame location as " + frame.getLocation());
         log.info("Storing frame size as " + frame.getSize());
 
         int state = frame.getExtendedState();
@@ -173,8 +175,8 @@ public abstract class SingleFrameApplication extends Application {
         log.info("Storing frame state as " + state);
 
         String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
-        log.info("Storing graphics device as " + deviceId);
         preferences.put(DEVICE_PREFERENCE, deviceId);
+        log.info("Storing graphics device as " + deviceId);
 
         frame.dispose();
     }

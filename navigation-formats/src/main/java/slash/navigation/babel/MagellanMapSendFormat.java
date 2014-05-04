@@ -41,8 +41,8 @@ public class MagellanMapSendFormat extends BabelFormat {
         return "mapsend";
     }
 
-    protected String getGlobalOptions() {
-        return "-r -w";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-r", "-w"};
     }
 
     public boolean isSupportsMultipleRoutes() {
@@ -55,9 +55,9 @@ public class MagellanMapSendFormat extends BabelFormat {
 
     protected Gpx10Format createGpxFormat() {
         return new Gpx10Format(false, true) {
-            protected String asWayPointComment(String name, String description) {
+            protected String asWayPointDescription(String name, String description) {
                 // ignore <name> from waypoints which is crippled to 7 or 8 characters by GPSBabel
-                return asComment(null, description);
+                return asDescription(null, description);
             }
         };
     }

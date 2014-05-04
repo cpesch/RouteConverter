@@ -21,7 +21,7 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding5.ObjectFactory;
@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.formatPosition;
-import static slash.common.io.Transfer.formatSpeed;
+import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeed;
 import static slash.navigation.gopal.GoPalUtil.marshal5;
 import static slash.navigation.gopal.GoPalUtil.unmarshal5;
 
@@ -46,7 +46,7 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal5;
  * @author Christian Pesch
  */
 
-public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
+public class GoPal5RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal5RouteFormat.class);
     private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
     private static final String VERSION_PREFIX = "v5";
@@ -60,11 +60,11 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> GoPal5Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new GoPal5Route(name, (List<GoPalPosition>) positions);
+    public <P extends NavigationPosition> GoPalRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new GoPalRoute(this, name, (List<GoPalPosition>) positions);
     }
 
-    private GoPal5Route process(Tour tour) {
+    private GoPalRoute process(Tour tour) {
         List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
         Tour.Start start = tour.getStart();
         if (start != null) {
@@ -93,16 +93,16 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             positions.add(new GoPalPosition(destination.getCoordinates().getMercatorx(), destination.getCoordinates().getMercatory(),
                     country, state, zip, city, suburb, street, sideStreet, houseNumber));
         }
-        return new GoPal5Route(null, tour.getRouteOptions(), positions);
+        return new GoPalRoute(this, null, tour.getRouteOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal5Route> context) throws Exception {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPalRoute> context) throws Exception {
         Tour tour = unmarshal5(source);
         context.appendRoute(process(tour));
     }
 
-    private Tour.RouteOptions createRouteOptions(GoPal5Route route) {
-        Tour.RouteOptions options = route.getOptions();
+    private Tour.RouteOptions createRouteOptions(GoPalRoute route) {
+        Tour.RouteOptions options = route.getOptions(Tour.RouteOptions.class);
         if (options == null) {
             ObjectFactory objectFactory = new ObjectFactory();
             options = objectFactory.createTourRouteOptions();
@@ -272,7 +272,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return destination;
     }
 
-    private Tour createGoPal(GoPal5Route route, int startIndex, int endIndex) {
+    private Tour createGoPal(GoPalRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Tour tour = objectFactory.createTour();
         tour.setRouteOptions(createRouteOptions(route));
@@ -289,7 +289,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return tour;
     }
 
-    public void write(GoPal5Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(GoPalRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             marshal5(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {

@@ -29,9 +29,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
@@ -67,7 +65,7 @@ public class SplitIT {
 
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)
-                targets[i] = File.createTempFile("target", ".test");
+                targets[i] = createTempFile("target", ".test");
             parser.write(sourceRoute, result.getFormat(), duplicateFirstPosition, false, null, targets);
 
             ParserResult sourceResult = parser.read(source);
@@ -221,7 +219,8 @@ public class SplitIT {
         } finally {
             // avoid to clutter the temp directory
             for (File target : targets) {
-                assert target.delete();
+                if (target.exists())
+                    assertTrue(target.delete());
             }
         }
     }

@@ -46,6 +46,7 @@ import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -93,6 +94,8 @@ import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.ApeMapFormat;
+import slash.navigation.simple.BrokenColumbusV900StandardFormat;
 import slash.navigation.simple.BrokenHaicomLoggerFormat;
 import slash.navigation.simple.BrokenNavilinkFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
@@ -116,6 +119,7 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.MotoPlanerUrlFormat;
 import slash.navigation.url.UrlFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
@@ -205,6 +209,7 @@ public final class NavigationFormats {
         addFormat(OpelNaviFormat.class);
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(NmnRouteFormat.class);
+        addFormat(ApeMapFormat.class);
         addFormat(ZipFormat.class);
 
         // GPSBabel-based formats
@@ -234,8 +239,10 @@ public final class NavigationFormats {
         addFormat(UrlFormat.class);
         addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
+        addFormat(MotoPlanerUrlFormat.class);
 
         // second try for broken files
+        addFormat(BrokenColumbusV900StandardFormat.class);
         addFormat(BrokenNmeaFormat.class);
         addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);
@@ -258,13 +265,13 @@ public final class NavigationFormats {
         SUPPORTED_FORMATS.add(format);
     }
 
-    private static List<NavigationFormat> getFormatInstances(boolean restrictToWritableFormats) {
+    private static List<NavigationFormat> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
         List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
         for (Class<? extends NavigationFormat> formatClass : SUPPORTED_FORMATS) {
             try {
                 NavigationFormat format = formatClass.newInstance();
-                if (restrictToWritableFormats && format.isSupportsWriting() ||
-                        !restrictToWritableFormats && format.isSupportsReading())
+                if (includeReadableFormats && format.isSupportsReading() ||
+                        includeWritableFormats && format.isSupportsWriting())
                     formats.add(format);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Cannot instantiate " + formatClass, e);
@@ -274,11 +281,11 @@ public final class NavigationFormats {
     }
 
     public static List<NavigationFormat> getReadFormats() {
-        return getFormatInstances(false);
+        return getFormatInstances(true, false);
     }
 
     public static List<NavigationFormat> getWriteFormats() {
-        return getFormatInstances(true);
+        return getFormatInstances(false, true);
     }
 
     private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
@@ -289,6 +296,10 @@ public final class NavigationFormats {
             }
         });
         return asList(formatsArray);
+    }
+
+    public static List<NavigationFormat> getFormatsSortedByName() {
+        return sortByName(getFormatInstances(true, true));
     }
 
     public static List<NavigationFormat> getReadFormatsSortedByName() {
@@ -341,7 +352,7 @@ public final class NavigationFormats {
         return buffer.toString();
     }
 
-    /* package local for tests */static BaseNavigationPosition asFormat(BaseNavigationPosition position, NavigationFormat format) throws IOException {
+    /* package local for tests */static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat format) throws IOException {
         BaseNavigationPosition result;
         String formatName = getFormatName(format);
         formatName = formatName.replace("Format", "Position");
@@ -355,9 +366,9 @@ public final class NavigationFormats {
         return result;
     }
 
-    public static List<BaseNavigationPosition> asFormatForPositions(List<BaseNavigationPosition> positions, NavigationFormat format) throws IOException {
+    public static List<BaseNavigationPosition> asFormatForPositions(List<NavigationPosition> positions, NavigationFormat format) throws IOException {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(positions.size());
-        for (BaseNavigationPosition position : positions) {
+        for (NavigationPosition position : positions) {
             result.add(asFormat(position, format));
         }
         return result;

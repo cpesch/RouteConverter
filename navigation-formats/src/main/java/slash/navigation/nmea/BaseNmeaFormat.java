@@ -28,26 +28,26 @@ import slash.navigation.base.SimpleFormat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.type.HexadecimalNumber.decodeBytes;
-import static slash.common.type.HexadecimalNumber.encodeByte;
-import static slash.common.type.CompactCalendar.fromDate;
+import static java.util.Locale.US;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.parseDate;
+import static slash.common.type.HexadecimalNumber.decodeBytes;
+import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -66,30 +66,24 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
 
-    private static final DateFormat PRECISE_DATE_AND_TIME_FORMAT = new SimpleDateFormat("ddMMyy HHmmss.SSS");
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("ddMMyy HHmmss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyy");
-    private static final DateFormat PRECISE_TIME_FORMAT = new SimpleDateFormat("HHmmss.SSS");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
+    private static final String DATE_AND_PRECISE_TIME_FORMAT = "ddMMyy HHmmss.SSS";
+    private static final String PRECISE_DATE_AND_TIME_FORMAT = "ddMMyyyy HHmmss";
+    private static final String DATE_AND_TIME_FORMAT = "ddMMyy HHmmss";
+    private static final String DATE_FORMAT = "ddMMyy";
+    private static final String PRECISE_TIME_FORMAT = "HHmmss.SSS";
+    private static final String TIME_FORMAT = "HHmmss";
+    private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
+    private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
     static {
-        PRECISE_DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
-        PRECISE_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
-
-    private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-    private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-    static {
+        int maximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 4);
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
+        LONGITUDE_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         LONGITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(5);
         LONGITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(5);
         LATITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
-        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
+        LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
@@ -122,12 +116,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             if (isValidLine(line)) {
                 if (isPosition(line)) {
                     NmeaPosition position = parsePosition(line);
-                    if (isValidStartDate(position.getTime()))
+                    boolean validStartDate = isValidStartDate(position.getTime());
+                    if (validStartDate)
                         startDate = position.getTime();
                     else
                         position.setStartDate(startDate);
 
-                    if (haveDifferentLongitudeAndLatitude(previous, position)) {
+                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) && !validStartDate) {
                         positions.add(position);
                         previous = position;
                     } else {
@@ -148,13 +143,24 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     boolean haveDifferentLongitudeAndLatitude(NmeaPosition predecessor, NmeaPosition successor) {
         return predecessor == null ||
                 (predecessor.hasCoordinates() && successor.hasCoordinates() &&
-                        !(predecessor.getLongitude().equals(successor.getLongitude()) &&
-                                predecessor.getLatitude().equals(successor.getLatitude())));
+                        !(predecessor.getLongitudeAsValueAndOrientation().equals(successor.getLongitudeAsValueAndOrientation()) &&
+                                predecessor.getLatitudeAsValueAndOrientation().equals(successor.getLatitudeAsValueAndOrientation())));
+    }
+
+    boolean haveDifferentTime(NmeaPosition predecessor, NmeaPosition successor) {
+        if(predecessor == null)
+            return true;
+        if(!predecessor.hasTime() || !successor.hasTime())
+            return false;
+        CompactCalendar predecessorTime = predecessor.getTime();
+        CompactCalendar successorTime = successor.getTime();
+        return predecessorTime.hasDateDefined() && successorTime.hasDateDefined() &&
+                !predecessorTime.equals(successorTime);
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (isEmpty(position.getComment()) && !isEmpty(toBeMergedInto.getComment()))
-            position.setComment(toBeMergedInto.getComment());
+        if (isEmpty(position.getDescription()) && !isEmpty(toBeMergedInto.getDescription()))
+            position.setDescription(toBeMergedInto.getDescription());
         if (isEmpty(position.getElevation()) && !isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
         if (isEmpty(position.getSpeed()) && !isEmpty(toBeMergedInto.getSpeed()))
@@ -162,11 +168,11 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         if (isEmpty(position.getHeading()) && !isEmpty(toBeMergedInto.getHeading()))
             position.setHeading(toBeMergedInto.getHeading());
         if (isEmpty(position.getLatitude()) && !isEmpty(toBeMergedInto.getLatitude()))
-            position.setLatitude(toBeMergedInto.getLatitude());
+            position.setLatitudeAsValueAndOrientation(toBeMergedInto.getLatitudeAsValueAndOrientation());
         if (isEmpty(position.getLongitude()) && !isEmpty(toBeMergedInto.getLongitude()))
-            position.setLongitude(toBeMergedInto.getLongitude());
-        if ((toBeMergedInto.getTime() != null) &&
-                (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
+            position.setLongitudeAsValueAndOrientation(toBeMergedInto.getLongitudeAsValueAndOrientation());
+        if (toBeMergedInto.hasTime() &&
+                (!position.hasTime() || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
         if (isEmpty(position.getHdop()) && !isEmpty(toBeMergedInto.getHdop()))
@@ -233,19 +239,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             return null;
         // 130441.89
         try {
-            Date parsed = PRECISE_TIME_FORMAT.parse(time);
+            Date parsed = createDateFormat(PRECISE_TIME_FORMAT).parse(time);
             return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // 130441
-        try {
-            Date parsed = TIME_FORMAT.parse(time);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse time '" + time + "'");
-        }
-        return null;
+        return parseDate(time, TIME_FORMAT);
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
@@ -256,32 +256,33 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         String dateAndTime = date + " " + time;
         // date: 160607 time: 130441.89
         try {
-            Date parsed = PRECISE_DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_PRECISE_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // date: 160607 time: 130441
         try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            Date parsed = createDateFormat(DATE_AND_TIME_FORMAT).parse(dateAndTime);
             return fromDate(parsed);
         } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
+            // intentionally left empty
         }
-        return null;
+        // date: 16062007 time: 130441
+        return parseDate(dateAndTime, PRECISE_DATE_AND_TIME_FORMAT);
     }
 
 
     protected String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return PRECISE_TIME_FORMAT.format(time.getTime());
+        return createDateFormat(PRECISE_TIME_FORMAT).format(time.getTime());
     }
 
     protected String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
-        return DATE_FORMAT.format(date.getTime());
+        return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
     protected String formatLongitude(Double longitude) {
@@ -290,7 +291,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return LONGITUDE_NUMBER_FORMAT.format(longitude);
     }
 
-    protected String formatLatititude(Double latitude) {
+    protected String formatLatitude(Double latitude) {
         if (latitude == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(latitude);
@@ -301,7 +302,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         writer.println("$" + sentence + "*" + ggaChecksum);
     }
 
-    protected abstract void writePosition(NmeaPosition position, PrintWriter writer, int index);
+    protected abstract void writePosition(NmeaPosition position, PrintWriter writer);
 
     protected void writeHeader(PrintWriter writer) {
     }
@@ -312,7 +313,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         List<NmeaPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             NmeaPosition position = positions.get(i);
-            writePosition(position, writer, i);
+            writePosition(position, writer);
         }
 
         writeFooter(writer);

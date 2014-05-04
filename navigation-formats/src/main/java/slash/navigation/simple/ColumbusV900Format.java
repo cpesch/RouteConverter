@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -29,17 +29,15 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -49,6 +47,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  */
 
 public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusV900Format.class);
     protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
 
     protected static final char SEPARATOR = ',';
@@ -57,21 +56,16 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     protected static final String VOICE_POSITION = "V";
     protected static final String POI_POSITION = "C";
 
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyMMdd HHmmss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
-    static {
-        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
+    private static final String DATE_AND_TIME_FORMAT = "yyMMdd HHmmss";
+    private static final String DATE_FORMAT = "yyMMdd";
+    private static final String TIME_FORMAT = "HHmmss";
 
     public String getExtension() {
         return ".csv";
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -79,17 +73,32 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return Track;
     }
 
-    protected abstract String getHeader();
-
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line.startsWith(getHeader());
+        return isPosition(line) || isHeader(line);
     }
 
-    protected abstract Pattern getPattern();
+    protected abstract Pattern getLinePattern();
 
     protected boolean isPosition(String line) {
-        Matcher matcher = getPattern().matcher(line);
+        Matcher matcher = getLinePattern().matcher(line);
+        return matcher.matches() && hasValidFix(line, trim(matcher.group(2)), "G");
+    }
+
+    protected abstract Pattern getHeaderPattern();
+
+    protected boolean isHeader(String line) {
+        Matcher matcher = getHeaderPattern().matcher(line);
         return matcher.matches();
+    }
+
+    protected abstract String getHeader();
+
+    private boolean hasValidFix(String line, String field, String valueThatIndicatesNoFix) {
+        if (field != null && field.equals(valueThatIndicatesNoFix)) {
+            log.severe("Fix for '" + line + "' is invalid. Contains '" + valueThatIndicatesNoFix + "'");
+            return preferences.getBoolean("ignoreInvalidFix", false);
+        }
+        return true;
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
@@ -98,13 +107,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
-        try {
-            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return fromDate(parsed);
-        } catch (ParseException e) {
-            log.severe("Could not parse date and time '" + dateAndTime + "'");
-        }
-        return null;
+        return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
     protected String removeZeros(String string) {
@@ -126,20 +129,20 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     protected String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
-        return DATE_FORMAT.format(date.getTime());
+        return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
     protected String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
-        return TIME_FORMAT.format(time.getTime());
+        return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    protected String formatLineType(String comment) {
-        if (comment != null) {
-            if (comment.startsWith("VOX"))
+    protected String formatLineType(String description) {
+        if (description != null) {
+            if (description.startsWith("VOX"))
                 return VOICE_POSITION;
-            if (comment.startsWith("POI")) {
+            if (description.startsWith("POI")) {
                 return POI_POSITION;
             }
         }

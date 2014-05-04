@@ -20,12 +20,12 @@
 
 package slash.navigation.itn;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
-import slash.navigation.util.RouteComments;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,13 +36,14 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.util.RouteComments.TRIPMASTER_TIME;
+import static slash.navigation.base.RouteComments.TRIPMASTER_DATE;
+import static slash.navigation.base.RouteComments.TRIPMASTER_TIME;
 
 /**
  * Reads and writes Tom Tom Route (.itn) files.
@@ -87,7 +88,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> TomTomRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> TomTomRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TomTomRoute(characteristics, name, (List<TomTomPosition>) positions);
     }
 
@@ -119,7 +120,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 else
                     position.setStartDate(startDate);
 
-                if (isIso885915ButReadWithUtf8(position.getComment()))
+                if (isIso885915ButReadWithUtf8(position.getDescription()))
                     return;
 
                 positions.add(position);
@@ -146,7 +147,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     private boolean isTrack(List<TomTomPosition> positions) {
         for (TomTomPosition position : positions) {
-            if (position.getReason() == null && position.getTime() == null)
+            if (position.getReason() == null && !position.hasTime())
                 return false;
         }
         return true;
@@ -158,8 +159,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = lineMatcher.group(3);
-        return new TomTomPosition(parseInt(longitude), parseInt(latitude), trim(comment));
+        String description = lineMatcher.group(3);
+        return new TomTomPosition(parseInt(longitude), parseInt(latitude), trim(description));
     }
 
     String parseName(String line) {
@@ -172,12 +173,12 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
         StringBuilder buffer = new StringBuilder();
-        if (position.getTime() != null) {
+        if (position.hasTime()) {
             buffer.append(firstOrLast).append(" : ");
         }
-        buffer.append(position.getComment());
-        if (position.getTime() != null) {
-            buffer.append(" : ").append(RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()));
+        buffer.append(position.getDescription());
+        if (position.hasTime()) {
+            buffer.append(" : ").append(createDateFormat(TRIPMASTER_DATE).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
             buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
@@ -190,9 +191,9 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     String formatIntermediateName(TomTomPosition position, Double distance) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(position.getComment());
-        if (position.getTime() != null) {
-            buffer.append(" : ").append(TRIPMASTER_TIME.format(position.getTime().getTime()));
+        buffer.append(position.getDescription());
+        if (position.hasTime()) {
+            buffer.append(" : ").append(createDateFormat(TRIPMASTER_TIME).format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
             buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
@@ -203,11 +204,11 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return buffer.toString();
     }
     
-    private String formatComment(String comment) {
-        comment = escape(comment, SEPARATOR, ';');
-        if (comment != null)
-            comment = comment.replaceAll("\u20ac", "\u0080");
-        return comment;
+    private String escape(String string) {
+        string = Transfer.escape(string, SEPARATOR, ';');
+        if (string != null)
+            string = string.replaceAll("\u20ac", "\u0080");
+        return string;
     }
 
     public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex) {
@@ -225,18 +226,18 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             else if (last)
                 type = END_TYPE;
 
-            String comment = position.getComment();
+            String description = position.getDescription();
             if (route.getCharacteristics().equals(Track)) {
                 Double distance = route.getDistance(startIndex, i);
                 if (first)
-                    comment = formatFirstOrLastName(position, "Start", distance);
+                    description = formatFirstOrLastName(position, "Start", distance);
                 else if (last)
-                    comment = formatFirstOrLastName(position, "Finish", distance);
+                    description = formatFirstOrLastName(position, "Finish", distance);
                 else
-                    comment = formatIntermediateName(position, distance);
+                    description = formatIntermediateName(position, distance);
             }
-            comment = formatComment(comment);
-            writer.println(longitude + SEPARATOR + latitude + SEPARATOR + comment + SEPARATOR + type + SEPARATOR);
+            description = escape(description);
+            writer.println(longitude + SEPARATOR + latitude + SEPARATOR + description + SEPARATOR + type + SEPARATOR);
         }
     }
 }

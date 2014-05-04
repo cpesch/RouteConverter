@@ -27,6 +27,8 @@ import slash.navigation.base.RouteCharacteristics;
 
 import javax.swing.*;
 
+import static java.lang.Integer.MIN_VALUE;
+
 /**
  * Acts as a {@link ComboBoxModel} for the characteristics of a {@link BaseRoute}.
  *
@@ -35,7 +37,7 @@ import javax.swing.*;
 
 public class CharacteristicsModel extends AbstractListModel implements ComboBoxModel {
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
-    public static final int IGNORE = Integer.MIN_VALUE;
+    public static final int IGNORE = MIN_VALUE;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
         return route;

@@ -8,18 +8,23 @@ all the programmers sending me code
 
 My special thanks to:
 
+Andrey Denisov for the Russian translation
+Björn Gaworski for Mac OS X fixes
 Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
-Harry van der Wolf for Linux and Mac OS X fixes
+Fredrik Teschke for dual licensing of navigation-formats module
+Harry van der Wolf for Linux and Mac OS X fixes and the Dutch translation
 Ilmari Krebs for contributing code for position selection and zooming on the map
 Javier M.R. (jamaro) for the Spanish translation
 Iorio Ciro for the Italian translation
 Malte Neumann for contributing code for KML, Wintec, Navigon, Douglas-Peucker, Map and much more
-Matthias Pötzsch for the RouteCatalog maintenance
+Martin Oberzalek for contributing code for ApeMap
+Matthias Pötzsch for the RouteCatalog and Forum maintenance
 Philippe Vandekerckhove for the Dutch translation
 Pietro Sarkocci for the Czech and Slovakian translation
 R.-Michael Teichert for the program icon
 Rainer Ippen for usuability improvements
+Robert Dziczek for the Polish translation
 Vincent Di Sanzo for the French translation
 Xiaoming Huang and LXLXJ for the Chinese translation
 

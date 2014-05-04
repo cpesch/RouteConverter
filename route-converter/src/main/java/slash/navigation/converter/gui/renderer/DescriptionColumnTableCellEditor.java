@@ -20,11 +20,9 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
-
-import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
 
 /**
  * Renders the description column of the positions table.
@@ -37,11 +35,11 @@ public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
         super(LEFT);
     }
 
-    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+    protected void formatCell(JLabel label, NavigationPosition position) {
         label.setText(extractValue(position));
     }
 
-    protected String extractValue(BaseNavigationPosition position) {
-        return extractComment(position);
+    protected String extractValue(NavigationPosition position) {
+        return position.getDescription();
     }
 }

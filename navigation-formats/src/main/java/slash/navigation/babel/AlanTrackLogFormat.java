@@ -39,8 +39,8 @@ public class AlanTrackLogFormat extends BabelFormat {
         return "alantrl";
     }
 
-    protected String getGlobalOptions() {
-        return "-t";
+    protected String[] getGlobalOptions() {
+        return new String[]{"-t"};
     }
 
     public boolean isSupportsMultipleRoutes() {

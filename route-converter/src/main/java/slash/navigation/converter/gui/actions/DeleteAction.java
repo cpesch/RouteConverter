@@ -26,8 +26,7 @@ import slash.navigation.gui.actions.FrameAction;
 import javax.swing.*;
 
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
-import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
  * {@link Action} that deletes the selected rows of a {@link JTable}.
@@ -55,8 +54,7 @@ public class DeleteAction extends FrameAction {
             if (table.getRowCount() > 0) {
                 invokeLater(new Runnable() {
                     public void run() {
-                        scrollToPosition(table, removeRow);
-                        selectPositions(table, removeRow, removeRow);
+                        selectAndScrollToPosition(table, removeRow, removeRow);
                     }
                 });
             }

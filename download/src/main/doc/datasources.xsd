@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
+            targetNamespace="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
+            elementFormDefault="qualified">
+
+    <xsd:element name="datasources" type="datasourcesType">
+        <xsd:annotation>
+            <xsd:documentation>
+                datasources is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="datasourcesType">
+        <xsd:annotation>
+            <xsd:documentation>
+                datasources contain datasource definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded">
+                <xsd:unique name="unique-name">
+                    <xsd:selector xpath="datasource"/>
+                    <xsd:field xpath="@name"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="datasourceType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a datasource contains a name, a base url, a directory, fragments and downloads.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="fragment" type="fragmentType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-key">
+                    <xsd:selector xpath="fragment"/>
+                    <xsd:field xpath="@key"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-file-uri">
+                    <xsd:selector xpath="file"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="map" type="mapType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-map-uri">
+                    <xsd:selector xpath="map"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="baseUrl" type="xsd:string" use="required"/>
+        <xsd:attribute name="directory" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fileType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a file contains the size, checksum and uri for a file relative to the base url
+                and optionally a north east and a south west position that form a bounding box
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="northEast" type="positionType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fragmentType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a fragment is a key within a file
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="key" type="xsd:string" use="required"/>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="mapType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a map is a file with a north east and a south west position that form a bounding box
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="northEast" type="positionType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
+        <xsd:attribute name="size" type="xsd:long"/>
+        <xsd:attribute name="checksum" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="positionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a position is a point on the globe defined by longitude and latitude
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="longitude" type="xsd:double" use="required"/>
+        <xsd:attribute name="latitude" type="xsd:double" use="required"/>
+    </xsd:complexType>
+</xsd:schema>

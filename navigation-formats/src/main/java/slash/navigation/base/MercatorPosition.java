@@ -21,7 +21,11 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.util.Conversion;
+
+import static slash.navigation.common.NavigationConversion.mercatorXToWgs84Longitude;
+import static slash.navigation.common.NavigationConversion.mercatorYToWgs84Latitude;
+import static slash.navigation.common.NavigationConversion.wgs84LatitudeToMercatorY;
+import static slash.navigation.common.NavigationConversion.wgs84LongitudeToMercatorX;
 
 /**
  * Represents a Mercator position in a route.
@@ -31,29 +35,26 @@ import slash.navigation.util.Conversion;
 
 public class MercatorPosition extends BaseNavigationPosition {
     protected Long x, y;
-    protected String comment;
+    protected String description;
+    private Double elevation;
+    private Double speed;
+    private CompactCalendar time;
 
-    public MercatorPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        this(asX(longitude), asY(latitude), elevation, speed, time, comment);
+    public MercatorPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        this(asX(longitude), asY(latitude), elevation, speed, time, description);
     }
 
-    public MercatorPosition(Long x, Long y, Double elevation, Double speed, CompactCalendar time, String comment) {
-        super(elevation, speed, time);
+    public MercatorPosition(Long x, Long y, Double elevation, Double speed, CompactCalendar time, String description) {
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
         this.x = x;
         this.y = y;
-        setComment(comment);
-    }
-
-    private static Long asX(Double longitude) {
-        return longitude != null ? Conversion.wgs84LongitudeToMercatorX(longitude) : null;
-    }
-
-    private static Long asY(Double latitude) {
-        return latitude != null ? Conversion.wgs84LatitudeToMercatorY(latitude) : null;
+        setDescription(description);
     }
 
     public Double getLongitude() {
-        return x != null ? Conversion.mercatorXToWgs84Longitude(x) : null;
+        return x != null ? mercatorXToWgs84Longitude(x) : null;
     }
 
     public void setLongitude(Double longitude) {
@@ -61,11 +62,52 @@ public class MercatorPosition extends BaseNavigationPosition {
     }
 
     public Double getLatitude() {
-        return y != null ? Conversion.mercatorYToWgs84Latitude(y) : null;
+        return y != null ? mercatorYToWgs84Latitude(y) : null;
     }
 
     public void setLatitude(Double latitude) {
         this.y = asY(latitude);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    public CompactCalendar getTime() {
+        return time;
+    }
+
+    public void setTime(CompactCalendar time) {
+        this.time = time;
+    }
+
+
+    private static Long asX(Double longitude) {
+        return longitude != null ? wgs84LongitudeToMercatorX(longitude) : null;
+    }
+
+    private static Long asY(Double latitude) {
+        return latitude != null ? wgs84LatitudeToMercatorY(latitude) : null;
     }
 
     public Long getX() {
@@ -76,26 +118,17 @@ public class MercatorPosition extends BaseNavigationPosition {
         return y;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         MercatorPosition that = (MercatorPosition) o;
 
-        return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+        return !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(x != null ? !x.equals(that.x) : that.x != null) &&
                 !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
+                !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 
     public int hashCode() {
@@ -103,8 +136,8 @@ public class MercatorPosition extends BaseNavigationPosition {
         result = (x != null ? x.hashCode() : 0);
         result = 31 * result + (y != null ? y.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (hasTime() ? getTime().hashCode() : 0);
         return result;
     }
 }

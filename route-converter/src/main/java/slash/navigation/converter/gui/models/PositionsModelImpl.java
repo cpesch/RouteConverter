@@ -25,39 +25,42 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.DegreeFormat;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.PositionHelper;
+import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.util.Unit;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
-import static slash.navigation.converter.gui.helper.PositionHelper.extractTime;
-import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitudeOrLatitude;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.common.UnitConversion.ddmm2latitude;
+import static slash.navigation.common.UnitConversion.ddmm2longitude;
+import static slash.navigation.common.UnitConversion.ddmmss2latitude;
+import static slash.navigation.common.UnitConversion.ddmmss2longitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -86,16 +89,16 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public String getStringAt(int rowIndex, int columnIndex) {
-        BaseNavigationPosition position = getPosition(rowIndex);
+        NavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                return extractComment(position);
+                return position.getDescription();
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLongitude());
+                return formatLongitude(position.getLongitude());
             case LATITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLatitude());
+                return formatLatitude(position.getLatitude());
             case ELEVATION_COLUMN_INDEX:
                 return extractElevation(position);
             case SPEED_COLUMN_INDEX:
@@ -116,35 +119,37 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
                 return getRoute().getElevationDescend(0, rowIndex);
+            case ELEVATION_DIFFERENCE_COLUMN_INDEX:
+                return getRoute().getElevationDelta(rowIndex);
         }
         return getPosition(rowIndex);
     }
 
-    public BaseNavigationPosition getPosition(int rowIndex) {
+    public NavigationPosition getPosition(int rowIndex) {
         return getRoute().getPosition(rowIndex);
     }
 
     @SuppressWarnings({"unchecked"})
-    public int getIndex(BaseNavigationPosition position) {
-        return getRoute().getIndex(position);
+    public int getIndex(NavigationPosition position) {
+        return getRoute().getIndex((BaseNavigationPosition) position);
     }
 
-    public List<BaseNavigationPosition> getPositions(int[] rowIndices) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(rowIndices.length);
+    public List<NavigationPosition> getPositions(int[] rowIndices) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(rowIndices.length);
         for (int rowIndex : rowIndices)
             result.add(getPosition(rowIndex));
         return result;
     }
 
-    public List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(lastIndex - firstIndex);
+    public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(lastIndex - firstIndex);
         for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
     }
 
-    public int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
-        return getRoute().getContainedPositions(northEastCorner, southWestCorner);
+    public int[] getContainedPositions(BoundingBox boundingBox) {
+        return getRoute().getContainedPositions(boundingBox);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -194,50 +199,60 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private void editCell(int rowIndex, int columnIndex, Object value) {
-        BaseNavigationPosition position = getPosition(rowIndex);
+        NavigationPosition position = getPosition(rowIndex);
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
-                position.setComment(string);
+                position.setDescription(string);
                 break;
             case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(value, string));
                 break;
             case LONGITUDE_COLUMN_INDEX:
-                Double longitude = parseDouble(value, string, null);
-                if (longitude != null)
-                    position.setLongitude(longitude);
+                position.setLongitude(parseLongitude(value, string));
                 break;
             case LATITUDE_COLUMN_INDEX:
-                Double latitude = parseDouble(value, string, null);
-                if (latitude != null)
-                    position.setLatitude(latitude);
+                position.setLatitude(parseLatitude(value, string));
                 break;
             case ELEVATION_COLUMN_INDEX:
                 Double elevation = parseElevation(value, string);
-                if (elevation != null)
-                    position.setElevation(elevation);
+                position.setElevation(elevation);
                 break;
             case SPEED_COLUMN_INDEX:
                 Double speed = parseSpeed(value, string);
-                if (speed != null)
-                    position.setSpeed(speed);
+                position.setSpeed(speed);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
     }
 
-    private Double parseElevation(Object objectValue, String stringValue) {
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        Double value = parseDouble(objectValue, stringValue, unit.getElevationName());
-        return unit.valueToDefault(value);
+    private Double parseLongitude(Object objectValue, String stringValue) {
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        switch (degreeFormat) {
+            case Degrees:
+                return parseDouble(objectValue, stringValue, null);
+            case Degrees_Minutes:
+                return ddmm2longitude(stringValue);
+            case Degrees_Minutes_Seconds:
+                return ddmmss2longitude(stringValue);
+            default:
+                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        }
     }
 
-    private Double parseSpeed(Object objectValue, String stringValue) {
-        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        Double value = parseDouble(objectValue, stringValue, unit.getSpeedName());
-        return unit.valueToDefault(value);
+    private Double parseLatitude(Object objectValue, String stringValue) {
+        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        switch (degreeFormat) {
+            case Degrees:
+                return parseDouble(objectValue, stringValue, null);
+            case Degrees_Minutes:
+                return ddmm2latitude(stringValue);
+            case Degrees_Minutes_Seconds:
+                return ddmmss2latitude(stringValue);
+            default:
+                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        }
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
@@ -248,6 +263,18 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 stringValue = stringValue.replaceAll(replaceAll, "");
             return Transfer.parseDouble(stringValue);
         }
+    }
+
+    private Double parseElevation(Object objectValue, String stringValue) {
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
+        return unitSystem.valueToDefault(value);
+    }
+
+    private Double parseSpeed(Object objectValue, String stringValue) {
+        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
+        return unitSystem.valueToDefault(value);
     }
 
     private CompactCalendar parseTime(Object objectValue, String stringValue) {
@@ -263,14 +290,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return null;
     }
 
-    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
         add(rowIndex, asList(position));
     }
 
+    @SuppressWarnings("unchecked")
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        return asFormatForPositions(route.getPositions(), targetFormat);
+        return asFormatForPositions((List)route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
@@ -318,6 +346,20 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 return false;
             }
         }).performMonotonicallyDecreasing();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<NavigationPosition> comparator) {
+        getRoute().sort(comparator);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void order(List<NavigationPosition> positions) {
+        getRoute().order(positions);
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
     }
 
     public void revert() {
@@ -380,9 +422,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
     }
 
+    private TableModelEvent currentEvent;
+
     public void fireTableChanged(TableModelEvent e) {
+        this.currentEvent = e;
         distanceCache = null;
         super.fireTableChanged(e);
+        this.currentEvent = null;
+    }
+
+    public boolean isContinousRange() {
+        return currentEvent != null && currentEvent instanceof ContinousRangeTableModelEvent;
+    }
+
+    public void fireTableRowsDeletedInContinousRange(int firstRow, int lastRow) {
+        fireTableChanged(new ContinousRangeTableModelEvent(this, firstRow, lastRow, ALL_COLUMNS, DELETE));
+    }
+
+    private static class ContinousRangeTableModelEvent extends TableModelEvent {
+        @SuppressWarnings("MagicConstant")
+        public ContinousRangeTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
+            super(source, firstRow, lastRow, column, type);
+        }
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

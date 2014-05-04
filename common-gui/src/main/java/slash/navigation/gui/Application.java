@@ -20,9 +20,9 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.helpers.UIHelper;
+import slash.navigation.jnlp.SingleInstance;
+import slash.navigation.jnlp.SingleInstanceCallback;
 
-import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -31,9 +31,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static java.lang.String.format;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Logger.getLogger;
+import static java.util.prefs.Preferences.userNodeForPackage;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 
 /**
  * The base of all graphical user interfaces.
@@ -42,11 +50,11 @@ import java.util.prefs.Preferences;
  */
 
 public abstract class Application {
-    private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
+    private static final Logger log = getLogger(SingleFrameApplication.class.getName());
     private static Application application = null;
     private final List<ExitListener> exitListeners;
     private final ApplicationContext context;
-    private Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private Preferences preferences = userNodeForPackage(getClass());
 
     private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
@@ -97,7 +105,6 @@ public abstract class Application {
             method.invoke(null);
         } catch (Exception e) {
             log.info("Cannot invoke NativeInterface#" + name + "(): " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -109,28 +116,42 @@ public abstract class Application {
         invokeNativeInterfaceMethod("runEventPump");
     }
 
+    private SingleInstance singleInstance;
+
+    private void initializeSingleInstance() {
+        try {
+            singleInstance = new SingleInstance(new SingleInstanceCallback() {
+                public void newActivation(String[] args) {
+                    Application.this.parseNewActivationArgs(args);
+                }
+            });
+        } catch (Throwable t) {
+            // intentionally left empty
+        }
+    }
+
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
-        UIHelper.setLookAndFeel();
+        setLookAndFeel();
         openNativeInterface();
-        initializeLocale(Preferences.userNodeForPackage(applicationClass));
+        initializeLocale(userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
                 try {
                     Application application = create(applicationClass);
                     setInstance(application);
-                    application.initialize(args);
+                    application.initializeSingleInstance();
                     application.startup();
-                    application.waitForReady();
+                    application.parseInitialArgs(args);
                 }
                 catch (Exception e) {
-                    String msg = String.format("Application %s failed to launch", applicationClass);
-                    log.log(Level.SEVERE, msg, e);
+                    String msg = format("Application %s failed to launch", applicationClass);
+                    log.log(SEVERE, msg, e);
                     throw new Error(msg, e);
                 }
             }
         };
-        SwingUtilities.invokeLater(doCreateAndShowGUI);
+        invokeLater(doCreateAndShowGUI);
         runNativeInterfaceEventPump();
     }
 
@@ -138,7 +159,7 @@ public abstract class Application {
         try {
             return ResourceBundle.getBundle(clazz.getName());
         } catch (Exception e) {
-            log.log(Level.FINER, "Cannot load bundle for class " + clazz, e);
+            log.log(FINE, "Cannot load bundle for class " + clazz, e);
             return null;
         }
     }
@@ -159,14 +180,13 @@ public abstract class Application {
         return application;
     }
 
-    protected void initialize(String[] args) {
-    }
-
     protected abstract void startup();
 
-    protected void waitForReady() {
+    protected void parseInitialArgs(String[] args) {
     }
 
+    protected void parseNewActivationArgs(String[] args) {
+    }
 
     public/*for ExitAction*/ void exit(EventObject event) {
         for (ExitListener listener : exitListeners) {
@@ -180,13 +200,13 @@ public abstract class Application {
                     listener.willExit(event);
                 }
                 catch (Exception e) {
-                    log.log(Level.WARNING, "ExitListener.willExit() failed", e);
+                    log.log(WARNING, "ExitListener.willExit() failed", e);
                 }
             }
             shutdown();
         }
         catch (Exception e) {
-            log.log(Level.WARNING, "unexpected error in Application.shutdown()", e);
+            log.log(WARNING, "Unexpected error in Application.shutdown()", e);
         }
         finally {
             end();
@@ -206,6 +226,8 @@ public abstract class Application {
     }
 
     void end() {
+        if(singleInstance != null)
+            singleInstance.dispose();
         Runtime.getRuntime().exit(0);
     }
 }

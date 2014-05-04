@@ -21,10 +21,11 @@
 package slash.navigation.lmx;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
-import slash.navigation.gpx.GpxFormat;
-import slash.navigation.gpx.GpxPosition;
-import slash.navigation.gpx.GpxRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.lmx.binding.CoordinatesType;
 import slash.navigation.lmx.binding.LandmarkCollectionType;
 import slash.navigation.lmx.binding.LandmarkType;
@@ -39,8 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.common.io.Transfer.formatFloat;
-import static slash.common.io.Transfer.formatPositionAsDouble;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.NavigationConversion.formatDouble;
+import static slash.common.io.Transfer.formatTime;
+import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -50,7 +52,7 @@ import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
  * @author Christian Pesch
  */
 
-public class NokiaLandmarkExchangeFormat extends GpxFormat {
+public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandmarkExchangeRoute> {
 
     public String getExtension() {
         return ".lmx";
@@ -68,11 +70,16 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
         return false;
     }
 
-    private GpxPosition process(LandmarkType landmark) {
+    @SuppressWarnings("unchecked")
+    public <P extends NavigationPosition> NokiaLandmarkExchangeRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new NokiaLandmarkExchangeRoute(name, null, (List<Wgs84Position>) positions);
+    }
+
+    private Wgs84Position process(LandmarkType landmark) {
         CoordinatesType coordinates = landmark.getCoordinates();
         Double altitude = coordinates != null && coordinates.getAltitude() != null ?
                 (double) coordinates.getAltitude() : null;
-        return new GpxPosition(coordinates != null ? coordinates.getLongitude() : null,
+        return new Wgs84Position(coordinates != null ? coordinates.getLongitude() : null,
                 coordinates != null ? coordinates.getLatitude() : null,
                 altitude,
                 null,
@@ -81,8 +88,8 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
                 landmark);
     }
 
-    private GpxRoute process(Lmx lmx) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+    private NokiaLandmarkExchangeRoute process(Lmx lmx) {
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 
         String name = null, description = null;
         LandmarkType aLandmark = lmx.getLandmark();
@@ -98,12 +105,12 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
             for (LandmarkType landmark : landmarkCollection.getLandmark())
                 positions.add(process(landmark));
         }
-        return new GpxRoute(this, Waypoints, name, asDescription(description), positions, lmx);
+        return new NokiaLandmarkExchangeRoute(name, asDescription(description), positions, lmx);
     }
 
-    private Lmx createLmx(GpxRoute route, int startIndex, int endIndex) {
+    private Lmx createLmx(NokiaLandmarkExchangeRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        Lmx lmx = route.getOrigin(Lmx.class);
+        Lmx lmx = route.getLmx();
         if (lmx != null) {
             if (lmx.getLandmark() != null)
                 lmx.setLandmark(null);
@@ -119,21 +126,21 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
         List<LandmarkType> landmarkTypeList = landmarkCollectionType.getLandmark();
         landmarkTypeList.clear();
 
-        List<GpxPosition> positions = route.getPositions();
+        List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
-            GpxPosition position = positions.get(i);
+            Wgs84Position position = positions.get(i);
 
             LandmarkType landmarkType = position.getOrigin(LandmarkType.class);
             if (landmarkType == null)
                 landmarkType = objectFactory.createLandmarkType();
-            landmarkType.setName(position.getComment());
+            landmarkType.setName(position.getDescription());
 
             CoordinatesType coordinatesType = landmarkType.getCoordinates();
             if (coordinatesType == null)
                 coordinatesType = objectFactory.createCoordinatesType();
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
-            coordinatesType.setLatitude(formatPositionAsDouble(position.getLatitude()));
-            coordinatesType.setLongitude(formatPositionAsDouble(position.getLongitude()));
+            coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
+            coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
             coordinatesType.setTimeStamp(formatTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 
@@ -144,20 +151,16 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
         return lmx;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<NokiaLandmarkExchangeRoute> context) throws Exception {
         Lmx lmx = unmarshal(source);
         context.appendRoute(process(lmx));
     }
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(NokiaLandmarkExchangeRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             marshal(createLmx(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
-        throw new UnsupportedOperationException();
     }
 }

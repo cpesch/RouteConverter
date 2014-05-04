@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -44,6 +45,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -87,14 +89,14 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
-        BaseNavigationPosition first = positions.get(0);
-        return new Wgs84Position(first.getLongitude(), first.getLatitude(), null, null, null, "Start:" + first.getComment());
+        NavigationPosition first = positions.get(0);
+        return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
@@ -109,6 +111,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             if (trim(line) == null)
                 continue;
 
+            //noinspection StatementWithEmptyBody
             if (isDataVersion(line) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
             } else if (line.startsWith(START_TRIP)) {
                 routeName = trim(parseValue(line));
@@ -161,12 +164,12 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         String city = trim(map.get(CITY));
         String county = trim(map.get(COUNTY));
         String address = trim(map.get(ADDRESS));
-        String comment = (state != null ? state + (zip != null ? "-" : " ") : "") +
+        String description = (state != null ? state + (zip != null ? "-" : " ") : "") +
                 (zip != null ? zip + " " : "") + (city != null ? city : "") +
                 (county != null ? ", " + county : "") + (address != null ? ", " + address : "");
         return new Wgs84Position(longitude != null ? longitude / INTEGER_FACTOR : null,
                 latitude != null ? latitude / INTEGER_FACTOR : null,
-                null, null, null, trim(comment));
+                null, null, null, trim(description));
     }
 
     protected void writeHeader(Wgs84Route route, PrintWriter writer) {
@@ -187,7 +190,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             String latitude = formatIntAsString(position.getLatitude() != null ? (int) (position.getLatitude() * INTEGER_FACTOR) : null);
             writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
 
-            // TODO write decomposed comment
+            // TODO write decomposed description
             // Name=
             // Address=11 Veilchenstrasse
             // City=Gladbeck
@@ -195,18 +198,18 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             // County=Recklinghausen
             // Zip=47853
 
-            String comment = position.getComment();
-            int index = comment.indexOf(',');
-            String city = index != -1 ? comment.substring(0, index) : comment;
+            String description = position.getDescription();
+            int index = description.indexOf(',');
+            String city = index != -1 ? description.substring(0, index) : description;
             city = trim(city);
-            String address = index != -1 ? comment.substring(index + 1) : comment;
+            String address = index != -1 ? description.substring(index + 1) : description;
             address = trim(address);
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
 
-            // only store address if there was a comma in the comment
+            // only store address if there was a comma in the description
             writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
-            // otherwise store comment als city
+            // otherwise store description als city
             writer.println(CITY + NAME_VALUE_SEPARATOR + city);
             if (first || last || preferences.getBoolean("writeTargets", false))
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "1"); // Target/Stop target

@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -71,7 +72,7 @@ public class AppendIT extends NavigationTestCase {
         String testName = testResult.getTheRoute().getName();
         List<String> testDescription = testResult.getTheRoute().getDescription();
         int testPositionCount = testResult.getTheRoute().getPositionCount();
-        List<BaseNavigationPosition> testPositions = new ArrayList<BaseNavigationPosition>(testResult.getTheRoute().getPositions());
+        List<NavigationPosition> testPositions = new ArrayList<NavigationPosition>(testResult.getTheRoute().getPositions());
         assertTrue(testPositionCount > 0);
 
         NavigationFormatParser appendParser = new NavigationFormatParser();
@@ -90,17 +91,17 @@ public class AppendIT extends NavigationTestCase {
         assertEquals(testPositionCount + appendPositionCount, route.getPositionCount());
 
         List<BaseNavigationPosition> positions = route.getPositions();
-        Class<? extends BaseNavigationPosition> positionClass = testPositions.get(0).getClass();
+        Class<? extends NavigationPosition> positionClass = testPositions.get(0).getClass();
         for (int i = 0; i < testPositionCount; i++) {
-            BaseNavigationPosition position = positions.get(i);
+            NavigationPosition position = positions.get(i);
             assertEquals(positionClass, position.getClass());
             assertEquals(testPositions.get(i), position);
         }
 
         for (int i = testPositionCount; i < testPositionCount + appendPositionCount; i++) {
-            BaseNavigationPosition position = positions.get(i);
+            NavigationPosition position = positions.get(i);
             assertEquals(positionClass, position.getClass());
-            BaseNavigationPosition expected = asFormat(appendPositions.get(i - testPositionCount), route.getFormat());
+            NavigationPosition expected = asFormat(appendPositions.get(i - testPositionCount), route.getFormat());
             assertEquals(expected, position);
         }
     }

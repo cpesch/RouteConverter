@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="GraphHopper" baseUrl="http://download.geofabrik.de/" directory="graphhopper">
+        <file uri="europe/austria-latest.osm.pbf">
+            <northEast longitude="17.16273" latitude="49.02403"/>
+            <southWest longitude="9.52678" latitude="46.36851"/>
+        </file>
+        <file uri="europe/germany-latest.osm.pbf">
+            <northEast longitude="15.05078" latitude="55.14777"/>
+            <southWest longitude="5.864417" latitude="47.26543"/>
+        </file>
+        <file uri="europe/germany/baden-wuerttemberg-latest.osm.pbf">
+            <northEast longitude="10.52081" latitude="49.80469"/>
+            <southWest longitude="7.372216" latitude="47.18741"/>
+        </file>
+        <file uri="europe/germany/bayern-latest.osm.pbf">
+            <northEast longitude="14.09027" latitude="50.56779"/>
+            <southWest longitude="8.974646" latitude="47.22839"/>
+        </file>
+        <file uri="europe/germany/berlin-latest.osm.pbf">
+            <northEast longitude="13.76136" latitude="52.6783"/>
+            <southWest longitude="13.08283" latitude="52.33446"/>
+        </file>
+        <file uri="europe/germany/brandenburg-latest.osm.pbf">
+            <northEast longitude="14.77917" latitude="53.5784"/>
+            <southWest longitude="11.22404" latitude="51.35252"/>
+        </file>
+        <file uri="europe/germany/bremen-latest.osm.pbf">
+            <northEast longitude="8.991268" latitude="53.61063"/>
+            <southWest longitude="8.480959" latitude="53.01034"/>
+        </file>
+        <file uri="europe/germany/hamburg-latest.osm.pbf">
+            <northEast longitude="10.33637" latitude="53.7465"/>
+            <southWest longitude="9.613465" latitude="53.38581"/>
+        </file>
+        <file uri="europe/germany/hessen-latest.osm.pbf">
+            <northEast longitude="10.24398" latitude="51.66252"/>
+            <southWest longitude="7.76757" latitude="49.39089"/>
+        </file>
+        <file uri="europe/germany/mecklenburg-vorpommern-latest.osm.pbf">
+            <northEast longitude="14.43422" latitude="54.99857"/>
+            <southWest longitude="10.58766" latitude="53.09723"/>
+        </file>
+        <file uri="europe/germany/niedersachsen-latest.osm.pbf">
+            <northEast longitude="11.64342" latitude="54.17288"/>
+            <southWest longitude="6.45099" latitude="51.28559"/>
+        </file>
+        <file uri="europe/germany/nordrhein-westfalen-latest.osm.pbf">
+            <northEast longitude="9.468311" latitude="52.5397"/>
+            <southWest longitude="5.512685" latitude="50.31874"/>
+        </file>
+        <file uri="europe/germany/rheinland-pfalz-latest.osm.pbf">
+            <northEast longitude="8.513735" latitude="50.95293"/>
+            <southWest longitude="6.108849" latitude="48.96259"/>
+        </file>
+        <file uri="europe/germany/saarland-latest.osm.pbf">
+            <northEast longitude="7.40979" latitude="49.64072"/>
+            <southWest longitude="6.35017" latitude="49.10868"/>
+        </file>
+        <file uri="europe/germany/sachsen-anhalt-latest.osm.pbf">
+            <northEast longitude="13.21268" latitude="53.0566"/>
+            <southWest longitude="10.54725" latitude="50.92887"/>
+        </file>
+        <file uri="europe/germany/sachsen-latest.osm.pbf">
+            <northEast longitude="15.05234" latitude="51.6838"/>
+            <southWest longitude="11.86685" latitude="50.15843"/>
+        </file>
+        <file uri="europe/germany/schleswig-holstein-latest.osm.pbf">
+            <northEast longitude="11.92753" latitude="55.14634"/>
+            <southWest longitude="7.46458" latitude="53.35408"/>
+        </file>
+        <file uri="europe/germany/thueringen-latest.osm.pbf">
+            <northEast longitude="12.67491" latitude="51.65237"/>
+            <southWest longitude="9.863176" latitude="50.19971"/>
+        </file>
+        <file uri="europe/netherlands-latest.osm.pbf">
+            <northEast longitude="7.230455" latitude="54.01786"/>
+            <southWest longitude="2.992192" latitude="50.74753"/>
+        </file>
+    </datasource>
+</datasources>

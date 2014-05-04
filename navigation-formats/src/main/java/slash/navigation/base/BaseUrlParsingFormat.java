@@ -20,6 +20,8 @@
 
 package slash.navigation.base;
 
+import slash.navigation.common.NavigationPosition;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -39,7 +42,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
@@ -95,7 +98,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         while (ix < data.length) {
             byte c = data[ix++];
             switch ((char) c) {
-                case'&':
+                case '&':
                     value = new String(data, 0, ox, encoding);
                     if (key != null) {
                         putMapEntry(result, key, value);
@@ -103,7 +106,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
                     }
                     ox = 0;
                     break;
-                case'=':
+                case '=':
                     if (key == null) {
                         key = new String(data, 0, ox, encoding);
                         ox = 0;
@@ -111,13 +114,15 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
                         data[ox++] = c;
                     }
                     break;
-                case'+':
+                case '+':
                     data[ox++] = (byte) ' ';
                     break;
-                case'%':
+                case '%':
                     int leftNibble = convertHexDigit(data[ix++]) << 4;
                     byte rightNibble = ix < data.length ? convertHexDigit(data[ix++]) : 0;
                     data[ox++] = (byte) (leftNibble + rightNibble);
+                    break;
+                case '?':
                     break;
                 default:
                     data[ox++] = c;
@@ -131,25 +136,25 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         return result;
     }
 
-    protected String decodeComment(String string) {
-        if (string == null)
+    protected String decodeDescription(String description) {
+        if (description == null)
             return "";
         try {
-            return URLDecoder.decode(string, UTF8_ENCODING);
+            return URLDecoder.decode(description, UTF8_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            return string;
+            return description;
         }
     }
 
-    protected String encodeComment(String string) {
-        if (string == null)
+    protected String encodeDescription(String description) {
+        if (description == null)
             return "";
         try {
-            string = URLEncoder.encode(string, UTF8_ENCODING);
-            string = string.replace("%2C", ",");
-            return string;
+            description = URLEncoder.encode(description, UTF8_ENCODING);
+            description = description.replace("%2C", ",");
+            return description;
         } catch (UnsupportedEncodingException e) {
-            return string;
+            return description;
         }
     }
 }

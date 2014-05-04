@@ -20,10 +20,13 @@
 
 package slash.navigation.earthtools;
 
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInt;
@@ -35,12 +38,16 @@ import static slash.navigation.earthtools.EarthToolsUtil.unmarshal;
  * @author Christian Pesch
  */
 
-public class EarthToolsService {
+public class EarthToolsService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(EarthToolsService.class);
     private static final String GEONAMES_URL_PREFERENCE = "earthtoolsUrl";
 
     private static String getEarthToolsUrlPreference() {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://www.earthtools.org/");
+    }
+
+    public String getName() {
+        return "EarthTools";
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
@@ -58,5 +65,21 @@ public class EarthToolsService {
                 throw io;
             }
         return null;
+    }
+
+    public boolean isDownload() {
+        return false;
+    }
+
+    public String getPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>INSERT_ROUTENAME</title>
-    <script src="http://maps.google.com/maps/api/js?v=3.8&sensor=false" type="text/javascript"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3.14&sensor=false" type="text/javascript"></script>
     <script type="text/javascript">
 
         function addTrack(latlngs) {
@@ -11,24 +11,37 @@
             polyline.setMap(map);
         }
 
-        function addRoute(latlngs) {
+        function addRouteFragment(latlngs, startIndex) {
+            if (startIndex >= latlngs.length - 2)
+                return;
+
+            var waypoints = [];
+            var current = startIndex + 1;
+            while (current < latlngs.length - 1 && waypoints.length < 8) {
+                waypoints.push({location:latlngs[current]});
+                current++;
+            }
             var directionsRequest = {
-                origin: latlngs[0],
-                // TODO waypoints: latlngs,
-                destination: latlngs[latlngs.length - 1],
+                origin: latlngs[startIndex],
+                waypoints: waypoints,
+                destination: latlngs[current],
                 travelMode: google.maps.DirectionsTravelMode.DRIVING,
                 avoidHighways: false,
                 avoidTolls: true
             };
             var renderer = new google.maps.DirectionsRenderer({map: map, preserveViewport: true,
                 suppressMarkers: true, hideRouteList: true});
-            new google.maps.DirectionsService().route(directionsRequest, function(result, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
+            new google.maps.DirectionsService().route(directionsRequest, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK)
                     renderer.setDirections(result);
-                } else {
-                    setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
-                }
+                setTimeout(function() {
+                    addRouteFragment(latlngs, current);
+                }, 250);
             });
+        }
+
+        function addRoute(latlngs) {
+            addRouteFragment(latlngs, 0);
         }
 
         function addWaypoints(markers) {
@@ -138,7 +151,7 @@
                     tileSize: DEFAULT_TILE_SIZE,
                     minZoom: 8,
                     maxZoom: 17,
-                    alt: "Outdoor Active Summer Map Deutschland",
+                    alt: "Outdoor Active Summer Map Germany",
                     name: OUTDOOR_D_MAPTYPE_ID
                 }));
                 map.mapTypes.set(OUTDOOR_A_MAPTYPE_ID, new google.maps.ImageMapType({
@@ -148,7 +161,7 @@
                     tileSize: DEFAULT_TILE_SIZE,
                     minZoom: 9,
                     maxZoom: 17,
-                    alt: "Outdoor Active Summer Map Österreich",
+                    alt: "Outdoor Active Summer Map Austria",
                     name: OUTDOOR_A_MAPTYPE_ID
                 }));
                 map.mapTypes.set(OUTDOOR_CH_MAPTYPE_ID, new google.maps.ImageMapType({

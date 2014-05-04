@@ -42,7 +42,7 @@ public class GarminPoiFormat extends BabelFormat {
     }
 
     protected String getFormatOptions(GpxRoute route) {
-        return route != null ? ",category=\"" + asRouteName(route.getName()) + "\"" : "";
+        return route != null ? ",category=" + asRouteName(route.getName()) : "";
     }
 
     public boolean isSupportsMultipleRoutes() {

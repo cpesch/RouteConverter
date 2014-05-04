@@ -20,27 +20,17 @@
 
 package slash.navigation.babel;
 
-import slash.common.io.Externalization;
-import slash.common.system.Platform;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -49,10 +39,12 @@ import java.util.prefs.Preferences;
 import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.common.io.Externalization.extractFile;
+import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.InputOutput.copy;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.common.system.Platform.*;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * The base of all GPSBabel based formats.
@@ -65,7 +57,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BabelFormat.class);
     private static final String BABEL_PATH_PREFERENCE = "babelPath";
     private static final String BABEL_INTERFACE_FORMAT_NAME = "gpx";
-    private static final String ROUTE_WAYPOINTS_TRACKS = "-r -w -t";
+    private static final String[] ROUTE_WAYPOINTS_TRACKS = new String[]{"-r", "-w", "-t"};
     private Gpx10Format gpxFormat;
 
     private Gpx10Format getGpxFormat() {
@@ -102,7 +94,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     protected abstract boolean isStreamingCapable();
 
-    protected String getGlobalOptions() {
+    protected String[] getGlobalOptions() {
         return ROUTE_WAYPOINTS_TRACKS;
     }
 
@@ -120,24 +112,26 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GpxRoute(new Gpx10Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
 
     // stream
 
-    private Process execute(String babel, String inputFormatName, String outputFormatName, String commandLineFlags) throws IOException {
-        String command = babel + " " + commandLineFlags
-                + " -i " + inputFormatName + " -f - -o " + outputFormatName
-                + " -F -";
-        log.info("Executing '" + command + "'");
+    private Process execute(String babel, String sourceFormat, String targetFormat, String[] globalFlags) throws IOException {
+        List<String> args = new ArrayList<String>();
+        args.add(babel);
+        args.addAll(asList(globalFlags));
+        args.addAll(asList("-i", sourceFormat, "-f", "-",
+                "-o", targetFormat, "-F", "-"));
+        log.info("Executing '" + args + "'");
 
-        command = considerShellScriptForBabel(babel, command);
+        args = considerShellScriptForBabel(babel, args);
 
         try {
-            return Runtime.getRuntime().exec(command);
+            return Runtime.getRuntime().exec(args.toArray(new String[args.size()]));
         } catch (IOException e) {
-            throw new BabelException("Cannot execute '" + command + "'", babel, e);
+            throw new BabelException("Cannot execute '" + args + "'", babel, e);
         }
     }
 
@@ -165,7 +159,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             public void run() {
                 try {
                     try {
-                        byte buffer[] = new byte[2048];
+                        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
                         int count = 0;
                         while (count >= 0) {
                             count = input.read(buffer);
@@ -187,7 +181,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelStreamPumper-" + streamName).start();
     }
 
-    private Process startBabel(InputStream source, String sourceFormat, String targetFormat, String commandLineFlags) throws IOException {
+    private Process startBabel(InputStream source, String sourceFormat, String targetFormat, String[] commandLineFlags) throws IOException {
         String babel = findBabel();
         Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
         pumpStream(source, process.getOutputStream(), "input", true);
@@ -196,42 +190,53 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        final Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
+        Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
         InputStream target = process.getInputStream();
         getGpxFormat().read(target, startDate, context);
         observer.interrupt();
+        target.close();
     }
 
     // temp file
 
+    private String escapeFilePathWithSpaces(String filePath) {
+        if (isLinux() || isMac()) {
+            filePath = "\"" + filePath + "\"";
+        }
+        return filePath;
+    }
+
     private boolean startBabel(File source, String sourceFormat,
                                File target, String targetFormat,
-                               String globalFlags, String formatFlags,
+                               String[] globalFlags, String formatFlags,
                                int timeout) throws IOException {
         String babel = findBabel();
-        String command = babel + " " + globalFlags +
-                " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
-                " -o " + targetFormat + formatFlags +
-                " -F \"" + target.getAbsolutePath() + "\"";
-        log.info("Executing '" + command + "'");
+        List<String> args = new ArrayList<String>();
+        args.add(babel);
+        args.addAll(asList(globalFlags));
+        args.addAll(asList("-i", sourceFormat,
+                "-f", escapeFilePathWithSpaces(source.getAbsolutePath()),
+                "-o", escapeFilePathWithSpaces(targetFormat + formatFlags),
+                "-F", escapeFilePathWithSpaces(target.getAbsolutePath())));
+        log.info("Executing '" + args + "'");
 
-        command = considerShellScriptForBabel(babel, command);
+        args = considerShellScriptForBabel(babel, args);
 
-        int exitValue = execute(babel, command, timeout);
-        log.info("Executed '" + command + "' with exit value: " + exitValue + " target exists: " + target.exists());
+        int exitValue = execute(babel, args, timeout);
+        log.info("Executed '" + args + "' with exit value: " + exitValue + " target exists: " + target.exists());
         return exitValue == 0;
     }
 
     private static final int COMMAND_EXECUTION_RECHECK_INTERVAL = 250;
 
-    private int execute(String babelPath, String command, int timeout) throws IOException {
+    private int execute(String babelPath, List<String> args, int timeout) throws IOException {
         Process process;
         try {
-            process = Runtime.getRuntime().exec(command);
+            process = Runtime.getRuntime().exec(args.toArray(new String[args.size()]));
         } catch (IOException e) {
-            throw new BabelException("Cannot execute '" + command + "'", babelPath, e);
+            throw new BabelException("Cannot execute '" + args + "'", babelPath, e);
         }
 
         InputStream inputStream = new BufferedInputStream(process.getInputStream());
@@ -258,7 +263,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
                     timeout = timeout - COMMAND_EXECUTION_RECHECK_INTERVAL;
                     if (timeout < 0 && timeout >= -COMMAND_EXECUTION_RECHECK_INTERVAL) {
-                        log.severe("Command doesn't terminate. Shutting down command...");
+                        log.severe("Command doesn't terminate. Shutting down args...");
                         process.destroy();
                     } else if (timeout < 0) {
                         log.severe("Command still doesn't terminate");
@@ -271,7 +276,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
 
         if (!hasExitValue) {
-            log.severe("Command doesn't return exit value. Shutting down command...");
+            log.severe("Command doesn't return exit value. Shutting down args...");
             process.destroy();
         }
 
@@ -287,7 +292,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private void readStream(InputStream inputStream, String streamName) throws IOException {
-        byte buffer[] = new byte[2048];
+        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
         int count = 0;
         while (inputStream.available() > 0 && count < buffer.length) {
             buffer[count++] = (byte) inputStream.read();
@@ -299,12 +304,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + getFormatName());
+            sourceFile = createTempFile("babel-read-source", "." + getFormatName(), getTemporaryDirectory());
             copy(source, new FileOutputStream(sourceFile));
-            targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            targetFile = createTempFile("babel-read-target", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
-                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, context);
+                InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile));
+                getGpxFormat().read(target, startDate, context);
+                target.close();
                 log.fine("Successfully converted " + sourceFile + " to " + targetFile);
             }
         } finally {
@@ -328,28 +335,28 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
 
         // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
+        if (babelFile == null && isWindows()) {
             babelFile = checkIfBabelExists(System.getenv("ProgramFiles") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
+        if (babelFile == null && isWindows()) {
             babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 3. look for "/usr/bin/gpsbabel" in path
-        if (babelFile == null && !Platform.isWindows()) {
+        if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
         }
 
         // 4. extract from classpath into temp directrory and execute there
         if (babelFile == null) {
-            String path = Platform.getOperationSystem() + "/" + Platform.getArchitecture() + "/";
-            if (Platform.isWindows()) {
-                Externalization.extractFile(path + "libexpat.dll");
-                babelFile = Externalization.extractFile(path + "gpsbabel.exe");
-            } else if (Platform.isLinux() || Platform.isMac()) {
-                babelFile = Externalization.extractFile(path + "gpsbabel");
+            String path = getOperationSystem() + "/" + getArchitecture() + "/";
+            if (isWindows()) {
+                extractFile(path + "libexpat.dll");
+                babelFile = extractFile(path + "gpsbabel.exe");
+            } else if (isLinux() || isMac()) {
+                babelFile = extractFile(path + "gpsbabel");
             }
         }
 
@@ -357,23 +364,26 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return babelFile != null ? babelFile.getAbsolutePath() : "gpsbabel";
     }
 
-    private String considerShellScriptForBabel(String babel, String command) throws IOException {
-        if (Platform.isLinux() || Platform.isMac()) {
-            File shellScript = createShellScript(babel, command);
-            command = "/bin/sh " + shellScript.getAbsolutePath();
+    private List<String> considerShellScriptForBabel(String babel, List<String> args) throws IOException {
+        if (isLinux() || isMac()) {
+            File shellScript = createShellScript(babel, args);
+            args = asList("/bin/sh", shellScript.getAbsolutePath());
         }
-        return command;
+        return args;
     }
 
-    private File createShellScript(String babelPath, String command) throws IOException {
-        File temp = createTempFile("gpsbabel", ".sh");
+    private File createShellScript(String babelPath, List<String> args) throws IOException {
+        File temp = createTempFile("gpsbabel", ".sh", getTemporaryDirectory());
         temp.deleteOnExit();
         BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
         writer.write("#!/bin/sh");
         writer.newLine();
         writer.write("`which chmod` a+x \"" + babelPath + "\"");
         writer.newLine();
-        writer.write(command);
+        for (String arg : args) {
+            writer.write(arg);
+            writer.write(" ");
+        }
         writer.newLine();
         writer.flush();
         writer.close();
@@ -403,7 +413,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return route;
     }
 
-    private void delete(File file) {
+    protected void delete(File file) {
         if (file != null && file.exists()) {
             if (!file.delete())
                 log.warning("Cannot delete babel file " + file);
@@ -428,9 +438,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            sourceFile = createTempFile("babel-write-source", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             getGpxFormat().write(route, new FileOutputStream(sourceFile), startIndex, endIndex, getBabelCharacteristics());
-            targetFile = createTempFile("babeltarget", getExtension());
+            targetFile = createTempFile("babel-write-target", getExtension(), getTemporaryDirectory());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
             if (!successful)
@@ -447,9 +457,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
-            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            sourceFile = createTempFile("babel-write-all-source", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             getGpxFormat().write(routes, new FileOutputStream(sourceFile));
-            targetFile = createTempFile("babeltarget", getExtension());
+            targetFile = createTempFile("babel-write-all-target", getExtension(), getTemporaryDirectory());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());
             if (!successful)

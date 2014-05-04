@@ -39,8 +39,9 @@ class BcrSection extends IniFileSection {
     }
 
     int getStationCount() {
-        int count = 0;
-        while (getStation(++count) != null) {
+        int count = 1;
+        while (getStation(count) != null) {
+            count++;
         }
         return count;
     }

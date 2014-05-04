@@ -20,24 +20,26 @@
 
 package slash.common.io;
 
+import slash.common.type.CompactCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
+import static java.lang.Integer.toHexString;
+import static java.lang.Math.*;
+import static java.util.Calendar.*;
 
 /**
  * Provides value transfer functionality.
@@ -46,10 +48,14 @@ import static java.lang.Math.round;
  */
 
 public class Transfer {
-    public static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
+    private Transfer() {}
 
-    private Transfer() {
-    }
+    private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
+    private static final Logger log = Logger.getLogger(Transfer.class.getName());
+    public static final String ISO_LATIN1_ENCODING = "ISO-8859-1";
+    public static final String UTF8_ENCODING = "UTF-8";
+    public static final String UTF16_ENCODING = "UTF-16";
+    public static final String UTF16LE_ENCODING = "UTF-16LE";
 
     public static double roundFraction(double number, int fractionCount) {
         double factor = pow(10, fractionCount);
@@ -113,53 +119,17 @@ public class Transfer {
     }
 
 
-    public static String escape(String string, char escape, char replacement) {
+    public static String escape(String string, char escape, char replacement, String defaultString) {
         String trimmed = trim(string);
         if (trimmed != null)
             trimmed = trimmed.replaceAll("\\" + escape, String.valueOf(replacement));
         else
-            trimmed = "";
+            trimmed = defaultString;
         return trimmed;
     }
 
-    private static boolean isReduceDecimalPlaceToReasonablePrecision() {
-        return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
-    }
-
-    public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
-        if (aDouble == null)
-            return null;
-        if (isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return BigDecimal.valueOf(aDouble);
-    }
-
-    public static double formatDouble(Double aDouble, int maximumFractionCount) {
-        if (aDouble == null)
-            return NaN;
-        if (isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return aDouble;
-    }
-
-    public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        return formatBigDecimal(longitudeOrLatitude, 7);
-    }
-
-    public static double formatPositionAsDouble(Double longitudeOrLatitude) {
-        return formatDouble(longitudeOrLatitude, 7);
-    }
-
-    public static BigDecimal formatElevation(Double elevation) {
-        return formatBigDecimal(elevation, 1);
-    }
-
-    public static BigDecimal formatHeading(Double heading) {
-        return formatBigDecimal(heading, 1);
-    }
-
-    public static BigDecimal formatSpeed(Double speed) {
-        return formatBigDecimal(speed, 1);
+    public static String escape(String string, char escape, char replacement) {
+        return escape(string, escape, replacement, "");
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {
@@ -195,32 +165,6 @@ public class Transfer {
         while (buffer.length() - index > exactFractionCount + 1)
             buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
-    }
-
-    public static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
-        if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return formatDoubleAsString(aDouble);
-    }
-
-    public static String formatPositionAsString(Double longitudeOrLatitude) {
-        return formatDoubleAsStringWithMaximumFractionCount(longitudeOrLatitude, 7);
-    }
-
-    public static String formatElevationAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
-    }
-
-    public static String formatAccuracyAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 6);
-    }
-
-    public static String formatHeadingAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 1);
-    }
-
-    public static String formatSpeedAsString(Double speed) {
-        return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
     }
 
     public static String formatIntAsString(Integer anInteger) {
@@ -312,5 +256,93 @@ public class Transfer {
             result[i] = integers.get(i);
         }
         return result;
+    }
+
+    public static String encodeUri(String uri) {
+        try {
+            String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
+            return encoded.replace("%2F", "/"); // better not .replace("%3A", ":");
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot encode uri " + uri + ": " + e.getMessage());
+            return uri;
+        }
+    }
+
+    public static String decodeUri(String uri) {
+        try {
+            return URLDecoder.decode(uri, UTF8_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot decode uri " + uri + ": " + e.getMessage());
+            return uri;
+        }
+    }
+
+    private static final char URI_ESCAPE_CHAR = '%';
+    private static final String FORBIDDEN_CHARACTERS = "\\/:*?\"<>|";
+
+    public static String encodeFileName(String name) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if ((c == '.' && i == 0) || c == URI_ESCAPE_CHAR || FORBIDDEN_CHARACTERS.indexOf(c) != -1) {
+                builder.append(URI_ESCAPE_CHAR);
+                if (c < 0x10)
+                    builder.append('0');
+                builder.append(toHexString(c));
+            } else {
+                builder.append(c);
+            }
+        }
+        return builder.toString();
+    }
+
+    public static String asUtf8(String string) {
+        try {
+            byte[] bytes = string.getBytes(UTF8_ENCODING);
+            return new String(bytes);
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e.getMessage());
+            return string;
+        }
+    }
+
+    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
+        if (calendar == null)
+            return null;
+        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(CompactCalendar.UTC, null, null);
+        return CompactCalendar.fromMillis(gregorianCalendar.getTimeInMillis());
+    }
+
+    private static DatatypeFactory datatypeFactory = null;
+
+    private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
+        if (datatypeFactory == null) {
+            datatypeFactory = DatatypeFactory.newInstance();
+        }
+        return datatypeFactory;
+    }
+
+    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
+       return formatTime(time, preferences.getBoolean("reduceTimeToSecondPrecision", false));
+    }
+
+    @SuppressWarnings("MagicConstant")
+    public static XMLGregorianCalendar formatTime(CompactCalendar time, boolean reduceTimeToSecondPrecision) {
+        if (time == null)
+            return null;
+        try {
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.UTC, Locale.getDefault());
+            gregorianCalendar.clear();
+            Calendar calendar = time.getCalendar();
+            gregorianCalendar.set(calendar.get(YEAR), calendar.get(MONTH), calendar.get(DATE),
+                    calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), calendar.get(SECOND));
+            gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
+            XMLGregorianCalendar result = getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
+            if (reduceTimeToSecondPrecision)
+                result.setFractionalSecond(null);
+            return result;
+        } catch (DatatypeConfigurationException e) {
+            return null;
+        }
     }
 }

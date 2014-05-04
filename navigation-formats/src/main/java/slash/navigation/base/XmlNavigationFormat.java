@@ -20,18 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.common.type.CompactCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * The base of all XML based navigation formats.
@@ -41,6 +30,10 @@ import static slash.common.type.CompactCalendar.fromMillis;
 
 public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
     public static final String HEADER_LINE = "<!-- " + GENERATED_BY + " -->\n";
+
+    public int getMaximumPositionCount() {
+        return UNLIMITED_MAXIMUM_POSITION_COUNT;
+    }
 
     protected String asDescription(List<String> strings) {
         StringBuilder buffer = new StringBuilder();
@@ -52,38 +45,5 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         if (buffer.indexOf(GENERATED_BY) == -1)
             buffer.append(GENERATED_BY);
         return buffer.toString();
-    }
-
-    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
-        if (calendar == null)
-            return null;
-        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
-        return fromMillis(gregorianCalendar.getTimeInMillis());
-    }
-
-    private static DatatypeFactory datatypeFactory = null;
-
-    private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
-        if (datatypeFactory == null) {
-            datatypeFactory = DatatypeFactory.newInstance();
-        }
-        return datatypeFactory;
-    }
-
-    @SuppressWarnings("MagicConstant")
-    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
-        if (time == null)
-            return null;
-        try {
-            GregorianCalendar gregorianCalendar = new GregorianCalendar(UTC, Locale.getDefault());
-            gregorianCalendar.clear();
-            Calendar calendar = time.getCalendar();
-            gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),
-                    calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-            gregorianCalendar.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND));
-            return getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
-        } catch (DatatypeConfigurationException e) {
-            return null;
-        }
     }
 }

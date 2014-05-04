@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.navigation.nmn.Nmn7Util.unmarshal;
 
 /**
@@ -96,7 +96,7 @@ public class Nmn7Format extends NmnFormat {
             Route.Point point = objectFactory.createRoutePoint();
             point.setX(formatBigDecimal(position.getLongitude(), 7));
             point.setY(formatBigDecimal(position.getLatitude(), 7));
-            point.setName(position.getComment());
+            point.setName(position.getDescription());
             result.getPoint().add(point);
         }
         return result;

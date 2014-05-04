@@ -19,12 +19,18 @@
 */
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-public class KompassFormatTest extends NavigationTestCase {
-    KompassFormat format = new KompassFormat();
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class KompassFormatTest {
+    private KompassFormat format = new KompassFormat();
+
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("51.0450383,7.0508300"));
         assertTrue(format.isPosition("51.0450383,7.0508300,"));
@@ -39,19 +45,21 @@ public class KompassFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("11.10717,49.37578,HOLSTEINBRUCH BEI WORZEL,HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("51.0450383,7.0508300,124.5", null);
-        assertEquals(7.0508300, position.getLongitude());
-        assertEquals(51.0450383, position.getLatitude());
-        assertEquals(124.5, position.getElevation());
-        assertNull(position.getComment());
+        assertDoubleEquals(7.0508300, position.getLongitude());
+        assertDoubleEquals(51.0450383, position.getLatitude());
+        assertDoubleEquals(124.5, position.getElevation());
+        assertNull(position.getDescription());
     }
 
+    @Test
     public void testParsePositionWithoutElevation() {
         Wgs84Position position = format.parsePosition("51.0450383,7.0508300", null);
-        assertEquals(7.0508300, position.getLongitude());
-        assertEquals(51.0450383, position.getLatitude());
+        assertDoubleEquals(7.0508300, position.getLongitude());
+        assertDoubleEquals(51.0450383, position.getLatitude());
         assertNull(position.getElevation());
-        assertNull(position.getComment());
+        assertNull(position.getDescription());
     }
 }

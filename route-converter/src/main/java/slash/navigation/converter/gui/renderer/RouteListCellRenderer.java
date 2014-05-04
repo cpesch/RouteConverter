@@ -22,10 +22,11 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static slash.navigation.base.RouteComments.shortenRouteName;
 
 /**
  * Renders the route labels of the route combo box.
@@ -41,7 +42,7 @@ public class RouteListCellRenderer extends DefaultListCellRenderer {
         String text = "?";
         if (route != null) {
             String characteristics = RouteConverter.getBundle().getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
-            text = RouteComments.shortenRouteName(route) + " (" + characteristics + ")";
+            text = shortenRouteName(route) + " (" + characteristics + ")";
         }
         label.setText(text);
         return label;

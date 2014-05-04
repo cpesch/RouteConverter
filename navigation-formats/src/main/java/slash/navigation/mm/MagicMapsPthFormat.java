@@ -21,8 +21,8 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.GkPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -63,7 +63,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends BaseNavigationPosition> MagicMapsPthRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> MagicMapsPthRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 
@@ -77,8 +77,10 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
             if (trim(line) == null)
                 continue;
 
+            //noinspection StatementWithEmptyBody
             if (line.startsWith("#")) {
-            } else if (isNameValue(line)) {
+            } else //noinspection StatementWithEmptyBody
+                if (isNameValue(line)) {
             } else if (isPosition(line)) {
                 GkPosition position = parsePosition(line);
                 positions.add(position);
@@ -107,8 +109,8 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
             throw new IllegalArgumentException("'" + line + "' does not match");
         Double right = parseDouble(lineMatcher.group(1));
         Double height = parseDouble(lineMatcher.group(2));
-        String comment = trim(lineMatcher.group(3));
-        return new GkPosition(right, height, comment);
+        String description = trim(lineMatcher.group(3));
+        return new GkPosition(right, height, description);
     }
 
     public void write(MagicMapsPthRoute route, PrintWriter writer, int startIndex, int endIndex) {

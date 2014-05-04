@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomRoute;
@@ -50,7 +51,7 @@ import static slash.navigation.base.NavigationTestCase.readSampleTomTomRouteFile
 
 public class StartDateIT {
 
-    private void checkPosition(BaseNavigationPosition position, CompactCalendar expectedDate) {
+    private void checkPosition(NavigationPosition position, CompactCalendar expectedDate) {
         CompactCalendar actual = position.getTime();
         DateFormat format = DateFormat.getDateTimeInstance();
         format.setTimeZone(CompactCalendar.UTC);
@@ -77,11 +78,11 @@ public class StartDateIT {
         assertEquals(1, routes.size());
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = routes.get(0);
         assertEquals(3, route.getPositionCount());
-        BaseNavigationPosition position1 = route.getPositions().get(0);
+        NavigationPosition position1 = route.getPositions().get(0);
         checkPosition(position1, calendar(year, month, day, 18, 51, 36));
-        BaseNavigationPosition position2 = route.getPositions().get(1);
+        NavigationPosition position2 = route.getPositions().get(1);
         checkPosition(position2, calendar(year, month, day, 18, 51, 45));
-        BaseNavigationPosition position3 = route.getPositions().get(2);
+        NavigationPosition position3 = route.getPositions().get(2);
         checkPosition(position3, calendar(year, month, day, 18, 51, 59));
     }
 

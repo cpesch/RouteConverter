@@ -29,6 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import static slash.common.io.Transfer.UTF16LE_ENCODING;
+import static slash.common.io.Transfer.UTF16_ENCODING;
+
 /**
  * Reads and writes CoPilot 9 (.trp) files.
  *
@@ -46,7 +49,7 @@ public class CoPilot9Format extends CoPilotFormat {
     }
 
     protected boolean isDataVersion(String line) {
-        return line.startsWith(DATA_VERSION + ":2");
+        return line.startsWith(DATA_VERSION + ":2") || line.startsWith(DATA_VERSION + ":3");
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {

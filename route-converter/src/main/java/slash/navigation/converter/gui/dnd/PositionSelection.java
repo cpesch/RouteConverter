@@ -22,8 +22,9 @@ package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.simple.GlopusFormat;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -49,18 +50,18 @@ public class PositionSelection implements Transferable {
     public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
     public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
 
-    private final List<BaseNavigationPosition> positions;
+    private final List<NavigationPosition> positions;
     private final BaseNavigationFormat format;
     private final String string;
 
-    public PositionSelection(List<BaseNavigationPosition> positions, BaseNavigationFormat format) {
+    public PositionSelection(List<NavigationPosition> positions, BaseNavigationFormat format) {
         this.positions = positions;
         this.format = format;
         this.string = createStringFor(positions);
     }
 
-    private String createStringFor(List<BaseNavigationPosition> sourcePositions) {
-        NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
+    private String createStringFor(List<NavigationPosition> sourcePositions) {
+        GlopusFormat targetFormat = new GlopusFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         try {
             targetPositions = asFormatForPositions(sourcePositions, targetFormat);
@@ -74,7 +75,7 @@ public class PositionSelection implements Transferable {
         return writer.toString();
     }
 
-    public List<BaseNavigationPosition> getPositions() {
+    public List<NavigationPosition> getPositions() {
         return positions;
     }
 

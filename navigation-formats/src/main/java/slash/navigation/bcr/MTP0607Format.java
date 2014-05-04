@@ -40,8 +40,8 @@ public class MTP0607Format extends BcrFormat {
     }
 
     protected void writePosition(BcrPosition position, PrintWriter writer, int index) {
-        String comment = (position.getZipCode() != null ? position.getZipCode() + " " : "") +
+        String description = (position.getZipCode() != null ? position.getZipCode() + " " : "") +
                 (position.getCity() != null ? position.getCity() : "");
-        writer.println(STATION_PREFIX + index + NAME_VALUE_SEPARATOR + comment);
+        writer.println(STATION_PREFIX + index + NAME_VALUE_SEPARATOR + description);
     }
 }

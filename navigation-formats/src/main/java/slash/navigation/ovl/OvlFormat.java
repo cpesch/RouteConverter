@@ -21,9 +21,10 @@
 package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -34,7 +35,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,10 +42,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatPositionAsString;
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.util.Positions.center;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
 /**
  * Reads and writes Top50 OVL ASCII (.ovl) files.
@@ -87,7 +88,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -259,7 +260,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writer.println(SECTION_PREFIX + SYMBOL_TITLE + " " + symbolIndex + SECTION_POSTFIX);
         writer.println(OvlSection.GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
 
-        writeSection(route.getSymbol(), writer, Arrays.asList(OvlSection.TEXT));
+        writeSection(route.getSymbol(), writer, asList(OvlSection.TEXT));
         writeMissingAttribute(route.getSymbol(), writer, "Typ", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Col", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Zoom", "1");
@@ -280,20 +281,20 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
 
     private void writeOverlay(OvlRoute route, PrintWriter writer, int symbolCount) {
         writer.println(SECTION_PREFIX + OVERLAY_TITLE + SECTION_POSTFIX);
-        writeSection(route.getOverlay(), writer, Arrays.asList(SYMBOL_COUNT));
+        writeSection(route.getOverlay(), writer, asList(SYMBOL_COUNT));
         writer.println(SYMBOL_COUNT + NAME_VALUE_SEPARATOR + symbolCount);
     }
 
     private void writeMapLage(OvlRoute route, PrintWriter writer) {
         writer.println(SECTION_PREFIX + MAPLAGE_TITLE + SECTION_POSTFIX);
-        writeSection(route.getMapLage(), writer, Arrays.asList(CREATOR));
+        writeSection(route.getMapLage(), writer, asList(CREATOR));
         // Top. Karte 1:50.000 Hessen
         // Top. Karte 1:50.000 Nieders.
         // Top. Karte 1:50000 Sh/HH
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
-        BaseNavigationPosition center = center(route.getPositions());
+        NavigationPosition center = new BoundingBox(route.getPositions()).getCenter();
         writeMissingAttribute(route.getMapLage(), writer, "CenterLat", formatPositionAsString(center.getLatitude()));
         writeMissingAttribute(route.getMapLage(), writer, "CenterLong", formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
@@ -306,7 +307,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     public void write(List<OvlRoute> routes, OutputStream target) throws IOException {
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, DEFAULT_ENCODING));
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, ISO_LATIN1_ENCODING));
         try {
             int symbols = 0;
             for (OvlRoute route : routes) {

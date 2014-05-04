@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+    <datasource name="Freizeitkarte Maps" baseUrl="http://download.freizeitkarte-osm.de/Experimental/MapsForge/Beta6/" directory="maps/freizeitkarte">
+        <map uri="freizeitkarte_alps_east.map.zip" size="642494391">
+            <northEast longitude="17.6" latitude="49.3"/>
+            <southWest longitude="9.3" latitude="45.299999"/>
+        </map>
+        <map uri="freizeitkarte_alps_west.map.zip" size="738676123">
+            <northEast longitude="10.9" latitude="48.0"/>
+            <southWest longitude="4.4" latitude="42.7"/>
+        </map>
+        <map uri="freizeitkarte_aut+.map.zip" size="511965107">
+            <northEast longitude="17.8" latitude="49.6"/>
+            <southWest longitude="9.0" latitude="45.799999"/>
+        </map>
+        <map uri="freizeitkarte_bel+.map.zip" size="356352990">
+            <northEast longitude="7.0" latitude="52.2"/>
+            <southWest longitude="1.8" latitude="48.899999"/>
+        </map>
+        <map uri="freizeitkarte_che+.map.zip" size="400730625">
+            <northEast longitude="11.1" latitude="48.4"/>
+            <southWest longitude="5.4" latitude="45.2"/>
+        </map>
+        <map uri="freizeitkarte_cze+.map.zip" size="409006867">
+            <northEast longitude="19.5" latitude="51.7"/>
+            <southWest longitude="11.5" latitude="48.0"/>
+        </map>
+        <map uri="freizeitkarte_deu+nord.map.zip" size="786057229">
+            <northEast longitude="15.6" latitude="55.7"/>
+            <southWest longitude="5.32" latitude="50.299999"/>
+        </map>
+        <map uri="freizeitkarte_deu+sued.map.zip" size="805219856">
+            <northEast longitude="15.55" latitude="50.8"/>
+            <southWest longitude="5.299999" latitude="46.7"/>
+        </map>
+        <map uri="freizeitkarte_dnk.map.zip" size="79498957">
+            <northEast longitude="15.52582" latitude="58.02074"/>
+            <southWest longitude="7.7011" latitude="54.37361"/>
+        </map>
+        <map uri="freizeitkarte_esp.map.zip" size="459859896">
+            <northEast longitude="5.098525" latitude="44.14855"/>
+            <southWest longitude="-9.779014" latitude="35.91539"/>
+        </map>
+        <map uri="freizeitkarte_gbr.map.zip" size="379636744">
+            <northEast longitude="2.25" latitude="61.92858"/>
+            <southWest longitude="-9.667832" latitude="48.79409"/>
+        </map>
+        <map uri="freizeitkarte_grc.map.zip" size="157659645">
+            <northEast longitude="29.65683" latitude="41.74954"/>
+            <southWest longitude="19.15881" latitude="34.59111"/>
+        </map>
+        <map uri="freizeitkarte_irl.map.zip" size="61243261">
+            <northEast longitude="-5.059265" latitude="55.70299"/>
+            <southWest longitude="-11.4" latitude="51.07948"/>
+        </map>
+        <map uri="freizeitkarte_isl.map.zip" size="63382878">
+            <northEast longitude="-12.41708" latitude="67.50085"/>
+            <southWest longitude="-25.74085" latitude="62.84553"/>
+        </map>
+        <map uri="freizeitkarte_ita.map.zip" size="644530399">
+            <northEast longitude="19.12499" latitude="47.10169"/>
+            <southWest longitude="6.602696" latitude="35.07638"/>
+        </map>
+        <map uri="freizeitkarte_lux+.map.zip" size="61626808">
+            <northEast longitude="7.1" latitude="50.8"/>
+            <southWest longitude="5.099999" latitude="48.799999"/>
+        </map>
+        <map uri="freizeitkarte_nld+.map.zip" size="449220783">
+            <northEast longitude="7.8" latitude="54.3"/>
+            <southWest longitude="2.5" latitude="50.2"/>
+        </map>
+        <map uri="freizeitkarte_pol+.map.zip" size="408618402">
+            <northEast longitude="24.7" latitude="55.6"/>
+            <southWest longitude="13.5" latitude="48.399999"/>
+        </map>
+        <map uri="freizeitkarte_svk.map.zip" size="107317627">
+            <northEast longitude="22.57051" latitude="49.6186"/>
+            <southWest longitude="16.828399" latitude="47.72646"/>
+        </map>
+        <map uri="freizeitkarte_svn.map.zip" size="34498829">
+            <northEast longitude="16.61889" latitude="46.88667"/>
+            <southWest longitude="13.36653" latitude="45.41273"/>
+        </map>
+    </datasource>
+</datasources>

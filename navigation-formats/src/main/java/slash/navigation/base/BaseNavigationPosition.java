@@ -21,8 +21,9 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.common.util.Bearing;
+import slash.navigation.common.Bearing;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
@@ -39,8 +40,12 @@ import static java.lang.Math.abs;
 import static java.lang.Math.asin;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
-import static slash.common.util.Bearing.EARTH_RADIUS;
-import static slash.common.util.Bearing.calculateBearing;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
+import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.navigation.common.Bearing.EARTH_RADIUS;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * The base of all navigation positions.
@@ -48,106 +53,32 @@ import static slash.common.util.Bearing.calculateBearing;
  * @author Christian Pesch
  */
 
-public abstract class BaseNavigationPosition {
-    private Double elevation;
-    private Double speed;
-    private CompactCalendar time;
-
-    protected BaseNavigationPosition(Double elevation, Double speed, CompactCalendar time) {
-        setElevation(elevation);
-        setSpeed(speed);
-        setTime(time);
-    }
-
-    /**
-     * Return the longitude in the WGS84 coordinate system
-     *
-     * @return the longitude in the WGS84 coordinate system
-     */
-    public abstract Double getLongitude();
-
-    public abstract void setLongitude(Double longitude);
-
-    /**
-     * Return the latitude in the WGS84 coordinate system
-     *
-     * @return the latitude in the WGS84 coordinate system
-     */
-    public abstract Double getLatitude();
-
-    public abstract void setLatitude(Double latitude);
+public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public boolean hasCoordinates() {
         return getLongitude() != null && getLatitude() != null;
     }
 
-    /**
-     * Return the elevation in meters above sea level
-     *
-     * @return the elevation in meters above sea level
-     */
-    public Double getElevation() {
-        return elevation;
+    public boolean hasTime() {
+        return getTime() != null;
     }
 
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
+    public boolean hasSpeed() {
+        return getSpeed() != null;
     }
 
-    /**
-     * Return the date and time in UTC time zone
-     *
-     * @return the date and time in UTC time zone
-     */
-    public CompactCalendar getTime() {
-        return time;
-    }
-
-    public void setTime(CompactCalendar time) {
-        this.time = time;
-    }
-
-    /**
-     * Return the speed in kilometers per hour
-     *
-     * @return the speed in kilometers per hour
-     */
-    public Double getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
-    /**
-     * Set the day/month/year-offset for date-less, time-only positions
-     *
-     * @param startDate the day/month/year-offset
-     */
     public void setStartDate(CompactCalendar startDate) {
-        if (getTime() != null && startDate != null) {
+        if (hasTime() && startDate != null) {
             Calendar calendar = getTime().getCalendar();
             Calendar startDateCalendar = startDate.getCalendar();
-            calendar.set(Calendar.YEAR, startDateCalendar.get(Calendar.YEAR));
-            calendar.set(Calendar.MONTH, startDateCalendar.get(Calendar.MONTH));
-            calendar.set(Calendar.DAY_OF_MONTH, startDateCalendar.get(Calendar.DAY_OF_MONTH));
-            setTime(CompactCalendar.fromCalendar(calendar));
+            calendar.set(YEAR, startDateCalendar.get(YEAR));
+            calendar.set(MONTH, startDateCalendar.get(MONTH));
+            calendar.set(DAY_OF_MONTH, startDateCalendar.get(DAY_OF_MONTH));
+            setTime(fromCalendar(calendar));
         }
     }
 
-    public abstract String getComment();
-
-    public abstract void setComment(String comment);
-
-    /**
-     * Calculate the distance in meter between this and the other position.
-     *
-     * @param other the other position
-     * @return the distance in meter between this and the other position
-     *         or null if the distance cannot be calculated
-     */
-    public Double calculateDistance(BaseNavigationPosition other) {
+    public Double calculateDistance(NavigationPosition other) {
         return other.hasCoordinates() ? calculateDistance(other.getLongitude(), other.getLatitude()) : null;
     }
 
@@ -161,42 +92,21 @@ public abstract class BaseNavigationPosition {
         return null;
     }
 
-    /**
-     * Calculate the elevation in meter between this and the other position.
-     *
-     * @param other the other position
-     * @return the elevation in meter between this and the other position
-     *         or null if the elevation cannot be calculated
-     */
-    public Double calculateElevation(BaseNavigationPosition other) {
+    public Double calculateElevation(NavigationPosition other) {
         if (getElevation() != null && other.getElevation() != null) {
             return other.getElevation() - getElevation();
         }
         return null;
     }
 
-    /**
-     * Calculate the time in milliseconds between this and the other position.
-     *
-     * @param other the other position
-     * @return the time in milliseconds between this and the other position
-     *         or null if the time cannot be calculated
-     */
-    public Long calculateTime(BaseNavigationPosition other) {
-        if (getTime() != null && other.getTime() != null) {
+    public Long calculateTime(NavigationPosition other) {
+        if (hasTime() && other.hasTime()) {
             return other.getTime().getTimeInMillis() - getTime().getTimeInMillis();
         }
         return null;
     }
 
-    /**
-     * Calculate the angle in degree between this and the other position.
-     *
-     * @param other the other position
-     * @return the angle in degree beween this and the other position
-     *         or null if the angle cannot be calculated
-     */
-    public Double calculateAngle(BaseNavigationPosition other) {
+    public Double calculateAngle(NavigationPosition other) {
         if (hasCoordinates() && other.hasCoordinates()) {
             Bearing bearing = calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
             return bearing.getAngle();
@@ -204,20 +114,7 @@ public abstract class BaseNavigationPosition {
         return null;
     }
 
-    /**
-     * Calculate the orthogonal distance of this position to the line from pointA to pointB,
-     * supposed you are proceeding on a great circle route from A to B and end up at D, perhaps
-     * ending off course.
-     * <p/>
-     * http://williams.best.vwh.net/avform.htm#XTE
-     * http://www.movable-type.co.uk/scripts/latlong.html
-     *
-     * @param pointA the first point determining the line between pointA and pointB
-     * @param pointB the second point determining the line between pointA and pointB
-     * @return the orthogonal distance to the line from pointA to pointB in meter
-     *         or null if the orthogonal distance cannot be calculated
-     */
-    public Double calculateOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB) {
+    public Double calculateOrthogonalDistance(NavigationPosition pointA, NavigationPosition pointB) {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
             Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
             Double distanceAtoD = bearingAD.getDistance();
@@ -231,17 +128,9 @@ public abstract class BaseNavigationPosition {
         return null;
     }
 
-    /**
-     * Calculate the average speed between this and the other position.
-     *
-     * @param other the other position
-     * @return the speed in kilometers per hour between this and the other position
-     *         or null if time or distance cannot be calculated
-     */
-    public Double calculateSpeed(BaseNavigationPosition other) {
-        if (getTime() != null && other.getTime() != null) {
+    public Double calculateSpeed(NavigationPosition other) {
+        if (hasTime() && other.hasTime()) {
             double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
-
             Double distance = calculateDistance(other);
             if (distance != null && interval > 0.0)
                 return distance / interval * 3.6;
@@ -249,195 +138,241 @@ public abstract class BaseNavigationPosition {
         return null;
     }
 
-
-    public Wgs84Position asColumbusVStandardPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asColumbusVProfessionalPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asCoPilotPosition() {
-        return asWgs84Position();
-    }
-
-    public GkPosition asGkPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
-    }
-
-    public Wgs84Position asGlopusPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asGoogleMapsPosition() {
-        return asWgs84Position();
-    }
-
-    public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
-    }
-
-    public Wgs84Position asGoPalTrackPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asGoRiderGpsPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asGpsTunerPosition() {
-        return asWgs84Position();
-    }
-
+    @SuppressWarnings("UnusedDeclaration")
     public GpxPosition asBrokenGpxPosition() {
         return asGpxPosition();
     }
 
-    public GpxPosition asGpxPosition() {
-        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
-    }
-
-    public Wgs84Position asHaicomLoggerPosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asIbluePosition() {
-        return asWgs84Position();
-    }
-
-    public Wgs84Position asKlickTelRoutePosition() {
-        return asWgs84Position();
-    }
-
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlLittleEndianPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmlBetaPosition() {
         return asKmlPosition();
     }
 
-    public KmlPosition asKmlPosition() {
-        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
-    }
-
-    public KmlPosition asKmlBetaPosition() {
-        return asKmlPosition();
-    }
-
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmzPosition() {
         return asKmzPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asBrokenKmzLittleEndianPosition() {
         return asKmzPosition();
     }
 
-    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asColumbusVStandardPosition() {
+        return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asColumbusVProfessionalPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asCoPilotPosition() {
+        return asWgs84Position();
+    }
+
+    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
+        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
+    }
+
+    public GkPosition asGkPosition() {
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asGlopusPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asGoogleMapsUrlPosition() {
+        return asWgs84Position();
+    }
+
+    public GoPalPosition asGoPalRoutePosition() {
+        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asGoPalTrackPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asGoRiderGpsPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asGpsTunerPosition() {
+        return asWgs84Position();
+    }
+
+    public GpxPosition asGpxPosition() {
+        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asHaicomLoggerPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asIbluePosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asKlickTelRoutePosition() {
+        return asWgs84Position();
+    }
+
+    public KmlPosition asKmlPosition() {
+        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asKmzPosition() {
         return asKmlPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public KmlPosition asKmzBetaPosition() {
         return asKmzPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asKompassPosition() {
         return asWgs84Position();
     }
 
-    public BcrPosition asMTPPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
-    }
-
+    @SuppressWarnings("UnusedDeclaration")
     public NmeaPosition asMagellanExploristPosition() {
         return asNmeaPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NmeaPosition asMagellanRoutePosition() {
         return asNmeaPosition();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asMagicMapsIktPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asMagicMapsGoPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public GkPosition asMagicMapsPthPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asMotoPlanerUrlPosition() {
+        return asWgs84Position();
+    }
+
+    public BcrPosition asMTPPosition() {
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asNavigatingPoiWarnerPosition() {
         return asWgs84Position();
     }
 
     public NmeaPosition asNmeaPosition() {
-        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NmnPosition asNmnFavoritesPosition() {
         return asNmnPosition();
     }
 
     public NmnPosition asNmnPosition() {
-        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asNmnUrlPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asNokiaLandmarkExchangePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asOpelNaviPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asOvlPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asQstarzQPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asRoutePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asSygicUnicodePosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public GpxPosition asTcxPosition() {
         return asGpxPosition();
     }
 
     public TomTomPosition asTomTomRoutePosition() {
-        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTkPosition() {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTesPosition() {
         return asWgs84Position();
     }

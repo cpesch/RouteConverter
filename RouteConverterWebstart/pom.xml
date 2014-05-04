@@ -1,70 +1,59 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>slash.navigation</groupId>
     <artifactId>RouteConverterWebstart</artifactId>
     <packaging>jar</packaging>
     <name>The RouteConverter UI tool for Webstart</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <version>2.13-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
-    <profiles>
-        <profile>
-            <id>routeconverter</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo.webstart</groupId>
-                        <artifactId>webstart-maven-plugin</artifactId>
-                        <version>1.0-beta-1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jnlp</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <dependencies>
-                                <excludes>
-                                    <exclude>slash.navigation:route-converter-license</exclude>
-                                </excludes>
-                            </dependencies>
-                            <jnlp>
-                                <outputFile>${project.name}.jnlp</outputFile>
-                                <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
-                            </jnlp>
-                            <sign>
-                                <keystore>${keystorePath}</keystore>
-                                <alias>${keystoreAlias}</alias>
-                                <storepass>${keystorePassword}</storepass>
-                                <keystoreConfig>
-                                    <delete>false</delete>
-                                    <gen>false</gen>
-                                </keystoreConfig>
-                            </sign>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <profiles><profile><id>routeconverter</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>webstart-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jnlp</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <dependencies>
+                            <excludes>
+                                <exclude>slash.navigation:route-converter-license</exclude>
+                            </excludes>
+                        </dependencies>
+                        <jnlp>
+                            <outputFile>${project.name}.jnlp</outputFile>
+                            <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                        </jnlp>
+                        <sign>
+                            <keystore>${keystorePath}</keystore>
+                            <alias>${keystoreAlias}</alias>
+                            <storepass>${keystorePassword}</storepass>
+                            <keystoreConfig>
+                                <delete>false</delete>
+                                <gen>false</gen>
+                            </keystoreConfig>
+                        </sign>
+                        <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile></profiles>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>RouteConverterBase</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- mvn package does not need this but mvn release:perform stops claiming there's no artifact
-             containing the main class if this is omitted -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -99,21 +88,25 @@
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86</artifactId>
             <version>3.8M4</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
             <version>3.8M4</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86</artifactId>
             <version>3.8M4</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86_64</artifactId>
             <version>3.8M4</version>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>

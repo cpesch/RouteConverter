@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -43,13 +44,14 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        //noinspection MagicConstant
         label.setHorizontalAlignment(alignment);
-        BaseNavigationPosition position = BaseNavigationPosition.class.cast(value);
+        NavigationPosition position = BaseNavigationPosition.class.cast(value);
         formatCell(label, position);
         return label;
     }
 
-    protected abstract void formatCell(JLabel label, BaseNavigationPosition position);
+    protected abstract void formatCell(JLabel label, NavigationPosition position);
 
     private DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
     {
@@ -85,10 +87,10 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        BaseNavigationPosition position = BaseNavigationPosition.class.cast(value);
+        NavigationPosition position = BaseNavigationPosition.class.cast(value);
         Object editedValue = extractValue(position);
         return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
     }
 
-    protected abstract String extractValue(BaseNavigationPosition position);
+    protected abstract String extractValue(NavigationPosition position);
 }

@@ -34,31 +34,31 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MTP0809FormatTest {
     private MTP0809Format format = new MTP0809Format();
     private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "WP,End,@,,0,")));
 
     @Test
-    public void testReadComment() throws IOException {
+    public void testReaddescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, DEFAULT_ENCODING, context);
+        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);
         List<BcrPosition> positions = route.getPositions();
         assertEquals(2, positions.size());
         BcrPosition position1 = positions.get(0);
-        assertEquals("Start", position1.getComment());
+        assertEquals("Start", position1.getDescription());
         BcrPosition position2 = positions.get(1);
-        assertEquals("End,@", position2.getComment());
+        assertEquals("End,@", position2.getDescription());
     }
 
     @Test
-    public void testWriteComment() {
+    public void testWritedescription() {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         String string = writer.toString();

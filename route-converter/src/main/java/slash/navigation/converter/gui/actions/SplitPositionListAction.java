@@ -24,6 +24,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
@@ -31,6 +32,10 @@ import slash.navigation.gui.actions.FrameAction;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.List;
+
+import static java.lang.Math.max;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.base.RouteComments.getRouteName;
 
 /**
  * {@link ActionListener} that splits the position list of a {@link PositionsModel} at
@@ -59,23 +64,23 @@ public class SplitPositionListAction extends FrameAction {
 
             for (int i = selectedRows.length - 1; i >= 0; i--) {
                 int fromIndex = selectedRows[i];
-                fromIndex = Math.max(fromIndex, 0);
+                fromIndex = max(fromIndex, 0);
                 int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
-                toIndex = Math.max(toIndex, 0);
+                toIndex = max(toIndex, 0);
                 if (fromIndex == 0 && toIndex == 0)
                     break;
 
-                List<BaseNavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
+                List<NavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
                 positionsModel.remove(fromIndex, toIndex);
                 NavigationFormat format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
-                        format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
+                        format.createRoute(selectedRoute.getCharacteristics(), getRouteName(selectedRoute, routeInsertIndex), positions);
                 formatAndRoutesModel.addPositionList(routeInsertIndex, target);
             }
 
-            final int selectedRow = Math.max(selectedRows[selectedRows.length - 1] - 1, 0);
-            SwingUtilities.invokeLater(new Runnable() {
+            final int selectedRow = max(selectedRows[selectedRows.length - 1] - 1, 0);
+            invokeLater(new Runnable() {
                 public void run() {
                     table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
                 }
