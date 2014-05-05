@@ -36,6 +36,7 @@ import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunner
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
@@ -217,7 +218,7 @@ public class EclipseSWTMapView extends BaseMapView {
             log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
 
             try {
-                Thread.sleep(timeout);
+                sleep(timeout);
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
