@@ -63,13 +63,17 @@ public class BRouter implements RoutingService {
     private final RoutingContext routingContext = new RoutingContext();
     private Map<String, File> fileMap;
     private String baseUrl, directory;
+    private boolean initialized = false;
 
     public BRouter(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
-        initialize();
     }
 
     private void initialize() {
+        if(initialized)
+            return;
+        initialized = true;
+
         DataSourceService service = new DataSourceService();
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
@@ -131,6 +135,7 @@ public class BRouter implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+        initialize();
         RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
         routingEngine.quite = true;
         routingEngine.doRun(MAX_RUNNING_TIME);
@@ -188,10 +193,10 @@ public class BRouter implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        initialize();
+
         Set<String> keys = createKeys(longitudeAndLatitudes);
-
         Set<FileAndTarget> files = createFileAndTargets(keys);
-
         final Set<FileAndTarget> notExistingFiles = createNotExistingFiles(files);
 
         return new DownloadFuture() {

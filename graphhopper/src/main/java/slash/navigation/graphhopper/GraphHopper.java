@@ -69,13 +69,17 @@ public class GraphHopper implements RoutingService {
     private Map<String, File> fileMap;
     private String baseUrl, directory;
     private java.io.File osmPbfFile = null;
+    private boolean initialized = false;
 
     public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
-        initialize();
     }
 
     private void initialize() {
+        if(initialized)
+            return;
+        initialized = true;
+
         DataSourceService service = new DataSourceService();
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
@@ -112,6 +116,7 @@ public class GraphHopper implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+        initialize();
         if(osmPbfFile == null)
             return null;
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
@@ -160,6 +165,7 @@ public class GraphHopper implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        initialize();
         BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
 
         String keyForSmallestBoundingBox = null;
