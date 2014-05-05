@@ -125,7 +125,8 @@ public class EclipseSWTMapView extends BaseMapView {
             final String url = html.toURI().toURL().toExternalForm();
             webBrowser.runInSequence(new Runnable() {
                 public void run() {
-                    webBrowser.navigate(url);
+                    boolean navigate = webBrowser.navigate(url);
+                    log.fine(currentTimeMillis() + " navigate " + navigate);
                 }
             });
             log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
