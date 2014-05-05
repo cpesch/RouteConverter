@@ -28,10 +28,10 @@ import slash.navigation.maps.Theme;
  * @author Christian Pesch
  */
 
-public class ThemeImpl extends LocaleResourceImpl implements Theme {
+public class VectorTheme extends LocaleResourceImpl implements Theme {
     private final XmlRenderTheme xmlRenderTheme;
 
-    public ThemeImpl(String description, String url, XmlRenderTheme xmlRenderTheme) {
+    public VectorTheme(String description, String url, XmlRenderTheme xmlRenderTheme) {
         super(description, url);
         this.xmlRenderTheme = xmlRenderTheme;
     }

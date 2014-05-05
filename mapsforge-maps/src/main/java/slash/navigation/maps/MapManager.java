@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.io.File.separator;
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.sort;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
@@ -134,7 +135,7 @@ public class MapManager {
         mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
         themesModel.clear();
-        themesModel.addOrUpdateTheme(new ThemeImpl("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
+        themesModel.addOrUpdateTheme(new VectorTheme("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
     }
 
     private void scanMaps() {
@@ -147,7 +148,8 @@ public class MapManager {
             mapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
 
         long end = currentTimeMillis();
-        log.info("Collected map files " + printArrayToDialogString(mapFilesArray) + " from " + mapsDirectory + " in " + (end - start) + " milliseconds");
+        log.info(format("Collected %d map files %s from %s in %d milliseconds",
+                mapFilesArray.length, printArrayToDialogString(mapFilesArray), mapsDirectory, (end - start)));
     }
 
     private void scanThemes() throws FileNotFoundException {
@@ -157,10 +159,11 @@ public class MapManager {
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
         for (File file : themeFilesArray)
-            themesModel.addOrUpdateTheme(new ThemeImpl(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
+            themesModel.addOrUpdateTheme(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
 
         long end = currentTimeMillis();
-        log.info("Collected theme files " + printArrayToDialogString(themeFilesArray) + " from " + themesDirectory + " in " + (end - start) + " milliseconds");
+        log.info(format("Collected %d theme files %s from %s in %d milliseconds",
+                themeFilesArray.length, printArrayToDialogString(themeFilesArray), themesDirectory, (end - start)));
     }
 
     private static String removePrefix(File root, File file) {
