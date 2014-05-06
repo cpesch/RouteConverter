@@ -84,7 +84,7 @@ public class GraphHopper implements RoutingService {
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
         } catch (JAXBException e) {
-            log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e.getMessage()));
+            log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e));
         }
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
@@ -140,7 +140,7 @@ public class GraphHopper implements RoutingService {
             hopper.init(read(args));
             hopper.importOrLoad();
         } catch (Exception e) {
-            log.warning("Cannot initialize GraphHopper: " + e.getMessage());
+            log.warning("Cannot initialize GraphHopper: " + e);
         }
     }
 

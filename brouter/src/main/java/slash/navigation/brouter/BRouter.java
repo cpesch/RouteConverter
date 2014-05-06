@@ -78,7 +78,7 @@ public class BRouter implements RoutingService {
         try {
             service.load(getClass().getResourceAsStream(DATASOURCE_URL));
         } catch (JAXBException e) {
-            log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e.getMessage()));
+            log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e));
         }
         this.fileMap = service.getFiles(getName());
         this.baseUrl = service.getDataSource(getName()).getBaseUrl();
@@ -98,7 +98,7 @@ public class BRouter implements RoutingService {
             extractFile("slash/navigation/brouter/trekking-steep.brf");
         }
         catch(IOException e) {
-            log.warning("Cannot initialize BRouter: " + e.getMessage());
+            log.warning("Cannot initialize BRouter: " + e);
         }
     }
 

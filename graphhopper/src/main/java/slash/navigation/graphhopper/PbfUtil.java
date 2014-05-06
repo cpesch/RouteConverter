@@ -80,7 +80,7 @@ public class PbfUtil {
                     log.info("Skipped block " + blobHeader.getType() + " with " + blobBytes.length + " bytes");
             }
         } catch (IOException e) {
-            log.warning(format("Could not pbf file '%s': %s", file, e.getMessage()));
+            log.warning(format("Could not pbf file '%s': %s", file, e));
         } finally {
             if (fileInputStream != null)
                 closeQuietly(fileInputStream);

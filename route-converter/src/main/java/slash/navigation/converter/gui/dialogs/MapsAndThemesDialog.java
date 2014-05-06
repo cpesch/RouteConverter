@@ -292,7 +292,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                     invokeLater(new Runnable() {
                         public void run() {
                             showMessageDialog(null,
-                                    format(RouteConverter.getBundle().getString("scan-error"), e.getMessage()), "Error",
+                                    format(RouteConverter.getBundle().getString("scan-error"), e), "Error",
                                     ERROR_MESSAGE);
                         }
                     });

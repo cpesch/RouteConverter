@@ -158,7 +158,7 @@ public class MapsforgeMapView implements MapView {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
             waypointIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("waypoint.png"), -1);
         } catch (IOException e) {
-            log.severe("Cannot create marker and waypoint icon: " + e.getMessage());
+            log.severe("Cannot create marker and waypoint icon: " + e);
         }
         TRACK_PAINT = GRAPHIC_FACTORY.createPaint();
         TRACK_PAINT.setColor(BLUE);
@@ -538,7 +538,7 @@ public class MapsforgeMapView implements MapView {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
             showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
-                    getString("cannot-load-map"), map.getDescription(), e.getMessage()), "Error", ERROR_MESSAGE);
+                    getString("cannot-load-map"), map.getDescription(), e), "Error", ERROR_MESSAGE);
             return;
         }
 
