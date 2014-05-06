@@ -32,6 +32,7 @@ import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -376,10 +377,26 @@ public class BatchPositionAugmenter {
                     public void performOnStart() {
                     }
 
+                    private String getLocationFor(NavigationPosition position) {
+                        try {
+                            return googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    }
+
+                    private String getNearByFor(NavigationPosition position) {
+                        try {
+                            return geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    }
+
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+                        String description = getLocationFor(position);
                         if (description == null)
-                            description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+                            description = getNearByFor(position);
                         if (description != null) {
                             description = createDescription(index + 1, description);
                             positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
