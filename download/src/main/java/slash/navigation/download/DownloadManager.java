@@ -68,7 +68,7 @@ public class DownloadManager {
             if (downloads != null)
                 model.setDownloads(downloads);
         } catch (Exception e) {
-            log.severe(format("Could not load download queue from '%s': %s", queueFile, e.getMessage()));
+            log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
         restartDownloadsWithState(Resuming);
@@ -90,7 +90,7 @@ public class DownloadManager {
         try {
             new QueuePersister(queueFile).save(model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e.getMessage()));
+            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
         }
     }
     public void dispose() {

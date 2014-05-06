@@ -263,7 +263,7 @@ public class Transfer {
             String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
             return encoded.replace("%2F", "/"); // better not .replace("%3A", ":");
         } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot encode uri " + uri + ": " + e.getMessage());
+            log.severe("Cannot encode uri " + uri + ": " + e);
             return uri;
         }
     }
@@ -272,7 +272,7 @@ public class Transfer {
         try {
             return URLDecoder.decode(uri, UTF8_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot decode uri " + uri + ": " + e.getMessage());
+            log.severe("Cannot decode uri " + uri + ": " + e);
             return uri;
         }
     }
@@ -301,7 +301,7 @@ public class Transfer {
             byte[] bytes = string.getBytes(UTF8_ENCODING);
             return new String(bytes);
         } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e.getMessage());
+            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e);
             return string;
         }
     }

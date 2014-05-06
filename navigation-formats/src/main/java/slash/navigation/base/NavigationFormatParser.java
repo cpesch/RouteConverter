@@ -112,7 +112,7 @@ public class NavigationFormatParser {
                 try {
                     format.read(buffer, startDate, context);
                 } catch (Exception e) {
-                    log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
+                    log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e));
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {
@@ -248,7 +248,7 @@ public class NavigationFormatParser {
             else
                 return READ_BUFFER_SIZE;
         } catch (URISyntaxException e) {
-            throw new IOException("Cannot determine file from URL: " + e.getMessage());
+            throw new IOException("Cannot determine file from URL: " + e);
         }
     }
 
@@ -265,7 +265,7 @@ public class NavigationFormatParser {
             } else
                 return null;
         } catch (URISyntaxException e) {
-            throw new IOException("Cannot determine file from URL: " + e.getMessage());
+            throw new IOException("Cannot determine file from URL: " + e);
         }
     }
 

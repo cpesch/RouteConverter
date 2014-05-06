@@ -40,7 +40,7 @@ class GeoNamesUtil {
         try {
             result = (Geonames) newUnmarshaller().unmarshal(reader);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         finally {
             reader.close();

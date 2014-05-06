@@ -60,7 +60,7 @@ public class ClipboardInteractor {
             }
         }
         catch (IllegalStateException e) {
-            log.warning("Cannot get available data flavors: " + e.getMessage());
+            log.warning("Cannot get available data flavors: " + e);
         }
         return false;
     }

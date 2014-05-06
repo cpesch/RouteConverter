@@ -57,7 +57,7 @@ class TcxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller1().unmarshal(in);
             result = (slash.navigation.tcx.binding1.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -72,7 +72,7 @@ class TcxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -83,7 +83,7 @@ class TcxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller2().unmarshal(in);
             result = (slash.navigation.tcx.binding2.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -98,7 +98,7 @@ class TcxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

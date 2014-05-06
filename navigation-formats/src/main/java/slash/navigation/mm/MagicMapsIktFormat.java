@@ -316,7 +316,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 target.close();
             }
         } catch (XMLStreamException e) {
-            throw new IOException("Error while marshalling: " + e.getMessage());
+            throw new IOException("Error while marshalling: " + e, e);
         }
     }
 }

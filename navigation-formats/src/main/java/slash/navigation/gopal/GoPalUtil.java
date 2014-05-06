@@ -67,7 +67,7 @@ class GoPalUtil {
         try {
             result = (slash.navigation.gopal.binding3.Tour) newUnmarshaller3().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -77,7 +77,7 @@ class GoPalUtil {
         try {
             result = (slash.navigation.gopal.binding5.Tour) newUnmarshaller5().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -93,7 +93,7 @@ class GoPalUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -107,7 +107,7 @@ class GoPalUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

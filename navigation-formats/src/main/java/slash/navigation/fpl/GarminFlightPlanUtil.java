@@ -52,7 +52,7 @@ class GarminFlightPlanUtil {
         try {
             result = (FlightPlan) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -67,7 +67,7 @@ class GarminFlightPlanUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

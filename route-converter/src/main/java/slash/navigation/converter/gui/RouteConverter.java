@@ -324,7 +324,7 @@ public class RouteConverter extends SingleFrameApplication {
         try {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
-            log.info("Cannot create " + className + ": " + e.getMessage());
+            log.info("Cannot create " + className + ": " + e);
             return null;
         }
     }
@@ -549,7 +549,7 @@ public class RouteConverter extends SingleFrameApplication {
         invokeLater(new Runnable() {
             public void run() {
                 throwable.printStackTrace();
-                log.severe("Open error: " + throwable.getMessage());
+                log.severe("Open error: " + throwable);
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
@@ -565,7 +565,7 @@ public class RouteConverter extends SingleFrameApplication {
         invokeLater(new Runnable() {
             public void run() {
                 throwable.printStackTrace();
-                log.severe("Open error: " + throwable.getMessage());
+                log.severe("Open error: " + throwable);
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
@@ -1039,6 +1039,25 @@ public class RouteConverter extends SingleFrameApplication {
                 getDownloadManager().loadQueue();
             }
         }, "DownloadManagerInitializer").start();
+    }
+
+    private void initializeMapManager() {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    getMapManager().initialize();
+                    getMapManager().scanDirectories();
+                } catch (final IOException e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(frame,
+                                    MessageFormat.format(getBundle().getString("scan-error"), e.getMessage()), frame.getTitle(),
+                                    ERROR_MESSAGE);
+                        }
+                    });
+                }
+            }
+        }, "MapManagerInitializer").start();
     }
 
     private class PrintMapAction extends FrameAction {

@@ -91,7 +91,7 @@ public class KmlUtil {
         try {
             result = (slash.navigation.kml.binding20.Kml) newUnmarshaller20().unmarshal(reader);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -101,7 +101,7 @@ public class KmlUtil {
         try {
             result = newUnmarshaller20().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -112,7 +112,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(reader);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -123,7 +123,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -134,7 +134,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(reader);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -145,7 +145,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(in);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -156,7 +156,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(reader);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -167,7 +167,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -182,7 +182,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -195,7 +195,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -208,7 +208,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -221,7 +221,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

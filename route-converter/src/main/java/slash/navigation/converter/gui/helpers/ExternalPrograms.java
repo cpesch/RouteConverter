@@ -86,10 +86,10 @@ public class ExternalPrograms {
             try {
                 getDesktop().browse(new URI(uri));
             } catch (Exception e) {
-                log.severe("Start browser error: " + e.getMessage());
+                log.severe("Start browser error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -104,10 +104,10 @@ public class ExternalPrograms {
             try {
                 getDesktop().mail(new URI(uri));
             } catch (Exception e) {
-                log.severe("Start mail error: " + e.getMessage());
+                log.severe("Start mail error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }

@@ -175,7 +175,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             output.close();
                     }
                 } catch (IOException e) {
-                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
+                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e);
                 }
             }
         }, "BabelStreamPumper-" + streamName).start();
@@ -252,7 +252,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     readStream(errorStream, "error");
                 }
             } catch (IOException e) {
-                log.severe("Couldn't read response: " + e.getMessage());
+                log.severe("Couldn't read response: " + e);
             }
 
             try {
@@ -284,7 +284,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             readStream(inputStream, "input");
             readStream(errorStream, "error");
         } catch (IOException e) {
-            log.severe("Couldn't read final response: " + e.getMessage());
+            log.severe("Couldn't read final response: " + e);
         }
 
         log.info("Executed '" + process + "' with exit value: " + exitValue);

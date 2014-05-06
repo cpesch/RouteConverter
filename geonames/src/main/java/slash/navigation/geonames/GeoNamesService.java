@@ -76,9 +76,7 @@ public class GeoNamesService implements ElevationService {
                 if (elevation != null && !elevation.equals(nullValue))
                     return elevation;
             } catch (NumberFormatException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         }
         return null;
@@ -113,9 +111,7 @@ public class GeoNamesService implements ElevationService {
             try {
                 return GeoNamesUtil.unmarshal(result);
             } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         }
         return null;

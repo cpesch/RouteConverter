@@ -69,7 +69,7 @@ public abstract class FormatAndRoutesListModelToDocumentAdapter extends PlainDoc
             insertString(0, delegateContent, null);
         }
         catch (BadLocationException e) {
-            log.severe("Error updating adapter:" + e.getMessage());
+            log.severe("Error updating adapter:" + e);
         }
     }
 }

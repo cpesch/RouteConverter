@@ -93,9 +93,7 @@ public class GoogleMapsService implements ElevationService {
                         throw new ServiceUnavailableException("maps.googleapis.com", url);
                 }
             } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         return null;
     }
@@ -135,9 +133,7 @@ public class GoogleMapsService implements ElevationService {
                         throw new ServiceUnavailableException("maps.googleapis.com", url);
                 }
             } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         return null;
     }
@@ -169,9 +165,7 @@ public class GoogleMapsService implements ElevationService {
                         throw new ServiceUnavailableException("maps.googleapis.com", url);
                 }
             } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         return null;
     }

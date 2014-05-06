@@ -49,7 +49,7 @@ class QueueUtil {
             JAXBElement<QueueType> element = (JAXBElement<QueueType>) newUnmarshaller().unmarshal(in);
             result = element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -63,7 +63,7 @@ class QueueUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

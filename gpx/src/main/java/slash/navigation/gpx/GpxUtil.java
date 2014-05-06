@@ -74,7 +74,7 @@ public class GpxUtil {
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(reader);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -84,7 +84,7 @@ public class GpxUtil {
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -99,7 +99,7 @@ public class GpxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -114,7 +114,7 @@ public class GpxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(reader);
             result = (GpxType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -125,7 +125,7 @@ public class GpxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(in);
             result = (GpxType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
 
         return result;
@@ -145,7 +145,7 @@ public class GpxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

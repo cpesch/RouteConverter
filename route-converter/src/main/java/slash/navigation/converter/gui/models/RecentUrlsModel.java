@@ -114,7 +114,7 @@ public class RecentUrlsModel {
                     if (file == null || file.exists())
                         result.add(0, url);
                 } catch (MalformedURLException e) {
-                    log.warning("Recent URL '" + urlString + "' is malformed: " + e.getMessage());
+                    log.warning("Recent URL '" + urlString + "' is malformed: " + e);
                 }
             }
         }

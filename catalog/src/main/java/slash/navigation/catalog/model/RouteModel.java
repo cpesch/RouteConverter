@@ -52,7 +52,7 @@ public class RouteModel {
         try {
             return getRoute().getName();
         } catch (Exception e) {
-            log.severe("Cannot get name: " + e.getMessage());
+            log.severe("Cannot get name: " + e);
             return "?";
         }
     }
@@ -61,7 +61,7 @@ public class RouteModel {
         try {
             return getRoute().getDescription();
         } catch (Exception e) {
-            log.severe("Cannot get description: " + e.getMessage());
+            log.severe("Cannot get description: " + e);
             return "?";
         }
     }

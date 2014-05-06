@@ -51,7 +51,7 @@ public class HgtFilesService {
             try {
                 service.load(getClass().getResourceAsStream(datasourceUrl));
             } catch (Exception e) {
-                log.severe(format("Cannot load '%s': %s", datasourceUrl, e.getMessage()));
+                log.severe(format("Cannot load '%s': %s", datasourceUrl, e));
             }
         }
 

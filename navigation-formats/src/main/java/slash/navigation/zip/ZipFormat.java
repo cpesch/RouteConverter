@@ -94,12 +94,12 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
                 zip.closeEntry();
             }
         } catch (IOException e) {
-            log.fine("Error reading invalid zip entry from " + source + ": " + e.getMessage());
+            log.fine("Error reading invalid zip entry from " + source + ": " + e);
         } finally {
             try {
                 zip.close();
             } catch (IOException e) {
-                log.fine("Error closing zip from " + source + ": " + e.getMessage());
+                log.fine("Error closing zip from " + source + ": " + e);
             }
         }
     }
