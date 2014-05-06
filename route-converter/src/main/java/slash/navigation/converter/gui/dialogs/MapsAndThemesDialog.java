@@ -113,7 +113,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
             }
         });
         tableAvailableMaps.setRowSorter(sorterAvailableMaps);
-        LocalMap selectedMap = getMapManager().getDisplayedMapModel().getItem();
+        final LocalMap selectedMap = getMapManager().getDisplayedMapModel().getItem();
         if (selectedMap != null) {
             int selectedMapIndex = getMapManager().getMapsModel().getIndex(selectedMap);
             if (selectedMapIndex != -1) {
@@ -126,8 +126,11 @@ public class MapsAndThemesDialog extends SimpleDialog {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
-                LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
+                int selectedRow = tableAvailableMaps.getSelectedRow();
+                if (selectedRow == -1)
+                    return;
+                int row = tableAvailableMaps.convertRowIndexToView(selectedRow);
+                LocalMap map = getMapManager().getMapsModel().getMap(row);
                 r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
             }
         });
@@ -210,8 +213,11 @@ public class MapsAndThemesDialog extends SimpleDialog {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                int selectedRow = tableResources.convertRowIndexToView(tableResources.getSelectedRow());
-                RemoteResource resource = getMapManager().getResourcesModel().getResource(selectedRow);
+                int selectedRow = tableResources.getSelectedRow();
+                if (selectedRow == -1)
+                    return;
+                int row = tableResources.convertRowIndexToView(selectedRow);
+                RemoteResource resource = getMapManager().getResourcesModel().getResource(row);
                 r.showMapBorder(resource instanceof RemoteMap ? ((RemoteMap) resource).getBoundingBox() : null);
             }
         });
