@@ -915,7 +915,7 @@ public class MapsforgeMapView implements MapView {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
-            mapViewCallback.complementDescription(row, longitude, latitude);
+            mapViewCallback.complementDescription(row, longitude, latitude);         // TODO same as BaseMapView
             mapViewCallback.complementElevation(row, longitude, latitude);
             mapViewCallback.complementTime(row, null, true);
         }
