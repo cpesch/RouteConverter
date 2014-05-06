@@ -85,7 +85,7 @@ public class InsertPositionFacade {
                 for (NavigationPosition position : result.getPositions()) {
                     positions.add(r.getPositionsModel().getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
                 }
-                int insertRow = r.getPositionsModel().getIndex(selectedPositions.get(i));
+                int insertRow = r.getPositionsModel().getIndex(selectedPositions.get(i)) + 1;
                 r.getPositionsModel().add(insertRow, positions);
 
                 for (int j = 0; j < positions.size(); j++) {    // TODO unify with BaseMapView#complementPositions
