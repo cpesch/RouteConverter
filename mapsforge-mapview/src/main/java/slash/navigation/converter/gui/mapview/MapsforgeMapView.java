@@ -57,6 +57,7 @@ import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.Theme;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -356,8 +357,9 @@ public class MapsforgeMapView implements MapView {
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
+                RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    List<LatLong> latLongs = calculateRoute(pairWithLayer);
+                    List<LatLong> latLongs = calculateRoute(routingService, pairWithLayer);
                     if (latLongs != null) {
                         Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
                         pairWithLayer.setLayer(polyline);
@@ -366,10 +368,10 @@ public class MapsforgeMapView implements MapView {
                 }
             }
 
-            private List<LatLong> calculateRoute(PairWithLayer pairWithLayer) {
+            private List<LatLong> calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<LatLong>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
-                RoutingResult intermediate = mapViewCallback.getRoutingService().getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
+                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
                 if (intermediate != null) {
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
                     pairsToDistances.put(pairWithLayer, intermediate.getDistance());
