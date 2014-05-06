@@ -22,21 +22,20 @@ package slash.navigation.brouter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.assertDoubleEquals;
 
 public class BRouterTest {
     private BRouter router = new BRouter(null);
 
     @Test
     public void testLongitude() {
-        assertEquals(190032100, router.asLongitude(10.0321));
-        assertEquals(10.0321, router.asLongitude(190032100), 0.00001);
+        assertEquals(190032145, router.asLongitude(10.032145));
+        assertEquals(10.032145, router.asLongitude(190032145), 0.000001);
     }
 
     @Test
     public void testLatitude() {
-        assertEquals(143569480, router.asLatitude(53.56948));
-        assertDoubleEquals(53.56948, router.asLatitude(143569480));
+        assertEquals(143569481, router.asLatitude(53.569481));
+        assertEquals(53.569481, router.asLatitude(143569481), 0.000001);
     }
 
     @Test
