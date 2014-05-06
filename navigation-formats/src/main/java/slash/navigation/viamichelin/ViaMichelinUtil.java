@@ -76,9 +76,9 @@ class ViaMichelinUtil {
             saxParser = parserFactory.newSAXParser();
             xmlReader = saxParser.getXMLReader();
         } catch (ParserConfigurationException e) {
-            throw new JAXBException("Parser configuration error: " + e.getMessage(), e);
+            throw new JAXBException("Parser configuration error: " + e, e);
         } catch (SAXException e) {
-            throw new JAXBException("SAX error: " + e.getMessage(), e);
+            throw new JAXBException("SAX error: " + e, e);
         }
         EntityResolver entityResolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
@@ -97,7 +97,7 @@ class ViaMichelinUtil {
         try {
             result = (PoiList) newUnmarshaller().unmarshal(new SAXSource(createXMLReader(), new InputSource(reader)));
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -115,7 +115,7 @@ class ViaMichelinUtil {
                 fos.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

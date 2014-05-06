@@ -66,7 +66,7 @@ public class PositionSelection implements Transferable {
         try {
             targetPositions = asFormatForPositions(sourcePositions, targetFormat);
         } catch (IOException e) {
-            log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
+            log.severe("Cannot convert " + sourcePositions + " for selection: " + e);
         }
         SimpleRoute targetRoute = targetFormat.createRoute(Waypoints, null, targetPositions);
 

@@ -110,7 +110,7 @@ public class RouteConverterCmdLine {
         try {
             convert(source, format, target);
         } catch (IOException e) {
-            log.severe("Error while converting: " + e.getMessage());
+            log.severe("Error while converting: " + e);
             System.exit(15);
         }
 

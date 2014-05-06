@@ -82,7 +82,7 @@ public class EclipseSWTMapView extends BaseMapView {
                 } catch (IllegalStateException e) {
                     System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
                     browser = new JWebBrowser(useXULRunnerRuntime());
-                    log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
+                    log.info("Using XULRunner runtime to create WebBrowser: " + e);
                 }
             } else {
                 browser = new JWebBrowser();
@@ -350,9 +350,9 @@ public class EclipseSWTMapView extends BaseMapView {
                     }
                 });
             } catch (InterruptedException e) {
-                log.severe("Cannot execute script with result: " + e.getMessage());
+                log.severe("Cannot execute script with result: " + e);
             } catch (InvocationTargetException e) {
-                log.severe("Cannot execute script with result: " + e.getMessage());
+                log.severe("Cannot execute script with result: " + e);
             }
         } else {
             webBrowser.runInSequence(new Runnable() {

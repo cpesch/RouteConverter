@@ -389,7 +389,7 @@ public abstract class BaseMapView implements MapView {
             setCallbackListenerPort(port);
             return serverSocket;
         } catch (IOException e) {
-            log.severe("Cannot open callback listener socket: " + e.getMessage());
+            log.severe("Cannot open callback listener socket: " + e);
             return null;
         }
     }
@@ -415,7 +415,7 @@ public abstract class BaseMapView implements MapView {
                                 try {
                                     processStream(socket);
                                 } catch (IOException e) {
-                                    log.severe("Cannot process stream from callback listener socket: " + e.getMessage());
+                                    log.severe("Cannot process stream from callback listener socket: " + e);
                                 }
                             }
                         });
@@ -425,7 +425,7 @@ public abstract class BaseMapView implements MapView {
                         synchronized (notificationMutex) {
                             //noinspection ConstantConditions
                             if (running) {
-                                log.severe("Cannot accept callback listener socket: " + e.getMessage());
+                                log.severe("Cannot accept callback listener socket: " + e);
                             }
                         }
                     }
@@ -577,7 +577,7 @@ public abstract class BaseMapView implements MapView {
             try {
                 callbackListenerServerSocket.close();
             } catch (IOException e) {
-                log.warning("Cannot close callback listener socket:" + e.getMessage());
+                log.warning("Cannot close callback listener socket:" + e);
             }
             long end = currentTimeMillis();
             log.info("CallbackListenerSocket stopped after " + (end - start) + " ms");
@@ -1039,7 +1039,7 @@ public abstract class BaseMapView implements MapView {
                         processingPost = true;
                     lines.add(line);
                 } catch (IOException e) {
-                    log.severe("Cannot read line from callback listener port:" + e.getMessage());
+                    log.severe("Cannot read line from callback listener port:" + e);
                     break;
                 }
             }
@@ -1411,7 +1411,7 @@ public abstract class BaseMapView implements MapView {
         try {
             positionsModel.add(row, route);
         } catch (IOException e) {
-            log.severe("Cannot insert route: " + e.getMessage());
+            log.severe("Cannot insert route: " + e);
         }
     }
 

@@ -55,7 +55,7 @@ public class BaseMapViewProcessStreamTest {
                     writer.close();
                     socket.close();
                 } catch (IOException e) {
-                    assertTrue("Cannot write to socket: " + e.getMessage(), false);
+                    assertTrue("Cannot write to socket: " + e, false);
                 }
             }
         }).start();

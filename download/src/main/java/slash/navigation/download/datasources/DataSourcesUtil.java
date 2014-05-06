@@ -49,7 +49,7 @@ public class DataSourcesUtil {
             JAXBElement<DatasourcesType> element = (JAXBElement<DatasourcesType>) newUnmarshaller().unmarshal(in);
             result = element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -63,7 +63,7 @@ public class DataSourcesUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

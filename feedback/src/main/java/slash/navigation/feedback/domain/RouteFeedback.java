@@ -79,7 +79,7 @@ public class RouteFeedback {
         try {
             GpxUtil.marshal11(gpxType, writer);
         } catch (JAXBException e) {
-            throw new RuntimeException("Cannot marshall " + gpxType + ": " + e.getMessage(), e);
+            throw new RuntimeException("Cannot marshall " + gpxType + ": " + e, e);
         }
         return writer.toString();
     }
@@ -92,9 +92,7 @@ public class RouteFeedback {
             try {
                 return GpxUtil.unmarshal11(result);
             } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         else
             return null;

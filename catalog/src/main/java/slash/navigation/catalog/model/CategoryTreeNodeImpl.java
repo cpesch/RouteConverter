@@ -94,7 +94,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
                     insert(new CategoryTreeNodeImpl(child), children == null ? 0 : getChildCount());
                 }
             } catch (Exception e) {
-                log.severe("Cannot get child categories: " + e.getMessage());
+                log.severe("Cannot get child categories: " + e);
             }
         }
     }
@@ -119,7 +119,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         try {
             return getCategory().getName();
         } catch (Exception e) {
-            log.severe("Cannot get name: " + e.getMessage());
+            log.severe("Cannot get name: " + e);
             return "?";
         }
     }
@@ -128,7 +128,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         try {
             return getCategory().getRoutes();
         } catch (Exception e) {
-            log.severe("Cannot get routes: " + e.getMessage());
+            log.severe("Cannot get routes: " + e);
             return null;
         }
     }

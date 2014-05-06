@@ -60,9 +60,7 @@ public class EarthToolsService implements ElevationService {
                 if (elevation != null && !elevation.equals(-9999))
                     return elevation.doubleValue();
             } catch (Exception e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         return null;
     }
