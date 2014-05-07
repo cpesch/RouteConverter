@@ -91,7 +91,7 @@ public abstract class BaseMapView implements MapView {
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
-    private static final String AUTO_ZOOM = "autoZoom";
+    private static final String RECENTER_MAP_PREFERENCE = "recenterMap";
 
     private PositionsModel positionsModel;
     private List<NavigationPosition> positions;
@@ -234,9 +234,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected void initializeBrowserInteraction() {
-
-        final boolean autoRezoomCenter = preferences.getBoolean(AUTO_ZOOM, true);
-
         getComponent().addComponentListener(new ComponentListener() {
             public void componentResized(ComponentEvent e) {
                 resize();
@@ -303,7 +300,7 @@ public abstract class BaseMapView implements MapView {
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
                             copiedPositions = new ArrayList<NavigationPosition>(positions);
-                            recenter = autoRezoomCenter && haveToReplaceRoute;
+                            recenter = isRecenteringMap() && haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
                             haveToRepaintRouteImmediately = false;
@@ -363,7 +360,7 @@ public abstract class BaseMapView implements MapView {
                                     " haveToRepaintSelection: " + haveToRepaintSelection +
                                     " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
                                     " haveToRecenterMap: " + haveToRecenterMap);
-                            recenter = autoRezoomCenter && haveToRecenterMap;
+                            recenter = isRecenteringMap() && haveToRecenterMap;
                             haveToRecenterMap = false;
                             haveToRepaintSelectionImmediately = false;
                             haveToRepaintSelection = false;
@@ -683,9 +680,12 @@ public abstract class BaseMapView implements MapView {
     private int getZoom() {
         return preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
     }
-
     private void setZoom(int zoom) {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
+    }
+
+    private boolean isRecenteringMap() {
+        return preferences.getBoolean(RECENTER_MAP_PREFERENCE, true);
     }
 
     protected abstract NavigationPosition getNorthEastBounds();
