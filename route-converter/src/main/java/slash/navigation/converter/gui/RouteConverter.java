@@ -168,13 +168,13 @@ public class RouteConverter extends SingleFrameApplication {
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
+    private JPanel convertPanel, browsePanel, mapPanel, profilePanel;
     private MapView mapView;
     private ProfileView profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
-    private static final GridConstraints ELEVATION_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
+    private static final GridConstraints PROFILE_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 300), 0, true);
 
@@ -378,15 +378,15 @@ public class RouteConverter extends SingleFrameApplication {
                         getPositionsSelectionModel(),
                         getUnitSystemModel(),
                         getProfileModeModel());
-                elevationPanel.add(profileView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
-                elevationPanel.setTransferHandler(new PanelDropHandler());
-                elevationPanel.setVisible(true);
+                profilePanel.add(profileView.getComponent(), PROFILE_PANEL_CONSTRAINTS);
+                profilePanel.setTransferHandler(new PanelDropHandler());
+                profilePanel.setVisible(true);
 
                 int location = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location < 2)
                     location = 888;
                 profileSplitPane.setDividerLocation(location);
-                log.fine("Initialized elevation divider to " + location);
+                log.fine("Initialized profile divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
             }
         });
@@ -730,7 +730,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.setShowWaypointDescription(showWaypointDescription);
     }
 
-    // elevation view related helpers
+    // profile view related helpers
 
     public PositionsModel getPositionsModel() {
         return getConvertPanel().getFormatAndRoutesModel().getPositionsModel();
@@ -810,12 +810,12 @@ public class RouteConverter extends SingleFrameApplication {
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        elevationPanel = new JPanel();
-        elevationPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        elevationPanel.setMinimumSize(new Dimension(0, 0));
-        elevationPanel.setPreferredSize(new Dimension(0, 0));
-        elevationPanel.setVisible(false);
-        profileSplitPane.setRightComponent(elevationPanel);
+        profilePanel = new JPanel();
+        profilePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        profilePanel.setMinimumSize(new Dimension(0, 0));
+        profilePanel.setPreferredSize(new Dimension(0, 0));
+        profilePanel.setVisible(false);
+        profileSplitPane.setRightComponent(profilePanel);
     }
 
     /**
@@ -963,7 +963,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
-        actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
+        actionManager.register("print-profile", new PrintProfileAction());
         actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-profile", new ShowProfileAction());
@@ -1042,7 +1042,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class PrintElevationProfileAction extends FrameAction {
+    private class PrintProfileAction extends FrameAction {
         public void run() {
             profileView.print();
         }
