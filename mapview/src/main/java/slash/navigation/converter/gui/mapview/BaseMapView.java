@@ -86,6 +86,7 @@ public abstract class BaseMapView implements MapView {
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
+    private static final String COMPLEMENT_TIME_FALLBACK = "complementTimeFallback";
     private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
@@ -1407,12 +1408,15 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
+
+        boolean allowComplementTimeFallback = preferences.getBoolean(COMPLEMENT_TIME_FALLBACK, true);
+
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
         mapViewCallback.complementDescription(row, longitude, latitude);
         mapViewCallback.complementElevation(row, longitude, latitude);
-        mapViewCallback.complementTime(row, null, true);
+        mapViewCallback.complementTime(row, null, allowComplementTimeFallback);
     }
 
     private int getAddRow() {
@@ -1443,6 +1447,8 @@ public abstract class BaseMapView implements MapView {
         boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
         boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true);
 
+        boolean allowComplementTimeFallback = preferences.getBoolean(COMPLEMENT_TIME_FALLBACK, true);
+
         int minimum = row;
         for (int index : selectedPositionIndices) {
             if (index < minimum)
@@ -1471,7 +1477,7 @@ public abstract class BaseMapView implements MapView {
             if (cleanTime)
                 positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)
-                mapViewCallback.complementTime(index, null, true);
+                mapViewCallback.complementTime(index, null, allowComplementTimeFallback);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
