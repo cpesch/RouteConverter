@@ -18,22 +18,22 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.routing;
 
 /**
- * Enumeration of the travel modes for routing directions.
+ * A travel mode for a routing service.
  *
  * @author Christian Pesch
  */
 
-public enum TravelMode {
-    Bicycling, Driving, Walking;
+public class TravelMode {
+    private final String name;
 
-    public static TravelMode fromValue(String value) {
-        for (TravelMode travelMode : TravelMode.values()) {
-            if(travelMode.name().equals(value))
-                return travelMode;
-        }
-        return null;
+    public TravelMode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -32,13 +32,12 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
-import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
+import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
-import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -96,7 +95,6 @@ import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
@@ -140,9 +138,6 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
-    public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
-    public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
-    public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -302,7 +297,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
             if (mapView instanceof BaseMapView)
-                getRoutingServiceFacade().getRoutingServices().add(0, new GoogleDirections(mapView));
+                getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
         }
         // if (mapView == null)
         //    mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
@@ -351,9 +346,6 @@ public class RouteConverter extends SingleFrameApplication {
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
-                        getTravelModePreference(),
-                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
-                        preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true),
                         getUnitSystemModel());
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -477,10 +469,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setCategoryPreference(String category) {
         preferences.put(CATEGORY_PREFERENCE, category);
-    }
-
-    public TravelMode getTravelModePreference() {
-        return TravelMode.fromValue(preferences.get(TRAVEL_MODE_PREFERENCE, Driving.toString()));
     }
 
     public NumberPattern getNumberPatternPreference() {
@@ -727,12 +715,6 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.addMapViewListener(mapViewListener);
     }
 
-    public void setTravelMode(TravelMode travelMode) {
-        preferences.put(TRAVEL_MODE_PREFERENCE, travelMode.toString());
-        if (isMapViewAvailable())
-            mapView.setTravelMode(travelMode);
-    }
-
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         if (isMapViewAvailable())
             mapView.setRecenterAfterZooming(recenterAfterZooming);
@@ -746,16 +728,6 @@ public class RouteConverter extends SingleFrameApplication {
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         if (isMapViewAvailable())
             mapView.setShowWaypointDescription(showWaypointDescription);
-    }
-
-    public void setAvoidHighways(boolean avoidHighways) {
-        if (isMapViewAvailable())
-            mapView.setAvoidHighways(avoidHighways);
-    }
-
-    public void setAvoidTolls(boolean avoidTolls) {
-        if (isMapViewAvailable())
-            mapView.setAvoidTolls(avoidTolls);
     }
 
     // elevation view related helpers

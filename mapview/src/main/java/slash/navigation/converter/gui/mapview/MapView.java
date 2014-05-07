@@ -41,7 +41,6 @@ public interface MapView extends PositionsSelectionModel {
                     MapViewCallback mapViewCallback,
                     boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,
-                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                     UnitSystemModel unitSystemModel);
     boolean isSupportedPlatform();
     boolean isInitialized();
@@ -54,9 +53,6 @@ public interface MapView extends PositionsSelectionModel {
     void setRecenterAfterZooming(boolean recenterAfterZooming);
     void setShowCoordinates(boolean showCoordinates);
     void setShowWaypointDescription(boolean showWaypointDescription);
-    void setTravelMode(TravelMode travelMode);
-    void setAvoidHighways(boolean avoidHighways);
-    void setAvoidTolls(boolean avoidTolls);
 
     NavigationPosition getCenter();
     void print(String title, boolean withDirections);

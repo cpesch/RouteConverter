@@ -21,6 +21,10 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
+
+import javax.swing.event.ChangeListener;
 
 /**
  * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
@@ -33,4 +37,10 @@ public interface MapViewCallback {
     void complementDescription(int row, Double longitude, Double latitude);
     void complementElevation(int row, Double longitude, Double latitude);
     void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
+
+    RoutingService getRoutingService();
+    TravelMode getTravelMode();
+    boolean isAvoidHighways();
+    boolean isAvoidTolls();
+    void addChangeListener(ChangeListener l);
 }

@@ -29,7 +29,8 @@ import slash.navigation.common.NumberPattern;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
-import slash.navigation.converter.gui.mapview.TravelMode;
+import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
+import slash.navigation.routing.TravelMode;
 import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
@@ -62,7 +63,6 @@ import static slash.navigation.common.DegreeFormat.*;
 import static slash.navigation.common.NumberPattern.*;
 import static slash.navigation.common.UnitSystem.*;
 import static slash.navigation.converter.gui.RouteConverter.*;
-import static slash.navigation.converter.gui.mapview.TravelMode.*;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
@@ -199,31 +199,23 @@ public class OptionsDialog extends SimpleDialog {
         });
         handleRoutingServiceUpdate();
 
-        ComboBoxModel travelModeModel = new DefaultComboBoxModel(new Object[]{
-                Bicycling, Driving, Walking
-        });
-        travelModeModel.setSelectedItem(r.getTravelModePreference());
-        comboboxTravelMode.setModel(travelModeModel);
         comboboxTravelMode.setRenderer(new TravelModeListCellRenderer());
         comboboxTravelMode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
                 TravelMode travelMode = (TravelMode) e.getItem();
-                r.setTravelMode(travelMode);
+                r.getRoutingServiceFacade().setTravelMode(travelMode);
             }
         });
-
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, getPreferences(), AVOID_HIGHWAYS_PREFERENCE, true);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
+                r.getRoutingServiceFacade().setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, getPreferences(), AVOID_TOLLS_PREFERENCE, true);
         checkBoxAvoidTolls.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.setAvoidTolls(checkBoxAvoidTolls.isSelected());
+                r.getRoutingServiceFacade().setAvoidTolls(checkBoxAvoidTolls.isSelected());
             }
         });
 
@@ -345,6 +337,18 @@ public class OptionsDialog extends SimpleDialog {
         textFieldRoutingServicePath.setEnabled(service.isDownload());
         textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
+        updateTravelModes();
+    }
+
+    private void updateTravelModes() {
+        RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingService service = serviceFacade.getRoutingService();
+
+        DefaultComboBoxModel travelModeModel = new DefaultComboBoxModel();
+        for (TravelMode travelMode : service.getAvailableTravelModes())
+            travelModeModel.addElement(travelMode);
+        travelModeModel.setSelectedItem(serviceFacade.getTravelMode());
+        comboboxTravelMode.setModel(travelModeModel);
     }
 
     private void handleElevationServiceUpdate() {

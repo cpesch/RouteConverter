@@ -77,7 +77,6 @@ public class EclipseSWTMapView extends BaseMapView {
             if (isLinux()) {
                 try {
                     System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
-                    // System.setProperty("nativeswing.webbrowser.runtime", "webkit");
                     browser = new JWebBrowser(useWebkitRuntime());
                     log.info("Using WebKit runtime to create WebBrowser");
                 } catch (IllegalStateException e) {
@@ -236,7 +235,7 @@ public class EclipseSWTMapView extends BaseMapView {
         checkLocalhostResolution();
         checkCallback();
         setDegreeFormat();
-        setCoordinates();
+        setShowCoordinates();
         end = currentTimeMillis();
         log.fine("Browser interaction is running after " + (end - start) + " ms");
     }

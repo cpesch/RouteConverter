@@ -25,6 +25,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,12 +75,13 @@ public class InsertPositionFacade {
             routingService.downloadRoutingDataFor(lal);
         }
 
+        TravelMode travelMode = r.getRoutingServiceFacade().getTravelMode();
         for (int i = 0; i < selectedPositions.size(); i++) {
             // skip the very last position without successor
             if (i == r.getPositionsModel().getRowCount() - 1 || i == selectedPositions.size() - 1)
                 continue;
 
-            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1));
+            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode);
             if (result != null) {
                 List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
                 for (NavigationPosition position : result.getPositions()) {

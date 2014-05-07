@@ -35,9 +35,10 @@ public interface RoutingService {
     String getName();
     boolean isDownload();
     boolean isSupportTurnpoints();
+    List<TravelMode> getAvailableTravelModes();
     String getPath();
     void setPath(String path);
 
-    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to);
+    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
     DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
 }

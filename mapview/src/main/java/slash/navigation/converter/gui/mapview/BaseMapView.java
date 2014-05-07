@@ -103,13 +103,11 @@ public abstract class BaseMapView implements MapView {
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, avoidHighways, avoidTolls,
-            running = true,
+    private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, running = true,
             haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
-    private TravelMode travelMode;
     private UnitSystemModel unitSystemModel;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private MapViewCallback mapViewCallback;
@@ -125,22 +123,18 @@ public abstract class BaseMapView implements MapView {
                            MapViewCallback mapViewCallback,
                            boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
-                           TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
                            UnitSystemModel unitSystemModel) {
+        this.mapViewCallback = mapViewCallback;
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
-        this.mapViewCallback = mapViewCallback;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
-        this.travelMode = travelMode;
-        this.avoidHighways = avoidHighways;
-        this.avoidTolls = avoidTolls;
     }
 
     protected abstract void initializeBrowser();
 
-    protected void setModel(PositionsModel positionsModel,
+    protected void setModel(final PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
                             CharacteristicsModel characteristicsModel,
                             final UnitSystemModel unitSystemModel) {
@@ -198,6 +192,12 @@ public abstract class BaseMapView implements MapView {
         unitSystemModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setDegreeFormat();
+            }
+        });
+        mapViewCallback.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                    update(false);
             }
         });
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
@@ -651,7 +651,7 @@ public abstract class BaseMapView implements MapView {
 
     public void setShowCoordinates(boolean showCoordinates) {
         this.showCoordinates = showCoordinates;
-        setCoordinates();
+        setShowCoordinates();
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
@@ -660,25 +660,7 @@ public abstract class BaseMapView implements MapView {
             update(false);
     }
 
-    public void setTravelMode(TravelMode travelMode) {
-        this.travelMode = travelMode;
-        if (positionsModel.getRoute().getCharacteristics() == Route)
-            update(false);
-    }
-
-    public void setAvoidHighways(boolean avoidHighways) {
-        this.avoidHighways = avoidHighways;
-        if (positionsModel.getRoute().getCharacteristics() == Route)
-            update(false);
-    }
-
-    public void setAvoidTolls(boolean avoidTolls) {
-        this.avoidTolls = avoidTolls;
-        if (positionsModel.getRoute().getCharacteristics() == Route)
-            update(false);
-    }
-
-    protected void setCoordinates() {
+    protected void setShowCoordinates() {
         executeScript("setShowCoordinates(" + showCoordinates + ");");
     }
 
@@ -809,9 +791,9 @@ public abstract class BaseMapView implements MapView {
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
                     append(",").append(destination.getLongitude()).append("), ");
             buffer.append("waypoints: [").append(waypoints).append("], ").
-                    append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
-            buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
-            buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
+                    append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
+            buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
+            buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
             buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(", ");
@@ -958,9 +940,9 @@ public abstract class BaseMapView implements MapView {
                     buffer.append(mode).append("({");
                     buffer.append("origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
                     buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
-                    buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
-                    buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
-                    buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
+                    buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
+                    buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
+                    buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
                     buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
                     buffer.append(key).append(");\n");
                     executeScript(buffer.toString());
