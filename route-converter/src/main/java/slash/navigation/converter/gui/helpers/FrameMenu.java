@@ -44,7 +44,7 @@ public class FrameMenu {
         JMenu printMenu = createMenu("print");
         printMenu.add(createItem("print-map"));
         printMenu.add(createItem("print-map-and-route"));
-        printMenu.add(createItem("print-elevation-profile"));
+        printMenu.add(createItem("print-profile"));
         fileMenu.add(printMenu);
         fileMenu.addSeparator();
         fileMenu.add(createItem("exit"));

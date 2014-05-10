@@ -25,8 +25,11 @@ import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 /**
  * Encapsulates access to Google Directions service.
@@ -35,6 +38,9 @@ import java.util.List;
  */
 
 public class GoogleDirections implements RoutingService {
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), new TravelMode("Driving"),
+            new TravelMode("Walking"));
+
     private final MapView mapView;
 
     public GoogleDirections(MapView mapView) {
@@ -53,6 +59,10 @@ public class GoogleDirections implements RoutingService {
         return true;
     }
 
+    public List<TravelMode> getAvailableTravelModes() {
+        return TRAVEL_MODES;
+    }
+
     public String getPath() {
         throw new UnsupportedOperationException();
     }
@@ -61,7 +71,7 @@ public class GoogleDirections implements RoutingService {
         throw new UnsupportedOperationException();
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         throw new UnsupportedOperationException();
     }
 

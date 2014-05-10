@@ -33,13 +33,12 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
-import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
+import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
-import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -98,7 +97,6 @@ import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
@@ -142,9 +140,6 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
-    public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
-    public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
-    public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -166,8 +161,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
-    private MapManager mapManager = new MapManager(downloadManager);
-    private CompletePositionService completePositionService = new CompletePositionService(downloadManager);
+    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
@@ -176,13 +170,13 @@ public class RouteConverter extends SingleFrameApplication {
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
+    private JPanel convertPanel, browsePanel, mapPanel, profilePanel;
     private MapView mapView;
     private ProfileView profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
-    private static final GridConstraints ELEVATION_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
+    private static final GridConstraints PROFILE_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 300), 0, true);
 
@@ -305,10 +299,11 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
             if (mapView instanceof BaseMapView)
-                getRoutingServiceFacade().getRoutingServices().add(0, new GoogleDirections(mapView));
+                getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
         }
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+        // if (mapView == null)
+        //    mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
@@ -354,9 +349,6 @@ public class RouteConverter extends SingleFrameApplication {
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
-                        getTravelModePreference(),
-                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
-                        preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true),
                         getUnitSystemModel());
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -389,15 +381,15 @@ public class RouteConverter extends SingleFrameApplication {
                         getPositionsSelectionModel(),
                         getUnitSystemModel(),
                         getProfileModeModel());
-                elevationPanel.add(profileView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
-                elevationPanel.setTransferHandler(new PanelDropHandler());
-                elevationPanel.setVisible(true);
+                profilePanel.add(profileView.getComponent(), PROFILE_PANEL_CONSTRAINTS);
+                profilePanel.setTransferHandler(new PanelDropHandler());
+                profilePanel.setVisible(true);
 
                 int location = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location < 2)
                     location = 888;
                 profileSplitPane.setDividerLocation(location);
-                log.fine("Initialized elevation divider to " + location);
+                log.fine("Initialized profile divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
             }
         });
@@ -407,7 +399,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
-        getCompletePositionService().dispose();
+        getElevationServiceFacade().dispose();
         getDownloadManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();
@@ -480,10 +472,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setCategoryPreference(String category) {
         preferences.put(CATEGORY_PREFERENCE, category);
-    }
-
-    public TravelMode getTravelModePreference() {
-        return TravelMode.fromValue(preferences.get(TRAVEL_MODE_PREFERENCE, Driving.toString()));
     }
 
     public NumberPattern getNumberPatternPreference() {
@@ -648,8 +636,8 @@ public class RouteConverter extends SingleFrameApplication {
             profileView.setSelectedPositions(selectedPositions, true);
     }
 
-    public CompletePositionService getCompletePositionService() {
-        return completePositionService;
+    public ElevationServiceFacade getElevationServiceFacade() {
+        return elevationServiceFacade;
     }
 
     public InsertPositionFacade getInsertPositionFacade() {
@@ -676,7 +664,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
         if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(frame, getCompletePositionService());
+            batchPositionAugmenter = new BatchPositionAugmenter(frame);
         }
         return batchPositionAugmenter;
     }
@@ -734,12 +722,6 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.addMapViewListener(mapViewListener);
     }
 
-    public void setTravelMode(TravelMode travelMode) {
-        preferences.put(TRAVEL_MODE_PREFERENCE, travelMode.toString());
-        if (isMapViewAvailable())
-            mapView.setTravelMode(travelMode);
-    }
-
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         if (isMapViewAvailable())
             mapView.setRecenterAfterZooming(recenterAfterZooming);
@@ -755,22 +737,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.setShowWaypointDescription(showWaypointDescription);
     }
 
-    public void setAvoidHighways(boolean avoidHighways) {
-        if (isMapViewAvailable())
-            mapView.setAvoidHighways(avoidHighways);
-    }
-
-    public void setAvoidTolls(boolean avoidTolls) {
-        if (isMapViewAvailable())
-            mapView.setAvoidTolls(avoidTolls);
-    }
-
-    public void showMapBorder(BoundingBox mapBoundingBox) {
-        if (mapView != null)
-            mapView.showMapBorder(mapBoundingBox);
-    }
-
-    // elevation view related helpers
+    // profile view related helpers
 
     public PositionsModel getPositionsModel() {
         return getConvertPanel().getFormatAndRoutesModel().getPositionsModel();
@@ -850,12 +817,12 @@ public class RouteConverter extends SingleFrameApplication {
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        elevationPanel = new JPanel();
-        elevationPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        elevationPanel.setMinimumSize(new Dimension(0, 0));
-        elevationPanel.setPreferredSize(new Dimension(0, 0));
-        elevationPanel.setVisible(false);
-        profileSplitPane.setRightComponent(elevationPanel);
+        profilePanel = new JPanel();
+        profilePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        profilePanel.setMinimumSize(new Dimension(0, 0));
+        profilePanel.setPreferredSize(new Dimension(0, 0));
+        profilePanel.setVisible(false);
+        profileSplitPane.setRightComponent(profilePanel);
     }
 
     /**
@@ -1003,7 +970,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
-        actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
+        actionManager.register("print-profile", new PrintProfileAction());
         actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-profile", new ShowProfileAction());
@@ -1102,7 +1069,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class PrintElevationProfileAction extends FrameAction {
+    private class PrintProfileAction extends FrameAction {
         public void run() {
             profileView.print();
         }

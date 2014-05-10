@@ -32,6 +32,7 @@ import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
@@ -56,8 +58,13 @@ public class BRouter implements RoutingService {
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final int MAX_RUNNING_TIME = 1000;
     private static final String DATASOURCE_URL = "brouter-datasources.xml";
+
+    private static final int MAX_RUNNING_TIME = 1000;
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("fastbike"),
+            new TravelMode("moped"), new TravelMode("safety"), new TravelMode("shortest"), new TravelMode("trekking"),
+            new TravelMode("trekking-ignore-cr"), new TravelMode("trekking-noferries"),
+            new TravelMode("trekking-nosteps"), new TravelMode("trekking-steep"), new TravelMode("car-test"));
 
     private final DownloadManager downloadManager;
     private final RoutingContext routingContext = new RoutingContext();
@@ -70,7 +77,7 @@ public class BRouter implements RoutingService {
     }
 
     private void initialize() {
-        if(initialized)
+        if (initialized)
             return;
         initialized = true;
 
@@ -85,19 +92,8 @@ public class BRouter implements RoutingService {
         this.directory = service.getDataSource(getName()).getDirectory();
 
         try {
-            extractFile("slash/navigation/brouter/car-test.brf");
-            extractFile("slash/navigation/brouter/fastbike.brf");
             extractFile("slash/navigation/brouter/lookups.dat");
-            extractFile("slash/navigation/brouter/moped.brf");
-            extractFile("slash/navigation/brouter/safety.brf");
-            extractFile("slash/navigation/brouter/shortest.brf");
-            routingContext.localFunction = extractFile("slash/navigation/brouter/trekking.brf").getPath(); // TODO make configurable
-            extractFile("slash/navigation/brouter/trekking-ignore-cr.brf");
-            extractFile("slash/navigation/brouter/trekking-noferries.brf");
-            extractFile("slash/navigation/brouter/trekking-nosteps.brf");
-            extractFile("slash/navigation/brouter/trekking-steep.brf");
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             log.warning("Cannot initialize BRouter: " + e);
         }
     }
@@ -118,6 +114,10 @@ public class BRouter implements RoutingService {
         return false;
     }
 
+    public List<TravelMode> getAvailableTravelModes() {
+        return TRAVEL_MODES;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }
@@ -129,13 +129,19 @@ public class BRouter implements RoutingService {
     private java.io.File getDirectory() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
+        if (!f.exists())
             directoryName = getApplicationDirectory(directory).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         initialize();
+        try {
+            routingContext.localFunction = extractFile("slash/navigation/brouter/" + travelMode.getName() + ".brf").getPath();
+        } catch (IOException e) {
+            log.warning(format("Cannot configure travel mode %s: %s", travelMode, e));
+        }
+
         RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
         routingEngine.quite = true;
         routingEngine.doRun(MAX_RUNNING_TIME);
@@ -203,12 +209,15 @@ public class BRouter implements RoutingService {
             public boolean isRequiresDownload() {
                 return !notExistingFiles.isEmpty();
             }
+
             public boolean isRequiresProcessing() {
                 return false;
             }
+
             public void download() {
                 downloadFiles(notExistingFiles);
             }
+
             public void process() {
                 // intentionally do nothing
             }

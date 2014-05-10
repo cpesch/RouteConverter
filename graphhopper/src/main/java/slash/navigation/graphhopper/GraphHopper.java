@@ -35,6 +35,7 @@ import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ public class GraphHopper implements RoutingService {
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final String DATASOURCE_URL = "graphhopper-datasources.xml";
+
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), new TravelMode("Car"),
+            new TravelMode("Foot"));
 
     private final DownloadManager downloadManager;
     private com.graphhopper.GraphHopper hopper;
@@ -107,6 +111,10 @@ public class GraphHopper implements RoutingService {
         return false;
     }
 
+    public List<TravelMode> getAvailableTravelModes() {
+        return TRAVEL_MODES;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }
@@ -115,22 +123,34 @@ public class GraphHopper implements RoutingService {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         initialize();
         if(osmPbfFile == null)
             return null;
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
-        request.setVehicle("car"); // TODO make configurable
+        request.setVehicle(travelMode.getName().toUpperCase());
         GHResponse response = hopper.route(request);
         return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis());
     }
 
-    private void initializeHopper(FileAndTarget fileAndTarget) {
+    private String getAvailableTravelModeNames() {
+        StringBuilder result = new StringBuilder();
+        List<TravelMode> availableTravelModes = getAvailableTravelModes();
+        for(int i=0; i < availableTravelModes.size(); i++) {
+            result.append(availableTravelModes.get(i).getName().toUpperCase());
+            if(i < availableTravelModes.size() - 1)
+                result.append(",");
+        }
+        return result.toString();
+    }
+
+    void initializeHopper(FileAndTarget fileAndTarget) {
         this.osmPbfFile = fileAndTarget.target;
         String[] args = new String[]{
                 "prepare.doPrepare=false",
                 "prepare.chShortcuts=false",
                 "graph.location=" + createPath(osmPbfFile),
+                "osmreader.acceptWay=" + getAvailableTravelModeNames(),
                 "osmreader.osm=" + osmPbfFile.getAbsolutePath()
         };
         try {

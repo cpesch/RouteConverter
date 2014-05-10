@@ -26,6 +26,7 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.TravelMode;
 
 import java.io.IOException;
 
@@ -44,10 +45,27 @@ public class BRouterIT {
             future.download();
     }
 
+    private TravelMode getTravelMode(String lookupName) {
+        for (TravelMode travelMode : router.getAvailableTravelModes()) {
+            if (lookupName.equals(travelMode.getName()))
+                return travelMode;
+        }
+        throw new IllegalArgumentException(lookupName + " not found");
+    }
+
     @Test
-    public void testGetRouteBetween() {
+    public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
-                new SimpleNavigationPosition(10.06767, 53.49249));
+                new SimpleNavigationPosition(10.06767, 53.49249), getTravelMode("car-test"));
+        assertEquals(156, result.getPositions().size());
+        assertEquals(13810.0, result.getDistance(), 5.0);
+        assertEquals(0, result.getTime());
+    }
+
+    @Test
+    public void testGetRouteBetweenByBike() {
+        RoutingResult result = router.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
+                new SimpleNavigationPosition(10.06767, 53.49249), getTravelMode("trekking"));
         assertEquals(109, result.getPositions().size());
         assertEquals(13945.0, result.getDistance(), 5.0);
         assertEquals(0, result.getTime());

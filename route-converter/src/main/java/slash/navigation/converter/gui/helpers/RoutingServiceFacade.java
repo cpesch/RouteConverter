@@ -24,6 +24,7 @@ import slash.navigation.brouter.BRouter;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -43,22 +44,29 @@ import static java.lang.String.format;
 public class RoutingServiceFacade {
     private static final Logger log = Logger.getLogger(RoutingServiceFacade.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RoutingServiceFacade.class);
-    private static final String ROUTING_SERVICE = "routingService";
+    private static final String ROUTING_SERVICE_PREFERENCE = "routingService";
+    private static final String TRAVEL_MODE_PREFERENCE = "travelMode";
+    public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
+    public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
     private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
     private final EventListenerList listenerList = new EventListenerList();
 
     public RoutingServiceFacade(DownloadManager downloadManager) {
-        routingServices.add(new BRouter(downloadManager));
-        routingServices.add(new GraphHopper(downloadManager));
+        addRoutingService(new GraphHopper(downloadManager));
+        addRoutingService(new BRouter(downloadManager));
     }
 
     public List<RoutingService> getRoutingServices() {
         return routingServices;
     }
 
+    public void addRoutingService(RoutingService routingService) {
+        routingServices.add(0, routingService);
+    }
+
     public RoutingService getRoutingService() {
-        String lookupServiceName = preferences.get(ROUTING_SERVICE, routingServices.get(0).getName());
+        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, routingServices.get(0).getName());
 
         for (RoutingService service : routingServices) {
             if (lookupServiceName.endsWith(service.getName()))
@@ -70,7 +78,25 @@ public class RoutingServiceFacade {
     }
 
     public void setRoutingService(RoutingService service) {
-        preferences.put(ROUTING_SERVICE, service.getName());
+        preferences.put(ROUTING_SERVICE_PREFERENCE, service.getName());
+        fireChanged();
+    }
+
+    public TravelMode getTravelMode() {
+        List<TravelMode> travelModes = getRoutingService().getAvailableTravelModes();
+        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelModes.get(0).getName());
+
+        for (TravelMode travelMode : travelModes) {
+            if (lookupName.equals(travelMode.getName()))
+                return travelMode;
+        }
+
+        log.warning(format("Failed to find travel mode %s; using first", lookupName));
+        return travelModes.get(0);
+    }
+
+    public void setTravelMode(TravelMode travelMode) {
+        preferences.put(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelMode.getName());
         fireChanged();
     }
 
@@ -86,4 +112,23 @@ public class RoutingServiceFacade {
     public void addChangeListener(ChangeListener l) {
         listenerList.add(ChangeListener.class, l);
     }
+
+    public boolean isAvoidHighways() {
+        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true);
+    }
+
+    public void setAvoidHighways(boolean avoidHighways) {
+        preferences.putBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), avoidHighways);
+        fireChanged();
+    }
+
+    public boolean isAvoidTolls() {
+        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true);
+    }
+
+    public void setAvoidTolls(boolean avoidTolls) {
+        preferences.putBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), avoidTolls);
+        fireChanged();
+    }
+
 }

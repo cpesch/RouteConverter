@@ -64,12 +64,10 @@ public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
     private static final Object mutex = new Object();
     private JFrame frame;
-    private CompletePositionService completePositionService;
     private boolean running = true;
 
-    public BatchPositionAugmenter(JFrame frame, CompletePositionService completePositionService) {
+    public BatchPositionAugmenter(JFrame frame) {
         this.frame = frame;
-        this.completePositionService = completePositionService;
     }
 
     public void interrupt() {
@@ -243,6 +241,8 @@ public class BatchPositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
+                    private ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
+
                     public String getName() {
                         return "ElevationPositionAugmenter";
                     }
@@ -257,12 +257,12 @@ public class BatchPositionAugmenter {
                             NavigationPosition position = positionsModel.getPosition(row);
                             longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
                         }
-                        completePositionService.downloadElevationDataFor(longitudeAndLatitudes);
+                        elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         Double previousElevation = position.getElevation();
-                        Double nextElevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
                         boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
                         if (changed)
                             positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, false, true);

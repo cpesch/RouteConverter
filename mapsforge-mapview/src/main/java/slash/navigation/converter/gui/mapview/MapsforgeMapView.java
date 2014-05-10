@@ -314,7 +314,7 @@ public class MapsforgeMapView implements MapView {
                             if (future.isRequiresProcessing())
                                 future.process();
 
-                            removeLines(pairWithLayers);
+                            removeLines(pairWithLayers, true);
                             drawRoute(pairWithLayers);
                             fireDistanceAndTime();
                         } else {
@@ -339,7 +339,7 @@ public class MapsforgeMapView implements MapView {
                 }
             }
 
-            private void removeLines(List<PairWithLayer> pairWithLayers) {
+            private void removeLines(List<PairWithLayer> pairWithLayers, boolean removeDistancesAndTimes) {
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     Layer layer = pairWithLayer.getLayer();
                     if (layer != null)
@@ -348,8 +348,10 @@ public class MapsforgeMapView implements MapView {
                         log.warning("Could not find layer for route pair " + pairWithLayer);
                     pairWithLayer.setLayer(null);
 
-                    pairsToDistances.remove(pairWithLayer);
-                    pairsToTimes.remove(pairWithLayer);
+                    if(removeDistancesAndTimes) {
+                        pairsToDistances.remove(pairWithLayer);
+                        pairsToTimes.remove(pairWithLayer);
+                    }
                 }
             }
 
@@ -380,7 +382,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                removeLines(pairWithLayers);
+                removeLines(pairWithLayers, true);
                 fireDistanceAndTime();
             }
 
@@ -540,7 +542,7 @@ public class MapsforgeMapView implements MapView {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
             showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
-                    getString("cannot-load-map"), map.getDescription(), e), "Error", ERROR_MESSAGE);
+                    getString("cannot-load-map"), map.getDescription(), e, "Error", ERROR_MESSAGE);
             return;
         }
 

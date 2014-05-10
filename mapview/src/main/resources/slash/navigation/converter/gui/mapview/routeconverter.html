@@ -1,11 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=10">
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <title>RouteConverter MapView</title>
-    <script src="http://${mapserver}/maps/api/js?v=3.15&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
+    <script src="http://${mapserver}/maps/api/js?v=3.16&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenu.js" type="text/javascript"></script>
     <script src="./keydragzoom.js" type="text/javascript"></script>
@@ -75,6 +74,17 @@
             font-size: 0.7em;
             padding: 2px 4px;
             position: absolute;
+        }
+        #CopyrightControl {
+            background: #fff;
+            font-size: 10px;
+            font-family: Arial, sans-serif;
+            whitespace: nowrap;
+            opacity: .6;
+            filter: alpha(opacity = 60);
+            -ms-filter: "alpha(opacity=60)";
+            -khtml-opacity: .6;
+            -moz-opacity: .6;
         }
     </style>
 </head>
@@ -177,7 +187,7 @@
 
    var callbackCount = 0;
 
-   function callJava(uri) {
+   function callJavaWithUri(uri) {
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
            xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, true);
@@ -204,14 +214,14 @@
    }
 
    function checkCallbackListenerPort() {
-       callJava("callback-port/" + callbackListenerPort);
+       callJavaWithUri("callback-port/" + callbackListenerPort);
    }
 
    function addListener(marker) {
        google.maps.event.addListener(marker, "dragend", function() {
            var position = marker.getPosition();
            var index = marker.index_;
-           callJava("move-position/" + index + "/" + position.lat() + "/" + position.lng());
+           callJavaWithUri("move-position/" + index + "/" + position.lat() + "/" + position.lng());
        });
    }
 
@@ -323,7 +333,7 @@
                var via_waypoints = legs[j].via_waypoints;
                for (var k = 0; k < via_waypoints.length; k++) {
                    var latLng = via_waypoints[k];
-                   callJava("insert-position/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
+                   callJavaWithUri("insert-position/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
                }
            }
        }
@@ -333,7 +343,7 @@
    var seconds = 0;
 
    function fireDirectionsLoaded() {
-       callJava("directions-load/" + meters + "/" + seconds);
+       callJavaWithUri("directions-load/" + meters + "/" + seconds);
    }
 
    function resetDirections() {
@@ -370,7 +380,7 @@
                if (lastSegment)
                    removeDirections();
            } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
-               callJava("over-query-limit");
+               callJavaWithUri("over-query-limit");
            } else {
                setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
@@ -638,11 +648,7 @@
            });
 
            var copyrightControl = document.createElement('div');
-           copyrightControl.id = 'copyright-control';
-           copyrightControl.style.fontSize = '10px';
-           copyrightControl.style.fontFamily = 'Arial, sans-serif';
-           copyrightControl.style.margin = '0 2px 4px 0';
-           copyrightControl.style.whitespace = 'nowrap';
+           copyrightControl.id = 'CopyrightControl';
            copyrightControl.index = 1;
            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
            map.enableKeyDragZoom({
@@ -663,9 +669,9 @@
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                var mapTypeId = map.getMapTypeId();
                if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
                } else if (mapTypeId == OUTDOOR_D_MAPTYPE_ID || mapTypeId == OUTDOOR_A_MAPTYPE_ID || mapTypeId == OUTDOOR_CH_MAPTYPE_ID || mapTypeId == TOPOGRAPHIC_MAPTYPE_ID) {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a>';
                } else {
                    copyrightControl.innerHTML = '';
                }
@@ -679,20 +685,20 @@
             	   map.overlayMapTypes.setAt(1, null);
                }
 
-               callJava("map-type-changed/" + mapTypeId);
+               callJavaWithUri("map-type-changed/" + mapTypeId);
            });
            addDebug("2. starting with maptype: " + map.getMapTypeId());
 
            try {
                var menu = new ContextMenu({map:map});
                menu.addItem('Select', function(map, latLng) {
-                   callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
+                   callJavaWithUri("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
                });
                menu.addItem('Insert', function(map, latLng) {
-                   callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
+                   callJavaWithUri("add-position/" + latLng.lat() + "/" + latLng.lng());
                });
                menu.addItem('Delete', function(map, latLng) {
-                   callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+                   callJavaWithUri("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
                });
                menu.addSep();
                menu.addItem('Center Here', function(map, latLng) {
@@ -734,7 +740,7 @@
 
            google.maps.event.addListener(map, "zoom_changed", function() {
                var zoom = map.getZoom();
-               callJava("zoom-changed/" + zoom);
+               callJavaWithUri("zoom-changed/" + zoom);
            });
            var centerLat = 0.0, centerLng = 0.0;
            google.maps.event.addListener(map, "center_changed", function() {
@@ -743,7 +749,7 @@
                var currentLng = Math.round(center.lng() * 100000) / 100000;
                if(currentLat != centerLat && currentLng != centerLng) {
                    centerLat = currentLat; centerLng = currentLng;
-                   callJava("center-changed/" + centerLat + "/" + centerLng);
+                   callJavaWithUri("center-changed/" + centerLat + "/" + centerLng);
                }
            });
 
@@ -753,13 +759,13 @@
            });
            google.maps.event.addListener(map, "click", function(event) {
                if (!shiftKey && !altKey && !ctrlKey) {
-                   callJava("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15) + "/true");
+                   callJavaWithUri("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15) + "/true");
                } else if (shiftKey && !altKey && !ctrlKey) {
-                   callJava("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15) + "/false");
+                   callJavaWithUri("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15) + "/false");
                } else if (!shiftKey && !altKey && ctrlKey) {
-                   callJava("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
+                   callJavaWithUri("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
-                   callJava("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
+                   callJavaWithUri("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
            });
            addDebug("4. added listeners");

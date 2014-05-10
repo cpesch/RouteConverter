@@ -24,14 +24,18 @@ import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.TravelMode;
 
+import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static slash.common.io.Directories.getApplicationDirectory;
 
 public class GraphHopperIT {
     private GraphHopper hopper;
@@ -42,16 +46,33 @@ public class GraphHopperIT {
         DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
+        else
+            hopper.initializeHopper(new FileAndTarget(null, new File(getApplicationDirectory("graphhopper"), "europe/germany/hamburg-latest.osm.pbf")));
+    }
+
+    private TravelMode getTravelMode(String lookupName) {
+        for (TravelMode travelMode : hopper.getAvailableTravelModes()) {
+            if (lookupName.equals(travelMode.getName()))
+                return travelMode;
+        }
+       throw new IllegalArgumentException(lookupName + " not found");
     }
 
     @Test
-    public void testGetRouteBetween() {
+    public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
-                new SimpleNavigationPosition(10.06767, 53.49249));
+                new SimpleNavigationPosition(10.06767, 53.49249), getTravelMode("Car"));
         assertEquals(149, result.getPositions().size());
         assertEquals(13633.0, result.getDistance(), 5.0);
         assertEquals(980824, result.getTime(), 100);
-        RoutingResult r2 = hopper.getRouteBetween(new SimpleNavigationPosition(10.18587, 53.40451),
-                new SimpleNavigationPosition(10.06767, 53.49249));
+    }
+
+    @Test
+    public void testGetRouteBetweenByBike() {
+        RoutingResult result = hopper.getRouteBetween(new SimpleNavigationPosition(10.0907221, 53.5790863),
+                new SimpleNavigationPosition(10.1510401, 53.5994911), getTravelMode("Bike"));
+        assertEquals(109, result.getPositions().size());
+        assertEquals(5277.44, result.getDistance(), 5.0);
+        assertEquals(668473.0, result.getTime(), 100);
     }
 }

@@ -33,12 +33,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.models.PatchedXYSeries;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.converter.gui.models.ProfileModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -112,6 +107,7 @@ public class ProfileView implements PositionsSelectionModel {
             public void chartMouseMoved(ChartMouseEvent e) {
             }
         });
+        chartPanel.setMouseWheelEnabled(true);
 
         updateAxis();
     }
