@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.maps.MapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
@@ -38,6 +39,7 @@ public interface MapViewCallback {
     void complementElevation(int row, Double longitude, Double latitude);
     void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
 
+    MapManager getMapManager();
     RoutingService getRoutingService();
     TravelMode getTravelMode();
     boolean isAvoidHighways();

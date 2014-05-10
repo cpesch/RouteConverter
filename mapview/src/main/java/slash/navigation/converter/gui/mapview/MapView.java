@@ -57,6 +57,7 @@ public interface MapView extends PositionsSelectionModel {
     void setRecenterAfterZooming(boolean recenterAfterZooming);
     void setShowCoordinates(boolean showCoordinates);
     void setShowWaypointDescription(boolean showWaypointDescription);
+    void showMapBorder(BoundingBox mapBoundingBox);
 
     NavigationPosition getCenter();
     void print(String title, boolean withDirections);

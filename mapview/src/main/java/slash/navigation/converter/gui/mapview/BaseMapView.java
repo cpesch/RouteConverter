@@ -670,6 +670,10 @@ public abstract class BaseMapView implements MapView {
         executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
     }
 
+    public void showMapBorder(BoundingBox mapBoundingBox) {
+        throw new UnsupportedOperationException();
+    }
+
     public NavigationPosition getCenter() {
         if (isInitialized())
             return getCurrentMapCenter();

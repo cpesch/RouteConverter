@@ -126,8 +126,8 @@ public class MapsforgeMapView implements MapView {
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
                            boolean recenterAfterZooming,
-                           boolean showCoordinates, boolean showWaypointDescription,
-                           TravelMode travelMode, boolean avoidHighways, boolean avoidTolls,
+                           boolean showCoordinates,
+                           boolean showWaypointDescription,
                            UnitSystemModel unitSystemModel) {
         this.mapViewCallback = mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
@@ -371,7 +371,7 @@ public class MapsforgeMapView implements MapView {
             private List<LatLong> calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<LatLong>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
-                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond());
+                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
                 if (intermediate != null) {
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
                     pairsToDistances.put(pairWithLayer, intermediate.getDistance());
@@ -542,7 +542,7 @@ public class MapsforgeMapView implements MapView {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
             showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
-                    getString("cannot-load-map"), map.getDescription(), e, "Error", ERROR_MESSAGE);
+                    getString("cannot-load-map"), map.getDescription(), e, "Error", ERROR_MESSAGE));
             return;
         }
 
@@ -657,18 +657,6 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
-        // TODO implement me
-    }
-
-    public void setTravelMode(TravelMode travelMode) {
-        // TODO implement me
-    }
-
-    public void setAvoidHighways(boolean avoidHighways) {
-        // TODO implement me
-    }
-
-    public void setAvoidTolls(boolean avoidTolls) {
         // TODO implement me
     }
 

@@ -127,6 +127,8 @@ public class GraphHopper implements RoutingService {
         initialize();
         if(osmPbfFile == null)
             return null;
+
+
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
         request.setVehicle(travelMode.getName().toUpperCase());
         GHResponse response = hopper.route(request);
@@ -186,8 +188,8 @@ public class GraphHopper implements RoutingService {
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         initialize();
-        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
 
+        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
         String keyForSmallestBoundingBox = null;
         BoundingBox smallestBoundingBox = null;
         for (String key : fileMap.keySet()) {

@@ -25,12 +25,12 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.maps.MapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
 import java.util.Calendar;
-import java.util.logging.Logger;
 
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -44,29 +44,24 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
  */
 
 public class MapViewCallbackImpl implements MapViewCallback {
-    private static final Logger log = Logger.getLogger(MapViewCallbackImpl.class.getName());
-    private PositionsModel positionsModel;
-
-    public MapViewCallbackImpl(PositionsModel positionsModel) {
-        this.positionsModel = positionsModel;
-    }
 
     public String createDescription(int index, String description) {
         return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
     }
 
     public void complementElevation(final int row, final Double longitude, final Double latitude) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), positionsModel, new int[]{row});
+        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), new int[]{row});
     }
 
     public void complementDescription(final int row, final Double longitude, final Double latitude) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), positionsModel, new int[]{row});
+        RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), new int[]{row});
     }
 
     public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) { // TODO check with BatchPositionAugmenter
         if (time != null)
             return;
 
+        PositionsModel positionsModel = RouteConverter.getInstance().getPositionsModel();
         // do not put this in executorService since when called in batches, the edit() must happen before the
         // next time can be complemented
         CompactCalendar interpolated = row - 2 >= 0 ? extrapolateTime(positionsModel.getPosition(row),
@@ -76,6 +71,10 @@ public class MapViewCallbackImpl implements MapViewCallback {
         if (interpolated == null && allowCurrentTime)
             interpolated = fromCalendar(Calendar.getInstance(UTC));
         positionsModel.edit(row, TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
+    }
+
+    public MapManager getMapManager() {
+        return RouteConverter.getInstance().getMapManager();
     }
 
     public RoutingService getRoutingService() {

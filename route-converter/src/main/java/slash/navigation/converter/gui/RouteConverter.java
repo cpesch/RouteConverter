@@ -28,6 +28,7 @@ import slash.common.system.Version;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
@@ -35,7 +36,6 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -47,6 +47,7 @@ import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.feedback.domain.RouteFeedback;
+import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -161,9 +162,11 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
+    private MapManager mapManager = new MapManager(downloadManager);
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
+    private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -298,11 +301,16 @@ public class RouteConverter extends SingleFrameApplication {
         //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-            if (mapView instanceof BaseMapView)
+            if (mapView != null)
                 getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
         }
-        // if (mapView == null)
-        //    mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+        if (mapView == null) {
+            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+            if (mapView != null) {
+                getRoutingServiceFacade().addRoutingService(new BRouter(downloadManager));
+                getRoutingServiceFacade().addRoutingService(new GraphHopper(downloadManager));
+            }
+        }
 
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
@@ -669,12 +677,7 @@ public class RouteConverter extends SingleFrameApplication {
         return batchPositionAugmenter;
     }
 
-    private MapViewCallbackImpl mapViewCallback = null;
-
-    private synchronized MapViewCallback getMapViewCallback() {
-        if (mapViewCallback == null) {
-            mapViewCallback = new MapViewCallbackImpl(getPositionsModel());
-        }
+    private MapViewCallback getMapViewCallback() {
         return mapViewCallback;
     }
 
@@ -735,6 +738,11 @@ public class RouteConverter extends SingleFrameApplication {
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         if (isMapViewAvailable())
             mapView.setShowWaypointDescription(showWaypointDescription);
+    }
+
+    public void showMapBorder(BoundingBox mapBoundingBox) {
+        if (isMapViewAvailable())
+            mapView.showMapBorder(mapBoundingBox);
     }
 
     // profile view related helpers
