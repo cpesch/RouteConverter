@@ -160,8 +160,9 @@ public class RouteConverter extends SingleFrameApplication {
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
-    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
+    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
+    private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -296,11 +297,9 @@ public class RouteConverter extends SingleFrameApplication {
         //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-            if (mapView instanceof BaseMapView)
+            if (mapView != null)
                 getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
         }
-        // if (mapView == null)
-        //    mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
 
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
@@ -662,12 +661,7 @@ public class RouteConverter extends SingleFrameApplication {
         return batchPositionAugmenter;
     }
 
-    private MapViewCallbackImpl mapViewCallback = null;
-
-    private synchronized MapViewCallback getMapViewCallback() {
-        if (mapViewCallback == null) {
-            mapViewCallback = new MapViewCallbackImpl(getPositionsModel());
-        }
+    private MapViewCallback getMapViewCallback() {
         return mapViewCallback;
     }
 

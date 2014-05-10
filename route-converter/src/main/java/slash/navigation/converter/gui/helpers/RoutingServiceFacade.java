@@ -20,9 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.brouter.BRouter;
-import slash.navigation.download.DownloadManager;
-import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
@@ -51,11 +48,6 @@ public class RoutingServiceFacade {
 
     private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
     private final EventListenerList listenerList = new EventListenerList();
-
-    public RoutingServiceFacade(DownloadManager downloadManager) {
-        addRoutingService(new GraphHopper(downloadManager));
-        addRoutingService(new BRouter(downloadManager));
-    }
 
     public List<RoutingService> getRoutingServices() {
         return routingServices;
@@ -100,19 +92,6 @@ public class RoutingServiceFacade {
         fireChanged();
     }
 
-    protected void fireChanged() {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                ((ChangeListener) listeners[i + 1]).stateChanged(null);
-            }
-        }
-    }
-
-    public void addChangeListener(ChangeListener l) {
-        listenerList.add(ChangeListener.class, l);
-    }
-
     public boolean isAvoidHighways() {
         return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true);
     }
@@ -131,4 +110,16 @@ public class RoutingServiceFacade {
         fireChanged();
     }
 
+    protected void fireChanged() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                ((ChangeListener) listeners[i + 1]).stateChanged(null);
+            }
+        }
+    }
+
+    public void addChangeListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
+    }
 }

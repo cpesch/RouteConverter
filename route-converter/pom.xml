@@ -42,11 +42,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>brouter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>catalog</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -95,11 +90,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>googlemaps</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>graphhopper</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

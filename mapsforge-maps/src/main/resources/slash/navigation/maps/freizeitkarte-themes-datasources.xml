@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
-    <datasource name="Freizeitkarte Theme" baseUrl="http://download.freizeitkarte-osm.de/Experimental/MapsForge/Beta6/" directory="themes/">
-        <file uri="freizeitkarte.zip" size="99298" checksum="54D18502086BA2F0C532C2595D47C6084CC7FE14" timestamp="2013-12-19T13:50:33Z"/>
-    </datasource>
-</datasources>
