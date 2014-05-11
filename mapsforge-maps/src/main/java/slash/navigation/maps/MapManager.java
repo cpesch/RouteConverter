@@ -123,6 +123,11 @@ public class MapManager {
         return preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath());
     }
 
+    public LocalMap getMap(String uri) {
+        String url = new File(getMapsDirectory(), uri).toURI().toString();
+        return getMapsModel().getMap(url);
+    }
+
     public synchronized void scanDirectories() throws IOException {
         initializeDefaults();
         scanMaps();

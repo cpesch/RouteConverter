@@ -55,6 +55,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.Theme;
+import slash.navigation.maps.models.VectorMap;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -72,6 +73,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -86,6 +88,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.helpers.MapTransfer.*;
+import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -113,6 +116,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewMouseEventListener mapViewMouseEventListener;
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
+    private TileRendererLayer oceansLayer, worldLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private ExecutorService executor = newSingleThreadExecutor();
@@ -207,6 +211,15 @@ public class MapsforgeMapView implements MapView {
                 handleMapAndThemeUpdate(false, false);
             }
         });
+
+        Theme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
+        LocalMap oceansMap = mapViewCallback.getMapManager().getMap("routeconverter/oceans.map");
+        if(oceansMap != null)
+            oceansLayer = createTileRendererLayer(oceansMap, theme);
+
+        LocalMap worldMap = mapViewCallback.getMapManager().getMap("routeconverter/world.map");
+        if(worldMap != null)
+            worldLayer = createTileRendererLayer(worldMap, theme);
     }
 
     private AwtGraphicMapView createMapView() {
@@ -229,7 +242,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(LocalMap map, Theme theme) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, false, GRAPHIC_FACTORY);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, true, GRAPHIC_FACTORY);
         tileRendererLayer.setMapFile(map.getFile());
         tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         return tileRendererLayer;
@@ -555,6 +568,17 @@ public class MapsforgeMapView implements MapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
+        if(oceansLayer != null) {
+            layers.remove(oceansLayer);
+            if (map.isVector())
+                layers.add(0, oceansLayer);
+        }
+        if(worldLayer != null) {
+            layers.remove(worldLayer);
+            if (map.isVector())
+                layers.add(0, worldLayer);
+        }
+
         // then start download layer threads
         if (layer instanceof TileDownloadLayer)
             ((TileDownloadLayer) layer).start();
@@ -750,7 +774,7 @@ public class MapsforgeMapView implements MapView {
         byte zoomLevelMin = 2;
         LocalMap map = mapsToLayers.keySet().iterator().next();
         if (map.isVector() && mapView.getModel().mapViewDimension.getDimension() != null)
-            zoomLevelMin = (byte) (zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
+            zoomLevelMin = (byte) max(0, zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), mapView.getModel().displayModel.getTileSize()) - 3);
         mapView.getModel().mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
