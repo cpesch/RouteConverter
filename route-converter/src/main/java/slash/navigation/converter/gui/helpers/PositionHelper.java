@@ -154,7 +154,7 @@ public class PositionHelper {
         return time != null ? formatTime(time) : "";
     }
 
-    static CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws ParseException {
+    private static CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws ParseException {
         Date parsed = getDateTimeFormat(timeZonePreference).parse(stringValue);
         return fromDate(parsed);
     }
