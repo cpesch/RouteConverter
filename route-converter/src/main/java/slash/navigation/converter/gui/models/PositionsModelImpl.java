@@ -26,8 +26,8 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.DegreeFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.PositionHelper;
@@ -55,12 +55,23 @@ import static slash.navigation.common.UnitConversion.ddmm2latitude;
 import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
 import static slash.navigation.common.UnitConversion.ddmmss2longitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -93,6 +104,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
                 return position.getDescription();
+            case DATE_TIME_COLUMN_INDEX:
+                return extractDateTime(position);
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
@@ -167,6 +180,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
+            case DATE_TIME_COLUMN_INDEX:
             case TIME_COLUMN_INDEX:
             case LONGITUDE_COLUMN_INDEX:
             case LATITUDE_COLUMN_INDEX:
@@ -205,8 +219,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             case DESCRIPTION_COLUMN_INDEX:
                 position.setDescription(string);
                 break;
+            case DATE_TIME_COLUMN_INDEX:
+                position.setTime(parseDateTime(value, string));
+                break;
             case TIME_COLUMN_INDEX:
-                position.setTime(parseTime(value, string));
+                position.setTime(parseTime(value, string, position.getTime()));
                 break;
             case LONGITUDE_COLUMN_INDEX:
                 position.setLongitude(parseLongitude(value, string));
@@ -277,12 +294,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return unitSystem.valueToDefault(value);
     }
 
-    private CompactCalendar parseTime(Object objectValue, String stringValue) {
+    private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return PositionHelper.parseTime(stringValue);
+                return PositionHelper.parseDateTime(stringValue);
+            } catch (ParseException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
+    }
+
+    private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
+        if (objectValue == null || objectValue instanceof CompactCalendar) {
+            return (CompactCalendar) objectValue;
+        } else if (stringValue != null) {
+            try {
+                if (positionTime != null)
+                    return PositionHelper.parseDateTime(PositionHelper.formatDate(positionTime) + " " + stringValue);
+                else
+                    return PositionHelper.parseTime(stringValue);
             } catch (ParseException e) {
                 // intentionally left empty
             }

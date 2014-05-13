@@ -24,23 +24,55 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.comparators.TimeComparator;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.DateTimeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.prefs.Preferences;
 
-import static java.text.DateFormat.*;
+import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.*;
+import static java.text.DateFormat.getDateTimeInstance;
+import static java.text.DateFormat.getTimeInstance;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
 import static java.util.Locale.US;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -59,7 +91,8 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     public PositionsTableColumnModel() {
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
-        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
+        predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
+        predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer, new TimeComparator());
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
@@ -90,7 +123,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    private String getExampleDateFromCurrentLocale() {
+    private Calendar createExampleCalendar() {
         Calendar calendar = Calendar.getInstance(US);
         calendar.set(YEAR, 2030);
         calendar.set(MONTH, 11);
@@ -98,7 +131,17 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         calendar.set(HOUR_OF_DAY, 22);
         calendar.set(MINUTE, 33);
         calendar.set(SECOND, 44);
+        return calendar;
+    }
+
+    private String getExampleDateTimeFromCurrentLocale() {
+        Calendar calendar = createExampleCalendar();
         return getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
+    }
+
+    private String getExampleTimeFromCurrentLocale() {
+        Calendar calendar = createExampleCalendar();
+        return getTimeInstance(MEDIUM).format(new Date(calendar.getTimeInMillis()));
     }
 
     private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,

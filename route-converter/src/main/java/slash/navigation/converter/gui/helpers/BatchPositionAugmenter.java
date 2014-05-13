@@ -486,7 +486,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return TIME_COLUMN_INDEX;
+                        return DATE_TIME_COLUMN_INDEX;
                     }
 
                     public void performOnStart() {
@@ -500,7 +500,7 @@ public class BatchPositionAugmenter {
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
                             boolean changed = nextTime == null || !nextTime.equals(previousTime);
                             if (changed)
-                                positionsModel.edit(index, TIME_COLUMN_INDEX, nextTime, -1, null, false, true);
+                                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, nextTime, -1, null, false, true);
                             return changed;
                         }
                         return false;
