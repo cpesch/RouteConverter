@@ -231,6 +231,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>brouter</module>
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
@@ -242,6 +243,7 @@
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
         <module>jaxb6</module>

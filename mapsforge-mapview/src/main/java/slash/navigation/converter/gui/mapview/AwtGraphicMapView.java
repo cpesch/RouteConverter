@@ -28,6 +28,7 @@ import org.mapsforge.map.controller.LayerManagerController;
 import org.mapsforge.map.controller.MapViewController;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.model.Model;
+import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.MapScaleBar;
 import org.mapsforge.map.view.FpsCounter;
 import org.mapsforge.map.view.FrameBuffer;
@@ -49,7 +50,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     private final FrameBufferController frameBufferController;
     private final LayerManager layerManager;
     private final FpsCounter fpsCounter;
-    private final MapScaleBar mapScaleBar;
+    private MapScaleBar mapScaleBar;
     private final Model model;
 
     public AwtGraphicMapView() {
@@ -67,7 +68,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         MapViewController.create(this, model);
 
         this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY);
-        this.mapScaleBar = new MapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
+        this.mapScaleBar = new DefaultMapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
     }
 
     public void destroy() {
@@ -93,6 +94,10 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
     public MapScaleBar getMapScaleBar() {
         return mapScaleBar;
+    }
+
+    public void setMapScaleBar(MapScaleBar mapScaleBar) {
+        this.mapScaleBar = mapScaleBar;
     }
 
     public Model getModel() {
