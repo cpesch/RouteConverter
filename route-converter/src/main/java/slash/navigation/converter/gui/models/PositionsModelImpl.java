@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
@@ -46,32 +45,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.TableModelEvent.*;
+import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
-import static slash.navigation.common.UnitConversion.ddmm2latitude;
-import static slash.navigation.common.UnitConversion.ddmm2longitude;
-import static slash.navigation.common.UnitConversion.ddmmss2latitude;
-import static slash.navigation.common.UnitConversion.ddmmss2longitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.common.UnitConversion.*;
+import static slash.navigation.converter.gui.helpers.PositionHelper.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -232,12 +212,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 position.setLatitude(parseLatitude(value, string));
                 break;
             case ELEVATION_COLUMN_INDEX:
-                Double elevation = parseElevation(value, string);
-                position.setElevation(elevation);
+                position.setElevation(parseElevation(value, string));
                 break;
             case SPEED_COLUMN_INDEX:
-                Double speed = parseSpeed(value, string);
-                position.setSpeed(speed);
+                position.setSpeed(parseSpeed(value, string));
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
@@ -245,10 +223,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseLongitude(Object objectValue, String stringValue) {
+        if (objectValue == null || objectValue instanceof Double)
+            return (Double) objectValue;
+
         DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         switch (degreeFormat) {
             case Degrees:
-                return parseDouble(objectValue, stringValue, null);
+                return parseDouble(stringValue);
             case Degrees_Minutes:
                 return ddmm2longitude(stringValue);
             case Degrees_Minutes_Seconds:
@@ -259,10 +240,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseLatitude(Object objectValue, String stringValue) {
+        if (objectValue == null || objectValue instanceof Double)
+            return (Double) objectValue;
+
         DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         switch (degreeFormat) {
             case Degrees:
-                return parseDouble(objectValue, stringValue, null);
+                return parseDouble(stringValue);
             case Degrees_Minutes:
                 return ddmm2latitude(stringValue);
             case Degrees_Minutes_Seconds:
@@ -272,25 +256,23 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
-        if (objectValue == null || objectValue instanceof Double) {
+    private Double parseDegrees(Object objectValue, String stringValue, String replaceAll) {
+        if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
-        } else {
-            if (replaceAll != null && stringValue != null)
-                stringValue = stringValue.replaceAll(replaceAll, "");
-            return Transfer.parseDouble(stringValue);
-        }
+        if (replaceAll != null && stringValue != null)
+            stringValue = stringValue.replaceAll(replaceAll, "");
+        return parseDouble(stringValue);
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
+        Double value = parseDegrees(objectValue, stringValue, unitSystem.getElevationName());
         return unitSystem.valueToDefault(value);
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
+        Double value = parseDegrees(objectValue, stringValue, unitSystem.getSpeedName());
         return unitSystem.valueToDefault(value);
     }
 
