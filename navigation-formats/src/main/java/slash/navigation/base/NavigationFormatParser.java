@@ -241,6 +241,10 @@ public class NavigationFormatParser {
         return read(source, READ_BUFFER_SIZE, null, getReadFormats());
     }
 
+    public ParserResult read(InputStream source, List<NavigationFormat> formats) throws IOException {
+        return read(source, READ_BUFFER_SIZE, null, formats);
+    }
+
     private int getSize(URL url) throws IOException {
         try {
             if (url.getProtocol().equals("file"))
