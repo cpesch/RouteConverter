@@ -93,7 +93,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidHighways() {
-        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true);
+        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), true);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
@@ -102,7 +102,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidTolls() {
-        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true);
+        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), true);
     }
 
     public void setAvoidTolls(boolean avoidTolls) {
