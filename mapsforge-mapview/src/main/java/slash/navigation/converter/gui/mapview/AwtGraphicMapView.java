@@ -97,6 +97,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     }
 
     public void setMapScaleBar(MapScaleBar mapScaleBar) {
+        this.mapScaleBar.destroy();
         this.mapScaleBar = mapScaleBar;
     }
 
