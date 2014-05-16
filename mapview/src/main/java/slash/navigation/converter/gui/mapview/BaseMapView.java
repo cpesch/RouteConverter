@@ -1481,7 +1481,7 @@ public abstract class BaseMapView implements MapView {
                 mapViewCallback.complementElevation(row, position.getLongitude(), position.getLatitude());
 
             if (cleanTime)
-                positionsModel.edit(index, TIME_COLUMN_INDEX, null, -1, null, false, false);
+                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)
                 mapViewCallback.complementTime(index, null, complementTimeFallback);
         }

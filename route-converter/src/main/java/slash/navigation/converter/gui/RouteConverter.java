@@ -164,7 +164,7 @@ public class RouteConverter extends SingleFrameApplication {
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
     private MapManager mapManager = new MapManager(downloadManager);
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
-    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade(downloadManager);
+    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();

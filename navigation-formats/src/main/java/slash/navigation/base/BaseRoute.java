@@ -34,11 +34,7 @@ import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gopal.GoPal3RouteFormat;
-import slash.navigation.gopal.GoPal5RouteFormat;
-import slash.navigation.gopal.GoPalRoute;
-import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.gopal.*;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
@@ -49,59 +45,15 @@ import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.klicktel.KlickTelRouteFormat;
-import slash.navigation.kml.BaseKmlFormat;
-import slash.navigation.kml.Igo8RouteFormat;
-import slash.navigation.kml.Kml20Format;
-import slash.navigation.kml.Kml21Format;
-import slash.navigation.kml.Kml22BetaFormat;
-import slash.navigation.kml.Kml22Format;
-import slash.navigation.kml.KmlRoute;
-import slash.navigation.kml.Kmz20Format;
-import slash.navigation.kml.Kmz21Format;
-import slash.navigation.kml.Kmz22BetaFormat;
-import slash.navigation.kml.Kmz22Format;
+import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.lmx.NokiaLandmarkExchangeRoute;
-import slash.navigation.mm.MagicMaps2GoFormat;
-import slash.navigation.mm.MagicMapsIktFormat;
-import slash.navigation.mm.MagicMapsIktRoute;
-import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.nmea.BaseNmeaFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.nmn.NavigatingPoiWarnerFormat;
-import slash.navigation.nmn.Nmn4Format;
-import slash.navigation.nmn.Nmn5Format;
-import slash.navigation.nmn.Nmn6FavoritesFormat;
-import slash.navigation.nmn.Nmn6Format;
-import slash.navigation.nmn.Nmn7Format;
-import slash.navigation.nmn.NmnFormat;
-import slash.navigation.nmn.NmnRoute;
-import slash.navigation.nmn.NmnRouteFormat;
-import slash.navigation.nmn.NmnUrlFormat;
+import slash.navigation.mm.*;
+import slash.navigation.nmea.*;
+import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.simple.ApeMapFormat;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
-import slash.navigation.simple.GlopusFormat;
-import slash.navigation.simple.GoRiderGpsFormat;
-import slash.navigation.simple.GpsTunerFormat;
-import slash.navigation.simple.GroundTrackFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Iblue747Format;
-import slash.navigation.simple.KienzleGpsFormat;
-import slash.navigation.simple.KompassFormat;
-import slash.navigation.simple.NavilinkFormat;
-import slash.navigation.simple.OpelNaviFormat;
-import slash.navigation.simple.QstarzQ1000Format;
-import slash.navigation.simple.Route66Format;
-import slash.navigation.simple.SygicAsciiFormat;
-import slash.navigation.simple.SygicUnicodeFormat;
-import slash.navigation.simple.WebPageFormat;
+import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.TcxFormat;
@@ -117,23 +69,14 @@ import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
 import slash.navigation.wbt.WintecWbt202TesFormat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Double.MAX_VALUE;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
 import static slash.common.io.Transfer.toArray;
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
+import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 
 /**
@@ -599,6 +542,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof GoPal5RouteFormat)
             return (GoPalRoute) this;
         return asGoPalRouteFormat(new GoPal5RouteFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public GoPalRoute asGoPal7RouteFormat() {
+        if (getFormat() instanceof GoPal5RouteFormat)
+            return (GoPalRoute) this;
+        return asGoPalRouteFormat(new GoPal7RouteFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")

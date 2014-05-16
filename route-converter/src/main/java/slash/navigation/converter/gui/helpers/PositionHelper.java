@@ -53,7 +53,8 @@ public class PositionHelper {
     private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
     private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
 
-    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeZone = "";
 
     public static String formatDistance(Double distance) {
@@ -110,14 +111,12 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
-    private static String formatTime(CompactCalendar time) {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        return getTimeFormat(timeZonePreference).format(time.getTime());
-    }
-
-    public static String extractTime(NavigationPosition position) {
-        CompactCalendar time = position.getTime();
-        return time != null ? formatTime(time) : "";
+    private static DateFormat getDateTimeFormat(String timeZonePreference) {
+        if (!currentTimeZone.equals(timeZonePreference)) {
+            dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+            currentTimeZone = timeZonePreference;
+        }
+        return dateTimeFormat;
     }
 
     private static DateFormat getTimeFormat(String timeZonePreference) {
@@ -128,9 +127,46 @@ public class PositionHelper {
         return timeFormat;
     }
 
+    public static String formatDate(CompactCalendar time) {
+        DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
+        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
+        dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+        return dateFormat.format(time.getTime());
+    }
+
+    private static String formatDateTime(CompactCalendar time) {
+        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
+        return getDateTimeFormat(timeZonePreference).format(time.getTime());
+    }
+
+    private static String formatTime(CompactCalendar time) {
+        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
+        return getTimeFormat(timeZonePreference).format(time.getTime());
+    }
+
+    public static String extractDateTime(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatDateTime(time) : "";
+    }
+
+    public static String extractTime(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatTime(time) : "";
+    }
+
+    static CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws ParseException {
+        Date parsed = getDateTimeFormat(timeZonePreference).parse(stringValue);
+        return fromDate(parsed);
+    }
+
     static CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
         Date parsed = getTimeFormat(timeZonePreference).parse(stringValue);
         return fromDate(parsed);
+    }
+
+    public static CompactCalendar parseDateTime(String stringValue) throws ParseException {
+        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
+        return parseDateTime(stringValue, timeZonePreference);
     }
 
     public static CompactCalendar parseTime(String stringValue) throws ParseException {

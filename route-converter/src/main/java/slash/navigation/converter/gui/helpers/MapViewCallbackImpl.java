@@ -35,7 +35,7 @@ import java.util.Calendar;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCalculations.extrapolateTime;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services.
@@ -70,7 +70,7 @@ public class MapViewCallbackImpl implements MapViewCallback {
         // more than one position for which no time can be interpolated from the previous positions
         if (interpolated == null && allowCurrentTime)
             interpolated = fromCalendar(Calendar.getInstance(UTC));
-        positionsModel.edit(row, TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
+        positionsModel.edit(row, DATE_TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
     }
 
     public MapManager getMapManager() {

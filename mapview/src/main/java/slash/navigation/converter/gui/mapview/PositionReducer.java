@@ -80,15 +80,16 @@ class PositionReducer {
     }
 
     public List<NavigationPosition> reducePositions(List<NavigationPosition> positions, RouteCharacteristics characteristics, boolean showWaypointDescription) {
-        // if it's within one segment, don't reduce the positions
-        if (positions.size() <= getMaximumSegmentLength(characteristics))
-            return positions;
+        List<NavigationPosition> result = filterPositionsWithoutCoordinates(positions);
 
-        int zoom = callback.getZoom();
-        List<NavigationPosition> result = reducedPositions.get(zoom);
-        if (result == null) {
-            result = reducePositions(positions, zoom, characteristics, showWaypointDescription);
-            reducedPositions.put(zoom, result);
+        // if it's more than one segment, reduce the positions
+        if (result.size() > getMaximumSegmentLength(characteristics)) {
+            int zoom = callback.getZoom();
+            result = reducedPositions.get(zoom);
+            if (result == null) {
+                result = reducePositions(positions, zoom, characteristics, showWaypointDescription);
+                reducedPositions.put(zoom, result);
+            }
         }
         return result;
     }
@@ -161,33 +162,32 @@ class PositionReducer {
     }
 
     private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, RouteCharacteristics characteristics, boolean showWaypointDescription) {
-        List<NavigationPosition> result = filterPositionsWithoutCoordinates(positions);
         int maximumPositionCount = getMaximumPositionCount(characteristics, showWaypointDescription);
 
         // reduce the number of result to those that are visible for tracks and waypoint lists
-        if (result.size() > maximumPositionCount && !characteristics.equals(Route)) {
+        if (positions.size() > maximumPositionCount && !characteristics.equals(Route)) {
             double visiblePositionAreaFactor = preferences.getDouble("visiblePositionAreaFactor", 3.0);
             double factor = max(visiblePositionAreaFactor * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * visiblePositionAreaFactor;
-            result = filterVisiblePositions(result, factor, false);
-            visible = new BoundingBox(result);
+            positions = filterVisiblePositions(positions, factor, false);
+            visible = new BoundingBox(positions);
         } else {
             visible = null;
         }
 
         // reduce the number of result by selecting every Nth to limit significance computation time
         int maximumSignificantPositionCount = preferences.getInt("maximumSignificantPositionCount", 50000);
-        if (result.size() > maximumSignificantPositionCount)
-            result = filterEveryNthPosition(result, maximumSignificantPositionCount);
+        if (positions.size() > maximumSignificantPositionCount)
+            positions = filterEveryNthPosition(positions, maximumSignificantPositionCount);
 
         // determine significant result for routes and tracks for this zoom level
         if (!characteristics.equals(Waypoints))
-            result = filterSignificantPositions(result, zoom);
+            positions = filterSignificantPositions(positions, zoom);
 
         // reduce the number of result to ensure browser stability
-        if (result.size() > maximumPositionCount)
-            result = filterEveryNthPosition(result, maximumPositionCount);
+        if (positions.size() > maximumPositionCount)
+            positions = filterEveryNthPosition(positions, maximumPositionCount);
 
-        return result;
+        return positions;
     }
 
     private List<NavigationPosition> filterPositionsWithoutCoordinates(List<NavigationPosition> positions) {

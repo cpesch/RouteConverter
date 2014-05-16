@@ -110,15 +110,17 @@ public class UnitConversion {
                     "([\\d\\.]*)\\s*'\\s*");
 
     private static Double ddmm2coordinate(String coordinateAsDdmm, Orientation negative) {
-        Matcher matcher = DDMM_TO_COORDINATE.matcher(coordinateAsDdmm);
-        if (matcher.matches()) {
-            Orientation orientation = Orientation.fromValue(matcher.group(1));
-            Double degree = parseDouble(matcher.group(2));
-            Double minutes = parseDouble(matcher.group(3));
-            double coordinate = degree + (minutes / 60.0);
-            if(orientation != null && orientation.equals(negative))
-                coordinate = -coordinate;
-            return formatDouble(coordinate, 7);
+        if(coordinateAsDdmm != null) {
+            Matcher matcher = DDMM_TO_COORDINATE.matcher(coordinateAsDdmm);
+            if (matcher.matches()) {
+                Orientation orientation = Orientation.fromValue(matcher.group(1));
+                Double degree = parseDouble(matcher.group(2));
+                Double minutes = parseDouble(matcher.group(3));
+                double coordinate = degree + (minutes / 60.0);
+                if (orientation != null && orientation.equals(negative))
+                    coordinate = -coordinate;
+                return formatDouble(coordinate, 7);
+            }
         }
         return null;
     }
@@ -163,16 +165,18 @@ public class UnitConversion {
                     "([\\d\\.]*)\\s*\"\\s*");
 
     private static Double ddmmss2coordinate(String coordinateAsDdmmss, Orientation negative) {
-        Matcher matcher = DDMMSS_TO_COORDINATE.matcher(coordinateAsDdmmss);
-        if (matcher.matches()) {
-            Orientation orientation = Orientation.fromValue(matcher.group(1));
-            Double degree = parseDouble(matcher.group(2));
-            Double minutes = parseDouble(matcher.group(3));
-            Double seconds = parseDouble(matcher.group(4));
-            double coordinate = degree + (minutes / 60.0) + (seconds / 3600.0);
-            if(orientation != null && orientation.equals(negative))
-                coordinate = -coordinate;
-            return formatDouble(coordinate, 7);
+        if(coordinateAsDdmmss != null) {
+            Matcher matcher = DDMMSS_TO_COORDINATE.matcher(coordinateAsDdmmss);
+            if (matcher.matches()) {
+                Orientation orientation = Orientation.fromValue(matcher.group(1));
+                Double degree = parseDouble(matcher.group(2));
+                Double minutes = parseDouble(matcher.group(3));
+                Double seconds = parseDouble(matcher.group(4));
+                double coordinate = degree + (minutes / 60.0) + (seconds / 3600.0);
+                if (orientation != null && orientation.equals(negative))
+                    coordinate = -coordinate;
+                return formatDouble(coordinate, 7);
+            }
         }
         return null;
     }

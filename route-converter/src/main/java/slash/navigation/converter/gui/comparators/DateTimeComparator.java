@@ -25,12 +25,12 @@ import slash.navigation.common.NavigationPosition;
 import java.util.Comparator;
 
 /**
- * Compares {@link NavigationPosition}s by their time.
+ * Compares {@link NavigationPosition}s by their date and time.
  *
  * @author Christian Pesch
  */
 
-public class TimeComparator implements Comparator<NavigationPosition> {
+public class DateTimeComparator implements Comparator<NavigationPosition> {
     public int compare(NavigationPosition p1, NavigationPosition p2) {
         if(!p1.hasTime())
             return -1;
