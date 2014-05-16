@@ -35,12 +35,14 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
+import org.mapsforge.map.scalebar.*;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.mapview.helpers.MapViewComponentListener;
 import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
 import slash.navigation.converter.gui.mapview.lines.Line;
@@ -55,7 +57,6 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.Theme;
-import slash.navigation.maps.models.VectorMap;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -72,7 +73,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -82,13 +82,13 @@ import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
+import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.METRIC;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.helpers.MapTransfer.*;
-import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -223,10 +223,34 @@ public class MapsforgeMapView implements MapView {
     }
 
     private AwtGraphicMapView createMapView() {
-        AwtGraphicMapView mapView = new AwtGraphicMapView();
-        mapView.getMapScaleBar().setVisible(true);
+        final AwtGraphicMapView mapView = new AwtGraphicMapView();
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
+        mapView.getMapScaleBar().setVisible(true);
+        ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(METRIC);
+        unitSystemModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleUnitSystem(mapView.getMapScaleBar());
+            }
+        });
+        handleUnitSystem(mapView.getMapScaleBar());
         return mapView;
+    }
+
+    private void handleUnitSystem(MapScaleBar mapScaleBar) {
+        UnitSystem unitSystem = unitSystemModel.getUnitSystem();
+        switch(unitSystem) {
+            case Metric:
+                mapScaleBar.setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
+                break;
+            case Statute:
+                mapView.getMapScaleBar().setDistanceUnitAdapter(ImperialUnitAdapter.INSTANCE);
+                break;
+            case Nautic:
+                mapView.getMapScaleBar().setDistanceUnitAdapter(NauticUnitAdapter.INSTANCE);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown UnitSystem " + unitSystem);
+        }
     }
 
     private JPopupMenu createPopupMenu() {
@@ -830,9 +854,6 @@ public class MapsforgeMapView implements MapView {
         if (dimension == null)
             return;
         byte zoom = zoomForBounds(dimension, boundingBox, mapView.getModel().displayModel.getTileSize());
-        // zoom out a bit if the bounding box is pretty large since the user selected a wrong map in the MapsDialog
-        if (abs(boundingBox.minLatitude - boundingBox.maxLatitude) > 10.0 || abs(boundingBox.maxLongitude - boundingBox.minLongitude) > 10.0)
-            zoom -= 1;
         setZoom(zoom);
     }
 
