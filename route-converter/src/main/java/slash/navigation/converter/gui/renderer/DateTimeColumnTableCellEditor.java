@@ -25,7 +25,6 @@ import slash.navigation.common.NavigationPosition;
 import javax.swing.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
 
 /**
  * Renders the date time column of the positions table.

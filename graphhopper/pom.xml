@@ -51,5 +51,10 @@
             <artifactId>graphhopper</artifactId>
             <version>0.3-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.openstreetmap.osmosis</groupId>
+            <artifactId>osmosis-osm-binary</artifactId>
+            <version>0.43.1</version>
+        </dependency>
     </dependencies>
 </project>
