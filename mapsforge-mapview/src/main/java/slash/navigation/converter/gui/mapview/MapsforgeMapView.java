@@ -156,6 +156,12 @@ public class MapsforgeMapView implements MapView {
 
     private void initializeMapView() {
         mapView = createMapView();
+        unitSystemModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleUnitSystem();
+            }
+        });
+        handleUnitSystem();
 
         mapViewMouseEventListener = new MapViewMouseEventListener(mapView, createPopupMenu());
         mapView.addMouseListener(mapViewMouseEventListener);
@@ -230,12 +236,6 @@ public class MapsforgeMapView implements MapView {
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(METRIC);
-        unitSystemModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                handleUnitSystem();
-            }
-        });
-        handleUnitSystem();
         return mapView;
     }
 
