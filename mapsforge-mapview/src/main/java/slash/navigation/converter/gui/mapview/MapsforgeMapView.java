@@ -35,7 +35,10 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
-import org.mapsforge.map.scalebar.*;
+import org.mapsforge.map.scalebar.DefaultMapScaleBar;
+import org.mapsforge.map.scalebar.ImperialUnitAdapter;
+import org.mapsforge.map.scalebar.MetricUnitAdapter;
+import org.mapsforge.map.scalebar.NauticUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
@@ -229,18 +232,18 @@ public class MapsforgeMapView implements MapView {
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(METRIC);
         unitSystemModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                handleUnitSystem(mapView.getMapScaleBar());
+                handleUnitSystem();
             }
         });
-        handleUnitSystem(mapView.getMapScaleBar());
+        handleUnitSystem();
         return mapView;
     }
 
-    private void handleUnitSystem(MapScaleBar mapScaleBar) {
+    private void handleUnitSystem() {
         UnitSystem unitSystem = unitSystemModel.getUnitSystem();
         switch(unitSystem) {
             case Metric:
-                mapScaleBar.setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
+                mapView.getMapScaleBar().setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
                 break;
             case Statute:
                 mapView.getMapScaleBar().setDistanceUnitAdapter(ImperialUnitAdapter.INSTANCE);
