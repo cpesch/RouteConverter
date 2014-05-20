@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.graphhopper</groupId>
             <artifactId>graphhopper</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>${graphhopper.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openstreetmap.osmosis</groupId>

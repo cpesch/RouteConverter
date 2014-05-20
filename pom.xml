@@ -53,6 +53,7 @@
     <properties>
         <targetJdk>1.7</targetJdk>
         <mapsforge.version>dev-SNAPSHOT</mapsforge.version>
+        <graphhopper.version>0.3</graphhopper.version>
     </properties>
 
     <build>
