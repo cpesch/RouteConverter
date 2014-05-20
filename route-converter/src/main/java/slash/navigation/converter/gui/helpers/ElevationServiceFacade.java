@@ -70,15 +70,17 @@ public class ElevationServiceFacade {
     }
 
     public ElevationService getElevationService() {
-        String lookupServiceName = preferences.get(ELEVATION_SERVICE, elevationServices.get(0).getName());
+        ElevationService firstElevationService = elevationServices.get(0);
+        String lookupServiceName = preferences.get(ELEVATION_SERVICE, firstElevationService.getName());
 
         for (ElevationService service : elevationServices) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
 
-        log.warning(format("Failed to find elevation service %s; using first", lookupServiceName));
-        return elevationServices.get(0);
+        log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
+        preferences.put(ELEVATION_SERVICE, firstElevationService.getName());
+        return firstElevationService;
     }
 
     public void setElevationService(ElevationService service) {
