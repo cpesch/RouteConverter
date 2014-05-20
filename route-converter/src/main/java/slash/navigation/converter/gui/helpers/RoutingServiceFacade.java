@@ -58,15 +58,17 @@ public class RoutingServiceFacade {
     }
 
     public RoutingService getRoutingService() {
-        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, routingServices.get(0).getName());
+        RoutingService firstRoutingService = routingServices.get(0);
+        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
 
         for (RoutingService service : routingServices) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
 
-        log.warning(format("Failed to find routing service %s; using first", lookupServiceName));
-        return routingServices.get(0);
+        log.warning(format("Failed to find routing service %s; using first %s", lookupServiceName, firstRoutingService.getName()));
+        preferences.put(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
+        return firstRoutingService;
     }
 
     public void setRoutingService(RoutingService service) {
