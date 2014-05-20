@@ -374,13 +374,16 @@
 
                if (lastSegment)
                    removeDirections();
+
            } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
                resetDirections();
-
                if (lastSegment)
                    removeDirections();
+               callJavaWithUri("zero-results");
+
            } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
                callJavaWithUri("over-query-limit");
+
            } else {
                setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }

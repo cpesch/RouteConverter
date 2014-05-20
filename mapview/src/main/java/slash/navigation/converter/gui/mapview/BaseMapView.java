@@ -115,7 +115,7 @@ public abstract class BaseMapView implements MapView {
     private MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
-    private int overQueryLimitCount = 0;
+    private int overQueryLimitCount = 0, zeroResultsCount = 0;
 
     // initialization
 
@@ -1109,6 +1109,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern OVER_QUERY_LIMIT_PATTERN = Pattern.compile("^over-query-limit$");
+    private static final Pattern ZERO_RESULTS_PATTERN = Pattern.compile("^zero-results$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
     boolean processCallback(String callback) {
@@ -1236,6 +1237,13 @@ public abstract class BaseMapView implements MapView {
         if (overQueryLimitMatcher.matches()) {
             overQueryLimitCount++;
             log.warning("Google Directions API is over query limit, count: " + overQueryLimitCount);
+            return true;
+        }
+
+        Matcher zeroResultsMatcher = ZERO_RESULTS_PATTERN.matcher(callback);
+        if (zeroResultsMatcher.matches()) {
+            zeroResultsCount++;
+            log.warning("Google Directions API returns zero results, count: " + zeroResultsCount);
             return true;
         }
 
