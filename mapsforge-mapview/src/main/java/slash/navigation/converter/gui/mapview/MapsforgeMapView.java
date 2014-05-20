@@ -38,7 +38,7 @@ import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
-import org.mapsforge.map.scalebar.NauticUnitAdapter;
+import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
@@ -85,7 +85,7 @@ import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
-import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.METRIC;
+import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -235,7 +235,7 @@ public class MapsforgeMapView implements MapView {
         final AwtGraphicMapView mapView = new AwtGraphicMapView();
         mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
         mapView.getMapScaleBar().setVisible(true);
-        ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(METRIC);
+        ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
         return mapView;
     }
 
@@ -249,7 +249,7 @@ public class MapsforgeMapView implements MapView {
                 mapView.getMapScaleBar().setDistanceUnitAdapter(ImperialUnitAdapter.INSTANCE);
                 break;
             case Nautic:
-                mapView.getMapScaleBar().setDistanceUnitAdapter(NauticUnitAdapter.INSTANCE);
+                mapView.getMapScaleBar().setDistanceUnitAdapter(NauticalUnitAdapter.INSTANCE);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown UnitSystem " + unitSystem);

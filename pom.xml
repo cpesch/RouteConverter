@@ -52,7 +52,7 @@
 
     <properties>
         <targetJdk>1.7</targetJdk>
-        <mapsforge.version>0.5.0-SNAPSHOT</mapsforge.version>
+        <mapsforge.version>dev-SNAPSHOT</mapsforge.version>
     </properties>
 
     <build>
