@@ -209,7 +209,7 @@ public class GraphHopper implements RoutingService {
                 return fileAndTarget != null && !new Validator(fileAndTarget.target).existsFile();
             }
             public boolean isRequiresProcessing() {
-                return fileAndTarget != null && !new Validator(new java.io.File(createPath(fileAndTarget.target), "edges")).existsFile();
+                return true;
             }
             public void download() {
                 downloadFile(fileAndTarget);
