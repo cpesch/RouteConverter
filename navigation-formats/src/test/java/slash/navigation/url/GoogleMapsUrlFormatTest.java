@@ -63,6 +63,8 @@ public class GoogleMapsUrlFormatTest {
 
     private static final String INPUT8_WWW_NO_COORDINATES ="http://www.google.de/maps?f=d&source=s_d&saddr=hannover&daddr=hamburg&hl=de&geocode=&mra=ls&sll=51.151786,10.415039&sspn=20.697059,39.331055&ie=UTF8&z=9";
 
+    private static final String INPUT9_NEW_GOOGLE_MAPS_2014 = "https://www.google.de/maps/dir/Aachen-Rothe+Erde/Mainz-Kastel,+Wiesbaden/Hanns-Martin-Schleyer-Stra%C3%9Fe,+Sindelfingen/@49.8065843,6.491479,8z/data=!3m1!4b1!4m20!4m19!1m5!1m1!1s0x47c09955de781093:0x8b975ed430fb3e53!2m2!1d6.116475!2d50.770202!1m5!1m1!1s0x47bd97a86ffd2e91:0xa4efa4fe12ce70c8!2m2!1d8.282168!2d50.0101878!1m5!1m1!1s0x4799dfcc3a4161f3:0xcd2a1bc2ee961675!2m2!1d9.0001511!2d48.7039074!3e0";
+
     private GoogleMapsUrlFormat format = new GoogleMapsUrlFormat();
 
     @Test
@@ -115,8 +117,13 @@ public class GoogleMapsUrlFormatTest {
 
     private List<Wgs84Position> parsePositions(String text) {
         String url = format.findURL(text);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
-        return format.parsePositions(parameters);
+        if (url.startsWith("/dir/")) {
+            return format.parsePositions(url.substring(5));
+        } else {
+            Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
+            return format.parsePositions(parameters);
+
+        }
     }
 
     @Test
@@ -283,6 +290,25 @@ public class GoogleMapsUrlFormatTest {
     }
 
     @Test
+    public void testParseNewGoogleMaps2014FromInput9() {
+        List<Wgs84Position> positions = parsePositions(INPUT9_NEW_GOOGLE_MAPS_2014);
+        assertNotNull(positions);
+        assertEquals(3, positions.size());
+        Wgs84Position position1 = positions.get(0);
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
+        assertEquals("Aachen-Rothe Erde", position1.getDescription());
+        Wgs84Position position2 = positions.get(1);
+        assertNull(position2.getLongitude());
+        assertNull(position2.getLatitude());
+        assertEquals("Mainz-Kastel, Wiesbaden", position2.getDescription());
+        Wgs84Position position3 = positions.get(2);
+        assertNull(position3.getLongitude());
+        assertNull(position3.getLatitude());
+        assertEquals("Hanns-Martin-Schleyer-Stra\u00dfe, Sindelfingen", position3.getDescription());
+    }
+
+    @Test
     public void testCreateURL() {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
@@ -297,6 +323,7 @@ public class GoogleMapsUrlFormatTest {
     @Test
     public void testIsGoogleMapsLinkUrl() throws MalformedURLException {
         assertTrue(isGoogleMapsLinkUrl(new URL("https://maps.google.com/maps?saddr=Hamburg&daddr=Hannover+to:M%C3%BCnchen&hl=en&ie=UTF8&sll=50.844236,10.557014&sspn=6.272277,10.777588&geocode=Fe0fMQMd0n2YACm5Exh-g2GxRzGgOtZ78j0mBA%3BFVQxHwMdqn-UACmFT0lNUQuwRzEgR6yUbawlBA%3BFRCC3gIdsqWwACnZX4yj-XWeRzF9mLF9SrgMAQ&mra=ls&t=m&z=7")));
+        assertTrue(isGoogleMapsLinkUrl(new URL("https://www.google.de/maps/dir/Hamburg/Hannover/M%C3%BCnchen/@50.8213415,8.3587982,7z/data=!3m1!4b1!4m20!4m19!1m5!1m1!1s0x47b161837e1813b9:0x4263df27bd63aa0!2m2!1d9.9936818!2d53.5510846!1m5!1m1!1s0x47b00b514d494f85:0x425ac6d94ac4720!2m2!1d9.7320104!2d52.3758916!1m5!1m1!1s0x479e75f9a38c5fd9:0x10cb84a7db1987d!2m2!1d11.5819806!2d48.1351253!3e0")));
     }
 
     @Test

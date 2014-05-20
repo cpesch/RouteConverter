@@ -90,7 +90,7 @@ public class Transfer {
         if (string == null)
             return null;
         string = string.trim();
-        if (string == null || string.length() == 0)
+        if (string.length() == 0)
             return null;
         else
             return string;
