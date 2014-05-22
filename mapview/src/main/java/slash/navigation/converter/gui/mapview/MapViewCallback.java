@@ -34,9 +34,9 @@ import javax.swing.event.ChangeListener;
 
 public interface MapViewCallback {
     String createDescription(int index, String description);
-    void complementDescription(int row, Double longitude, Double latitude);
-    void complementElevation(int row, Double longitude, Double latitude);
-    void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
+    void complementDescription(int row);
+    void complementElevation(int[] rows);
+    void complementTime(int row, CompactCalendar time, boolean allowCurrentTime);
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();

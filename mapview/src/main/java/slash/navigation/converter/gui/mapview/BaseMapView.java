@@ -35,15 +35,32 @@ import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -62,13 +79,29 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -1409,11 +1442,13 @@ public abstract class BaseMapView implements MapView {
     @SuppressWarnings({"unchecked"})
     private void complementPositions(int row, BaseRoute route) {
         List<NavigationPosition> positions = route.getPositions();
+
+        mapViewCallback.complementElevation(asRange(row, row + positions.size()));
+
         int index = row;
         for (NavigationPosition position : positions) {
             // do not complement description since this is limited to 2500 calls/day
-            // mapViewCallback.complementDescription(index, position.getLongitude(), position.getLatitude());
-            mapViewCallback.complementElevation(index, position.getLongitude(), position.getLatitude());
+            // mapViewCallback.complementDescription(index);
             mapViewCallback.complementTime(index, position.getTime(), false);
             index++;
         }
@@ -1425,8 +1460,8 @@ public abstract class BaseMapView implements MapView {
 
         boolean complementTimeFallback = preferences.getBoolean(COMPLEMENT_TIME_FALLBACK, true);
 
-        mapViewCallback.complementDescription(row, longitude, latitude);
-        mapViewCallback.complementElevation(row, longitude, latitude);
+        mapViewCallback.complementDescription(row);
+        mapViewCallback.complementElevation(new int[]{row});
         mapViewCallback.complementTime(row, null, complementTimeFallback);
     }
 
@@ -1482,7 +1517,7 @@ public abstract class BaseMapView implements MapView {
             if (cleanElevation)
                 positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
             if (complementElevation)
-                mapViewCallback.complementElevation(row, position.getLongitude(), position.getLatitude());
+                mapViewCallback.complementElevation(new int[]{row});
 
             if (cleanTime)
                 positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);

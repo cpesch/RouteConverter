@@ -396,6 +396,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.dispose();
         getConvertPanel().dispose();
         getElevationServiceFacade().dispose();
+        getBatchPositionAugmenter().dispose();
         getDownloadManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();

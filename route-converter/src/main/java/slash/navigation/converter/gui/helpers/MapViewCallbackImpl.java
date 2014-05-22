@@ -47,11 +47,11 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
     }
 
-    public void complementElevation(final int row, final Double longitude, final Double latitude) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), new int[]{row});
+    public void complementElevation(int[] rows) {
+        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), rows);
     }
 
-    public void complementDescription(final int row, final Double longitude, final Double latitude) {
+    public void complementDescription(int row) {
         RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), new int[]{row});
     }
 

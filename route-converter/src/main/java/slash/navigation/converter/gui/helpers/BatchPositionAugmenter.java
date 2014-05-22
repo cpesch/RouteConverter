@@ -36,8 +36,11 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import static java.lang.Math.min;
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -62,6 +65,7 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Object mutex = new Object();
     private JFrame frame;
     private boolean running = true;
@@ -76,6 +80,9 @@ public class BatchPositionAugmenter {
         }
     }
 
+    public void dispose() {
+        executor.shutdownNow();
+    }
 
     private interface OverwritePredicate {
         boolean shouldOverwrite(NavigationPosition position);
@@ -118,7 +125,7 @@ public class BatchPositionAugmenter {
 
         startWaitCursor(frame.getRootPane());
         final ProgressMonitor progress = new ProgressMonitor(frame, "", RouteConverter.getBundle().getString("progress-started"), 0, 100);
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             public void run() {
                 try {
                     invokeLater(new Runnable() {
@@ -164,7 +171,7 @@ public class BatchPositionAugmenter {
                                 public void run() {
                                     positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, operation.getColumnIndex());
                                     if (positionsTable != null) {
-                                        scrollToPosition(positionsTable, Math.min(lastIndex + maximumRangeLength, positionsModel.getRowCount()));
+                                        scrollToPosition(positionsTable, min(lastIndex + maximumRangeLength, positionsModel.getRowCount()));
                                     }
                                 }
                             });
@@ -191,7 +198,7 @@ public class BatchPositionAugmenter {
                     });
                 }
             }
-        }, operation.getName()).start();
+        });
     }
 
 
