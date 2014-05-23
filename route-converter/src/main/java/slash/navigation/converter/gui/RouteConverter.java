@@ -34,7 +34,6 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -45,6 +44,7 @@ import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.datasources.DataSourceManager;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -126,7 +126,11 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), getEdition(), version.getVersion(), version.getDate());
+    }
+
+    public static String getEdition() {
+        return "Online";
     }
 
     private static String getRouteConverter() {
@@ -159,6 +163,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
+    private DataSourceManager dataSourceManager = new DataSourceManager(downloadManager);
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
@@ -649,6 +654,10 @@ public class RouteConverter extends SingleFrameApplication {
         return downloadManager;
     }
 
+    public DataSourceManager getDataSourceManager() {
+        return dataSourceManager;
+    }
+
     private File getDownloadQueueFile() {
         return new File(getTemporaryDirectory(), "download-queue.xml");
     }
@@ -1004,6 +1013,18 @@ public class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 getDownloadManager().loadQueue();
+
+                try {
+                    getDataSourceManager().initialize(getEdition());
+                } catch (final Exception e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(frame,
+                                    MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(),
+                                    ERROR_MESSAGE);
+                        }
+                    });
+                }
             }
         }, "DownloadManagerInitializer").start();
     }
