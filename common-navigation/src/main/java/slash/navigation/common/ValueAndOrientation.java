@@ -65,6 +65,6 @@ public class ValueAndOrientation {
     }
 
     public String toString() {
-        return super.toString() + "[value=" + value + ", orientation=" + orientation + "]";
+        return getClass().getSimpleName() + "[value=" + value + ", orientation=" + orientation + "]";
     }
 }

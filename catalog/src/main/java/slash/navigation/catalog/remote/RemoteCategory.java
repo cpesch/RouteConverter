@@ -164,6 +164,6 @@ public class RemoteCategory implements Category {
     }
 
     public String toString() {
-        return super.toString() + "[url=" + getUrl() + "]";
+        return  getClass().getSimpleName() + "[url=" + getUrl() + "]";
     }
 }

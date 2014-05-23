@@ -141,7 +141,8 @@ public class RemoteRoute implements Route {
     }
 
     public String toString() {
-        return super.toString() + "[category=" + category + ", url=" + url +
-                ", name=" + name + ", creator=" + creator + ", description=" + description + ", fromCategory=" + fromCategory + "]";
+        return  getClass().getSimpleName() + "[category=" + category + ", url=" + url +
+                ", name=" + name + ", creator=" + creator + ", description=" + description +
+                ", fromCategory=" + fromCategory + "]";
     }
 }
