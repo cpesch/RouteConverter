@@ -119,7 +119,6 @@ public abstract class BaseMapView implements MapView {
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
-    private static final String COMPLEMENT_TIME_FALLBACK = "complementTimeFallback";
     private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
@@ -1443,27 +1442,21 @@ public abstract class BaseMapView implements MapView {
     private void complementPositions(int row, BaseRoute route) {
         List<NavigationPosition> positions = route.getPositions();
 
-        mapViewCallback.complementElevation(asRange(row, row + positions.size()));
-
-        int index = row;
-        for (NavigationPosition position : positions) {
-            // do not complement description since this is limited to 2500 calls/day
-            // mapViewCallback.complementDescription(index);
-            if (position.getTime() == null)
-                mapViewCallback.complementTime(index, false);
-            index++;
-        }
+        int[] rows = asRange(row, row + positions.size());
+        // do not complement description since this is limited to 2500 calls/day
+        // mapViewCallback.complementDescription(rows);
+        mapViewCallback.complementElevation(rows);
+        mapViewCallback.complementTime(rows);
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
-        boolean complementTimeFallback = preferences.getBoolean(COMPLEMENT_TIME_FALLBACK, true);
-
-        mapViewCallback.complementDescription(row);
-        mapViewCallback.complementElevation(new int[]{row});
-        mapViewCallback.complementTime(row, complementTimeFallback);
+        int[] rows = new int[]{row};
+        mapViewCallback.complementDescription(rows);
+        mapViewCallback.complementElevation(rows);
+        mapViewCallback.complementTime(rows);
     }
 
     private int getAddRow() {
@@ -1493,7 +1486,6 @@ public abstract class BaseMapView implements MapView {
         boolean complementElevation = preferences.getBoolean(COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE, true);
         boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
         boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true);
-        boolean complementTimeFallback = preferences.getBoolean(COMPLEMENT_TIME_FALLBACK, true);
 
         int minimum = row;
         for (int index : selectedPositionIndices) {
@@ -1518,12 +1510,12 @@ public abstract class BaseMapView implements MapView {
             if (cleanElevation)
                 positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
             if (complementElevation)
-                mapViewCallback.complementElevation(new int[]{row});
+                mapViewCallback.complementElevation(new int[]{index});
 
             if (cleanTime)
                 positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)
-                mapViewCallback.complementTime(index, complementTimeFallback);
+                mapViewCallback.complementTime(new int[]{index});
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

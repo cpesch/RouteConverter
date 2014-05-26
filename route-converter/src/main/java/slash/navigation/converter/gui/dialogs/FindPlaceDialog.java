@@ -164,12 +164,13 @@ public class FindPlaceDialog extends SimpleDialog {
             NavigationPosition position = (NavigationPosition) objects[i];
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
-            r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow}, true);
+
+            int[] rows = new int[]{insertRow};
+            r.getPositionsSelectionModel().setSelectedPositions(rows, true);
 
             if (isEmpty(position.getElevation()))
-                r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), positionsModel, new int[]{insertRow});
-            r.complementTime(insertRow, true);
-            // TODO r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), positionsModel, new int[]{insertRow});
+                r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), positionsModel, rows);
+            r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), positionsModel, rows);
         }
     }
 

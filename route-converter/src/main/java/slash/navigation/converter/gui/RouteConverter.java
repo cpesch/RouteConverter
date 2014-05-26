@@ -675,11 +675,6 @@ public class RouteConverter extends SingleFrameApplication {
         return mapViewCallback;
     }
 
-    public void complementTime(int row, boolean allowCurrentTime) {
-        getMapViewCallback().complementTime(row, allowCurrentTime);
-    }
-
-
     public JTable getPositionsView() {
         return getConvertPanel().getPositionsView();
     }

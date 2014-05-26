@@ -91,11 +91,9 @@ public class InsertPositionFacade {
                 r.getPositionsModel().add(insertRow, positions);
 
                 for (int j = 0; j < positions.size(); j++) {    // TODO unify with BaseMapView#complementPositions
-                    NavigationPosition position = positions.get(j);
-                    r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), r.getPositionsModel(), new int[]{insertRow + j});
-                    if (position.getTime() == null)
-                        r.complementTime(insertRow + j, false);
-                    // TODO r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), r.getPositionsModel(), new int[]{insertRow + j});
+                    int[] rows = new int[]{insertRow + j};
+                    r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), r.getPositionsModel(), rows);
+                    r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), r.getPositionsModel(), rows);
                 }
             }
         }
