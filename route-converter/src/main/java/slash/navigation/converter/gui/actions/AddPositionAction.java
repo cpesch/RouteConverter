@@ -79,7 +79,8 @@ public class AddPositionAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         r.getBatchPositionAugmenter().addDescriptions(table, positionsModel, new int[]{row});
         r.getBatchPositionAugmenter().addElevations(table, positionsModel, new int[]{row});
-        r.complementTime(row, position.getTime(), true);
+        if (position.getTime() == null)
+            r.complementTime(row, true);
         // TODO r.getBatchPositionAugmenter().addTimes(table, positionsModel, new int[]{row});
     }
 

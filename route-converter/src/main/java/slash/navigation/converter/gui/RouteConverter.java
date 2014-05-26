@@ -675,8 +675,8 @@ public class RouteConverter extends SingleFrameApplication {
         return mapViewCallback;
     }
 
-    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) {
-        getMapViewCallback().complementTime(row, time, allowCurrentTime);
+    public void complementTime(int row, boolean allowCurrentTime) {
+        getMapViewCallback().complementTime(row, allowCurrentTime);
     }
 
 
@@ -1013,7 +1013,7 @@ public class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 getDownloadManager().loadQueue();
-
+                /*
                 try {
                     getDataSourceManager().initialize(getEdition());
                 } catch (final Exception e) {
@@ -1025,6 +1025,7 @@ public class RouteConverter extends SingleFrameApplication {
                         }
                     });
                 }
+                */
             }
         }, "DownloadManagerInitializer").start();
     }

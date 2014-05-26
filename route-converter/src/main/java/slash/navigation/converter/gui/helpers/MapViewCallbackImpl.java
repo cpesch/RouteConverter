@@ -55,10 +55,7 @@ public class MapViewCallbackImpl implements MapViewCallback {
         RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), new int[]{row});
     }
 
-    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) { // TODO check with BatchPositionAugmenter
-        if (time != null)
-            return;
-
+    public void complementTime(int row, boolean allowCurrentTime) { // TODO check with BatchPositionAugmenter
         PositionsModel positionsModel = RouteConverter.getInstance().getPositionsModel();
         // do not put this in executorService since when called in batches, the edit() must happen before the
         // next time can be complemented

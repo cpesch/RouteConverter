@@ -93,7 +93,8 @@ public class InsertPositionFacade {
                 for (int j = 0; j < positions.size(); j++) {    // TODO unify with BaseMapView#complementPositions
                     NavigationPosition position = positions.get(j);
                     r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), r.getPositionsModel(), new int[]{insertRow + j});
-                    r.complementTime(insertRow + j, position.getTime(), false);
+                    if (position.getTime() == null)
+                        r.complementTime(insertRow + j, false);
                     // TODO r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), r.getPositionsModel(), new int[]{insertRow + j});
                 }
             }

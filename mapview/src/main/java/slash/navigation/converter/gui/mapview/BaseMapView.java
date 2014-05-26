@@ -1449,7 +1449,8 @@ public abstract class BaseMapView implements MapView {
         for (NavigationPosition position : positions) {
             // do not complement description since this is limited to 2500 calls/day
             // mapViewCallback.complementDescription(index);
-            mapViewCallback.complementTime(index, position.getTime(), false);
+            if (position.getTime() == null)
+                mapViewCallback.complementTime(index, false);
             index++;
         }
     }
@@ -1462,7 +1463,7 @@ public abstract class BaseMapView implements MapView {
 
         mapViewCallback.complementDescription(row);
         mapViewCallback.complementElevation(new int[]{row});
-        mapViewCallback.complementTime(row, null, complementTimeFallback);
+        mapViewCallback.complementTime(row, complementTimeFallback);
     }
 
     private int getAddRow() {
@@ -1522,7 +1523,7 @@ public abstract class BaseMapView implements MapView {
             if (cleanTime)
                 positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);
             if (complementTime)
-                mapViewCallback.complementTime(index, null, complementTimeFallback);
+                mapViewCallback.complementTime(index, complementTimeFallback);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

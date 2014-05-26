@@ -36,7 +36,7 @@ public interface MapViewCallback {
     String createDescription(int index, String description);
     void complementDescription(int row);
     void complementElevation(int[] rows);
-    void complementTime(int row, CompactCalendar time, boolean allowCurrentTime);
+    void complementTime(int row, boolean allowCurrentTime);
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
