@@ -1438,25 +1438,17 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     private void complementPositions(int row, BaseRoute route) {
-        List<NavigationPosition> positions = route.getPositions();
-
-        int[] rows = asRange(row, row + positions.size());
+        int[] rows = asRange(row, row + route.getPositions().size());
         // do not complement description since this is limited to 2500 calls/day
-        // mapViewCallback.complementDescription(rows);
-        mapViewCallback.complementElevation(rows);
-        mapViewCallback.complementTime(rows);
+        mapViewCallback.complementData(rows, false, true, true);
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
-        positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
-
         int[] rows = new int[]{row};
-        mapViewCallback.complementDescription(rows);
-        mapViewCallback.complementElevation(rows);
-        mapViewCallback.complementTime(rows);
+        positionsSelectionModel.setSelectedPositions(rows, true);
+        mapViewCallback.complementData(rows, true, true, true);
     }
 
     private int getAddRow() {
@@ -1507,15 +1499,13 @@ public abstract class BaseMapView implements MapView {
                         LATITUDE_COLUMN_INDEX, latitude, false, true);
             }
 
-            if (cleanElevation)
-                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
-            if (complementElevation)
-                mapViewCallback.complementElevation(new int[]{index});
-
             if (cleanTime)
                 positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);
-            if (complementTime)
-                mapViewCallback.complementTime(new int[]{index});
+            if (cleanElevation)
+                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
+
+            if (complementTime || complementElevation)
+                mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

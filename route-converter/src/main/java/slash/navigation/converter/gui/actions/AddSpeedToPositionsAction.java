@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -29,26 +29,17 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds speeds to the selected rows of a {@link JTable}
- * with the help of a {@link slash.navigation.converter.gui.helpers.BatchPositionAugmenter}.
+ * with the help of a {@link BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
 public class AddSpeedToPositionsAction extends FrameAction {
-    private final JTable table;
-    private final PositionsModel positionsModel;
-    private final BatchPositionAugmenter augmenter;
-
-    public AddSpeedToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
-        this.table = table;
-        this.positionsModel = positionsModel;
-        this.augmenter = augmenter;
-    }
-
     public void run() {
-        int[] selectedRows = table.getSelectedRows();
+        RouteConverter r = RouteConverter.getInstance();
+        int[] selectedRows = r.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addSpeeds(table, positionsModel, selectedRows);
+            r.getBatchPositionAugmenter().addSpeeds(selectedRows);
         }
     }
 }

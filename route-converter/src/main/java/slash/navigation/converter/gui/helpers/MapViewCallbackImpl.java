@@ -39,16 +39,8 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
     }
 
-    public void complementDescription(int[] rows) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), rows);
-    }
-
-    public void complementElevation(int[] rows) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), rows);
-    }
-
-    public void complementTime(int[] rows) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addTimes(RouteConverter.getInstance().getPositionsView(), RouteConverter.getInstance().getPositionsModel(), rows);
+    public void complementData(int[] rows, boolean description, boolean time, boolean elevation) {
+        RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation);
     }
 
     public RoutingService getRoutingService() {

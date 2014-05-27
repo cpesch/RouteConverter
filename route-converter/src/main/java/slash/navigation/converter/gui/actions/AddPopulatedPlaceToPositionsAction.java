@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -35,20 +35,11 @@ import java.awt.event.ActionListener;
  */
 
 public class AddPopulatedPlaceToPositionsAction extends FrameAction {
-    private final JTable table;
-    private final PositionsModel positionsModel;
-    private final BatchPositionAugmenter augmenter;
-
-    public AddPopulatedPlaceToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
-        this.table = table;
-        this.positionsModel = positionsModel;
-        this.augmenter = augmenter;
-    }
-
     public void run() {
-        int[] selectedRows = table.getSelectedRows();
+        RouteConverter r = RouteConverter.getInstance();
+        int[] selectedRows = r.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addPopulatedPlaces(table, positionsModel, selectedRows);
+            r.getBatchPositionAugmenter().addPopulatedPlaces(selectedRows);
         }
     }
 }

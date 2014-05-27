@@ -34,9 +34,7 @@ import javax.swing.event.ChangeListener;
 
 public interface MapViewCallback {
     String createDescription(int index, String description);
-    void complementDescription(int[] rows);
-    void complementElevation(int[] rows);
-    void complementTime(int[] rows);
+    void complementData(int[] rows, boolean description, boolean time, boolean elevation);
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();

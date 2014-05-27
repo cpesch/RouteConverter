@@ -50,7 +50,12 @@ import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.intrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -65,12 +70,16 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
+    private final JFrame frame;
+    private final JTable positionsView;
+    private final PositionsModel positionsModel;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Object mutex = new Object();
-    private JFrame frame;
     private boolean running = true;
 
-    public BatchPositionAugmenter(JFrame frame) {
+    public BatchPositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame) {
+        this.positionsView = positionsView;
+        this.positionsModel = positionsModel;
         this.frame = frame;
     }
 
@@ -237,8 +246,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addCoordinates(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processCoordinates(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addCoordinates(int[] rows) {
+        processCoordinates(positionsView, positionsModel, rows, TAUTOLOGY_PREDICATE);
     }
 
 
@@ -284,8 +293,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addElevations(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processElevations(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    public void addElevations(int[] rows) {
+        processElevations(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -322,8 +331,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        addPopulatedPlaces(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    public void addPopulatedPlaces(int[] rows) {
+        addPopulatedPlaces(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -360,8 +369,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addPostalAddresses(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        addPostalAddresses(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    public void addPostalAddresses(int[] rows) {
+        addPostalAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -419,8 +428,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addDescriptions(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        addDescriptions(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    private void addDescriptions(int[] rows) {
+        addDescriptions(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -461,8 +470,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addSpeeds(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processSpeeds(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    public void addSpeeds(int[] rows) {
+        processSpeeds(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
     private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
@@ -521,8 +530,8 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addTimes(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processTimes(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
+    public void addTimes(int[] rows) {
+        processTimes(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -561,10 +570,10 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+    public void addNumbers(int[] rows) {
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-        processNumbers(positionsTable, positionsModel, selectedRows, digitCount, numberPattern, COORDINATE_PREDICATE);
+        processNumbers(positionsView, positionsModel, rows, digitCount, numberPattern, COORDINATE_PREDICATE);
     }
 
     public String createDescription(int index, String description) {
@@ -573,5 +582,14 @@ public class BatchPositionAugmenter {
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(index);
         return formatNumberedPosition(numberPattern, number, description);
+    }
+
+    public void addData(int[] rows, boolean description, boolean time, boolean elevation) {
+        if (description)
+            addDescriptions(rows);
+        if (time)
+            addTimes(rows);
+        if (elevation)
+            addElevations(rows);
     }
 }

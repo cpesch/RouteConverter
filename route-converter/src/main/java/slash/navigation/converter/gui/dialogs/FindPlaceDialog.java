@@ -25,11 +25,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -49,7 +49,6 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -167,10 +166,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
             int[] rows = new int[]{insertRow};
             r.getPositionsSelectionModel().setSelectedPositions(rows, true);
-
-            if (isEmpty(position.getElevation()))
-                r.getBatchPositionAugmenter().addElevations(r.getPositionsView(), positionsModel, rows);
-            r.getBatchPositionAugmenter().addTimes(r.getPositionsView(), positionsModel, rows);
+            r.getBatchPositionAugmenter().addData(rows, false, true, true);
         }
     }
 

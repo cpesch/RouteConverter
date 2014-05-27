@@ -77,10 +77,7 @@ public class AddPositionAction extends FrameAction {
 
     private void complementRow(int row) {
         RouteConverter r = RouteConverter.getInstance();
-        int[] rows = new int[]{row};
-        r.getBatchPositionAugmenter().addDescriptions(table, positionsModel, rows);
-        r.getBatchPositionAugmenter().addElevations(table, positionsModel, rows);
-        r.getBatchPositionAugmenter().addTimes(table, positionsModel, rows);
+        r.getBatchPositionAugmenter().addData(new int[]{row}, true, true, true);
     }
 
     public void run() {
