@@ -35,12 +35,13 @@ import javax.swing.undo.UndoableEdit;
 
 class EditPosition extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
-    private int row, firstColumn, secondColumn;
-    private Object previousFirstValue, nextFirstValue, previousSecondValue, nextSecondValue;
+    private int row, firstColumn, secondColumn, thirdColumn;
+    private Object previousFirstValue, nextFirstValue, previousSecondValue, nextSecondValue, previousThirdValue, nextThirdValue;
 
     public EditPosition(UndoPositionsModel positionsModel, int row,
                         int firstColumn, Object previousFirstValue, Object nextFirstValue,
-                        int secondColumn, Object previousSecondValue, Object nextSecondValue) {
+                        int secondColumn, Object previousSecondValue, Object nextSecondValue,
+                        int thirdColumn, Object previousThirdValue, Object nextThirdValue) {
         this.positionsModel = positionsModel;
         this.row = row;
         this.firstColumn = firstColumn;
@@ -49,6 +50,9 @@ class EditPosition extends AbstractUndoableEdit {
         this.secondColumn = secondColumn;
         this.previousSecondValue = previousSecondValue;
         this.nextSecondValue = nextSecondValue;
+        this.thirdColumn = thirdColumn;
+        this.previousThirdValue = previousThirdValue;
+        this.nextThirdValue = nextThirdValue;
     }
 
     public String getUndoPresentationName() {
@@ -61,11 +65,11 @@ class EditPosition extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.edit(row, firstColumn, previousFirstValue, secondColumn, previousSecondValue, true, false);
+        positionsModel.edit(row, firstColumn, previousFirstValue, secondColumn, previousSecondValue, thirdColumn, previousThirdValue, true, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.edit(row, firstColumn, nextFirstValue, secondColumn, nextSecondValue, true, false);
+        positionsModel.edit(row, firstColumn, nextFirstValue, secondColumn, nextSecondValue, thirdColumn, nextThirdValue, true, false);
     }
 }

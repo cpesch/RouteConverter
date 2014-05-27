@@ -234,7 +234,7 @@ public class BatchPositionAugmenter {
                         NavigationPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
                         if (coordinates != null) {
                             positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
-                                    LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), false, true);
+                                    LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), -1, null, false, true);
                         }
                         return coordinates != null;
                     }
@@ -282,7 +282,7 @@ public class BatchPositionAugmenter {
                         Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
                         boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
                         if (changed)
-                            positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, false, true);
+                            positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, -1, null, false, true);
                         return changed;
                     }
 
@@ -320,7 +320,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
                         return description != null;
                     }
 
@@ -358,7 +358,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
                         return description != null;
                     }
 
@@ -416,7 +416,7 @@ public class BatchPositionAugmenter {
                             description = getNearByFor(position);
                         if (description != null) {
                             description = createDescription(index + 1, description);
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
                         }
                         return description != null;
                     }
@@ -457,7 +457,7 @@ public class BatchPositionAugmenter {
                             Double nextSpeed = position.calculateSpeed(predecessor);
                             boolean changed = nextSpeed == null || !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.edit(index, SPEED_COLUMN_INDEX, nextSpeed, -1, null, false, true);
+                                positionsModel.edit(index, SPEED_COLUMN_INDEX, nextSpeed, -1, null, -1, null, false, true);
                             return changed;
                         }
                         return false;
@@ -517,7 +517,7 @@ public class BatchPositionAugmenter {
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
                             boolean changed = nextTime == null || !nextTime.equals(previousTime);
                             if (changed)
-                                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, nextTime, -1, null, false, true);
+                                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, nextTime, -1, null, -1, null, false, true);
                             return changed;
                         }
                         return false;
@@ -559,7 +559,7 @@ public class BatchPositionAugmenter {
                         String nextDescription = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
                         if (changed)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextDescription, -1, null, false, true);
+                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextDescription, -1, null, -1, null, false, true);
                         return changed;
                     }
 

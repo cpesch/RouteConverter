@@ -1493,16 +1493,16 @@ public abstract class BaseMapView implements MapView {
                     continue;
 
                 positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, position.getLongitude() + diffLongitude,
-                        LATITUDE_COLUMN_INDEX, position.getLatitude() + diffLatitude, false, true);
+                        LATITUDE_COLUMN_INDEX, position.getLatitude() + diffLatitude, -1, null, false, true);
             } else {
                 positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, longitude,
-                        LATITUDE_COLUMN_INDEX, latitude, false, true);
+                        LATITUDE_COLUMN_INDEX, latitude, -1, null, false, true);
             }
 
             if (cleanTime)
-                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, false, false);
+                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, -1, null, false, false);
             if (cleanElevation)
-                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, false, false);
+                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, -1, null, false, false);
 
             if (complementTime || complementElevation)
                 mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation);
