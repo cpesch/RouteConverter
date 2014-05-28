@@ -173,25 +173,25 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        edit(rowIndex, columnIndex, aValue, -1, null, -1, null, true, true);
+        edit(rowIndex, new PositionColumnValues(columnIndex, aValue), true, true);
     }
 
-    public void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue,
-                     int thirdColumnIndex, Object thirdValue, boolean fireEvent, boolean trackUndo) {
+    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
-        editCell(rowIndex, firstColumnIndex, firstValue);
-        if (secondColumnIndex != -1)
-            editCell(rowIndex, secondColumnIndex, secondValue);
-        if (thirdColumnIndex != -1)
-            editCell(rowIndex, thirdColumnIndex, thirdValue);
+        if(columnToValues.getNextValues() != null) {
+            for (int i = 0; i < columnToValues.getColumnIndices().size(); i++) {
+                int columnIndex = columnToValues.getColumnIndices().get(i);
+                editCell(rowIndex, columnIndex, columnToValues.getNextValues().get(i));
+            }
+        }
 
         if (fireEvent) {
-            if (secondColumnIndex != -1 || thirdColumnIndex != -1)
+            if (columnToValues.getColumnIndices().size() > 1)
                 fireTableRowsUpdated(rowIndex, rowIndex);
             else
-                fireTableRowsUpdated(rowIndex, rowIndex, firstColumnIndex);
+                fireTableRowsUpdated(rowIndex, rowIndex, columnToValues.getColumnIndices().get(0));
         }
     }
 

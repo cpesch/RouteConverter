@@ -29,6 +29,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
@@ -53,6 +54,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -73,6 +75,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
+import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -1492,17 +1495,17 @@ public abstract class BaseMapView implements MapView {
                 if (!moveCompleteSelection)
                     continue;
 
-                positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, position.getLongitude() + diffLongitude,
-                        LATITUDE_COLUMN_INDEX, position.getLatitude() + diffLatitude, -1, null, false, true);
+                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                                Arrays.<Object>asList( position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
             } else {
-                positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, longitude,
-                        LATITUDE_COLUMN_INDEX, latitude, -1, null, false, true);
+                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                        Arrays.<Object>asList(longitude, latitude)), false, true);
             }
 
             if (cleanTime)
-                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, null, -1, null, -1, null, false, false);
+                positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, null), false, false);
             if (cleanElevation)
-                positionsModel.edit(index, ELEVATION_COLUMN_INDEX, null, -1, null, -1, null, false, false);
+                positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, null), false, false);
 
             if (complementTime || complementElevation)
                 mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation);

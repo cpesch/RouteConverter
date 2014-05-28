@@ -25,6 +25,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
@@ -35,13 +36,15 @@ import javax.swing.*;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -70,10 +73,15 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
+
     private final JFrame frame;
     private final JTable positionsView;
     private final PositionsModel positionsModel;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private final ExecutorService executor = newSingleThreadExecutor();
+    private final ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
+    private final GoogleMapsService googleMapsService = new GoogleMapsService();
+    private final GeoNamesService geonamesService = new GeoNamesService();
     private static final Object mutex = new Object();
     private boolean running = true;
 
@@ -112,13 +120,9 @@ public class BatchPositionAugmenter {
 
     private interface Operation {
         String getName();
-
         int getColumnIndex();
-
         void performOnStart();
-
         boolean run(int index, NavigationPosition position) throws Exception;
-
         String getErrorMessage();
     }
 
@@ -232,10 +236,10 @@ public class BatchPositionAugmenter {
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         NavigationPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
-                        if (coordinates != null) {
-                            positionsModel.edit(index, LONGITUDE_COLUMN_INDEX, coordinates.getLongitude(),
-                                    LATITUDE_COLUMN_INDEX, coordinates.getLatitude(), -1, null, false, true);
-                        }
+                        if (coordinates != null)
+                            positionsModel.edit(index,
+                                    new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                                            Arrays.<Object>asList(coordinates.getLongitude(), coordinates.getLatitude())), false, true);
                         return coordinates != null;
                     }
 
@@ -257,8 +261,6 @@ public class BatchPositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
-
                     public String getName() {
                         return "ElevationPositionAugmenter";
                     }
@@ -268,13 +270,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public void performOnStart() {
-                        List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<LongitudeAndLatitude>();
-                        for (int row : rows) {
-                            NavigationPosition position = positionsModel.getPosition(row);
-                            if (position.hasCoordinates())
-                                longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
-                        }
-                        elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes);
+                        downloadElevationData(rows);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
@@ -282,7 +278,7 @@ public class BatchPositionAugmenter {
                         Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
                         boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
                         if (changed)
-                            positionsModel.edit(index, ELEVATION_COLUMN_INDEX, nextElevation, -1, null, -1, null, false, true);
+                            positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, nextElevation), false, true);
                         return changed;
                     }
 
@@ -291,6 +287,16 @@ public class BatchPositionAugmenter {
                     }
                 }
         );
+    }
+
+    private void downloadElevationData(int[] rows) {
+        List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<LongitudeAndLatitude>();
+        for (int row : rows) {
+            NavigationPosition position = positionsModel.getPosition(row);
+            if (position.hasCoordinates())
+                longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
+        }
+        elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes);
     }
 
     public void addElevations(int[] rows) {
@@ -320,7 +326,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
+                            positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
                         return description != null;
                     }
 
@@ -358,7 +364,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (description != null)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
+                            positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
                         return description != null;
                     }
 
@@ -371,65 +377,6 @@ public class BatchPositionAugmenter {
 
     public void addPostalAddresses(int[] rows) {
         addPostalAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
-    }
-
-
-    private void addDescriptions(final JTable positionsTable,
-                                 final PositionsModel positionsModel,
-                                 final int[] rows,
-                                 final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, true, predicate,
-                new Operation() {
-                    private GoogleMapsService googleMapsService = new GoogleMapsService();
-                    private GeoNamesService geonamesService = new GeoNamesService();
-
-                    public String getName() {
-                        return "DescriptionPositionAugmenter";
-                    }
-
-                    public int getColumnIndex() {
-                        return DESCRIPTION_COLUMN_INDEX;
-                    }
-
-                    public void performOnStart() {
-                    }
-
-                    private String getLocationFor(NavigationPosition position) {
-                        try {
-                            return googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    }
-
-                    private String getNearByFor(NavigationPosition position) {
-                        try {
-                            return geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    }
-
-                    public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = getLocationFor(position);
-                        if (description == null)
-                            description = getNearByFor(position);
-                        if (description != null) {
-                            description = createDescription(index + 1, description);
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, description, -1, null, -1, null, false, true);
-                        }
-                        return description != null;
-                    }
-
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-description-error");
-                    }
-                }
-        );
-    }
-
-    private void addDescriptions(int[] rows) {
-        addDescriptions(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -457,7 +404,7 @@ public class BatchPositionAugmenter {
                             Double nextSpeed = position.calculateSpeed(predecessor);
                             boolean changed = nextSpeed == null || !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.edit(index, SPEED_COLUMN_INDEX, nextSpeed, -1, null, -1, null, false, true);
+                                positionsModel.edit(index, new PositionColumnValues(SPEED_COLUMN_INDEX, nextSpeed), false, true);
                             return changed;
                         }
                         return false;
@@ -517,7 +464,7 @@ public class BatchPositionAugmenter {
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
                             boolean changed = nextTime == null || !nextTime.equals(previousTime);
                             if (changed)
-                                positionsModel.edit(index, DATE_TIME_COLUMN_INDEX, nextTime, -1, null, -1, null, false, true);
+                                positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, nextTime), false, true);
                             return changed;
                         }
                         return false;
@@ -559,7 +506,7 @@ public class BatchPositionAugmenter {
                         String nextDescription = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
                         if (changed)
-                            positionsModel.edit(index, DESCRIPTION_COLUMN_INDEX, nextDescription, -1, null, -1, null, false, true);
+                            positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, nextDescription), false, true);
                         return changed;
                     }
 
@@ -576,20 +523,110 @@ public class BatchPositionAugmenter {
         processNumbers(positionsView, positionsModel, rows, digitCount, numberPattern, COORDINATE_PREDICATE);
     }
 
+
+    private void addData(final JTable positionsTable,
+                         final PositionsModel positionsModel,
+                         final int[] rows,
+                         final OverwritePredicate predicate,
+                         final boolean complementDescription,
+                         final boolean complementTime,
+                         final boolean complementElevation) {
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
+                new Operation() {
+                    public String getName() {
+                        return "DataPositionAugmenter";
+                    }
+
+                    public int getColumnIndex() {
+                        return ALL_COLUMNS; // might be DESCRIPTION_COLUMN_INDEX, ELEVATION_COLUMN_INDEX, DATE_TIME_COLUMN_INDEX
+                    }
+
+                    public void performOnStart() {
+                        downloadElevationData(rows);
+                    }
+
+                    public boolean run(int index, NavigationPosition position) throws Exception {
+                        List<Integer> columnIndices = new ArrayList<Integer>(3);
+                        List<Object> columnValues = new ArrayList<Object>(3);
+
+                        if (complementDescription) {
+                            String nextDescription = getLocationFor(position);
+                            if (nextDescription == null)
+                                nextDescription = getNearByFor(position);
+                            if (nextDescription != null) {
+                                nextDescription = createDescription(index + 1, nextDescription);
+                            }
+                            String previousDescription = position.getDescription();
+                            boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
+                            if (changed) {
+                                columnIndices.add(DESCRIPTION_COLUMN_INDEX);
+                                columnValues.add(nextDescription);
+                            }
+                        }
+
+                        if (complementElevation) {
+                            Double previousElevation = position.getElevation();
+                            Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
+                            boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
+                            if (changed) {
+                                columnIndices.add(ELEVATION_COLUMN_INDEX);
+                                columnValues.add(nextElevation);
+                            }
+                        }
+
+                        if (complementTime) {
+                            NavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
+                            NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
+                            if (predecessor != null && successor != null) {
+                                CompactCalendar previousTime = position.getTime();
+                                CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
+                                boolean changed = nextTime == null || !nextTime.equals(previousTime);
+                                if (changed) {
+                                    columnIndices.add(DATE_TIME_COLUMN_INDEX);
+                                    columnValues.add(nextTime);
+                                }
+                            }
+                        }
+
+                        positionsModel.edit(index, new PositionColumnValues(columnIndices, columnValues), false, true);
+                        return complementDescription && columnIndices.contains(DESCRIPTION_COLUMN_INDEX) &&
+                                complementElevation && columnIndices.contains(ELEVATION_COLUMN_INDEX) &&
+                                complementTime && columnIndices.contains(DATE_TIME_COLUMN_INDEX);
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-data-error");
+                    }
+                }
+        );
+    }
+
+    private String getLocationFor(NavigationPosition position) {
+        try {
+            return googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private String getNearByFor(NavigationPosition position) {
+        try {
+            return geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public void addData(int[] rows, boolean description, boolean time, boolean elevation) {
+        addData(positionsView, positionsModel, rows, COORDINATE_PREDICATE, description, time, elevation);
+    }
+
+
     public String createDescription(int index, String description) {
         if (description == null)
             description = RouteConverter.getBundle().getString("new-position-name");
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(index);
         return formatNumberedPosition(numberPattern, number, description);
-    }
-
-    public void addData(int[] rows, boolean description, boolean time, boolean elevation) {
-        if (description)
-            addDescriptions(rows);
-        if (time)
-            addTimes(rows);
-        if (elevation)
-            addElevations(rows);
     }
 }
