@@ -290,6 +290,8 @@ public class BatchPositionAugmenter {
     }
 
     private void downloadElevationData(int[] rows) {
+        if(!elevationServiceFacade.isDownload())
+            return;
         List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<LongitudeAndLatitude>();
         for (int row : rows) {
             NavigationPosition position = positionsModel.getPosition(row);

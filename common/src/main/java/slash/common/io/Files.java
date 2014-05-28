@@ -29,12 +29,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.io.File.createTempFile;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
 
@@ -262,22 +260,6 @@ public class Files {
         return files;
     }
 
-    public static File writeToTempFile(byte[] bytes) throws IOException {
-        File tempFile = createTempFile("catalog", ".xml", getTemporaryDirectory());
-        tempFile.deleteOnExit();
-        OutputStream outputStream = new FileOutputStream(tempFile);
-        try {
-            outputStream.write(bytes);
-        } finally {
-            outputStream.close();
-        }
-        return tempFile;
-    }
-
-    public static File writeToTempFile(String string) throws IOException {
-        return writeToTempFile(string.getBytes());
-    }
-
     private static final String DEFAULT_ALGORITHM = "SHA1";
 
     public static String generateChecksum(InputStream inputStream) throws IOException {
@@ -305,6 +287,11 @@ public class Files {
         } finally {
             closeQuietly(fis);
         }
+    }
+
+    public static void setLastModified(File file, long lastModified) throws IOException {
+        if (!file.setLastModified(lastModified))
+            throw new IOException(format("Could not set last modified of %s to %s", file, lastModified));
     }
 
     /**

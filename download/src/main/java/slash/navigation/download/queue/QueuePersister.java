@@ -17,16 +17,14 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.download.queue;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.download.Action;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.State;
-import slash.navigation.download.actions.Checksum;
-import slash.navigation.download.queue.binding.DownloadType;
-import slash.navigation.download.queue.binding.ObjectFactory;
-import slash.navigation.download.queue.binding.QueueType;
+import slash.navigation.download.queue.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -48,42 +46,83 @@ import static slash.navigation.download.queue.QueueUtil.unmarshal;
  */
 
 public class QueuePersister {
-    private final File file;
 
-    public QueuePersister(File file) {
-        this.file = file;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public List<Download> load() throws IOException, JAXBException {
+    public Result load(File file) throws IOException {
         if (!file.exists())
             return null;
-        QueueType queueType = unmarshal(new FileInputStream(file));
-        return asDownloads(queueType);
+
+        QueueType queueType;
+        try {
+            queueType = unmarshal(new FileInputStream(file));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new IOException("Cannot unmarshall " + file + ": " + e, e);
+        }
+        return new Result(asDownloads(queueType), parseTime(queueType.getLastSync()));
+    }
+
+    public static class Result {
+        private final CompactCalendar lastSync;
+        private final List<Download> downloads;
+
+        public Result(List<Download> downloads, CompactCalendar lastSync) {
+            this.downloads = downloads;
+            this.lastSync = lastSync;
+        }
+
+        public List<Download> getDownloads() {
+            return downloads;
+        }
+
+        public CompactCalendar getLastSync() {
+            return lastSync;
+        }
     }
 
     private List<Download> asDownloads(QueueType queueType) {
-        List<Download> result = new ArrayList<Download>();
+        List<Download> result = new ArrayList<>();
         for (DownloadType downloadType : queueType.getDownload())
             result.add(asDownload(downloadType));
         return result;
     }
 
     private Download asDownload(DownloadType downloadType) {
-        return new Download(downloadType.getDescription(), downloadType.getUrl(),
-                new Checksum(downloadType.getChecksum(), downloadType.getSize(), parseTime(downloadType.getTimestamp())),
-                Action.valueOf(downloadType.getAction()), new File(downloadType.getTarget()),
-                parseTime(downloadType.getLastSync()), State.valueOf(downloadType.getState()),
-                new File(downloadType.getTempFile()), parseTime(downloadType.getLastModified()),
-                downloadType.getContentLength());
+        return new Download(downloadType.getDescription(), downloadType.getUrl(), Action.valueOf(downloadType.getAction()),
+                new File(downloadType.getDownloadable().getTarget()), asChecksum(downloadType.getDownloadable().getChecksum()),
+                asFiles(downloadType.getDownloadable().getFragment()), asChecksums(downloadType.getDownloadable().getFragment()),
+                downloadType.getETag(), State.valueOf(downloadType.getState()), new File(downloadType.getTempFile()));
     }
 
-    public void save(List<Download> downloads) throws IOException, JAXBException {
+    private List<File> asFiles(List<FragmentType> fragmentTypes) {
+        List<File> files = new ArrayList<>();
+        for (FragmentType fragmentType : fragmentTypes)
+            files.add(new File(fragmentType.getTarget()));
+        return files;
+    }
+
+    private List<Checksum> asChecksums(List<FragmentType> fragmentTypes) {
+        List<Checksum> checksums = new ArrayList<>();
+        for (FragmentType fragmentType : fragmentTypes)
+            checksums.add(asChecksum(fragmentType.getChecksum()));
+        return checksums;
+    }
+
+    private Checksum asChecksum(ChecksumType checksumType) {
+        if(checksumType == null)
+            return null;
+
+        return new Checksum(parseTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
+    }
+
+    public void save(File file, List<Download> downloads, CompactCalendar lastSync) throws IOException {
         QueueType queueType = asQueueType(downloads);
-        marshal(queueType, new FileOutputStream(file));
+        queueType.setLastSync(formatTime(lastSync));
+        try {
+            marshal(queueType, new FileOutputStream(file));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new IOException("Cannot marshall " + file + ": " + e, e);
+        }
     }
 
     private QueueType asQueueType(List<Download> downloads) {
@@ -95,18 +134,52 @@ public class QueuePersister {
 
     private DownloadType asDownloadType(Download download) {
         DownloadType downloadType = new ObjectFactory().createDownloadType();
+        downloadType.setDownloadable(asDownloadableType(download));
         downloadType.setDescription(download.getDescription());
         downloadType.setUrl(download.getUrl());
-        downloadType.setSize(download.getChecksum().getSize());
-        downloadType.setChecksum(download.getChecksum().getChecksum());
-        downloadType.setTimestamp(formatTime(download.getChecksum().getTimestamp(), true));
-        downloadType.setState(download.getState().name());
-        downloadType.setLastSync(formatTime(download.getLastSync(), true));
         downloadType.setAction(download.getAction().name());
-        downloadType.setTarget(download.getTarget().getPath());
+        downloadType.setState(download.getState().name());
+        downloadType.setETag(download.getETag());
         downloadType.setTempFile(download.getTempFile().getPath());
-        downloadType.setLastModified(formatTime(download.getLastModified(), true));
-        downloadType.setContentLength(download.getContentLength());
         return downloadType;
+    }
+
+    private DownloadableType asDownloadableType(Download download) {
+        DownloadableType downloadableType = new ObjectFactory().createDownloadableType();
+        downloadableType.setChecksum(asChecksumType(download.getFileChecksum()));
+        downloadableType.setTarget(download.getFileTarget().getPath());
+        List<FragmentType> fragmentTypes = asFragmentTypes(download.getFragmentTargets(), download.getFragmentChecksums());
+        if (fragmentTypes != null)
+            downloadableType.getFragment().addAll(fragmentTypes);
+        return downloadableType;
+    }
+
+    private ChecksumType asChecksumType(Checksum checksum) {
+        if (checksum == null)
+            return null;
+
+        ChecksumType checksumType = new ObjectFactory().createChecksumType();
+        checksumType.setContentLength(checksum.getContentLength());
+        checksumType.setLastModified(formatTime(checksum.getLastModified(), true));
+        checksumType.setSha1(checksum.getSHA1());
+        return checksumType;
+    }
+
+    private List<FragmentType> asFragmentTypes(List<File> targets, List<Checksum> checksums) {
+        if (targets == null || checksums == null)
+            return null;
+
+        List<FragmentType> fragmentTypes = new ArrayList<>();
+        for (int i = 0; i < targets.size(); i++) {
+            fragmentTypes.add(asFragmentType(targets.get(i), checksums.get(i)));
+        }
+        return fragmentTypes;
+    }
+
+    private FragmentType asFragmentType(File target, Checksum checksum) {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setChecksum(asChecksumType(checksum));
+        fragmentType.setTarget(target.getPath());
+        return fragmentType;
     }
 }

@@ -19,6 +19,8 @@
 */
 package slash.navigation.download;
 
+import slash.common.type.CompactCalendar;
+
 import java.util.Comparator;
 
 /**
@@ -32,7 +34,16 @@ class DownloadExecutorComparator implements Comparator<Runnable> {
             return -1;
         if (!(r2 instanceof DownloadExecutor))
             return 1;
-        return (int) (((DownloadExecutor) r1).getDownload().getLastSync().getTimeInMillis() -
-                ((DownloadExecutor) r2).getDownload().getLastSync().getTimeInMillis());
+        return (int) (getTimeInMillis((DownloadExecutor) r1) - getTimeInMillis((DownloadExecutor) r2));
+    }
+
+    private long getTimeInMillis(DownloadExecutor executor) {
+        Checksum latestChecksum = executor.getDownload().getFileChecksum();
+        if (latestChecksum != null) {
+            CompactCalendar lastModified = latestChecksum.getLastModified();
+            if (lastModified != null)
+                return lastModified.getTimeInMillis();
+        }
+        return 0;
     }
 }

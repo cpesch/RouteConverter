@@ -25,7 +25,7 @@ import slash.navigation.rest.SimpleCredentials;
 public abstract class RouteFeedbackServiceBase {
     // protected static final String HOST = "www.routeconverter.com";
     protected static final String HOST = "localhost:8000";
-    protected static final String ROOT = "http://" + HOST + "/catalog/";
+    protected static final String ROOT = "http://" + HOST + "/feedback/";
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
 

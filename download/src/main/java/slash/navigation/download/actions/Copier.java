@@ -19,11 +19,10 @@
 */
 package slash.navigation.download.actions;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 
 /**
@@ -36,6 +35,11 @@ public class Copier {
 
     public Copier(CopierListener listener) {
         this.listener = listener;
+    }
+
+    public long copyAndClose(File from, File to) throws IOException {
+        ensureDirectory(to.getParent());
+        return copyAndClose(new FileInputStream(from), new FileOutputStream(to), 0, from.length());
     }
 
     public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {

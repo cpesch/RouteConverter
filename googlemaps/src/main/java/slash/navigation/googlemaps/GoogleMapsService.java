@@ -81,7 +81,7 @@ public class GoogleMapsService implements ElevationService {
     public String getLocationFor(double longitude, double latitude) throws IOException {
         String url = getGeocodingUrl("latlng=" + latitude + "," + longitude);
         Get get = get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
                 GeocodeResponse geocodeResponse = unmarshalGeocode(result);
@@ -121,7 +121,7 @@ public class GoogleMapsService implements ElevationService {
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
                 GeocodeResponse geocodeResponse = unmarshalGeocode(result);
@@ -151,7 +151,7 @@ public class GoogleMapsService implements ElevationService {
     public Double getElevationFor(double longitude, double latitude) throws IOException {
         String url = getElevationUrl("locations=" + latitude + "," + longitude); // TODO could be up to 512 locations
         Get get = get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
                 ElevationResponse elevationResponse = GoogleMapsUtil.unmarshalElevation(result);

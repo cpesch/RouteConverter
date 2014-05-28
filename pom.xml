@@ -234,6 +234,7 @@
         <module>common</module>
         <module>common-gui</module>
         <module>common-navigation</module>
+        <module>datasource</module>
         <module>download</module>
         <module>download-tools</module>
         <module>earthtools</module>

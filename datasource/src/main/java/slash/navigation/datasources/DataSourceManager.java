@@ -1,0 +1,121 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.datasources;
+
+import slash.navigation.download.Download;
+import slash.navigation.download.DownloadManager;
+
+import javax.xml.bind.JAXBException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.type.CompactCalendar.now;
+import static slash.navigation.download.Action.Copy;
+
+/**
+ * Encapsulates access to the download of the DataSource XMLs.
+ *
+ * @author Christian Pesch
+ */
+
+public class DataSourceManager {
+    private static final Logger log = Logger.getLogger(DataSourceManager.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(DataSourceManager.class);
+    private static final String DIRECTORY_PREFERENCE = "directory";
+
+    private final DownloadManager downloadManager;
+    private final DataSourceService dataSourceService = new DataSourceService();
+
+    public DataSourceManager(DownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
+    }
+
+    public void initialize(String edition) throws IOException, JAXBException {
+        initializeEdition(edition);
+        initializeDataSources();
+        downloadManager.setLastSync(now());
+    }
+
+    private void initializeEdition(String edition) throws JAXBException, FileNotFoundException {
+        String uri = edition.toLowerCase() + ".xml";
+        String url = "http://localhost:8000/datasources/edition/" + uri;
+        log.info(format("Loading edition '%s'", url));
+
+        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Datasources", url, Copy,
+                null, new java.io.File(getTarget(), uri), null, null, null);
+        downloadManager.waitForCompletion(asList(download));
+
+        dataSourceService.load(new FileInputStream(download.getFileTarget()));
+    }
+
+    private void initializeDataSources() throws JAXBException, FileNotFoundException {
+        List<Download> downloads = new ArrayList<>();
+        for(DataSource dataSource : dataSourceService.getDataSources()) {
+            for(File file : dataSource.getFiles()) {
+                String url = dataSource.getBaseUrl() + file.getUri();
+                log.info(format("Loading data source '%s'", url));
+
+                Download download = downloadManager.queueForDownload(dataSource.getName() + ": Datasource " + file.getUri(),
+                        url, Copy, null, new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum(),
+                        null, null);
+                downloads.add(download);
+            }
+        }
+        downloadManager.waitForCompletion(downloads);
+
+        for(Download download : downloads) {
+            dataSourceService.load(new FileInputStream(download.getFileTarget()));
+        }
+    }
+
+    public String getPath() {
+        return preferences.get(DIRECTORY_PREFERENCE, "");
+    }
+
+    public void setPath(String path) {
+        preferences.put(DIRECTORY_PREFERENCE, path);
+    }
+
+    private java.io.File getTarget() {
+        String directoryName = getPath();
+        java.io.File f = new java.io.File(directoryName);
+        if(!f.exists())
+            directoryName = getApplicationDirectory("datasources").getAbsolutePath();
+        return ensureDirectory(directoryName);
+    }
+
+    public DataSourceService getDataSourceService() {
+        return dataSourceService;
+    }
+
+    public DownloadManager getDownloadManager() {
+        return downloadManager;
+    }
+}

@@ -59,9 +59,8 @@ public class UserIT extends RouteCatalogClientBase {
                              String firstName, String lastName, String email,
                              String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createUserXml(userName, password, firstName, lastName, email);
-
         Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -69,7 +68,7 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testCreateFromFile() throws Exception {
         Post request = createUser("userstest.gpx");
-        String result = request.execute();
+        String result = request.executeAsString();
         assertTrue(result.contains("user"));
         assertTrue(result.contains("created"));
         String location = request.getLocation();
@@ -81,7 +80,7 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testCreateFromJAXB() throws Exception {
         Post request = createUser("ivan", "secret", "Ivan", "Secret", "ivan@secret.org", USERNAME, PASSWORD);
-        String result = request.execute();
+        String result = request.executeAsString();
         assertTrue(result.contains("user"));
         assertTrue(result.contains("created"));
         String location = request.getLocation();
@@ -93,20 +92,20 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testCreateWithSameNameNotAllowed() throws Exception {
         HttpRequest request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         assertTrue(request1.isSuccessful());
         HttpRequest request2 = createUser("userstest.gpx");
-        request2.execute();
+        request2.executeAsString();
         assertFalse(request2.isSuccessful());
     }
 
     @Test
     public void testRead() throws Exception {
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = readUser(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
@@ -129,15 +128,15 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testUpdate() throws Exception {
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("user alif updated", result2);
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readUser("alif");
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
 
@@ -159,10 +158,10 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -170,12 +169,12 @@ public class UserIT extends RouteCatalogClientBase {
 
     @Test
     public void testUpdateNotMyUser() throws Exception {
-        createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = updateUser(key, "userstest.gpx", "alif", "topr");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
@@ -184,15 +183,15 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testDelete() throws Exception {
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = deleteUser(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("user ivan deleted", result2);
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readUser(key);
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertNotNull(result3);
         assertEquals(404, request3.getStatusCode());
         assertFalse(request3.isSuccessful());
@@ -201,10 +200,10 @@ public class UserIT extends RouteCatalogClientBase {
     @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = deleteUser(key, "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -212,12 +211,12 @@ public class UserIT extends RouteCatalogClientBase {
 
     @Test
     public void testDeleteNotMyUser() throws Exception {
-        createUser("alif", "stop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "stop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
         Post request1 = createUser("userstest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
         HttpRequest request2 = deleteUser(key, "alif", "stop");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
