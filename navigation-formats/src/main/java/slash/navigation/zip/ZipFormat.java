@@ -86,8 +86,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         try {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
+                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, size));
                 buffer.mark(size);
                 List<NavigationFormat> formats = getReadFormatsPreferredByExtension(Files.getExtension(entry.getName()));
                 parserContext.parse(buffer, size, startDate, formats);

@@ -136,7 +136,7 @@ public class NavigationFormatParser {
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         FileInputStream fis = new FileInputStream(source);
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int) source.length() + 1));
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis));
         buffer.mark((int) source.length() + 1);
         try {
             return read(buffer, (int) source.length(), getStartDate(source), formats);
@@ -209,7 +209,7 @@ public class NavigationFormatParser {
             URL url = new URL(urlString);
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream(), readBufferSize + 1));
+            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream()));
             buffer.mark(readBufferSize + 1);
             try {
                 internalRead(buffer, readBufferSize, getStartDate(url), getReadFormats(), this);
@@ -222,7 +222,7 @@ public class NavigationFormatParser {
     private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate,
                               List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source));
         buffer.mark(readBufferSize + 1);
         try {
             ParserContext<BaseRoute> context = new InternalParserContext<BaseRoute>();
