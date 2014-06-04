@@ -101,7 +101,7 @@ public class NavigationFormatParser {
     }
 
     @SuppressWarnings("unchecked")
-    private void internalRead(InputStream buffer, int readBufferSize, CompactCalendar startDate,
+    private void internalRead(InputStream buffer, CompactCalendar startDate,
                               List<NavigationFormat> formats, ParserContext context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
         try {
@@ -123,8 +123,7 @@ public class NavigationFormatParser {
                 try {
                     buffer.reset();
                 } catch (IOException e) {
-                    // Resetting to invalid mark - if the read buffer is not large enough
-                    log.severe(format("No known format found within %d bytes; increase the read buffer", readBufferSize));
+                    log.severe("Cannot reset() to mark()");
                     break;
                 }
             }
@@ -199,8 +198,8 @@ public class NavigationFormatParser {
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
-        public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
-            internalRead(inputStream, readBufferSize, startDate, formats, this);
+        public void parse(InputStream inputStream, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+            internalRead(inputStream, startDate, formats, this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -212,7 +211,7 @@ public class NavigationFormatParser {
             NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream()));
             buffer.mark(readBufferSize + 1);
             try {
-                internalRead(buffer, readBufferSize, getStartDate(url), getReadFormats(), this);
+                internalRead(buffer, getStartDate(url), getReadFormats(), this);
             } finally {
                 buffer.closeUnderlyingInputStream();
             }
@@ -226,7 +225,7 @@ public class NavigationFormatParser {
         buffer.mark(readBufferSize + 1);
         try {
             ParserContext<BaseRoute> context = new InternalParserContext<BaseRoute>();
-            internalRead(buffer, readBufferSize, startDate, formats, context);
+            internalRead(buffer, startDate, formats, context);
             return createResult(context);
         } finally {
             buffer.closeUnderlyingInputStream();

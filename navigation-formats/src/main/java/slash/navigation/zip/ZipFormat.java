@@ -90,7 +90,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
                 int size = (int) entry.getSize() + 1;
                 buffer.mark(size);
                 List<NavigationFormat> formats = getReadFormatsPreferredByExtension(Files.getExtension(entry.getName()));
-                parserContext.parse(buffer, size, startDate, formats);
+                parserContext.parse(buffer, startDate, formats);
                 zip.closeEntry();
             }
         } catch (IOException e) {
