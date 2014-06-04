@@ -56,7 +56,7 @@ public class DataSourceServiceIT {
         for (int i = 0; i < keyValues.length; i += 2) {
             String key = keyValues[i];
             String value = keyValues[i + 1];
-            assertEquals(value, fileMap.get(key).getChecksum());
+            assertEquals(value, fileMap.get(key).getChecksum().getChecksum());
         }
     }
 
