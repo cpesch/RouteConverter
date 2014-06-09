@@ -776,8 +776,8 @@
       var ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
       var bnds = new google.maps.LatLngBounds(sw, ne);
 
-      if (this.key_ == 90 ) {
-      // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
+      if (this.key_ == 90) {
+        // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
         z = this.map_.getZoom();
         this.map_.fitBounds(bnds);
         if (this.map_.getZoom() < z) {
