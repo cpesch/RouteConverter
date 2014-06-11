@@ -58,7 +58,6 @@ public class MapSelector {
     private JPanel mapViewPanel;
 
     public MapSelector(final MapManager mapManager, AwtGraphicMapView mapView) {
-        $$$setupUI$$$();
         mapViewPanel.add(mapView, new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
                 SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, false));
@@ -93,6 +92,10 @@ public class MapSelector {
 
     public Component getComponent() {
         return contentPane;
+    }
+
+    JPanel getMapViewPanel() {
+        return mapViewPanel;
     }
 
     private void createUIComponents() {

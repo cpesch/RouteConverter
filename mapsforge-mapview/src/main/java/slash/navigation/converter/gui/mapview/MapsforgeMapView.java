@@ -75,12 +75,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.event.KeyEvent.VK_MINUS;
+import static java.awt.event.KeyEvent.VK_PLUS;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
@@ -186,6 +190,18 @@ public class MapsforgeMapView implements MapView {
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
         mapSelector = new MapSelector(mapViewCallback.getMapManager(), mapView);
+
+        final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                actionManager.run("zoom-in");
+            }
+        }, getKeyStroke(VK_PLUS, 0), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                actionManager.run("zoom-out");
+            }
+        }, getKeyStroke(VK_MINUS, 0), WHEN_IN_FOCUSED_WINDOW);
 
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(new Observer() {
