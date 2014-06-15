@@ -96,12 +96,15 @@ public class MapViewMouseEventListener extends MouseAdapter {
     private static final int TOTAL_STEPS = 25;
 
     public void centerToMousePosition() {
+        Dimension dimension = mapView.getDimension();
+        int horizontalDiff = dimension.width / 2 - lastMousePressPoint.x;
+        int verticalDiff = dimension.height / 2 - lastMousePressPoint.y;
+        animateCenter(horizontalDiff, verticalDiff);
+    }
+
+    public void animateCenter(final int horizontalDiff, final int verticalDiff) {
         new Thread(new Runnable() {
             public void run() {
-                Dimension dimension = mapView.getDimension();
-                int horizontalDiff = dimension.width / 2 - lastMousePressPoint.x;
-                int verticalDiff = dimension.height / 2 - lastMousePressPoint.y;
-
                 double stepSizeX = horizontalDiff / TOTAL_STEPS;
                 double stepSizeY = verticalDiff / TOTAL_STEPS;
                 for (int i = 0; i < TOTAL_STEPS; i++) {

@@ -75,8 +75,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.awt.event.KeyEvent.VK_MINUS;
-import static java.awt.event.KeyEvent.VK_PLUS;
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.text.MessageFormat.format;
@@ -111,6 +111,7 @@ public class MapsforgeMapView implements MapView {
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
+    private static final int SCROLL_DIFF = 100;
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -196,12 +197,32 @@ public class MapsforgeMapView implements MapView {
             public void run() {
                 actionManager.run("zoom-in");
             }
-        }, getKeyStroke(VK_PLUS, 0), WHEN_IN_FOCUSED_WINDOW);
+        }, getKeyStroke(VK_PLUS, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
                 actionManager.run("zoom-out");
             }
-        }, getKeyStroke(VK_MINUS, 0), WHEN_IN_FOCUSED_WINDOW);
+        }, getKeyStroke(VK_MINUS, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                mapViewMouseEventListener.animateCenter(SCROLL_DIFF, 0);
+            }
+        }, getKeyStroke(VK_LEFT, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                mapViewMouseEventListener.animateCenter(-SCROLL_DIFF, 0);
+            }
+        }, getKeyStroke(VK_RIGHT, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                mapViewMouseEventListener.animateCenter(0, SCROLL_DIFF);
+            }
+        }, getKeyStroke(VK_UP, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                mapViewMouseEventListener.animateCenter(0, -SCROLL_DIFF);
+            }
+        }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(new Observer() {
