@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
@@ -164,7 +166,7 @@ public class LengthCalculator {
 
         int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
         int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance((int) distanceMeters, Math.max(maxMinusMin, summedUp));
+        fireCalculatedDistance((int) distanceMeters, max(maxMinusMin, summedUp));
     }
 
     private void initialize() {
@@ -192,7 +194,7 @@ public class LengthCalculator {
     }
 
     public void dispose() {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
         synchronized (notificationMutex) {
             running = false;
             notificationMutex.notifyAll();
@@ -204,7 +206,7 @@ public class LengthCalculator {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("LengthCalculator stopped after " + (end - start) + " ms");
         }
     }
