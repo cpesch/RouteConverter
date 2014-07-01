@@ -481,8 +481,9 @@
        error.appendChild(debug);
    }
 
-   function ignoreCtrlF(event) {
-       if (event.ctrlKey && event.keyCode == 70) {
+   function ignoreKeystrokes(event) {
+       // ctrl F, F5
+       if (event.ctrlKey && event.keyCode == 70 || event.keyCode == 116) {
            event.preventDefault();
        }
    }
@@ -798,17 +799,17 @@
                if (window.addEventListener) {
                    addDebug("6. window.addEventListener");
                    window.addEventListener("keydown", function(event) {
-                       ignoreCtrlF(event);
+                       ignoreKeystrokes(event);
                    });
                } else if (document.addEventListener) {
                    addDebug("6. document.addEventListener");
                    document.addEventListener("keydown", function(event) {
-                       ignoreCtrlF(event);
+                       ignoreKeystrokes(event);
                    });
                } else if (window.attachEvent) {
                    addDebug("6. window.attachEvent");
                    window.attachEvent("keydown", function(event) {
-                       ignoreCtrlF(event);
+                       ignoreKeystrokes(event);
                    });
                }
            } catch (e) {
