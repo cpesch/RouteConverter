@@ -34,7 +34,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
 
 /**
  * Encapsulates access to HGT files.
@@ -167,6 +167,6 @@ public class HgtFiles implements ElevationService {
         String url = getBaseUrl() + uri;
         File file = fileMap.get(uri);
         return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, file.getChecksum(),
-                Extract, getDirectory());
+                Flatten, getDirectory());
     }
 }
