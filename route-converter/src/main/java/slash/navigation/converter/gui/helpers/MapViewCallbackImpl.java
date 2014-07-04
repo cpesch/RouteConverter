@@ -51,6 +51,10 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getRoutingServiceFacade().getTravelMode();
     }
 
+    public boolean isAvoidFerries() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidFerries();
+    }
+
     public boolean isAvoidHighways() {
         return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidHighways();
     }

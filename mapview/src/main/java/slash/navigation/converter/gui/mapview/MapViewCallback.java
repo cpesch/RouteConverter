@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
@@ -38,6 +37,7 @@ public interface MapViewCallback {
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
+    boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();
     void addChangeListener(ChangeListener l);

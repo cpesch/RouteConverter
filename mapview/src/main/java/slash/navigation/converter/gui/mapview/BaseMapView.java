@@ -832,6 +832,7 @@ public abstract class BaseMapView implements MapView {
                     append(",").append(destination.getLongitude()).append("), ");
             buffer.append("waypoints: [").append(waypoints).append("], ").
                     append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
+            buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(", ");
             buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
             buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
             buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
@@ -981,6 +982,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append("origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
                     buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
                     buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
+                    buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(", ");
                     buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
                     buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
                     buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
