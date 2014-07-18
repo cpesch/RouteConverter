@@ -68,16 +68,10 @@ public class JaxbUtils {
         return context;
     }
 
-    public static Marshaller newMarshaller(JAXBContext context, String... uriToPrefix) {
+    public static Marshaller newMarshaller(JAXBContext context) {
         try {
             Marshaller result = context.createMarshaller();
             result.setProperty(JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
-            try {
-                result.setProperty(JAXB_IMPL_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperImpl(map(uriToPrefix)));
-            } catch (Throwable t) {
-                t.printStackTrace();
-                log.severe("Could not set namespace prefix mapper: " + t.getMessage());
-            }
             return result;
         } catch (JAXBException e) {
             throw new RuntimeException(e);
