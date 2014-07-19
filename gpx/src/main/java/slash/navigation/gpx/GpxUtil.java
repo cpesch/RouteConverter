@@ -27,7 +27,7 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
-import static slash.navigation.jaxb.JaxbUtils.*;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class GpxUtil {
     public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";

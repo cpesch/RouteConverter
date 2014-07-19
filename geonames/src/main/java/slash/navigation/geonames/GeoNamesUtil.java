@@ -20,19 +20,19 @@
 
 package slash.navigation.geonames;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.geonames.binding.ObjectFactory;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class GeoNamesUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Geonames unmarshal(StringReader reader) throws JAXBException {

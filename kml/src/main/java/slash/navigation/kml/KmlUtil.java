@@ -30,9 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class KmlUtil {
     public static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";

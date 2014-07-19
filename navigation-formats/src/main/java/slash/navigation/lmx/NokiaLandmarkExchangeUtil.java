@@ -20,7 +20,7 @@
 
 package slash.navigation.lmx;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.lmx.binding.Lmx;
 import slash.navigation.lmx.binding.ObjectFactory;
 
@@ -40,11 +40,11 @@ public class NokiaLandmarkExchangeUtil {
     public static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class)
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class)
         );
     }
 

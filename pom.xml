@@ -51,7 +51,7 @@
     </scm>
 
     <properties>
-        <targetJdk>1.6</targetJdk>
+        <targetJdk>1.7</targetJdk>
     </properties>
 
     <build>
@@ -59,22 +59,22 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh-external</artifactId>
-                <version>2.2</version>
+                <version>2.4</version>
             </extension>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-scm</artifactId>
-                <version>2.2</version>
+                <version>2.4</version>
             </extension>
             <extension>
                 <groupId>org.apache.maven.scm</groupId>
                 <artifactId>maven-scm-manager-plexus</artifactId>
-                <version>1.8</version>
+                <version>1.8.1</version>
             </extension>
             <extension>
                 <groupId>org.apache.maven.scm</groupId>
                 <artifactId>maven-scm-provider-gitexe</artifactId>
-                <version>1.8</version>
+                <version>1.8.1</version>
             </extension>
         </extensions>
 
@@ -123,7 +123,7 @@
                             <group>
                                 <title>Utilities</title>
                                 <packages>
-                                    slash.common.io:slash.common.hex:slash.common.log:slash.common.util:slash.navigation.jaxb:slash.navigation.util
+                                    slash.common.io:slash.common.hex:slash.common.log:slash.common.util:slash.navigation.util
                                 </packages>
                             </group>
                         </groups>
@@ -142,7 +142,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.4.1</version>
+                    <version>2.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -201,7 +201,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.9.0</version>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -211,7 +211,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.6</version>
+                <version>1.9</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
@@ -243,7 +243,6 @@
         <module>googlemaps</module>
         <module>gpx</module>
         <module>hgt</module>
-        <module>jaxb6</module>
         <module>jnlp</module>
         <module>kml</module>
         <module>mapview</module>

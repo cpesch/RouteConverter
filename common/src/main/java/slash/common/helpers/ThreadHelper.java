@@ -24,7 +24,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 
 /**
- * Helpers used throughout the UI
+ * Provides thread helpers
  *
  * @author Christian Pesch
  */

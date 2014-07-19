@@ -20,19 +20,19 @@
 
 package slash.navigation.earthtools;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.earthtools.binding.ObjectFactory;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class EarthToolsUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Height unmarshal(StringReader reader) throws JAXBException {

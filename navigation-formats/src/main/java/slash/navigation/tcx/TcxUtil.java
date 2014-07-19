@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.*;
+import static slash.common.helpers.JAXBHelper.*;
 
 class TcxUtil {
-    private static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
-    private static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+    public static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
+    public static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 
     private static Unmarshaller newUnmarshaller1() {
         return newUnmarshaller(newContext(slash.navigation.tcx.binding1.ObjectFactory.class));

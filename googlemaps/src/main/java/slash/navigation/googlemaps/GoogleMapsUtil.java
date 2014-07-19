@@ -20,23 +20,23 @@
 
 package slash.navigation.googlemaps;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 public class GoogleMapsUtil {
     private static Unmarshaller newUnmarshallerElevation() {
-        return JaxbUtils.newUnmarshaller(newContext(slash.navigation.googlemaps.elevation.ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.elevation.ObjectFactory.class));
     }
 
     private static Unmarshaller newUnmarshallerGeocode() {
-        return JaxbUtils.newUnmarshaller(newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class));
     }
 
     private static ElevationResponse unmarshalElevation(StringReader reader) throws JAXBException {

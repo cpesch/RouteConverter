@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jaxb6</artifactId>
+            <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

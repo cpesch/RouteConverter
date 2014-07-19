@@ -25,9 +25,9 @@ CONTRIBUTORS.txt provides a list of the people who helped developing RouteConver
 How to develop for RouteConverter
 =================================
 
-1. Install a recent Java 6 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
+1. Install a recent Java 7 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
 
-2. Install Maven 3 from http://maven.apache.org/download.html
+2. Install a recent Maven 3 from http://maven.apache.org/download.html
 
 3. Clone RouteConverter from github:
    > git clone git://github.com/cpesch/RouteConverter.git
@@ -47,10 +47,10 @@ How to develop for RouteConverter
 
 5. Build RouteConverter
 
-   Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.6.0_45
+   Let JAVA_HOME refer to the Java 7 SDK
+   > set JAVA_HOME=c:\Programm Files\Java\jdk1.7.0_55
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.0.5
+   > set M2_HOME=c:\Program Files\apache-maven-3.2.2
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
    Call
