@@ -128,14 +128,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public List<NavigationPosition> getPositions(int[] rowIndices) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>(rowIndices.length);
+        List<NavigationPosition> result = new ArrayList<>(rowIndices.length);
         for (int rowIndex : rowIndices)
             result.add(getPosition(rowIndex));
         return result;
     }
 
     public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>(lastIndex - firstIndex);
+        List<NavigationPosition> result = new ArrayList<>(lastIndex - firstIndex);
         for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
@@ -276,7 +276,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     private Double parseSpeed(Object objectValue, String stringValue) {
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         Double value = parseDegrees(objectValue, stringValue, unitSystem.getSpeedName());
-        return unitSystem.valueToDefault(value);
+        return unitSystem.distanceToDefault(value);
     }
 
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
