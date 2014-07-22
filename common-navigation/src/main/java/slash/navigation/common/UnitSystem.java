@@ -22,11 +22,7 @@
 
 package slash.navigation.common;
 
-import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
-import static slash.navigation.common.UnitConversion.kiloMeterToStatuteMiles;
-import static slash.navigation.common.UnitConversion.meterToFeets;
-import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
-import static slash.navigation.common.UnitConversion.statuteMilesToKiloMeter;
+import static slash.navigation.common.UnitConversion.*;
 
 /**
  * Enumeration of supported unit systems.
@@ -61,7 +57,7 @@ public enum UnitSystem {
             return value != null ? meterToFeets(value) : null;
         }
         public Double valueToDefault(Double value) {
-            return value != null ? statuteMilesToKiloMeter(value) : null;
+            return value != null ? feetToMeters(value) : null;
         }
     }),
 
@@ -76,7 +72,7 @@ public enum UnitSystem {
             return value;
         }
         public Double valueToDefault(Double value) {
-            return value != null ? nauticMilesToKiloMeter(value) : null;
+            return value;
         }
     });
 
