@@ -105,7 +105,7 @@ public class LengthCalculator {
         });
     }
 
-    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<LengthCalculatorListener>();
+    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<>();
 
     public void addLengthCalculatorListener(LengthCalculatorListener listener) {
         lengthCalculatorListeners.add(listener);
@@ -164,9 +164,9 @@ public class LengthCalculator {
             previous = next;
         }
 
-        int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
-        int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance((int) distanceMeters, max(maxMinusMin, summedUp));
+        long summedUp = totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0;
+        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000 : 0;
+        fireCalculatedDistance((int) distanceMeters, (int) max(maxMinusMin, summedUp));
     }
 
     private void initialize() {
