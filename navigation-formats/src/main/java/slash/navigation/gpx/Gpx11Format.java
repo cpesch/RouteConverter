@@ -24,16 +24,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.gpx.binding11.ExtensionsType;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.binding11.RteType;
-import slash.navigation.gpx.binding11.TrkType;
-import slash.navigation.gpx.binding11.TrksegType;
-import slash.navigation.gpx.binding11.WptType;
+import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
+import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -44,20 +38,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static slash.common.io.Transfer.formatInt;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatHeading;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
-import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.common.NavigationConversion.formatSpeed;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
@@ -194,20 +177,30 @@ public class Gpx11Format extends GpxFormat {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof Element) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof TrackPointExtensionT) {
+                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                        result = trackPoint.getSpeed();
+                        // everything is converted from m/s to Km/h except for the exceptional case
+                        if (!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
+                            result = asKmh(result);
+                    }
+
+                } else if (any instanceof Element) {
                     Element element = (Element) any;
 
-                    // Garmin Extensions v3
+                    // TrackPointExtension v1
                     if ("TrackPointExtension".equals(element.getLocalName())) {
                         Node firstChild = element.getFirstChild();
-                        if(firstChild != null && "speed".equals(firstChild.getLocalName())) {
+                        if (firstChild != null && "speed".equals(firstChild.getLocalName())) {
                             result = parseDouble(element.getTextContent());
                             // everything is converted from m/s to Km/h except for the exceptional case
                             if (!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
-                               result = asKmh(result);
+                                result = asKmh(result);
                         }
 
-                    // generic reading of speed elements
+                        // generic reading of speed elements
                     } else if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // everything is converted from m/s to Km/h except for the exceptional case
@@ -278,7 +271,14 @@ public class Gpx11Format extends GpxFormat {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof Element) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof TrackPointExtensionT) {
+                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                        result = trackPoint.getCourse().doubleValue();
+                    }
+
+                } else if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("course".equals(element.getLocalName()))
                         result = parseDouble(element.getTextContent());

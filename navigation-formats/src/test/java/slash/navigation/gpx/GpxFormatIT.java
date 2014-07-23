@@ -34,10 +34,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
@@ -122,14 +120,40 @@ public class GpxFormatIT {
     }
 
     @Test
-    public void testGarminExtensions() throws Exception {
-        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "MS.gpx");
+    public void testGarminGpxExtensionsv3() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-route.gpx");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         GpxRoute route = routes.get(0);
         assertEquals(2, route.getPositionCount());
         GpxRoute track = routes.get(1);
         assertEquals(1073, track.getPositionCount());
+    }
+
+    @Test
+    public void testGarminTrackPointExtensionv1() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v1.gpx");
+        assertNotNull(routes);
+        assertEquals(1, routes.size());
+        GpxRoute track = routes.get(0);
+        assertEquals(1207, track.getPositionCount());
+        assertDoubleEquals(0.444479976, track.getPosition(1).getSpeed());
+        assertNull(track.getPosition(1).getHeading());
+        assertDoubleEquals(6.6301596, track.getPosition(1000).getSpeed());
+    }
+
+    @Test
+    public void testGarminTrackPointExtensionv2() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v2.gpx");
+        assertNotNull(routes);
+        assertEquals(2, routes.size());
+        GpxRoute track1 = routes.get(0);
+        assertEquals(1571, track1.getPositionCount());
+        assertDoubleEquals(14.832, track1.getPosition(1).getSpeed());
+        assertDoubleEquals(9.88, track1.getPosition(1).getHeading());
+        GpxRoute track2 = routes.get(1);
+        assertEquals(896, track2.getPositionCount());
+        assertDoubleEquals(9.9, track2.getPosition(1).getSpeed());
     }
 
     @Test
