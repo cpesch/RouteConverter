@@ -1345,7 +1345,26 @@ public class ConvertPanel implements PanelInTab {
         panel3.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxChoosePositionListCharacteristics = new JComboBox();
         panel3.add(comboBoxChoosePositionListCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxChoosePositionList = new JComboBox();
+        comboBoxChoosePositionList = new JComboBox(){
+            public Dimension getMinimumSize() {
+                Dimension minimumSize = super.getMinimumSize();
+                System.out.println("minimum size " + minimumSize);
+                return minimumSize;
+            }
+
+            public Dimension getMaximumSize() {
+                Dimension maximumSize = super.getMaximumSize();
+                System.out.println("maximum size " + maximumSize);
+                return maximumSize;
+            }
+
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension preferred = super.getPreferredSize();
+                System.out.println("preferred size " + preferred);
+                return preferred;
+            }
+        };
         comboBoxChoosePositionList.setVisible(true);
         convertPanel.add(comboBoxChoosePositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
@@ -1430,6 +1449,17 @@ public class ConvertPanel implements PanelInTab {
      */
     public JComponent $$$getRootComponent$$$() {
         return convertPanel;
+    }
+
+    private void createUIComponents() {
+        comboBoxChoosePositionList = new JComboBox() {
+            public Dimension getPreferredSize() {
+                Dimension preferredSize = super.getPreferredSize();
+                preferredSize.width = convertPanel.getPreferredSize().width - 300;
+                return preferredSize;
+            }
+        };
+        comboBoxChoosePositionList.setMinimumSize(new Dimension(-1, comboBoxChoosePositionList.getMinimumSize().height));
     }
 
     private class TableDragAndDropHandler extends TransferHandler {
