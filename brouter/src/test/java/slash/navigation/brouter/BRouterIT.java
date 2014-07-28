@@ -23,14 +23,12 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.TravelMode;
 
 import java.io.IOException;
 
-import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
@@ -39,7 +37,7 @@ public class BRouterIT {
 
     @Before
     public void setUp() throws IOException {
-        router = new BRouter(new DownloadManager(createTempFile("queueFile", ".xml")));
+        router = new BRouter(null, null);
         DownloadFuture future = router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();

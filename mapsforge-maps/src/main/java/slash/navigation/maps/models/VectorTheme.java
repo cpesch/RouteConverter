@@ -20,15 +20,15 @@
 package slash.navigation.maps.models;
 
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
-import slash.navigation.maps.Theme;
+import slash.navigation.maps.LocalTheme;
 
 /**
- * A {@link Theme} that is used when rendering a {@link VectorMap}.
+ * A {@link LocalTheme} that is used when rendering a {@link VectorMap}.
  *
  * @author Christian Pesch
  */
 
-public class VectorTheme extends LocaleResourceImpl implements Theme {
+public class VectorTheme extends LocaleResourceImpl implements LocalTheme {
     private final XmlRenderTheme xmlRenderTheme;
 
     public VectorTheme(String description, String url, XmlRenderTheme xmlRenderTheme) {

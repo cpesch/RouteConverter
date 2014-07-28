@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.maps.MapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -44,6 +43,10 @@ public class MapViewCallbackImpl implements MapViewCallback {
 
     public void complementData(int[] rows, boolean description, boolean time, boolean elevation) {
         RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation);
+    }
+
+    public MapManager getMapManager() {
+        return RouteConverter.getInstance().getMapManager();
     }
 
     public RoutingService getRoutingService() {

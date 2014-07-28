@@ -19,14 +19,17 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.download.datasources.DataSourceService;
-import slash.navigation.download.datasources.binding.DatasourceType;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.DataSourceService;
+import slash.navigation.download.DownloadManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
 
-import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * Encapsulates access to all services providing map and theme files.
@@ -35,31 +38,29 @@ import static java.lang.String.format;
  */
 
 public class MapFilesService {
-    private static final Logger log = Logger.getLogger(MapFilesService.class.getName());
     private final List<MapFiles> mapFiles = new ArrayList<MapFiles>();
-    private static final String[] DATASOURCE_URLS = new String[]{
-            "freizeitkarte-maps-datasources.xml",
-            "freizeitkarte-themes-datasources.xml",
-            "android-maps-datasources.xml",
-            "mapsforge-maps-datasources.xml",
-            "openandromaps-maps-datasources.xml",
-            "openandromaps-themes-datasources.xml"
-    };
+    private static final Set<String> DATASOURCE_URIS = new HashSet<>(asList(
+            "freizeitkarte-maps-datasources",
+            "freizeitkarte-themes-datasources",
+            "android-maps-datasources",
+            "mapsforge-maps-datasources",
+            "openandromaps-maps-datasources",
+            "openandromaps-themes-datasources"
+    ));
 
-    public MapFilesService() {
-        DataSourceService service = new DataSourceService();
-        for (String datasourceUrl : DATASOURCE_URLS) {
-            try {
-                service.load(getClass().getResourceAsStream(datasourceUrl));
-            } catch (Exception e) {
-                log.severe(format("Cannot load '%s': %s", datasourceUrl, e));
-            }
-        }
+    private DataSourceManager dataSourceManager;
 
-        for (DatasourceType datasourceType : service.getDatasourceTypes()) {
-            String name = datasourceType.getName();
-            mapFiles.add(new MapFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getFiles(name), service.getMaps(name)));
+    public MapFilesService(DataSourceManager dataSourceManager) {
+        this.dataSourceManager = dataSourceManager;
+    }
+
+    public void initialize() {
+        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
+        DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
+
+        for (DataSource dataSource : dataSourceService.getDataSources()) {
+            if (DATASOURCE_URIS.contains(dataSource.getId()))
+                mapFiles.add(new MapFiles(dataSource));
         }
     }
 

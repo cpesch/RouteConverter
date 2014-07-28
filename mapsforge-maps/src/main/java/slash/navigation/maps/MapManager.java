@@ -22,7 +22,11 @@ package slash.navigation.maps;
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.Fragment;
 import slash.navigation.download.Action;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.maps.models.*;
@@ -50,7 +54,7 @@ import static slash.navigation.download.Action.Extract;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
- * Manages {@link LocalMap}s and {@link Theme}s
+ * Manages {@link LocalMap}s and {@link LocalTheme}s
  *
  * @author Christian Pesch
  */
@@ -65,7 +69,7 @@ public class MapManager {
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
     private static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
-    private final DownloadManager downloadManager;
+    private final DataSourceManager dataSourceManager;
     private MapsTableModel mapsModel = new MapsTableModel();
     private ThemesTableModel themesModel = new ThemesTableModel();
     private ResourcesTableModel resourcesModel = new ResourcesTableModel();
@@ -80,18 +84,18 @@ public class MapManager {
         }
     };
 
-    private ItemModel<Theme> appliedThemeModel = new ItemModel<Theme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
-        protected Theme stringToItem(String url) {
+    private ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
+        protected LocalTheme stringToItem(String url) {
             return getThemesModel().getTheme(url);
         }
 
-        protected String itemToString(Theme theme) {
+        protected String itemToString(LocalTheme theme) {
             return theme.getUrl();
         }
     };
 
-    public MapManager(DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
+    public MapManager(DataSourceManager dataSourceManager) {
+        this.dataSourceManager = dataSourceManager;
         initializeDefaults();
     }
 
@@ -107,7 +111,7 @@ public class MapManager {
         return themesModel;
     }
 
-    public ItemModel<Theme> getAppliedThemeModel() {
+    public ItemModel<LocalTheme> getAppliedThemeModel() {
         return appliedThemeModel;
     }
 
@@ -184,7 +188,7 @@ public class MapManager {
     }
 
     public void initialize() {
-        List<RemoteResource> resources = new MapFilesService().getResources();
+        List<RemoteResource> resources = new MapFilesService(dataSourceManager).getResources();
         RemoteResource[] remoteResources = resources.toArray(new RemoteResource[resources.size()]);
         sort(remoteResources, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
@@ -196,20 +200,34 @@ public class MapManager {
     }
 
     public void queueForDownload(List<RemoteResource> resources) {
+        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
         List<Download> downloads = new ArrayList<Download>();
         for (RemoteResource resource : resources) {
-            slash.navigation.download.datasources.File file = resource.getFile();
-            Action action = resource.getFile().getUri().endsWith(".zip") ? Extract : Copy;
+            Downloadable downloadable = resource.getDownloadable();
+
+            List<java.io.File> fragmentTargets = new ArrayList<>();
+            for (Fragment otherFragments : downloadable.getFragments())
+                fragmentTargets.add(getFragment(otherFragments));
+            List<Checksum> fragmentChecksums = new ArrayList<>();
+            for (Fragment otherFragments : downloadable.getFragments())
+                fragmentChecksums.add(otherFragments.getLatestChecksum());
+
+            Action action = resource.getDownloadable().getUri().endsWith(".zip") ? Extract : Copy;
             File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
-            Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + file.getUri(),
-                    resource.getUrl(), file.getSize(), file.getChecksum(), file.getTimestamp(), action, target);
+
+            Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + downloadable.getUri(),
+                    resource.getUrl(), action, null, target, downloadable.getLatestChecksum(), fragmentTargets, fragmentChecksums);
             downloads.add(download);
         }
         downloadManager.waitForCompletion(downloads);
     }
 
+    private File getFragment(Fragment fragment) {
+        throw new UnsupportedOperationException();
+    }
+
     private File getFile(RemoteResource resource) {
-        return new File(getApplicationDirectory(resource.getSubDirectory()), resource.getFile().getUri());
+        return new File(getApplicationDirectory(resource.getSubDirectory()), resource.getDownloadable().getUri());
     }
 
     private File getDirectory(RemoteResource resource) {

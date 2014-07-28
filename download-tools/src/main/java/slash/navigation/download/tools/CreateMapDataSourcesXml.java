@@ -20,16 +20,12 @@
 package slash.navigation.download.tools;
 
 import slash.navigation.common.BoundingBox;
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.MapType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.maps.helpers.MapUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -65,13 +61,13 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
         return file;
     }
 
-    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
 
         String extension = getExtension(file);
         if(".map".equals(extension)) {
             System.out.println(getClass().getSimpleName() + ": " + uri);
-            mapTypes.add(createMapType(uri, file, MapUtil.extractBoundingBox(file), true, false));
+            mapTypes.add(createMapType(uri, file, MapUtil.extractBoundingBox(file)));
 
         } else if (".zip".endsWith(extension)) {
             ZipInputStream zipInputStream = null;
@@ -81,7 +77,7 @@ public class CreateMapDataSourcesXml extends BaseDataSourcesXmlGenerator {
                 while (entry != null) {
                     if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
                         System.out.println(getClass().getSimpleName() + ": " + entry.getName() + " maps to " + uri);
-                        mapTypes.add(createMapType(uri, file, extractBoundingBox(zipInputStream), true, false));
+                        mapTypes.add(createMapType(uri, file, extractBoundingBox(zipInputStream)));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

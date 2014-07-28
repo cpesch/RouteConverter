@@ -19,13 +19,12 @@
 */
 package slash.navigation.maps;
 
-import org.mapsforge.map.rendertheme.XmlRenderTheme;
-
 /**
- * Represents a mapsforge theme.
+ * Represents a remotely stored mapsforge theme.
  *
  * @author Christian Pesch
  */
-public interface Theme extends LocalResource {
-    XmlRenderTheme getXmlRenderTheme();
+
+public interface RemoteTheme extends RemoteResource {
+    String getImageUrl();
 }

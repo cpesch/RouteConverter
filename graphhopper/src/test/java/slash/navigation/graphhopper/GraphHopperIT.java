@@ -23,8 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.download.DownloadManager;
-import slash.navigation.download.helpers.FileAndTarget;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.TravelMode;
@@ -32,7 +30,6 @@ import slash.navigation.routing.TravelMode;
 import java.io.File;
 import java.io.IOException;
 
-import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -42,12 +39,12 @@ public class GraphHopperIT {
 
     @Before
     public void setUp() throws IOException {
-        hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
+        hopper = new GraphHopper(null, null);
         DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
         else
-            hopper.initializeHopper(new FileAndTarget(null, new File(getApplicationDirectory("graphhopper"), "europe/germany/hamburg-latest.osm.pbf")));
+            hopper.initializeHopper(new File(getApplicationDirectory("graphhopper"), "europe/germany/hamburg-latest.osm.pbf"));
     }
 
     private TravelMode getTravelMode(String lookupName) {

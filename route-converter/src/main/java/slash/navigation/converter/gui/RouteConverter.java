@@ -58,6 +58,7 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
+import slash.navigation.maps.MapManager;
 import slash.navigation.rest.Credentials;
 
 import javax.swing.*;
@@ -172,6 +173,7 @@ public class RouteConverter extends SingleFrameApplication {
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager;
     private DataSourceManager dataSourceManager;
+    private MapManager mapManager;
     private ElevationServiceFacade elevationServiceFacade;
     private HgtFilesService hgtFilesService;
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
@@ -301,8 +303,8 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
             if (mapView != null) {
-                getRoutingServiceFacade().addRoutingService(new BRouter(downloadManager));
-                getRoutingServiceFacade().addRoutingService(new GraphHopper(downloadManager));
+                getRoutingServiceFacade().addRoutingService(new BRouter(dataSourceManager.getDataSourceService().getDataSource("brouter"), downloadManager));
+                getRoutingServiceFacade().addRoutingService(new GraphHopper(dataSourceManager.getDataSourceService().getDataSource("graphhopper"), downloadManager));
             }
         }
 
@@ -968,7 +970,7 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager = new DownloadManager(getDownloadQueueFile());
         downloadManager.getModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                if(isFirstToLastRow(e))
+                if (isFirstToLastRow(e))
                     return;
 
                 for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
@@ -994,6 +996,7 @@ public class RouteConverter extends SingleFrameApplication {
         });
 
         dataSourceManager = new DataSourceManager(downloadManager);
+        mapManager = new MapManager(dataSourceManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
         elevationServiceFacade = new ElevationServiceFacade();
     }

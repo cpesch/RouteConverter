@@ -19,8 +19,8 @@
 */
 package slash.navigation.maps.models;
 
+import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.Theme;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -30,15 +30,15 @@ import java.util.List;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
- * Acts as a {@link TableModel} for the {@link Theme}s of the {@link MapManager}.
+ * Acts as a {@link TableModel} for the {@link LocalTheme}s of the {@link MapManager}.
  *
  * @author Christian Pesch
  */
 
 public class ThemesTableModel extends AbstractTableModel {
-    private List<Theme> themes = new ArrayList<Theme>();
+    private List<LocalTheme> themes = new ArrayList<LocalTheme>();
 
-    public List<Theme> getThemes() {
+    public List<LocalTheme> getThemes() {
         return themes;
     }
 
@@ -54,23 +54,23 @@ public class ThemesTableModel extends AbstractTableModel {
         return getTheme(rowIndex);
     }
 
-    public Theme getTheme(int rowIndex) {
+    public LocalTheme getTheme(int rowIndex) {
         return themes.get(rowIndex);
     }
 
-    public Theme getTheme(String url) {
-        for (Theme theme : new ArrayList<Theme>(themes)) {
+    public LocalTheme getTheme(String url) {
+        for (LocalTheme theme : new ArrayList<LocalTheme>(themes)) {
             if (theme.getUrl().equals(url))
                 return theme;
         }
         return null;
     }
 
-    public int getIndex(Theme theme) {
+    public int getIndex(LocalTheme theme) {
         return themes.indexOf(theme);
     }
 
-    private void addTheme(Theme theme) {
+    private void addTheme(LocalTheme theme) {
         if (!themes.add(theme))
             throw new IllegalArgumentException("Theme " + theme + " not added to " + themes);
 
@@ -85,7 +85,7 @@ public class ThemesTableModel extends AbstractTableModel {
         });
     }
 
-    void updateTheme(Theme theme) {
+    void updateTheme(LocalTheme theme) {
         final int index = getIndex(theme);
         if (index == -1)
             throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
@@ -97,7 +97,7 @@ public class ThemesTableModel extends AbstractTableModel {
         });
     }
 
-    public void addOrUpdateTheme(Theme theme) {
+    public void addOrUpdateTheme(LocalTheme theme) {
         int index = getIndex(theme);
         if (index == -1)
             addTheme(theme);
@@ -105,7 +105,7 @@ public class ThemesTableModel extends AbstractTableModel {
             updateTheme(theme);
     }
 
-    private void removeTheme(Theme theme) {
+    private void removeTheme(LocalTheme theme) {
         final int index = getIndex(theme);
         if (index == -1)
             throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
@@ -121,7 +121,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        this.themes = new ArrayList<Theme>();
+        this.themes = new ArrayList<LocalTheme>();
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {

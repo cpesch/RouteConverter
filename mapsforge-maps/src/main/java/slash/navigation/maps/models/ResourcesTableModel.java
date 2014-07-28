@@ -20,9 +20,9 @@
 package slash.navigation.maps.models;
 
 import slash.navigation.maps.LocalMap;
+import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteResource;
-import slash.navigation.maps.Theme;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -32,7 +32,7 @@ import java.util.List;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
- * Acts as a {@link TableModel} for the available resources of {@link LocalMap}s and {@link Theme}s of the {@link MapManager}.
+ * Acts as a {@link TableModel} for the available resources of {@link LocalMap}s and {@link LocalTheme}s of the {@link MapManager}.
  *
  * @author Christian Pesch
  */

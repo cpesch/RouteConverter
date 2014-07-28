@@ -20,7 +20,7 @@
 package slash.navigation.maps.models;
 
 import slash.navigation.common.BoundingBox;
-import slash.navigation.download.datasources.Map;
+import slash.navigation.datasources.Map;
 import slash.navigation.maps.RemoteMap;
 
 /**
@@ -34,6 +34,7 @@ public class RemoteMapImpl extends RemoteResourceImpl implements RemoteMap {
     }
 
     public BoundingBox getBoundingBox() {
-        return getFile().getBoundingBox();
+        Map map = Map.class.cast(getDownloadable());
+        return map.getBoundingBox();
     }
 }

@@ -59,7 +59,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.Theme;
+import slash.navigation.maps.LocalTheme;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -258,7 +258,7 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        Theme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
+        LocalTheme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
         LocalMap oceansMap = mapViewCallback.getMapManager().getMap("routeconverter/oceans.map");
         if(oceansMap != null)
             oceansLayer = createTileRendererLayer(oceansMap, theme);
@@ -305,7 +305,7 @@ public class MapsforgeMapView implements MapView {
         return menu;
     }
 
-    private TileRendererLayer createTileRendererLayer(LocalMap map, Theme theme) {
+    private TileRendererLayer createTileRendererLayer(LocalMap map, LocalTheme theme) {
         TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, true, GRAPHIC_FACTORY);
         tileRendererLayer.setMapFile(map.getFile());
         tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
@@ -613,7 +613,7 @@ public class MapsforgeMapView implements MapView {
 
         // add new map with a theme
         LocalMap map = mapViewCallback.getMapManager().getDisplayedMapModel().getItem();
-        Theme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
+        LocalTheme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
         Layer layer;
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
@@ -988,11 +988,9 @@ public class MapsforgeMapView implements MapView {
 
         private void insertPosition(int row, Double longitude, Double latitude) {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
-            positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
-
-            mapViewCallback.complementDescription(row, longitude, latitude);         // TODO same as BaseMapView
-            mapViewCallback.complementElevation(row, longitude, latitude);
-            mapViewCallback.complementTime(row, null, true);
+            int[] rows = new int[]{row};
+            positionsSelectionModel.setSelectedPositions(rows, true);
+            mapViewCallback.complementData(rows, true, true, true);
         }
 
         public void run() {

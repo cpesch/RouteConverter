@@ -19,9 +19,9 @@
 */
 package slash.navigation.download.tools;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.MapType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.graphhopper.PbfUtil;
 
 import java.io.File;
@@ -36,10 +36,10 @@ import java.util.List;
 
 public class CreateGraphHopperDataSourcesXml extends BaseDataSourcesXmlGenerator {
 
-    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
         System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, PbfUtil.extractBoundingBox(file), false, false));
+        fileTypes.add(createFileType(uri, file, PbfUtil.extractBoundingBox(file)));
     }
 
     public static void main(String[] args) throws Exception {

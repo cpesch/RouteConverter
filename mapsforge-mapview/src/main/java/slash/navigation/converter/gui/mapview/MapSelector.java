@@ -27,8 +27,8 @@ import slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer;
 import slash.navigation.converter.gui.mapview.renderer.ThemeListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
+import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.Theme;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +54,7 @@ public class MapSelector {
     private JPanel contentPane;
     private JLabel labelZoom;
     private JComboBox<LocalMap> comboBoxMap;
-    private JComboBox<Theme> comboBoxTheme;
+    private JComboBox<LocalTheme> comboBoxTheme;
     private JPanel mapViewPanel;
 
     public MapSelector(final MapManager mapManager, AwtGraphicMapView mapView) {
@@ -78,8 +78,8 @@ public class MapSelector {
             }
         });
 
-        comboBoxTheme.setModel(new JoinedListComboBoxModel<Theme>(
-                        new TableModelToComboBoxModelAdapter<Theme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
+        comboBoxTheme.setModel(new JoinedListComboBoxModel<LocalTheme>(
+                        new TableModelToComboBoxModelAdapter<LocalTheme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getThemesModel().getTheme(0));
@@ -109,7 +109,7 @@ public class MapSelector {
                 super.setSelectedItem(anObject);
             }
         };
-        comboBoxTheme = new JComboBox<Theme>() {
+        comboBoxTheme = new JComboBox<LocalTheme>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_THEME.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("select-maps");

@@ -151,13 +151,13 @@ public class MapsAndThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<TableModel>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
-        sorterAvailableThemes.setComparator(0, new Comparator<Theme>() {
-            public int compare(Theme t1, Theme t2) {
+        sorterAvailableThemes.setComparator(0, new Comparator<LocalTheme>() {
+            public int compare(LocalTheme t1, LocalTheme t2) {
                 return t1.getDescription().compareToIgnoreCase(t2.getDescription());
             }
         });
         tableAvailableThemes.setRowSorter(sorterAvailableThemes);
-        Theme selectedTheme = getMapManager().getAppliedThemeModel().getItem();
+        LocalTheme selectedTheme = getMapManager().getAppliedThemeModel().getItem();
         if (selectedTheme != null) {
             int selectedThemeIndex = getMapManager().getThemesModel().getIndex(selectedTheme);
             if (selectedThemeIndex != -1) {
@@ -205,7 +205,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         });
         sorterResources.setComparator(2, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
-                return r1.getFile().getSize().intValue() - r2.getFile().getSize().intValue();
+                return (int) (r1.getDownloadable().getLatestChecksum().getContentLength() - r2.getDownloadable().getLatestChecksum().getContentLength());
             }
         });
         tableResources.setRowSorter(sorterResources);
@@ -267,7 +267,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
 
     private void apply() {
         int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
-        Theme theme = getMapManager().getThemesModel().getTheme(selectedRow);
+        LocalTheme theme = getMapManager().getThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
         labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()));
     }

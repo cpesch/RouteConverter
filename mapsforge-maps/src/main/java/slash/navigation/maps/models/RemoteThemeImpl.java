@@ -17,30 +17,23 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
+package slash.navigation.maps.models;
 
-import slash.navigation.datasources.binding.FileType;
-import slash.navigation.datasources.binding.MapType;
-import slash.navigation.datasources.binding.ThemeType;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import slash.navigation.datasources.Theme;
+import slash.navigation.maps.RemoteTheme;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * The implementation of a {@link RemoteTheme}.
  *
  * @author Christian Pesch
  */
-
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
-
-    protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, null));
+public class RemoteThemeImpl extends RemoteResourceImpl implements RemoteTheme {
+    public RemoteThemeImpl(String datasource, String baseUrl, String subDirectory, Theme theme) {
+        super(datasource, baseUrl, subDirectory, theme);
     }
 
-    public static void main(String[] args) throws Exception {
-        new CreateBrouterDataSourcesXml().run(args);
-    }}
+    public String getImageUrl() {
+        Theme theme = Theme.class.cast(getDownloadable());
+        return theme.getImageUrl();
+    }
+}

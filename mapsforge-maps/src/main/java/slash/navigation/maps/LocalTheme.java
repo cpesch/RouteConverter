@@ -19,19 +19,13 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.datasources.Downloadable;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 /**
- * Represents a mapsforge resource.
+ * Represents a mapsforge theme.
  *
  * @author Christian Pesch
  */
-
-public interface RemoteResource {
-    String getDataSource();
-    String getBaseUrl();
-    String getSubDirectory();
-    Downloadable getDownloadable();
-
-    String getUrl();
+public interface LocalTheme extends LocalResource {
+    XmlRenderTheme getXmlRenderTheme();
 }

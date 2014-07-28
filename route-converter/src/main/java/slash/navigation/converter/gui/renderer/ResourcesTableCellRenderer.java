@@ -46,11 +46,11 @@ public class ResourcesTableCellRenderer extends AlternatingColorTableCellRendere
                 label.setToolTipText(resource.getUrl());
                 break;
             case 1:
-                label.setText(resource.getFile().getUri());
+                label.setText(resource.getDownloadable().getUri());
                 label.setToolTipText(resource.getUrl());
                 break;
             case 2:
-                label.setText(asSize(resource.getFile().getSize()));
+                label.setText(asSize(resource.getDownloadable().getLatestChecksum().getContentLength()));
                 label.setToolTipText(resource.getUrl());
                 break;
             default:

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.Theme;
+import slash.navigation.maps.LocalTheme;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,7 @@ import java.awt.*;
 public class ThemesTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        Theme theme = (Theme) value;
+        LocalTheme theme = (LocalTheme) value;
         switch (columnIndex) {
             case 0:
                 label.setText(theme.getDescription());

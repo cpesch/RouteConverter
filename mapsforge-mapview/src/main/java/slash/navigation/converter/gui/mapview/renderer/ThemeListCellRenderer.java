@@ -20,21 +20,21 @@
 package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.Theme;
+import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.models.VectorTheme;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link Theme} labels of the map and theme selector combo box.
+ * Renders the {@link LocalTheme} labels of the map and theme selector combo box.
  *
  * @author Christian Pesch
  */
 
 public class ThemeListCellRenderer extends DefaultListCellRenderer {
-    public static final Theme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
-    public static final Theme DOWNLOAD_THEME = new VectorTheme(null, null, null);
+    public static final LocalTheme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
+    public static final LocalTheme DOWNLOAD_THEME = new VectorTheme(null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
     private static final int MAXIMUM_NAME_LENGTH = 40;
 
@@ -42,7 +42,7 @@ public class ThemeListCellRenderer extends DefaultListCellRenderer {
         if (SEPARATOR_TO_DOWNLOAD_THEME.equals(value))
             return SEPARATOR;
 
-        Theme theme = (Theme) value;
+        LocalTheme theme = (LocalTheme) value;
         String text = "?";
         String tooltip = "";
         if (DOWNLOAD_THEME.equals(value)) {

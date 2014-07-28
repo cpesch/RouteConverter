@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>download</artifactId>
+            <artifactId>datasource</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

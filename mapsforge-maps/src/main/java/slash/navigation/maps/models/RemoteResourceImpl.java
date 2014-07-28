@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.models;
 
-import slash.navigation.download.datasources.File;
+import slash.navigation.datasources.Downloadable;
 import slash.navigation.maps.RemoteResource;
 
 /**
@@ -32,13 +32,13 @@ public class RemoteResourceImpl implements RemoteResource {
     private final String datasource;
     private final String baseUrl;
     private final String subDirectory;
-    private final File file;
+    private final Downloadable downloadable;
 
-    public RemoteResourceImpl(String datasource, String baseUrl, String subDirectory, File file) {
+    public RemoteResourceImpl(String datasource, String baseUrl, String subDirectory, Downloadable downloadable) {
         this.datasource = datasource;
         this.baseUrl = baseUrl;
         this.subDirectory = subDirectory;
-        this.file = file;
+        this.downloadable = downloadable;
     }
 
     public String getDataSource() {
@@ -53,11 +53,11 @@ public class RemoteResourceImpl implements RemoteResource {
         return subDirectory;
     }
 
-    public File getFile() {
-        return file;
+    public Downloadable getDownloadable() {
+        return downloadable;
     }
 
     public String getUrl() {
-        return baseUrl + file.getUri();
+        return baseUrl + downloadable.getUri();
     }
 }
