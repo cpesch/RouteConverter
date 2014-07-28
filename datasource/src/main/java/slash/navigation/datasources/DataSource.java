@@ -38,5 +38,6 @@ public interface DataSource {
     List<Map> getMaps();
     List<Theme> getThemes();
 
+    Downloadable getDownloadable(String uri);
     Fragment getFragment(String key);
 }

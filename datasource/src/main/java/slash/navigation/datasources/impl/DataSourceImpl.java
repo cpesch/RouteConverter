@@ -20,7 +20,10 @@
 package slash.navigation.datasources.impl;
 
 import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +37,31 @@ import java.util.List;
 
 public class DataSourceImpl implements DataSource {
     private final DatasourceType datasourceType;
+    private boolean initialized = false;
+    private final java.util.Map<String, Downloadable> downloadableMap = new HashMap<>();
+    private final java.util.Map<String, Fragment> fragmentMap = new HashMap<>();
 
     public DataSourceImpl(DatasourceType datasourceType) {
         this.datasourceType = datasourceType;
+    }
+
+    private void putDownloadables(List<? extends Downloadable> downloadables) {
+        for (Downloadable downloadable : downloadables) {
+            downloadableMap.put(downloadable.getUri(), downloadable);
+
+            for (Fragment fragment : downloadable.getFragments())
+                fragmentMap.put(fragment.getKey(), fragment);
+        }
+    }
+
+    private synchronized void initialize() {
+        if (initialized)
+            return;
+
+        putDownloadables(getFiles());
+        putDownloadables(getMaps());
+        putDownloadables(getThemes());
+        initialized = true;
     }
 
     public String getId() {
@@ -76,22 +101,13 @@ public class DataSourceImpl implements DataSource {
         return result;
     }
 
-    private java.util.Map<String, Fragment> fragmentMap = null;
-
-    private void putFragments(List<? extends Downloadable> downloadables) {
-        for(Downloadable downloadable : downloadables) {
-            for(Fragment fragment : downloadable.getFragments())
-                fragmentMap.put(fragment.getKey(), fragment);
-        }
+    public Downloadable getDownloadable(String uri) {
+        initialize();
+        return downloadableMap.get(uri);
     }
 
-    public synchronized Fragment getFragment(String key) {
-        if(fragmentMap == null) {
-            fragmentMap = new HashMap<>();
-            putFragments(getFiles());
-            putFragments(getMaps());
-            putFragments(getThemes());
-        }
+    public Fragment getFragment(String key) {
+        initialize();
         return fragmentMap.get(key);
     }
 
