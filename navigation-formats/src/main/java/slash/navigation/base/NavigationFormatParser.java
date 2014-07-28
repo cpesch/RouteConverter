@@ -123,7 +123,7 @@ public class NavigationFormatParser {
                 try {
                     buffer.reset();
                 } catch (IOException e) {
-                    log.severe("Cannot reset() to mark()");
+                    log.severe("Cannot reset() stream to mark()");
                     break;
                 }
             }

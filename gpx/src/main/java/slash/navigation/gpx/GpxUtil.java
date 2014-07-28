@@ -142,4 +142,21 @@ public class GpxUtil {
             throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
+
+    public static GpxType createGpxType() {
+        GpxType gpxType = new slash.navigation.gpx.binding11.ObjectFactory().createGpxType();
+        gpxType.setCreator("RouteConverter");
+        gpxType.setVersion("1.1");
+        return gpxType;
+    }
+
+    public static String toXml(GpxType gpxType) throws IOException {
+        StringWriter writer = new StringWriter();
+        try {
+            marshal11(gpxType, writer);
+        } catch (JAXBException e) {
+            throw new IOException("Cannot marshall " + gpxType + ": " + e, e);
+        }
+        return writer.toString();
+    }
 }

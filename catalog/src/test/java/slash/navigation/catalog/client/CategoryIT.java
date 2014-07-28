@@ -66,7 +66,7 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testCreateFromFile() throws Exception {
         Post request2 = createCategoryFromFile("categoriestest.gpx");
-        String result = request2.execute();
+        String result = request2.executeAsString();
         assertTrue(result.contains("category"));
         assertTrue(result.contains("created"));
         String location = request2.getLocation();
@@ -79,7 +79,7 @@ public class CategoryIT extends RouteCatalogClientBase {
     public void testCreateRootCategoryFromJAXB() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request2 = createCategory("", name);
-        String result = request2.execute();
+        String result = request2.executeAsString();
         assertTrue(result.contains("category"));
         assertTrue(result.contains(name));
         assertTrue(result.contains("created"));
@@ -93,7 +93,7 @@ public class CategoryIT extends RouteCatalogClientBase {
     public void testCreateUploadCategoryFromJAXB() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request2 = createCategory("Upload", name);
-        String result = request2.execute();
+        String result = request2.executeAsString();
         assertTrue(result.contains("category"));
         assertTrue(result.contains(name));
         assertTrue(result.contains("created"));
@@ -106,11 +106,11 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testRead() throws Exception {
         Post request1 = createCategoryFromFile("categoriestest.gpx");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
 
         HttpRequest request2 = readCategory(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
@@ -126,7 +126,7 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testReadRoot() throws Exception {
         HttpRequest request1 = readCategory("");
-        String result1 = request1.execute();
+        String result1 = request1.executeAsString();
         assertEquals(200, request1.getStatusCode());
         assertTrue(request1.isSuccessful());
 
@@ -143,11 +143,11 @@ public class CategoryIT extends RouteCatalogClientBase {
     public void testReadWithSpaces() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request1 = createCategory("Upload", name);
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
 
         HttpRequest request2 = readCategory(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
@@ -163,17 +163,17 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testUpdate() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         String newName = "Interesting" + System.currentTimeMillis();
         Put request2 = updateCategory(key, newName);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("category /Upload/" + newName + " updated", result2);
         assertEquals(201, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         String newKey = parseCategoryKey(request2.getLocation());
         HttpRequest request3 = readCategory(newKey);
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
         GpxType gpxType = GpxUtil.unmarshal11(result3);
@@ -183,10 +183,10 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -194,12 +194,12 @@ public class CategoryIT extends RouteCatalogClientBase {
 
     @Test
     public void testUpdateNotMyUser() throws Exception {
-        createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "alif", "topr");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
@@ -208,15 +208,15 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testDelete() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = deleteCategory(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("category /" + key + " deleted", result2);
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readCategory(key);
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertNotNull(result3);
         assertEquals(404, request3.getStatusCode());
         assertFalse(request3.isSuccessful());
@@ -225,10 +225,10 @@ public class CategoryIT extends RouteCatalogClientBase {
     @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = deleteCategory(key, "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -236,12 +236,12 @@ public class CategoryIT extends RouteCatalogClientBase {
 
     @Test
     public void testDeleteNotMyUser() throws Exception {
-        createUser("alif", "toup", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "toup", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
         Post request1 = createCategory("Upload", "Interesting");
-        request1.execute();
+        request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
         HttpRequest request2 = deleteCategory(key, "alif", "toup");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());

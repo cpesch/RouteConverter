@@ -19,15 +19,17 @@
 */
 package slash.navigation.hgt;
 
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceService;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.datasources.DataSourceService;
-import slash.navigation.download.datasources.binding.DatasourceType;
+import slash.navigation.datasources.DataSourceManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
 
-import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * Encapsulates access to all services providing HGT files.
@@ -36,29 +38,27 @@ import static java.lang.String.format;
  */
 
 public class HgtFilesService {
-    private static final Logger log = Logger.getLogger(HgtFiles.class.getName());
-    private final List<HgtFiles> hgtFiles = new ArrayList<HgtFiles>();
-    private static final String[] DATASOURCE_URLS = new String[]{
-            "srtm3-datasources.xml",
-            "srtm1-datasources.xml",
-            "ferranti3-datasources.xml",
-            "ferranti1-datasources.xml"
-    };
+    private final List<HgtFiles> hgtFiles = new ArrayList<>();
+    private static final Set<String> DATASOURCE_URIS = new HashSet<>(asList(
+            "srtm3",
+            "srtm1",
+            "ferranti3",
+            "ferranti1"
+    ));
 
-    public HgtFilesService(DownloadManager downloadManager) {
-        DataSourceService service = new DataSourceService();
-        for (String datasourceUrl : DATASOURCE_URLS) {
-            try {
-                service.load(getClass().getResourceAsStream(datasourceUrl));
-            } catch (Exception e) {
-                log.severe(format("Cannot load '%s': %s", datasourceUrl, e));
-            }
-        }
+    private DataSourceManager dataSourceManager;
 
-        for (DatasourceType datasourceType : service.getDatasourceTypes()) {
-            String name = datasourceType.getName();
-            hgtFiles.add(new HgtFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getFiles(name), service.getFragments(name), downloadManager));
+    public HgtFilesService(DataSourceManager dataSourceManager) {
+        this.dataSourceManager = dataSourceManager;
+    }
+
+    public void initialize() {
+        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
+        DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
+
+        for (DataSource dataSource : dataSourceService.getDataSources()) {
+            if (DATASOURCE_URIS.contains(dataSource.getId()))
+                hgtFiles.add(new HgtFiles(dataSource, downloadManager));
         }
     }
 

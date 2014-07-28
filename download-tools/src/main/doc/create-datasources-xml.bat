@@ -1,6 +1,6 @@
 java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "test" "testUrl" "testDirectory" "C:\Temp\test-brouter" "test-brouter-datasources.xml"
 java -jar download-tools\target\CreateGraphHopperDataSourcesXml.jar "test" "testUrl" "testDirectory" "C:\Temp\test-graphhopper" "test-graphhopper-datasources.xml"
-java -jar download-tools\target\CreateHgtDataSourcesXml.jar "test" "testUrl" "testDirectory" "C:\Temp\test-hgt" "test-hgt-datasources.xml"
+java -jar download-tools\target\CreateHgtDataSourcesXml.jar "testId" "testName" "testUrl" "testDirectory" "C:\Temp\test-hgt" "test-hgt-datasources.xml"
 java -jar download-tools\target\CreateMapDataSourcesXml.jar "test" "testUrl" "testDirectory" "C:\Temp\test-map" "test-map-datasources.xml"
 
 java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "BRouter" "http://h2096617.stratoserver.net/brouter/segments2/" "brouter" "W:\Mirrors\h2096617.stratoserver.net\brouter\segments2" "brouter\src\main\resources\slash\navigation\brouter\brouter-datasources.xml"

@@ -20,10 +20,12 @@
 package slash.navigation.hgt;
 
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Fragment;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.datasources.File;
-import slash.navigation.download.datasources.Fragment;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.IOException;
@@ -47,29 +49,21 @@ public class HgtFiles implements ElevationService {
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
 
-    private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<java.io.File, RandomAccessFile>();
-    private final String name, baseUrl, directory;
-    private final Map<String, File> fileMap;
-    private final Map<String, Fragment> fragmentMap;
+    private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<>();
+    private final DataSource dataSource;
     private final DownloadManager downloadManager;
 
-    public HgtFiles(String name, String baseUrl, String directory,
-                    Map<String, File> fileMap, Map<String, Fragment> fragmentMap,
-                    DownloadManager downloadManager) {
-        this.name = name;
-        this.baseUrl = baseUrl;
-        this.directory = directory;
-        this.fileMap = fileMap;
-        this.fragmentMap = fragmentMap;
+    public HgtFiles(DataSource dataSource, DownloadManager downloadManager) {
+        this.dataSource = dataSource;
         this.downloadManager = downloadManager;
     }
 
     public String getName() {
-        return name;
+        return dataSource.getName();
     }
 
     String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
+        return preferences.get(BASE_URL_PREFERENCE + getName(), dataSource.getBaseUrl());
     }
 
     public boolean isDownload() {
@@ -87,8 +81,8 @@ public class HgtFiles implements ElevationService {
     private java.io.File getDirectory() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
-            directoryName = getApplicationDirectory(directory).getAbsolutePath();
+        if (!f.exists())
+            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
@@ -128,32 +122,22 @@ public class HgtFiles implements ElevationService {
         randomAccessFileCache.clear();
     }
 
-    private static class FragmentAndTarget {
-        public final Fragment fragment;
-        public final java.io.File target;
-
-        private FragmentAndTarget(Fragment fragment, java.io.File target) {
-            this.fragment = fragment;
-            this.target = target;
-        }
-    }
-
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<String> keys = new HashSet<String>();
+        Set<String> keys = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Set<FragmentAndTarget> fragments = new HashSet<FragmentAndTarget>();
+        Set<Fragment> fragments = new HashSet<>();
         for (String key : keys) {
-            Fragment fragment = fragmentMap.get(key);
+            Fragment fragment = dataSource.getFragment(key);
             if (fragment != null)
-                fragments.add(new FragmentAndTarget(fragment, createFile(key)));
+                fragments.add(fragment);
         }
 
-        Collection<Download> downloads = new HashSet<Download>();
-        for (FragmentAndTarget fragment : fragments) {
-            if (fragment.target.exists())
+        Collection<Download> downloads = new HashSet<>();
+        for (Fragment<File> fragment : fragments) {
+            if (createFile(fragment.getKey()).exists())
                 continue;
             downloads.add(download(fragment));
         }
@@ -162,11 +146,17 @@ public class HgtFiles implements ElevationService {
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(FragmentAndTarget fragment) {
-        String uri = fragment.fragment.getUri();
+    private Download download(Fragment<File> fragment) {
+        File file = fragment.getDownloadable();
+        List<java.io.File> fragmentTargets = new ArrayList<>();
+        for (Fragment otherFragments : file.getFragments())
+            fragmentTargets.add(createFile(otherFragments.getKey()));
+        List<Checksum> fragmentChecksums = new ArrayList<>();
+        for (Fragment otherFragments : file.getFragments())
+            fragmentChecksums.add(otherFragments.getLatestChecksum());
+        String uri = file.getUri();
         String url = getBaseUrl() + uri;
-        File file = fileMap.get(uri);
-        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, file.getChecksum(),
-                Flatten, getDirectory());
+        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, Flatten,
+                null, getDirectory(), file.getLatestChecksum(), fragmentTargets, fragmentChecksums);
     }
 }

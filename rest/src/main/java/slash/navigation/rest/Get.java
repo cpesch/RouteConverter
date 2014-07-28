@@ -21,17 +21,15 @@ package slash.navigation.rest;
 
 import org.apache.http.client.methods.HttpGet;
 
+import static org.apache.http.HttpHeaders.RANGE;
+
 /**
  * Wrapper to initiate an HTTP GET Request.
  *
  * @author Christian Pesch
  */
 
-public class Get extends HttpRequest {
-    public Get(String url, Credentials credentials) {
-        super(new HttpGet(url), credentials);
-    }
-
+public class Get extends ReadRequest {
     public Get(String url) {
         super(new HttpGet(url));
     }
@@ -40,6 +38,6 @@ public class Get extends HttpRequest {
         // avoid GZIP'ed range
         disableContentCompression();
         // Apache accepts just bytes=1234-1235 while the spec says bytes 1234-1235/1236
-        setHeader("Range", "bytes=" + startIndex + "-" + (endIndex != null ? endIndex : ""));
+        setHeader(RANGE, "bytes=" + startIndex + "-" + (endIndex != null ? endIndex : ""));
     }
 }

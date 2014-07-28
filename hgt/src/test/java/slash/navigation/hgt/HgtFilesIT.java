@@ -19,41 +19,68 @@
 */
 package slash.navigation.hgt;
 
-import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.impl.DataSourceImpl;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.datasources.File;
-import slash.navigation.download.datasources.Fragment;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
+import static slash.common.TestCase.calendar;
+import static slash.navigation.datasources.DataSourcesUtil.createChecksumType;
 
 public class HgtFilesIT {
-    private Map<String, Fragment> archiveMap = new HashMap<String, Fragment>();
-    private Map<String, File> fileMap = new HashMap<String, File>();
-    private HgtFiles files;
-    {
-        archiveMap.put("N59E011", new Fragment("N59E011", "Eurasia/N59E011.hgt.zip", 2884802L, "notdefined", null));
-        archiveMap.put("N60E012", new Fragment("N60E012", "Eurasia/N60E012.hgt.zip", 2884802L, "notdefined", null));
-    }
 
-    @Before
-    public void setUp() throws Exception {
-        files = new HgtFiles("test", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test", fileMap, archiveMap,
-                new DownloadManager(createTempFile("queueFile", ".xml")));
-        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
+    private DataSource createDataSource(String id, String name, String baseUrl, String directory) {
+        DatasourceType datasourceType = new DatasourceType();
+        datasourceType.setId(id);
+        datasourceType.setName(name);
+        datasourceType.setBaseUrl(baseUrl);
+        datasourceType.setDirectory(directory);
+
+        FileType fileType1 = new FileType();
+        fileType1.setUri("Eurasia/N59E011.hgt.zip");
+        FragmentType fragmentType1 = new FragmentType();
+        fragmentType1.setKey("N59E011");
+        fileType1.getFragment().add(fragmentType1);
+        datasourceType.getFile().add(fileType1);
+
+        FileType fileType2 = new FileType();
+        fileType2.setUri("Eurasia/N60E012.hgt.zip");
+        FragmentType fragmentType2 = new FragmentType();
+        fragmentType2.setKey("N60E012");
+        fileType2.getFragment().add(fragmentType2);
+        datasourceType.getFile().add(fileType2);
+
+        FileType fileType3 = new FileType();
+        fileType3.setUri("I36.zip");
+        fileType3.getChecksum().add(createChecksumType(4987465L, calendar(2013, 1, 20, 17, 42, 36), "99982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
+        FragmentType fragmentType3 = new FragmentType();
+        fragmentType3.setKey("N32E034");
+        fragmentType3.getChecksum().add(createChecksumType(187465L, calendar(2013, 1, 20, 17, 42, 36), "A9982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
+        fileType3.getFragment().add(fragmentType3);
+        FragmentType fragmentType4 = new FragmentType();
+        fragmentType4.setKey("N32E035");
+        fragmentType4.getChecksum().add(createChecksumType(287465L, calendar(2011, 1, 20, 17, 42, 36), "B9982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
+        fileType3.getFragment().add(fragmentType4);
+        datasourceType.getFile().add(fileType3);
+
+        return new DataSourceImpl(datasourceType);
     }
 
     @Test
     public void testElevationFor() throws IOException {
+        HgtFiles files = new HgtFiles(createDataSource("test id", "test plain", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test"),
+                new DownloadManager(createTempFile("queueFile", ".xml")));
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
+
         Double elevation1 = files.getElevationFor(11.2, 59.0);
         assertNotNull(elevation1);
         assertEquals(40, elevation1.intValue());
@@ -61,5 +88,16 @@ public class HgtFilesIT {
         assertNotNull(elevation2);
         assertEquals(211, elevation2.intValue());
         assertNull(files.getElevationFor(11.2, 61.0));
+    }
+
+    @Test
+    public void testDownloadElevationDataInZipFile() throws IOException {
+        HgtFiles files = new HgtFiles(createDataSource("test id", "test zip", "http://www.viewfinderpanoramas.org/dem3/", "test"),
+                new DownloadManager(createTempFile("queueFile", ".xml")));
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(35.71, 32.51)));
+
+        Double elevation1 = files.getElevationFor(35.71, 32.51);
+        assertNotNull(elevation1);
+        assertEquals(274, elevation1.intValue());
     }
 }

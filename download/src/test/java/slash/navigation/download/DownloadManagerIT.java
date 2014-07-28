@@ -21,17 +21,21 @@ package slash.navigation.download;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import slash.navigation.download.actions.Checksum;
+import slash.common.type.CompactCalendar;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.Head;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.*;
+import java.util.List;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -44,6 +48,17 @@ public class DownloadManagerIT {
     private static final String LOREM_IPSUM_DOLOR_SIT_AMET = "Lorem ipsum dolor sit amet";
     private static final String EXPECTED = LOREM_IPSUM_DOLOR_SIT_AMET + ", consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
+
+    private static final CompactCalendar LAST_MODIFIED = fromMillis(1387698493000L);
+    private static final long CONTENT_LENGTH = 447L;
+    private static final String ETAG = "\"40e0167-1bf-4ee1abbbb0940\"-gzip";
+    private static final String SHA1 = "597D5107C0DC296DF4F6128257F6F8D2079FA11A";
+
+    private static final CompactCalendar ZIP_LAST_MODIFIED = fromMillis(1394029600000L);
+    private static final long ZIP_CONTENT_LENGTH = 415L;
+    private static final String ZIP_SHA1 = "483AF8EEF96B20864776F019D4537B3750C1173D";
+
+    private static final CompactCalendar EXTRACTED_LAST_MODIFIED = fromMillis(1387698494000L);
 
     private DownloadManager manager;
     private File target, queueFile;
@@ -93,6 +108,7 @@ public class DownloadManagerIT {
 
         TableModelListener l = new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                System.out.println("Expected state: " + expectedState + ", download state: " + download.getState());
                 if (expectedState.equals(download.getState())) {
                     synchronized (LOCK) {
                         found[0] = true;
@@ -125,7 +141,7 @@ public class DownloadManagerIT {
 
     @Test
     public void testInvalidUrl() throws IOException {
-        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, Copy, target);
+        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", Copy, null, target, null, null, null);
         waitFor(download, Failed);
 
         assertEquals(Failed, download.getState());
@@ -135,19 +151,99 @@ public class DownloadManagerIT {
     public void testFreshDownload() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, null, null, null);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
         String actual = readFileToString(target);
         assertEquals(EXPECTED, actual);
+    }
+
+    @Ignore
+    @Test
+    public void testSetLastModifiedForLocalFiles() {
+        File txt = new File("C:\\p4\\RouteSite\\static\\downloads\\test\\447bytes.txt");
+        assertTrue(txt.setLastModified(LAST_MODIFIED.getTimeInMillis()));
+        File zip = new File("C:\\p4\\RouteSite\\static\\downloads\\test\\447bytes.zip");
+        assertTrue(zip.setLastModified(ZIP_LAST_MODIFIED.getTimeInMillis()));
+    }
+
+    @Ignore
+    @Test
+    public void testMapServerHEADAndGET() throws IOException {
+        String[] URLS = new String[]{
+                // "http://localhost:8000/datasources/edition/online.xml"
+                "http://www.androidmaps.co.uk/maps/africa/botswana.map",
+                "http://download.freizeitkarte-osm.de/android/1404/freizeitkarte_berlin.map.zip",   // Content-Type: application/zip
+                "http://download.mapsforge.org/maps/asia/azerbaijan.map",
+                "http://ftp5.gwdg.de/pub/misc/openstreetmap/openandromaps/maps/Germany/berlin.zip"  // Content-Type: application/zip
+        };
+        for (String url : URLS) {
+            Head head200 = new Head(url);
+            head200.executeAsString();
+            assertTrue(head200.isOk());
+            assertTrue(head200.getAcceptByteRanges());
+            assertNotNull(head200.getETag());
+            assertNotNull(head200.getLastModified());
+            assertNotNull(head200.getContentLength());
+            System.out.println(url + ":\nHEAD 200: " + head200.getHeaders());
+
+            Head head304IfModifiedSince = new Head(url);
+            head304IfModifiedSince.setIfModifiedSince(head200.getLastModified());
+            head304IfModifiedSince.executeAsString();
+            assertTrue(head304IfModifiedSince.isNotModified());
+            assertFalse(head304IfModifiedSince.getAcceptByteRanges());
+            assertNotNull(head304IfModifiedSince.getETag());
+            assertNull(head304IfModifiedSince.getLastModified());
+            assertNull(head304IfModifiedSince.getContentLength());
+            System.out.println(head304IfModifiedSince.getHeaders());
+
+            Head head304Etag = new Head(url);
+            head304Etag.setIfNoneMatch(head200.getETag());
+            head304Etag.executeAsString();
+            assertTrue(head304Etag.isNotModified());
+            assertFalse(head304Etag.getAcceptByteRanges());
+            assertNotNull(head304Etag.getETag());
+            assertNull(head304Etag.getLastModified());
+            assertNull(head304Etag.getContentLength());
+            System.out.println(head304Etag.getHeaders());
+
+            Get get200 = new Get(url);
+            get200.executeAsString();
+            assertTrue(get200.isOk());
+            assertTrue(get200.getAcceptByteRanges());
+            assertNotNull(get200.getETag());
+            assertNotNull(get200.getLastModified());
+            assertNotNull(get200.getContentLength());
+            System.out.println("GET 200: " + get200.getHeaders());
+
+            Get get304IfModifiedSince = new Get(url);
+            get304IfModifiedSince.setIfModifiedSince(head200.getLastModified());
+            get304IfModifiedSince.executeAsString();
+            assertTrue(get304IfModifiedSince.isNotModified());
+            assertFalse(get304IfModifiedSince.getAcceptByteRanges());
+            assertNotNull(get304IfModifiedSince.getETag());
+            assertNull(get304IfModifiedSince.getLastModified());
+            assertNull(get304IfModifiedSince.getContentLength());
+            System.out.println(get304IfModifiedSince.getHeaders());
+
+            Get get304Etag = new Get(url);
+            get304Etag.setIfNoneMatch(head200.getETag());
+            get304Etag.executeAsString();
+            assertTrue(get304Etag.isNotModified());
+            assertFalse(get304Etag.getAcceptByteRanges());
+            assertNotNull(get304Etag.getETag());
+            assertNull(get304Etag.getLastModified());
+            assertNull(get304Etag.getContentLength());
+            System.out.println(get304Etag.getHeaders() + "\n");
+        }
     }
 
     @Test
     public void testDownloadWithCorrectChecksum() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 447L, fromMillis(1387698493000L)), Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1), null, null);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -156,10 +252,10 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongSize() throws IOException {
+    public void testDownloadWithWrongContentLength() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 4711L, fromMillis(1387698493000L)), Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(LAST_MODIFIED, 4711L, SHA1), null, null);
         waitFor(download, Downloading);
         waitFor(download, ChecksumError);
 
@@ -167,10 +263,10 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongChecksum() throws IOException {
+    public void testDownloadWithWrongSHA1() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("notdefined", 447L, fromMillis(1387698493000L)), Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, "notdefined"), null, null);
         waitFor(download, Downloading);
         waitFor(download, ChecksumError);
 
@@ -178,23 +274,32 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongTimestamp() throws IOException {
+    public void testDownloadWithWrongLastModified() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 447L, fromMillis(0)), Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(fromMillis(0L), CONTENT_LENGTH, SHA1), null, null);
         waitFor(download, Downloading);
         waitFor(download, ChecksumError);
 
         assertEquals(ChecksumError, download.getState());
+    }
+
+    @Test
+    public void testDownloadWithWrongETag() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1), null, null);
+        waitFor(download, Downloading);
+        waitFor(download, Succeeded);
+
+        assertEquals(Succeeded, download.getState());
     }
 
     @Test
     public void testResumeDownload() throws IOException {
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1), null, null);
         // write content to temp file and patch download object
         writeStringToFile(download.getTempFile(), LOREM_IPSUM_DOLOR_SIT_AMET);
-        download.setLastModified(fromMillis(download.getTempFile().lastModified()));
-        download.setContentLength(447L);
 
         waitFor(download, Succeeded);
 
@@ -205,25 +310,16 @@ public class DownloadManagerIT {
 
     @Test
     public void testNotModifiedDownload() throws IOException {
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
-        // write content to temp file and patch download object
-        writeStringToFile(download.getTempFile(), EXPECTED);
-        download.setLastModified(fromMillis(download.getTempFile().lastModified()));
-        download.setContentLength(download.getTempFile().length());
-
-        waitFor(download, Succeeded);
-
-        assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
-        assertEquals(EXPECTED, actual);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, ETAG, target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1), null, null);
+        waitFor(download, NotModified);
     }
 
     @Test
     public void testDownloadSameUrl() throws IOException {
         writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
 
-        Download download1 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
-        Download download2 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
+        Download download1 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, null, null, null);
+        Download download2 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, null, target, null, null, null);
         waitFor(download2, Succeeded);
 
         assertEquals(download2, download1);
@@ -234,7 +330,9 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, Flatten, target.getParentFile());
+            List<File> fragmentTargets = asList(extracted);
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", Flatten,
+                    null, target.getParentFile(), null, fragmentTargets, null);
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 
@@ -255,7 +353,10 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "first/second/447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, Extract, target.getParentFile());
+            List<File> fragmentTargets = asList(extracted);
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", Extract,
+                    null, target.getParentFile(), new Checksum(ZIP_LAST_MODIFIED, ZIP_CONTENT_LENGTH, ZIP_SHA1),
+                    fragmentTargets, asList(new Checksum(EXTRACTED_LAST_MODIFIED, CONTENT_LENGTH, SHA1)));
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 

@@ -20,6 +20,10 @@
 
 package slash.navigation.feedback.domain;
 
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourcesUtil;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.DatasourcesType;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
@@ -33,15 +37,14 @@ import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.common.io.Files.writeToTempFile;
 import static slash.common.io.Transfer.asUtf8;
+import static slash.navigation.datasources.DataSourcesUtil.asDatasourceType;
+import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**
  * Encapsulates REST access to the RouteFeedback service of RouteConverter.
@@ -52,9 +55,10 @@ import static slash.common.io.Transfer.asUtf8;
 public class RouteFeedback {
     private static final Logger log = Logger.getLogger(RouteFeedback.class.getName());
 
-    private static final String USERS_URI = "users/";
     private static final String ERROR_REPORT_URI = "error-report/";
     private static final String UPDATE_CHECK_URI = "update-check/";
+    private static final String USERS_URI = "users/";
+    private static final String DATASOURCES_URI = "datasources/";
 
     private final String rootUrl;
     private final Credentials credentials;
@@ -64,33 +68,13 @@ public class RouteFeedback {
         this.credentials = credentials;
     }
 
-    private static final ObjectFactory gpxFactory = new ObjectFactory();
-    private static final slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
-
-    private static GpxType createGpxType() {
-        GpxType gpxType = gpxFactory.createGpxType();
-        gpxType.setCreator("RouteFeedback Client");
-        gpxType.setVersion("1.1");
-        return gpxType;
-    }
-
-    private static String toXml(GpxType gpxType) {
-        StringWriter writer = new StringWriter();
-        try {
-            GpxUtil.marshal11(gpxType, writer);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Cannot marshall " + gpxType + ": " + e, e);
-        }
-        return writer.toString();
-    }
-
     GpxType fetchGpx(String url) throws IOException {
         log.fine("Fetching gpx from " + url);
         Get get = new Get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
-                return GpxUtil.unmarshal11(result);
+                return unmarshal11(result);
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
@@ -98,41 +82,38 @@ public class RouteFeedback {
             return null;
     }
 
-    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) {
-        MetadataType metadataType = gpxFactory.createMetadataType();
+    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) throws IOException {
+        ObjectFactory objectFactory = new ObjectFactory();
+        MetadataType metadataType = objectFactory.createMetadataType();
         metadataType.setName(asUtf8(userName));
 
-        UserextensionType userextensionType = rcFactory.createUserextensionType();
+        UserextensionType userextensionType = new slash.navigation.gpx.routecatalog10.ObjectFactory().createUserextensionType();
         userextensionType.setEmail(asUtf8(email));
         userextensionType.setFirstname(asUtf8(firstName));
         userextensionType.setLastname(asUtf8(lastName));
         userextensionType.setPassword(asUtf8(password));
 
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
+        ExtensionsType extensionsType = objectFactory.createExtensionsType();
         extensionsType.getAny().add(userextensionType);
         metadataType.setExtensions(extensionsType);
 
-        GpxType gpxType = createGpxType();
+        GpxType gpxType = GpxUtil.createGpxType();
         gpxType.setMetadata(metadataType);
 
-        return toXml(gpxType);
+        return GpxUtil.toXml(gpxType);
     }
 
     private String getUsersUrl() {
         return rootUrl + USERS_URI;
     }
 
-    private Post prepareAddUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
+    public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
         log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
         String xml = createUserXml(userName, password, firstName, lastName, email);
         Post request = new Post(getUsersUrl(), credentials);
-        request.addFile("file", writeToTempFile(xml));
-        return request;
-    }
+        request.addFile("file", xml.getBytes());
 
-    public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        Post request = prepareAddUser(userName, password, firstName, lastName, email);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add user " + userName, getUsersUrl());
         if (request.isForbidden())
@@ -146,38 +127,30 @@ public class RouteFeedback {
         return rootUrl + ERROR_REPORT_URI;
     }
 
-    private Post prepareSendErrorReport(String logOutput, String description, File file) throws IOException {
-        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description +
-                "\"" + (file != null ? ", file " + file.getAbsolutePath() : ""));
+    public String sendErrorReport(String logOutput, String description, java.io.File file) throws IOException {
+        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description + "\"" +
+                (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(getErrorReportUrl(), credentials);
         request.addString("log", logOutput);
         request.addString("description", description);
         if (file != null)
             request.addFile("file", file);
-        return request;
-    }
 
-    public String sendErrorReport(String log, String description, File file) throws IOException {
-        Post request = prepareSendErrorReport(log, description, file);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), getErrorReportUrl());
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getErrorReportUrl() + " with log " + log.length() + " characters" +
+            throw new IOException("POST on " + getErrorReportUrl() + " with log " + logOutput.length() + " characters" +
                     ", description \"" + description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
-    }
-
-    private String getUpdateCheckUrl() {
-        return rootUrl + UPDATE_CHECK_URI;
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
                                  String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
                                  String webstartVersion, long startTime) throws IOException {
-        log.fine("Checking for update for version \"" + routeConverterVersion + "\"");
-        Post request = new Post(getUpdateCheckUrl(), credentials);
+        log.fine("Checking for update for version " + routeConverterVersion);
+        Post request = new Post(rootUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
@@ -190,6 +163,35 @@ public class RouteFeedback {
         request.addString("rcBits", routeConverterBits);
         if (webstartVersion != null)
             request.addString("webstartVersion", webstartVersion);
-        return request.execute().replace("\"", "");
+        return request.executeAsString().replace("\"", "");
+    }
+
+    private static String createDataSourceXml(DataSource dataSource) throws IOException {
+        slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
+
+        DatasourcesType datasourcesType = objectFactory.createDatasourcesType();
+        DatasourceType datasourceType = asDatasourceType(dataSource);
+        datasourcesType.getDatasource().add(datasourceType);
+
+        return DataSourcesUtil.toXml(datasourcesType);
+    }
+
+    private String getDataSourcesUrl() {
+        return rootUrl + DATASOURCES_URI;
+    }
+
+    public String sendChecksums(DataSource dataSource) throws IOException {
+        log.fine("Sending checksums for data source " + dataSource);
+        String xml = createDataSourceXml(dataSource);
+        Post request = new Post(getDataSourcesUrl(), credentials);
+        request.addFile("file", xml.getBytes());
+
+        String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Cannot send checksums ", getDataSourcesUrl());
+        if (!request.isSuccessful())
+            throw new IOException("POST on " + getDataSourcesUrl() + " for data source " + dataSource +
+                    " not successful: " + result);
+        return result;
     }
 }

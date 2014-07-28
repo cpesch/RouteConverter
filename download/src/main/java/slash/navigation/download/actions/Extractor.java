@@ -32,6 +32,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.lastPathFragment;
+import static slash.common.io.Files.setLastModified;
 
 /**
  * Extracts a {@link Download} to a target directory.
@@ -63,15 +64,12 @@ public class Extractor {
                         extracted = new File(destination, entry.getName());
                         ensureDirectory(extracted.getParent());
                     }
+
                     FileOutputStream output = new FileOutputStream(extracted);
-
                     new Copier(listener).copy(zipInputStream, output, 0, entry.getSize());
-
                     // do not close zip input stream
                     closeQuietly(output);
-
-                    if(!extracted.setLastModified(entry.getTime()))
-                        throw new IOException("Could not set last modified of " + extracted);
+                    setLastModified(extracted, entry.getTime());
 
                     zipInputStream.closeEntry();
                 }

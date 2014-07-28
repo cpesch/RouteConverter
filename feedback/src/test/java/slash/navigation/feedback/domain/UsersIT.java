@@ -19,7 +19,6 @@
 */
 package slash.navigation.feedback.domain;
 
-import org.junit.Assert;
 import org.junit.Test;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
@@ -27,43 +26,45 @@ import slash.navigation.gpx.routecatalog10.UserextensionType;
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 public class UsersIT extends RouteFeedbackServiceBase {
 
     @Test
     public void testAddUser() throws Exception {
         String name = "User " + System.currentTimeMillis();
         String location = routeFeedback.addUser(name, "secret", "First", "Last", "first@last.com");
-        Assert.assertNotNull(location);
+        assertNotNull(location);
         GpxType gpxType = routeFeedback.fetchGpx(location);
-        Assert.assertNotNull(gpxType);
-        Assert.assertEquals(name, gpxType.getMetadata().getName());
+        assertNotNull(gpxType);
+        assertEquals(name, gpxType.getMetadata().getName());
         List<Object> anys = gpxType.getMetadata().getExtensions().getAny();
-        Assert.assertEquals(1, anys.size());
+        assertEquals(1, anys.size());
         JAXBElement any = (JAXBElement) anys.get(0);
         UserextensionType extension = (UserextensionType) any.getValue();
-        Assert.assertEquals("first@last.com", extension.getEmail());
-        Assert.assertEquals("First", extension.getFirstname());
-        Assert.assertNotNull(extension.getLastlogin());
-        Assert.assertEquals("Last", extension.getLastname());
-        Assert.assertNull(extension.getPassword());
+        assertEquals("first@last.com", extension.getEmail());
+        assertEquals("First", extension.getFirstname());
+        assertNotNull(extension.getLastlogin());
+        assertEquals("Last", extension.getLastname());
+        assertNull(extension.getPassword());
     }
 
     @Test
     public void testAddUserWithUmlauts() throws Exception {
         String name = "User äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
         String location = routeFeedback.addUser(name, "secretÄÖÜ", "First ÄÖÜ", "Last ÄÖÜ", "first@last.com");
-        Assert.assertNotNull(location);
+        assertNotNull(location);
         GpxType gpxType = routeFeedback.fetchGpx(location);
-        Assert.assertNotNull(gpxType);
-        Assert.assertEquals(name, gpxType.getMetadata().getName());
+        assertNotNull(gpxType);
+        assertEquals(name, gpxType.getMetadata().getName());
         List<Object> anys = gpxType.getMetadata().getExtensions().getAny();
-        Assert.assertEquals(1, anys.size());
+        assertEquals(1, anys.size());
         JAXBElement any = (JAXBElement) anys.get(0);
         UserextensionType extension = (UserextensionType) any.getValue();
-        Assert.assertEquals("first@last.com", extension.getEmail());
-        Assert.assertEquals("First ÄÖÜ", extension.getFirstname());
-        Assert.assertNotNull(extension.getLastlogin());
-        Assert.assertEquals("Last ÄÖÜ", extension.getLastname());
-        Assert.assertNull(extension.getPassword());
+        assertEquals("first@last.com", extension.getEmail());
+        assertEquals("First ÄÖÜ", extension.getFirstname());
+        assertNotNull(extension.getLastlogin());
+        assertEquals("Last ÄÖÜ", extension.getLastname());
+        assertNull(extension.getPassword());
     }
 }

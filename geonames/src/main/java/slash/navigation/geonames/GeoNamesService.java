@@ -60,7 +60,7 @@ public class GeoNamesService implements ElevationService {
     private String execute(String uri) throws IOException {
         String url = getGeoNamesNamesUrl() + uri + "&username=" + getGeoNamesUserName();
         Get get = new Get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful()) {
             checkCurrentlyOverloaded(url, result);
             return result;
