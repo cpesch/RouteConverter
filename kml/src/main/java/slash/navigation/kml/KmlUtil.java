@@ -30,18 +30,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class KmlUtil {
-    private static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
-    private static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
-    private static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
-    private static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
-    private static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
-    private static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
-    private static final String KML_22_EXT_NAMESPACE_URI = "http://www.google.com/kml/ext/2.2";
+    public static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
+    public static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
+    public static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
+    public static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
+    public static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
+    public static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
+    public static final String KML_22_EXT_NAMESPACE_URI = "http://www.google.com/kml/ext/2.2";
 
     public static Unmarshaller newUnmarshaller20() {
         return newUnmarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class));
@@ -60,10 +58,7 @@ public class KmlUtil {
     }
 
     private static Marshaller newMarshaller20() {
-        return newMarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class),
-                KML_20_NAMESPACE_URI, "",
-                XAL_20_NAMESPACE_URI, "xal"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller21() {
@@ -71,18 +66,11 @@ public class KmlUtil {
     }
 
     private static Marshaller newMarshaller22Beta() {
-        return newMarshaller(newContext(slash.navigation.kml.binding22beta.ObjectFactory.class),
-                ATOM_2005_NAMESPACE_URI, "atom",
-                XAL_20_NAMESPACE_URI, "xal"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding22beta.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller22() {
-        return newMarshaller(newContext(slash.navigation.kml.binding22.ObjectFactory.class),
-                ATOM_2005_NAMESPACE_URI, "atom",
-                XAL_20_NAMESPACE_URI, "xal",
-                KML_22_EXT_NAMESPACE_URI, "gx"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding22.ObjectFactory.class));
     }
 
 

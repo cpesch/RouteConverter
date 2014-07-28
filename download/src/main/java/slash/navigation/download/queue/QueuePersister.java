@@ -23,6 +23,7 @@ package slash.navigation.download.queue;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.State;
+import slash.navigation.download.actions.Checksum;
 import slash.navigation.download.queue.binding.DownloadType;
 import slash.navigation.download.queue.binding.ObjectFactory;
 import slash.navigation.download.queue.binding.QueueType;
@@ -72,8 +73,8 @@ public class QueuePersister {
     }
 
     private Download asDownload(DownloadType downloadType) {
-        return new Download(downloadType.getDescription(), downloadType.getUrl(), downloadType.getSize(),
-                downloadType.getChecksum(), parseTime(downloadType.getTimestamp()),
+        return new Download(downloadType.getDescription(), downloadType.getUrl(),
+                new Checksum(downloadType.getChecksum(), downloadType.getSize(), parseTime(downloadType.getTimestamp())),
                 Action.valueOf(downloadType.getAction()), new File(downloadType.getTarget()),
                 parseTime(downloadType.getLastSync()), State.valueOf(downloadType.getState()),
                 new File(downloadType.getTempFile()), parseTime(downloadType.getLastModified()),
@@ -96,9 +97,9 @@ public class QueuePersister {
         DownloadType downloadType = new ObjectFactory().createDownloadType();
         downloadType.setDescription(download.getDescription());
         downloadType.setUrl(download.getUrl());
-        downloadType.setSize(download.getSize());
-        downloadType.setChecksum(download.getChecksum());
-        downloadType.setTimestamp(formatTime(download.getTimestamp(), true));
+        downloadType.setSize(download.getChecksum().getSize());
+        downloadType.setChecksum(download.getChecksum().getChecksum());
+        downloadType.setTimestamp(formatTime(download.getChecksum().getTimestamp(), true));
         downloadType.setState(download.getState().name());
         downloadType.setLastSync(formatTime(download.getLastSync(), true));
         downloadType.setAction(download.getAction().name());

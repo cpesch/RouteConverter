@@ -82,14 +82,8 @@ public class DownloadExecutor implements Runnable {
                 Validator validator = new Validator(download.getTempFile());
                 if(!validator.existsFile())
                     result = NoFileError;
-                else {
-                    if(!validator.validSize(download.getSize()))
-                        result = SizeError;
-                    if(!validator.validChecksum(download.getChecksum()))
-                        result = ChecksumError;
-                    if(!validator.validTimestamp(download.getTimestamp()))
-                        result = TimestampError;
-                }
+                else if (download.getChecksum() != null && !validator.validChecksum(download.getChecksum()))
+                    result = ChecksumError;
 
                 postProcess();
                 updateState(download, result);
@@ -171,7 +165,7 @@ public class DownloadExecutor implements Runnable {
         get.setRange(fileSize, contentLength);
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful() && get.isPartialContent()) {
-            modelUpdater.expectingBytes(contentLength);
+            modelUpdater.expectingBytes(contentLength != null ? contentLength : 0);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile(), true), fileSize, contentLength);
             return true;
         }
@@ -187,7 +181,7 @@ public class DownloadExecutor implements Runnable {
         Get get = new Get(download.getUrl());
         InputStream inputStream = get.executeAsStream(true);
         if (get.isSuccessful()) {
-            modelUpdater.expectingBytes(contentLength);
+            modelUpdater.expectingBytes(contentLength != null ? contentLength : 0);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0, contentLength);
             return true;
         }
@@ -202,6 +196,8 @@ public class DownloadExecutor implements Runnable {
             case Copy:
                 ensureDirectory(download.getTarget().getParent());
                 new Copier(modelUpdater).copyAndClose(new FileInputStream(download.getTempFile()), new FileOutputStream(download.getTarget()), 0, download.getTempFile().length());
+                if(!download.getTarget().setLastModified(download.getLastModified().getTimeInMillis()))
+                    log.warning("Could not set last modified of " + download.getTarget() + " to " + download.getLastModified().getTimeInMillis());
                 break;
             case Flatten:
                 new Extractor(modelUpdater).flatten(download.getTempFile(), download.getTarget());

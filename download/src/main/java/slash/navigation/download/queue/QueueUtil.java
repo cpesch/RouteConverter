@@ -20,9 +20,9 @@
 
 package slash.navigation.download.queue;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.download.queue.binding.ObjectFactory;
 import slash.navigation.download.queue.binding.QueueType;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -32,15 +32,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class QueueUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
     }
 
     public static QueueType unmarshal(InputStream in) throws JAXBException {

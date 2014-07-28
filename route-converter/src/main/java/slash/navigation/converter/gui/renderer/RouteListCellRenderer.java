@@ -26,8 +26,6 @@ import slash.navigation.converter.gui.RouteConverter;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.base.RouteComments.shortenRouteName;
-
 /**
  * Renders the route labels of the route combo box.
  *
@@ -35,14 +33,14 @@ import static slash.navigation.base.RouteComments.shortenRouteName;
  */
 
 public class RouteListCellRenderer extends DefaultListCellRenderer {
-
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         BaseRoute route = (BaseRoute) value;
         String text = "?";
         if (route != null) {
             String characteristics = RouteConverter.getBundle().getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
-            text = shortenRouteName(route) + " (" + characteristics + ")";
+            String name = route.getName() != null ? route.getName() : "?";
+            text = name + " (" + characteristics + ")";
         }
         label.setText(text);
         return label;

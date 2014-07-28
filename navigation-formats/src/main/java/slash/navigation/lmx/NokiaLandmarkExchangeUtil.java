@@ -20,31 +20,31 @@
 
 package slash.navigation.lmx;
 
-import slash.navigation.jaxb.JaxbUtils;
-import slash.navigation.lmx.binding.Lmx;
-import slash.navigation.lmx.binding.ObjectFactory;
+import static slash.common.helpers.JAXBHelper.newContext;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import slash.common.helpers.JAXBHelper;
+import slash.navigation.lmx.binding.Lmx;
+import slash.navigation.lmx.binding.ObjectFactory;
 
-class NokiaLandmarkExchangeUtil {
-    private static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";
+public class NokiaLandmarkExchangeUtil {
+    public static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class),
-                LMX_NAMESPACE_URI, "lm"
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class)
         );
     }
 

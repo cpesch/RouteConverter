@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.14-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,11 +31,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>elevation-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>jaxb6</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

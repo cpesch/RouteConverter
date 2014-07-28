@@ -23,12 +23,8 @@ package slash.navigation.download.datasources;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.download.datasources.binding.DatasourceType;
-import slash.navigation.download.datasources.binding.DatasourcesType;
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.MapType;
-import slash.navigation.download.datasources.binding.PositionType;
+import slash.navigation.download.actions.Checksum;
+import slash.navigation.download.datasources.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -40,7 +36,7 @@ import java.util.Map;
 import static slash.common.io.Transfer.parseTime;
 
 /**
- * Encapsulates access to the {@link DataSourceService}
+ * Encapsulates access to a DataSources XML.
  *
  * @author Christian Pesch
  */
@@ -88,7 +84,7 @@ public class DataSourceService {
     }
 
     private File asFile(FileType fileType) {
-        return new File(fileType.getUri(), fileType.getSize(), fileType.getChecksum(), parseTime(fileType.getTimestamp()), asBoundingBox(fileType.getNorthEast(), fileType.getSouthWest()));
+        return new File(fileType.getUri(), new Checksum(fileType.getChecksum(), fileType.getSize(), parseTime(fileType.getTimestamp())), asBoundingBox(fileType.getNorthEast(), fileType.getSouthWest()));
     }
 
     public Map<String, slash.navigation.download.datasources.Map> getMaps(String dataSourceName) {

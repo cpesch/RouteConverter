@@ -25,7 +25,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Platform;
 import slash.common.system.Version;
-import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.brouter.BRouter;
@@ -46,6 +45,7 @@ import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.datasources.DataSourceManager;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
@@ -96,7 +96,6 @@ import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
@@ -129,7 +128,11 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), getEdition(), version.getVersion(), version.getDate());
+    }
+
+    public static String getEdition() {
+        return "Online";
     }
 
     private static String getRouteConverter() {
@@ -155,14 +158,13 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
-    private static final String SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE = "showedTooOldJreVersion";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator";
 
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
-    private MapManager mapManager = new MapManager(downloadManager);
+    private DataSourceManager dataSourceManager = new DataSourceManager(downloadManager);
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
@@ -190,7 +192,6 @@ public class RouteConverter extends SingleFrameApplication {
     protected void startup() {
         initializeLogging();
         show();
-        checkForTooOldJreVersion();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
     }
@@ -232,21 +233,6 @@ public class RouteConverter extends SingleFrameApplication {
         }
         log.info("Started " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
-    }
-
-    private void checkForTooOldJreVersion() {
-        String currentVersion = System.getProperty("java.version");
-        String minimumVersion = "1.6.0_14";
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion) && !preferences.getBoolean(SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE, false)) {
-            JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
-            label.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent me) {
-                    startBrowserForJava(frame);
-                }
-            });
-            showMessageDialog(frame, label, frame.getTitle(), WARNING_MESSAGE);
-            preferences.putBoolean(SHOWED_TOO_OLD_JRE_VERSION_PREFERENCE, true);
-        }
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
@@ -408,6 +394,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.dispose();
         getConvertPanel().dispose();
         getElevationServiceFacade().dispose();
+        getBatchPositionAugmenter().dispose();
         getDownloadManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();
@@ -660,6 +647,10 @@ public class RouteConverter extends SingleFrameApplication {
         return downloadManager;
     }
 
+    public DataSourceManager getDataSourceManager() {
+        return dataSourceManager;
+    }
+
     public MapManager getMapManager() {
         return mapManager;
     }
@@ -672,7 +663,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
         if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(frame);
+            batchPositionAugmenter = new BatchPositionAugmenter(getPositionsView(), getPositionsModel(), frame);
         }
         return batchPositionAugmenter;
     }
@@ -680,11 +671,6 @@ public class RouteConverter extends SingleFrameApplication {
     private MapViewCallback getMapViewCallback() {
         return mapViewCallback;
     }
-
-    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) {
-        getMapViewCallback().complementTime(row, time, allowCurrentTime);
-    }
-
 
     public JTable getPositionsView() {
         return getConvertPanel().getPositionsView();
@@ -1025,6 +1011,19 @@ public class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 getDownloadManager().loadQueue();
+                /*
+                try {
+                    getDataSourceManager().initialize(getEdition());
+                } catch (final Exception e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(frame,
+                                    MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(),
+                                    ERROR_MESSAGE);
+                        }
+                    });
+                }
+                */
             }
         }, "DownloadManagerInitializer").start();
     }

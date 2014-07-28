@@ -75,12 +75,9 @@ public class AddPositionAction extends FrameAction {
         return positionsModel.getPosition(row);
     }
 
-    private void complementRow(int row, NavigationPosition position) {
+    private void complementRow(int row) {
         RouteConverter r = RouteConverter.getInstance();
-        r.getBatchPositionAugmenter().addDescriptions(table, positionsModel, new int[]{row});
-        r.getBatchPositionAugmenter().addElevations(table, positionsModel, new int[]{row});
-        r.complementTime(row, position.getTime(), true);
-        // TODO r.getBatchPositionAugmenter().addTimes(table, positionsModel, new int[]{row});
+        r.getBatchPositionAugmenter().addData(new int[]{row}, true, true, true);
     }
 
     public void run() {
@@ -114,7 +111,7 @@ public class AddPositionAction extends FrameAction {
             for (NavigationPosition position : insertedPositions) {
                 int index = positionsModel.getIndex(position);
                 insertedRows.add(index);
-                complementRow(index, position);
+                complementRow(index);
             }
 
             final int[] rows = toArray(insertedRows);

@@ -20,9 +20,9 @@
 
 package slash.navigation.fpl;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.fpl.binding.FlightPlan;
 import slash.navigation.fpl.binding.ObjectFactory;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -33,17 +33,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class GarminFlightPlanUtil {
     private static final String FPL_NAMESPACE_URI = "http://www8.garmin.com/xmlschemas/FlightPlan/v1";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
     }
 
 

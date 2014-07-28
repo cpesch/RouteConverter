@@ -43,6 +43,6 @@ public interface ParserContext<R extends BaseRoute> {
     void addFormat(NavigationFormat<R> format);
     List<NavigationFormat<R>> getFormats();
 
-    void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException;
+    void parse(InputStream inputStream, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException;
     void parse(String url) throws IOException;
 }

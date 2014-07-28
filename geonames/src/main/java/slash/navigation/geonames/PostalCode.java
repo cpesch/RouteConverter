@@ -35,10 +35,6 @@ public class PostalCode {
         this.placeName = placeName;
     }
 
-    public String toString() {
-        return "PostalCode[" + countryCode + "," + postalCode + "," + placeName + "]";
-    }
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -55,5 +51,10 @@ public class PostalCode {
         result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
         result = 31 * result + (placeName != null ? placeName.hashCode() : 0);
         return result;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[countryCode=" + countryCode + ", postalCode=" + postalCode +
+                ", placeName=" + placeName + "]";
     }
 }

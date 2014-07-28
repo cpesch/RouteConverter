@@ -30,10 +30,10 @@ import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatParserListener;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserCallback;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
 import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
@@ -64,7 +64,6 @@ import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
 import slash.navigation.converter.gui.helpers.LengthCalculator;
 import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
@@ -243,6 +242,7 @@ public class ConvertPanel implements PanelInTab {
     private TableHeaderMenu tableHeaderMenu;
 
     public ConvertPanel() {
+        $$$setupUI$$$();
         initialize();
         logFormatUsage();
     }
@@ -413,7 +413,6 @@ public class ConvertPanel implements PanelInTab {
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
-        BatchPositionAugmenter positionAugmenter = r.getBatchPositionAugmenter();
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
         actionManager.register("undo", new UndoAction());
@@ -431,13 +430,13 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("new-positionlist", new AddPositionListAction(getFormatAndRoutesModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new RemovePositionListAction(getFormatAndRoutesModel()));
-        actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-elevation", new AddElevationToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-postal-address", new AddPostalAddressToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-speed", new AddSpeedToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-time", new AddTimeToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-number", new AddNumberToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction());
+        actionManager.register("add-elevation", new AddElevationToPositionsAction());
+        actionManager.register("add-postal-address", new AddPostalAddressToPositionsAction());
+        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositionsAction());
+        actionManager.register("add-speed", new AddSpeedToPositionsAction());
+        actionManager.register("add-time", new AddTimeToPositionsAction());
+        actionManager.register("add-number", new AddNumberToPositionsAction());
         actionManager.register("split-positionlist", new SplitPositionListAction(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
         actionManager.register("export-positionlist", new ExportPositionListAction(this));
@@ -516,7 +515,7 @@ public class ConvertPanel implements PanelInTab {
             return;
 
         // make copy which we could modify freely
-        List<URL> copy = new ArrayList<URL>(urls);
+        List<URL> copy = new ArrayList<>(urls);
         for (Iterator<URL> it = copy.iterator(); it.hasNext(); ) {
             URL url = it.next();
             File file = toFile(url);
@@ -622,7 +621,7 @@ public class ConvertPanel implements PanelInTab {
                                 recentUrlsModel.addUrl(url);
 
                                 if (urls.size() > 1) {
-                                    List<URL> append = new ArrayList<URL>(urls);
+                                    List<URL> append = new ArrayList<>(urls);
                                     append.remove(0);
                                     // this way the route is always marked as modified :-(
                                     appendPositionList(-1, append);
@@ -1214,11 +1213,15 @@ public class ConvertPanel implements PanelInTab {
         formatAndRoutesModel.renamePositionList(name);
     }
 
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
+    private void createUIComponents() {
+        comboBoxChoosePositionList = new JComboBox() {
+            public Dimension getPreferredSize() {
+                Dimension preferredSize = super.getPreferredSize();
+                preferredSize.width = convertPanel.getPreferredSize().width - 300;
+                return preferredSize;
+            }
+        };
+        comboBoxChoosePositionList.setMinimumSize(new Dimension(-1, comboBoxChoosePositionList.getMinimumSize().height));
     }
 
     /**
@@ -1229,6 +1232,7 @@ public class ConvertPanel implements PanelInTab {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
+        createUIComponents();
         convertPanel = new JPanel();
         convertPanel.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 0, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
@@ -1347,9 +1351,7 @@ public class ConvertPanel implements PanelInTab {
         panel3.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxChoosePositionListCharacteristics = new JComboBox();
         panel3.add(comboBoxChoosePositionListCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxChoosePositionList = new JComboBox();
-        comboBoxChoosePositionList.setVisible(true);
-        convertPanel.add(comboBoxChoosePositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        convertPanel.add(comboBoxChoosePositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel4, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1485,9 +1487,7 @@ public class ConvertPanel implements PanelInTab {
                         }
                     }
                 }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
+            } catch (UnsupportedFlavorException | IOException e) {
                 // intentionally left empty
             }
             return delegate.importData(support);

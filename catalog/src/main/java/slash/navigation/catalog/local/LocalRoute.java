@@ -107,6 +107,6 @@ public class LocalRoute implements Route {
     }
 
     public String toString() {
-        return super.toString() + "[file=" + file + ", name=" + name + "]";
+        return  getClass().getSimpleName() + "[file=" + file + ", name=" + name + "]";
     }
 }

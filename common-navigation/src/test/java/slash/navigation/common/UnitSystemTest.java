@@ -44,7 +44,7 @@ public class UnitSystemTest {
         assertDoubleEquals(1.8520043, Nautic.distanceToDefault(1.0));
         assertDoubleEquals(1.0, Nautic.distanceToUnit(1.8520043));
 
-        assertDoubleEquals(1.8520043, Nautic.valueToDefault(1.0));
+        assertDoubleEquals(1.2345, Metric.valueToDefault(1.2345));
         assertDoubleEquals(1.2345, Nautic.valueToUnit(1.2345));
     }
 
@@ -54,8 +54,7 @@ public class UnitSystemTest {
         assertDoubleEquals(1.609344, Statute.distanceToDefault(1.0));
         assertDoubleEquals(1.0, Statute.distanceToUnit(1.609344));
 
-        assertDoubleEquals(1.609344, Statute.valueToDefault(1.0));
-        // feet for a meter
-        assertDoubleEquals(3.280839895013123, Statute.valueToUnit(1.0));
+        assertDoubleEquals(0.3048, Statute.valueToDefault(1.0));
+        assertDoubleEquals(1.0, Statute.valueToUnit(0.3048));
     }
 }

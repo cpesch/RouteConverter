@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
@@ -103,7 +105,7 @@ public class LengthCalculator {
         });
     }
 
-    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<LengthCalculatorListener>();
+    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<>();
 
     public void addLengthCalculatorListener(LengthCalculatorListener listener) {
         lengthCalculatorListeners.add(listener);
@@ -162,9 +164,9 @@ public class LengthCalculator {
             previous = next;
         }
 
-        int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
-        int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance((int) distanceMeters, Math.max(maxMinusMin, summedUp));
+        long summedUp = totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0;
+        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000 : 0;
+        fireCalculatedDistance((int) distanceMeters, (int) max(maxMinusMin, summedUp));
     }
 
     private void initialize() {
@@ -192,7 +194,7 @@ public class LengthCalculator {
     }
 
     public void dispose() {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
         synchronized (notificationMutex) {
             running = false;
             notificationMutex.notifyAll();
@@ -204,7 +206,7 @@ public class LengthCalculator {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("LengthCalculator stopped after " + (end - start) + " ms");
         }
     }

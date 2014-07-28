@@ -27,17 +27,18 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
-import static slash.navigation.jaxb.JaxbUtils.*;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class GpxUtil {
-    private static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
-    private static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
-    private static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-    private static final String GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/WaypointExtension/v1";
-    private static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
-    private static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
-    private static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
-    private static final String XML_SCHEMA_INSTANCE_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
+    public static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
+    public static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
+    public static final String GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/WaypointExtension/v1";
+    public static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
+    public static final String GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
+    public static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
+    public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
+    public static final String XML_SCHEMA_INSTANCE_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
     public static Unmarshaller newUnmarshaller10() {
         return newUnmarshaller(newContext(slash.navigation.gpx.binding10.ObjectFactory.class));
@@ -50,6 +51,7 @@ public class GpxUtil {
     private static JAXBContext newContext11() {
         return newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
                 slash.navigation.gpx.garmin3.ObjectFactory.class,
+                slash.navigation.gpx.trackpoint2.ObjectFactory.class,
                 slash.navigation.gpx.routecatalog10.ObjectFactory.class);
     }
 
@@ -58,19 +60,12 @@ public class GpxUtil {
     }
 
     private static Marshaller newMarshaller11() {
-        return newMarshaller(newContext11(),
-                XML_SCHEMA_INSTANCE_NAMESPACE_URI, "xsi",
-                GARMIN_EXTENSIONS_3_NAMESPACE_URI, "gpxtrx",
-                GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI, "gpxtpx",
-                GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI, "gpxx",
-                ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI, "rcxx",
-                TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI, "nmea"
-        );
+        return newMarshaller(newContext11());
     }
 
 
     public static Gpx unmarshal10(Reader reader) throws JAXBException {
-        Gpx result = null;
+        Gpx result;
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(reader);
         } catch (ClassCastException e) {
@@ -80,7 +75,7 @@ public class GpxUtil {
     }
 
     public static Gpx unmarshal10(InputStream in) throws JAXBException {
-        Gpx result = null;
+        Gpx result;
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(in);
         } catch (ClassCastException e) {
@@ -92,7 +87,7 @@ public class GpxUtil {
     public static void marshal10(Gpx gpx, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller10().marshal(new JAXBElement<Gpx>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), out);
+                newMarshaller10().marshal(new JAXBElement<>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), out);
             }
             finally {
                 out.flush();
@@ -109,7 +104,7 @@ public class GpxUtil {
     }
 
     public static GpxType unmarshal11(Reader reader) throws JAXBException {
-        GpxType result = null;
+        GpxType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(reader);
             result = (GpxType) element.getValue();
@@ -120,14 +115,13 @@ public class GpxUtil {
     }
 
     public static GpxType unmarshal11(InputStream in) throws JAXBException {
-        GpxType result = null;
+        GpxType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(in);
             result = (GpxType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e);
         }
-
         return result;
     }
 

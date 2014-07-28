@@ -61,6 +61,7 @@ public abstract class HttpRequest {
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpRequestBase method;
     private HttpResponse response;
+    private HttpClientContext context;
 
     HttpRequest(HttpRequestBase method) {
         this.log = Logger.getLogger(getClass().getName());
@@ -85,15 +86,13 @@ public abstract class HttpRequest {
     private void setAuthentication(String userName, String password, AuthScope authScope) {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
-        clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-
-        // preemptive authentication
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
         HttpHost targetHost = new HttpHost(authScope.getHost(), authScope.getPort(), authScope.getScheme());
         authCache.put(targetHost, basicAuth);
-        HttpClientContext localContext = HttpClientContext.create();
-        localContext.setAuthCache(authCache);
+        context = HttpClientContext.create();
+        context.setAuthCache(authCache);
+        context.setCredentialsProvider(credentialsProvider);
     }
 
     private void setAuthentication(Credentials credentials) {
@@ -119,7 +118,7 @@ public abstract class HttpRequest {
 
     protected HttpResponse doExecute() throws IOException {
         try {
-            return clientBuilder.build().execute(method);
+            return clientBuilder.build().execute(method, context);
         } catch (SocketException e) {
             if (throwsSocketExceptionIfUnAuthorized())
                 return new BasicHttpResponse(HTTP_1_1, SC_UNAUTHORIZED, "socket exception since unauthorized");

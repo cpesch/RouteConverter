@@ -43,8 +43,9 @@ public class RoutingServiceFacade {
     private static final Preferences preferences = Preferences.userNodeForPackage(RoutingServiceFacade.class);
     private static final String ROUTING_SERVICE_PREFERENCE = "routingService";
     private static final String TRAVEL_MODE_PREFERENCE = "travelMode";
-    public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
-    public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
+    private static final String AVOID_FERRIES_PREFERENCE = "avoidFerries";
+    private static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
+    private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
     private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
     private final EventListenerList listenerList = new EventListenerList();
@@ -94,8 +95,17 @@ public class RoutingServiceFacade {
         fireChanged();
     }
 
+    public boolean isAvoidFerries() {
+        return preferences.getBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), true);
+    }
+
+    public void setAvoidFerries(boolean avoidFerries) {
+        preferences.putBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), avoidFerries);
+        fireChanged();
+    }
+
     public boolean isAvoidHighways() {
-        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true);
+        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), true);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
@@ -104,7 +114,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidTolls() {
-        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true);
+        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), true);
     }
 
     public void setAvoidTolls(boolean avoidTolls) {

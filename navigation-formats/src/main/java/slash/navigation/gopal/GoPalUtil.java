@@ -32,9 +32,9 @@ import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.newContext;
+import static slash.common.helpers.JAXBHelper.newMarshaller;
+import static slash.common.helpers.JAXBHelper.newUnmarshaller;
 
 class GoPalUtil {
     private static final String GOPAL_NAMESPACE_URI = "";

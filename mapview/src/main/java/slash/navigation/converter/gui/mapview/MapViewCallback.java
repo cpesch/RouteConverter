@@ -35,13 +35,12 @@ import javax.swing.event.ChangeListener;
 
 public interface MapViewCallback {
     String createDescription(int index, String description);
-    void complementDescription(int row, Double longitude, Double latitude);
-    void complementElevation(int row, Double longitude, Double latitude);
-    void complementTime(int row, final CompactCalendar time, boolean allowCurrentTime);
+    void complementData(int[] rows, boolean description, boolean time, boolean elevation);
 
     MapManager getMapManager();
     RoutingService getRoutingService();
     TravelMode getTravelMode();
+    boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();
     void addChangeListener(ChangeListener l);

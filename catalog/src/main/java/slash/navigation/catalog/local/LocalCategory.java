@@ -183,6 +183,6 @@ public class LocalCategory implements Category {
     }
 
     public String toString() {
-        return super.toString() + "[directory=" + directory + ", name=" + name + "]";
+        return  getClass().getSimpleName() + "[directory=" + directory + ", name=" + name + "]";
     }
 }

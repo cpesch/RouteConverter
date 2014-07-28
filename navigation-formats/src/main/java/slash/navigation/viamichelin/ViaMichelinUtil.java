@@ -24,7 +24,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.viamichelin.binding.ObjectFactory;
 import slash.navigation.viamichelin.binding.PoiList;
 
@@ -46,18 +46,18 @@ import java.io.Reader;
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class ViaMichelinUtil {
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        Marshaller marshaller = JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_FRAGMENT, true);
             marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);

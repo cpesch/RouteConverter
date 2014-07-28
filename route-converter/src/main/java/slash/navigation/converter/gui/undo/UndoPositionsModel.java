@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
 import slash.navigation.gui.events.ContinousRange;
@@ -84,22 +85,27 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        edit(rowIndex, columnIndex, aValue, -1, null, true, true);
+        edit(rowIndex, new PositionColumnValues(columnIndex, aValue), true, true);
     }
 
     private String getStringAt(int rowIndex, int columnIndex) {
         return delegate.getStringAt(rowIndex, columnIndex);
     }
 
-    public void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue, boolean fireEvent, boolean trackUndo) {
+    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
-        Object previousFirstValue = trackUndo ? trim(getStringAt(rowIndex, firstColumnIndex)) : null;
-        Object previousSecondValue = trackUndo && secondColumnIndex != -1 ? trim(getStringAt(rowIndex, secondColumnIndex)) : null;
-        delegate.edit(rowIndex, firstColumnIndex, firstValue, secondColumnIndex, secondValue, fireEvent, trackUndo);
+        if(trackUndo) {
+            List<Object> previousValues = new ArrayList<Object>(columnToValues.getColumnIndices().size());
+            for (int columnIndex : columnToValues.getColumnIndices()) {
+                previousValues.add(trim(getStringAt(rowIndex, columnIndex)));
+            }
+            columnToValues.setPreviousValues(previousValues);
+        }
+        delegate.edit(rowIndex, columnToValues, fireEvent, trackUndo);
         if (trackUndo)
-            undoManager.addEdit(new EditPosition(this, rowIndex, firstColumnIndex, previousFirstValue, firstValue, secondColumnIndex, previousSecondValue, secondValue));
+            undoManager.addEdit(new EditPosition(this, rowIndex, columnToValues));
     }
 
     public void addTableModelListener(TableModelListener l) {

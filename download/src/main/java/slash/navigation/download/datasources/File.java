@@ -20,8 +20,8 @@
 
 package slash.navigation.download.datasources;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.download.actions.Checksum;
 
 /**
  * A file that may be downloaded
@@ -31,16 +31,12 @@ import slash.navigation.common.BoundingBox;
 
 public class File {
     private final String uri;
-    private final Long size;
-    private final String checksum;
-    private final CompactCalendar timestamp;
+    private final Checksum checksum;
     private final BoundingBox boundingBox;
 
-    public File(String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
+    public File(String uri, Checksum checksum, BoundingBox boundingBox) {
         this.uri = uri;
-        this.size = size;
         this.checksum = checksum;
-        this.timestamp = timestamp;
         this.boundingBox = boundingBox;
     }
 
@@ -48,16 +44,8 @@ public class File {
         return uri;
     }
 
-    public Long getSize() {
-        return size;
-    }
-
-    public String getChecksum() {
+    public Checksum getChecksum() {
         return checksum;
-    }
-
-    public CompactCalendar getTimestamp() {
-        return timestamp;
     }
 
     public BoundingBox getBoundingBox() {

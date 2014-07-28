@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
+import slash.common.helpers.JAXBHelper;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.AlanTrackLogFormat;
@@ -54,7 +55,6 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.Igo8RouteFormat;
 import slash.navigation.kml.KmlFormat;
@@ -124,7 +124,7 @@ public abstract class NavigationTestCase extends TestCase {
     public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + separator;
 
     static {
-        JaxbUtils.setCacheContexts(true);
+        JAXBHelper.setCacheContexts(true);
     }
 
     public static void assertDescriptionEquals(List<String> expected, List<String> was) {

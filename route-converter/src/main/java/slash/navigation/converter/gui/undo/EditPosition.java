@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
+import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -34,21 +35,14 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class EditPosition extends AbstractUndoableEdit {
-    private UndoPositionsModel positionsModel;
-    private int row, firstColumn, secondColumn;
-    private Object previousFirstValue, nextFirstValue, previousSecondValue, nextSecondValue;
+    private final UndoPositionsModel positionsModel;
+    private final int row;
+    private final PositionColumnValues columnToValues;
 
-    public EditPosition(UndoPositionsModel positionsModel, int row,
-                        int firstColumn, Object previousFirstValue, Object nextFirstValue,
-                        int secondColumn, Object previousSecondValue, Object nextSecondValue) {
+    public EditPosition(UndoPositionsModel positionsModel, int row, PositionColumnValues columnToValues) {
         this.positionsModel = positionsModel;
         this.row = row;
-        this.firstColumn = firstColumn;
-        this.previousFirstValue = previousFirstValue;
-        this.nextFirstValue = nextFirstValue;
-        this.secondColumn = secondColumn;
-        this.previousSecondValue = previousSecondValue;
-        this.nextSecondValue = nextSecondValue;
+        this.columnToValues = columnToValues;
     }
 
     public String getUndoPresentationName() {
@@ -61,11 +55,11 @@ class EditPosition extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.edit(row, firstColumn, previousFirstValue, secondColumn, previousSecondValue, true, false);
+        positionsModel.edit(row, new PositionColumnValues(columnToValues.getColumnIndices(), columnToValues.getPreviousValues()), true, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.edit(row, firstColumn, nextFirstValue, secondColumn, nextSecondValue, true, false);
+        positionsModel.edit(row, new PositionColumnValues(columnToValues.getColumnIndices(), columnToValues.getNextValues()), true, false);
     }
 }

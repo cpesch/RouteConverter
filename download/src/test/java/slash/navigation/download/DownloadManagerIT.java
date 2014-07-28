@@ -22,15 +22,11 @@ package slash.navigation.download;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.download.actions.Checksum;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
@@ -39,17 +35,9 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.download.Action.Copy;
-import static slash.navigation.download.Action.Extract;
-import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.*;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
-import static slash.navigation.download.State.ChecksumError;
-import static slash.navigation.download.State.Downloading;
-import static slash.navigation.download.State.Failed;
-import static slash.navigation.download.State.Processing;
-import static slash.navigation.download.State.SizeError;
-import static slash.navigation.download.State.Succeeded;
-import static slash.navigation.download.State.TimestampError;
+import static slash.navigation.download.State.*;
 
 public class DownloadManagerIT {
     private static final String DOWNLOAD = System.getProperty("download", "http://static.routeconverter.com/download/test/");
@@ -137,7 +125,7 @@ public class DownloadManagerIT {
 
     @Test
     public void testInvalidUrl() throws IOException {
-        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, null, null, Copy, target);
+        Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", null, Copy, target);
         waitFor(download, Failed);
 
         assertEquals(Failed, download.getState());
@@ -147,7 +135,7 @@ public class DownloadManagerIT {
     public void testFreshDownload() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -156,10 +144,10 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithCorrectSize() throws IOException {
+    public void testDownloadWithCorrectChecksum() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 447L, null, null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 447L, fromMillis(1387698493000L)), Copy, target);
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
@@ -171,30 +159,7 @@ public class DownloadManagerIT {
     public void testDownloadWithWrongSize() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 4711L, null, null, Copy, target);
-        waitFor(download, Downloading);
-        waitFor(download, SizeError);
-
-        assertEquals(SizeError, download.getState());
-    }
-
-    @Test
-    public void testDownloadWithCorrectChecksum() throws IOException {
-        assertTrue(target.delete());
-
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", null, Copy, target);
-        waitFor(download, Succeeded);
-
-        assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
-        assertEquals(EXPECTED, actual);
-    }
-
-    @Test
-    public void testDownloadWithWrongChecksum() throws IOException {
-        assertTrue(target.delete());
-
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "notdefined", null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 4711L, fromMillis(1387698493000L)), Copy, target);
         waitFor(download, Downloading);
         waitFor(download, ChecksumError);
 
@@ -202,31 +167,30 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithCorrectTimestamp() throws IOException {
+    public void testDownloadWithWrongChecksum() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", fromMillis(1387698493000L), Copy, target);
-        waitFor(download, Succeeded);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("notdefined", 447L, fromMillis(1387698493000L)), Copy, target);
+        waitFor(download, Downloading);
+        waitFor(download, ChecksumError);
 
-        assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
-        assertEquals(EXPECTED, actual);
+        assertEquals(ChecksumError, download.getState());
     }
 
     @Test
     public void testDownloadWithWrongTimestamp() throws IOException {
         assertTrue(target.delete());
 
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, "notdefined", fromMillis(0), Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", new Checksum("597D5107C0DC296DF4F6128257F6F8D2079FA11A", 447L, fromMillis(0)), Copy, target);
         waitFor(download, Downloading);
-        waitFor(download, TimestampError);
+        waitFor(download, ChecksumError);
 
-        assertEquals(TimestampError, download.getState());
+        assertEquals(ChecksumError, download.getState());
     }
 
     @Test
     public void testResumeDownload() throws IOException {
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
         // write content to temp file and patch download object
         writeStringToFile(download.getTempFile(), LOREM_IPSUM_DOLOR_SIT_AMET);
         download.setLastModified(fromMillis(download.getTempFile().lastModified()));
@@ -241,7 +205,7 @@ public class DownloadManagerIT {
 
     @Test
     public void testNotModifiedDownload() throws IOException {
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", 447L, "597D5107C0DC296DF4F6128257F6F8D2079FA11A", null, Copy, target);
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
         // write content to temp file and patch download object
         writeStringToFile(download.getTempFile(), EXPECTED);
         download.setLastModified(fromMillis(download.getTempFile().lastModified()));
@@ -258,8 +222,8 @@ public class DownloadManagerIT {
     public void testDownloadSameUrl() throws IOException {
         writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
 
-        Download download1 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, null, Copy, target);
-        Download download2 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, null, null, Copy, target);
+        Download download1 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
+        Download download2 = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", null, Copy, target);
         waitFor(download2, Succeeded);
 
         assertEquals(download2, download1);
@@ -270,7 +234,7 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null, null, Flatten, target.getParentFile());
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, Flatten, target.getParentFile());
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 
@@ -291,7 +255,7 @@ public class DownloadManagerIT {
         File extracted = new File(target.getParentFile(), "first/second/447bytes.txt");
 
         try {
-            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, null, null, Extract, target.getParentFile());
+            Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", null, Extract, target.getParentFile());
             waitFor(download, Processing);
             assertEquals(Processing, download.getState());
 

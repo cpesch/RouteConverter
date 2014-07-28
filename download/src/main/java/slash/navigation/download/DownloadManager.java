@@ -21,6 +21,7 @@
 package slash.navigation.download;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.download.actions.Checksum;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
@@ -71,6 +72,7 @@ public class DownloadManager {
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
+        restartDownloadsWithState(Running);
         restartDownloadsWithState(Resuming);
         restartDownloadsWithState(Downloading);
         restartDownloadsWithState(Processing);
@@ -131,9 +133,8 @@ public class DownloadManager {
         return download;
     }
 
-    public Download queueForDownload(String description, String url, Long size, String checksum,
-                                     CompactCalendar timestamp, Action action, File target) {
-        return queueForDownload(new Download(description, url, size, checksum, timestamp, action, target));
+    public Download queueForDownload(String description, String url, Checksum checksum, Action action, File target) {
+        return queueForDownload(new Download(description, url, checksum, action, target));
     }
 
     private static final Object LOCK = new Object();

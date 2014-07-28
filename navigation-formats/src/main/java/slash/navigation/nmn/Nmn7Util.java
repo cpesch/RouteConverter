@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 
@@ -36,17 +36,17 @@ import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class Nmn7Util {
     private static final String NMN7_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        Marshaller marshaller = JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);
         } catch (PropertyException e) {

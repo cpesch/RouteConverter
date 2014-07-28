@@ -19,11 +19,9 @@
 */
 package slash.navigation.hgt;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.actions.Validator;
 import slash.navigation.download.datasources.File;
 import slash.navigation.download.datasources.Fragment;
 import slash.navigation.elevation.ElevationService;
@@ -36,7 +34,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
 
 /**
  * Encapsulates access to HGT files.
@@ -155,7 +153,7 @@ public class HgtFiles implements ElevationService {
 
         Collection<Download> downloads = new HashSet<Download>();
         for (FragmentAndTarget fragment : fragments) {
-            if (new Validator(fragment.target).existsFile())
+            if (fragment.target.exists())
                 continue;
             downloads.add(download(fragment));
         }
@@ -168,10 +166,7 @@ public class HgtFiles implements ElevationService {
         String uri = fragment.fragment.getUri();
         String url = getBaseUrl() + uri;
         File file = fileMap.get(uri);
-        Long fileSize = file != null ? file.getSize() : null;
-        CompactCalendar fileTimestamp = file != null ? file.getTimestamp() : null;
-        String fileChecksum = file != null ? file.getChecksum() : null;
-        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url,
-                fileSize, fileChecksum, fileTimestamp, Extract, getDirectory());
+        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, file.getChecksum(),
+                Flatten, getDirectory());
     }
 }
