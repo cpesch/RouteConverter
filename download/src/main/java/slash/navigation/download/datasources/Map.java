@@ -20,8 +20,8 @@
 
 package slash.navigation.download.datasources;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.download.actions.Checksum;
 
 /**
  * A map that may be downloaded
@@ -30,7 +30,7 @@ import slash.navigation.common.BoundingBox;
  */
 
 public class Map extends File {
-    public Map(String uri, Long size, String checksum, CompactCalendar timestamp, BoundingBox boundingBox) {
-        super(uri, size, checksum, timestamp, boundingBox);
+    public Map(String uri, Checksum checksum, BoundingBox boundingBox) {
+        super(uri, checksum, boundingBox);
     }
 }
