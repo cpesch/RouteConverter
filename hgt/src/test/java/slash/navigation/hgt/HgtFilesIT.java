@@ -48,14 +48,14 @@ public class HgtFilesIT {
         FileType fileType1 = new FileType();
         fileType1.setUri("Eurasia/N59E011.hgt.zip");
         FragmentType fragmentType1 = new FragmentType();
-        fragmentType1.setKey("N59E011");
+        fragmentType1.setKey("N59E011.hgt");
         fileType1.getFragment().add(fragmentType1);
         datasourceType.getFile().add(fileType1);
 
         FileType fileType2 = new FileType();
         fileType2.setUri("Eurasia/N60E012.hgt.zip");
         FragmentType fragmentType2 = new FragmentType();
-        fragmentType2.setKey("N60E012");
+        fragmentType2.setKey("N60E012.hgt");
         fileType2.getFragment().add(fragmentType2);
         datasourceType.getFile().add(fileType2);
 
@@ -63,11 +63,11 @@ public class HgtFilesIT {
         fileType3.setUri("I36.zip");
         fileType3.getChecksum().add(createChecksumType(4987465L, calendar(2013, 1, 20, 17, 42, 36), "99982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
         FragmentType fragmentType3 = new FragmentType();
-        fragmentType3.setKey("N32E034");
-        fragmentType3.getChecksum().add(createChecksumType(187465L, calendar(2013, 1, 20, 17, 42, 36), "A9982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
+        fragmentType3.setKey("N32E034.hgt");
+        fragmentType3.getChecksum().add(createChecksumType(187465L, calendar(2013, 1, 20, 17, 42, 36), "AD36AA9709ECAE64718308EBB1659C5BB4327A74"));
         fileType3.getFragment().add(fragmentType3);
         FragmentType fragmentType4 = new FragmentType();
-        fragmentType4.setKey("N32E035");
+        fragmentType4.setKey("N32E035.hgt");
         fragmentType4.getChecksum().add(createChecksumType(287465L, calendar(2011, 1, 20, 17, 42, 36), "B9982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
         fileType3.getFragment().add(fragmentType4);
         datasourceType.getFile().add(fileType3);
