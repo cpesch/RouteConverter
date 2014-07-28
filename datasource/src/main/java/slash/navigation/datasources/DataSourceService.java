@@ -38,7 +38,7 @@ import static slash.navigation.datasources.DataSourcesUtil.unmarshal;
  */
 
 public class DataSourceService {
-    private List<DataSource> dataSources = new ArrayList<DataSource>();
+    private List<DataSource> dataSources = new ArrayList<>();
 
     public void load(InputStream inputStream) throws JAXBException {
         DatasourcesType datasourcesType = unmarshal(inputStream);
@@ -50,7 +50,15 @@ public class DataSourceService {
         return dataSources;
     }
 
-    public DataSource getDataSource(String url) {
+    public DataSource getDataSourceById(String id) {
+        for (DataSource dataSource : getDataSources()) {
+            if (dataSource.getId().equals(id))
+                return dataSource;
+        }
+        return null;
+    }
+
+    public DataSource getDataSourceByUrl(String url) {
         for (DataSource dataSource : getDataSources()) {
             if (url.startsWith(dataSource.getBaseUrl()))
                 return dataSource;

@@ -976,7 +976,7 @@ public class RouteConverter extends SingleFrameApplication {
                 for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
                     Download download = downloadManager.getModel().getDownloads().get(i);
                     if (download.getState().equals(Validating)) {
-                        final DataSource dataSource = dataSourceManager.getDataSourceService().getDataSource(download.getUrl());
+                        final DataSource dataSource = dataSourceManager.getDataSourceService().getDataSourceByUrl(download.getUrl());
                         if (dataSource != null) {
                             getOperator().executeOperation(new RouteServiceOperator.Operation() {
                                 public String getName() {
