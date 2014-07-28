@@ -140,7 +140,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public static String getEdition() {
-        return "Online";
+        return "Offline";
     }
 
     private static String getRouteConverter() {
@@ -300,13 +300,8 @@ public class RouteConverter extends SingleFrameApplication {
             if (mapView != null)
                 getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
         }
-        if (mapView == null) {
+        if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-            if (mapView != null) {
-                getRoutingServiceFacade().addRoutingService(new BRouter(dataSourceManager.getDataSourceService().getDataSource("brouter"), downloadManager));
-                getRoutingServiceFacade().addRoutingService(new GraphHopper(dataSourceManager.getDataSourceService().getDataSource("graphhopper"), downloadManager));
-            }
-        }
 
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
@@ -1070,6 +1065,12 @@ public class RouteConverter extends SingleFrameApplication {
                 for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
                     getElevationServiceFacade().addElevationService(hgtFile);
 
+                DataSource brouter = dataSourceManager.getDataSourceService().getDataSourceById("brouter");
+                if (brouter != null)
+                    getRoutingServiceFacade().addRoutingService(new BRouter(brouter, downloadManager));
+                DataSource graphhopper = dataSourceManager.getDataSourceService().getDataSourceById("graphhopper");
+                if (graphhopper != null)
+                    getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, downloadManager));
             }
         }, "DownloadManagerInitializer").start();
     }

@@ -22,7 +22,6 @@ package slash.navigation.maps;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.DataSourceService;
-import slash.navigation.download.DownloadManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ import static java.util.Arrays.asList;
  */
 
 public class MapFilesService {
-    private final List<MapFiles> mapFiles = new ArrayList<MapFiles>();
+    private final List<MapFiles> mapFiles = new ArrayList<>();
     private static final Set<String> DATASOURCE_URIS = new HashSet<>(asList(
             "freizeitkarte-maps-datasources",
             "freizeitkarte-themes-datasources",
@@ -55,7 +54,6 @@ public class MapFilesService {
     }
 
     public void initialize() {
-        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
         DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
 
         for (DataSource dataSource : dataSourceService.getDataSources()) {
@@ -69,7 +67,7 @@ public class MapFilesService {
     }
 
     public List<RemoteResource> getResources() {
-        List<RemoteResource> result = new ArrayList<RemoteResource>();
+        List<RemoteResource> result = new ArrayList<>();
         for (MapFiles files : getMapFiles()) {
             result.addAll(files.getResources());
         }

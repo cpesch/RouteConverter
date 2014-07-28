@@ -24,6 +24,8 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -31,10 +33,7 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -43,6 +42,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
+import static slash.navigation.download.Action.Copy;
 
 /**
  * Encapsulates access to the BRouter.
@@ -55,19 +55,16 @@ public class BRouter implements RoutingService {
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final String DATASOURCE_URL = "brouter-datasources.xml";
-
-    private static final int MAX_RUNNING_TIME = 1000;
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("fastbike"),
             new TravelMode("moped"), new TravelMode("safety"), new TravelMode("shortest"), new TravelMode("trekking"),
             new TravelMode("trekking-ignore-cr"), new TravelMode("trekking-noferries"),
             new TravelMode("trekking-nosteps"), new TravelMode("trekking-steep"), new TravelMode("car-test"));
+    private static final int MAX_RUNNING_TIME = 1000;
 
     private final DataSource dataSource;
     private final DownloadManager downloadManager;
 
     private final RoutingContext routingContext = new RoutingContext();
-    private boolean initialized = false;
 
     public BRouter(DataSource dataSource, DownloadManager downloadManager) {
         this.dataSource = dataSource;
@@ -118,6 +115,20 @@ public class BRouter implements RoutingService {
         return ensureDirectory(directoryName);
     }
 
+    private java.io.File createFile(String key) {
+        return new java.io.File(getDirectory(), key);
+    }
+
+    String createFileKey(double longitude, double latitude) {
+        int longitudeAsInteger = ((int) longitude / 5) * 5;
+        int latitudeAsInteger = ((int) latitude / 5) * 5;
+        return format("%s%d_%s%d.rd5",
+                longitude < 0 ? "W" : "E",
+                longitude < 0 ? -longitudeAsInteger : longitudeAsInteger,
+                latitude < 0 ? "S" : "N",
+                latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
+    }
+
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         initialize();
         try {
@@ -140,7 +151,7 @@ public class BRouter implements RoutingService {
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
-        List<OsmNodeNamed> result = new ArrayList<OsmNodeNamed>();
+        List<OsmNodeNamed> result = new ArrayList<>();
         result.add(asOsmNodeNamed(from.getDescription(), from.getLongitude(), from.getLatitude()));
         result.add(asOsmNodeNamed(to.getDescription(), to.getLongitude(), to.getLatitude()));
         return result;
@@ -163,7 +174,7 @@ public class BRouter implements RoutingService {
     }
 
     private List<NavigationPosition> asPositions(OsmTrack track) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (OsmPathElement element : track.nodes) {
             result.add(asPosition(element));
         }
@@ -185,10 +196,24 @@ public class BRouter implements RoutingService {
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         initialize();
 
-        Set<String> keys = createKeys(longitudeAndLatitudes);
-        /* TODO
-        Set<FileAndTarget> files = createFileAndTargets(keys);
-        final Set<FileAndTarget> notExistingFiles = createNotExistingFiles(files);
+        Set<String> uris = new HashSet<>();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            uris.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+        }
+
+        Collection<Downloadable> downloadables = new HashSet<>();
+        for (String key : uris) {
+            Downloadable downloadable = dataSource.getDownloadable(key);
+            if (downloadable != null)
+                downloadables.add(downloadable);
+        }
+
+        final Collection<Downloadable> notExistingFiles = new HashSet<>();
+        for (Downloadable downloadable : downloadables) {
+            if (createFile(downloadable.getUri()).exists())
+                continue;
+            notExistingFiles.add(downloadable);
+        }
 
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
@@ -200,74 +225,28 @@ public class BRouter implements RoutingService {
             }
 
             public void download() {
-                downloadFiles(notExistingFiles);
+                downloadAll(notExistingFiles);
             }
 
             public void process() {
                 // intentionally do nothing
             }
         };
-        */
-        return null;
     }
 
-    private Set<String> createKeys(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<String> keys = new HashSet<String>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
-        }
-        return keys;
-    }
-
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), format("%s%s", key, ".rd5"));
-    }
-
-    String createFileKey(double longitude, double latitude) {
-        int longitudeAsInteger = ((int) longitude / 5) * 5;
-        int latitudeAsInteger = ((int) latitude / 5) * 5;
-        return format("%s%d_%s%d",
-                longitude < 0 ? "W" : "E",
-                longitude < 0 ? -longitudeAsInteger : longitudeAsInteger,
-                latitude < 0 ? "S" : "N",
-                latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
-    }
-
-    /* TODO
-    private Set<FileAndTarget> createFileAndTargets(Set<String> keys) {
-        Set<FileAndTarget> files = new HashSet<FileAndTarget>();
-        for (String key : keys) {
-            File catalog = fileMap.get(key + ".rd5");
-            if (catalog != null)
-                files.add(new FileAndTarget(catalog, createFile(key)));
-        }
-        return files;
-    }
-
-    private Set<FileAndTarget> createNotExistingFiles(Set<FileAndTarget> files) {
-        final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
-        for (FileAndTarget file : files) {
-            if (new Validator(file.target).existsFile())
-                continue;
-            notExistingFiles.add(file);
-        }
-        return notExistingFiles;
-    }
-
-    private void downloadFiles(Set<FileAndTarget> retrieve) {
-        Collection<Download> downloads = new HashSet<Download>();
-        for (FileAndTarget file : retrieve)
-            downloads.add(initiateDownload(file));
+    private void downloadAll(Collection<Downloadable> downloadables) {
+        Collection<Download> downloads = new HashSet<>();
+        for (Downloadable downloadable : downloadables)
+            downloads.add(download(downloadable));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download initiateDownload(FileAndTarget file) {
-        String uri = file.file.getUri();
+    private Download download(Downloadable downloadable) {
+        String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
-                file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
+        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url, Copy,
+                null, createFile(downloadable.getUri()), downloadable.getLatestChecksum(), null, null);
     }
-    */
 }

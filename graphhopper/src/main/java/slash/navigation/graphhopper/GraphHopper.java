@@ -27,6 +27,9 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.File;
+import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -43,6 +46,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
+import static slash.navigation.download.Action.Copy;
 
 /**
  * Encapsulates access to the GraphHopper.
@@ -55,13 +59,12 @@ public class GraphHopper implements RoutingService {
     private static final Logger log = Logger.getLogger(GraphHopper.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final String DATASOURCE_URL = "graphhopper-datasources.xml";
-
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), new TravelMode("Car"),
             new TravelMode("Foot"));
 
     private final DataSource dataSource;
     private final DownloadManager downloadManager;
+
     private com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile = null;
 
@@ -106,10 +109,13 @@ public class GraphHopper implements RoutingService {
         return ensureDirectory(directoryName);
     }
 
+    private java.io.File createFile(String key) {
+        return new java.io.File(getDirectory(), key);
+    }
+
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         if(osmPbfFile == null)
             return null;
-
 
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
         request.setVehicle(travelMode.getName().toUpperCase());
@@ -153,7 +159,7 @@ public class GraphHopper implements RoutingService {
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (int i = 0, c = points.getSize(); i < c; i++) {
             result.add(new SimpleNavigationPosition(points.getLongitude(i), points.getLatitude(i)));
         }
@@ -162,75 +168,54 @@ public class GraphHopper implements RoutingService {
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
-        String keyForSmallestBoundingBox = null;
+        Downloadable downloadableForSmallestBoundingBox = null;
         BoundingBox smallestBoundingBox = null;
-        /* TODO
-        for (String key : fileMap.keySet()) {
-            File file = fileMap.get(key);
+
+        for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
             if (fileBoundingBox.contains(routeBoundingBox)) {
                 if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
-                    keyForSmallestBoundingBox = key;
+                    downloadableForSmallestBoundingBox = file;
                     smallestBoundingBox = fileBoundingBox;
                 }
             }
         }
 
-        final FileAndTarget fileAndTarget = createFileAndTarget(keyForSmallestBoundingBox);
+        final Downloadable downloadable = downloadableForSmallestBoundingBox;
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
-                return fileAndTarget != null && !new Validator(fileAndTarget.target).existsFile();
+                return downloadable != null && !createFile(downloadable.getUri()).exists();
             }
             public boolean isRequiresProcessing() {
                 return true;
             }
             public void download() {
-                downloadFile(fileAndTarget);
+                downloadAll(downloadable);
             }
             public void process() {
-                initializeHopper(fileAndTarget);
+                if(downloadable != null)
+                    initializeHopper(createFile(downloadable.getUri()));
             }
         };
-        */
-        return null;
     }
 
     private BoundingBox createBoundingBox(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> positions = new ArrayList<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
         return new BoundingBox(positions);
     }
 
-    /* TODO
-    private FileAndTarget createFileAndTarget(String keyForSmallestBoundingBox) {
-        if (keyForSmallestBoundingBox != null) {
-            File catalog = fileMap.get(keyForSmallestBoundingBox);
-            if (catalog != null) {
-                java.io.File file = createFile(keyForSmallestBoundingBox);
-                return new FileAndTarget(catalog, file);
-            }
-        }
-        return null;
-    }
-    */
-
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), key);
-    }
-
-    /* TODO
-    private void downloadFile(FileAndTarget retrieve) {
-        Download download = initiateDownload(retrieve);
+    private void downloadAll(Downloadable downloadable) {
+        Download download = download(downloadable);
         downloadManager.waitForCompletion(asList(download));
     }
 
-    private Download initiateDownload(FileAndTarget file) {
-        String uri = file.file.getUri();
+    private Download download(Downloadable downloadable) {
+        String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
-                file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
+        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url, Copy,
+                null, createFile(downloadable.getUri()), downloadable.getLatestChecksum(), null, null);
     }
-    */
 }

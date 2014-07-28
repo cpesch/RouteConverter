@@ -40,13 +40,13 @@ public class BRouterTest {
 
     @Test
     public void createFileKey() {
-        assertEquals("E0_N0", router.createFileKey(0.1, 4.9));
-        assertEquals("E5_N5", router.createFileKey(5.1, 9.9));
-        assertEquals("E50_N50", router.createFileKey(50.1, 54.9));
-        assertEquals("E175_N85", router.createFileKey(179.9, 89.9));
-        assertEquals("W0_S0", router.createFileKey(-0.1, -4.9));
-        assertEquals("W5_S5", router.createFileKey(-5.1, -9.9));
-        assertEquals("W50_S50", router.createFileKey(-50.1, -54.9));
-        assertEquals("W175_S85", router.createFileKey(-179.9, -89.9));
+        assertEquals("E0_N0.rd5", router.createFileKey(0.1, 4.9));
+        assertEquals("E5_N5.rd5", router.createFileKey(5.1, 9.9));
+        assertEquals("E50_N50.rd5", router.createFileKey(50.1, 54.9));
+        assertEquals("E175_N85.rd5", router.createFileKey(179.9, 89.9));
+        assertEquals("W0_S0.rd5", router.createFileKey(-0.1, -4.9));
+        assertEquals("W5_S5.rd5", router.createFileKey(-5.1, -9.9));
+        assertEquals("W50_S50.rd5", router.createFileKey(-50.1, -54.9));
+        assertEquals("W175_S85.rd5", router.createFileKey(-179.9, -89.9));
     }
 }
