@@ -21,13 +21,10 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
-import slash.navigation.hgt.HgtFiles;
-import slash.navigation.hgt.HgtFilesService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,19 +47,16 @@ public class ElevationServiceFacade {
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
-    private final HgtFilesService hgtFilesService;
+    private boolean loggedFailedElevationServiceWarning = false;
 
-    public ElevationServiceFacade(DownloadManager downloadManager) {
-        hgtFilesService = new HgtFilesService(downloadManager);
-        for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
-            elevationServices.add(hgtFile);
+    public ElevationServiceFacade() {
         elevationServices.add(new GeoNamesService());
         elevationServices.add(new GoogleMapsService());
         elevationServices.add(new EarthToolsService());
     }
 
-    public void dispose() {
-        hgtFilesService.dispose();
+    public void addElevationService(ElevationService elevationService) {
+        elevationServices.add(0, elevationService);
     }
 
     public List<ElevationService> getElevationServices() {
@@ -78,8 +72,10 @@ public class ElevationServiceFacade {
                 return service;
         }
 
-        log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
-        preferences.put(ELEVATION_SERVICE, firstElevationService.getName());
+        if(!loggedFailedElevationServiceWarning) {
+            log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
+            loggedFailedElevationServiceWarning = true;
+        }
         return firstElevationService;
     }
 
@@ -90,6 +86,10 @@ public class ElevationServiceFacade {
     public Double getElevationFor(double longitude, double latitude) throws IOException {
         Double elevation = getElevationService().getElevationFor(longitude, latitude);
         return elevation != null ? formatElevation(elevation).doubleValue() : null;
+    }
+
+    public boolean isDownload() {
+        return getElevationService().isDownload();
     }
 
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {

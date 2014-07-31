@@ -49,6 +49,7 @@ public class RoutingServiceFacade {
 
     private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
     private final EventListenerList listenerList = new EventListenerList();
+    private boolean loggedFailedRoutingServiceWarning = false, loggedFailedTravelModeWarning = false;
 
     public List<RoutingService> getRoutingServices() {
         return routingServices;
@@ -59,15 +60,19 @@ public class RoutingServiceFacade {
     }
 
     public RoutingService getRoutingService() {
-        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, routingServices.get(0).getName());
+        RoutingService firstRoutingService = routingServices.get(0);
+        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
 
         for (RoutingService service : routingServices) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
 
-        log.warning(format("Failed to find routing service %s; using first", lookupServiceName));
-        return routingServices.get(0);
+        if(!loggedFailedRoutingServiceWarning) {
+            log.warning(format("Failed to find routing service %s; using first", lookupServiceName));
+            loggedFailedRoutingServiceWarning = true;
+        }
+        return firstRoutingService;
     }
 
     public void setRoutingService(RoutingService service) {
@@ -84,7 +89,10 @@ public class RoutingServiceFacade {
                 return travelMode;
         }
 
-        log.warning(format("Failed to find travel mode %s; using first", lookupName));
+        if(!loggedFailedTravelModeWarning) {
+            log.warning(format("Failed to find travel mode %s; using first", lookupName));
+            loggedFailedTravelModeWarning = true;
+        }
         return travelModes.get(0);
     }
 
