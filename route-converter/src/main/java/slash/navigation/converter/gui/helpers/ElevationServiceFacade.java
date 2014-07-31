@@ -21,10 +21,13 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.hgt.HgtFiles;
+import slash.navigation.hgt.HgtFilesService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,12 +50,20 @@ public class ElevationServiceFacade {
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
+    private final HgtFilesService hgtFilesService;
     private boolean loggedFailedElevationServiceWarning = false;
 
-    public ElevationServiceFacade() {
+    public ElevationServiceFacade(DownloadManager downloadManager) {
+        hgtFilesService = new HgtFilesService(downloadManager);
+        for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
+            addElevationService(hgtFile);
         elevationServices.add(new GeoNamesService());
         elevationServices.add(new GoogleMapsService());
         elevationServices.add(new EarthToolsService());
+    }
+
+    public void dispose() {
+        hgtFilesService.dispose();
     }
 
     public void addElevationService(ElevationService elevationService) {
