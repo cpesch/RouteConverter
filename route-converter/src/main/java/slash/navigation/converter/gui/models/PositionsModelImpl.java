@@ -128,14 +128,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public List<NavigationPosition> getPositions(int[] rowIndices) {
-        List<NavigationPosition> result = new ArrayList<>(rowIndices.length);
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(rowIndices.length);
         for (int rowIndex : rowIndices)
             result.add(getPosition(rowIndex));
         return result;
     }
 
     public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
-        List<NavigationPosition> result = new ArrayList<>(lastIndex - firstIndex);
+        List<NavigationPosition> result = new ArrayList<NavigationPosition>(lastIndex - firstIndex);
         for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
