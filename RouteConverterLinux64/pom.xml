@@ -111,7 +111,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>

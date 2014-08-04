@@ -87,37 +87,37 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86_64</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>win32.win32.x86</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>win32.win32.x86_64</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
 
