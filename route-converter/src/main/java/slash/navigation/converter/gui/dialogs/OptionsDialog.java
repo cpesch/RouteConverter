@@ -339,10 +339,14 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleRoutingServiceUpdate() {
-        RoutingService service = RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
+        RoutingServiceFacade routingServiceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingService service = routingServiceFacade.getRoutingService();
         textFieldRoutingServicePath.setEnabled(service.isDownload());
         textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
+        checkBoxAvoidFerries.setSelected(routingServiceFacade.isAvoidFerries());
+        checkBoxAvoidHighways.setSelected(routingServiceFacade.isAvoidHighways());
+        checkBoxAvoidTolls.setSelected(routingServiceFacade.isAvoidTolls());
         updateTravelModes();
     }
 
