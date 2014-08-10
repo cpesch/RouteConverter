@@ -25,10 +25,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.String.format;
+import static java.util.logging.Logger.getLogger;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.lastPathFragment;
@@ -39,6 +42,7 @@ import static slash.common.io.Files.lastPathFragment;
  * @author Christian Pesch
  */
 public class Extractor {
+    private static final Logger log = getLogger(Extractor.class.getName());
     private final CopierListener listener;
 
     public Extractor(CopierListener listener) {
@@ -65,6 +69,7 @@ public class Extractor {
                     }
                     FileOutputStream output = new FileOutputStream(extracted);
 
+                    log.info(format("Extracting from %s to %s", tempFile, extracted));
                     new Copier(listener).copy(zipInputStream, output, 0, entry.getSize());
 
                     // do not close zip input stream

@@ -87,12 +87,14 @@ public class DownloadExecutor implements Runnable {
 
                 postProcess();
                 updateState(download, result);
+                log.info(format("Finished download of %s with %s", download.getUrl(), result));
                 return;
             }
         } catch (Exception e) {
             log.severe(format("Could not download content from %s: %s", download.getUrl(), e));
         }
         updateState(download, Failed);
+        log.warning(format("Download of %s failed", download.getUrl()));
 
         // finally set date of latest sync
         download.setLastSync(now());
@@ -164,6 +166,7 @@ public class DownloadExecutor implements Runnable {
         Get get = new Get(download.getUrl());
         get.setRange(fileSize, contentLength);
         InputStream inputStream = get.executeAsStream(true);
+        log.info(format("Resume %s successful: %s", download.getUrl(), get.isSuccessful()));
         if (get.isSuccessful() && get.isPartialContent()) {
             modelUpdater.expectingBytes(contentLength != null ? contentLength : 0);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile(), true), fileSize, contentLength);
@@ -180,6 +183,7 @@ public class DownloadExecutor implements Runnable {
 
         Get get = new Get(download.getUrl());
         InputStream inputStream = get.executeAsStream(true);
+        log.info(format("Download %s successful: %s", download.getUrl(), get.isSuccessful()));
         if (get.isSuccessful()) {
             modelUpdater.expectingBytes(contentLength != null ? contentLength : 0);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0, contentLength);
@@ -190,6 +194,7 @@ public class DownloadExecutor implements Runnable {
 
     private void postProcess() throws IOException {
         updateState(download, Processing);
+        log.info(format("Post processing download from %s", download.getUrl()));
 
         Action action = download.getAction();
         switch (action) {
