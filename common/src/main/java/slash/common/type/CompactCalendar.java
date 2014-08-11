@@ -185,6 +185,8 @@ public class CompactCalendar {
     }
 
     public String toString() {
-        return DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(getTime());
+        DateFormat format = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+        format.setTimeZone(getTimeZone());
+        return format.format(getTime()) + " " + format.getTimeZone().getID();
     }
 }

@@ -31,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -49,6 +50,10 @@ public class RouteServiceOperator {
     public RouteServiceOperator(JFrame frame, RouteFeedback routeFeedback) {
         this.frame = frame;
         this.routeFeedback = routeFeedback;
+    }
+
+    public RouteFeedback getRouteFeedback() {
+        return routeFeedback;
     }
 
     public boolean showLogin() {
@@ -93,7 +98,7 @@ public class RouteServiceOperator {
                             final boolean[] showedLogin = new boolean[1];
                             showedLogin[0] = false;
 
-                            SwingUtilities.invokeAndWait(new Runnable() {
+                            invokeAndWait(new Runnable() {
                                 public void run() {
                                     showedLogin[0] = showLogin();
                                 }

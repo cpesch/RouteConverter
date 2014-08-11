@@ -20,17 +20,12 @@
 
 package slash.navigation.download;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.download.actions.Checksum;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static java.io.File.createTempFile;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.common.io.Files.getExtension;
-import static slash.common.io.Files.removeExtension;
-import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.State.Queued;
 
 /**
@@ -41,50 +36,44 @@ import static slash.navigation.download.State.Queued;
 
 public class Download {
     private final String description, url;
-    private final Checksum checksum;
-    private CompactCalendar lastSync;
+    private String eTag;
     private final Action action;
-    private final File target, tempFile;
-    private CompactCalendar lastModified;
-    private Long contentLength;
+    private final File fileTarget, tempFile;
+    private final List<File> fragmentTargets;
+    private Checksum fileChecksum;
+    private final List<Checksum> fragmentChecksums;
 
     private State state;
     private long processedBytes;
     private Long expectedBytes;
 
-    public Download(String description, String url, Checksum checksum,
-                    Action action, File target, CompactCalendar lastSync, State state, File tempFile,
-                    CompactCalendar lastModified, Long contentLength) {
+    public Download(String description, String url, Action action, File fileTarget, Checksum fileChecksum,
+                    List<File> fragmentTargets, List<Checksum> fragmentChecksums, String eTag, State state, File tempFile) {
         this.description = description;
         this.url = url;
-        this.checksum = checksum;
-
         this.action = action;
-        this.target = target;
-        this.lastSync = lastSync;
+        this.fileTarget = fileTarget;
+        this.fileChecksum = fileChecksum;
+        this.fragmentTargets = fragmentTargets;
+        this.fragmentChecksums = fragmentChecksums;
+        setETag(eTag);
         this.state = state;
         this.tempFile = tempFile;
-        this.lastModified = lastModified;
-        this.contentLength = contentLength;
     }
 
-    public Download(String description, String url, Checksum checksum, Action action, File target) {
-        this(description, url, checksum, action, target, now(), Queued, newTempFile(target, action), null, null);
+    public Download(String description, String url, Action action, String eTag, File fileTarget, Checksum fileChecksum,
+                    List<File> fragmentTargets, List<Checksum> fragmentChecksums) {
+        this(description, url, action, fileTarget, fileChecksum, fragmentTargets, fragmentChecksums, eTag, Queued, newTempFile());
     }
 
-    private static File newTempFile(File target, Action action) {
+    private static File newTempFile() {
         try {
-            switch (action) {
-                case Copy:
-                    return createTempFile(removeExtension(target.getName()) + "-", getExtension(target), getTemporaryDirectory());
-                case Flatten:
-                case Extract:
-                    return createTempFile(target.getName() + "-", ".zip", getTemporaryDirectory());
-                default:
-                    throw new IllegalArgumentException("Unknown Action " + action);
-            }
+            File file = createTempFile("download", ".tmp", getTemporaryDirectory());
+            if(!file.delete())
+                throw new IllegalArgumentException("Cannot delete temp file");
+            return file;
         } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot create temp file for " + target, e);
+            throw new IllegalArgumentException("Cannot create temp file", e);
         }
     }
 
@@ -96,24 +85,36 @@ public class Download {
         return url;
     }
 
-    public Checksum getChecksum() {
-        return checksum;
-    }
-
     public Action getAction() {
         return action;
     }
 
-    public File getTarget() {
-        return target;
+    public File getFileTarget() {
+        return fileTarget;
     }
 
-    public CompactCalendar getLastSync() {
-        return lastSync;
+    public Checksum getFileChecksum() {
+        return fileChecksum;
     }
 
-    public void setLastSync(CompactCalendar lastSync) {
-        this.lastSync = lastSync;
+    public void setFileChecksum(Checksum fileChecksum) {
+        this.fileChecksum = fileChecksum;
+    }
+
+    public List<File> getFragmentTargets() {
+        return fragmentTargets;
+    }
+
+    public List<Checksum> getFragmentChecksums() {
+        return fragmentChecksums;
+    }
+
+    public String getETag() {
+        return eTag;
+    }
+
+    void setETag(String eTag) {
+        this.eTag = eTag != null ? eTag.replaceAll("-gzip", "") : null;
     }
 
     public State getState() {
@@ -126,22 +127,6 @@ public class Download {
 
     public File getTempFile() {
         return tempFile;
-    }
-
-    public CompactCalendar getLastModified() {
-        return lastModified;
-    }
-
-    void setLastModified(CompactCalendar lastModified) {
-        this.lastModified = lastModified;
-    }
-
-    public Long getContentLength() {
-        return contentLength;
-    }
-
-    void setContentLength(Long contentLength) {
-        this.contentLength = contentLength;
     }
 
     private static final int UNKNOWN_EXPECTED_BYTES = 1024 * 1024 * 1024;

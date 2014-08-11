@@ -62,7 +62,7 @@ public class DownloadsDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        tableDownloads.setModel(r.getDownloadManager().getModel());
+        tableDownloads.setModel(r.getDataSourceManager().getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "state");
         TableColumnModel columns = tableDownloads.getColumnModel();
@@ -75,7 +75,7 @@ public class DownloadsDialog extends SimpleDialog {
                 column.setMaxWidth(width);
             }
         }
-        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableDownloads.getModel());
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableDownloads.getModel());
         sorter.setSortsOnUpdates(true);
         sorter.setComparator(0, new Comparator<Download>() {
             public int compare(Download d1, Download d2) {

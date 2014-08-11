@@ -159,6 +159,7 @@ public class UpdateChecker {
         private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
         private static final String JAVA6_VERSION_KEY = "java6.version";
         private static final String JAVA7_VERSION_KEY = "java7.version";
+        private static final String JAVA8_VERSION_KEY = "java8.version";
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
@@ -190,7 +191,11 @@ public class UpdateChecker {
         }
 
         public String getLatestJavaVersion() {
-            return getValue(new Version(myJavaVersion).isLaterVersionThan(new Version("1.7.0")) ? JAVA7_VERSION_KEY : JAVA6_VERSION_KEY);
+            Version version = new Version(myJavaVersion);
+            String latestVersionKey = version.isLaterVersionThan(new Version("1.8.0")) ? JAVA8_VERSION_KEY :
+                    version.isLaterVersionThan(new Version("1.7.0")) ? JAVA7_VERSION_KEY :
+                            JAVA6_VERSION_KEY;
+            return getValue(latestVersionKey);
         }
 
         public boolean existsLaterJavaVersion() {

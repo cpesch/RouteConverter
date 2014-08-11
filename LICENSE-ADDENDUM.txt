@@ -4,6 +4,5 @@ underly the Apache License 2 (see LICENSE-APACHE.txt) in addition to GPL 2 (LICE
 * common
 * googlemaps
 * gpx
-* jaxb6
 * kml
 * navigation-formats

@@ -21,27 +21,9 @@
 package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding21.ContainerType;
-import slash.navigation.kml.binding21.DocumentType;
-import slash.navigation.kml.binding21.FeatureType;
-import slash.navigation.kml.binding21.FolderType;
-import slash.navigation.kml.binding21.GeometryType;
-import slash.navigation.kml.binding21.KmlType;
-import slash.navigation.kml.binding21.LineStringType;
-import slash.navigation.kml.binding21.LineStyleType;
-import slash.navigation.kml.binding21.LinkType;
-import slash.navigation.kml.binding21.MultiGeometryType;
-import slash.navigation.kml.binding21.NetworkLinkType;
-import slash.navigation.kml.binding21.ObjectFactory;
-import slash.navigation.kml.binding21.PlacemarkType;
-import slash.navigation.kml.binding21.PointType;
-import slash.navigation.kml.binding21.StyleType;
-import slash.navigation.kml.binding21.TimePrimitiveType;
-import slash.navigation.kml.binding21.TimeSpanType;
-import slash.navigation.kml.binding21.TimeStampType;
+import slash.navigation.kml.binding21.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -53,6 +35,7 @@ import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.ISO8601.formatDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.kml.KmlUtil.marshal21;
@@ -226,7 +209,7 @@ public class Kml21Format extends KmlFormat {
             placemarkType.setVisibility(Boolean.FALSE);
             if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
-                timeStampType.setWhen(ISO8601.format(position.getTime()));
+                timeStampType.setWhen(formatDate(position.getTime()));
                 placemarkType.setTimePrimitive(objectFactory.createTimeStamp(timeStampType));
             }
             PointType pointType = objectFactory.createPointType();

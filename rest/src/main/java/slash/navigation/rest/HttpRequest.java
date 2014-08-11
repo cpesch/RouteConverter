@@ -42,9 +42,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
 import java.net.URI;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.http.HttpStatus.*;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static slash.common.io.InputOutput.readBytes;
@@ -116,7 +118,7 @@ public abstract class HttpRequest {
         return false;
     }
 
-    protected HttpResponse doExecute() throws IOException {
+    protected HttpResponse execute() throws IOException {
         try {
             return clientBuilder.build().execute(method, context);
         } catch (SocketException e) {
@@ -127,20 +129,16 @@ public abstract class HttpRequest {
         }
     }
 
-    public String execute() throws IOException {
-        return execute(true);
-    }
-
-    public String execute(boolean logUnsuccessful) throws IOException {
+    public String executeAsString() throws IOException {
         try {
-            this.response = doExecute();
+            this.response = execute();
             // no response body then
             if (isUnAuthorized())
                 return null;
             HttpEntity entity = response.getEntity();
             // HEAD requests don't have a body
             String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
-            if (!isSuccessful() && logUnsuccessful && body != null)
+            if (!isSuccessful() && body != null)
                 log.warning(body);
             return body;
         } finally {
@@ -148,13 +146,14 @@ public abstract class HttpRequest {
         }
     }
 
-    public InputStream executeAsStream(boolean logUnsuccessful) throws IOException {
-        this.response = doExecute();
+    public InputStream executeAsStream() throws IOException {
+        this.response = execute();
         // no response body then
         if (isUnAuthorized())
             return null;
-        InputStream body = response.getEntity().getContent();
-        if (!isSuccessful() && logUnsuccessful)
+        HttpEntity entity = response.getEntity();
+        InputStream body = entity != null ? entity.getContent() : null;
+        if (!isSuccessful() && !isNotModified())
             log.warning(format("Cannot read response body for %s", method.getURI()));
         return body;
     }
@@ -176,6 +175,11 @@ public abstract class HttpRequest {
         return header != null ? header.getValue() : null;
     }
 
+    public/*for tests*/ List<Header> getHeaders() throws IOException {
+        assertExecuted();
+        return asList(response.getAllHeaders());
+    }
+
     public int getStatusCode() throws IOException {
         assertExecuted();
         return response.getStatusLine().getStatusCode();
@@ -187,6 +191,10 @@ public abstract class HttpRequest {
 
     public boolean isOk() throws IOException {
         return getStatusCode() == SC_OK;
+    }
+
+    public boolean isNotModified() throws IOException {
+        return getStatusCode() == SC_NOT_MODIFIED;
     }
 
     public boolean isPartialContent() throws IOException {

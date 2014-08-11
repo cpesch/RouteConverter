@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -42,8 +41,10 @@ import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.datasources.DataSourceManager;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -51,6 +52,8 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
+import slash.navigation.hgt.HgtFiles;
+import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
 
 import javax.swing.*;
@@ -156,12 +159,11 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator";
 
-    private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
-    private DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
-    private DataSourceManager dataSourceManager = new DataSourceManager(downloadManager);
-    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade(downloadManager);
+    private DataSourceManager dataSourceManager;
+    private ElevationServiceFacade elevationServiceFacade;
+    private HgtFilesService hgtFilesService;
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
@@ -234,7 +236,7 @@ public class RouteConverter extends SingleFrameApplication {
     private List<String> getLanguagesWithActiveTranslators() {
         List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
                 POLAND, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());
         }
@@ -381,10 +383,10 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
-        getElevationServiceFacade().dispose();
+        hgtFilesService.dispose();
         getBatchPositionAugmenter().dispose();
-        getDownloadManager().dispose();
-        getDownloadManager().saveQueue();
+        getDataSourceManager().getDownloadManager().dispose();
+        getDataSourceManager().getDownloadManager().saveQueue();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -479,7 +481,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     // helpers for external components
 
-    public RouteServiceOperator getOperator() {
+    public RouteServiceOperator getRouteServiceOperator() {
         return routeServiceOperator;
     }
 
@@ -576,13 +578,25 @@ public class RouteConverter extends SingleFrameApplication {
     // helpers for external components
 
     public void sendErrorReport(final String log, final String description, final File file) {
-        getOperator().executeOperation(new RouteServiceOperator.Operation() {
+        getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "SendErrorReport";
             }
 
             public void run() throws IOException {
-                routeFeedback.sendErrorReport(log, description, file);
+                getRouteServiceOperator().getRouteFeedback().sendErrorReport(log, description, file);
+            }
+        });
+    }
+
+    public void sendChecksums(final DataSource dataSource, final Download download) {
+        getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
+            public String getName() {
+                return "SendChecksums";
+            }
+
+            public void run() throws IOException {
+                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, download.getUrl());
             }
         });
     }
@@ -629,10 +643,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public RoutingServiceFacade getRoutingServiceFacade() {
         return routingServiceFacade;
-    }
-
-    public DownloadManager getDownloadManager() {
-        return downloadManager;
     }
 
     public DataSourceManager getDataSourceManager() {
@@ -806,8 +816,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private class LazyTabInitializer implements ChangeListener {
-        private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
-        private Map<Component, PanelInTab> initialized = new HashMap<Component, PanelInTab>();
+        private Map<Component, Runnable> lazyInitializers = new HashMap<>();
+        private Map<Component, PanelInTab> initialized = new HashMap<>();
 
         LazyTabInitializer() {
             lazyInitializers.put(convertPanel, new Runnable() {
@@ -933,9 +943,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void initializeRouteConverterServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
+        DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
+        downloadManager.getModel().addTableModelListener(new ChecksumSender());
+        dataSourceManager = new DataSourceManager(downloadManager);
+        hgtFilesService = new HgtFilesService(dataSourceManager);
+        elevationServiceFacade = new ElevationServiceFacade();
     }
 
     private void initializeActions() {
@@ -988,8 +1003,8 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDownloadManager() {
         new Thread(new Runnable() {
             public void run() {
-                getDownloadManager().loadQueue();
-                /*
+                getDataSourceManager().getDownloadManager().loadQueue();
+
                 try {
                     getDataSourceManager().initialize(getEdition());
                 } catch (final Exception e) {
@@ -1001,7 +1016,11 @@ public class RouteConverter extends SingleFrameApplication {
                         }
                     });
                 }
-                */
+
+                hgtFilesService.initialize();
+                for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
+                    getElevationServiceFacade().addElevationService(hgtFile);
+
             }
         }, "DownloadManagerInitializer").start();
     }
@@ -1040,4 +1059,5 @@ public class RouteConverter extends SingleFrameApplication {
             profileView.print();
         }
     }
+
 }

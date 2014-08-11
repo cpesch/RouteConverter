@@ -52,7 +52,7 @@ public class EarthToolsService implements ElevationService {
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
         Get get = new Get(getEarthToolsUrlPreference() + "height/" + latitude + "/" + longitude);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
                 Height height = unmarshal(result);

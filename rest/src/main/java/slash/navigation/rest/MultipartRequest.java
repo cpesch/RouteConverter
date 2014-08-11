@@ -66,16 +66,22 @@ abstract class MultipartRequest extends HttpRequest {
         getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(value.getName()));
     }
 
+    public void addFile(String name, byte[] value) throws IOException {
+        if (value.length > 4096)
+            containsFileLargerThan4k = true;
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(name + ".xml"));
+    }
+
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return containsFileLargerThan4k;
     }
 
-    protected HttpResponse doExecute() throws IOException {
+    protected HttpResponse execute() throws IOException {
         if (builder != null) {
             HttpEntity entity = builder.build();
             getHttpEntityEnclosingRequestBase().setEntity(entity);
         }
-        return super.doExecute();
+        return super.execute();
     }
 
     public String getLocation() throws IOException {

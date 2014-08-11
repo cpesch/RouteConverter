@@ -23,6 +23,7 @@ package slash.common.io;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.type.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,9 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.calendar;
 import static slash.common.io.Files.*;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 public class FilesTest {
     private File file;
@@ -134,18 +137,21 @@ public class FilesTest {
             calculateConvertFileName(file, 10000, 10000, "gpx", 64);
             assertTrue("IllegalArgumentException expected", false);
         } catch (IllegalArgumentException e) {
+            // intentionally left empty
         }
 
         try {
             calculateConvertFileName(file, 5000, 10000, "gpx", 64);
             assertTrue("IllegalArgumentException expected", false);
         } catch (IllegalArgumentException e) {
+            // intentionally left empty
         }
 
         try {
             calculateConvertFileName(file, 1001, 999, "gpx", 64);
             assertTrue("IllegalArgumentException expected", false);
         } catch (IllegalArgumentException e) {
+            // intentionally left empty
         }
     }
 
@@ -182,5 +188,17 @@ public class FilesTest {
         assertEquals(11, lastPathFragment("superlongfilenameforfile.gpx", 11).length());
         assertEquals("...l=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12",
                 lastPathFragment("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.0831601,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12", 60));
+    }
+
+    @Test
+    public void testLastModified() throws IOException {
+        CompactCalendar actual = getLastModified(file);
+        assertEquals("UTC", actual.getTimeZoneId());
+        assertEquals(fromMillis(file.lastModified()), actual);
+
+        setLastModified(file, calendar(2010, 4, 12, 14, 41, 15, 0, "GMT+1"));
+        CompactCalendar expected = calendar(2010, 4, 12, 13, 41, 15, 0, "UTC");
+        assertEquals(expected, getLastModified(file));
+        assertEquals(expected.getTimeInMillis(), file.lastModified());
     }
 }

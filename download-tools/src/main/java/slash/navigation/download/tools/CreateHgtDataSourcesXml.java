@@ -19,13 +19,15 @@
 */
 package slash.navigation.download.tools;
 
-import slash.navigation.download.datasources.binding.FileType;
-import slash.navigation.download.datasources.binding.FragmentType;
-import slash.navigation.download.datasources.binding.MapType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,9 +55,9 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
         return matcher.group(1).toUpperCase();
     }
 
-    protected void parseFile(File file, List<FileType> fileTypes, List<FragmentType> fragmentTypes, List<MapType> mapTypes, File baseDirectory) throws IOException {
+    protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        fileTypes.add(createFileType(uri, file, null, true, true));
+        List<FragmentType> fragmentTypes = new ArrayList<>();
 
         ZipInputStream zipInputStream = null;
         try {
@@ -66,7 +68,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
                     String key = extractKey(entry.getName());
                     if (key != null) {
                         System.out.println(getClass().getSimpleName() + ": " + key + " maps to " + uri);
-                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream, false));
+                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();
@@ -78,6 +80,10 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
             if (zipInputStream != null)
                 closeQuietly(zipInputStream);
         }
+
+        FileType fileType = createFileType(uri, file, null);
+        fileType.getFragment().addAll(sortFragmentTypes(fragmentTypes));
+        fileTypes.add(fileType);
     }
 
     public static void main(String[] args) throws Exception {

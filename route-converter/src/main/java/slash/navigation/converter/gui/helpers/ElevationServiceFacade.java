@@ -50,20 +50,12 @@ public class ElevationServiceFacade {
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
-    private final HgtFilesService hgtFilesService;
-    private boolean loggedFailedElevationServiceWarning = false;
+    private boolean loggedFailedWarning = false;
 
-    public ElevationServiceFacade(DownloadManager downloadManager) {
-        hgtFilesService = new HgtFilesService(downloadManager);
-        for(HgtFiles hgtFile : hgtFilesService.getHgtFiles())
-            addElevationService(hgtFile);
+    public ElevationServiceFacade() {
         elevationServices.add(new GeoNamesService());
         elevationServices.add(new GoogleMapsService());
         elevationServices.add(new EarthToolsService());
-    }
-
-    public void dispose() {
-        hgtFilesService.dispose();
     }
 
     public void addElevationService(ElevationService elevationService) {
@@ -83,9 +75,9 @@ public class ElevationServiceFacade {
                 return service;
         }
 
-        if(!loggedFailedElevationServiceWarning) {
+        if(!loggedFailedWarning) {
             log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
-            loggedFailedElevationServiceWarning = true;
+            loggedFailedWarning = true;
         }
         return firstElevationService;
     }

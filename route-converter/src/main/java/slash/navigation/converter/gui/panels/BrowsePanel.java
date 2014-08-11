@@ -309,7 +309,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private RouteServiceOperator getOperator() {
-        return RouteConverter.getInstance().getOperator();
+        return RouteConverter.getInstance().getRouteServiceOperator();
     }
 
 

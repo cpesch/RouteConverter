@@ -184,7 +184,7 @@ public abstract class RouteCatalogClientBase {
 
     private void forceDeleteCategory(String categoryName) {
         try {
-            deleteCategory(categoryName).execute(false);
+            deleteCategory(categoryName).executeAsString();
         } catch (IOException e) {
             // intentionally left empty
         }
@@ -194,9 +194,8 @@ public abstract class RouteCatalogClientBase {
     protected Post createRoute(String category, Integer fileKey, String description,
                                String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createRouteXml(category, fileKey, description);
-
         Post request = new Post(ROUTES_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -219,9 +218,8 @@ public abstract class RouteCatalogClientBase {
                               String firstName, String lastName, String email,
                               String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createUserXml(userName, password, firstName, lastName, email);
-
         Post request = new Post(POST_USERS_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -236,7 +234,7 @@ public abstract class RouteCatalogClientBase {
 
     private void forceDeleteUser(String userName) {
         try {
-            deleteUser(userName).execute(false);
+            deleteUser(userName).executeAsString();
         } catch (IOException e) {
             // intentionally left empty
         }

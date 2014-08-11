@@ -38,9 +38,8 @@ public class RouteIT extends RouteCatalogClientBase {
     private Put updateRoute(int routeKey, String category, Integer fileKey, String description,
                             String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createRouteXml(category, fileKey, description);
-
         Put request = new Put(ROUTES_URL + routeKey + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -59,12 +58,12 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testCreateFromJAXB() throws Exception {
         Post request1 = createFile("filestest.gpx");
-        request1.execute();
+        request1.executeAsString();
         assertTrue(request1.isSuccessful());
         int key = parseFileKey(request1.getLocation());
 
         Post request2 = createRoute("Upload", key, "Description/" + key);
-        String result = request2.execute();
+        String result = request2.executeAsString();
         assertTrue(result.contains("route"));
         assertTrue(result.contains("created"));
         String location = request2.getLocation();
@@ -76,7 +75,7 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testCreateWithInvalidCategory() throws Exception {
         Post request1 = createRoute("Invalid category " + System.currentTimeMillis(), -1, "Description");
-        String result = request1.execute();
+        String result = request1.executeAsString();
         assertTrue(result.contains("no"));
         assertTrue(result.contains("valid"));
         assertTrue(result.contains("category"));
@@ -87,15 +86,15 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testRead() throws Exception {
         Post request1 = createFile("filestest.gpx");
-        request1.execute();
+        request1.executeAsString();
         int fileKey = parseFileKey(request1.getLocation());
 
         Post request2 = createRoute("Upload", fileKey, "Description" + fileKey);
-        request2.execute();
+        request2.executeAsString();
         int routeKey = parseRouteKey(request2.getLocation());
 
         HttpRequest request3 = readRoute(routeKey);
-        String result2 = request3.execute();
+        String result2 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
 
@@ -123,19 +122,19 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testUpdate() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, "Upload", -2, "Updated description", USERNAME, PASSWORD);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("route " + routeKey + " updated", result2);
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readRoute(routeKey);
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
         GpxType gpxType = GpxUtil.unmarshal11(result3);
@@ -145,14 +144,14 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, "Upload", -2, "Updated description", "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -160,17 +159,17 @@ public class RouteIT extends RouteCatalogClientBase {
 
     @Test
     public void testUpdateNotMyUser() throws Exception {
-        createUser("alif", "toop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "toop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
 
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, "Upload", -2, "Updated description", "alif", "toop");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());
@@ -179,16 +178,16 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithoutFile() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        String result1 = request1.execute();
+        String result1 = request1.executeAsString();
         assertTrue(result1.contains("route"));
         assertTrue(result1.contains("created"));
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, "Upload", null, "Updated description");
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertTrue(result2.contains("no"));
         assertTrue(result2.contains("url"));
         assertTrue(result2.contains("given"));
@@ -199,16 +198,16 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithoutCategory() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        String result1 = request1.execute();
+        String result1 = request1.executeAsString();
         assertTrue(result1.contains("route"));
         assertTrue(result1.contains("created"));
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, null, fileKey, "Updated description");
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertTrue(result2.contains("no"));
         assertTrue(result2.contains("category"));
         assertTrue(result2.contains("given"));
@@ -219,16 +218,16 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testUpdateWithInvalidCategory() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        String result1 = request1.execute();
+        String result1 = request1.executeAsString();
         assertTrue(result1.contains("route"));
         assertTrue(result1.contains("created"));
         int routeKey = parseRouteKey(request1.getLocation());
         HttpRequest request2 = updateRoute(routeKey, "Invalid category " + System.currentTimeMillis(), fileKey, "Updated description");
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertTrue(result2.contains("no"));
         assertTrue(result2.contains("valid"));
         assertTrue(result2.contains("category"));
@@ -239,19 +238,19 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testDelete() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int key = parseRouteKey(request1.getLocation());
         HttpRequest request2 = deleteRoute(key);
-        String result2 = request2.execute();
+        String result2 = request2.executeAsString();
         assertEquals("route " + key + " deleted", result2);
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
         HttpRequest request3 = readRoute(key);
-        String result3 = request3.execute();
+        String result3 = request3.executeAsString();
         assertNotNull(result3);
         assertEquals(404, request3.getStatusCode());
         assertFalse(request3.isSuccessful());
@@ -260,14 +259,14 @@ public class RouteIT extends RouteCatalogClientBase {
     @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int key = parseRouteKey(request1.getLocation());
         HttpRequest request2 = deleteRoute(key, "user-does-not-exist", "password-is-wrong");
-        assertNull(request2.execute());
+        assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isUnAuthorized());
@@ -275,17 +274,17 @@ public class RouteIT extends RouteCatalogClientBase {
 
     @Test
     public void testDeleteNotMyUser() throws Exception {
-        createUser("alif", "topg", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
+        createUser("alif", "topg", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).executeAsString();
 
         Post request0 = createFile("filestest.gpx");
-        request0.execute();
+        request0.executeAsString();
         int fileKey = parseFileKey(request0.getLocation());
 
         Post request1 = createRoute("Upload", fileKey, "Description");
-        request1.execute();
+        request1.executeAsString();
         int key = parseRouteKey(request1.getLocation());
         HttpRequest request2 = deleteRoute(key, "alif", "topg");
-        request2.execute();
+        request2.executeAsString();
         assertEquals(403, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
         assertTrue(request2.isForbidden());

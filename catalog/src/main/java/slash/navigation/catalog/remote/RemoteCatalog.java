@@ -24,16 +24,8 @@ import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.exception.NotFoundException;
 import slash.navigation.catalog.domain.exception.NotOwnerException;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.LinkType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.binding11.RteType;
-import slash.navigation.rest.Credentials;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
+import slash.navigation.gpx.binding11.*;
+import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
@@ -43,7 +35,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 
-import static slash.common.io.Files.writeToTempFile;
 import static slash.common.io.Transfer.asUtf8;
 import static slash.common.io.Transfer.decodeUri;
 import static slash.navigation.gpx.GpxUtil.marshal11;
@@ -77,7 +68,7 @@ public class RemoteCatalog implements Catalog {
     GpxType fetchGpx(String url) throws IOException {
         log.fine("Fetching gpx from " + url);
         Get get = new Get(url);
-        String result = get.execute();
+        String result = get.executeAsString();
         if (get.isSuccessful())
             try {
                 return unmarshal11(result);
@@ -159,13 +150,13 @@ public class RemoteCatalog implements Catalog {
         log.fine("Adding " + name + " to " + categoryUrl);
         String xml = createCategoryXml(null, name);
         Post request = new Post(categoryUrl, credentials);
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
     String addCategory(String categoryUrl, String name) throws IOException {
         Post request = prepareAddCategory(categoryUrl, name);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add category " + name, categoryUrl);
         if (request.isNotFound())
@@ -181,13 +172,13 @@ public class RemoteCatalog implements Catalog {
         log.fine("Updating " + categoryUrl + " to " + parentUrl + " with name " + name);
         String xml = createCategoryXml(parentUrl, name);
         Put request = new Put(categoryUrl, credentials);
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
     String updateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
         Put request = prepareUpdateCategory(categoryUrl, parentUrl, name);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot update category to " + name, categoryUrl);
         if (request.isNotFound())
@@ -201,7 +192,7 @@ public class RemoteCatalog implements Catalog {
 
     void deleteCategory(String categoryUrl) throws IOException {
         Delete request = prepareDelete(categoryUrl);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot delete category", categoryUrl);
         if (request.isNotFound())
@@ -225,7 +216,7 @@ public class RemoteCatalog implements Catalog {
 
     public String addFile(File file) throws IOException {
         Post request = prepareAddFile(file);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add file " + file.getAbsolutePath(), getFilesUrl());
         if (request.isForbidden())
@@ -242,7 +233,7 @@ public class RemoteCatalog implements Catalog {
         }
 
         Delete request = prepareDelete(fileUrl);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot delete file", fileUrl);
         if (request.isNotFound())
@@ -261,7 +252,7 @@ public class RemoteCatalog implements Catalog {
         log.fine("Adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Post request = new Post(getRoutesUrl(), credentials);
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -269,7 +260,7 @@ public class RemoteCatalog implements Catalog {
         log.fine("Updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Put request = new Put(routeUrl, credentials);
-        request.addFile("file", writeToTempFile(xml));
+        request.addFile("file", xml.getBytes());
         return request;
     }
 
@@ -283,7 +274,7 @@ public class RemoteCatalog implements Catalog {
 
     public String addRoute(String categoryUrl, String description, String fileUrl) throws IOException {
         Post request = prepareAddRoute(categoryUrl, description, fileUrl);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add route " + description, getRoutesUrl());
         if (request.isForbidden())
@@ -295,7 +286,7 @@ public class RemoteCatalog implements Catalog {
 
     public void updateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
         Put request = prepareUpdateRoute(categoryUrl, routeUrl, description, fileUrl);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot update route to " + description, routeUrl);
         if (request.isNotFound())
@@ -308,7 +299,7 @@ public class RemoteCatalog implements Catalog {
 
     void deleteRoute(String routeUrl) throws IOException {
         Delete request = prepareDelete(routeUrl);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot delete route", routeUrl);
         if (request.isNotFound())
