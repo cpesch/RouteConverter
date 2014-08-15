@@ -58,7 +58,7 @@ public class Version {
     public String getMinor() {
         int dot = version.indexOf('.');
         if (dot != -1)
-            version = version.substring(dot + 1);
+            return version.substring(dot + 1);
         return version;
     }
 
