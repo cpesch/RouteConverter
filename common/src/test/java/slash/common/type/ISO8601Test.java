@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
+import static slash.common.type.ISO8601.formatDate;
 import static slash.common.type.ISO8601.parseDate;
 
 public class ISO8601Test {
@@ -68,9 +69,9 @@ public class ISO8601Test {
         String string = "2007-03-04T14:49:05Z";
         Calendar actual = parseDate(string);
         Calendar expected = calendar(2007, 3, 4, 14, 49, 5).getCalendar();
-        assertEquals(string, ISO8601.formatDate(actual, false));
-        assertEquals(ISO8601.formatDate(expected, false), ISO8601.formatDate(actual, false));
-        assertEquals(ISO8601.formatDate(expected, true), ISO8601.formatDate(actual, true));
+        assertEquals(string, formatDate(actual, false));
+        assertEquals(formatDate(expected, false), formatDate(actual, false));
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
     }
 
     @Test
@@ -80,27 +81,27 @@ public class ISO8601Test {
         Calendar expected = calendar(2007, 3, 4, 14, 49, 5).getCalendar();
         String[] ids = TimeZone.getAvailableIDs((3 * 3600 + 30 * 60) * 1000);
         expected.setTimeZone(TimeZone.getTimeZone(ids[0]));
-        assertEquals(string, ISO8601.formatDate(actual, false));
+        assertEquals(string, formatDate(actual, false));
     }
 
     @Test
     public void testFormatWithMilliSeconds1() {
         Calendar actual = parseDate("2010-09-18T03:13:32.2Z");
         Calendar expected = calendar(2010, 9, 18, 3, 13, 32, 200).getCalendar();
-        assertEquals(ISO8601.formatDate(expected, true), ISO8601.formatDate(actual, true));
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
     }
 
     @Test
     public void testFormatWithMilliSeconds2() {
         Calendar actual = parseDate("2010-09-18T03:13:32.29Z");
         Calendar expected = calendar(2010, 9, 18, 3, 13, 32, 290).getCalendar();
-        assertEquals(ISO8601.formatDate(expected, true), ISO8601.formatDate(actual, true));
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
     }
 
     @Test
     public void testFormatWithMilliSeconds3() {
         Calendar actual = parseDate("2010-09-18T03:13:32.293Z");
         Calendar expected = calendar(2010, 9, 18, 3, 13, 32, 293).getCalendar();
-        assertEquals(ISO8601.formatDate(expected, true), ISO8601.formatDate(actual, true));
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
     }
 }

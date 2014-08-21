@@ -24,9 +24,12 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import static java.lang.Character.isDigit;
+import static java.lang.Integer.parseInt;
 import static java.util.Calendar.*;
 import static java.util.GregorianCalendar.AD;
 import static java.util.GregorianCalendar.BC;
+import static java.util.TimeZone.getTimeZone;
 import static slash.common.type.CompactCalendar.UTC;
 
 /**
@@ -36,7 +39,7 @@ import static slash.common.type.CompactCalendar.UTC;
  * <p/>
  * The currently supported format is:
  * <pre>
- *   &plusmn;YYYY-MM-DDThh:mm:ss[.SSS]
+ *   &plusmn;YYYY-MM-DDThh:mm:ss[.SSS]TZD
  * </pre>
  * where:
  * <pre>
@@ -50,15 +53,13 @@ import static slash.common.type.CompactCalendar.UTC;
  *   mm    = two digits of minute (00 through 59)
  *   ss    = two digits of second (00 through 59)
  *   SSS   = optionally: three digits of milliseconds (000 through 999)
+ *   TZD   = time zone designator (Z or +hh:mm or -hh:mm)
  * </pre>
  *
  * @author Unknown
  */
 
 public final class ISO8601 {
-    /**
-     * misc. numeric formats used in formatting
-     */
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXX_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
@@ -102,7 +103,7 @@ public final class ISO8601 {
         int year, month, day, hour, minutes, seconds, milliseconds = 0;
         try {
             // year (YYYY)
-            year = Integer.parseInt(text.substring(start, start + 4));
+            year = parseInt(text.substring(start, start + 4));
             start += 4;
             // delimiter '-'
             if (text.charAt(start) != '-') {
@@ -110,7 +111,7 @@ public final class ISO8601 {
             }
             start++;
             // month (MM)
-            month = Integer.parseInt(text.substring(start, start + 2));
+            month = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter '-'
             if (text.charAt(start) != '-') {
@@ -118,7 +119,7 @@ public final class ISO8601 {
             }
             start++;
             // day (DD)
-            day = Integer.parseInt(text.substring(start, start + 2));
+            day = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter 'T'
             if (text.charAt(start) != 'T') {
@@ -126,7 +127,7 @@ public final class ISO8601 {
             }
             start++;
             // hour (hh)
-            hour = Integer.parseInt(text.substring(start, start + 2));
+            hour = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter ':'
             if (text.charAt(start) != ':') {
@@ -134,7 +135,7 @@ public final class ISO8601 {
             }
             start++;
             // minute (mm)
-            minutes = Integer.parseInt(text.substring(start, start + 2));
+            minutes = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter ':'
             if (text.charAt(start) != ':') {
@@ -142,7 +143,7 @@ public final class ISO8601 {
             }
             start++;
             // second (ss)
-            seconds = Integer.parseInt(text.substring(start, start + 2));
+            seconds = parseInt(text.substring(start, start + 2));
             start += 2;
 
             // delimiter '.' 'Z' '+' (or 'T')
@@ -152,7 +153,7 @@ public final class ISO8601 {
                 StringBuilder buffer = new StringBuilder();
                 while (true) {
                     delimiter = text.charAt(start++);
-                    if (Character.isDigit(delimiter))
+                    if (isDigit(delimiter))
                         buffer.append(delimiter);
                     else
                         break;
@@ -160,17 +161,17 @@ public final class ISO8601 {
                 while (buffer.length() < 3) {
                     buffer.append('0');
                 }
-                milliseconds = Integer.parseInt(buffer.toString());
+                milliseconds = parseInt(buffer.toString());
             }
 
             if (delimiter == 'T')
                 delimiter = '+';
             if (delimiter == 'Z') {
-                timeZone = CompactCalendar.UTC;
+                timeZone = UTC;
             } else if (delimiter == '+' || delimiter == '-') {
-                // delimiter hour (hh)  ':' minute (mm)
+                // delimiter hour (hh) ':' minute (mm)
                 String tzString = text.substring(start, start + 5);
-                timeZone = TimeZone.getTimeZone("GMT" + delimiter + tzString);
+                timeZone = getTimeZone("GMT" + delimiter + tzString);
             } else
                 return null;
         } catch (IndexOutOfBoundsException e) {
