@@ -266,10 +266,13 @@
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
         <module>RouteConverterLinux64</module>
+        <module>RouteConverterLinuxOffline</module>
         <module>RouteConverterMac</module>
         <module>RouteConverterMac64</module>
+        <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindows</module>
         <module>RouteConverterWindows64</module>
+        <module>RouteConverterWindowsOffline</module>
         <module>RouteConverterWebstart</module>
     </modules>
 </project>

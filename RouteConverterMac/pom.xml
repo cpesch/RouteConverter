@@ -125,12 +125,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapsforge-mapview</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- TODO remove swt-mapview dependencies
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>swt-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -148,10 +142,9 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <classifier>stripped</classifier>
         </dependency>
-        -->
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>
             <artifactId>mac.os_x.x86</artifactId>
