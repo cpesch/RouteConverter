@@ -44,7 +44,6 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        //noinspection MagicConstant
         label.setHorizontalAlignment(alignment);
         NavigationPosition position = BaseNavigationPosition.class.cast(value);
         formatCell(label, position);
