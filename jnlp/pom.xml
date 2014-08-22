@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jnlp</artifactId>
     <packaging>jar</packaging>
-    <name>Encapsulate Java Network Launching Protocol (JNLP) access</name>
+    <name>Access to Java Network Launching Protocol (JNLP)</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
