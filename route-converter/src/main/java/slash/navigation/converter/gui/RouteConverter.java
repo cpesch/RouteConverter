@@ -947,7 +947,8 @@ public class RouteConverter extends SingleFrameApplication {
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
         DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
-        downloadManager.getModel().addTableModelListener(new ChecksumSender());
+        downloadManager.addDownloadListener(new ChecksumSender());
+        downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
         elevationServiceFacade = new ElevationServiceFacade();

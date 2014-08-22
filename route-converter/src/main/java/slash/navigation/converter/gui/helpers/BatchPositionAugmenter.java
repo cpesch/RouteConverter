@@ -29,10 +29,13 @@ import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
+import slash.navigation.gui.notifications.NotificationManager;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -53,12 +56,7 @@ import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.intrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -82,7 +80,7 @@ public class BatchPositionAugmenter {
     private final ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
     private final GoogleMapsService googleMapsService = new GoogleMapsService();
     private final GeoNamesService geonamesService = new GeoNamesService();
-    private static final Object mutex = new Object();
+    private static final Object notificationMutex = new Object();
     private boolean running = true;
 
     public BatchPositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame) {
@@ -92,7 +90,7 @@ public class BatchPositionAugmenter {
     }
 
     public void interrupt() {
-        synchronized (mutex) {
+        synchronized (notificationMutex) {
             this.running = false;
         }
     }
@@ -100,6 +98,7 @@ public class BatchPositionAugmenter {
     public void dispose() {
         executor.shutdownNow();
     }
+
 
     private interface OverwritePredicate {
         boolean shouldOverwrite(NavigationPosition position);
@@ -126,26 +125,38 @@ public class BatchPositionAugmenter {
         String getErrorMessage();
     }
 
+
+    private NotificationManager getNotificationManager() {
+        return Application.getInstance().getContext().getNotificationManager();
+    }
+
+    private class CancelAction extends AbstractAction {
+        private boolean canceled = false;
+
+        public boolean isCanceled() {
+            return canceled;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            this.canceled = true;
+        }
+    }
+
     private void executeOperation(final JTable positionsTable,
                                   final PositionsModel positionsModel,
                                   final int[] rows,
                                   final boolean slowOperation,
                                   final OverwritePredicate predicate,
                                   final Operation operation) {
-        synchronized (mutex) {
+        synchronized (notificationMutex) {
             this.running = true;
         }
 
         startWaitCursor(frame.getRootPane());
-        final ProgressMonitor progress = new ProgressMonitor(frame, "", RouteConverter.getBundle().getString("progress-started"), 0, 100);
+        final CancelAction cancelAction = new CancelAction();
         executor.execute(new Runnable() {
             public void run() {
                 try {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            progress.setNote(RouteConverter.getBundle().getString("progress-downloading"));
-                        }
-                    });
                     operation.performOnStart();
 
                     final Exception[] lastException = new Exception[1];
@@ -171,10 +182,8 @@ public class BatchPositionAugmenter {
                             invokeLater(new Runnable() {
                                 public void run() {
                                     int percent = count++ * 100 / rows.length;
-                                    progress.setNote(MessageFormat.format(
-                                            RouteConverter.getBundle().getString("progress-processing-position"),
-                                            index, percent));
-                                    progress.setProgress(percent);
+                                    getNotificationManager().showNotification(MessageFormat.format(
+                                            RouteConverter.getBundle().getString("augment-progressed"), percent), cancelAction);
                                 }
                             });
                         }
@@ -191,8 +200,8 @@ public class BatchPositionAugmenter {
                         }
 
                         public boolean isInterrupted() {
-                            synchronized (mutex) {
-                                return progress.isCanceled() || !running;
+                            synchronized (notificationMutex) {
+                                return cancelAction.isCanceled() || !running;
                             }
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
@@ -205,15 +214,14 @@ public class BatchPositionAugmenter {
                     invokeLater(new Runnable() {
                         public void run() {
                             stopWaitCursor(frame.getRootPane());
-                            progress.setNote(RouteConverter.getBundle().getString("progress-finished"));
-                            progress.setProgress(progress.getMaximum());
+                            getNotificationManager().showNotification(MessageFormat.format(
+                                    RouteConverter.getBundle().getString("augment-completed"), rows.length), null);
                         }
                     });
                 }
             }
         });
     }
-
 
     private void processCoordinates(final JTable positionsTable,
                                     final PositionsModel positionsModel,
@@ -292,7 +300,7 @@ public class BatchPositionAugmenter {
     private void downloadElevationData(int[] rows) {
         if (!elevationServiceFacade.isDownload())
             return;
-        List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<LongitudeAndLatitude>();
+        List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
         for (int row : rows) {
             NavigationPosition position = positionsModel.getPosition(row);
             if (position.hasCoordinates())
@@ -548,8 +556,8 @@ public class BatchPositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        List<Integer> columnIndices = new ArrayList<Integer>(3);
-                        List<Object> columnValues = new ArrayList<Object>(3);
+                        List<Integer> columnIndices = new ArrayList<>(3);
+                        List<Object> columnValues = new ArrayList<>(3);
 
                         if (complementDescription) {
                             String nextDescription = getLocationFor(position);

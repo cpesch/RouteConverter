@@ -68,7 +68,7 @@ public class DataSourceManager {
         String url = System.getProperty("datasources", "http://www.routeconverter.com/datasources/") + "edition/" + uri;
         log.info(format("Downloading edition '%s'", url));
 
-        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Datasources", url, Copy,
+        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources", url, Copy,
                 null, new java.io.File(getTarget(), uri), null, null, null);
         downloadManager.waitForCompletion(asList(download));
 
@@ -87,7 +87,7 @@ public class DataSourceManager {
                 String url = dataSource.getBaseUrl() + file.getUri();
                 log.info(format("Downloading data source '%s'", url));
 
-                Download download = downloadManager.queueForDownload(dataSource.getName() + ": Datasource " + file.getUri(),
+                Download download = downloadManager.queueForDownload(dataSource.getName() + ": Data Source " + file.getUri(),
                         url, Copy, null, new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum(),
                         null, null);
                 downloads.add(download);

@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
@@ -56,6 +57,7 @@ public class DownloadManager {
 
     private final File queueFile;
 
+    private final List<DownloadListener> downloadListeners = new CopyOnWriteArrayList<>();
     private final DownloadTableModel model = new DownloadTableModel();
     private final ThreadPoolExecutor pool;
     private CompactCalendar lastSync;
@@ -118,6 +120,29 @@ public class DownloadManager {
         return model;
     }
 
+    public void addDownloadListener(DownloadListener listener) {
+        downloadListeners.add(listener);
+    }
+
+    void fireDownloadProgressed(Download download) {
+        int percentage = download.getPercentage();
+        for (DownloadListener listener : downloadListeners) {
+            listener.progressed(download, percentage);
+        }
+    }
+
+    void fireDownloadFailed(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.failed(download);
+        }
+    }
+
+    void fireDownloadSucceeded(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.succeeded(download);
+        }
+    }
+
     private void startExecutor(Download download) {
         DownloadExecutor executor = new DownloadExecutor(download, this);
         model.addOrUpdateDownload(download);
@@ -154,6 +179,7 @@ public class DownloadManager {
         }
 
         startExecutor(download);
+        fireDownloadProgressed(download);
         return download;
     }
 
@@ -162,7 +188,7 @@ public class DownloadManager {
         return queueForDownload(new Download(description, url, action, eTag, fileTarget, fileChecksum, fragmentTargets, fragmentChecksums));
     }
 
-    private static final Object LOCK = new Object();
+    private static final Object notificationMutex = new Object();
 
     private boolean isCompleted(Collection<Download> downloads) {
         for (Download download : downloads) {
@@ -173,7 +199,7 @@ public class DownloadManager {
     }
 
     public void waitForCompletion(final Collection<Download> downloads) {
-        if(isCompleted(downloads))
+        if (isCompleted(downloads))
             return;
 
         final boolean[] found = new boolean[1];
@@ -183,14 +209,14 @@ public class DownloadManager {
 
         TableModelListener l = new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     lastEvent[0] = currentTimeMillis();
 
-                    if(!isCompleted(downloads))
+                    if (!isCompleted(downloads))
                         return;
 
                     found[0] = true;
-                    LOCK.notifyAll();
+                    notificationMutex.notifyAll();
                 }
             }
         };
@@ -198,11 +224,11 @@ public class DownloadManager {
         model.addTableModelListener(l);
         try {
             while (true) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     if (found[0] || currentTimeMillis() - lastEvent[0] > WAIT_TIMEOUT)
                         break;
                     try {
-                        LOCK.wait(1000);
+                        notificationMutex.wait(1000);
                     } catch (InterruptedException e) {
                         // intentionally left empty
                     }

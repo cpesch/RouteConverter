@@ -34,7 +34,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class DownloadTableModel extends AbstractTableModel {
-    private List<Download> downloads = new ArrayList<Download>();
+    private List<Download> downloads = new ArrayList<>();
 
     public List<Download> getDownloads() {
         return downloads;

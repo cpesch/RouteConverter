@@ -74,16 +74,16 @@ public class DownloadExecutor implements Runnable {
                 success = download();
             if (success) {
                 if (postProcess())
-                    updateState(download, Succeeded);
+                    succeeded(get.isNotModified());
 
             } else if (get.isNotModified())
                 updateState(download, NotModified);
             else
-                updateState(download, Failed);
+                failed();
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(format("Could not download content from %s: %s", download.getUrl(), e));
-            updateState(download, Failed);
+            failed();
         }
     }
 
@@ -100,6 +100,17 @@ public class DownloadExecutor implements Runnable {
         log.fine(format("State for download from %s changed to %s", download.getUrl(), state));
     }
 
+    private void failed() {
+        updateState(download, Failed);
+        downloadManager.fireDownloadFailed(download);
+    }
+
+    private void succeeded(boolean notModified) {
+        updateState(download, Succeeded);
+        if (!notModified)
+            downloadManager.fireDownloadSucceeded(download);
+    }
+
     private class ModelUpdater implements CopierListener {
         public void expectingBytes(long byteCount) {
             download.setExpectedBytes(byteCount);
@@ -108,6 +119,7 @@ public class DownloadExecutor implements Runnable {
         public void processedBytes(long byteCount) {
             download.setProcessedBytes(byteCount);
             downloadManager.getModel().updateDownload(download);
+            downloadManager.fireDownloadProgressed(download);
         }
     }
 

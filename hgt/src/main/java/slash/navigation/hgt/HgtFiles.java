@@ -158,7 +158,7 @@ public class HgtFiles implements ElevationService {
 
         String uri = file.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, Flatten,
+        return downloadManager.queueForDownload(getName() + ": Elevation Data " + uri, url, Flatten,
                 null, getDirectory(), file.getLatestChecksum(), fragmentTargets, fragmentChecksums);
     }
 }

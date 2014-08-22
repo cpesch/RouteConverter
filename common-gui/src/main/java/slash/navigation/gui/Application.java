@@ -60,7 +60,7 @@ public abstract class Application {
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
 
     Application() {
-        exitListeners = new CopyOnWriteArrayList<ExitListener>();
+        exitListeners = new CopyOnWriteArrayList<>();
         context = new ApplicationContext();
     }
 
@@ -223,6 +223,7 @@ public abstract class Application {
     }
 
     protected void shutdown() {
+        getContext().getNotificationManager().dispose();
     }
 
     void end() {
