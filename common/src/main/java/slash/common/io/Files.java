@@ -312,26 +312,26 @@ public class Files {
      * @param collectDirectories decides whether directories are collected
      * @param collectFiles       decides whether file are collected
      * @param extension          the extension in lower case
-     * @param result             the list to add hits to
+     * @param list               the list to add hits to
      */
     private static void recursiveCollect(File path,
                                          final boolean collectDirectories,
                                          final boolean collectFiles,
                                          final String extension,
-                                         final List<File> result) {
+                                         final List<File> list) {
         if (path.isFile()) {
             if (collectFiles &&
                     (extension == null || getExtension(path).equals(extension)))
-                result.add(path);
+                list.add(path);
 
         } else {
             if (collectDirectories)
-                result.add(path);
+                list.add(path);
 
             //noinspection ResultOfMethodCallIgnored
             path.listFiles(new FileFilter() {
                 public boolean accept(File file) {
-                    recursiveCollect(file, collectDirectories, collectFiles, extension, result);
+                    recursiveCollect(file, collectDirectories, collectFiles, extension, list);
                     return true;
                 }
             });

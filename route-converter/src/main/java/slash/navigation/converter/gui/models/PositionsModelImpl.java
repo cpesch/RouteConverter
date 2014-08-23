@@ -180,7 +180,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         if (rowIndex == getRowCount())
             return;
 
-        if(columnToValues.getNextValues() != null) {
+        if (columnToValues.getNextValues() != null) {
             for (int i = 0; i < columnToValues.getColumnIndices().size(); i++) {
                 int columnIndex = columnToValues.getColumnIndices().get(i);
                 editCell(rowIndex, columnIndex, columnToValues.getNextValues().get(i));
@@ -316,7 +316,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     @SuppressWarnings("unchecked")
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        return asFormatForPositions((List)route.getPositions(), targetFormat);
+        return asFormatForPositions((List) route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {

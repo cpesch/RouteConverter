@@ -42,7 +42,7 @@ public class DataSourceService {
 
     public void load(InputStream inputStream) throws JAXBException {
         DatasourcesType datasourcesType = unmarshal(inputStream);
-        for(DatasourceType datasourceType : datasourcesType.getDatasource())
+        for (DatasourceType datasourceType : datasourcesType.getDatasource())
             dataSources.add(new DataSourceImpl(datasourceType));
     }
 
@@ -53,6 +53,14 @@ public class DataSourceService {
     public DataSource getDataSourceByUrlPrefix(String url) {
         for (DataSource dataSource : getDataSources()) {
             if (url.startsWith(dataSource.getBaseUrl()))
+                return dataSource;
+        }
+        return null;
+    }
+
+    public DataSource getDataSourceById(String id) {
+        for (DataSource dataSource : getDataSources()) {
+            if (id.equals(dataSource.getId()))
                 return dataSource;
         }
         return null;

@@ -63,8 +63,6 @@ import slash.navigation.rest.Credentials;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -102,9 +100,7 @@ import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.download.State.Validating;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
-import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
@@ -170,13 +166,9 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
-    private ElevationServiceFacade elevationServiceFacade;
-    private HgtFilesService hgtFilesService;
-    private DownloadManager downloadManager;
-    private DataSourceManager dataSourceManager;
     private MapManager mapManager;
-    private ElevationServiceFacade elevationServiceFacade;
     private HgtFilesService hgtFilesService;
+    private ElevationServiceFacade elevationServiceFacade;
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
@@ -842,7 +834,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private class LazyTabInitializer implements ChangeListener {
         private Map<Component, Runnable> lazyInitializers = new HashMap<>();
-        private Map<Component, PanelInTab> initialized = new HashMap<Component, PanelInTab>();
+        private Map<Component, PanelInTab> initialized = new HashMap<>();
 
         LazyTabInitializer() {
             lazyInitializers.put(convertPanel, new Runnable() {
@@ -975,37 +967,6 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
-        hgtFilesService = new HgtFilesService(dataSourceManager);
-        elevationServiceFacade = new ElevationServiceFacade();
-        downloadManager = new DownloadManager(getDownloadQueueFile());
-        downloadManager.getModel().addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                if (isFirstToLastRow(e))
-                    return;
-
-                for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
-                    Download download = downloadManager.getModel().getDownloads().get(i);
-                    if (download.getState().equals(Validating)) {
-                        final DataSource dataSource = dataSourceManager.getDataSourceService().getDataSourceByUrl(download.getUrl());
-                        if (dataSource != null) {
-                            getOperator().executeOperation(new RouteServiceOperator.Operation() {
-                                public String getName() {
-                                    return "SendChecksums";
-                                }
-
-                                public void run() throws IOException {
-                                    String result = routeFeedback.sendChecksums(dataSource);
-                                    log.info("Sent checksum for " + dataSource + " with result:\n" + result);
-                                }
-                            });
-
-                        }
-                    }
-                }
-            }
-        });
-
-        dataSourceManager = new DataSourceManager(downloadManager);
         mapManager = new MapManager(dataSourceManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
         elevationServiceFacade = new ElevationServiceFacade();
@@ -1080,17 +1041,12 @@ public class RouteConverter extends SingleFrameApplication {
                 for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
                     getElevationServiceFacade().addElevationService(hgtFile);
 
-
-                hgtFilesService.initialize();
-                for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
-                    getElevationServiceFacade().addElevationService(hgtFile);
-
-                DataSource brouter = dataSourceManager.getDataSourceService().getDataSourceById("brouter");
+                DataSource brouter = getDataSourceManager().getDataSourceService().getDataSourceById("brouter");
                 if (brouter != null)
-                    getRoutingServiceFacade().addRoutingService(new BRouter(brouter, downloadManager));
+                    getRoutingServiceFacade().addRoutingService(new BRouter(brouter, getDataSourceManager().getDownloadManager()));
                 DataSource graphhopper = dataSourceManager.getDataSourceService().getDataSourceById("graphhopper");
                 if (graphhopper != null)
-                    getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, downloadManager));
+                    getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager()));
             }
         }, "DownloadManagerInitializer").start();
     }

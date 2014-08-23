@@ -46,7 +46,7 @@ public class ElevationServiceFacade {
     private static final Preferences preferences = Preferences.userNodeForPackage(ElevationServiceFacade.class);
     private static final String ELEVATION_SERVICE = "elevationService";
 
-    private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
+    private final List<ElevationService> elevationServices = new ArrayList<>();
     private boolean loggedFailedWarning = false;
 
     public ElevationServiceFacade() {
