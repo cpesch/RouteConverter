@@ -23,6 +23,8 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -52,7 +54,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
- * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for finding and inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */

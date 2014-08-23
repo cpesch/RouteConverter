@@ -21,13 +21,10 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
-import slash.navigation.hgt.HgtFiles;
-import slash.navigation.hgt.HgtFilesService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +46,7 @@ public class ElevationServiceFacade {
     private static final Preferences preferences = Preferences.userNodeForPackage(ElevationServiceFacade.class);
     private static final String ELEVATION_SERVICE = "elevationService";
 
-    private final List<ElevationService> elevationServices = new ArrayList<ElevationService>();
+    private final List<ElevationService> elevationServices = new ArrayList<>();
     private boolean loggedFailedWarning = false;
 
     public ElevationServiceFacade() {
@@ -75,7 +72,7 @@ public class ElevationServiceFacade {
                 return service;
         }
 
-        if(!loggedFailedWarning) {
+        if (!loggedFailedWarning) {
             log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
             loggedFailedWarning = true;
         }

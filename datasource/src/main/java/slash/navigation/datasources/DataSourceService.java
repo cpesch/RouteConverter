@@ -57,4 +57,12 @@ public class DataSourceService {
         }
         return null;
     }
+
+    public DataSource getDataSourceById(String id) {
+        for (DataSource dataSource : getDataSources()) {
+            if (id.equals(dataSource.getId()))
+                return dataSource;
+        }
+        return null;
+    }
 }

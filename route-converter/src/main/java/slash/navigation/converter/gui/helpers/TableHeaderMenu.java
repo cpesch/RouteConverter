@@ -39,7 +39,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
@@ -137,7 +136,7 @@ public class TableHeaderMenu {
     }
 
     private List<ToggleColumnVisibilityAction> getActions() {
-        List<ToggleColumnVisibilityAction> result = new ArrayList<ToggleColumnVisibilityAction>();
+        List<ToggleColumnVisibilityAction> result = new ArrayList<>();
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
             result.add((ToggleColumnVisibilityAction) actionManager.get("show-column-" + column.getName()));
