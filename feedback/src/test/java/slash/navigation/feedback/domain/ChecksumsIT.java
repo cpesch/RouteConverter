@@ -94,97 +94,86 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         return new DataSourceImpl(datasourceType);
     }
 
+    private String[] createFilterUris(long id) {
+        String baseUrl = "baseUrl" + id;
+        return new String[]{baseUrl + "file1uri" + id, baseUrl + "file2uri" + id, baseUrl + "file3uri" + id,
+                baseUrl + "mapuri" + id, baseUrl + "themeuri" + id};
+    }
+
     @Test
     public void testSendChecksum() throws Exception {
         long id = currentTimeMillis();
         assertEquals("created datasource id" + id + "\n" +
-                        "created file file1uri" + id + "\n" +
-                        "created fragment file1uri" + id + " -> fragmentkey" + id + "\n" +
-                        "created file file2uri" + id + "\n" +
-                        "created checksum 2014-01-01 01:02:00, 2, file\n" +
-                        "added checksum 2014-01-01 01:02:00, 2, file to file2uri" + id + "\n" +
-                        "created fragment file2uri" + id + " -> fragmentkey" + id + "\n" +
-                        "created file file3uri" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:00, 3, file\n" +
-                        "added checksum 2014-01-01 01:03:00, 3, file to file3uri" + id + "\n" +
-                        "created fragment file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:01, 31, file3 fragment1\n" +
-                        "added checksum 2014-01-01 01:03:01, 31, file3 fragment1 to file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "created fragment file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:02, 32, file3 fragment2\n" +
-                        "added checksum 2014-01-01 01:03:02, 32, file3 fragment2 to file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "created map mapuri" + id + "\n" +
-                        "created checksum 2014-01-02 01:01:00, 100, map\n" +
-                        "added checksum 2014-01-02 01:01:00, 100, map to mapuri" + id + "\n" +
-                        "created fragment mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created checksum 2014-01-02 01:01:00, 101, map fragment\n" +
-                        "added checksum 2014-01-02 01:01:00, 101, map fragment to mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created theme themeuri" + id + "\n" +
-                        "created checksum 2014-01-03 01:01:00, 200, theme\n" +
-                        "added checksum 2014-01-03 01:01:00, 200, theme to themeuri" + id + "\n" +
-                        "created fragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created checksum 2014-01-03 01:01:00, 201, theme fragment\n" +
-                        "added checksum 2014-01-03 01:01:00, 201, theme fragment to themeuri" + id + " -> fragmentkey" + id,
-                routeFeedback.sendChecksums(createDataSource(id)));
+                        "created File file1uri" + id + "\n" +
+                        "created FileFragment file1uri" + id + " -> fragmentkey" + id + "\n" +
+                        "created File file2uri" + id + "\n" +
+                        "created FileChecksum 2014-01-01 01:02:00, 2, file for file2uri" + id + "\n" +
+                        "created FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
+                        "created File file3uri" + id + "\n" +
+                        "created FileChecksum 2014-01-01 01:03:00, 3, file for file3uri" + id + "\n" +
+                        "created FileFragment file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:01, 31, file3 fragment1 for file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "created FileFragment file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:02, 32, file3 fragment2 for file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "created Map mapuri" + id + "\n" +
+                        "created MapChecksum 2014-01-02 01:01:00, 100, map for mapuri" + id + "\n" +
+                        "created MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created MapFragmentChecksum 2014-01-02 01:01:00, 101, map fragment for mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created Theme themeuri" + id + "\n" +
+                        "created ThemeChecksum 2014-01-03 01:01:00, 200, theme for themeuri" + id + "\n" +
+                        "created ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:00, 201, theme fragment for themeuri" + id + " -> fragmentkey" + id,
+                routeFeedback.sendChecksums(createDataSource(id), createFilterUris(id)));
     }
 
     @Test
     public void testSendChecksumTwice() throws Exception {
         long id = currentTimeMillis();
-        DataSource datasource = createDataSource(id);
         assertEquals("created datasource id" + id + "\n" +
-                        "created file file1uri" + id + "\n" +
-                        "created fragment file1uri" + id + " -> fragmentkey" + id + "\n" +
-                        "created file file2uri" + id + "\n" +
-                        "created checksum 2014-01-01 01:02:00, 2, file\n" +
-                        "added checksum 2014-01-01 01:02:00, 2, file to file2uri" + id + "\n" +
-                        "created fragment file2uri" + id + " -> fragmentkey" + id + "\n" +
-                        "created file file3uri" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:00, 3, file\n" +
-                        "added checksum 2014-01-01 01:03:00, 3, file to file3uri" + id + "\n" +
-                        "created fragment file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:01, 31, file3 fragment1\n" +
-                        "added checksum 2014-01-01 01:03:01, 31, file3 fragment1 to file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "created fragment file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "created checksum 2014-01-01 01:03:02, 32, file3 fragment2\n" +
-                        "added checksum 2014-01-01 01:03:02, 32, file3 fragment2 to file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "created map mapuri" + id + "\n" +
-                        "created checksum 2014-01-02 01:01:00, 100, map\n" +
-                        "added checksum 2014-01-02 01:01:00, 100, map to mapuri" + id + "\n" +
-                        "created fragment mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created checksum 2014-01-02 01:01:00, 101, map fragment\n" +
-                        "added checksum 2014-01-02 01:01:00, 101, map fragment to mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created theme themeuri" + id + "\n" +
-                        "created checksum 2014-01-03 01:01:00, 200, theme\n" +
-                        "added checksum 2014-01-03 01:01:00, 200, theme to themeuri" + id + "\n" +
-                        "created fragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created checksum 2014-01-03 01:01:00, 201, theme fragment\n" +
-                        "added checksum 2014-01-03 01:01:00, 201, theme fragment to themeuri" + id + " -> fragmentkey" + id,
-                routeFeedback.sendChecksums(datasource));
+                        "created File file1uri" + id + "\n" +
+                        "created FileFragment file1uri" + id + " -> fragmentkey" + id + "\n" +
+                        "created File file2uri" + id + "\n" +
+                        "created FileChecksum 2014-01-01 01:02:00, 2, file for file2uri" + id + "\n" +
+                        "created FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
+                        "created File file3uri" + id + "\n" +
+                        "created FileChecksum 2014-01-01 01:03:00, 3, file for file3uri" + id + "\n" +
+                        "created FileFragment file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:01, 31, file3 fragment1 for file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "created FileFragment file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:02, 32, file3 fragment2 for file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "created Map mapuri" + id + "\n" +
+                        "created MapChecksum 2014-01-02 01:01:00, 100, map for mapuri" + id + "\n" +
+                        "created MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created MapFragmentChecksum 2014-01-02 01:01:00, 101, map fragment for mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created Theme themeuri" + id + "\n" +
+                        "created ThemeChecksum 2014-01-03 01:01:00, 200, theme for themeuri" + id + "\n" +
+                        "created ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:00, 201, theme fragment for themeuri" + id + " -> fragmentkey" + id,
+                routeFeedback.sendChecksums(createDataSource(id), createFilterUris(id)));
 
-        Get get = new Get("http://" + HOST + "/datasources/datasource/id" + id + ".xml");
+        Get get = new Get(DATASOURCES + "datasource/id" + id + ".xml");
         assertTrue(get.executeAsString().contains(Long.toString(id)));
 
         assertEquals("existing datasource id" + id + "\n" +
-                        "existing file file1uri" + id + "\n" +
-                        "existing fragment file1uri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing file file2uri" + id + "\n" +
-                        "existing checksum 2014-01-01 01:02:00, 2, file for file2uri" + id + "\n" +
-                        "existing fragment file2uri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing file file3uri" + id + "\n" +
-                        "existing checksum 2014-01-01 01:03:00, 3, file for file3uri" + id + "\n" +
-                        "existing fragment file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "existing checksum 2014-01-01 01:03:01, 31, file3 fragment1 for file3uri" + id + " -> fragment1key" + id + "\n" +
-                        "existing fragment file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "existing checksum 2014-01-01 01:03:02, 32, file3 fragment2 for file3uri" + id + " -> fragment2key" + id + "\n" +
-                        "existing map mapuri" + id + "\n" +
-                        "existing checksum 2014-01-02 01:01:00, 100, map for mapuri" + id + "\n" +
-                        "existing fragment mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing checksum 2014-01-02 01:01:00, 101, map fragment for mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing theme themeuri" + id + "\n" +
-                        "existing checksum 2014-01-03 01:01:00, 200, theme for themeuri" + id + "\n" +
-                        "existing fragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing checksum 2014-01-03 01:01:00, 201, theme fragment for themeuri" + id + " -> fragmentkey" + id,
-                routeFeedback.sendChecksums(datasource));
+                        "existing File file1uri" + id + "\n" +
+                        "existing FileFragment file1uri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing File file2uri" + id + "\n" +
+                        "existing FileChecksum 2014-01-01 01:02:00, 2, file for file2uri" + id + "\n" +
+                        "existing FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing File file3uri" + id + "\n" +
+                        "existing FileChecksum 2014-01-01 01:03:00, 3, file for file3uri" + id + "\n" +
+                        "existing FileFragment file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "existing FileFragmentChecksum 2014-01-01 01:03:01, 31, file3 fragment1 for file3uri" + id + " -> fragment1key" + id + "\n" +
+                        "existing FileFragment file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "existing FileFragmentChecksum 2014-01-01 01:03:02, 32, file3 fragment2 for file3uri" + id + " -> fragment2key" + id + "\n" +
+                        "existing Map mapuri" + id + "\n" +
+                        "existing MapChecksum 2014-01-02 01:01:00, 100, map for mapuri" + id + "\n" +
+                        "existing MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing MapFragmentChecksum 2014-01-02 01:01:00, 101, map fragment for mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing Theme themeuri" + id + "\n" +
+                        "existing ThemeChecksum 2014-01-03 01:01:00, 200, theme for themeuri" + id + "\n" +
+                        "existing ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing ThemeFragmentChecksum 2014-01-03 01:01:00, 201, theme fragment for themeuri" + id + " -> fragmentkey" + id,
+                routeFeedback.sendChecksums(createDataSource(id), createFilterUris(id)));
     }
 }

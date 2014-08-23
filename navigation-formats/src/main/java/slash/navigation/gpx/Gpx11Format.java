@@ -275,7 +275,7 @@ public class Gpx11Format extends GpxFormat {
                     Object anyValue = ((JAXBElement) any).getValue();
                     if (anyValue instanceof TrackPointExtensionT) {
                         TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                        result = trackPoint.getCourse().doubleValue();
+                        result = formatDouble(trackPoint.getCourse());
                     }
 
                 } else if (any instanceof Element) {

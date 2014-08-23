@@ -17,21 +17,17 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.feedback.domain;
 
-import org.junit.Before;
-import slash.navigation.rest.SimpleCredentials;
+package slash.navigation.download;
 
-public abstract class RouteFeedbackServiceBase {
-    protected static final String DATASOURCES = System.getProperty("feedback", "http://localhost:8000/datasources/");
-    protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
-    protected static final String USERNAME = "test";
-    protected static final String PASSWORD = "test";
+/**
+ * Interface for events from a {@link DownloadManager}
+ *
+ * @author Christian Pesch
+ */
 
-    protected RouteFeedback routeFeedback;
-
-    @Before
-    public void setUp() throws Exception {
-        routeFeedback = new RouteFeedback(FEEDBACK, new SimpleCredentials(USERNAME, PASSWORD));
-    }
+public interface DownloadListener {
+    void progressed(Download download, int percentage);
+    void failed(Download download);
+    void succeeded(Download download);
 }

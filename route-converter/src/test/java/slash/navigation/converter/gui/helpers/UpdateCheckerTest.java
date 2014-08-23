@@ -41,7 +41,7 @@ public class UpdateCheckerTest {
     @Test
     public void testParseVersion() {
         UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult("2.2", "1.6.0_03");
-        result.setParameters("b=c,routeconverter.version=1.3,java6.version=1.6.0_04,java7.version=1.7.0_05,a=b");
+        result.setParameters("b=c,routeconverter.version=1.3,java6.version=1.6.0_04,java7.version=1.7.0_05,java8.version=1.8.0_05,a=b");
         assertEquals("2.2", result.getMyRouteConverterVersion());
         assertEquals("1.3", result.getLatestRouteConverterVersion());
         assertFalse(result.existsLaterRouteConverterVersion());

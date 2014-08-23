@@ -40,7 +40,7 @@ public class Download {
     private final Action action;
     private final File fileTarget, tempFile;
     private final List<File> fragmentTargets;
-    private final Checksum fileChecksum;
+    private Checksum fileChecksum;
     private final List<Checksum> fragmentChecksums;
 
     private State state;
@@ -95,6 +95,10 @@ public class Download {
 
     public Checksum getFileChecksum() {
         return fileChecksum;
+    }
+
+    public void setFileChecksum(Checksum fileChecksum) {
+        this.fileChecksum = fileChecksum;
     }
 
     public List<File> getFragmentTargets() {

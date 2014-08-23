@@ -21,16 +21,11 @@
 package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,14 +33,10 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.DOTALL;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.*;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.common.type.ISO8601.parseDate;
+import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.formatElevationAsString;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.common.PositionParser.parsePositions;
@@ -152,7 +143,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     protected CompactCalendar parseTime(String time) {
         if (time != null) {
-            Calendar calendar = ISO8601.parse(time);
+            Calendar calendar = parseDate(time);
             if (calendar != null) {
                 calendar.setTimeZone(UTC);
                 return fromCalendar(calendar);

@@ -182,6 +182,7 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     protected void shutdown() {
+        super.shutdown();
         closeFrame();
     }
 }

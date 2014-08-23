@@ -21,38 +21,12 @@
 package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding22.AbstractContainerType;
-import slash.navigation.kml.binding22.AbstractFeatureType;
-import slash.navigation.kml.binding22.AbstractGeometryType;
-import slash.navigation.kml.binding22.AbstractTimePrimitiveType;
-import slash.navigation.kml.binding22.AbstractViewType;
-import slash.navigation.kml.binding22.DocumentType;
-import slash.navigation.kml.binding22.FolderType;
-import slash.navigation.kml.binding22.KmlType;
-import slash.navigation.kml.binding22.LineStringType;
-import slash.navigation.kml.binding22.LineStyleType;
-import slash.navigation.kml.binding22.LinkType;
-import slash.navigation.kml.binding22.LookAtType;
-import slash.navigation.kml.binding22.MultiGeometryType;
-import slash.navigation.kml.binding22.NetworkLinkType;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.binding22.ObjectFactory;
-import slash.navigation.kml.binding22.PlacemarkType;
-import slash.navigation.kml.binding22.PointType;
-import slash.navigation.kml.binding22.ScreenOverlayType;
-import slash.navigation.kml.binding22.StyleType;
-import slash.navigation.kml.binding22.TimeSpanType;
-import slash.navigation.kml.binding22.TimeStampType;
-import slash.navigation.kml.binding22.UnitsEnumType;
-import slash.navigation.kml.binding22.Vec2Type;
-import slash.navigation.kml.binding22gx.AbstractTourPrimitiveType;
-import slash.navigation.kml.binding22gx.FlyToType;
-import slash.navigation.kml.binding22gx.MultiTrackType;
-import slash.navigation.kml.binding22gx.TourType;
-import slash.navigation.kml.binding22gx.TrackType;
+import slash.navigation.kml.binding22gx.*;
 import slash.navigation.kml.bindingatom.Link;
 
 import javax.xml.bind.JAXBElement;
@@ -65,19 +39,15 @@ import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.lang.Math.asin;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.toDegrees;
-import static java.lang.Math.toRadians;
+import static java.lang.Math.*;
 import static java.lang.String.valueOf;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
-import static slash.navigation.common.Bearing.EARTH_RADIUS;
+import static slash.common.type.ISO8601.formatDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.Bearing.EARTH_RADIUS;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.common.PositionParser.parseExtensionPositions;
 import static slash.navigation.kml.KmlUtil.marshal22;
@@ -333,7 +303,7 @@ public class Kml22Format extends KmlFormat {
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             if (position.hasTime()) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
-                timeStampType.setWhen(ISO8601.format(position.getTime()));
+                timeStampType.setWhen(formatDate(position.getTime()));
                 placemarkType.setAbstractTimePrimitiveGroup(objectFactory.createTimeStamp(timeStampType));
             }
             PointType pointType = objectFactory.createPointType();
@@ -373,7 +343,7 @@ public class Kml22Format extends KmlFormat {
             List<KmlPosition> positions = route.getPositions();
             for (int i = startIndex; i < endIndex; i++) {
                 KmlPosition position = positions.get(i);
-                String time = position.hasTime() ? ISO8601.format(position.getTime()) : "";
+                String time = position.hasTime() ? formatDate(position.getTime()) : "";
                 trackType.getWhen().add(time);
             }
             for (int i = startIndex; i < endIndex; i++) {

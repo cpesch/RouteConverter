@@ -52,6 +52,10 @@ public class RouteServiceOperator {
         this.routeFeedback = routeFeedback;
     }
 
+    public RouteFeedback getRouteFeedback() {
+        return routeFeedback;
+    }
+
     public boolean showLogin() {
         LoginDialog loginDialog = new LoginDialog(routeFeedback);
         loginDialog.pack();

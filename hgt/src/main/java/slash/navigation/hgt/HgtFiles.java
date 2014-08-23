@@ -89,14 +89,14 @@ public class HgtFiles implements ElevationService {
     String createFileKey(double longitude, double latitude) {
         int longitudeAsInteger = (int) longitude;
         int latitudeAsInteger = (int) latitude;
-        return format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
+        return format("%s%02d%s%03d", (latitude < 0) ? "S" : "N",
                 (latitude < 0) ? ((latitudeAsInteger - 1) * -1) : latitudeAsInteger,
                 (longitude < 0) ? "W" : "E",
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
     }
 
     private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), key);
+        return new java.io.File(getDirectory(), key + ".hgt");
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
@@ -158,7 +158,7 @@ public class HgtFiles implements ElevationService {
 
         String uri = file.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " elevation data for " + uri, url, Flatten,
+        return downloadManager.queueForDownload(getName() + ": Elevation Data " + uri, url, Flatten,
                 null, getDirectory(), file.getLatestChecksum(), fragmentTargets, fragmentChecksums);
     }
 }

@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -168,9 +167,11 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator";
 
-    private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
+    private DataSourceManager dataSourceManager;
+    private ElevationServiceFacade elevationServiceFacade;
+    private HgtFilesService hgtFilesService;
     private DownloadManager downloadManager;
     private DataSourceManager dataSourceManager;
     private MapManager mapManager;
@@ -400,8 +401,8 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().dispose();
         hgtFilesService.dispose();
         getBatchPositionAugmenter().dispose();
-        getDownloadManager().dispose();
-        getDownloadManager().saveQueue();
+        getDataSourceManager().getDownloadManager().dispose();
+        getDataSourceManager().getDownloadManager().saveQueue();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -496,7 +497,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     // helpers for external components
 
-    public RouteServiceOperator getOperator() {
+    public RouteServiceOperator getRouteServiceOperator() {
         return routeServiceOperator;
     }
 
@@ -593,13 +594,25 @@ public class RouteConverter extends SingleFrameApplication {
     // helpers for external components
 
     public void sendErrorReport(final String log, final String description, final File file) {
-        getOperator().executeOperation(new RouteServiceOperator.Operation() {
+        getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "SendErrorReport";
             }
 
             public void run() throws IOException {
-                routeFeedback.sendErrorReport(log, description, file);
+                getRouteServiceOperator().getRouteFeedback().sendErrorReport(log, description, file);
+            }
+        });
+    }
+
+    public void sendChecksums(final DataSource dataSource, final Download download) {
+        getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
+            public String getName() {
+                return "SendChecksums";
+            }
+
+            public void run() throws IOException {
+                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, download.getUrl());
             }
         });
     }
@@ -646,10 +659,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public RoutingServiceFacade getRoutingServiceFacade() {
         return routingServiceFacade;
-    }
-
-    public DownloadManager getDownloadManager() {
-        return downloadManager;
     }
 
     public DataSourceManager getDataSourceManager() {
@@ -959,9 +968,15 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void initializeRouteConverterServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
+        DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
+        downloadManager.addDownloadListener(new ChecksumSender());
+        downloadManager.addDownloadListener(new DownloadNotifier());
+        dataSourceManager = new DataSourceManager(downloadManager);
+        hgtFilesService = new HgtFilesService(dataSourceManager);
+        elevationServiceFacade = new ElevationServiceFacade();
         downloadManager = new DownloadManager(getDownloadQueueFile());
         downloadManager.getModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -1047,7 +1062,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDownloadManager() {
         new Thread(new Runnable() {
             public void run() {
-                getDownloadManager().loadQueue();
+                getDataSourceManager().getDownloadManager().loadQueue();
 
                 try {
                     getDataSourceManager().initialize(getEdition());
@@ -1060,6 +1075,11 @@ public class RouteConverter extends SingleFrameApplication {
                         }
                     });
                 }
+
+                hgtFilesService.initialize();
+                for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
+                    getElevationServiceFacade().addElevationService(hgtFile);
+
 
                 hgtFilesService.initialize();
                 for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
@@ -1128,4 +1148,5 @@ public class RouteConverter extends SingleFrameApplication {
             profileView.print();
         }
     }
+
 }

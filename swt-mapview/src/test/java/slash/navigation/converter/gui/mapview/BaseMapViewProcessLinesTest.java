@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BaseMapViewProcessLinesTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
-    private final Object LOCK = new Object();
+    private final Object notificationMutex = new Object();
 
     private void processLines(final List<String> lines) throws InterruptedException {
         final int[] portCallback = new int[1];
@@ -37,9 +37,9 @@ public class BaseMapViewProcessLinesTest {
 
         view.addMapViewListener(new AbstractMapViewListener() {
             public void receivedCallback(int port) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     portCallback[0] = port;
-                    LOCK.notify();
+                    notificationMutex.notify();
                 }
             }
         });
@@ -49,8 +49,8 @@ public class BaseMapViewProcessLinesTest {
             }
         }).start();
 
-        synchronized (LOCK) {
-            LOCK.wait(1000);
+        synchronized (notificationMutex) {
+            notificationMutex.wait(1000);
         }
 
         assertEquals(49632, portCallback[0]);
@@ -74,7 +74,7 @@ public class BaseMapViewProcessLinesTest {
 
         view.addMapViewListener(new AbstractMapViewListener() {
             public void receivedCallback(int port) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     portCallback[0] = port;
                     callbackCount[0]++;
                 }
@@ -87,8 +87,8 @@ public class BaseMapViewProcessLinesTest {
             }
         }).start();
 
-        synchronized (LOCK) {
-            LOCK.wait(1000);
+        synchronized (notificationMutex) {
+            notificationMutex.wait(1000);
         }
 
         assertEquals(49632, portCallback[0]);

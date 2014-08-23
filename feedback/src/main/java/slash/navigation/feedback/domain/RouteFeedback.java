@@ -40,8 +40,10 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Transfer.asUtf8;
 import static slash.navigation.datasources.DataSourcesUtil.asDatasourceType;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
@@ -166,11 +168,11 @@ public class RouteFeedback {
         return request.executeAsString().replace("\"", "");
     }
 
-    private static String createDataSourceXml(DataSource dataSource) throws IOException {
+    private static String createDataSourceXml(DataSource dataSource, String... filterUrls) throws IOException {
         slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
 
         DatasourcesType datasourcesType = objectFactory.createDatasourcesType();
-        DatasourceType datasourceType = asDatasourceType(dataSource);
+        DatasourceType datasourceType = asDatasourceType(dataSource, filterUrls);
         datasourcesType.getDatasource().add(datasourceType);
 
         return DataSourcesUtil.toXml(datasourcesType);
@@ -180,9 +182,9 @@ public class RouteFeedback {
         return rootUrl + DATASOURCES_URI;
     }
 
-    public String sendChecksums(DataSource dataSource) throws IOException {
-        log.fine("Sending checksums for data source " + dataSource);
-        String xml = createDataSourceXml(dataSource);
+    public String sendChecksums(DataSource dataSource, String... filterUrls) throws IOException {
+        String xml = createDataSourceXml(dataSource, filterUrls);
+        log.fine(format("Sending checksums for %s:\n%s", printArrayToDialogString(filterUrls), xml));
         Post request = new Post(getDataSourcesUrl(), credentials);
         request.addFile("file", xml.getBytes());
 
@@ -192,6 +194,8 @@ public class RouteFeedback {
         if (!request.isSuccessful())
             throw new IOException("POST on " + getDataSourcesUrl() + " for data source " + dataSource +
                     " not successful: " + result);
+
+        log.info(format("Sent checksum for %s with result:\n%s", printArrayToDialogString(filterUrls), result));
         return result;
     }
 }

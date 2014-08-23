@@ -21,6 +21,7 @@
 package slash.navigation.gui;
 
 import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.gui.undo.UndoManager;
 
 import javax.help.HelpBroker;
@@ -40,6 +41,7 @@ public class ApplicationContext {
     private ResourceBundle bundle;
     private ActionManager actionManager = new ActionManager();
     private UndoManager undoManager = new UndoManager();
+    private NotificationManager notificationManager = new NotificationManager();
     private JMenuBar menuBar = null;
     private String helpBrokerUrl = null;
     private ClassLoader helpBrokerClassLoader = null;
@@ -59,6 +61,10 @@ public class ApplicationContext {
 
     public UndoManager getUndoManager() {
         return undoManager;
+    }
+
+    public NotificationManager getNotificationManager() {
+        return notificationManager;
     }
 
     public JMenuBar getMenuBar() {

@@ -22,9 +22,14 @@ package slash.common.type;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import static java.lang.Character.isDigit;
+import static java.lang.Integer.parseInt;
+import static java.util.Calendar.*;
+import static java.util.GregorianCalendar.AD;
+import static java.util.GregorianCalendar.BC;
+import static java.util.TimeZone.getTimeZone;
 import static slash.common.type.CompactCalendar.UTC;
 
 /**
@@ -34,7 +39,7 @@ import static slash.common.type.CompactCalendar.UTC;
  * <p/>
  * The currently supported format is:
  * <pre>
- *   &plusmn;YYYY-MM-DDThh:mm:ss[.SSS]
+ *   &plusmn;YYYY-MM-DDThh:mm:ss[.SSS]TZD
  * </pre>
  * where:
  * <pre>
@@ -48,15 +53,13 @@ import static slash.common.type.CompactCalendar.UTC;
  *   mm    = two digits of minute (00 through 59)
  *   ss    = two digits of second (00 through 59)
  *   SSS   = optionally: three digits of milliseconds (000 through 999)
+ *   TZD   = time zone designator (Z or +hh:mm or -hh:mm)
  * </pre>
  *
  * @author Unknown
  */
 
 public final class ISO8601 {
-    /**
-     * misc. numeric formats used in formatting
-     */
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXX_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
@@ -69,7 +72,7 @@ public final class ISO8601 {
      *         not be parsed
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
      */
-    public static Calendar parse(String text) {
+    public static Calendar parseDate(String text) {
         if (text == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
@@ -100,7 +103,7 @@ public final class ISO8601 {
         int year, month, day, hour, minutes, seconds, milliseconds = 0;
         try {
             // year (YYYY)
-            year = Integer.parseInt(text.substring(start, start + 4));
+            year = parseInt(text.substring(start, start + 4));
             start += 4;
             // delimiter '-'
             if (text.charAt(start) != '-') {
@@ -108,7 +111,7 @@ public final class ISO8601 {
             }
             start++;
             // month (MM)
-            month = Integer.parseInt(text.substring(start, start + 2));
+            month = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter '-'
             if (text.charAt(start) != '-') {
@@ -116,7 +119,7 @@ public final class ISO8601 {
             }
             start++;
             // day (DD)
-            day = Integer.parseInt(text.substring(start, start + 2));
+            day = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter 'T'
             if (text.charAt(start) != 'T') {
@@ -124,7 +127,7 @@ public final class ISO8601 {
             }
             start++;
             // hour (hh)
-            hour = Integer.parseInt(text.substring(start, start + 2));
+            hour = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter ':'
             if (text.charAt(start) != ':') {
@@ -132,7 +135,7 @@ public final class ISO8601 {
             }
             start++;
             // minute (mm)
-            minutes = Integer.parseInt(text.substring(start, start + 2));
+            minutes = parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter ':'
             if (text.charAt(start) != ':') {
@@ -140,7 +143,7 @@ public final class ISO8601 {
             }
             start++;
             // second (ss)
-            seconds = Integer.parseInt(text.substring(start, start + 2));
+            seconds = parseInt(text.substring(start, start + 2));
             start += 2;
 
             // delimiter '.' 'Z' '+' (or 'T')
@@ -150,7 +153,7 @@ public final class ISO8601 {
                 StringBuilder buffer = new StringBuilder();
                 while (true) {
                     delimiter = text.charAt(start++);
-                    if (Character.isDigit(delimiter))
+                    if (isDigit(delimiter))
                         buffer.append(delimiter);
                     else
                         break;
@@ -158,17 +161,17 @@ public final class ISO8601 {
                 while (buffer.length() < 3) {
                     buffer.append('0');
                 }
-                milliseconds = Integer.parseInt(buffer.toString());
+                milliseconds = parseInt(buffer.toString());
             }
 
             if (delimiter == 'T')
                 delimiter = '+';
             if (delimiter == 'Z') {
-                timeZone = CompactCalendar.UTC;
+                timeZone = UTC;
             } else if (delimiter == '+' || delimiter == '-') {
-                // delimiter hour (hh)  ':' minute (mm)
+                // delimiter hour (hh) ':' minute (mm)
                 String tzString = text.substring(start, start + 5);
-                timeZone = TimeZone.getTimeZone("GMT" + delimiter + tzString);
+                timeZone = getTimeZone("GMT" + delimiter + tzString);
             } else
                 return null;
         } catch (IndexOutOfBoundsException e) {
@@ -178,41 +181,41 @@ public final class ISO8601 {
         }
 
         // initialize Calendar object
-        Calendar cal = Calendar.getInstance(timeZone);
-        cal.setLenient(false);
+        Calendar calendar = Calendar.getInstance(timeZone);
+        calendar.setLenient(false);
         // year and era
         if (sign == '-' || year == 0) {
             // not CE, need to set era (BCE) and adjust year
-            cal.set(Calendar.YEAR, year + 1);
-            cal.set(Calendar.ERA, GregorianCalendar.BC);
+            calendar.set(YEAR, year + 1);
+            calendar.set(ERA, BC);
         } else {
-            cal.set(Calendar.YEAR, year);
-            cal.set(Calendar.ERA, GregorianCalendar.AD);
+            calendar.set(YEAR, year);
+            calendar.set(ERA, AD);
         }
         // month (0-based!)
-        cal.set(Calendar.MONTH, month - 1);
+        calendar.set(MONTH, month - 1);
         // day of month
-        cal.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(DAY_OF_MONTH, day);
         // hour
-        cal.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(HOUR_OF_DAY, hour);
         // minute
-        cal.set(Calendar.MINUTE, minutes);
+        calendar.set(MINUTE, minutes);
         // second
-        cal.set(Calendar.SECOND, seconds);
+        calendar.set(SECOND, seconds);
         // millisecond
-        cal.set(Calendar.MILLISECOND, milliseconds);
+        calendar.set(MILLISECOND, milliseconds);
 
         try {
             /**
              * the following call will trigger an IllegalArgumentException
              * if any of the set values are illegal or out of range
              */
-            cal.getTime();
+            calendar.getTime();
         } catch (IllegalArgumentException e) {
             return null;
         }
 
-        return cal;
+        return calendar;
     }
 
     /**
@@ -222,11 +225,11 @@ public final class ISO8601 {
      * @return the formatted date/time string
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
      */
-    public static String format(CompactCalendar calendar) {
+    public static String formatDate(CompactCalendar calendar) {
         if (calendar == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
-        return format(calendar.getCalendar(), false);
+        return formatDate(calendar.getCalendar(), false);
     }
 
     /**
@@ -237,14 +240,14 @@ public final class ISO8601 {
      * @return the formatted date/time string
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
      */
-    public static String format(Calendar calendar, boolean includeMilliseconds) {
+    public static String formatDate(Calendar calendar, boolean includeMilliseconds) {
         if (calendar == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
 
         // determine era and adjust year if necessary
-        int year = calendar.get(Calendar.YEAR);
-        if (calendar.isSet(Calendar.ERA) && calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
+        int year = calendar.get(YEAR);
+        if (calendar.isSet(ERA) && calendar.get(ERA) == BC) {
             /**
              * calculate year using astronomical system:
              * year n BCE => astronomical year -n + 1
@@ -264,23 +267,23 @@ public final class ISO8601 {
         buffer.append(XXXX_FORMAT.format(year));
         buffer.append('-');
         // month (MM)
-        buffer.append(XX_FORMAT.format(calendar.get(Calendar.MONTH) + 1));
+        buffer.append(XX_FORMAT.format(calendar.get(MONTH) + 1));
         buffer.append('-');
         // day (DD)
-        buffer.append(XX_FORMAT.format(calendar.get(Calendar.DAY_OF_MONTH)));
+        buffer.append(XX_FORMAT.format(calendar.get(DAY_OF_MONTH)));
         buffer.append('T');
         // hour (hh)
-        buffer.append(XX_FORMAT.format(calendar.get(Calendar.HOUR_OF_DAY)));
+        buffer.append(XX_FORMAT.format(calendar.get(HOUR_OF_DAY)));
         buffer.append(':');
         // minute (mm)
-        buffer.append(XX_FORMAT.format(calendar.get(Calendar.MINUTE)));
+        buffer.append(XX_FORMAT.format(calendar.get(MINUTE)));
         buffer.append(':');
         // second (ss)
-        buffer.append(XX_FORMAT.format(calendar.get(Calendar.SECOND)));
+        buffer.append(XX_FORMAT.format(calendar.get(SECOND)));
         if (includeMilliseconds) {
             // millisecond (SSS)
             buffer.append('.');
-            buffer.append(XXX_FORMAT.format(calendar.get(Calendar.MILLISECOND)));
+            buffer.append(XXX_FORMAT.format(calendar.get(MILLISECOND)));
         }
         if (calendar.getTimeZone().equals(UTC))
             buffer.append('Z');

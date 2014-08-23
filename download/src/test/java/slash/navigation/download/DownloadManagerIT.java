@@ -100,7 +100,7 @@ public class DownloadManagerIT {
         manager.dispose();
     }
 
-    private static final Object LOCK = new Object();
+    private static final Object notificationMutex = new Object();
 
     void waitFor(final Download download, final State expectedState) {
         final boolean[] found = new boolean[1];
@@ -110,9 +110,9 @@ public class DownloadManagerIT {
             public void tableChanged(TableModelEvent e) {
                 System.out.println("Expected state: " + expectedState + ", download state: " + download.getState());
                 if (expectedState.equals(download.getState())) {
-                    synchronized (LOCK) {
+                    synchronized (notificationMutex) {
                         found[0] = true;
-                        LOCK.notifyAll();
+                        notificationMutex.notifyAll();
                     }
                 }
             }
@@ -122,13 +122,13 @@ public class DownloadManagerIT {
         manager.getModel().addTableModelListener(l);
         try {
             while (true) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     if (found[0])
                         break;
                     if (currentTimeMillis() - start > WAIT_TIMEOUT)
                         throw new IllegalStateException("waited for " + WAIT_TIMEOUT + " seconds without seeing " + expectedState);
                     try {
-                        LOCK.wait(1000);
+                        notificationMutex.wait(1000);
                     } catch (InterruptedException e) {
                         // intentionally left empty
                     }

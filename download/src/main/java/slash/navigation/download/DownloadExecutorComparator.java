@@ -38,9 +38,9 @@ class DownloadExecutorComparator implements Comparator<Runnable> {
     }
 
     private long getTimeInMillis(DownloadExecutor executor) {
-        Checksum latestChecksum = executor.getDownload().getFileChecksum();
-        if (latestChecksum != null) {
-            CompactCalendar lastModified = latestChecksum.getLastModified();
+        Checksum checksum = executor.getDownload().getFileChecksum();
+        if (checksum != null) {
+            CompactCalendar lastModified = checksum.getLastModified();
             if (lastModified != null)
                 return lastModified.getTimeInMillis();
         }

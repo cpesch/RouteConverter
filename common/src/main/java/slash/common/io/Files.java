@@ -20,6 +20,8 @@
 
 package slash.common.io;
 
+import slash.common.type.CompactCalendar;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -34,6 +36,7 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
 
 /**
@@ -160,7 +163,7 @@ public class Files {
     }
 
     public static List<URL> toUrls(String... urls) {
-        List<URL> result = new ArrayList<URL>(urls.length);
+        List<URL> result = new ArrayList<>(urls.length);
         for (String url : urls) {
             try {
                 result.add(new URL(url));
@@ -178,7 +181,7 @@ public class Files {
     }
 
     public static List<URL> toUrls(File... files) {
-        List<URL> urls = new ArrayList<URL>(files.length);
+        List<URL> urls = new ArrayList<>(files.length);
         for (File file : files) {
             try {
                 urls.add(file.toURI().toURL());
@@ -190,7 +193,7 @@ public class Files {
     }
 
     public static List<URL> reverse(List<URL> urls) {
-        List<URL> result = new ArrayList<URL>();
+        List<URL> result = new ArrayList<>();
         for (URL url : urls)
             result.add(0, url);
         return result;
@@ -289,8 +292,14 @@ public class Files {
         }
     }
 
-    public static void setLastModified(File file, long lastModified) throws IOException {
-        if (!file.setLastModified(lastModified))
+    public static CompactCalendar getLastModified(File file) {
+        return fromMillis(file.lastModified());
+    }
+
+    public static void setLastModified(File file, CompactCalendar lastModified) throws IOException {
+        if (lastModified == null)
+            return;
+        if (!file.setLastModified(lastModified.getTimeInMillis()))
             throw new IOException(format("Could not set last modified of %s to %s", file, lastModified));
     }
 
@@ -340,10 +349,10 @@ public class Files {
      *         with the given extension
      */
     public static List<File> collectFiles(File path, String extension) {
-        List<File> result = new ArrayList<File>(1);
+        List<File> list = new ArrayList<>(1);
         extension = extension != null ? extension.toLowerCase() : null;
-        recursiveCollect(path, false, true, extension, result);
-        return result;
+        recursiveCollect(path, false, true, extension, list);
+        return list;
     }
 
     public static File findExistingPath(File path) {

@@ -60,10 +60,25 @@ public class Validator {
 
         downloadableChecksum = createChecksum(getFileTarget());
         List<File> fragmentTargets = download.getFragmentTargets();
-        if (fragmentTargets != null)
+        if (fragmentTargets != null) {
             for (File fragment : fragmentTargets) {
                 fragmentChecksums.add(createChecksum(fragment));
             }
+        }
+
+        updateDownloadFromValidator();
+    }
+
+    private void updateDownloadFromValidator() {
+        if (download.getFileChecksum() == null)
+            download.setFileChecksum(downloadableChecksum);
+        List<Checksum> fragmentChecksums = download.getFragmentChecksums();
+        if (fragmentChecksums != null) {
+            for (int i = 0; i < fragmentChecksums.size(); i++) {
+                if (fragmentChecksums.get(i) == null)
+                    fragmentChecksums.set(i, this.fragmentChecksums.get(i));
+            }
+        }
     }
 
     private File getFileTarget() {
@@ -85,7 +100,7 @@ public class Validator {
                 expectedChecksum.getSHA1().equals(actualChecksum.getSHA1());
         if (!sha1Equals)
             log.warning(format("%s has SHA-1 %s but expected %s", object, actualChecksum.getSHA1(), expectedChecksum.getSHA1()));
-        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals;
+        boolean valid = /*lastModifiedEquals &&*/ contentLengthEquals && sha1Equals;
         if (valid)
             log.info(format("%s has valid checksum", object));
         return valid;

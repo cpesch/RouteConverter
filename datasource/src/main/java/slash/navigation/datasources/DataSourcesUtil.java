@@ -92,8 +92,16 @@ public class DataSourcesUtil {
         return new SimpleNavigationPosition(positionType.getLongitude(), positionType.getLatitude());
     }
 
+    private static boolean contains(String[] array, String name) {
+        for (String anArray : array) {
+            if (name.equals(anArray))
+                return true;
 
-    public static DatasourceType asDatasourceType(DataSource dataSource) {
+        }
+        return false;
+    }
+
+    public static DatasourceType asDatasourceType(DataSource dataSource, String... filterUrls) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DatasourceType datasourceType = objectFactory.createDatasourceType();
@@ -103,6 +111,9 @@ public class DataSourcesUtil {
         datasourceType.setDirectory(dataSource.getDirectory());
 
         for (File file : dataSource.getFiles()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + file.getUri()))
+                continue;
+
             FileType fileType = objectFactory.createFileType();
             fileType.setBoundingBox(asBoundingBoxType(file.getBoundingBox()));
             fileType.setUri(file.getUri());
@@ -112,6 +123,9 @@ public class DataSourcesUtil {
         }
 
         for (Map map : dataSource.getMaps()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + map.getUri()))
+                continue;
+
             MapType mapType = objectFactory.createMapType();
             mapType.setBoundingBox(asBoundingBoxType(map.getBoundingBox()));
             mapType.setUri(map.getUri());
@@ -121,6 +135,9 @@ public class DataSourcesUtil {
         }
 
         for (Theme theme : dataSource.getThemes()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + theme.getUri()))
+                continue;
+
             ThemeType themeType = objectFactory.createThemeType();
             themeType.setImageUrl(theme.getImageUrl());
             themeType.setUri(theme.getUri());
@@ -133,7 +150,7 @@ public class DataSourcesUtil {
     }
 
     public static BoundingBoxType asBoundingBoxType(BoundingBox boundingBox) {
-        if(boundingBox == null)
+        if (boundingBox == null)
             return null;
 
         BoundingBoxType boundingBoxType = new ObjectFactory().createBoundingBoxType();
@@ -151,7 +168,7 @@ public class DataSourcesUtil {
 
     public static void replaceChecksumTypes(List<ChecksumType> previousChecksumTypes, List<Checksum> nextChecksums) {
         previousChecksumTypes.clear();
-        if(nextChecksums != null)
+        if (nextChecksums != null)
             previousChecksumTypes.addAll(asChecksumTypes(nextChecksums));
     }
 
@@ -179,7 +196,7 @@ public class DataSourcesUtil {
 
     public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment> nextFragments) {
         previousFragmentTypes.clear();
-        if(nextFragments != null)
+        if (nextFragments != null)
             previousFragmentTypes.addAll(asFragmentTypes(nextFragments));
     }
 
@@ -203,7 +220,7 @@ public class DataSourcesUtil {
     public static String toXml(DatasourcesType datasourcesType) throws IOException {
         StringWriter writer = new StringWriter();
         try {
-           marshal(datasourcesType, writer);
+            marshal(datasourcesType, writer);
         } catch (JAXBException e) {
             throw new IOException("Cannot marshall " + datasourcesType + ": " + e, e);
         }

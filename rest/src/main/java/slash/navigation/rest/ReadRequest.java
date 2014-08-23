@@ -22,15 +22,13 @@ package slash.navigation.rest;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.Calendar;
 
-import static java.util.Locale.US;
 import static org.apache.http.HttpHeaders.*;
 import static slash.common.io.Transfer.parseLong;
+import static slash.navigation.rest.RFC2616.formatDate;
+import static slash.navigation.rest.RFC2616.parseDate;
 
 /**
  * Wrapper for a HTTP HEAD or GET Request.
@@ -39,22 +37,8 @@ import static slash.common.io.Transfer.parseLong;
  */
 
 abstract class ReadRequest extends HttpRequest {
-    private static final String RFC1123_DATE = "EEE, dd MMM yyyy HH:mm:ss z";
-    private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
-
     public ReadRequest(HttpRequestBase method) {
         super(method);
-    }
-
-    public ReadRequest(HttpRequestBase method, Credentials credentials) {
-        super(method, credentials);
-    }
-
-    private DateFormat createDateFormat() {
-        SimpleDateFormat format = new SimpleDateFormat(RFC1123_DATE, US);
-        // django.utils.http.RFC1123_DATE expects GMT
-        format.setTimeZone(GMT);
-        return format;
     }
 
     public boolean getAcceptByteRanges() throws IOException {
@@ -71,8 +55,8 @@ abstract class ReadRequest extends HttpRequest {
             return null;
 
         try {
-            Date date = createDateFormat().parse(lastModified);
-            return date.getTime();
+            Calendar calendar = parseDate(lastModified);
+            return calendar.getTimeInMillis();
         } catch (ParseException e) {
             throw new IOException("Cannot parse last modified: " + lastModified, e);
         }
@@ -84,7 +68,7 @@ abstract class ReadRequest extends HttpRequest {
 
 
     public void setIfModifiedSince(long modifiedSince) {
-        String ifModifiedSince = createDateFormat().format(new Date(modifiedSince));
+        String ifModifiedSince = formatDate(modifiedSince);
         setHeader(IF_MODIFIED_SINCE, ifModifiedSince);
     }
 

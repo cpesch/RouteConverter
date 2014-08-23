@@ -21,7 +21,6 @@
 package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
@@ -37,6 +36,7 @@ import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.ISO8601.formatDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.PositionParser.parsePosition;
@@ -135,7 +135,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<Folder> findFolders(List<Object> elements) {
-        List<Folder> folders = new ArrayList<Folder>();
+        List<Folder> folders = new ArrayList<>();
         for (Object element : elements) {
             if (element instanceof Folder) {
                 folders.add((Folder) element);
@@ -145,7 +145,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<Placemark> findPlacemarks(List<Object> elements) {
-        List<Placemark> placemarks = new ArrayList<Placemark>();
+        List<Placemark> placemarks = new ArrayList<>();
         for (Object element : elements) {
             if (element instanceof Placemark) {
                 placemarks.add((Placemark) element);
@@ -155,7 +155,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<NetworkLink> findNetworkLinks(List<Object> elements) {
-        List<NetworkLink> networkLinks = new ArrayList<NetworkLink>();
+        List<NetworkLink> networkLinks = new ArrayList<>();
         for (Object element : elements) {
             if (element instanceof NetworkLink) {
                 networkLinks.add((NetworkLink) element);
@@ -180,7 +180,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private void extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, CompactCalendar startDate, ParserContext<KmlRoute> context) {
-        List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
+        List<KmlPosition> waypoints = new ArrayList<>();
         for (Placemark placemark : placemarks) {
             String placemarkName = asDescription(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
@@ -215,7 +215,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositions(LineString lineString) {
-        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        List<KmlPosition> result = new ArrayList<>();
         for (NavigationPosition position : parsePositions(lineString.getCoordinates())) {
             result.add(asKmlPosition(position));
         }
@@ -223,7 +223,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositions(List<Object> elements) {
-        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        List<KmlPosition> result = new ArrayList<>();
         for (Object element : elements) {
             if (element instanceof Point) {
                 Point point = (Point) element;
@@ -260,7 +260,7 @@ public class Kml20Format extends KmlFormat {
             placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getDescription() : null)));
             placemarkList.add(objectFactory.createVisibility(Boolean.FALSE));
             if (position.hasTime())
-                placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
+                placemarkList.add(objectFactory.createTimePosition(formatDate(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);
             point.setCoordinates(createCoordinates(position, false));

@@ -50,15 +50,7 @@ public class DataSourceService {
         return dataSources;
     }
 
-    public DataSource getDataSourceById(String id) {
-        for (DataSource dataSource : getDataSources()) {
-            if (dataSource.getId().equals(id))
-                return dataSource;
-        }
-        return null;
-    }
-
-    public DataSource getDataSourceByUrl(String url) {
+    public DataSource getDataSourceByUrlPrefix(String url) {
         for (DataSource dataSource : getDataSources()) {
             if (url.startsWith(dataSource.getBaseUrl()))
                 return dataSource;

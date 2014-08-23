@@ -86,15 +86,15 @@ public class DataSourceServiceTest {
 
         assertEquals(3, dataSources.size());
         checkDatasourceType(dataSources.get(0), "id1", "name1", baseUrl1, "dir1");
-        checkDatasourceType(service.getDataSourceByUrl(baseUrl2), "id2", "name2", baseUrl2, "dir2/dir3");
+        checkDatasourceType(service.getDataSourceByUrlPrefix(baseUrl2), "id2", "name2", baseUrl2, "dir2/dir3");
         checkDatasourceType(dataSources.get(2), "id3", "name3", baseUrl3, "dir4");
 
-        checkFragments(getFile(service.getDataSourceByUrl(baseUrl1).getFiles(), "x/y/z.data").getFragments(), "a", "a");
-        checkFragments(getFile(service.getDataSourceByUrl(baseUrl2).getFiles(), "x/y/z.data").getFragments(), "b", "b");
-        checkFragments(getFile(service.getDataSourceByUrl(baseUrl2).getFiles(), "z/y/x.data").getFragments(), "c", "c");
+        checkFragments(getFile(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data").getFragments(), "a", "a");
+        checkFragments(getFile(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "x/y/z.data").getFragments(), "b", "b");
+        checkFragments(getFile(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "z/y/x.data").getFragments(), "c", "c");
 
-        checkFiles(service.getDataSourceByUrl(baseUrl1).getFiles(), "x/y/z.data", "x");
-        checkFiles(service.getDataSourceByUrl(baseUrl3).getFiles());
-        checkFiles(service.getDataSourceByUrl(baseUrl2).getFiles(), "x/y/z.data", "x", "z/y/x.data", "z");
+        checkFiles(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data", "x");
+        checkFiles(service.getDataSourceByUrlPrefix(baseUrl3).getFiles());
+        checkFiles(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "x/y/z.data", "x", "z/y/x.data", "z");
     }
 }
