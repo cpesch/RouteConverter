@@ -1018,12 +1018,17 @@ public class RouteConverter extends SingleFrameApplication {
                     });
                 }
 
-                hgtFilesService.initialize();
-                for (HgtFiles hgtFile : hgtFilesService.getHgtFiles())
-                    getElevationServiceFacade().addElevationService(hgtFile);
-
+                initializeElevationServices();
             }
         }, "DownloadManagerInitializer").start();
+    }
+
+    private void initializeElevationServices() {
+        hgtFilesService.initialize();
+        for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+            log.info(String.format("Added elevation service '%s'", hgtFile.getName()));
+        }
     }
 
     private class PrintMapAction extends FrameAction {
