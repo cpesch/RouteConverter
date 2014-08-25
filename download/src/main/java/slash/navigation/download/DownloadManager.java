@@ -153,19 +153,16 @@ public class DownloadManager {
     private static final Set<State> RESTART_WHEN_QUEUED_AGAIN = new HashSet<>(asList(NotModified, Succeeded, NoFileError, ChecksumError, Failed));
 
     private Download queueForDownload(Download download) {
-        if (download.getFileTarget() == null)
-            throw new IllegalArgumentException("No target given for " + download);
+        if (download.getFile().getFile() == null)
+            throw new IllegalArgumentException("No file given for " + download);
         if (download.getAction().equals(Extract) || download.getAction().equals(Flatten)) {
-            if (!download.getFileTarget().isDirectory())
-                throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getFileTarget()));
+            if (!download.getFile().getFile().isDirectory())
+                throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getFile().getFile()));
 
-            List<File> fragmentTargets = download.getFragmentTargets();
-            if (fragmentTargets == null || fragmentTargets.size() == 0)
+            List<FileAndChecksum> fragments = download.getFragments();
+            if (fragments == null || fragments.size() == 0)
                 throw new IllegalArgumentException("No fragments given for " + download);
-            List<Checksum> fragmentChecksums = download.getFragmentChecksums();
-            if (fragmentChecksums != null && fragmentChecksums.size() != fragmentTargets.size())
-                throw new IllegalArgumentException("Different number of fragment checksums given for " + download);
-            for (File fragmentTarget : fragmentTargets) {
+            for (FileAndChecksum fragmentTarget : fragments) {
                 if (fragmentTarget == null)
                     throw new IllegalArgumentException("No fragment target given for " + download);
             }
@@ -183,9 +180,9 @@ public class DownloadManager {
         return download;
     }
 
-    public Download queueForDownload(String description, String url, Action action, String eTag, File fileTarget, Checksum fileChecksum,
-                                     List<File> fragmentTargets, List<Checksum> fragmentChecksums) {
-        return queueForDownload(new Download(description, url, action, eTag, fileTarget, fileChecksum, fragmentTargets, fragmentChecksums));
+    public Download queueForDownload(String description, String url, Action action, String eTag, FileAndChecksum file,
+                                     List<FileAndChecksum> fragments) {
+        return queueForDownload(new Download(description, url, action, eTag, file, fragments));
     }
 
     private static final Object notificationMutex = new Object();

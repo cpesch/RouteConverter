@@ -25,7 +25,7 @@ import slash.common.type.CompactCalendar;
 import java.util.List;
 
 /**
- * A checksum, contentLength, timestamp.
+ * A last modified timestamp, content length and SHA-1 checksum.
  *
  * @author Christian Pesch
  */
@@ -60,8 +60,8 @@ public class Checksum {
 
     public static Checksum getLatestChecksum(List<Checksum> checksums) {
         Checksum latest = null;
-        for(Checksum checksum : checksums) {
-            if(latest == null || checksum.laterThan(latest))
+        for (Checksum checksum : checksums) {
+            if (latest == null || checksum.laterThan(latest))
                 latest = checksum;
         }
         return latest;

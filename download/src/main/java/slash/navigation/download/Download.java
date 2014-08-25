@@ -38,32 +38,29 @@ public class Download {
     private final String description, url;
     private String eTag;
     private final Action action;
-    private final File fileTarget, tempFile;
-    private final List<File> fragmentTargets;
-    private Checksum fileChecksum;
-    private final List<Checksum> fragmentChecksums;
+    private final FileAndChecksum file;
+    private final File tempFile;
+    private final List<FileAndChecksum> fragments;
 
     private State state;
     private long processedBytes;
     private Long expectedBytes;
 
-    public Download(String description, String url, Action action, File fileTarget, Checksum fileChecksum,
-                    List<File> fragmentTargets, List<Checksum> fragmentChecksums, String eTag, State state, File tempFile) {
+    public Download(String description, String url, Action action, FileAndChecksum file,
+                    List<FileAndChecksum> fragments, String eTag, State state, File tempFile) {
         this.description = description;
         this.url = url;
         this.action = action;
-        this.fileTarget = fileTarget;
-        this.fileChecksum = fileChecksum;
-        this.fragmentTargets = fragmentTargets;
-        this.fragmentChecksums = fragmentChecksums;
+        this.file = file;
+        this.fragments = fragments;
         setETag(eTag);
         this.state = state;
         this.tempFile = tempFile;
     }
 
-    public Download(String description, String url, Action action, String eTag, File fileTarget, Checksum fileChecksum,
-                    List<File> fragmentTargets, List<Checksum> fragmentChecksums) {
-        this(description, url, action, fileTarget, fileChecksum, fragmentTargets, fragmentChecksums, eTag, Queued, newTempFile());
+    public Download(String description, String url, Action action, String eTag, FileAndChecksum file,
+                    List<FileAndChecksum> fragments) {
+        this(description, url, action, file, fragments, eTag, Queued, newTempFile());
     }
 
     private static File newTempFile() {
@@ -89,24 +86,12 @@ public class Download {
         return action;
     }
 
-    public File getFileTarget() {
-        return fileTarget;
+    public FileAndChecksum getFile() {
+        return file;
     }
 
-    public Checksum getFileChecksum() {
-        return fileChecksum;
-    }
-
-    public void setFileChecksum(Checksum fileChecksum) {
-        this.fileChecksum = fileChecksum;
-    }
-
-    public List<File> getFragmentTargets() {
-        return fragmentTargets;
-    }
-
-    public List<Checksum> getFragmentChecksums() {
-        return fragmentChecksums;
+    public List<FileAndChecksum> getFragments() {
+        return fragments;
     }
 
     public String getETag() {

@@ -72,7 +72,7 @@ public class ElevationServiceFacade {
                 return service;
         }
 
-        if(!loggedFailedWarning) {
+        if (!loggedFailedWarning) {
             log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
             loggedFailedWarning = true;
         }

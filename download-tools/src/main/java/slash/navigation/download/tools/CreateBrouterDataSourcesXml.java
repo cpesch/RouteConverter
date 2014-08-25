@@ -22,25 +22,34 @@ package slash.navigation.download.tools;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.download.tools.base.WebsiteDataSourcesXmlGenerator;
+import slash.navigation.download.tools.helpers.ContentLengthAndLastModified;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Creates a BRouter data sources XML from file system mirror.
+ * Creates a BRouter data sources XML from the website.
  *
  * @author Christian Pesch
  */
 
-public class CreateBrouterDataSourcesXml extends BaseDataSourcesXmlGenerator {
+public class CreateBrouterDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
+    protected boolean isIncludeAnchor(String anchor) {
+        return anchor.endsWith(".rd5");
+    }
 
-    protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
-        String uri = relativizeUri(file, baseDirectory);
-        System.out.println(getClass().getSimpleName() + ": " + uri);
-        fileTypes.add(createFileType(uri, file, null));
+    protected boolean isRecurseAnchor(String anchor) {
+        return false;
+    }
+
+    protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri);
+        if (meta != null)
+            fileTypes.add(createFileType(uri, meta.lastModified, meta.contentLength, null));
     }
 
     public static void main(String[] args) throws Exception {
         new CreateBrouterDataSourcesXml().run(args);
-    }}
+    }
+}

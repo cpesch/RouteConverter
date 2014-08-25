@@ -24,6 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourcesUtil;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.DatasourcesType;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
@@ -38,6 +39,8 @@ import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -168,11 +171,11 @@ public class RouteFeedback {
         return request.executeAsString().replace("\"", "");
     }
 
-    private static String createDataSourceXml(DataSource dataSource, String... filterUrls) throws IOException {
+    private static String createDataSourceXml(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) throws IOException {
         slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
 
         DatasourcesType datasourcesType = objectFactory.createDatasourcesType();
-        DatasourceType datasourceType = asDatasourceType(dataSource, filterUrls);
+        DatasourceType datasourceType = asDatasourceType(dataSource, fileAndChecksums, filterUrls);
         datasourcesType.getDatasource().add(datasourceType);
 
         return DataSourcesUtil.toXml(datasourcesType);
@@ -182,9 +185,9 @@ public class RouteFeedback {
         return rootUrl + DATASOURCES_URI;
     }
 
-    public String sendChecksums(DataSource dataSource, String... filterUrls) throws IOException {
-        String xml = createDataSourceXml(dataSource, filterUrls);
-        log.fine(format("Sending checksums for %s:\n%s", printArrayToDialogString(filterUrls), xml));
+    public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) throws IOException {
+        String xml = createDataSourceXml(dataSource, fileAndChecksums, filterUrls);
+        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileAndChecksums, printArrayToDialogString(filterUrls), xml));
         Post request = new Post(getDataSourcesUrl(), credentials);
         request.addFile("file", xml.getBytes());
 
@@ -195,7 +198,7 @@ public class RouteFeedback {
             throw new IOException("POST on " + getDataSourcesUrl() + " for data source " + dataSource +
                     " not successful: " + result);
 
-        log.info(format("Sent checksum for %s with result:\n%s", printArrayToDialogString(filterUrls), result));
+        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileAndChecksums, printArrayToDialogString(filterUrls), result));
         return result;
     }
 }

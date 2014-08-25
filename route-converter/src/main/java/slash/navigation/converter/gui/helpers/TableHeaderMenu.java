@@ -136,7 +136,7 @@ public class TableHeaderMenu {
     }
 
     private List<ToggleColumnVisibilityAction> getActions() {
-        List<ToggleColumnVisibilityAction> result = new ArrayList<ToggleColumnVisibilityAction>();
+        List<ToggleColumnVisibilityAction> result = new ArrayList<>();
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
             result.add((ToggleColumnVisibilityAction) actionManager.get("show-column-" + column.getName()));

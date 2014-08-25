@@ -6,6 +6,7 @@ import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
+import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -61,9 +62,10 @@ public class QueuePersisterIT {
     @Test
     public void testSaveAndLoadDownloads() throws IOException {
         CompactCalendar now = now();
-        List<Download> downloads = new ArrayList<Download>();
-        downloads.add(new Download("description", "url", Flatten, fileTarget, createChecksum(),
-                asList(fragmentTarget1, fragmentTarget2), asList(createChecksum(), createChecksum()), "etag", Downloading, tempFile));
+        List<Download> downloads = new ArrayList<>();
+        downloads.add(new Download("description", "url", Flatten, new FileAndChecksum(fileTarget, createChecksum()),
+                asList(new FileAndChecksum(fragmentTarget1, createChecksum()), new FileAndChecksum(fragmentTarget2, createChecksum())),
+                "etag", Downloading, tempFile));
         persister.save(queueFile, downloads, now);
 
         QueuePersister.Result result = persister.load(queueFile);

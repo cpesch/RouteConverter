@@ -25,10 +25,7 @@ import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Fragment;
-import slash.navigation.download.Action;
-import slash.navigation.download.Checksum;
-import slash.navigation.download.Download;
-import slash.navigation.download.DownloadManager;
+import slash.navigation.download.*;
 import slash.navigation.maps.models.*;
 
 import java.io.File;
@@ -201,29 +198,26 @@ public class MapManager {
 
     public void queueForDownload(List<RemoteResource> resources) {
         DownloadManager downloadManager = dataSourceManager.getDownloadManager();
-        List<Download> downloads = new ArrayList<Download>();
+        List<Download> downloads = new ArrayList<>();
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();
 
-            List<java.io.File> fragmentTargets = new ArrayList<>();
+            List<FileAndChecksum> fragments = new ArrayList<>();
             for (Fragment otherFragments : downloadable.getFragments())
-                fragmentTargets.add(getFragment(otherFragments));
-            List<Checksum> fragmentChecksums = new ArrayList<>();
-            for (Fragment otherFragments : downloadable.getFragments())
-                fragmentChecksums.add(otherFragments.getLatestChecksum());
+                fragments.add(new FileAndChecksum(getFragment(otherFragments), otherFragments.getLatestChecksum()));
 
             Action action = resource.getDownloadable().getUri().endsWith(".zip") ? Extract : Copy;
             File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
 
             Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + downloadable.getUri(),
-                    resource.getUrl(), action, null, target, downloadable.getLatestChecksum(), fragmentTargets, fragmentChecksums);
+                    resource.getUrl(), action, null, new FileAndChecksum(target, downloadable.getLatestChecksum()), fragments);
             downloads.add(download);
         }
         downloadManager.waitForCompletion(downloads);
     }
 
     private File getFragment(Fragment fragment) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(); // TODO fix me
     }
 
     private File getFile(RemoteResource resource) {

@@ -88,7 +88,7 @@ public class DownloadExecutor implements Runnable {
     }
 
     private boolean canResume() {
-        Checksum checksum = download.getFileChecksum();
+        Checksum checksum = download.getFile().getExpectedChecksum();
         return download.getTempFile().exists() && download.getTempFile().length() > 0 &&
                 checksum != null && checksum.getContentLength() != null &&
                 checksum.getContentLength() > download.getTempFile().length();
@@ -119,7 +119,8 @@ public class DownloadExecutor implements Runnable {
         public void processedBytes(long byteCount) {
             download.setProcessedBytes(byteCount);
             downloadManager.getModel().updateDownload(download);
-            downloadManager.fireDownloadProgressed(download);
+            if (download.getState().equals(Downloading))
+                downloadManager.fireDownloadProgressed(download);
         }
     }
 
@@ -128,7 +129,7 @@ public class DownloadExecutor implements Runnable {
     private boolean resume() throws IOException {
         updateState(download, Resuming);
         long fileSize = download.getTempFile().length();
-        Long contentLength = download.getFileChecksum() != null ? download.getFileChecksum().getContentLength() : null;
+        Long contentLength = download.getFile().getExpectedChecksum() != null ? download.getFile().getExpectedChecksum().getContentLength() : null;
         log.info(format("Resuming bytes %d-%d from %s", fileSize, contentLength, download.getUrl()));
 
         get = new Get(download.getUrl());
@@ -146,11 +147,11 @@ public class DownloadExecutor implements Runnable {
 
     private boolean download() throws IOException {
         updateState(download, Downloading);
-        Long contentLength = download.getFileChecksum() != null ? download.getFileChecksum().getContentLength() : null;
+        Long contentLength = download.getFile().getExpectedChecksum() != null ? download.getFile().getExpectedChecksum().getContentLength() : null;
         log.info(format("Downloading %d bytes from %s with ETag %s", contentLength, download.getUrl(), download.getETag()));
 
         get = new Get(download.getUrl());
-        if (existsTarget() && download.getETag() != null)
+        if (new Validator(download).existTargets() && download.getETag() != null)
             get.setIfNoneMatch(download.getETag());
 
         InputStream inputStream = get.executeAsStream();
@@ -162,16 +163,6 @@ public class DownloadExecutor implements Runnable {
             return true;
         }
         return false;
-    }
-
-    private boolean existsTarget() {
-        if (!download.getFileTarget().exists())
-            return false;
-        if (download.getFragmentTargets() != null)
-            for (File fragmentTarget : download.getFragmentTargets())
-                if (!fragmentTarget.exists())
-                    return false;
-        return true;
     }
 
     private boolean postProcess() throws IOException {
@@ -206,7 +197,7 @@ public class DownloadExecutor implements Runnable {
     }
 
     private boolean copy() throws IOException {
-        File target = download.getFileTarget();
+        File target = download.getFile().getFile();
         ensureDirectory(target.getParent());
         new Copier(modelUpdater).copyAndClose(download.getTempFile(), target);
         setLastModified(target, fromMillis(get.getLastModified()));
@@ -214,14 +205,14 @@ public class DownloadExecutor implements Runnable {
     }
 
     private boolean flatten() throws IOException {
-        File target = download.getFileTarget();
+        File target = download.getFile().getFile();
         new Extractor(modelUpdater).flatten(download.getTempFile(), target);
         setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
         return true;
     }
 
     private boolean extract() throws IOException {
-        File target = download.getFileTarget();
+        File target = download.getFile().getFile();
         new Extractor(modelUpdater).extract(download.getTempFile(), target);
         setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
         return true;

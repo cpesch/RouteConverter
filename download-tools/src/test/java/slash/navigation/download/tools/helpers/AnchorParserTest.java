@@ -17,27 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.helpers;
+package slash.navigation.download.tools.helpers;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.download.Download;
-import slash.navigation.download.DownloadListener;
-import slash.navigation.download.State;
-import slash.navigation.feedback.domain.RouteFeedback;
+import org.junit.Test;
 
-/**
- * Sends checksums via the {@link RouteFeedback} upon {@link State#Succeeded} on {@link Download}s.
- *
- * @author Christian Pesch
- */
-public class ChecksumSender implements DownloadListener {
-    public void progressed(Download download, int percentage) {
+import java.io.IOException;
+
+import static java.util.Arrays.asList;
+import static junit.framework.TestCase.assertEquals;
+
+public class AnchorParserTest {
+    private AnchorParser parser = new AnchorParser();
+
+    @Test
+    public void testParseSingleAnchor() throws IOException {
+        assertEquals(asList("", "link"), parser.parseAnchors("bla<a href=''><a/>" +
+                "bla<a id='a' href=\"link\" download=\"link\">text</a>bla"));
     }
 
-    public void failed(Download download) {
-    }
-
-    public void succeeded(Download download) {
-        RouteConverter.getInstance().sendChecksums(download);
+    @Test
+    public void testParseMultipleAnchors() throws IOException {
+        assertEquals(asList("http://url1", "http://url2"), parser.parseAnchors("bla<a href=\"http://url1\">text</a>blabla<a href=\"http://url2\">text</a>bla"));
     }
 }

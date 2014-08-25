@@ -23,6 +23,7 @@ import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.FragmentType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.download.tools.base.FileDataSourcesXmlGenerator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,12 +39,12 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
- * Creates a HGT data sources XML from file system mirror.
+ * Creates a HGT data sources XML from a file system mirror.
  *
  * @author Christian Pesch
  */
 
-public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
+public class CreateHgtDataSourcesXml extends FileDataSourcesXmlGenerator {
     private static final Pattern KEY_PATTERN = Pattern.compile(".*([N|S]\\d{2}[E|W]\\d{3}).*", CASE_INSENSITIVE);
 
     private String extractKey(String string) {
@@ -68,7 +69,7 @@ public class CreateHgtDataSourcesXml extends BaseDataSourcesXmlGenerator {
                     String key = extractKey(entry.getName());
                     if (key != null) {
                         System.out.println(getClass().getSimpleName() + ": " + key + " maps to " + uri);
-                        fragmentTypes.add(createFragmentType(key, uri, entry, zipInputStream));
+                        fragmentTypes.add(createFragmentType(key, entry, zipInputStream));
 
                         // do not close zip input stream
                         zipInputStream.closeEntry();

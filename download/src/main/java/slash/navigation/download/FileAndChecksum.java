@@ -19,31 +19,42 @@
 */
 package slash.navigation.download;
 
-import slash.common.type.CompactCalendar;
-
-import java.util.Comparator;
+import java.io.File;
 
 /**
- * Compares {@link DownloadExecutor}s by their last sync date.
+ * A file, it's expected and actual checksum
  *
  * @author Christian Pesch
  */
-class DownloadExecutorComparator implements Comparator<Runnable> {
-    public int compare(Runnable r1, Runnable r2) {
-        if (!(r1 instanceof DownloadExecutor))
-            return -1;
-        if (!(r2 instanceof DownloadExecutor))
-            return 1;
-        return (int) (getTimeInMillis((DownloadExecutor) r1) - getTimeInMillis((DownloadExecutor) r2));
+
+public class FileAndChecksum {
+    private final File file;
+    private final Checksum expectedChecksum;
+    private Checksum actualChecksum;
+
+    public FileAndChecksum(File file, Checksum expectedChecksum) {
+        this.file = file;
+        this.expectedChecksum = expectedChecksum;
     }
 
-    private long getTimeInMillis(DownloadExecutor executor) {
-        Checksum checksum = executor.getDownload().getFile().getExpectedChecksum();
-        if (checksum != null) {
-            CompactCalendar lastModified = checksum.getLastModified();
-            if (lastModified != null)
-                return lastModified.getTimeInMillis();
-        }
-        return 0;
+    public File getFile() {
+        return file;
+    }
+
+    public Checksum getExpectedChecksum() {
+        return expectedChecksum;
+    }
+
+    public Checksum getActualChecksum() {
+        return actualChecksum;
+    }
+
+    public void setActualChecksum(Checksum actualChecksum) {
+        this.actualChecksum = actualChecksum;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[file=" + file + ", expectedChecksum=" + expectedChecksum +
+                ", actualChecksum=" + actualChecksum + "]";
     }
 }

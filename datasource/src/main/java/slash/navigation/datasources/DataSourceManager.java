@@ -22,6 +22,7 @@ package slash.navigation.datasources;
 
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
@@ -69,15 +70,15 @@ public class DataSourceManager {
         log.info(format("Downloading edition '%s'", url));
 
         Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources", url, Copy,
-                null, new java.io.File(getTarget(), uri), null, null, null);
+                null, new FileAndChecksum(new java.io.File(getTarget(), uri), null), null);
         downloadManager.waitForCompletion(asList(download));
 
-        java.io.File target = download.getFileTarget();
+        java.io.File target = download.getFile().getFile();
         if (!target.exists()) {
             log.warning(format("Cannot find %s to load '%s' data", target, download.getDescription()));
             return;
         }
-        dataSourceService.load(new FileInputStream(download.getFileTarget()));
+        dataSourceService.load(new FileInputStream(download.getFile().getFile()));
     }
 
     private void initializeDataSources() throws JAXBException, FileNotFoundException {
@@ -88,15 +89,15 @@ public class DataSourceManager {
                 log.info(format("Downloading data source '%s'", url));
 
                 Download download = downloadManager.queueForDownload(dataSource.getName() + ": Data Source " + file.getUri(),
-                        url, Copy, null, new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum(),
-                        null, null);
+                        url, Copy, null, new FileAndChecksum(new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum()),
+                        null);
                 downloads.add(download);
             }
         }
         downloadManager.waitForCompletion(downloads);
 
         for(Download download : downloads) {
-            java.io.File target = download.getFileTarget();
+            java.io.File target = download.getFile().getFile();
             if (!target.exists()) {
                 log.warning(format("Cannot find %s to load '%s' data", target, download.getDescription()));
                 continue;

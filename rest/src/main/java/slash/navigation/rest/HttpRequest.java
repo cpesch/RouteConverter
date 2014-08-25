@@ -158,7 +158,7 @@ public abstract class HttpRequest {
         return body;
     }
 
-    private void release() throws IOException {
+    public void release() throws IOException {
         if(response instanceof Closeable)
             ((Closeable)response).close();
         method.reset();

@@ -114,6 +114,72 @@
                             </filters>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>CreateMapDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateMapDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateMapDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateMapDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>CreateThemeDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateThemeDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateThemeDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateThemeDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

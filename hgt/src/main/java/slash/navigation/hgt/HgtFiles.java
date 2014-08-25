@@ -23,9 +23,9 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 import slash.navigation.datasources.Fragment;
-import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.IOException;
@@ -147,18 +147,15 @@ public class HgtFiles implements ElevationService {
     }
 
     private Download download(Fragment<File> fragment) {
-        File file = fragment.getDownloadable();
+        File downloadable = fragment.getDownloadable();
 
-        List<java.io.File> fragmentTargets = new ArrayList<>();
-        for (Fragment otherFragments : file.getFragments())
-            fragmentTargets.add(createFile(otherFragments.getKey()));
-        List<Checksum> fragmentChecksums = new ArrayList<>();
-        for (Fragment otherFragments : file.getFragments())
-            fragmentChecksums.add(otherFragments.getLatestChecksum());
+        List<FileAndChecksum> fragments = new ArrayList<>();
+        for (Fragment otherFragments : downloadable.getFragments())
+            fragments.add(new FileAndChecksum(createFile(otherFragments.getKey()), otherFragments.getLatestChecksum()));
 
-        String uri = file.getUri();
+        String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + ": Elevation Data " + uri, url, Flatten,
-                null, getDirectory(), file.getLatestChecksum(), fragmentTargets, fragmentChecksums);
+                null, new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
     }
 }

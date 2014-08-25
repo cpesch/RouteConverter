@@ -27,6 +27,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -247,6 +248,6 @@ public class BRouter implements RoutingService {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " routing data for " + uri, url, Copy,
-                null, createFile(downloadable.getUri()), downloadable.getLatestChecksum(), null, null);
+                null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 }

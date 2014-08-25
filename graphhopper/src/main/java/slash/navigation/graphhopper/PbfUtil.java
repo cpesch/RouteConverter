@@ -24,12 +24,13 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
 
 import static java.lang.String.format;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
  * Provides PBF functionality.
@@ -40,11 +41,9 @@ public class PbfUtil {
     private static final Logger log = Logger.getLogger(PbfUtil.class.getName());
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
-    public static BoundingBox extractBoundingBox(File file) {
-        FileInputStream fileInputStream = null;
+    public static BoundingBox extractBoundingBox(InputStream inputStream) {
         try {
-            fileInputStream = new FileInputStream(file);
-            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
             boolean foundOsmHeader = false;
 
             while (!foundOsmHeader) {
@@ -52,15 +51,15 @@ public class PbfUtil {
                     break;
 
                 byte[] blobHeaderBytes = new byte[dataInputStream.readInt()];
-                int readHeader = dataInputStream.read(blobHeaderBytes);
-                if (readHeader != blobHeaderBytes.length)
-                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobHeaderBytes.length, readHeader));
+                int readBlobHeader = dataInputStream.read(blobHeaderBytes);
+                if (readBlobHeader != blobHeaderBytes.length)
+                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobHeaderBytes.length, readBlobHeader));
                 Fileformat.BlobHeader blobHeader = Fileformat.BlobHeader.parseFrom(blobHeaderBytes);
 
                 byte[] blobBytes = new byte[blobHeader.getDatasize()];
                 int readBlob = dataInputStream.read(blobBytes);
                 if (readBlob != blobBytes.length)
-                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobBytes.length, readBlob));
+                    log.warning(format("Wanted to read %d blob bytes, but got only %d bytes", blobBytes.length, readBlob));
                 Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobBytes);
 
                 InputStream blobData;
@@ -71,19 +70,16 @@ public class PbfUtil {
                 }
 
                 if (blobHeader.getType().equals("OSMHeader")) {
-                    Osmformat.HeaderBlock hb = Osmformat.HeaderBlock.parseFrom(blobData);
-                    if (hb.hasBbox())
-                        return toBoundingBox(hb.getBbox());
+                    Osmformat.HeaderBlock headerBlock = Osmformat.HeaderBlock.parseFrom(blobData);
+                    if (headerBlock.hasBbox())
+                        return toBoundingBox(headerBlock.getBbox());
 
                     foundOsmHeader = true;
                 } else
                     log.info("Skipped block " + blobHeader.getType() + " with " + blobBytes.length + " bytes");
             }
         } catch (IOException e) {
-            log.warning(format("Could not pbf file '%s': %s", file, e));
-        } finally {
-            if (fileInputStream != null)
-                closeQuietly(fileInputStream);
+            log.warning(format("Could not read pbf header: %s", e));
         }
         return null;
     }
