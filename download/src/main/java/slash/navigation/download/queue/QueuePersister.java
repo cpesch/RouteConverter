@@ -20,10 +20,7 @@
 package slash.navigation.download.queue;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.download.Action;
-import slash.navigation.download.Checksum;
-import slash.navigation.download.Download;
-import slash.navigation.download.State;
+import slash.navigation.download.*;
 import slash.navigation.download.queue.binding.*;
 
 import javax.xml.bind.JAXBException;
@@ -88,23 +85,16 @@ public class QueuePersister {
 
     private Download asDownload(DownloadType downloadType) {
         return new Download(downloadType.getDescription(), downloadType.getUrl(), Action.valueOf(downloadType.getAction()),
-                new File(downloadType.getDownloadable().getTarget()), asChecksum(downloadType.getDownloadable().getChecksum()),
-                asFiles(downloadType.getDownloadable().getFragment()), asChecksums(downloadType.getDownloadable().getFragment()),
+                new FileAndChecksum(new File(downloadType.getDownloadable().getTarget()), asChecksum(downloadType.getDownloadable().getChecksum())),
+                asFileAndChecksums(downloadType.getDownloadable().getFragment()),
                 downloadType.getETag(), State.valueOf(downloadType.getState()), new File(downloadType.getTempFile()));
     }
 
-    private List<File> asFiles(List<FragmentType> fragmentTypes) {
-        List<File> files = new ArrayList<>();
+    private List<FileAndChecksum> asFileAndChecksums(List<FragmentType> fragmentTypes) {
+        List<FileAndChecksum> files = new ArrayList<>();
         for (FragmentType fragmentType : fragmentTypes)
-            files.add(new File(fragmentType.getTarget()));
+            files.add(new FileAndChecksum(new File(fragmentType.getTarget()), asChecksum(fragmentType.getChecksum())));
         return files;
-    }
-
-    private List<Checksum> asChecksums(List<FragmentType> fragmentTypes) {
-        List<Checksum> checksums = new ArrayList<>();
-        for (FragmentType fragmentType : fragmentTypes)
-            checksums.add(asChecksum(fragmentType.getChecksum()));
-        return checksums;
     }
 
     private Checksum asChecksum(ChecksumType checksumType) {
@@ -146,9 +136,9 @@ public class QueuePersister {
 
     private DownloadableType asDownloadableType(Download download) {
         DownloadableType downloadableType = new ObjectFactory().createDownloadableType();
-        downloadableType.setChecksum(asChecksumType(download.getFileChecksum()));
-        downloadableType.setTarget(download.getFileTarget().getPath());
-        List<FragmentType> fragmentTypes = asFragmentTypes(download.getFragmentTargets(), download.getFragmentChecksums());
+        downloadableType.setChecksum(asChecksumType(download.getFile().getExpectedChecksum()));
+        downloadableType.setTarget(download.getFile().getFile().getPath());
+        List<FragmentType> fragmentTypes = asFragmentTypes(download.getFragments());
         if (fragmentTypes != null)
             downloadableType.getFragment().addAll(fragmentTypes);
         return downloadableType;
@@ -165,21 +155,21 @@ public class QueuePersister {
         return checksumType;
     }
 
-    private List<FragmentType> asFragmentTypes(List<File> targets, List<Checksum> checksums) {
-        if (targets == null || checksums == null)
+    private List<FragmentType> asFragmentTypes(List<FileAndChecksum> fragments) {
+        if (fragments == null)
             return null;
 
         List<FragmentType> fragmentTypes = new ArrayList<>();
-        for (int i = 0; i < targets.size(); i++) {
-            fragmentTypes.add(asFragmentType(targets.get(i), checksums.get(i)));
+        for (FileAndChecksum fragment : fragments) {
+            fragmentTypes.add(asFragmentType(fragment));
         }
         return fragmentTypes;
     }
 
-    private FragmentType asFragmentType(File target, Checksum checksum) {
+    private FragmentType asFragmentType(FileAndChecksum fileAndChecksum) {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setChecksum(asChecksumType(checksum));
-        fragmentType.setTarget(target.getPath());
+        fragmentType.setChecksum(asChecksumType(fileAndChecksum.getExpectedChecksum()));
+        fragmentType.setTarget(fileAndChecksum.getFile().getPath());
         return fragmentType;
     }
 }

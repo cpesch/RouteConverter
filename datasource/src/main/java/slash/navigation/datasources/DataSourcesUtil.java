@@ -27,6 +27,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.download.Checksum;
+import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -34,7 +35,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Transfer.formatTime;
@@ -101,7 +104,7 @@ public class DataSourcesUtil {
         return false;
     }
 
-    public static DatasourceType asDatasourceType(DataSource dataSource, String... filterUrls) {
+    public static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DatasourceType datasourceType = objectFactory.createDatasourceType();
@@ -110,15 +113,15 @@ public class DataSourcesUtil {
         datasourceType.setBaseUrl(dataSource.getBaseUrl());
         datasourceType.setDirectory(dataSource.getDirectory());
 
-        for (File file : dataSource.getFiles()) {
-            if (!contains(filterUrls, dataSource.getBaseUrl() + file.getUri()))
+        for (File aFile : dataSource.getFiles()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + aFile.getUri()))
                 continue;
 
             FileType fileType = objectFactory.createFileType();
-            fileType.setBoundingBox(asBoundingBoxType(file.getBoundingBox()));
-            fileType.setUri(file.getUri());
-            replaceChecksumTypes(fileType.getChecksum(), file.getChecksums());
-            replaceFragmentTypes(fileType.getFragment(), file.getFragments());
+            fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
+            fileType.setUri(aFile.getUri());
+            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile.getChecksums(), fileAndChecksums.keySet()));
+            replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileAndChecksums);
             datasourceType.getFile().add(fileType);
         }
 
@@ -129,8 +132,8 @@ public class DataSourcesUtil {
             MapType mapType = objectFactory.createMapType();
             mapType.setBoundingBox(asBoundingBoxType(map.getBoundingBox()));
             mapType.setUri(map.getUri());
-            replaceChecksumTypes(mapType.getChecksum(), map.getChecksums());
-            replaceFragmentTypes(mapType.getFragment(), map.getFragments());
+            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map.getChecksums(), fileAndChecksums.keySet()));
+            replaceFragmentTypes(mapType.getFragment(), map.getFragments(), fileAndChecksums);
             datasourceType.getMap().add(mapType);
         }
 
@@ -141,8 +144,8 @@ public class DataSourcesUtil {
             ThemeType themeType = objectFactory.createThemeType();
             themeType.setImageUrl(theme.getImageUrl());
             themeType.setUri(theme.getUri());
-            replaceChecksumTypes(themeType.getChecksum(), theme.getChecksums());
-            replaceFragmentTypes(themeType.getFragment(), theme.getFragments());
+            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme.getChecksums(), fileAndChecksums.keySet()));
+            replaceFragmentTypes(themeType.getFragment(), theme.getFragments(), fileAndChecksums);
             datasourceType.getTheme().add(themeType);
         }
 
@@ -166,7 +169,18 @@ public class DataSourcesUtil {
         return positionType;
     }
 
-    public static void replaceChecksumTypes(List<ChecksumType> previousChecksumTypes, List<Checksum> nextChecksums) {
+    private static List<Checksum> filterChecksums(List<Checksum> expectedChecksums, Set<FileAndChecksum> fileAndChecksums) {
+        List<Checksum> result = new ArrayList<>();
+        for (Checksum expectedChecksum : expectedChecksums) {
+            for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
+                if (fileAndChecksum.getExpectedChecksum().equals(expectedChecksum))
+                    result.add(fileAndChecksum.getActualChecksum());
+            }
+        }
+        return result;
+    }
+
+    private static void replaceChecksumTypes(List<ChecksumType> previousChecksumTypes, List<Checksum> nextChecksums) {
         previousChecksumTypes.clear();
         if (nextChecksums != null)
             previousChecksumTypes.addAll(asChecksumTypes(nextChecksums));
@@ -194,26 +208,45 @@ public class DataSourcesUtil {
         return checksumType;
     }
 
-    public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment> nextFragments) {
+    public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment> nextFragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fragments) {
         previousFragmentTypes.clear();
         if (nextFragments != null)
-            previousFragmentTypes.addAll(asFragmentTypes(nextFragments));
+            previousFragmentTypes.addAll(asFragmentTypes(nextFragments, fragments));
     }
 
-    private static List<FragmentType> asFragmentTypes(List<Fragment> fragments) {
+    private static Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumsMap) {
+        Set<FileAndChecksum> result = new HashSet<>();
+        for (FileAndChecksum fileAndChecksum : fileAndChecksumsMap.keySet()) {
+            String path = fileAndChecksum.getFile().getAbsolutePath();
+            String uri = fragment.getDownloadable().getUri();
+            if (path.endsWith(uri)) {
+                List<FileAndChecksum> fragmentAndChecksums = fileAndChecksumsMap.get(fileAndChecksum);
+                if (fragmentAndChecksums != null)
+                    for (FileAndChecksum fragmentChecksum : fragmentAndChecksums) {
+                        String pathf = fragmentChecksum.getFile().getAbsolutePath();
+                        String key = fragment.getKey();
+                        if (pathf.endsWith(key))
+                            result.add(fragmentChecksum);
+                    }
+            }
+        }
+        return result;
+    }
+
+    private static List<FragmentType> asFragmentTypes(List<Fragment> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
         if (fragments == null)
             return null;
 
         List<FragmentType> fragmentTypes = new ArrayList<>();
         for (Fragment fragment : fragments)
-            fragmentTypes.add(asFragmentType(fragment));
+            fragmentTypes.add(asFragmentType(fragment, findFile(fragment, fileAndChecksums)));
         return fragmentTypes;
     }
 
-    private static FragmentType asFragmentType(Fragment fragment) {
+    private static FragmentType asFragmentType(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
         fragmentType.setKey(fragment.getKey());
-        replaceChecksumTypes(fragmentType.getChecksum(), fragment.getChecksums());
+        replaceChecksumTypes(fragmentType.getChecksum(), filterChecksums(fragment.getChecksums(), fileAndChecksums));
         return fragmentType;
     }
 

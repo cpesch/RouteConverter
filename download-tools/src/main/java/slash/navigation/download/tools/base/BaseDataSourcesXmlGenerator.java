@@ -17,21 +17,17 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools;
+package slash.navigation.download.tools.base;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import static java.io.File.separatorChar;
-import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.apache.commons.io.IOUtils.closeQuietly;
@@ -42,77 +38,14 @@ import static slash.navigation.datasources.DataSourcesUtil.asBoundingBoxType;
 import static slash.navigation.datasources.DataSourcesUtil.marshal;
 
 /**
- * Base for generator of data sources XML from file system mirror.
+ * Base for generation of data sources XML.
  *
  * @author Christian Pesch
  */
 
 public abstract class BaseDataSourcesXmlGenerator {
 
-    public void run(String[] args) throws Exception {
-        if (args.length != 6) {
-            System.err.println(getClass().getSimpleName() + ": <id> <name> <baseUrl> <directory> <scanDirectory> <writeXmlFile>");
-            System.exit(20);
-        }
-
-        long start = currentTimeMillis();
-
-        DatasourceType datasourceType = new ObjectFactory().createDatasourceType();
-        datasourceType.setId(args[0]);
-        datasourceType.setName(args[1]);
-        datasourceType.setBaseUrl(args[2]);
-        datasourceType.setDirectory(args[3]);
-
-        List<File> files = new ArrayList<>();
-        File scanDirectory = new File(args[4]);
-        if (!scanDirectory.exists()) {
-            System.err.println(getClass().getSimpleName() + ": " + scanDirectory + " does not exist");
-            System.exit(10);
-        }
-        collectFiles(scanDirectory, files);
-
-        List<FileType> fileTypes = new ArrayList<>();
-        List<ThemeType> themeTypes = new ArrayList<>();
-        List<MapType> mapTypes = new ArrayList<>();
-
-        parseFiles(files, fileTypes, mapTypes, themeTypes, scanDirectory);
-
-        datasourceType.getFile().addAll(sortFileTypes(fileTypes));
-        datasourceType.getMap().addAll(sortMapTypes(mapTypes));
-        datasourceType.getTheme().addAll(sortThemeTypes(themeTypes));
-
-        File writeXmlFile = new File(args[5]);
-        writeXml(datasourceType, writeXmlFile);
-
-        long end = currentTimeMillis();
-        System.out.println(getClass().getSimpleName() + ": Took " + ((end - start) / 1000) + " seconds to collect " +
-                fileTypes.size() + " files, " + mapTypes.size() + " maps and " + themeTypes.size() + " themes");
-        System.exit(0);
-    }
-
-    private void collectFiles(File directory, List<File> files) {
-        //noinspection ConstantConditions
-        for (File file : directory.listFiles()) {
-            if (file.isDirectory())
-                collectFiles(file, files);
-            else
-                files.add(file);
-        }
-    }
-
-    protected void parseFiles(List<File> files, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
-        System.out.println(getClass().getSimpleName() + ": Parsing " + files.size() + " files in " + baseDirectory);
-        for (File file : files)
-            parseFile(file, fileTypes, mapTypes, themeTypes, baseDirectory);
-    }
-
-    protected abstract void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException;
-
-    protected String relativizeUri(File file, File baseDirectory) {
-        return file.getAbsolutePath().substring(baseDirectory.getAbsolutePath().length() + 1).replace(separatorChar, '/');
-    }
-
-    private List<FileType> sortFileTypes(List<FileType> fileTypes) {
+    protected List<FileType> sortFileTypes(List<FileType> fileTypes) {
         FileType[] fileTypesArray = fileTypes.toArray(new FileType[fileTypes.size()]);
         sort(fileTypesArray, new Comparator<FileType>() {
             public int compare(FileType ft1, FileType ft2) {
@@ -122,7 +55,7 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(fileTypesArray);
     }
 
-    private List<MapType> sortMapTypes(List<MapType> mapTypes) {
+    protected List<MapType> sortMapTypes(List<MapType> mapTypes) {
         MapType[] mapTypesArray = mapTypes.toArray(new MapType[mapTypes.size()]);
         sort(mapTypesArray, new Comparator<MapType>() {
             public int compare(MapType mt1, MapType mt2) {
@@ -132,7 +65,7 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(mapTypesArray);
     }
 
-    private List<ThemeType> sortThemeTypes(List<ThemeType> themeTypes) {
+    protected List<ThemeType> sortThemeTypes(List<ThemeType> themeTypes) {
         ThemeType[] themeTypesArray = themeTypes.toArray(new ThemeType[themeTypes.size()]);
         sort(themeTypesArray, new Comparator<ThemeType>() {
             public int compare(ThemeType tt1, ThemeType tt2) {
@@ -152,45 +85,6 @@ public abstract class BaseDataSourcesXmlGenerator {
         return asList(fragmentTypesArray);
     }
 
-    protected FileType createFileType(String uri, File file, BoundingBox boundingBox) throws IOException {
-        FileType fileType = new ObjectFactory().createFileType();
-        fileType.setUri(uri);
-        fileType.setBoundingBox(asBoundingBoxType(boundingBox));
-        fileType.getChecksum().add(createChecksumType(file));
-        return fileType;
-    }
-
-    protected MapType createMapType(String uri, File file, BoundingBox boundingBox) throws IOException {
-        MapType mapType = new ObjectFactory().createMapType();
-        mapType.setUri(uri);
-        mapType.setBoundingBox(asBoundingBoxType(boundingBox));
-        mapType.getChecksum().add(createChecksumType(file));
-        return mapType;
-    }
-
-    protected ThemeType createThemeType(String uri, File file, String imageUrl) throws IOException {
-        ThemeType themeType = new ObjectFactory().createThemeType();
-        themeType.setUri(uri);
-        themeType.setImageUrl(imageUrl);
-        themeType.getChecksum().add(createChecksumType(file));
-        return themeType;
-    }
-
-    protected FragmentType createFragmentType(String key, String uri, ZipEntry entry, ZipInputStream inputStream) throws IOException {
-        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setKey(key);
-        fragmentType.getChecksum().add(createChecksumType(entry.getTime(), entry.getSize(), inputStream));
-        return fragmentType;
-    }
-
-    private ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
-        ChecksumType result = new ChecksumType();
-        result.setLastModified(formatTime(fromMillis(lastModified), true));
-        result.setContentLength(contentLength);
-        result.setSha1(generateChecksum(inputStream));
-        return result;
-    }
-
     private ChecksumType createChecksumType(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
         try {
@@ -200,7 +94,66 @@ public abstract class BaseDataSourcesXmlGenerator {
         }
     }
 
-    private void writeXml(DatasourceType datasourceType, File file) throws JAXBException, FileNotFoundException {
+    protected FileType createFileType(String uri, File file, BoundingBox boundingBox) throws IOException {
+        FileType fileType = new ObjectFactory().createFileType();
+        fileType.setUri(uri);
+        fileType.setBoundingBox(asBoundingBoxType(boundingBox));
+        fileType.getChecksum().add(createChecksumType(file));
+        return fileType;
+    }
+
+    protected FileType createFileType(String uri, Long lastModified, Long contentLength, BoundingBox boundingBox) throws IOException {
+        FileType fileType = new ObjectFactory().createFileType();
+        fileType.setUri(uri);
+        fileType.setBoundingBox(asBoundingBoxType(boundingBox));
+        fileType.getChecksum().add(createChecksumType(lastModified, contentLength));
+        return fileType;
+    }
+
+    protected MapType createMapType(String uri, Long lastModified, Long contentLength, BoundingBox boundingBox) throws IOException {
+        MapType mapType = new ObjectFactory().createMapType();
+        mapType.setUri(uri);
+        mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        mapType.getChecksum().add(createChecksumType(lastModified, contentLength));
+        return mapType;
+    }
+
+    protected ThemeType createThemeType(String uri, Long lastModified, Long contentLength, InputStream inputStream, String imageUrl) throws IOException {
+        ThemeType themeType = new ObjectFactory().createThemeType();
+        themeType.setUri(uri);
+        themeType.setImageUrl(imageUrl);
+        themeType.getChecksum().add(createChecksumType(lastModified, contentLength, inputStream));
+        return themeType;
+    }
+
+    protected FragmentType createFragmentType(String key, ZipEntry entry, InputStream inputStream) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.getChecksum().add(createChecksumType(entry.getTime(), entry.getSize(), inputStream));
+        return fragmentType;
+    }
+
+    protected FragmentType createFragmentType(String key, Long lastModified, Long contentLength) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.getChecksum().add(createChecksumType(lastModified, contentLength));
+        return fragmentType;
+    }
+
+    protected ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
+        ChecksumType result = new ChecksumType();
+        result.setLastModified(formatTime(fromMillis(lastModified), true));
+        result.setContentLength(contentLength);
+        if (inputStream != null)
+            result.setSha1(generateChecksum(inputStream));
+        return result;
+    }
+
+    protected ChecksumType createChecksumType(Long lastModified, Long contentLength) throws IOException {
+        return createChecksumType(lastModified, contentLength, null);
+    }
+
+    protected void writeXml(DatasourceType datasourceType, File file) throws JAXBException, FileNotFoundException {
         DatasourcesType datasourcesType = new ObjectFactory().createDatasourcesType();
         datasourcesType.getDatasource().add(datasourceType);
         FileOutputStream out = new FileOutputStream(file);

@@ -45,6 +45,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -589,14 +590,22 @@ public class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public void sendChecksums(final DataSource dataSource, final Download download) {
+    public void sendChecksums(final Download download) {
+        final DataSource dataSource = RouteConverter.getInstance().getDataSourceManager().
+                getDataSourceService().getDataSourceByUrlPrefix(download.getUrl());
+        if (dataSource == null)
+            return;
+
+        final Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums = new HashMap<>();
+        fileAndChecksums.put(download.getFile(), download.getFragments());
+
         getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "SendChecksums";
             }
 
             public void run() throws IOException {
-                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, download.getUrl());
+                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, fileAndChecksums, download.getUrl());
             }
         });
     }
@@ -1019,6 +1028,7 @@ public class RouteConverter extends SingleFrameApplication {
                 }
 
                 initializeElevationServices();
+                // initializeRoutingServices();
             }
         }, "DownloadManagerInitializer").start();
     }
@@ -1029,6 +1039,9 @@ public class RouteConverter extends SingleFrameApplication {
             getElevationServiceFacade().addElevationService(hgtFile);
             log.info(String.format("Added elevation service '%s'", hgtFile.getName()));
         }
+    }
+
+    private void initializeRoutingServices() {
     }
 
     private class PrintMapAction extends FrameAction {

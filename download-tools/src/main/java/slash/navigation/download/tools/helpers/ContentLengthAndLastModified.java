@@ -17,27 +17,19 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.helpers;
-
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.download.Download;
-import slash.navigation.download.DownloadListener;
-import slash.navigation.download.State;
-import slash.navigation.feedback.domain.RouteFeedback;
+package slash.navigation.download.tools.helpers;
 
 /**
- * Sends checksums via the {@link RouteFeedback} upon {@link State#Succeeded} on {@link Download}s.
+ * A content length and a last modification date
  *
  * @author Christian Pesch
  */
-public class ChecksumSender implements DownloadListener {
-    public void progressed(Download download, int percentage) {
-    }
 
-    public void failed(Download download) {
-    }
+public class ContentLengthAndLastModified {
+    public Long contentLength, lastModified;
 
-    public void succeeded(Download download) {
-        RouteConverter.getInstance().sendChecksums(download);
+    public ContentLengthAndLastModified(Long contentLength, Long lastModified) {
+        this.contentLength = contentLength;
+        this.lastModified = lastModified;
     }
 }
