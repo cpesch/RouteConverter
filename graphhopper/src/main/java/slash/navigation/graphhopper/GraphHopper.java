@@ -60,8 +60,8 @@ public class GraphHopper implements RoutingService {
     private static final Logger log = Logger.getLogger(GraphHopper.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), new TravelMode("Car"),
-            new TravelMode("Foot"));
+    private static final TravelMode CAR = new TravelMode("Car");
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
 
     private final DataSource dataSource;
     private final DownloadManager downloadManager;
@@ -92,6 +92,10 @@ public class GraphHopper implements RoutingService {
 
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
+    }
+
+    public TravelMode getPreferredTravelMode() {
+        return CAR;
     }
 
     public String getPath() {

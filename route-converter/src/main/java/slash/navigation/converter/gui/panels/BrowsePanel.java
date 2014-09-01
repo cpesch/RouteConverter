@@ -25,13 +25,27 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.local.LocalCatalog;
-import slash.navigation.catalog.model.*;
+import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.CategoryTreeNodeImpl;
+import slash.navigation.catalog.model.RootTreeNode;
+import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.*;
+import slash.navigation.converter.gui.actions.AddCategoryAction;
+import slash.navigation.converter.gui.actions.AddFileAction;
+import slash.navigation.converter.gui.actions.AddUrlAction;
+import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
+import slash.navigation.converter.gui.actions.RemoveRoutesAction;
+import slash.navigation.converter.gui.actions.RenameCategoryAction;
+import slash.navigation.converter.gui.actions.RenameRouteAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
@@ -48,7 +62,12 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -69,7 +88,9 @@ import java.util.prefs.Preferences;
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
-import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.KeyEvent.VK_END;
+import static java.awt.event.KeyEvent.VK_HOME;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -83,7 +104,9 @@ import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavo
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
@@ -527,7 +550,7 @@ public class BrowsePanel implements PanelInTab {
         }
 
         private List<RouteModel> toModels(int[] rowIndices, RoutesTableModel model) {
-            List<RouteModel> selectedRoutes = new ArrayList<RouteModel>();
+            List<RouteModel> selectedRoutes = new ArrayList<>();
             for (int selectedRow : rowIndices) {
                 RouteModel route = model.getRoute(selectedRow);
                 selectedRoutes.add(route);
@@ -625,9 +648,7 @@ public class BrowsePanel implements PanelInTab {
                         return true;
                     }
                 }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
+            } catch (UnsupportedFlavorException | IOException e) {
                 // intentionally left empty
             }
             return false;

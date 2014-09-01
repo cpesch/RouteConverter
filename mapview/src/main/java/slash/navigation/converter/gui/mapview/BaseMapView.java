@@ -48,6 +48,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.Character.isLetterOrDigit;
+import static java.lang.Character.isWhitespace;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
@@ -297,7 +299,7 @@ public abstract class BaseMapView implements MapView {
                                     " haveToUpdateRoute:" + haveToUpdateRoute +
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
-                            copiedPositions = new ArrayList<NavigationPosition>(positions);
+                            copiedPositions = new ArrayList<>(positions);
                             recenter = isRecenteringMap() && haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
@@ -837,9 +839,7 @@ public abstract class BaseMapView implements MapView {
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("addPolyline([").append(latlngs).append("], \"#").append(color).append("\",").append(width).append(");");
-            executeScript(buffer.toString());
+            executeScript("addPolyline([" + latlngs + "], \"#" + color + "\"," + width + ");");
         }
         removeOverlays();
         removeDirections();
@@ -901,7 +901,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void selectPositions(List<NavigationPosition> selectedPositions, NavigationPosition center) {
-        lastSelectedPositions = new ArrayList<NavigationPosition>(selectedPositions);
+        lastSelectedPositions = new ArrayList<>(selectedPositions);
 
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
@@ -987,7 +987,7 @@ public abstract class BaseMapView implements MapView {
         StringBuilder buffer = new StringBuilder(string);
         for (int i = 0; i < buffer.length(); i++) {
             char c = buffer.charAt(i);
-            if (!(Character.isLetterOrDigit(c) || Character.isWhitespace(c) || c == '\'' || c == ',')) {
+            if (!(isLetterOrDigit(c) || isWhitespace(c) || c == '\'' || c == ',')) {
                 buffer.deleteCharAt(i);
                 i--;
             }
@@ -1344,7 +1344,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<String> parseCoordinates(String coordinates) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
         while (tokenizer.hasMoreTokens()) {
             String latitude = trim(tokenizer.nextToken());

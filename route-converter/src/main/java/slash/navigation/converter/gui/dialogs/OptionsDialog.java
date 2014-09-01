@@ -30,14 +30,20 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
-import slash.navigation.routing.TravelMode;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.DegreeFormatListCellRenderer;
+import slash.navigation.converter.gui.renderer.ElevationServiceListCellRenderer;
+import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
+import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
+import slash.navigation.converter.gui.renderer.RoutingServiceListCellRenderer;
+import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
+import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -55,15 +61,42 @@ import java.util.TimeZone;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Arrays.sort;
-import static java.util.Locale.*;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.ROOT;
+import static java.util.Locale.US;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JFileChooser.*;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.common.DegreeFormat.*;
-import static slash.navigation.common.NumberPattern.*;
-import static slash.navigation.common.UnitSystem.*;
-import static slash.navigation.converter.gui.RouteConverter.*;
-import static slash.navigation.gui.helpers.UIHelper.*;
+import static slash.navigation.common.DegreeFormat.Degrees;
+import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
+import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
+import static slash.navigation.common.NumberPattern.Description_Only;
+import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
+import static slash.navigation.common.NumberPattern.Number_Only;
+import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
+import static slash.navigation.common.UnitSystem.Metric;
+import static slash.navigation.common.UnitSystem.Nautic;
+import static slash.navigation.common.UnitSystem.Statute;
+import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.SHOW_COORDINATES_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.SHOW_WAYPOINT_DESCRIPTION_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.getPreferences;
+import static slash.navigation.gui.helpers.UIHelper.ARABIA;
+import static slash.navigation.gui.helpers.UIHelper.CROATIA;
+import static slash.navigation.gui.helpers.UIHelper.CZECH;
+import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
+import static slash.navigation.gui.helpers.UIHelper.POLAND;
+import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
+import static slash.navigation.gui.helpers.UIHelper.SERBIA;
+import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
+import static slash.navigation.gui.helpers.UIHelper.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
  * Dialog to show options for the program.
@@ -74,7 +107,7 @@ import static slash.navigation.gui.helpers.UIHelper.*;
 public class OptionsDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
-    private JComboBox comboBoxLocale;
+    private JComboBox<Locale> comboBoxLocale;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseBabelPath;
     private JCheckBox checkBoxAutomaticUpdateCheck;
@@ -84,17 +117,17 @@ public class OptionsDialog extends SimpleDialog {
     private JCheckBox checkBoxRecenterAfterZooming;
     private JCheckBox checkBoxShowCoordinates;
     private JCheckBox checkBoxShowWaypointDescription;
-    private JComboBox comboBoxRoutingService;
+    private JComboBox<RoutingService> comboBoxRoutingService;
     private JTextField textFieldRoutingServicePath;
     private JButton buttonChooseRoutingServicePath;
-    private JComboBox comboBoxElevationService;
+    private JComboBox<ElevationService> comboBoxElevationService;
     private JTextField textFieldElevationServicePath;
     private JButton buttonChooseElevationServicePath;
-    private JComboBox comboboxTravelMode;
-    private JComboBox comboboxNumberPattern;
-    private JComboBox comboBoxUnitSystem;
-    private JComboBox comboBoxTimeZone;
-    private JComboBox comboBoxDegreeFormat;
+    private JComboBox<TravelMode> comboboxTravelMode;
+    private JComboBox<NumberPattern> comboboxNumberPattern;
+    private JComboBox<UnitSystem> comboBoxUnitSystem;
+    private JComboBox<String> comboBoxTimeZone;
+    private JComboBox<DegreeFormat> comboBoxDegreeFormat;
     private JButton buttonClose;
 
     public OptionsDialog() {
@@ -105,7 +138,7 @@ public class OptionsDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        ComboBoxModel localeModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA,
                 ITALY, NEDERLANDS, POLAND, RUSSIA, SLOVAKIA, SERBIA, ROOT
         });
@@ -164,7 +197,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        DefaultComboBoxModel routingServiceModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices())
             routingServiceModel.addElement(service);
         routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
@@ -225,7 +258,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel numberPatternModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<NumberPattern> numberPatternModel = new DefaultComboBoxModel<>(new NumberPattern[]{
                 Description_Only, Number_Only, Number_Directly_Followed_By_Description, Number_Space_Then_Description
         });
         numberPatternModel.setSelectedItem(r.getNumberPatternPreference());
@@ -240,7 +273,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        DefaultComboBoxModel elevationServiceModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel<ElevationService> elevationServiceModel = new DefaultComboBoxModel<>();
         for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
             elevationServiceModel.addElement(service);
         elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
@@ -276,7 +309,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         handleElevationServiceUpdate();
 
-        ComboBoxModel unitSystemModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<UnitSystem> unitSystemModel = new DefaultComboBoxModel<>(new UnitSystem[]{
                 Metric, Statute, Nautic
         });
         unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
@@ -291,7 +324,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel degreeFormatModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<DegreeFormat> degreeFormatModel = new DefaultComboBoxModel<>(new DegreeFormat[]{
                 Degrees, Degrees_Minutes, Degrees_Minutes_Seconds
         });
         degreeFormatModel.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
@@ -306,7 +339,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel timeZoneModel = new DefaultComboBoxModel(getTimeZoneIds());
+        ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
         timeZoneModel.setSelectedItem(r.getTimeZonePreference());
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
@@ -354,7 +387,7 @@ public class OptionsDialog extends SimpleDialog {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
 
-        DefaultComboBoxModel travelModeModel = new DefaultComboBoxModel();
+        MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         for (TravelMode travelMode : service.getAvailableTravelModes())
             travelModeModel.addElement(travelMode);
         travelModeModel.setSelectedItem(serviceFacade.getTravelMode());

@@ -36,6 +36,7 @@ public interface RoutingService {
     boolean isDownload();
     boolean isSupportTurnpoints();
     List<TravelMode> getAvailableTravelModes();
+    TravelMode getPreferredTravelMode();
     String getPath();
     void setPath(String path);
 

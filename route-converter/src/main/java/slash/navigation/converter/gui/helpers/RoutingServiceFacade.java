@@ -47,7 +47,7 @@ public class RoutingServiceFacade {
     private static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
-    private final List<RoutingService> routingServices = new ArrayList<RoutingService>();
+    private final List<RoutingService> routingServices = new ArrayList<>();
     private final EventListenerList listenerList = new EventListenerList();
     private boolean loggedFailedRoutingServiceWarning = false, loggedFailedTravelModeWarning = false;
 
@@ -60,10 +60,10 @@ public class RoutingServiceFacade {
     }
 
     public RoutingService getRoutingService() {
-        RoutingService firstRoutingService = routingServices.get(0);
+        RoutingService firstRoutingService = getRoutingServices().get(0);
         String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
 
-        for (RoutingService service : routingServices) {
+        for (RoutingService service : getRoutingServices()) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
@@ -81,19 +81,19 @@ public class RoutingServiceFacade {
     }
 
     public TravelMode getTravelMode() {
-        List<TravelMode> travelModes = getRoutingService().getAvailableTravelModes();
-        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelModes.get(0).getName());
+        TravelMode preferredTravelMode = getRoutingService().getPreferredTravelMode();
+        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), preferredTravelMode.getName());
 
-        for (TravelMode travelMode : travelModes) {
+        for (TravelMode travelMode : getRoutingService().getAvailableTravelModes()) {
             if (lookupName.equals(travelMode.getName()))
                 return travelMode;
         }
 
         if(!loggedFailedTravelModeWarning) {
-            log.warning(format("Failed to find travel mode %s; using first", lookupName));
+            log.warning(format("Failed to find travel mode %s; using preferred travel mode %s", lookupName, preferredTravelMode.getName()));
             loggedFailedTravelModeWarning = true;
         }
-        return travelModes.get(0);
+        return preferredTravelMode;
     }
 
     public void setTravelMode(TravelMode travelMode) {

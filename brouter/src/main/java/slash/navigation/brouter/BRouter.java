@@ -56,8 +56,9 @@ public class BRouter implements RoutingService {
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("fastbike"),
-            new TravelMode("moped"), new TravelMode("safety"), new TravelMode("shortest"), new TravelMode("trekking"),
+    private static final TravelMode MOPED = new TravelMode("moped");
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("fastbike"), MOPED,
+            new TravelMode("safety"), new TravelMode("shortest"), new TravelMode("trekking"),
             new TravelMode("trekking-ignore-cr"), new TravelMode("trekking-noferries"),
             new TravelMode("trekking-nosteps"), new TravelMode("trekking-steep"), new TravelMode("car-test"));
     private static final int MAX_RUNNING_TIME = 1000;
@@ -98,6 +99,10 @@ public class BRouter implements RoutingService {
 
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
+    }
+
+    public TravelMode getPreferredTravelMode() {
+        return MOPED;
     }
 
     public String getPath() {

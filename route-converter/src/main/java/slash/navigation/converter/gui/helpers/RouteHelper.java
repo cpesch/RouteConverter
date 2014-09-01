@@ -22,8 +22,6 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 
-import java.io.IOException;
-
 /**
  * A helper for rendering aspects of {@link RouteModel}.
  *

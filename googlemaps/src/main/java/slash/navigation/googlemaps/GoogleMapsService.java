@@ -40,6 +40,7 @@ import java.util.prefs.Preferences;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalElevation;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
 
 /**
@@ -139,7 +140,7 @@ public class GoogleMapsService implements ElevationService {
     }
 
     private List<NavigationPosition> extractAdresses(List<GeocodeResponse.Result> responses) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>(responses.size());
+        List<NavigationPosition> result = new ArrayList<>(responses.size());
         for (GeocodeResponse.Result response : responses) {
             GeocodeResponse.Result.Geometry.Location location = response.getGeometry().getLocation();
             result.add(new SimpleNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
@@ -154,7 +155,7 @@ public class GoogleMapsService implements ElevationService {
         String result = get.executeAsString();
         if (get.isSuccessful())
             try {
-                ElevationResponse elevationResponse = GoogleMapsUtil.unmarshalElevation(result);
+                ElevationResponse elevationResponse = unmarshalElevation(result);
                 if (elevationResponse != null) {
                     String status = elevationResponse.getStatus();
                     if (status.equals(OK)) {
@@ -171,7 +172,7 @@ public class GoogleMapsService implements ElevationService {
     }
 
     private List<Double> extractElevations(List<ElevationResponse.Result> responses) {
-        List<Double> results = new ArrayList<Double>(responses.size());
+        List<Double> results = new ArrayList<>(responses.size());
         for (ElevationResponse.Result response : responses) {
             results.add(response.getElevation().doubleValue());
         }

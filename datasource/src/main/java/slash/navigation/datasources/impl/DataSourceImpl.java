@@ -39,7 +39,7 @@ public class DataSourceImpl implements DataSource {
     private final DatasourceType datasourceType;
     private boolean initialized = false;
     private final java.util.Map<String, Downloadable> downloadableMap = new HashMap<>();
-    private final java.util.Map<String, Fragment> fragmentMap = new HashMap<>();
+    private final java.util.Map<String, Fragment<Downloadable>> fragmentMap = new HashMap<>();
 
     public DataSourceImpl(DatasourceType datasourceType) {
         this.datasourceType = datasourceType;
@@ -49,7 +49,7 @@ public class DataSourceImpl implements DataSource {
         for (Downloadable downloadable : downloadables) {
             downloadableMap.put(downloadable.getUri(), downloadable);
 
-            for (Fragment fragment : downloadable.getFragments())
+            for (Fragment<Downloadable> fragment : downloadable.getFragments())
                 fragmentMap.put(fragment.getKey(), fragment);
         }
     }
@@ -106,7 +106,7 @@ public class DataSourceImpl implements DataSource {
         return downloadableMap.get(uri);
     }
 
-    public Fragment getFragment(String key) {
+    public Fragment<Downloadable> getFragment(String key) {
         initialize();
         return fragmentMap.get(key);
     }

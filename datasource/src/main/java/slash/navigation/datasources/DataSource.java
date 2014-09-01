@@ -39,5 +39,5 @@ public interface DataSource {
     List<Theme> getThemes();
 
     Downloadable getDownloadable(String uri);
-    Fragment getFragment(String key);
+    Fragment<Downloadable> getFragment(String key);
 }

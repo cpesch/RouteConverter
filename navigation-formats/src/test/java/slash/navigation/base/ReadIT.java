@@ -40,11 +40,15 @@ import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.collectFiles;
-import static slash.navigation.base.NavigationTestCase.*;
+import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.assertTrue;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
-    private static Set<String> comments = new HashSet<String>();
+    private static Set<String> comments = new HashSet<>();
 
     protected interface TestFileCallback {
         void test(File file) throws IOException;

@@ -43,8 +43,8 @@ public class DataSourceServiceTest {
         assertEquals(directory, dataSource.getDirectory());
     }
 
-    private Fragment getFragment(List<Fragment> fragments, String key) {
-        for (Fragment fragment : fragments) {
+    private Fragment<Downloadable> getFragment(List<Fragment<Downloadable>> fragments, String key) {
+        for (Fragment<Downloadable> fragment : fragments) {
             if (fragment.getKey().equals(key))
                 return fragment;
         }
@@ -52,7 +52,7 @@ public class DataSourceServiceTest {
     }
 
 
-    private void checkFragments(List<Fragment> fragments, String... keyValues) {
+    private void checkFragments(List<Fragment<Downloadable>> fragments, String... keyValues) {
         for (int i = 0; i < keyValues.length; i += 2) {
             String key = keyValues[i];
             String value = keyValues[i + 1];

@@ -208,7 +208,7 @@ public class DataSourcesUtil {
         return checksumType;
     }
 
-    public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment> nextFragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fragments) {
+    public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment<Downloadable>> nextFragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fragments) {
         previousFragmentTypes.clear();
         if (nextFragments != null)
             previousFragmentTypes.addAll(asFragmentTypes(nextFragments, fragments));
@@ -233,7 +233,7 @@ public class DataSourcesUtil {
         return result;
     }
 
-    private static List<FragmentType> asFragmentTypes(List<Fragment> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
+    private static List<FragmentType> asFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
         if (fragments == null)
             return null;
 
