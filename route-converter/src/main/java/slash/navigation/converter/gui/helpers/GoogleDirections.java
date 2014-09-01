@@ -38,8 +38,8 @@ import static java.util.Arrays.asList;
  */
 
 public class GoogleDirections implements RoutingService {
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), new TravelMode("Driving"),
-            new TravelMode("Walking"));
+    private static final TravelMode DRIVING = new TravelMode("Driving");
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
 
     private final MapView mapView;
 
@@ -61,6 +61,10 @@ public class GoogleDirections implements RoutingService {
 
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
+    }
+
+    public TravelMode getPreferredTravelMode() {
+        return DRIVING;
     }
 
     public String getPath() {
