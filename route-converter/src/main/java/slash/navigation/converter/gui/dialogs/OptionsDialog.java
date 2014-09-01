@@ -74,7 +74,7 @@ import static slash.navigation.gui.helpers.UIHelper.*;
 public class OptionsDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
-    private JComboBox comboBoxLocale;
+    private JComboBox<Locale> comboBoxLocale;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseBabelPath;
     private JCheckBox checkBoxAutomaticUpdateCheck;
@@ -84,17 +84,17 @@ public class OptionsDialog extends SimpleDialog {
     private JCheckBox checkBoxRecenterAfterZooming;
     private JCheckBox checkBoxShowCoordinates;
     private JCheckBox checkBoxShowWaypointDescription;
-    private JComboBox comboBoxRoutingService;
+    private JComboBox<RoutingService> comboBoxRoutingService;
     private JTextField textFieldRoutingServicePath;
     private JButton buttonChooseRoutingServicePath;
-    private JComboBox comboBoxElevationService;
+    private JComboBox<ElevationService> comboBoxElevationService;
     private JTextField textFieldElevationServicePath;
     private JButton buttonChooseElevationServicePath;
-    private JComboBox comboboxTravelMode;
-    private JComboBox comboboxNumberPattern;
-    private JComboBox comboBoxUnitSystem;
-    private JComboBox comboBoxTimeZone;
-    private JComboBox comboBoxDegreeFormat;
+    private JComboBox<TravelMode> comboboxTravelMode;
+    private JComboBox<NumberPattern> comboboxNumberPattern;
+    private JComboBox<UnitSystem> comboBoxUnitSystem;
+    private JComboBox<String> comboBoxTimeZone;
+    private JComboBox<DegreeFormat> comboBoxDegreeFormat;
     private JButton buttonClose;
 
     public OptionsDialog() {
@@ -105,7 +105,7 @@ public class OptionsDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        ComboBoxModel localeModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA,
                 ITALY, NEDERLANDS, POLAND, RUSSIA, SLOVAKIA, SERBIA, ROOT
         });
@@ -164,7 +164,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        DefaultComboBoxModel routingServiceModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices())
             routingServiceModel.addElement(service);
         routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
@@ -225,7 +225,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel numberPatternModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<NumberPattern> numberPatternModel = new DefaultComboBoxModel<>(new NumberPattern[]{
                 Description_Only, Number_Only, Number_Directly_Followed_By_Description, Number_Space_Then_Description
         });
         numberPatternModel.setSelectedItem(r.getNumberPatternPreference());
@@ -240,7 +240,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        DefaultComboBoxModel elevationServiceModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel<ElevationService> elevationServiceModel = new DefaultComboBoxModel<>();
         for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
             elevationServiceModel.addElement(service);
         elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
@@ -276,7 +276,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         handleElevationServiceUpdate();
 
-        ComboBoxModel unitSystemModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<UnitSystem> unitSystemModel = new DefaultComboBoxModel<>(new UnitSystem[]{
                 Metric, Statute, Nautic
         });
         unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
@@ -291,7 +291,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel degreeFormatModel = new DefaultComboBoxModel(new Object[]{
+        ComboBoxModel<DegreeFormat> degreeFormatModel = new DefaultComboBoxModel<>(new DegreeFormat[]{
                 Degrees, Degrees_Minutes, Degrees_Minutes_Seconds
         });
         degreeFormatModel.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
@@ -306,7 +306,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel timeZoneModel = new DefaultComboBoxModel(getTimeZoneIds());
+        ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
         timeZoneModel.setSelectedItem(r.getTimeZonePreference());
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
@@ -354,7 +354,7 @@ public class OptionsDialog extends SimpleDialog {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
 
-        DefaultComboBoxModel travelModeModel = new DefaultComboBoxModel();
+        MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         for (TravelMode travelMode : service.getAvailableTravelModes())
             travelModeModel.addElement(travelMode);
         travelModeModel.setSelectedItem(serviceFacade.getTravelMode());
