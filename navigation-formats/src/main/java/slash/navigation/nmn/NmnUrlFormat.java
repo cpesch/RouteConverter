@@ -93,7 +93,7 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
     }
 
     protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         if (parameters == null)
             return result;
 
@@ -104,26 +104,12 @@ public class NmnUrlFormat extends BaseUrlParsingFormat {
         return result;
     }
 
-    private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        String mapName = trim(preferences.get("navigonUrlMapName", null));
-        if (mapName != null)
-            return mapName;
-
-        int westCount = 0;
-        for (int i = startIndex; i < endIndex; i++) {
-            Wgs84Position position = positions.get(i);
-            if (position.getLongitude() < -27.0)
-                westCount++;
-        }
-        int eastCount = endIndex - startIndex - westCount;
-        return westCount > eastCount ? "USA-CA" : "DEU";
-    }
-
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("navigon");
-        if (false)
-            buffer.append(calculateMapName(positions, startIndex, endIndex));
+        String mapName = trim(preferences.get("navigonUrlMapName", null));
+        if (mapName != null)
+            buffer.append(mapName);
         buffer.append("://route/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);

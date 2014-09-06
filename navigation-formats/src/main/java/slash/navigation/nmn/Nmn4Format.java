@@ -20,7 +20,6 @@
 
 package slash.navigation.nmn;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 

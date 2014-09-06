@@ -109,7 +109,7 @@ public class LocalCategory implements Category {
         try {
             newName = new File(parent != null ? new File(new URL(parent.getUrl()).toURI()) : directory.getParentFile(), encodeFileName(name));
         } catch (URISyntaxException e) {
-            throw new IOException(format("cannot rename %s to %s", directory, newName));
+            throw new IOException(format("cannot rename %s for %s and %s", directory, parent, name));
         }
         if (!directory.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", directory, newName));
