@@ -26,9 +26,6 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
-import slash.navigation.download.DownloadManager;
-import slash.navigation.maps.MapManager;
-import slash.navigation.routing.RoutingService;
 
 import java.awt.*;
 

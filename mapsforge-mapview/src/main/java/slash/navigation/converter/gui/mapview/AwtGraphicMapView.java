@@ -67,7 +67,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
         MapViewController.create(this, model);
 
-        this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY);
+        this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY, model.displayModel);
         this.mapScaleBar = new DefaultMapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
     }
 

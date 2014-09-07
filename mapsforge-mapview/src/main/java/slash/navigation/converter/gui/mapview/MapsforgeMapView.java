@@ -89,6 +89,7 @@ import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
+import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
@@ -306,7 +307,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(LocalMap map, LocalTheme theme) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, true, GRAPHIC_FACTORY);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
         tileRendererLayer.setMapFile(map.getFile());
         tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         return tileRendererLayer;
@@ -361,8 +362,8 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private java.util.Map<PairWithLayer, Double> pairsToDistances = new HashMap<PairWithLayer, Double>();
-            private java.util.Map<PairWithLayer, Long> pairsToTimes = new HashMap<PairWithLayer, Long>();
+            private java.util.Map<PairWithLayer, Double> pairsToDistances = new HashMap<>();
+            private java.util.Map<PairWithLayer, Long> pairsToTimes = new HashMap<>();
 
             public void add(final List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
@@ -446,7 +447,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private List<LatLong> calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
-                List<LatLong> latLongs = new ArrayList<LatLong>();
+                List<LatLong> latLongs = new ArrayList<>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
                 RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
                 if (intermediate != null) {
@@ -529,7 +530,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
+                List<NavigationPosition> removed = new ArrayList<>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
                     internalRemove(positionWithLayer);
                     removed.add(positionWithLayer.getPosition());
@@ -598,15 +599,15 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {
-        Set<NavigationPosition> removed = new HashSet<NavigationPosition>();
+        Set<NavigationPosition> removed = new HashSet<>();
         for (PairWithLayer pair : pairWithLayers) {
             removed.add(pair.getFirst());
             removed.add(pair.getSecond());
         }
-        selectionUpdater.removedPositions(new ArrayList<NavigationPosition>(removed));
+        selectionUpdater.removedPositions(new ArrayList<>(removed));
     }
 
-    private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<LocalMap, Layer>();
+    private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
     private void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
         Layers layers = getLayerManager().getLayers();
@@ -798,7 +799,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox, boolean alwaysRecenter) {
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> positions = new ArrayList<>();
 
         // if there is a route and we center and zoom, then use the route bounding box
         if (routeBoundingBox != null) {
@@ -922,7 +923,7 @@ public class MapsforgeMapView implements MapView {
 
     // listeners
 
-    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
+    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);
@@ -945,8 +946,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     private double getThresholdForPixel(LatLong latLong, int pixel) {
-        double metersPerPixel = calculateGroundResolution(latLong.latitude,
-                mapView.getModel().mapViewPosition.getZoomLevel(), mapView.getModel().displayModel.getTileSize());
+        long mapSize = getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), mapView.getModel().displayModel.getTileSize());
+        double metersPerPixel = calculateGroundResolution(latLong.latitude, mapSize);
         return metersPerPixel * pixel;
     }
 

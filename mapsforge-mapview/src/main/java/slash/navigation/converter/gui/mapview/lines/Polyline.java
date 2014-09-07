@@ -29,8 +29,7 @@ import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
 import java.util.List;
 
-import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
-import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
+import static org.mapsforge.core.util.MercatorProjection.*;
 
 /**
  * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}
@@ -50,13 +49,14 @@ public class Polyline extends Layer {
     }
 
     public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+        long mapSize = getMapSize(zoomLevel, tileSize);
         for (int i = 0; i < latLongs.size() - 1; i++) {
             LatLong from = latLongs.get(i);
-            int fromX = (int) (longitudeToPixelX(from.longitude, zoomLevel, tileSize) - topLeftPoint.x);
-            int fromY = (int) (latitudeToPixelY(from.latitude, zoomLevel, tileSize) - topLeftPoint.y);
+            int fromX = (int) (longitudeToPixelX(from.longitude, mapSize) - topLeftPoint.x);
+            int fromY = (int) (latitudeToPixelY(from.latitude, mapSize) - topLeftPoint.y);
             LatLong to = latLongs.get(i + 1);
-            int toX = (int) (longitudeToPixelX(to.longitude, zoomLevel, tileSize) - topLeftPoint.x);
-            int toY = (int) (latitudeToPixelY(to.latitude, zoomLevel, tileSize) - topLeftPoint.y);
+            int toX = (int) (longitudeToPixelX(to.longitude, mapSize) - topLeftPoint.x);
+            int toY = (int) (latitudeToPixelY(to.latitude, mapSize) - topLeftPoint.y);
             canvas.drawLine(fromX, fromY, toX, toY, paint);
         }
     }

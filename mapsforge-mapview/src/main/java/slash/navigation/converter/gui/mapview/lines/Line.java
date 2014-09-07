@@ -27,8 +27,7 @@ import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
-import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
-import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
+import static org.mapsforge.core.util.MercatorProjection.*;
 
 /**
  * A line between two {@link LatLong}s on {@link MapsforgeMapView}
@@ -50,10 +49,11 @@ public class Line extends Layer {
     }
 
     public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        int fromX = (int) (longitudeToPixelX(from.longitude, zoomLevel, tileSize) - topLeftPoint.x);
-        int fromY = (int) (latitudeToPixelY(from.latitude, zoomLevel, tileSize) - topLeftPoint.y);
-        int toX = (int) (longitudeToPixelX(to.longitude, zoomLevel, tileSize) - topLeftPoint.x);
-        int toY = (int) (latitudeToPixelY(to.latitude, zoomLevel, tileSize) - topLeftPoint.y);
+        long mapSize = getMapSize(zoomLevel, tileSize);
+        int fromX = (int) (longitudeToPixelX(from.longitude, mapSize) - topLeftPoint.x);
+        int fromY = (int) (latitudeToPixelY(from.latitude, mapSize) - topLeftPoint.y);
+        int toX = (int) (longitudeToPixelX(to.longitude, mapSize) - topLeftPoint.x);
+        int toY = (int) (latitudeToPixelY(to.latitude, mapSize) - topLeftPoint.y);
         canvas.drawLine(fromX, fromY, toX, toY, paint);
     }
 }
