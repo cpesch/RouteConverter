@@ -69,8 +69,8 @@ public class DataSourceManager {
         String url = System.getProperty("datasources", "http://www.routeconverter.com/datasources/") + "edition/" + uri;
         log.info(format("Downloading edition '%s'", url));
 
-        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources", url, Copy,
-                null, new FileAndChecksum(new java.io.File(getTarget(), uri), null), null);
+        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources",
+                url, Copy, null, new FileAndChecksum(new java.io.File(getTarget(), uri), null), null);
         downloadManager.waitForCompletion(asList(download));
 
         java.io.File target = download.getFile().getFile();
@@ -83,20 +83,19 @@ public class DataSourceManager {
 
     private void initializeDataSources() throws JAXBException, FileNotFoundException {
         List<Download> downloads = new ArrayList<>();
-        for(DataSource dataSource : dataSourceService.getDataSources()) {
-            for(File file : dataSource.getFiles()) {
+        for (DataSource dataSource : dataSourceService.getDataSources()) {
+            for (File file : dataSource.getFiles()) {
                 String url = dataSource.getBaseUrl() + file.getUri();
                 log.info(format("Downloading data source '%s'", url));
 
                 Download download = downloadManager.queueForDownload(dataSource.getName() + ": Data Source " + file.getUri(),
-                        url, Copy, null, new FileAndChecksum(new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum()),
-                        null);
+                        url, Copy, null, new FileAndChecksum(new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum()), null);
                 downloads.add(download);
             }
         }
         downloadManager.waitForCompletion(downloads);
 
-        for(Download download : downloads) {
+        for (Download download : downloads) {
             java.io.File target = download.getFile().getFile();
             if (!target.exists()) {
                 log.warning(format("Cannot find %s to load '%s' data", target, download.getDescription()));
@@ -117,7 +116,7 @@ public class DataSourceManager {
     private java.io.File getTarget() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
+        if (!f.exists())
             directoryName = getApplicationDirectory("datasources").getAbsolutePath();
         return ensureDirectory(directoryName);
     }

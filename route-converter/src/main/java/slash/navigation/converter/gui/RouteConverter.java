@@ -359,9 +359,9 @@ public class RouteConverter extends SingleFrameApplication {
         }
         openProfileView();
 
-        initializeRouteConverterServices();
+        initializeServices();
         initializeActions();
-        initializeDownloadManager();
+        initializeDatasources();
     }
 
     private MapView createMapView(String className) {
@@ -1011,7 +1011,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeRouteConverterServices() {
+    private void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
@@ -1071,7 +1071,7 @@ public class RouteConverter extends SingleFrameApplication {
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }
 
-    private void initializeDownloadManager() {
+    private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
                 getDataSourceManager().getDownloadManager().loadQueue();
@@ -1089,9 +1089,10 @@ public class RouteConverter extends SingleFrameApplication {
                 }
 
                 initializeElevationServices();
-                // initializeRoutingServices();
+                initializeRoutingServices();
+                initializeMapManager();
             }
-        }, "DownloadManagerInitializer").start();
+        }, "DataSourceInitializer").start();
     }
 
     private void initializeElevationServices() {
@@ -1103,6 +1104,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeRoutingServices() {
+    }
+
+    private void initializeMapManager() {
     }
 
     private class PrintMapAction extends FrameAction {

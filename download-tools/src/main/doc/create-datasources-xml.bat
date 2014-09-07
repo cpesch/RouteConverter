@@ -21,4 +21,4 @@ java -jar download-tools\target\CreateMapDataSourcesXml.jar "freizeitkarte-maps"
 java -jar download-tools\target\CreateMapDataSourcesXml.jar "mapsforge-maps" "Mapsforge Maps" "http://download.mapsforge.org/maps/" "http://download.mapsforge.org/maps/" "maps/mapsforge" "C:\Temp\mapsforge-maps-datasources.xml"
 java -jar download-tools\target\CreateMapDataSourcesXml.jar "openandromaps" "Openandromaps" "http://ftp5.gwdg.de/pub/misc/openstreetmap/openandromaps/maps/" "http://ftp5.gwdg.de/pub/misc/openstreetmap/openandromaps/maps/" "maps/openandromaps" "C:\Temp\openandromaps-maps-datasources.xml"
 
-java -jar download-tools\target\CreateThemeDataSourcesXml.jar "freizeitkarte-theme" "Freizeitkarte Theme" "http://download.freizeitkarte-osm.de/android/1408/" "themes/freizeitkarte" "C:\Temp\freizeitkarte-theme-datasources.xml"
+java -jar download-tools\target\CreateThemeDataSourcesXml.jar "freizeitkarte-themes" "Freizeitkarte Themes" "http://download.freizeitkarte-osm.de/android/1408/" "http://download.freizeitkarte-osm.de/android/1408/" "themes/freizeitkarte" "C:\Temp\freizeitkarte-themes-datasources.xml"
