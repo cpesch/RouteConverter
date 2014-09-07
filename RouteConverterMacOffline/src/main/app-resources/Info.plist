@@ -31,7 +31,7 @@
             <key>VMOptions</key>
             <string>-XstartOnFirstThread -d64 -Xmx1024m -Dapple.laf.useScreenMenuBar=true</string>
             <key>MainClass</key>
-            <string>slash.navigation.converter.gui.RouteConverter</string>
+            <string>slash.navigation.converter.gui.RouteConverterOffline</string>
             <key>ClassPath</key>
             <string>$JAVAROOT/RouteConverterMacOffline.jar</string>
         </dict>

@@ -366,7 +366,7 @@ public abstract class BaseMapView implements MapView {
                             haveToRepaintSelection = false;
                             copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                            copiedPositions = new ArrayList<NavigationPosition>(positions);
+                            copiedPositions = new ArrayList<>(positions);
                         } else
                             continue;
                     }
@@ -1060,7 +1060,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("^(.+?):(.+)$");
 
     private Map<String, String> asMap(List<String> lines) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (String line : lines) {
             Matcher matcher = NAME_VALUE_PATTERN.matcher(line);
             if (matcher.matches())
@@ -1526,7 +1526,7 @@ public abstract class BaseMapView implements MapView {
 
     // listeners
 
-    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
+    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);

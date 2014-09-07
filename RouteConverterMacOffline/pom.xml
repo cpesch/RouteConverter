@@ -30,8 +30,8 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                        <Implementation-Vendor>Mac</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
+                                        <Implementation-Vendor>MacNA</Implementation-Vendor>
+                                        <Main-Class>slash.navigation.converter.gui.RouteConverterOffline</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
@@ -47,8 +47,11 @@
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
                                         <exclude>META-INF/maven/</exclude>
+                                        <exclude>COPYING*</exclude>
+                                        <exclude>builddate</exclude>
                                         <exclude>external.xpt</exclude>
-                                        <exclude>version.txt</exclude>
+                                        <exclude>log4j.properties</exclude>
+                                        <exclude>version*</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -120,12 +123,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mapsforge-mapview</artifactId>
+            <artifactId>route-converter-offline</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

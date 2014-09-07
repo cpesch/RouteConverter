@@ -61,6 +61,11 @@ public class CreateGraphHopperDataSourcesXml extends WebsiteDataSourcesXmlGenera
         BoundingBox boundingBox = PbfUtil.extractBoundingBox(inputStream);
         closeQuietly(inputStream);
         get.release();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
         return boundingBox;
     }
 

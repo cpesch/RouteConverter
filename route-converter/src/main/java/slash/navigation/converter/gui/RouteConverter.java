@@ -26,7 +26,6 @@ import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.brouter.BRouter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
@@ -49,7 +48,6 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
-import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -111,7 +109,7 @@ import static slash.navigation.gui.helpers.UIHelper.*;
  */
 
 public class RouteConverter extends SingleFrameApplication {
-    private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
+    protected static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
     public static void main(String[] args) {
@@ -132,11 +130,11 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), getEdition(), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
     }
 
-    public static String getEdition() {
-        return "Offline";
+    protected String getEdition() {
+        return "Online";
     }
 
     private static String getRouteConverter() {
@@ -287,8 +285,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        // if (isJavaFX())
-        //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        if (isJavaFX())
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
             if (mapView != null)
@@ -393,8 +391,8 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().dispose();
         hgtFilesService.dispose();
         getBatchPositionAugmenter().dispose();
-        getDataSourceManager().getDownloadManager().dispose();
-        getDataSourceManager().getDownloadManager().saveQueue();
+        getDataSourceManager().dispose();
+        getDownloadManager().saveQueue();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -663,6 +661,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public DataSourceManager getDataSourceManager() {
         return dataSourceManager;
+    }
+
+    private DownloadManager getDownloadManager() {
+        return getDataSourceManager().getDownloadManager();
     }
 
     public MapManager getMapManager() {
@@ -1031,7 +1033,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
-                getDataSourceManager().getDownloadManager().loadQueue();
+                getDownloadManager().loadQueue();
 
                 try {
                     getDataSourceManager().initialize(getEdition());
@@ -1058,32 +1060,10 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeRoutingServices() {
-        DataSource brouter = getDataSourceManager().getDataSourceService().getDataSourceById("brouter");
-        if (brouter != null) {
-            BRouter router = new BRouter(brouter, getDataSourceManager().getDownloadManager());
-            getRoutingServiceFacade().addRoutingService(router);
-            log.info(String.format("Added routing service '%s'", router.getName()));
-        }
-        DataSource graphhopper = dataSourceManager.getDataSourceService().getDataSourceById("graphhopper");
-        if (graphhopper != null) {
-            GraphHopper hopper = new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager());
-            getRoutingServiceFacade().addRoutingService(hopper);
-            log.info(String.format("Added routing service '%s'", hopper.getName()));
-        }
+    protected void initializeRoutingServices() {
     }
 
-    private void initializeMapManager() {
-        try {
-            getMapManager().initialize();
-            getMapManager().scanDirectories();
-        } catch (final IOException e) {
-            invokeLater(new Runnable() {
-                public void run() {
-                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                }
-            });
-        }
+    protected void initializeMapManager() {
     }
 
     private class PrintMapAction extends FrameAction {

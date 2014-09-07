@@ -178,7 +178,7 @@ public class GraphHopper implements RoutingService {
 
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
-            if (fileBoundingBox.contains(routeBoundingBox)) {
+            if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
                 if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
                     downloadableForSmallestBoundingBox = file;
                     smallestBoundingBox = fileBoundingBox;
