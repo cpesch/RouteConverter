@@ -185,7 +185,10 @@ public class MapManager {
     }
 
     public void initialize() {
-        List<RemoteResource> resources = new MapFilesService(dataSourceManager).getResources();
+        MapFilesService mapFilesService = new MapFilesService(dataSourceManager);
+        mapFilesService.initialize();
+
+        List<RemoteResource> resources = mapFilesService.getMapsAndThemes();
         RemoteResource[] remoteResources = resources.toArray(new RemoteResource[resources.size()]);
         sort(remoteResources, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
@@ -203,21 +206,23 @@ public class MapManager {
             Downloadable downloadable = resource.getDownloadable();
 
             List<FileAndChecksum> fragments = new ArrayList<>();
-            for (Fragment otherFragments : downloadable.getFragments())
-                fragments.add(new FileAndChecksum(getFragment(otherFragments), otherFragments.getLatestChecksum()));
+            for (Fragment fragment : downloadable.getFragments()) {
+                File fragmentFile = getFile(resource, fragment);
+                fragments.add(new FileAndChecksum(fragmentFile, fragment.getLatestChecksum()));
+            }
 
             Action action = resource.getDownloadable().getUri().endsWith(".zip") ? Extract : Copy;
-            File target = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
+            File resourceFile = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
 
             Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + downloadable.getUri(),
-                    resource.getUrl(), action, null, new FileAndChecksum(target, downloadable.getLatestChecksum()), fragments);
+                    resource.getUrl(), action, null, new FileAndChecksum(resourceFile, downloadable.getLatestChecksum()), fragments);
             downloads.add(download);
         }
         downloadManager.waitForCompletion(downloads);
     }
 
-    private File getFragment(Fragment fragment) {
-        throw new UnsupportedOperationException(); // TODO fix me
+    private File getFile(RemoteResource resource, Fragment fragment) {
+        return new File(getFile(resource), fragment.getKey());
     }
 
     private File getFile(RemoteResource resource) {
@@ -227,9 +232,9 @@ public class MapManager {
     private File getDirectory(RemoteResource resource) {
         String subDirectory = resource.getSubDirectory();
         if (resource instanceof RemoteMap)
-            return ensureDirectory(getMapsDirectory() + separator + resource.getSubDirectory().substring(5));
-        else if (subDirectory.startsWith("themes/"))
-            return ensureDirectory(getThemesDirectory() + separator + resource.getSubDirectory().substring(7));
-        return getApplicationDirectory(resource.getSubDirectory());
+            return ensureDirectory(getMapsDirectory() + separator + subDirectory.substring(5));
+        else if (resource instanceof RemoteTheme)
+            return ensureDirectory(getThemesDirectory() + separator + subDirectory.substring(7));
+        return getApplicationDirectory(subDirectory);
     }
 }

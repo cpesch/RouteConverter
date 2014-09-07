@@ -24,11 +24,7 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.DataSourceService;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 /**
  * Encapsulates access to all services providing map and theme files.
@@ -38,15 +34,6 @@ import static java.util.Arrays.asList;
 
 public class MapFilesService {
     private final List<MapFiles> mapFiles = new ArrayList<>();
-    private static final Set<String> DATASOURCE_URIS = new HashSet<>(asList(
-            "freizeitkarte-maps-datasources",
-            "freizeitkarte-themes-datasources",
-            "android-maps-datasources",
-            "mapsforge-maps-datasources",
-            "openandromaps-maps-datasources",
-            "openandromaps-themes-datasources"
-    ));
-
     private DataSourceManager dataSourceManager;
 
     public MapFilesService(DataSourceManager dataSourceManager) {
@@ -57,19 +44,18 @@ public class MapFilesService {
         DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
 
         for (DataSource dataSource : dataSourceService.getDataSources()) {
-            if (DATASOURCE_URIS.contains(dataSource.getId()))
-                mapFiles.add(new MapFiles(dataSource));
+            mapFiles.add(new MapFiles(dataSource));
         }
     }
 
-    public List<MapFiles> getMapFiles() {
+    private List<MapFiles> getMapFiles() {
         return mapFiles;
     }
 
-    public List<RemoteResource> getResources() {
+    public List<RemoteResource> getMapsAndThemes() {
         List<RemoteResource> result = new ArrayList<>();
         for (MapFiles files : getMapFiles()) {
-            result.addAll(files.getResources());
+            result.addAll(files.getMapsAndThemes());
         }
         return result;
     }

@@ -27,8 +27,10 @@ import slash.navigation.converter.gui.renderer.MapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ResourcesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemesTableCellRenderer;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
+import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.*;
 
 import javax.swing.*;
@@ -36,8 +38,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -75,7 +75,6 @@ public class MapsAndThemesDialog extends SimpleDialog {
     private JTable tableResources;
     private JButton buttonDownload;
     private JButton buttonClose;
-    private JLabel labelMessage;
 
     private ExecutorService executor = newCachedThreadPool();
 
@@ -100,7 +99,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                 column.setMaxWidth(width);
             }
         }
-        TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<TableModel>(tableAvailableMaps.getModel());
+        TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
         sorterAvailableMaps.setComparator(0, new Comparator<LocalMap>() {
             public int compare(LocalMap m1, LocalMap m2) {
@@ -149,7 +148,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
             TableColumn column = themesColumns.getColumn(i);
             column.setHeaderRenderer(availableThemesHeaderRenderer);
         }
-        TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<TableModel>(tableAvailableThemes.getModel());
+        TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
         sorterAvailableThemes.setComparator(0, new Comparator<LocalTheme>() {
             public int compare(LocalTheme t1, LocalTheme t2) {
@@ -191,7 +190,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                 column.setMaxWidth(width);
             }
         }
-        TableRowSorter<TableModel> sorterResources = new TableRowSorter<TableModel>(tableResources.getModel());
+        TableRowSorter<TableModel> sorterResources = new TableRowSorter<>(tableResources.getModel());
         sorterResources.setSortsOnUpdates(true);
         sorterResources.setComparator(0, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
@@ -234,12 +233,6 @@ public class MapsAndThemesDialog extends SimpleDialog {
             }
         });
 
-        labelMessage.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                r.getContext().getActionManager().run("show-downloads");
-            }
-        });
-
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -258,29 +251,37 @@ public class MapsAndThemesDialog extends SimpleDialog {
         return RouteConverter.getInstance().getMapManager();
     }
 
+    private NotificationManager getNotificationManager() {
+        return Application.getInstance().getContext().getNotificationManager();
+    }
+
+    private Action getAction() {
+        return Application.getInstance().getContext().getActionManager().get("show-downloads");
+    }
+
     private void display() {
         int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
         LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
-        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()));
+        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
     }
 
     private void apply() {
         int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
         LocalTheme theme = getMapManager().getThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
-        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()));
+        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
     }
 
     private void download() {
-        final List<RemoteResource> selectedResources = new ArrayList<RemoteResource>();
-        List<String> selectedResourcesNames = new ArrayList<String>();
+        final List<RemoteResource> selectedResources = new ArrayList<>();
+        List<String> selectedResourcesNames = new ArrayList<>();
         for (int selectedRow : tableResources.getSelectedRows()) {
             RemoteResource resource = getMapManager().getResourcesModel().getResource(tableResources.convertRowIndexToModel(selectedRow));
             selectedResources.add(resource);
             selectedResourcesNames.add(resource.getUrl());
         }
-        labelMessage.setText(MessageFormat.format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedResourcesNames.toArray())));
+        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedResourcesNames.toArray())), getAction());
 
         executor.execute(new Runnable() {
             public void run() {
@@ -291,9 +292,8 @@ public class MapsAndThemesDialog extends SimpleDialog {
                 } catch (final IOException e) {
                     invokeLater(new Runnable() {
                         public void run() {
-                            showMessageDialog(null,
-                                    format(RouteConverter.getBundle().getString("scan-error"), e), "Error",
-                                    ERROR_MESSAGE);
+                            JFrame frame = RouteConverter.getInstance().getFrame();
+                            showMessageDialog(frame, format(RouteConverter.getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
                         }
                     });
                 }
@@ -322,7 +322,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(6, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
@@ -391,7 +391,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         contentPane.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel10, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel10, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel10.add(spacer4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
@@ -400,11 +400,6 @@ public class MapsAndThemesDialog extends SimpleDialog {
         buttonClose = new JButton();
         this.$$$loadButtonText$$$(buttonClose, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("close"));
         panel11.add(buttonClose, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelMessage = new JLabel();
-        contentPane.add(labelMessage, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel12 = new JPanel();
-        panel12.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
-        contentPane.add(panel12, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     }
 
     /**

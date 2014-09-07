@@ -305,10 +305,9 @@ public class RouteConverter extends SingleFrameApplication {
         }
         openProfileView();
 
-        initializeRouteConverterServices();
+        initializeServices();
         initializeActions();
-        initializeDownloadManager();
-        initializeMapManager();
+        initializeDatasources();
     }
 
     private MapView createMapView(String className) {
@@ -967,7 +966,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeRouteConverterServices() {
+    private void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
@@ -1029,7 +1028,7 @@ public class RouteConverter extends SingleFrameApplication {
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }
 
-    private void initializeDownloadManager() {
+    private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
                 getDataSourceManager().getDownloadManager().loadQueue();
@@ -1039,15 +1038,14 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (final Exception e) {
                     invokeLater(new Runnable() {
                         public void run() {
-                            showMessageDialog(frame,
-                                    MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(),
-                                    ERROR_MESSAGE);
+                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(), ERROR_MESSAGE);
                         }
                     });
                 }
 
                 initializeElevationServices();
                 initializeRoutingServices();
+                initializeMapManager();
             }
         }, "DownloadManagerInitializer").start();
     }
@@ -1076,22 +1074,16 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeMapManager() {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    getMapManager().initialize();
-                    getMapManager().scanDirectories();
-                } catch (final IOException e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            showMessageDialog(frame,
-                                    MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(),
-                                    ERROR_MESSAGE);
-                        }
-                    });
+        try {
+            getMapManager().initialize();
+            getMapManager().scanDirectories();
+        } catch (final IOException e) {
+            invokeLater(new Runnable() {
+                public void run() {
+                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
                 }
-            }
-        }, "MapManagerInitializer").start();
+            });
+        }
     }
 
     private class PrintMapAction extends FrameAction {

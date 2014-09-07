@@ -20,10 +20,8 @@
 package slash.navigation.maps;
 
 import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.File;
 import slash.navigation.datasources.Theme;
 import slash.navigation.maps.models.RemoteMapImpl;
-import slash.navigation.maps.models.RemoteResourceImpl;
 import slash.navigation.maps.models.RemoteThemeImpl;
 
 import java.util.ArrayList;
@@ -58,11 +56,8 @@ public class MapFiles {
         return dataSource.getDirectory();
     }
 
-    public List<RemoteResource> getResources() {
+    public List<RemoteResource> getMapsAndThemes() {
         List<RemoteResource> result = new ArrayList<>();
-        for(File file : dataSource.getFiles()) {
-            result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), file));
-        }
         for(slash.navigation.datasources.Map map : dataSource.getMaps()) {
             result.add(new RemoteMapImpl(getName(), getBaseUrl(), getSubDirectory(), map));
         }
