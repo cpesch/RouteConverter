@@ -141,9 +141,7 @@ import static slash.common.io.Files.findExistingPath;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toUrls;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
@@ -168,7 +166,7 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
  */
 
 public class RouteConverter extends SingleFrameApplication {
-    private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
+    protected static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
     public static void main(String[] args) {
@@ -189,10 +187,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), getEdition(), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
     }
 
-    public static String getEdition() {
+    protected String getEdition() {
         return "Online";
     }
 
@@ -343,8 +341,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        // if (isJavaFX())
-        //    mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        if (isJavaFX())
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null) {
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
             if (mapView != null)
@@ -447,8 +445,8 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().dispose();
         hgtFilesService.dispose();
         getBatchPositionAugmenter().dispose();
-        getDataSourceManager().getDownloadManager().dispose();
-        getDataSourceManager().getDownloadManager().saveQueue();
+        getDataSourceManager().dispose();
+        getDownloadManager().saveQueue();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -717,6 +715,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public DataSourceManager getDataSourceManager() {
         return dataSourceManager;
+    }
+
+    private DownloadManager getDownloadManager() {
+        return getDataSourceManager().getDownloadManager();
     }
 
     private File getDownloadQueueFile() {
@@ -1074,7 +1076,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
-                getDataSourceManager().getDownloadManager().loadQueue();
+                getDownloadManager().loadQueue();
 
                 try {
                     getDataSourceManager().initialize(getEdition());
@@ -1103,10 +1105,10 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeRoutingServices() {
+    protected void initializeRoutingServices() {
     }
 
-    private void initializeMapManager() {
+    protected void initializeMapManager() {
     }
 
     private class PrintMapAction extends FrameAction {

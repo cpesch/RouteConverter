@@ -23,12 +23,15 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static java.lang.System.currentTimeMillis;
+import static javax.swing.BorderFactory.createEtchedBorder;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 
@@ -56,7 +59,7 @@ public class NotificationManager {
         label.setFont(label.getFont().deriveFont(13f));
         label.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if(nextAction != null)
+                if (nextAction != null)
                     nextAction.actionPerformed(new ActionEvent(e, 4711, "notify"));
             }
         });
@@ -65,7 +68,7 @@ public class NotificationManager {
         JPanel contentPane = (JPanel) window.getContentPane();
         contentPane.add(label);
         contentPane.setBackground(new Color(0, 7 * 16 + 9, 13 * 16));
-        contentPane.setBorder(BorderFactory.createEtchedBorder());
+        contentPane.setBorder(new CompoundBorder(createEtchedBorder(), new EmptyBorder(2, 3, 2, 3)));
 
         initializeNotificationUpdater();
     }
@@ -88,11 +91,13 @@ public class NotificationManager {
                             nextMessage = null;
                             lastEvent = currentTimeMillis();
 
-                            invokeInAwtEventQueue(new Runnable() {
-                                public void run() {
-                                    show(showMessage);
-                                }
-                            });
+                            if (!label.getText().equals(showMessage)) {
+                                invokeInAwtEventQueue(new Runnable() {
+                                    public void run() {
+                                        show(showMessage);
+                                    }
+                                });
+                            }
                         } else if (currentTimeMillis() - lastEvent > DISPLAY_TIMEOUT) {
                             invokeInAwtEventQueue(new Runnable() {
                                 public void run() {

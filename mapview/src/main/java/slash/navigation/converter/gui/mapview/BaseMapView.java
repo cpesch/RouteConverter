@@ -366,7 +366,7 @@ public abstract class BaseMapView implements MapView {
                             haveToRepaintSelection = false;
                             copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                            copiedPositions = new ArrayList<NavigationPosition>(positions);
+                            copiedPositions = new ArrayList<>(positions);
                         } else
                             continue;
                     }
@@ -670,6 +670,10 @@ public abstract class BaseMapView implements MapView {
         executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
     }
 
+    public void showMapBorder(BoundingBox mapBoundingBox) {
+        throw new UnsupportedOperationException();
+    }
+
     public NavigationPosition getCenter() {
         if (isInitialized())
             return getCurrentMapCenter();
@@ -680,6 +684,7 @@ public abstract class BaseMapView implements MapView {
     private int getZoom() {
         return preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
     }
+
     private void setZoom(int zoom) {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
     }
@@ -689,9 +694,11 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract NavigationPosition getNorthEastBounds();
+
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
+
     protected abstract Integer getCurrentZoom();
 
     protected abstract String getCallbacks();
@@ -996,6 +1003,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
+
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks
@@ -1056,7 +1064,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("^(.+?):(.+)$");
 
     private Map<String, String> asMap(List<String> lines) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (String line : lines) {
             Matcher matcher = NAME_VALUE_PATTERN.matcher(line);
             if (matcher.matches())
@@ -1307,7 +1315,7 @@ public abstract class BaseMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-            // directions are automatically scaled by the Google Maps API when zooming
+                // directions are automatically scaled by the Google Maps API when zooming
             else if (positionsModel.getRoute().getCharacteristics() != Route ||
                     positionReducer.hasFilteredVisibleArea() || recenterAfterZooming) {
                 haveToRepaintRouteImmediately = true;
@@ -1461,7 +1469,7 @@ public abstract class BaseMapView implements MapView {
                     continue;
 
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                                Arrays.<Object>asList( position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
+                        Arrays.<Object>asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
             } else {
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                         Arrays.<Object>asList(longitude, latitude)), false, true);
@@ -1522,7 +1530,7 @@ public abstract class BaseMapView implements MapView {
 
     // listeners
 
-    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
+    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);

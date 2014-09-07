@@ -157,7 +157,9 @@ public class DownloadExecutor implements Runnable {
         InputStream inputStream = get.executeAsStream();
         log.info(format("Download from %s returned with status code %s", download.getUrl(), get.getStatusCode()));
         if (get.isSuccessful() && inputStream != null) {
-            modelUpdater.expectingBytes(contentLength != null ? contentLength : get.getContentLength() != null ? get.getContentLength() : 0);
+            if(contentLength == null)
+                contentLength = get.getContentLength();
+            modelUpdater.expectingBytes(contentLength != null ? contentLength : 0);
             new Copier(modelUpdater).copyAndClose(inputStream, new FileOutputStream(download.getTempFile()), 0, contentLength);
             download.setETag(get.getETag());
             return true;

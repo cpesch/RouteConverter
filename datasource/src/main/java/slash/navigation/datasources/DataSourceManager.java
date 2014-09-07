@@ -128,4 +128,8 @@ public class DataSourceManager {
     public DownloadManager getDownloadManager() {
         return downloadManager;
     }
+
+    public void dispose() {
+        getDownloadManager().dispose();
+    }
 }
