@@ -46,8 +46,9 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.mapview.helpers.MapViewComponentListener;
-import slash.navigation.converter.gui.mapview.helpers.MapViewMouseEventListener;
+import slash.navigation.converter.gui.mapview.helpers.CoordinateDisplayer;
+import slash.navigation.converter.gui.mapview.helpers.MapViewComponentResizer;
+import slash.navigation.converter.gui.mapview.helpers.MapViewMoverAndZoomer;
 import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
 import slash.navigation.converter.gui.mapview.updater.*;
@@ -122,7 +123,8 @@ public class MapsforgeMapView implements MapView {
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
-    private MapViewMouseEventListener mapViewMouseEventListener;
+    private MapViewMoverAndZoomer mapViewMoverAndZoomer;
+    private CoordinateDisplayer coordinateDisplayer = new CoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
     private TileRendererLayer oceansLayer, worldLayer;
@@ -147,6 +149,7 @@ public class MapsforgeMapView implements MapView {
         initializeActions();
         initializeMapView();
         this.recenterAfterZooming = recenterAfterZooming;
+        setShowCoordinates(showCoordinates);
     }
 
     private void initializeActions() {
@@ -169,10 +172,11 @@ public class MapsforgeMapView implements MapView {
         });
         handleUnitSystem();
 
-        mapViewMouseEventListener = new MapViewMouseEventListener(mapView, createPopupMenu());
-        mapView.addMouseListener(mapViewMouseEventListener);
-        mapView.addMouseMotionListener(mapViewMouseEventListener);
-        mapView.addMouseWheelListener(mapViewMouseEventListener);
+        mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, createPopupMenu());
+        mapView.addMouseListener(mapViewMoverAndZoomer);
+        mapView.addMouseMotionListener(mapViewMoverAndZoomer);
+        mapView.addMouseWheelListener(mapViewMoverAndZoomer);
+        coordinateDisplayer.initialize(mapView, mapViewCallback);
 
         try {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
@@ -206,22 +210,22 @@ public class MapsforgeMapView implements MapView {
         }, getKeyStroke(VK_MINUS, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
-                mapViewMouseEventListener.animateCenter(SCROLL_DIFF, 0);
+                mapViewMoverAndZoomer.animateCenter(SCROLL_DIFF, 0);
             }
         }, getKeyStroke(VK_LEFT, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
-                mapViewMouseEventListener.animateCenter(-SCROLL_DIFF, 0);
+                mapViewMoverAndZoomer.animateCenter(-SCROLL_DIFF, 0);
             }
         }, getKeyStroke(VK_RIGHT, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
-                mapViewMouseEventListener.animateCenter(0, SCROLL_DIFF);
+                mapViewMoverAndZoomer.animateCenter(0, SCROLL_DIFF);
             }
         }, getKeyStroke(VK_UP, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
-                mapViewMouseEventListener.animateCenter(0, -SCROLL_DIFF);
+                mapViewMoverAndZoomer.animateCenter(0, -SCROLL_DIFF);
             }
         }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
@@ -271,7 +275,7 @@ public class MapsforgeMapView implements MapView {
 
     private AwtGraphicMapView createMapView() {
         final AwtGraphicMapView mapView = new AwtGraphicMapView();
-        mapView.addComponentListener(new MapViewComponentListener(mapView, mapView.getModel().mapViewDimension));
+        mapView.addComponentListener(new MapViewComponentResizer(mapView, mapView.getModel().mapViewDimension));
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
         return mapView;
@@ -742,7 +746,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        // TODO implement me
+        coordinateDisplayer.setShowCoordinates(showCoordinates);
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
@@ -940,7 +944,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private LatLong getMousePosition() {
-        Point point = mapViewMouseEventListener.getMousePosition();
+        Point point = mapViewMoverAndZoomer.getMousePosition();
         return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
                 mapView.getModel().mapViewPosition.getCenter();
     }
@@ -1022,7 +1026,7 @@ public class MapsforgeMapView implements MapView {
 
     private class CenterAction extends FrameAction {
         public void run() {
-            mapViewMouseEventListener.centerToMousePosition();
+            mapViewMoverAndZoomer.centerToMousePosition();
         }
     }
 
@@ -1034,7 +1038,7 @@ public class MapsforgeMapView implements MapView {
         }
 
         public void run() {
-            mapViewMouseEventListener.zoomToMousePosition(zoomLevelDiff);
+            mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
         }
     }
 }

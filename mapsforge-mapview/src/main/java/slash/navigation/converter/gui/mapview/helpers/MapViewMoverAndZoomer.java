@@ -24,7 +24,6 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
-import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 
@@ -39,17 +38,17 @@ import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
 /**
- * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewPosition}
+ * Move, zoom map and fire actions upon mouse events of the {@link AwtGraphicMapView}.
  *
  * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
  */
 
-public class MapViewMouseEventListener extends MouseAdapter {
+public class MapViewMoverAndZoomer extends MouseAdapter {
     private final AwtGraphicMapView mapView;
     private final JPopupMenu popupMenu;
     private Point lastMousePressPoint;
 
-    public MapViewMouseEventListener(AwtGraphicMapView mapView, JPopupMenu popupMenu) {
+    public MapViewMoverAndZoomer(AwtGraphicMapView mapView, JPopupMenu popupMenu) {
         this.mapView = mapView;
         this.popupMenu = popupMenu;
     }

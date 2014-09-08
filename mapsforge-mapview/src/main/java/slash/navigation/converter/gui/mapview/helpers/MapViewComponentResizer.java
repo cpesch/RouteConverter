@@ -21,23 +21,22 @@ package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.map.model.MapViewDimension;
 import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
-import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 /**
- * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewDimension}
+ * Resize {@link AwtGraphicMapView} upon component resize events.
  *
  * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
  */
 
-public class MapViewComponentListener extends ComponentAdapter {
+public class MapViewComponentResizer extends ComponentAdapter {
     private final AwtGraphicMapView mapView;
     private final MapViewDimension mapViewDimension;
 
-    public MapViewComponentListener(AwtGraphicMapView mapView, MapViewDimension mapViewDimension) {
+    public MapViewComponentResizer(AwtGraphicMapView mapView, MapViewDimension mapViewDimension) {
         this.mapView = mapView;
         this.mapViewDimension = mapViewDimension;
     }
