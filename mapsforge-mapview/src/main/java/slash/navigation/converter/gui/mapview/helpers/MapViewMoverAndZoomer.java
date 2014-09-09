@@ -21,13 +21,13 @@ package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.converter.gui.mapview.overlays.DraggableMarker;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,55 +35,63 @@ import java.awt.event.MouseWheelEvent;
 
 import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
+import static slash.navigation.gui.helpers.UIHelper.startDragCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
- * Move, zoom map and fire actions upon mouse events of the {@link AwtGraphicMapView}.
+ * Move and zoom map upon mouse events of the {@link AwtGraphicMapView}.
  *
- * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
+ * @author Christian Pesch
  */
 
 public class MapViewMoverAndZoomer extends MouseAdapter {
-    private final AwtGraphicMapView mapView;
-    private final JPopupMenu popupMenu;
-    private Point lastMousePressPoint;
+    private static final int STEPS_TO_MOVE_CENTER = 25;
 
-    public MapViewMoverAndZoomer(AwtGraphicMapView mapView, JPopupMenu popupMenu) {
+    private final AwtGraphicMapView mapView;
+    private final MapViewProjection projection;
+    private final LayerManager layerManager;
+    private Point lastMousePressPoint;
+    private DraggableMarker mousePressMarker;
+
+    public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
         this.mapView = mapView;
-        this.popupMenu = popupMenu;
+        this.projection = new MapViewProjection(mapView);
+        this.layerManager = layerManager;
+        mapView.addMouseListener(this);
+        mapView.addMouseMotionListener(this);
+        mapView.addMouseWheelListener(this);
+    }
+
+    public void mousePressed(MouseEvent e) {
+        mousePressMarker = getMarkerFor(e);
+        if (mousePressMarker == null)
+            lastMousePressPoint = e.getPoint();
     }
 
     public void mouseDragged(MouseEvent e) {
         if (isLeftMouseButton(e)) {
-            Point point = e.getPoint();
-            if (lastMousePressPoint != null) {
+            if (isMousePressedOnMarker()) {
+                startDragCursor(mapView);
+                LatLong latLong = projection.fromPixels(e.getX(), e.getY());
+                mousePressMarker.setLatLong(latLong);
+                mousePressMarker.requestRedraw();
+
+            } else if (getLastMousePoint() != null) {
+                Point point = e.getPoint();
                 int moveHorizontal = point.x - lastMousePressPoint.x;
                 int moveVertical = point.y - lastMousePressPoint.y;
                 mapView.getModel().mapViewPosition.moveCenter(moveHorizontal, moveVertical);
+                lastMousePressPoint = point;
             }
-            lastMousePressPoint = point;
         }
     }
 
-    public void mousePressed(MouseEvent e) {
-        lastMousePressPoint = e.getPoint();
-
-        if (isLeftMouseButton(e)) {
-            boolean shiftKey = e.isShiftDown();
-            boolean altKey = e.isAltDown();
-            boolean ctrlKey = e.isControlDown();
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-            if (!shiftKey && !altKey && !ctrlKey)
-                actionManager.run("select-position");
-            else if (shiftKey && !altKey && !ctrlKey)
-                actionManager.run("extend-selection");
-            else if (!shiftKey && !altKey && ctrlKey)
-                actionManager.run("add-position");
-            else if (!shiftKey && altKey && ctrlKey)
-                actionManager.run("delete-position");
-
-        } else if (isRightMouseButton(e)) {
-            popupMenu.show(mapView, e.getX(), e.getY());
+    public void mouseReleased(MouseEvent e) {
+        if (isMousePressedOnMarker()) {
+            LatLong latLong = projection.fromPixels(e.getX(), e.getY());
+            mousePressMarker.onDrop(latLong);
+            mousePressMarker = null;
+            stopWaitCursor(mapView);
         }
     }
 
@@ -92,7 +100,22 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
-    private static final int TOTAL_STEPS = 25;
+    private DraggableMarker getMarkerFor(MouseEvent e) {
+        LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
+        org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
+
+        for (int i = layerManager.getLayers().size() - 1; i >= 0; --i) {
+            Layer layer = layerManager.getLayers().get(i);
+            if (!(layer instanceof DraggableMarker))
+                continue;
+
+            org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
+            if (layer.onTap(tapLatLong, layerXY, tapXY))
+                return DraggableMarker.class.cast(layer);
+        }
+        return null;
+    }
+
 
     public void centerToMousePosition() {
         Dimension dimension = mapView.getDimension();
@@ -104,9 +127,9 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     public void animateCenter(final int horizontalDiff, final int verticalDiff) {
         new Thread(new Runnable() {
             public void run() {
-                double stepSizeX = horizontalDiff / TOTAL_STEPS;
-                double stepSizeY = verticalDiff / TOTAL_STEPS;
-                for (int i = 0; i < TOTAL_STEPS; i++) {
+                double stepSizeX = horizontalDiff / STEPS_TO_MOVE_CENTER;
+                double stepSizeY = verticalDiff / STEPS_TO_MOVE_CENTER;
+                for (int i = 0; i < STEPS_TO_MOVE_CENTER; i++) {
                     mapView.getModel().mapViewPosition.moveCenter(stepSizeX, stepSizeY);
                     try {
                         sleep(10);
@@ -119,14 +142,13 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void zoomToMousePosition(byte zoomLevelDiff) {
+        if (zoomLevelDiff == 0 || lastMousePressPoint == null)
+            return;
         zoomToMousePosition(zoomLevelDiff, lastMousePressPoint.x, lastMousePressPoint.y);
     }
 
     private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
-        if(zoomLevelDiff == 0)
-            return;
-
-        LatLong mouse = new MapViewProjection(mapView).fromPixels(mouseX, mouseY);
+        LatLong mouse = projection.fromPixels(mouseX, mouseY);
         MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setPivot(mouse);
 
@@ -139,7 +161,11 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         }
     }
 
-    public Point getMousePosition() {
+    public Point getLastMousePoint() {
         return lastMousePressPoint != null ? lastMousePressPoint : null;
+    }
+
+    public boolean isMousePressedOnMarker() {
+        return mousePressMarker != null;
     }
 }

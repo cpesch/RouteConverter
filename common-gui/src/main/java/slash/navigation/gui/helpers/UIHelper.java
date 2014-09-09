@@ -31,6 +31,7 @@ import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
+import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 
@@ -79,13 +80,17 @@ public class UIHelper {
         component.setCursor(Cursor.getPredefinedCursor(WAIT_CURSOR));
     }
 
+    public static void startDragCursor(Component component) {
+        component.setCursor(DefaultMoveDrop);
+    }
+
     public static void stopWaitCursor(JComponent component) {
         RootPaneContainer root = (RootPaneContainer) component.getTopLevelAncestor();
         stopWaitCursor(root.getGlassPane());
         root.getGlassPane().setVisible(false);
     }
 
-    private static void stopWaitCursor(Component component) {
+    public static void stopWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(DEFAULT_CURSOR));
     }
 

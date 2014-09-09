@@ -46,16 +46,15 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.mapview.helpers.CoordinateDisplayer;
-import slash.navigation.converter.gui.mapview.helpers.MapViewComponentResizer;
+import slash.navigation.converter.gui.mapview.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.converter.gui.mapview.helpers.MapViewMoverAndZoomer;
+import slash.navigation.converter.gui.mapview.helpers.MapViewPopupMenu;
+import slash.navigation.converter.gui.mapview.helpers.MapViewResizer;
 import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
+import slash.navigation.converter.gui.mapview.overlays.DraggableMarker;
 import slash.navigation.converter.gui.mapview.updater.*;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -81,6 +80,7 @@ import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.text.MessageFormat.format;
+import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -124,7 +124,7 @@ public class MapsforgeMapView implements MapView {
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
-    private CoordinateDisplayer coordinateDisplayer = new CoordinateDisplayer();
+    private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
     private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
     private TileRendererLayer oceansLayer, worldLayer;
@@ -172,12 +172,6 @@ public class MapsforgeMapView implements MapView {
         });
         handleUnitSystem();
 
-        mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, createPopupMenu());
-        mapView.addMouseListener(mapViewMoverAndZoomer);
-        mapView.addMouseMotionListener(mapViewMoverAndZoomer);
-        mapView.addMouseWheelListener(mapViewMoverAndZoomer);
-        coordinateDisplayer.initialize(mapView, mapViewCallback);
-
         try {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
             waypointIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("waypoint.png"), -1);
@@ -196,6 +190,9 @@ public class MapsforgeMapView implements MapView {
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
         mapSelector = new MapSelector(mapViewCallback.getMapManager(), mapView);
+        mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
+        mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
+        new MapViewPopupMenu(mapView, createPopupMenu());
 
         final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
@@ -275,7 +272,7 @@ public class MapsforgeMapView implements MapView {
 
     private AwtGraphicMapView createMapView() {
         final AwtGraphicMapView mapView = new AwtGraphicMapView();
-        mapView.addComponentListener(new MapViewComponentResizer(mapView, mapView.getModel().mapViewDimension));
+        new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
         return mapView;
@@ -322,15 +319,14 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileCache createTileCache() {
-        TileCache firstLevelTileCache = new InMemoryTileCache(64);
         // TODO think about replacing with file system cache that survives restarts
         // File cacheDirectory = new File(System.getProperty("java.io.tmpdir"), "mapsforge");
         // TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, GRAPHIC_FACTORY);
         // return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
-        return firstLevelTileCache;
+        return new InMemoryTileCache(64);
     }
 
-    protected void setModel(PositionsModel positionsModel,
+    protected void setModel(final PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
                             CharacteristicsModel characteristicsModel,
                             UnitSystemModel unitSystemModel) {
@@ -342,9 +338,18 @@ public class MapsforgeMapView implements MapView {
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
-                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                for (final PositionWithLayer positionWithLayer : positionWithLayers) {
                     LatLong position = asLatLong(positionWithLayer.getPosition());
-                    Marker marker = new Marker(position, markerIcon, 8, -16);
+                    Marker marker = new DraggableMarker(position, markerIcon, 8, -16) {
+                        public void onDrop(LatLong latLong) {
+                            int index = positionsModel.getIndex(positionWithLayer.getPosition());
+                            positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                                    Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
+                            // ensure this marker is on top of the moved waypoint marker
+                            getLayerManager().getLayers().remove(this);
+                            getLayerManager().getLayers().add(this);
+                        }
+                    };
                     positionWithLayer.setLayer(marker);
                     getLayerManager().getLayers().add(marker);
                     center = position;
@@ -746,11 +751,11 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        coordinateDisplayer.setShowCoordinates(showCoordinates);
+        mapViewCoordinateDisplayer.setShowCoordinates(showCoordinates);
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
-        // TODO implement me
+        throw new UnsupportedOperationException(); // TODO implement me
     }
 
     private Polyline mapBorder, routeBorder;
@@ -944,7 +949,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private LatLong getMousePosition() {
-        Point point = mapViewMoverAndZoomer.getMousePosition();
+        Point point = mapViewMoverAndZoomer.getLastMousePoint();
         return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
                 mapView.getModel().mapViewPosition.getCenter();
     }
@@ -957,7 +962,7 @@ public class MapsforgeMapView implements MapView {
 
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) { // TODO same as in BaseMapView
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
-        if (row != -1)
+        if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker())
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
     }
 

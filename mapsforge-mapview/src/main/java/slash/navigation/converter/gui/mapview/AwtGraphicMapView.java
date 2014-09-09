@@ -74,6 +74,9 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     public void destroy() {
         layerManager.interrupt();
         frameBufferController.destroy();
+        this.frameBuffer.destroy();
+        if (this.mapScaleBar != null)
+            this.mapScaleBar.destroy();
     }
 
     public Dimension getDimension() {

@@ -27,18 +27,19 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 /**
- * Resize {@link AwtGraphicMapView} upon component resize events.
+ * Resize map upon component resize events of the {@link AwtGraphicMapView}..
  *
- * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
+ * @author Christian Pesch
  */
 
-public class MapViewComponentResizer extends ComponentAdapter {
+public class MapViewResizer extends ComponentAdapter {
     private final AwtGraphicMapView mapView;
     private final MapViewDimension mapViewDimension;
 
-    public MapViewComponentResizer(AwtGraphicMapView mapView, MapViewDimension mapViewDimension) {
+    public MapViewResizer(AwtGraphicMapView mapView, MapViewDimension mapViewDimension) {
         this.mapView = mapView;
         this.mapViewDimension = mapViewDimension;
+        mapView.addComponentListener(this);
     }
 
     public void componentResized(ComponentEvent componentEvent) {

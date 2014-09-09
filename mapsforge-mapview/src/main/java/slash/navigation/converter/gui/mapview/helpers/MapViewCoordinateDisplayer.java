@@ -20,12 +20,10 @@
 package slash.navigation.converter.gui.mapview.helpers;
 
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import org.mapsforge.map.view.MapView;
 import slash.navigation.converter.gui.mapview.AwtGraphicMapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
-import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 
@@ -39,13 +37,12 @@ import java.awt.event.MouseEvent;
 import static javax.swing.BorderFactory.createEtchedBorder;
 
 /**
- * Listen to mouse events of the {@link MapsforgeMapView}'s {@link MapViewPosition} to
- * show coordinates.
+ * Show coordinates upon to mouse events of the {@link AwtGraphicMapView}.
  *
  * @author Christian Pesch
  */
 
-public class CoordinateDisplayer extends MouseAdapter {
+public class MapViewCoordinateDisplayer extends MouseAdapter {
     private MapView mapView;
     private MapViewCallback mapViewCallback;
     private JWindow window;

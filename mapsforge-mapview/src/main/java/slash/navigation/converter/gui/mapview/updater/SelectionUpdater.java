@@ -37,7 +37,7 @@ import java.util.List;
 public class SelectionUpdater {
     private final PositionsModel positionsModel;
     private final SelectionOperation selectionOperation;
-    private final List<PositionWithLayer> positionWithLayers = new ArrayList<PositionWithLayer>();
+    private final List<PositionWithLayer> positionWithLayers = new ArrayList<>();
 
     public SelectionUpdater(PositionsModel positionsModel, SelectionOperation selectionOperation) {
         this.positionsModel = positionsModel;
@@ -53,7 +53,7 @@ public class SelectionUpdater {
     }
 
     public void removedPositions(List<NavigationPosition> positions) {
-        List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> removed = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
             if (positions.contains(position) && positionsModel.getIndex(position) == -1)
@@ -69,12 +69,12 @@ public class SelectionUpdater {
     private void updateSelection(int[] selectedPositions) {
         List<PositionWithLayer> selected = asPositionWithLayers(selectedPositions);
 
-        List<PositionWithLayer> added = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> added = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : selected) {
             if (!positionWithLayers.contains(positionWithLayer))
                 added.add(positionWithLayer);
         }
-        List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> removed = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
             if (!selected.contains(positionWithLayer))
                 removed.add(positionWithLayer);
@@ -95,7 +95,7 @@ public class SelectionUpdater {
     }
 
     private List<PositionWithLayer> asPositionWithLayers(int[] indices) {
-        List<PositionWithLayer> result = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> result = new ArrayList<>();
         for (int selectedPosition : indices) {
             result.add(new PositionWithLayer(positionsModel.getPosition(selectedPosition)));
         }
