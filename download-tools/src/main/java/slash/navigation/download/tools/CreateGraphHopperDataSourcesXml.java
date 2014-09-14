@@ -55,18 +55,24 @@ public class CreateGraphHopperDataSourcesXml extends WebsiteDataSourcesXmlGenera
 
     private BoundingBox extractBoundingBox(String baseUrl, String uri) throws IOException {
         System.out.println(getClass().getSimpleName() + ": Extracting bounding box from " + baseUrl + uri);
-        Get get = new Get(baseUrl + uri);
-        get.setRange(0L, PEEK_HEADER_SIZE);
-        InputStream inputStream = get.executeAsStream();
-        BoundingBox boundingBox = PbfUtil.extractBoundingBox(inputStream);
-        closeQuietly(inputStream);
-        get.release();
         try {
-            Thread.sleep(10000);
+            Get get = new Get(baseUrl + uri);
+            get.setRange(0L, PEEK_HEADER_SIZE);
+            InputStream inputStream = get.executeAsStream();
+            BoundingBox boundingBox = PbfUtil.extractBoundingBox(inputStream);
+            closeQuietly(inputStream);
+            get.release();
+
+            // avoid server overload
+            Thread.sleep(15000);
+
+            return boundingBox;
         } catch (InterruptedException e) {
-            throw new IOException(e);
+            // intentionally do nothing
+        } catch (IOException e) {
+            System.err.println(getClass().getSimpleName() + ": " + e.getMessage());
         }
-        return boundingBox;
+        return null;
     }
 
     protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {

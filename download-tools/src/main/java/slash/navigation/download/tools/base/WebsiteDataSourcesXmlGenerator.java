@@ -128,12 +128,17 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
             parseUri(baseUrl, uri, fileTypes, mapTypes, themeTypes);
     }
 
-    protected ContentLengthAndLastModified extractContentLengthAndLastModified(String baseUrl, String uri) throws IOException {
+    protected ContentLengthAndLastModified extractContentLengthAndLastModified(String baseUrl, String uri) {
         System.out.println(getClass().getSimpleName() + ": Extracting content length and last modified from " + baseUrl + uri);
-        Head head = new Head(baseUrl + uri);
-        head.executeAsString();
-        if (head.isSuccessful()) {
-            return new ContentLengthAndLastModified(head.getContentLength(), head.getLastModified());
+        try {
+            Head head = new Head(baseUrl + uri);
+            head.executeAsString();
+            if (head.isSuccessful()) {
+                return new ContentLengthAndLastModified(head.getContentLength(), head.getLastModified());
+            }
+        }
+        catch(IOException e) {
+            System.err.println(getClass().getSimpleName() + ": " + e.getMessage());
         }
         return null;
     }
