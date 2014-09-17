@@ -22,7 +22,10 @@ package slash.navigation.converter.gui;
 import slash.navigation.brouter.BRouter;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.notifications.NotificationManager;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -60,10 +63,20 @@ public class RouteConverterOffline extends RouteConverter {
         }
     }
 
+    private NotificationManager getNotificationManager() {
+        return Application.getInstance().getContext().getNotificationManager();
+    }
+
+    private Action getAction() {
+        return Application.getInstance().getContext().getActionManager().get("select-maps");
+    }
+
     protected void initializeMapManager() {
         try {
             getMapManager().initialize();
             getMapManager().scanDirectories();
+
+            getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getAction());
         } catch (final IOException e) {
             invokeLater(new Runnable() {
                 public void run() {

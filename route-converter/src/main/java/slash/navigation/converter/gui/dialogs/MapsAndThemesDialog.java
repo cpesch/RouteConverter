@@ -264,7 +264,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
         LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
         getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
-    }
+}
 
     private void apply() {
         int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
