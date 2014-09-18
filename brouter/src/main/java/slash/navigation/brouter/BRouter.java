@@ -252,7 +252,7 @@ public class BRouter implements RoutingService {
     private Download download(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + ": Routing Data " + uri, url, Copy,
                 null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 }
