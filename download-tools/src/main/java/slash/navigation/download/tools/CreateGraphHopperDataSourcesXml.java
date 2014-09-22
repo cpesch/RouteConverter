@@ -53,32 +53,34 @@ public class CreateGraphHopperDataSourcesXml extends WebsiteDataSourcesXmlGenera
                 (anchor.endsWith("/") || anchor.endsWith(".html"));
     }
 
-    private BoundingBox extractBoundingBox(String baseUrl, String uri) throws IOException {
-        System.out.println(getClass().getSimpleName() + ": Extracting bounding box from " + baseUrl + uri);
+    private BoundingBox extractBoundingBox(String baseUrl, String uri, int index) throws IOException {
+        // avoid server overload
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // intentionally do nothing
+        }
+
+        System.out.println(getClass().getSimpleName() + ": Extracting bounding box from " + baseUrl + uri + " (" + index + ")");
         try {
             Get get = new Get(baseUrl + uri);
             get.setRange(0L, PEEK_HEADER_SIZE);
             InputStream inputStream = get.executeAsStream();
             BoundingBox boundingBox = PbfUtil.extractBoundingBox(inputStream);
+            inputStream.close();
             closeQuietly(inputStream);
             get.release();
-
-            // avoid server overload
-            Thread.sleep(15000);
-
             return boundingBox;
-        } catch (InterruptedException e) {
-            // intentionally do nothing
         } catch (IOException e) {
             System.err.println(getClass().getSimpleName() + ": " + e.getMessage());
         }
         return null;
     }
 
-    protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
-        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri);
+    protected void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri, index);
         if (meta != null) {
-            BoundingBox boundingBox = extractBoundingBox(baseUrl, uri);
+            BoundingBox boundingBox = extractBoundingBox(baseUrl, uri, index);
             fileTypes.add(createFileType(uri, meta.lastModified, meta.contentLength, boundingBox));
         }
     }

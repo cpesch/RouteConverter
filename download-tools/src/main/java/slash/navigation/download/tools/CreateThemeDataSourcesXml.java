@@ -52,7 +52,7 @@ public class CreateThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
                 (anchor.endsWith("/") || anchor.endsWith(".html"));
     }
 
-    protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+    protected void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
         Get get = new Get(baseUrl + uri);
         InputStream inputStream = get.executeAsStream();
 
@@ -63,7 +63,7 @@ public class CreateThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 if (!entry.isDirectory()) {
-                    System.out.println(getClass().getSimpleName() + ": theme file " + entry.getName() + " found in " + uri);
+                    System.out.println(getClass().getSimpleName() + ": theme file " + entry.getName() + " found in " + uri + " (" + index + ")");
                     fragmentTypes.add(createFragmentType(entry.getName(), entry, zipInputStream));
 
                     // do not close zip input stream

@@ -43,8 +43,8 @@ public class CreateBrouterDataSourcesXml extends WebsiteDataSourcesXmlGenerator 
         return false;
     }
 
-    protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
-        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri);
+    protected void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri, index);
         if (meta != null)
             fileTypes.add(createFileType(uri, meta.lastModified, meta.contentLength, null));
     }

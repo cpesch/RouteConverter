@@ -68,8 +68,8 @@ public class CreateMapDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
         return file;
     }
 
-    protected void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
-        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri);
+    protected void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+        ContentLengthAndLastModified meta = extractContentLengthAndLastModified(baseUrl, uri, index);
         if (meta != null) {
             File file = downloadMapHeader(baseUrl, uri, meta.contentLength);
 

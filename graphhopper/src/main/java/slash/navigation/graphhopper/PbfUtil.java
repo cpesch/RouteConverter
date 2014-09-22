@@ -39,6 +39,7 @@ import static java.lang.String.format;
  */
 public class PbfUtil {
     private static final Logger log = Logger.getLogger(PbfUtil.class.getName());
+    private static final String OSM_HEADER = "OSMHeader";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
     public static BoundingBox extractBoundingBox(InputStream inputStream) {
@@ -52,14 +53,18 @@ public class PbfUtil {
 
                 byte[] blobHeaderBytes = new byte[dataInputStream.readInt()];
                 int readBlobHeader = dataInputStream.read(blobHeaderBytes);
-                if (readBlobHeader != blobHeaderBytes.length)
+                if (readBlobHeader != blobHeaderBytes.length) {
                     log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobHeaderBytes.length, readBlobHeader));
+                    return null;
+                }
                 Fileformat.BlobHeader blobHeader = Fileformat.BlobHeader.parseFrom(blobHeaderBytes);
 
                 byte[] blobBytes = new byte[blobHeader.getDatasize()];
                 int readBlob = dataInputStream.read(blobBytes);
-                if (readBlob != blobBytes.length)
+                if (readBlob != blobBytes.length) {
                     log.warning(format("Wanted to read %d blob bytes, but got only %d bytes", blobBytes.length, readBlob));
+                    return null;
+                }
                 Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobBytes);
 
                 InputStream blobData;
@@ -69,7 +74,7 @@ public class PbfUtil {
                     blobData = blob.getRaw().newInput();
                 }
 
-                if (blobHeader.getType().equals("OSMHeader")) {
+                if (blobHeader.getType().equals(OSM_HEADER)) {
                     Osmformat.HeaderBlock headerBlock = Osmformat.HeaderBlock.parseFrom(blobData);
                     if (headerBlock.hasBbox())
                         return toBoundingBox(headerBlock.getBbox());
