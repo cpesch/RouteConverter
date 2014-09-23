@@ -71,9 +71,8 @@ public class RouteConverterOffline extends RouteConverter {
         return Application.getInstance().getContext().getActionManager().get("select-maps");
     }
 
-    protected void initializeMapManager() {
+    protected void scanLocalMapsAndThemes() {
         try {
-            getMapManager().initialize();
             getMapManager().scanDirectories();
 
             getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getAction());
@@ -84,5 +83,9 @@ public class RouteConverterOffline extends RouteConverter {
                 }
             });
         }
+    }
+
+    protected void scanRemoteMapsAndThemes() {
+        getMapManager().scanDatasources();
     }
 }

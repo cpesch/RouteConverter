@@ -184,7 +184,7 @@ public class MapManager {
         return filePath;
     }
 
-    public void initialize() {
+    public void scanDatasources() {
         MapFilesService mapFilesService = new MapFilesService(dataSourceManager);
         mapFilesService.initialize();
 

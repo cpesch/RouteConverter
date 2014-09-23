@@ -1033,6 +1033,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
+                scanLocalMapsAndThemes();
                 getDownloadManager().loadQueue();
 
                 try {
@@ -1047,9 +1048,9 @@ public class RouteConverter extends SingleFrameApplication {
 
                 initializeElevationServices();
                 initializeRoutingServices();
-                initializeMapManager();
+                scanRemoteMapsAndThemes();
             }
-        }, "DownloadManagerInitializer").start();
+        }, "DataSourceInitializer").start();
     }
 
     private void initializeElevationServices() {
@@ -1063,7 +1064,10 @@ public class RouteConverter extends SingleFrameApplication {
     protected void initializeRoutingServices() {
     }
 
-    protected void initializeMapManager() {
+    protected void scanLocalMapsAndThemes() {
+    }
+
+    protected void scanRemoteMapsAndThemes() {
     }
 
     private class PrintMapAction extends FrameAction {
