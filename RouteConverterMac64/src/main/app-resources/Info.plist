@@ -24,16 +24,29 @@
         <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</string>
         <key>CFBundleVersion</key>
         <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
-        <key>Java</key>
+        <key>JVMMainClassName</key>
+        <string>slash.navigation.converter.gui.RouteConverter</string>
+        <key>LSArchitecturePriority</key>
+        <array>
+            <string>x86_64</string>
+            <string>i386</string>
+        </array>
+        <key>LSEnvironment</key>
         <dict>
-            <key>JVMVersion</key>
-            <string>1.7+</string>
-            <key>VMOptions</key>
-            <string>-XstartOnFirstThread -d64 -Xmx1024m -Dapple.laf.useScreenMenuBar=true</string>
-            <key>MainClass</key>
-            <string>slash.navigation.converter.gui.RouteConverter</string>
-            <key>ClassPath</key>
-            <string>$JAVAROOT/RouteConverterMac64.jar</string>
+            <key>LC_CTYPE</key>
+            <string>UTF-8</string>
         </dict>
+        <key>JVMOptions</key>
+        <array>
+            <string>-XstartOnFirstThread</string>
+            <string>-Xmx1024m</string>
+            <string>-Xdock:icon=Contents/Resources/RouteConverter.icns</string>
+            <string>-Xdock:name=RouteConverter</string>
+            <string>-Dapple.laf.useScreenMenuBar=true</string>
+            <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
+            <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+            <string>-Dcom.apple.mrj.application.apple.menu.about.name=RouteConverter</string>
+            <string>-Dcom.apple.smallTabs=true</string>
+        </array>
     </dict>
 </plist>
