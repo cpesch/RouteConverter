@@ -200,7 +200,9 @@ public class OptionsDialog extends SimpleDialog {
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices())
             routingServiceModel.addElement(service);
-        routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
+        RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
+        if (routingService != null)
+            routingServiceModel.setSelectedItem(routingService);
         comboBoxRoutingService.setModel(routingServiceModel);
         comboBoxRoutingService.setRenderer(new RoutingServiceListCellRenderer());
         comboBoxRoutingService.addItemListener(new ItemListener() {
@@ -276,7 +278,9 @@ public class OptionsDialog extends SimpleDialog {
         DefaultComboBoxModel<ElevationService> elevationServiceModel = new DefaultComboBoxModel<>();
         for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
             elevationServiceModel.addElement(service);
-        elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
+        ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
+        if (elevationService != null)
+            elevationServiceModel.setSelectedItem(elevationService);
         comboBoxElevationService.setModel(elevationServiceModel);
         comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
@@ -561,11 +565,13 @@ public class OptionsDialog extends SimpleDialog {
         this.$$$loadLabelText$$$(label10, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
         panel7.add(label10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxAvoidHighways = new JCheckBox();
+        checkBoxAvoidHighways.setEnabled(false);
         panel7.add(checkBoxAvoidHighways, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label11 = new JLabel();
         this.$$$loadLabelText$$$(label11, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-tolls"));
         panel7.add(label11, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxAvoidTolls = new JCheckBox();
+        checkBoxAvoidTolls.setEnabled(false);
         panel7.add(checkBoxAvoidTolls, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
@@ -574,6 +580,7 @@ public class OptionsDialog extends SimpleDialog {
         this.$$$loadLabelText$$$(label12, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-ferries"));
         panel7.add(label12, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxAvoidFerries = new JCheckBox();
+        checkBoxAvoidFerries.setEnabled(false);
         panel7.add(checkBoxAvoidFerries, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));

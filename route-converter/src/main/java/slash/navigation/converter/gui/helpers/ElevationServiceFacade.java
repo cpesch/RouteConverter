@@ -64,10 +64,13 @@ public class ElevationServiceFacade {
     }
 
     public ElevationService getElevationService() {
-        ElevationService firstElevationService = elevationServices.get(0);
+        ElevationService firstElevationService = getElevationServices().size() > 0 ? getElevationServices().get(0) : null;
+        if (firstElevationService == null)
+            return null;
+
         String lookupServiceName = preferences.get(ELEVATION_SERVICE, firstElevationService.getName());
 
-        for (ElevationService service : elevationServices) {
+        for (ElevationService service : getElevationServices()) {
             if (lookupServiceName.endsWith(service.getName()))
                 return service;
         }
