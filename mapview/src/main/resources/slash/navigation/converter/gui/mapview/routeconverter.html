@@ -352,6 +352,16 @@
        fireDirectionsLoaded();
    }
 
+   function extractPath(directionsRequest) {
+       var path = [];
+       path.push(directionsRequest['origin']);
+       var waypoints = directionsRequest['waypoints'];
+       for (var i = 0; i < waypoints.length; i++)
+           path.push(waypoints[i]['location']);
+       path.push(directionsRequest['destination']);
+       return path;
+   }
+
    function renderDirections(directionsRequest, startIndex, lastSegment) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
@@ -376,9 +386,14 @@
                    removeDirections();
 
            } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
+               var path = extractPath(directionsRequest);
+               var polyline = new google.maps.Polyline({path:path, strokeColor:"#FF0000", strokeWeight:5, strokeOpacity:0.3, clickable:false, geodesic:true});
+               addDirections(polyline, document.createElement("div"));
+
                resetDirections();
                if (lastSegment)
                    removeDirections();
+
                callJavaWithUri("zero-results");
 
            } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
