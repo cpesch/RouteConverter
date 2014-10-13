@@ -782,6 +782,8 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
+        String color = preferences.get("routeLineColor", "6CB1F3");
+        int width = preferences.getInt("routeLineWidth", 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
@@ -811,7 +813,7 @@ public abstract class BaseMapView implements MapView {
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
-            buffer.append(lastSegment).append(");\n");
+            buffer.append(lastSegment).append(",\"#").append(color).append("\",").append(width).append(");\n");
             try {
                 sleep(preferences.getInt("routeSegmentTimeout", 250));
             } catch (InterruptedException e) {
@@ -842,7 +844,7 @@ public abstract class BaseMapView implements MapView {
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
-            executeScript("addPolyline([" + latlngs + "], \"#" + color + "\"," + width + ");");
+            executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + width + ");");
         }
         removeOverlays();
         removeDirections();

@@ -362,11 +362,12 @@
        return path;
    }
 
-   function renderDirections(directionsRequest, startIndex, lastSegment) {
+   function renderDirections(directionsRequest, startIndex, lastSegment, color, weight) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
                var panel = document.createElement("div");
                var renderer = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
+                   polylineOptions: new google.maps.Polyline({strokeColor: color, strokeWeight: weight, strokeOpacity: 0.8, map: map}),
                    draggable: true, hideRouteList: true, directions: result, panel: panel});
                google.maps.event.addListener(renderer, "directions_changed", function() {
                    insertPosition(renderer.directions, startIndex);
