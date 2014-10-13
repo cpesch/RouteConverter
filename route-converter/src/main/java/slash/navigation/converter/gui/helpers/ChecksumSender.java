@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadListener;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.download.State;
 import slash.navigation.feedback.domain.RouteFeedback;
 
@@ -31,13 +32,23 @@ import slash.navigation.feedback.domain.RouteFeedback;
  * @author Christian Pesch
  */
 public class ChecksumSender implements DownloadListener {
+    private void sendChecksums(Download download) {
+        RouteConverter.getInstance().sendChecksums(download);
+    }
+
     public void progressed(Download download, int percentage) {
     }
 
     public void failed(Download download) {
+        FileAndChecksum file = download.getFile();
+        if (file.getActualChecksum() == null)
+            return;
+        if (file.getActualChecksum().laterThan(file.getExpectedChecksum()) ||
+                file.getExpectedChecksum().getSHA1() == null && file.getActualChecksum().getSHA1() != null)
+            sendChecksums(download);
     }
 
     public void succeeded(Download download) {
-        RouteConverter.getInstance().sendChecksums(download);
+        sendChecksums(download);
     }
 }

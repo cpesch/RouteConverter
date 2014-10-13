@@ -27,12 +27,14 @@ import slash.navigation.rest.Head;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 
 /**
  * Base for generation of data sources XML from websites.
@@ -43,8 +45,8 @@ import static java.lang.System.currentTimeMillis;
 public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlGenerator {
 
     public void run(String[] args) throws Exception {
-        if (args.length != 6) {
-            System.err.println(getClass().getSimpleName() + ": <id> <name> <startUrl> <baseUrl> <directory> <writeXmlFile>");
+        if (args.length < 6) {
+            System.err.println(getClass().getSimpleName() + ": <id> <name> <startUrl> <baseUrl> <directory> <writeXmlFile> [<startindex>] [<endindex>]");
             System.exit(20);
         }
 
@@ -52,18 +54,24 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         DatasourceType datasourceType = new ObjectFactory().createDatasourceType();
         datasourceType.setId(args[0]);
         datasourceType.setName(args[1]);
-        String baseUrl = args[3];
+        String baseUrl = args[2];
         datasourceType.setBaseUrl(baseUrl);
         datasourceType.setDirectory(args[4]);
 
-        Set<String> uris = collectUris(args[2], baseUrl);
-        System.out.println("Collected URIs: " + uris);
+        List<String> collectedUris = collectUris(args[3], baseUrl);
+        System.out.println("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
+
+        int startIndex = args.length > 7 ? parseInt(args[6]) : 0;
+        int endIndex = args.length > 8 ? parseInt(args[7]) : MAX_VALUE;
+        endIndex = min(collectedUris.size(), endIndex);
+        List<String> parsingUris = collectedUris.subList(startIndex, endIndex);
+        System.out.println("Parsing URIs from " + startIndex + " to " + endIndex + " (" + parsingUris.size() + " elements)");
 
         List<FileType> fileTypes = new ArrayList<>();
         List<ThemeType> themeTypes = new ArrayList<>();
         List<MapType> mapTypes = new ArrayList<>();
 
-        parseUris(baseUrl, uris, fileTypes, mapTypes, themeTypes);
+        parseUris(baseUrl, parsingUris, fileTypes, mapTypes, themeTypes);
 
         datasourceType.getFile().addAll(sortFileTypes(fileTypes));
         datasourceType.getMap().addAll(sortMapTypes(mapTypes));
@@ -78,24 +86,40 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         System.exit(0);
     }
 
-    private void recursiveCollect(String startUrl, String baseUrl, String uri, Set<String> uris) throws IOException {
+    private void recursiveCollect(String startUrl, String baseUrl, String uri, Set<String> uris, Set<String> visitedUris) throws IOException {
+        if(visitedUris.contains(uri))
+            return;
+        visitedUris.add(uri);
+
+        // avoid server overload
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // intentionally do nothing
+        }
+
         System.out.println(getClass().getSimpleName() + ": Downloading Webpage from " + startUrl + uri);
         Get get = new Get(startUrl + uri);
         String result = get.executeAsString();
+        // System.out.println(result);
 
         AnchorParser parser = new AnchorParser();
         List<String> anchors = parser.parseAnchors(result);
 
         for (String anchor : anchors) {
+            // System.out.println(anchor);
+
             if (anchor.startsWith("./"))
                 anchor = anchor.substring(2);
 
             if (isRecurseAnchor(anchor)) {
                 String nextPath = createPath(uri, anchor);
-                recursiveCollect(startUrl, baseUrl, nextPath, uris);
+                if (nextPath.startsWith(startUrl))
+                    nextPath = nextPath.substring(startUrl.length());
+                recursiveCollect(startUrl, baseUrl, nextPath, uris, visitedUris);
             } else if (isIncludeAnchor(anchor)) {
                 String nextUri = createUri(uri, anchor);
-                if(nextUri.startsWith(baseUrl))
+                if (nextUri.startsWith(baseUrl))
                     nextUri = nextUri.substring(baseUrl.length());
                 uris.add(nextUri);
             }
@@ -112,31 +136,44 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         return index != -1 && !anchor.contains("/") ? uri.substring(0, index + 1) + anchor : anchor;
     }
 
-    private Set<String> collectUris(String startUrl, String baseUrl) throws IOException {
+    private List<String> collectUris(String startUrl, String baseUrl) throws IOException {
         Set<String> uris = new HashSet<>();
-        recursiveCollect(startUrl, baseUrl, "", uris);
-        return uris;
+        recursiveCollect(startUrl, baseUrl, "", uris, new HashSet<String>());
+
+        String[] sortedUris = uris.toArray(new String[uris.size()]);
+        sort(sortedUris);
+        return asList(sortedUris);
     }
 
     protected abstract boolean isRecurseAnchor(String anchor);
 
     protected abstract boolean isIncludeAnchor(String anchor);
 
-    private void parseUris(String baseUrl, Set<String> uris, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
+    private void parseUris(String baseUrl, List<String> uris, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
         System.out.println(getClass().getSimpleName() + ": Parsing " + uris.size() + " URIs");
-        for (String uri : uris)
-            parseUri(baseUrl, uri, fileTypes, mapTypes, themeTypes);
+        for (int i = 0; i < uris.size(); i++)
+            parseUri(baseUrl, uris.get(i), i, fileTypes, mapTypes, themeTypes);
     }
 
-    protected ContentLengthAndLastModified extractContentLengthAndLastModified(String baseUrl, String uri) throws IOException {
-        System.out.println(getClass().getSimpleName() + ": Extracting content length and last modified from " + baseUrl + uri);
-        Head head = new Head(baseUrl + uri);
-        head.executeAsString();
-        if (head.isSuccessful()) {
-            return new ContentLengthAndLastModified(head.getContentLength(), head.getLastModified());
+    protected ContentLengthAndLastModified extractContentLengthAndLastModified(String baseUrl, String uri, int index) {
+        // avoid server overload
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // intentionally do nothing
+        }
+        System.out.println(getClass().getSimpleName() + ": Extracting content length and last modified from " + baseUrl + uri + " (" + index + ")");
+        try {
+            Head head = new Head(baseUrl + uri);
+            head.executeAsString();
+            if (head.isSuccessful()) {
+                return new ContentLengthAndLastModified(head.getContentLength(), head.getLastModified());
+            }
+        } catch (IOException e) {
+            System.err.println(getClass().getSimpleName() + ": " + e.getMessage());
         }
         return null;
     }
 
-    protected abstract void parseUri(String baseUrl, String uri, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException;
+    protected abstract void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException;
 }

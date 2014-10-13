@@ -118,6 +118,14 @@ public abstract class BaseDataSourcesXmlGenerator {
         return mapType;
     }
 
+    protected ThemeType createThemeType(String uri, File file, String imageUrl) throws IOException {
+        ThemeType themeType = new ObjectFactory().createThemeType();
+        themeType.setUri(uri);
+        themeType.setImageUrl(imageUrl);
+        themeType.getChecksum().add(createChecksumType(file));
+        return themeType;
+    }
+
     protected ThemeType createThemeType(String uri, Long lastModified, Long contentLength, InputStream inputStream, String imageUrl) throws IOException {
         ThemeType themeType = new ObjectFactory().createThemeType();
         themeType.setUri(uri);
@@ -142,7 +150,7 @@ public abstract class BaseDataSourcesXmlGenerator {
 
     protected ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
         ChecksumType result = new ChecksumType();
-        result.setLastModified(formatTime(fromMillis(lastModified), true));
+        result.setLastModified(lastModified != null ? formatTime(fromMillis(lastModified), true) : null);
         result.setContentLength(contentLength);
         if (inputStream != null)
             result.setSha1(generateChecksum(inputStream));

@@ -60,7 +60,10 @@ public class RoutingServiceFacade {
     }
 
     public RoutingService getRoutingService() {
-        RoutingService firstRoutingService = getRoutingServices().get(0);
+        RoutingService firstRoutingService = getRoutingServices().size() > 0 ? getRoutingServices().get(0) : null;
+        if (firstRoutingService == null)
+            return null;
+
         String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
 
         for (RoutingService service : getRoutingServices()) {
@@ -68,7 +71,7 @@ public class RoutingServiceFacade {
                 return service;
         }
 
-        if(!loggedFailedRoutingServiceWarning) {
+        if (!loggedFailedRoutingServiceWarning) {
             log.warning(format("Failed to find routing service %s; using first", lookupServiceName));
             loggedFailedRoutingServiceWarning = true;
         }
@@ -89,7 +92,7 @@ public class RoutingServiceFacade {
                 return travelMode;
         }
 
-        if(!loggedFailedTravelModeWarning) {
+        if (!loggedFailedTravelModeWarning) {
             log.warning(format("Failed to find travel mode %s; using preferred travel mode %s", lookupName, preferredTravelMode.getName()));
             loggedFailedTravelModeWarning = true;
         }

@@ -72,13 +72,17 @@ public class DownloadExecutor implements Runnable {
                 success = resume();
             if (!success)
                 success = download();
+
             if (success) {
                 if (postProcess())
                     succeeded(get.isNotModified());
+                else
+                    downloadManager.fireDownloadFailed(download);
 
-            } else if (get.isNotModified())
+            } else if (get.isNotModified()) {
                 updateState(download, NotModified);
-            else
+
+            } else
                 failed();
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,8 +174,7 @@ public class DownloadExecutor implements Runnable {
     private boolean postProcess() throws IOException {
         updateState(download, Processing);
 
-        if (!bringToTarget())
-            return false;
+        bringToTarget();
 
         if (!validate())
             return false;
@@ -184,40 +187,40 @@ public class DownloadExecutor implements Runnable {
         return true;
     }
 
-    private boolean bringToTarget() throws IOException {
+    private void bringToTarget() throws IOException {
         Action action = download.getAction();
         switch (action) {
             case Copy:
-                return copy();
+                copy();
+                break;
             case Flatten:
-                return flatten();
+                flatten();
+                break;
             case Extract:
-                return extract();
+                extract();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Action " + action);
         }
     }
 
-    private boolean copy() throws IOException {
+    private void copy() throws IOException {
         File target = download.getFile().getFile();
         ensureDirectory(target.getParent());
         new Copier(modelUpdater).copyAndClose(download.getTempFile(), target);
         setLastModified(target, fromMillis(get.getLastModified()));
-        return true;
     }
 
-    private boolean flatten() throws IOException {
+    private void flatten() throws IOException {
         File target = download.getFile().getFile();
         new Extractor(modelUpdater).flatten(download.getTempFile(), target);
         setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
-        return true;
     }
 
-    private boolean extract() throws IOException {
+    private void extract() throws IOException {
         File target = download.getFile().getFile();
         new Extractor(modelUpdater).extract(download.getTempFile(), target);
         setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
-        return true;
     }
 
     private boolean validate() throws IOException {
