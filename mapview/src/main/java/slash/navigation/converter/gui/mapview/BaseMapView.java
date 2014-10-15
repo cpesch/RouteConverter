@@ -96,7 +96,7 @@ public abstract class BaseMapView implements MapView {
     private PositionsModel positionsModel;
     private List<NavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
-    private List<NavigationPosition> lastSelectedPositions;
+    private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
     private int lastZoom = -1;
 
@@ -919,8 +919,7 @@ public abstract class BaseMapView implements MapView {
 
         if (center != null && center.hasCoordinates())
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
-        if (lastSelectedPositions.size() > 0)
-            buffer.append("removeSelectedPositions();");
+        buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
     }
 

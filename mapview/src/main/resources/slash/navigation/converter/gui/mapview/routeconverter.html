@@ -712,7 +712,7 @@
            addDebug("2. starting with maptype: " + map.getMapTypeId());
 
            try {
-               var menu = new ContextMenu({map:map});
+               var menu = new ContextMenu({map: map});
                menu.addItem('Select', function(map, latLng) {
                    callJavaWithUri("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
                });
