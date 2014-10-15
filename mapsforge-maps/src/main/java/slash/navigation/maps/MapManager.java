@@ -25,7 +25,10 @@ import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Fragment;
-import slash.navigation.download.*;
+import slash.navigation.download.Action;
+import slash.navigation.download.Download;
+import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.maps.models.*;
 
 import java.io.File;
@@ -205,14 +208,14 @@ public class MapManager {
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();
 
-            List<FileAndChecksum> fragments = new ArrayList<>();
-            for (Fragment fragment : downloadable.getFragments()) {
-                File fragmentFile = getFile(resource, fragment);
-                fragments.add(new FileAndChecksum(fragmentFile, fragment.getLatestChecksum()));
-            }
-
             Action action = resource.getDownloadable().getUri().endsWith(".zip") ? Extract : Copy;
             File resourceFile = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
+
+            List<FileAndChecksum> fragments = new ArrayList<>();
+            for (Fragment fragment : downloadable.getFragments()) {
+                File fragmentFile = new File(resourceFile, fragment.getKey());
+                fragments.add(new FileAndChecksum(fragmentFile, fragment.getLatestChecksum()));
+            }
 
             Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + downloadable.getUri(),
                     resource.getUrl(), action, null, new FileAndChecksum(resourceFile, downloadable.getLatestChecksum()), fragments);
@@ -221,20 +224,21 @@ public class MapManager {
         downloadManager.waitForCompletion(downloads);
     }
 
-    private File getFile(RemoteResource resource, Fragment fragment) {
-        return new File(getFile(resource), fragment.getKey());
-    }
-
     private File getFile(RemoteResource resource) {
-        return new File(getApplicationDirectory(resource.getSubDirectory()), resource.getDownloadable().getUri());
+        return new File(getApplicationDirectory(resource.getSubDirectory().toLowerCase()), resource.getDownloadable().getUri().toLowerCase());
     }
 
     private File getDirectory(RemoteResource resource) {
         String subDirectory = resource.getSubDirectory();
         if (resource instanceof RemoteMap)
-            return ensureDirectory(getMapsDirectory() + separator + subDirectory.substring(5));
+            return getDirectory(getMapsDirectory(), subDirectory.substring(5), resource.getDownloadable().getUri());
         else if (resource instanceof RemoteTheme)
-            return ensureDirectory(getThemesDirectory() + separator + subDirectory.substring(7));
+            return getDirectory(getThemesDirectory(), subDirectory.substring(7), resource.getDownloadable().getUri());
         return getApplicationDirectory(subDirectory);
+    }
+
+    private File getDirectory(String part1, String part2, String part3) {
+        File directory = new File(part1, part2);
+        return ensureDirectory(new File(directory, part3).getParentFile());
     }
 }

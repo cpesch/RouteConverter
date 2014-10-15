@@ -54,7 +54,7 @@ public class Checksum {
     }
 
     public boolean laterThan(Checksum other) {
-        return getLastModified() != null && other != null && other.getLastModified() != null &&
+        return other == null || getLastModified() != null && other.getLastModified() != null &&
                 getLastModified().after(other.getLastModified());
     }
 

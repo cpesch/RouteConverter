@@ -45,15 +45,18 @@ public class Directories {
     private static final String temporaryDirectory = preferences.get(TEMPORARY_DIRECTORY_PREFERENCE,
                     System.getProperty("java.io.tmpdir") + separator + "routeconverter" + (!isWindows() ? "-" + System.getProperty("user.name") : ""));
 
-    public static File ensureDirectory(String directory) {
-        File file = new File(directory);
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
+    public static File ensureDirectory(File directory) {
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
                 log.severe("Could not create directory " + directory);
                 throw new IllegalArgumentException(format("Cannot create directory '%s'", directory));
             }
         }
-        return file;
+        return directory;
+    }
+
+    public static File ensureDirectory(String directory) {
+        return ensureDirectory(new File(directory));
     }
 
     public synchronized static File getTemporaryDirectory() {
