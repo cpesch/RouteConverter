@@ -41,9 +41,9 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
  * @author Christian Pesch
  */
 
-public class CreateThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
+public class CreateWebThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
     protected boolean isIncludeAnchor(String anchor) {
-        return anchor.endsWith(".zip") && !anchor.endsWith(".map.zip");
+        return anchor.endsWith(".zip");
     }
 
     protected boolean isRecurseAnchor(String anchor) {
@@ -90,6 +90,6 @@ public class CreateThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
     }
 
     public static void main(String[] args) throws Exception {
-        new CreateThemeDataSourcesXml().run(args);
+        new CreateWebThemeDataSourcesXml().run(args);
     }
 }

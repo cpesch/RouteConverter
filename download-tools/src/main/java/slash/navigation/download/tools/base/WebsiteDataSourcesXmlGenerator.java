@@ -56,13 +56,13 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         datasourceType.setName(args[1]);
         String baseUrl = args[2];
         datasourceType.setBaseUrl(baseUrl);
-        datasourceType.setDirectory(args[3]);
+        datasourceType.setDirectory(args[4]);
 
-        List<String> collectedUris = collectUris(args[2], baseUrl);
+        List<String> collectedUris = collectUris(args[3], baseUrl);
         System.out.println("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
 
-        int startIndex = args.length > 4 ? parseInt(args[5]) : 0;
-        int endIndex = args.length > 5 ? parseInt(args[6]) : MAX_VALUE;
+        int startIndex = args.length > 7 ? parseInt(args[6]) : 0;
+        int endIndex = args.length > 8 ? parseInt(args[7]) : MAX_VALUE;
         endIndex = min(collectedUris.size(), endIndex);
         List<String> parsingUris = collectedUris.subList(startIndex, endIndex);
         System.out.println("Parsing URIs from " + startIndex + " to " + endIndex + " (" + parsingUris.size() + " elements)");
@@ -77,7 +77,7 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         datasourceType.getMap().addAll(sortMapTypes(mapTypes));
         datasourceType.getTheme().addAll(sortThemeTypes(themeTypes));
 
-        File writeXmlFile = new File(args[4]);
+        File writeXmlFile = new File(args[5]);
         writeXml(datasourceType, writeXmlFile);
 
         long end = currentTimeMillis();
@@ -86,7 +86,11 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         System.exit(0);
     }
 
-    private void recursiveCollect(String startUrl, String baseUrl, String uri, Set<String> uris) throws IOException {
+    private void recursiveCollect(String startUrl, String baseUrl, String uri, Set<String> uris, Set<String> visitedUris) throws IOException {
+        if(visitedUris.contains(uri))
+            return;
+        visitedUris.add(uri);
+
         // avoid server overload
         try {
             Thread.sleep(100);
@@ -97,17 +101,22 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
         System.out.println(getClass().getSimpleName() + ": Downloading Webpage from " + startUrl + uri);
         Get get = new Get(startUrl + uri);
         String result = get.executeAsString();
+        // System.out.println(result);
 
         AnchorParser parser = new AnchorParser();
         List<String> anchors = parser.parseAnchors(result);
 
         for (String anchor : anchors) {
+            // System.out.println(anchor);
+
             if (anchor.startsWith("./"))
                 anchor = anchor.substring(2);
 
             if (isRecurseAnchor(anchor)) {
                 String nextPath = createPath(uri, anchor);
-                recursiveCollect(startUrl, baseUrl, nextPath, uris);
+                if (nextPath.startsWith(startUrl))
+                    nextPath = nextPath.substring(startUrl.length());
+                recursiveCollect(startUrl, baseUrl, nextPath, uris, visitedUris);
             } else if (isIncludeAnchor(anchor)) {
                 String nextUri = createUri(uri, anchor);
                 if (nextUri.startsWith(baseUrl))
@@ -129,7 +138,7 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
 
     private List<String> collectUris(String startUrl, String baseUrl) throws IOException {
         Set<String> uris = new HashSet<>();
-        recursiveCollect(startUrl, baseUrl, "", uris);
+        recursiveCollect(startUrl, baseUrl, "", uris, new HashSet<String>());
 
         String[] sortedUris = uris.toArray(new String[uris.size()]);
         sort(sortedUris);
