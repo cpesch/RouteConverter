@@ -6,11 +6,14 @@
 		@XmlNs(prefix = "xsi", namespaceURI = XML_SCHEMA_INSTANCE_NAMESPACE_URI),
 		@XmlNs(prefix = "gpxtrx", namespaceURI = GARMIN_EXTENSIONS_3_NAMESPACE_URI),
         @XmlNs(prefix = "gpxtpx", namespaceURI = GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI),
+        @XmlNs(prefix = "trp", namespaceURI = GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI),
 		@XmlNs(prefix = "gpxx", namespaceURI = GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI),
 		@XmlNs(prefix = "rcxx", namespaceURI = ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI),
 		@XmlNs(prefix = "nmea", namespaceURI = TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI) })
 package slash.navigation.gpx.binding11;
+
 import javax.xml.bind.annotation.XmlNs;
+
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static slash.navigation.gpx.GpxUtil.*;
 

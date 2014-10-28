@@ -28,6 +28,7 @@ import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
+import slash.navigation.gpx.trip1.ViaPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.*;
@@ -258,8 +260,8 @@ public class Gpx11Format extends GpxFormat {
             }
         }
         if (!foundSpeed && speed != null) {
-            slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createSpeed(formatSpeed(asMs(speed))));
+            slash.navigation.gpx.trekbuddy.ObjectFactory trekbuddyFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
+            anys.add(trekbuddyFactory.createSpeed(formatSpeed(asMs(speed))));
         }
 
         if (anys.size() == 0)
@@ -329,12 +331,56 @@ public class Gpx11Format extends GpxFormat {
             }
         }
         if (!foundHeading && heading != null) {
-            slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createCourse(formatHeading(heading)));
+            slash.navigation.gpx.trekbuddy.ObjectFactory trekbuddyFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
+            anys.add(trekbuddyFactory.createCourse(formatHeading(heading)));
         }
 
         if (anys.size() == 0)
             wptType.setExtensions(null);
+    }
+
+    private void setExtension(WptType wptType, String extensionNameToRemove, String extensionNameToAdd, Object extensionToAdd) {
+        if (wptType.getExtensions() == null)
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        @SuppressWarnings("ConstantConditions")
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        boolean foundElement = false;
+        Iterator<Object> iterator = anys.iterator();
+        while (iterator.hasNext()) {
+            Object any = iterator.next();
+
+            if (any instanceof JAXBElement) {
+                JAXBElement<String> element = (JAXBElement<String>) any;
+                if (extensionNameToRemove.equals(element.getName().getLocalPart())) {
+                    iterator.remove();
+                } else if (extensionNameToAdd.equals(element.getName().getLocalPart())) {
+                    foundElement = true;
+                }
+            }
+        }
+
+        if (!foundElement)
+            anys.add(extensionToAdd);
+
+        if (anys.size() == 0)
+            wptType.setExtensions(null);
+    }
+
+    private void setViaPoint(WptType wptType) {
+        slash.navigation.gpx.trip1.ObjectFactory tripFactory = new slash.navigation.gpx.trip1.ObjectFactory();
+        ViaPointExtensionT viaPointExtensionT = tripFactory.createViaPointExtensionT();
+        viaPointExtensionT.setCalculationMode("ShorterDistance");
+        viaPointExtensionT.setElevationMode("Standard");
+        setExtension(wptType, "ShapingPoint", "ViaPoint", tripFactory.createViaPoint(viaPointExtensionT));
+    }
+
+    private void setShapingPoint(WptType wptType) {
+        slash.navigation.gpx.trip1.ObjectFactory tripFactory = new slash.navigation.gpx.trip1.ObjectFactory();
+        ViaPointExtensionT viaPointExtensionT = tripFactory.createViaPointExtensionT();
+        viaPointExtensionT.setCalculationMode("ShorterDistance");
+        viaPointExtensionT.setElevationMode("Standard");
+        setExtension(wptType, "ViaPoint", "ShapingPoint", tripFactory.createShapingPoint(tripFactory.createShapingPointExtensionT()));
     }
 
     private WptType createWptType(GpxPosition position) {
@@ -389,8 +435,16 @@ public class Gpx11Format extends GpxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             WptType wptType = createWptType(position);
-            if (wptType != null)
+            if (wptType != null) {
                 rteType.getRtept().add(wptType);
+
+                if (isWriteTrip()) {
+                    if (i == startIndex || i == endIndex - 1)
+                        setViaPoint(wptType);
+                    else
+                        setShapingPoint(wptType);
+                }
+            }
         }
         return rteTypes;
     }
