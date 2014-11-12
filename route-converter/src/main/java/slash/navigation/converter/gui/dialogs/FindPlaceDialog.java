@@ -51,6 +51,7 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -97,7 +98,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
 
@@ -106,7 +107,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 searchPositions();
             }
-        }, KeyStroke.getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
         listResult.addListSelectionListener(new ListSelectionListener() {
