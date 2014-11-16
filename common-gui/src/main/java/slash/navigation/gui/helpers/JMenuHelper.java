@@ -43,13 +43,13 @@ public class JMenuHelper {
 
     private static String getOptionalString(String key) {
         ResourceBundle bundle = Application.getInstance().getContext().getBundle();
-        return bundle.containsKey(key) ? bundle.getString(key) : null;
+        return bundle.containsKey(key) ? trim(bundle.getString(key)) : null;
     }
 
     public static JMenu createMenu(String name) {
         JMenu menu = new JMenu(getString(name + "-menu"));
         menu.setName(name);
-        String mnemonic = trim(getOptionalString(name + "-menu-mnemonic"));
+        String mnemonic = getOptionalString(name + "-menu-mnemonic");
         if (mnemonic != null && mnemonic.length() > 0)
             menu.setMnemonic(mnemonic.charAt(0));
         return menu;
@@ -85,7 +85,7 @@ public class JMenuHelper {
     }
 
     public static void setMnemonic(AbstractButton button, String key) {
-        String mnemonic = trim(getOptionalString(key));
+        String mnemonic = getOptionalString(key);
         if (mnemonic != null && mnemonic.length() > 0)
             setMnemonic(button, mnemonic.charAt(0));
     }
@@ -107,17 +107,17 @@ public class JMenuHelper {
     private static void initializeItem(String name, JMenuItem item) {
         item.setName(name);
         item.setText(getString(name + "-action"));
-        String tooltip = trim(getOptionalString(name + "-action-tooltip"));
+        String tooltip = getOptionalString(name + "-action-tooltip");
         if (tooltip != null)
             item.setToolTipText(tooltip);
         setMnemonic(item, name + "-action-mnemonic");
-        String keystroke = trim(getOptionalString(name + "-action-keystroke"));
+        String keystroke = getOptionalString(name + "-action-keystroke");
         if (keystroke != null)
             item.setAccelerator(getKeyStroke(keystroke));
-        String iconUrl = trim(getOptionalString(name + "-action-icon"));
+        String iconUrl = getOptionalString(name + "-action-icon");
         if (iconUrl != null)
             item.setIcon(loadIcon(iconUrl));
-        String disabledIconUrl = trim(getOptionalString(name + "-action-disabled-icon"));
+        String disabledIconUrl = getOptionalString(name + "-action-disabled-icon");
         if (disabledIconUrl != null)
             item.setDisabledIcon(loadIcon(disabledIconUrl));
     }
