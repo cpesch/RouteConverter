@@ -112,7 +112,9 @@ public class FrameMenu {
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
-        helpMenu.add(createItem("show-about"));
+        if(!isMac()) {
+            helpMenu.add(createItem("show-about"));
+        }
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
