@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
@@ -50,7 +51,7 @@ public class JMenuHelper {
         JMenu menu = new JMenu(getString(name + "-menu"));
         menu.setName(name);
         String mnemonic = getOptionalString(name + "-menu-mnemonic");
-        if (mnemonic != null && mnemonic.length() > 0)
+        if (mnemonic != null && mnemonic.length() > 0 && !isMac())
             menu.setMnemonic(mnemonic.charAt(0));
         return menu;
     }
@@ -75,6 +76,8 @@ public class JMenuHelper {
     }
 
     private static void setMnemonic(AbstractButton item, char mnemonic) {
+        if (isMac())
+            return;
         item.setMnemonic(mnemonic);
         String text = item.getText();
         int ampersandIndex = getMnemonicAmpersandIndex(text);
