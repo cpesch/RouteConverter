@@ -24,6 +24,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
@@ -46,8 +47,10 @@ public class FrameMenu {
         printMenu.add(createItem("print-map-and-route"));
         printMenu.add(createItem("print-profile"));
         fileMenu.add(printMenu);
-        fileMenu.addSeparator();
-        fileMenu.add(createItem("exit"));
+        if(!isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(createItem("exit"));
+        }
 
         JMenu editMenu = createMenu("edit");
         editMenu.add(createItem("undo"));
