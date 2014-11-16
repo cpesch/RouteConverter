@@ -111,7 +111,7 @@ public class JMenuHelper {
         if (tooltip != null)
             item.setToolTipText(tooltip);
         setMnemonic(item, name + "-action-mnemonic");
-        String keystroke = getOptionalString(name + "-action-keystroke");
+        String keystroke = getOptionalString(name + "-action-keystroke" + (isMac() ? "-mac" : ""));
         if (keystroke != null)
             item.setAccelerator(getKeyStroke(keystroke));
         String iconUrl = getOptionalString(name + "-action-icon");
