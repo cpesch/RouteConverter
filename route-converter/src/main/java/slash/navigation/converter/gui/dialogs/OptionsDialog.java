@@ -386,7 +386,6 @@ public class OptionsDialog extends SimpleDialog {
     private void updateTravelModes() {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
-
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         for (TravelMode travelMode : service.getAvailableTravelModes())
             travelModeModel.addElement(travelMode);

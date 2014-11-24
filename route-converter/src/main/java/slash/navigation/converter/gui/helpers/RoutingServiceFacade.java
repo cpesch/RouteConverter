@@ -84,10 +84,11 @@ public class RoutingServiceFacade {
     }
 
     public TravelMode getTravelMode() {
-        TravelMode preferredTravelMode = getRoutingService().getPreferredTravelMode();
-        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), preferredTravelMode.getName());
+        RoutingService service = getRoutingService();
+        TravelMode preferredTravelMode = service.getPreferredTravelMode();
+        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + service.getName(), preferredTravelMode.getName());
 
-        for (TravelMode travelMode : getRoutingService().getAvailableTravelModes()) {
+        for (TravelMode travelMode : service.getAvailableTravelModes()) {
             if (lookupName.equals(travelMode.getName()))
                 return travelMode;
         }
