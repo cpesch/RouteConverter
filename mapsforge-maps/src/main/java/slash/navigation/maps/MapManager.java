@@ -140,11 +140,11 @@ public class MapManager {
 
     private void initializeDefaults() {
         mapsModel.clear();
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap - a map of the world, created by people like you and free to use under an open license.", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap.org - the OpenStreetMap Cycle Map", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap.org", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap.org", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
         themesModel.clear();
-        themesModel.addOrUpdateTheme(new VectorTheme("A render-theme similar to the OpenStreetMap Osmarender style", OSMARENDER_URL, OSMARENDER));
+        themesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
     }
 
     private void scanMaps() {

@@ -63,8 +63,8 @@ public class MapSelector {
                 SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
                 new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, false));
 
-        comboBoxMap.setModel(new JoinedListComboBoxModel<LocalMap>(
-                        new TableModelToComboBoxModelAdapter<LocalMap>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
+        comboBoxMap.setModel(new JoinedListComboBoxModel<>(
+                        new TableModelToComboBoxModelAdapter<>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
         comboBoxMap.setPrototypeDisplayValue(mapManager.getMapsModel().getMap(1));
@@ -78,8 +78,8 @@ public class MapSelector {
             }
         });
 
-        comboBoxTheme.setModel(new JoinedListComboBoxModel<LocalTheme>(
-                        new TableModelToComboBoxModelAdapter<LocalTheme>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
+        comboBoxTheme.setModel(new JoinedListComboBoxModel<>(
+                        new TableModelToComboBoxModelAdapter<>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getThemesModel().getTheme(0));

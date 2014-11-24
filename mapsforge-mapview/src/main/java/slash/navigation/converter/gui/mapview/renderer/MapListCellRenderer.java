@@ -50,9 +50,7 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
             text = Application.getInstance().getContext().getBundle().getString("download-map-text");
             tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
         } else if (map != null) {
-            text = map.getDescription();
-            if (map.isVector())
-                text = format(Application.getInstance().getContext().getBundle().getString("vector-map"), text);
+            text = format(Application.getInstance().getContext().getBundle().getString(map.isVector() ? "vector-map" : "download-map"), map.getDescription());
             tooltip = map.getUrl();
         }
 

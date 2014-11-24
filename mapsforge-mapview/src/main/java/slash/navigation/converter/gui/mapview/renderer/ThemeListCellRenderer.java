@@ -36,7 +36,6 @@ public class ThemeListCellRenderer extends DefaultListCellRenderer {
     public static final LocalTheme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
     public static final LocalTheme DOWNLOAD_THEME = new VectorTheme(null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
-    private static final int MAXIMUM_NAME_LENGTH = 40;
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (SEPARATOR_TO_DOWNLOAD_THEME.equals(value))
@@ -57,9 +56,5 @@ public class ThemeListCellRenderer extends DefaultListCellRenderer {
         label.setText(text);
         label.setToolTipText(tooltip);
         return label;
-    }
-
-    static String shortenName(String name) {
-        return name.length() > MAXIMUM_NAME_LENGTH ? name.substring(0, MAXIMUM_NAME_LENGTH) + "..." : name;
     }
 }
