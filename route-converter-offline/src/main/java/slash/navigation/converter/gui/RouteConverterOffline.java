@@ -24,6 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
+import slash.navigation.routing.BeelineRoutingService;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeRoutingServices() {
+        getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
         DataSource brouter = getDataSourceManager().getDataSourceService().getDataSourceById("brouter");
         if (brouter != null) {
             BRouter router = new BRouter(brouter, getDataSourceManager().getDownloadManager());

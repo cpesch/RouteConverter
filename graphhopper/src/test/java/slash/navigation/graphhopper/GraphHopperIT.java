@@ -38,6 +38,7 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -83,6 +84,7 @@ public class GraphHopperIT {
         assertEquals(149, result.getPositions().size());
         assertEquals(13633.0, result.getDistance(), 5.0);
         assertEquals(980824, result.getTime(), 100);
+        assertTrue(result.isValid());
     }
 
     @Test
@@ -91,5 +93,6 @@ public class GraphHopperIT {
         assertEquals(118, result.getPositions().size());
         assertEquals(13571.47, result.getDistance(), 5.0);
         assertEquals(3109179.0, result.getTime(), 100);
+        assertTrue(result.isValid());
     }
 }

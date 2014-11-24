@@ -125,7 +125,7 @@ public class GraphHopper implements RoutingService {
         GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
         request.setVehicle(travelMode.getName().toUpperCase());
         GHResponse response = hopper.route(request);
-        return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis());
+        return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis(), true);
     }
 
     private String getAvailableTravelModeNames() {

@@ -126,7 +126,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
-    private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_DOWNLOADING_PAINT;
+    private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
     private TileRendererLayer oceansLayer, worldLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
@@ -184,6 +184,9 @@ public class MapsforgeMapView implements MapView {
         ROUTE_PAINT = GRAPHIC_FACTORY.createPaint();
         ROUTE_PAINT.setColor(0x993379FF);
         ROUTE_PAINT.setStrokeWidth(5);
+        ROUTE_NOT_VALID_PAINT = GRAPHIC_FACTORY.createPaint();
+        ROUTE_NOT_VALID_PAINT.setColor(0xFFFF0000);
+        ROUTE_NOT_VALID_PAINT.setStrokeWidth(5);
         ROUTE_DOWNLOADING_PAINT = GRAPHIC_FACTORY.createPaint();
         ROUTE_DOWNLOADING_PAINT.setColor(0x993379FF);
         ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
@@ -391,23 +394,28 @@ public class MapsforgeMapView implements MapView {
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
                 executor.execute(new Runnable() {
                     public void run() {
-                        final DownloadFuture future = mapViewCallback.getRoutingService().downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-                        if (future.isRequiresDownload() || future.isRequiresProcessing()) {
-                            drawBeeline(pairWithLayers);
-                            fireDistanceAndTime();
+                        RoutingService service = mapViewCallback.getRoutingService();
+                        if (service.isDownload()) {
+                            DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
+                            if (future.isRequiresDownload() || future.isRequiresProcessing()) {
+                                drawBeeline(pairWithLayers);
+                                fireDistanceAndTime();
 
-                            if (future.isRequiresDownload())
-                                future.download();
-                            if (future.isRequiresProcessing())
-                                future.process();
+                                if (future.isRequiresDownload())
+                                    future.download();
+                                if (future.isRequiresProcessing())
+                                    future.process();
 
-                            removeLines(pairWithLayers, true);
-                            drawRoute(pairWithLayers);
-                            fireDistanceAndTime();
-                        } else {
-                            drawRoute(pairWithLayers);
-                            fireDistanceAndTime();
+                                removeLines(pairWithLayers, true);
+                                drawRoute(pairWithLayers);
+                                fireDistanceAndTime();
+                                return;
+                            }
                         }
+
+                        // no download possible or required
+                        drawRoute(pairWithLayers);
+                        fireDistanceAndTime();
                     }
                 });
             }
@@ -446,26 +454,23 @@ public class MapsforgeMapView implements MapView {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    List<LatLong> latLongs = calculateRoute(routingService, pairWithLayer);
-                    if (latLongs != null) {
-                        Polyline polyline = new Polyline(latLongs, ROUTE_PAINT, tileSize);
-                        pairWithLayer.setLayer(polyline);
-                        getLayerManager().getLayers().add(polyline);
-                    }
+                    IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
+                    Polyline polyline = new Polyline(intermediateRoute.latLongs, intermediateRoute.valid ? ROUTE_PAINT : ROUTE_NOT_VALID_PAINT, tileSize);
+                    pairWithLayer.setLayer(polyline);
+                    getLayerManager().getLayers().add(polyline);
                 }
             }
 
-            private List<LatLong> calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
+            private IntermediateRoute calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
                 RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
-                if (intermediate != null) {
+                if (intermediate.isValid())
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
-                    pairsToDistances.put(pairWithLayer, intermediate.getDistance());
-                    pairsToTimes.put(pairWithLayer, intermediate.getTime());
-                }
+                pairsToDistances.put(pairWithLayer, intermediate.getDistance());
+                pairsToTimes.put(pairWithLayer, intermediate.getTime());
                 latLongs.add(asLatLong(pairWithLayer.getSecond()));
-                return latLongs;
+                return new IntermediateRoute(latLongs, intermediate.isValid());
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
@@ -605,6 +610,16 @@ public class MapsforgeMapView implements MapView {
                 }
             }
         });
+    }
+
+    private class IntermediateRoute {
+        public List<LatLong> latLongs;
+        public boolean valid;
+
+        private IntermediateRoute(List<LatLong> latLongs, boolean valid) {
+            this.latLongs = latLongs;
+            this.valid = valid;
+        }
     }
 
     private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {

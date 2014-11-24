@@ -43,6 +43,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
+import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -148,12 +149,12 @@ public class BRouter implements RoutingService {
         routingEngine.doRun(MAX_RUNNING_TIME);
         if (routingEngine.getErrorMessage() != null) {
             log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
-            return null;
+            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         }
 
         OsmTrack track = routingEngine.getFoundTrack();
         int distance = routingEngine.getDistance();
-        return new RoutingResult(asPositions(track), distance, 0);
+        return new RoutingResult(asPositions(track), distance, 0L, true);
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {

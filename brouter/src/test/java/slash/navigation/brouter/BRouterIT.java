@@ -36,6 +36,7 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,6 +75,7 @@ public class BRouterIT {
         assertEquals(162, result.getPositions().size());
         assertEquals(13810.0, result.getDistance(), 5.0);
         assertEquals(0, result.getTime());
+        assertTrue(result.isValid());
     }
 
     @Test
@@ -82,5 +84,6 @@ public class BRouterIT {
         assertEquals(110, result.getPositions().size());
         assertEquals(13945.0, result.getDistance(), 5.0);
         assertEquals(0, result.getTime());
+        assertTrue(result.isValid());
     }
 }
