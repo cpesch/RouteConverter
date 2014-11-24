@@ -54,21 +54,21 @@ public class InsertPositionFacade {
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         r.clearSelection();
 
-        RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && r.isMapViewInitialized()) {
-            ((GoogleDirections) routingService).insertOnlyTurnpoints(selectedRows);
+        RoutingService service = r.getRoutingServiceFacade().getRoutingService();
+        if (service instanceof GoogleDirections && r.isMapViewInitialized()) {
+            ((GoogleDirections) service).insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }
 
     private void insertWithRoutingService(RoutingService routingService, int[] selectedRows) {
         RouteConverter r = RouteConverter.getInstance();
-        List<NavigationPosition> selectedPositions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> selectedPositions = new ArrayList<>();
         for (int i = 0; i < selectedRows.length; i++)
             selectedPositions.add(r.getPositionsModel().getPosition(i));
 
         if (routingService.isDownload()) {
-            List<LongitudeAndLatitude> lal = new ArrayList<LongitudeAndLatitude>();
+            List<LongitudeAndLatitude> lal = new ArrayList<>();
             for (NavigationPosition position : selectedPositions) {
                 lal.add(asLongitudeAndLatitude(position));
             }
@@ -82,8 +82,8 @@ public class InsertPositionFacade {
                 continue;
 
             RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode);
-            if (result != null) {
-                List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+            if (result.isValid()) {
+                List<BaseNavigationPosition> positions = new ArrayList<>();
                 for (NavigationPosition position : result.getPositions()) {
                     positions.add(r.getPositionsModel().getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
                 }

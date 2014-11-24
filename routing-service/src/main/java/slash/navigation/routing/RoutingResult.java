@@ -34,11 +34,13 @@ public class RoutingResult   {
     private final List<NavigationPosition> positions;
     private final double distance;
     private final long time;
+    private final boolean valid;
 
-    public RoutingResult(List<NavigationPosition> positions, double distance, long time) {
+    public RoutingResult(List<NavigationPosition> positions, double distance, long time, boolean valid) {
         this.positions = positions;
         this.distance = distance;
         this.time = time;
+        this.valid = valid;
     }
 
     public List<NavigationPosition> getPositions() {
@@ -59,5 +61,13 @@ public class RoutingResult   {
      */
     public long getTime() {
         return time;
+    }
+
+    /**
+     * Return if this routing contains positions from a valid routing process
+     * @return true, if this routing contains positions from a valid routing process
+     */
+    public boolean isValid() {
+        return valid;
     }
 }

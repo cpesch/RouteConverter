@@ -200,9 +200,7 @@ public class OptionsDialog extends SimpleDialog {
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices())
             routingServiceModel.addElement(service);
-        RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-        if (routingService != null)
-            routingServiceModel.setSelectedItem(routingService);
+        routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
         comboBoxRoutingService.setModel(routingServiceModel);
         comboBoxRoutingService.setRenderer(new RoutingServiceListCellRenderer());
         comboBoxRoutingService.addItemListener(new ItemListener() {
@@ -390,7 +388,6 @@ public class OptionsDialog extends SimpleDialog {
     private void updateTravelModes() {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
-
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         for (TravelMode travelMode : service.getAvailableTravelModes())
             travelModeModel.addElement(travelMode);
