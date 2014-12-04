@@ -180,7 +180,7 @@ public class MapsforgeMapView implements MapView {
         }
         TRACK_PAINT = GRAPHIC_FACTORY.createPaint();
         TRACK_PAINT.setColor(BLUE);
-        TRACK_PAINT.setStrokeWidth(3);
+        TRACK_PAINT.setStrokeWidth(2);
         ROUTE_PAINT = GRAPHIC_FACTORY.createPaint();
         ROUTE_PAINT.setColor(0x993379FF);
         ROUTE_PAINT.setStrokeWidth(5);
