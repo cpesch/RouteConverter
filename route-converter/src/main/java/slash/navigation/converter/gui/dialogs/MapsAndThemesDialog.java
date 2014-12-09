@@ -261,22 +261,29 @@ public class MapsAndThemesDialog extends SimpleDialog {
 
     private void display() {
         int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
+        if (selectedRow == -1)
+            return;
         LocalMap map = getMapManager().getMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
         getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
-}
+    }
 
     private void apply() {
         int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
+        if (selectedRow == -1)
+            return;
         LocalTheme theme = getMapManager().getThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
         getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
     }
 
     private void download() {
+        int[] selectedRows = tableResources.getSelectedRows();
+        if (selectedRows.length == 0)
+            return;
         final List<RemoteResource> selectedResources = new ArrayList<>();
         List<String> selectedResourcesNames = new ArrayList<>();
-        for (int selectedRow : tableResources.getSelectedRows()) {
+        for (int selectedRow : selectedRows) {
             RemoteResource resource = getMapManager().getResourcesModel().getResource(tableResources.convertRowIndexToModel(selectedRow));
             selectedResources.add(resource);
             selectedResourcesNames.add(resource.getUrl());
