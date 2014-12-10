@@ -600,8 +600,8 @@ public class RouteConverter extends SingleFrameApplication {
         if (dataSource == null)
             return;
 
-        final Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums = new HashMap<>();
-        fileAndChecksums.put(download.getFile(), download.getFragments());
+        final Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments = new HashMap<>();
+        fileToFragments.put(download.getFile(), download.getFragments());
 
         getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
@@ -609,7 +609,7 @@ public class RouteConverter extends SingleFrameApplication {
             }
 
             public void run() throws IOException {
-                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, fileAndChecksums, download.getUrl());
+                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, fileToFragments, download.getUrl());
             }
         });
     }

@@ -104,7 +104,7 @@ public class DataSourcesUtil {
         return false;
     }
 
-    public static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) {
+    public static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DatasourceType datasourceType = objectFactory.createDatasourceType();
@@ -120,8 +120,8 @@ public class DataSourcesUtil {
             FileType fileType = objectFactory.createFileType();
             fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
             fileType.setUri(aFile.getUri());
-            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile.getChecksums(), fileAndChecksums.keySet()));
-            replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileAndChecksums);
+            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile.getChecksums(), fileToFragments.keySet()));
+            replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileToFragments);
             datasourceType.getFile().add(fileType);
         }
 
@@ -132,8 +132,8 @@ public class DataSourcesUtil {
             MapType mapType = objectFactory.createMapType();
             mapType.setBoundingBox(asBoundingBoxType(map.getBoundingBox()));
             mapType.setUri(map.getUri());
-            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map.getChecksums(), fileAndChecksums.keySet()));
-            replaceFragmentTypes(mapType.getFragment(), map.getFragments(), fileAndChecksums);
+            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map.getChecksums(), fileToFragments.keySet()));
+            replaceFragmentTypes(mapType.getFragment(), map.getFragments(), fileToFragments);
             datasourceType.getMap().add(mapType);
         }
 
@@ -144,8 +144,8 @@ public class DataSourcesUtil {
             ThemeType themeType = objectFactory.createThemeType();
             themeType.setImageUrl(theme.getImageUrl());
             themeType.setUri(theme.getUri());
-            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme.getChecksums(), fileAndChecksums.keySet()));
-            replaceFragmentTypes(themeType.getFragment(), theme.getFragments(), fileAndChecksums);
+            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme.getChecksums(), fileToFragments.keySet()));
+            replaceFragmentTypes(themeType.getFragment(), theme.getFragments(), fileToFragments);
             datasourceType.getTheme().add(themeType);
         }
 

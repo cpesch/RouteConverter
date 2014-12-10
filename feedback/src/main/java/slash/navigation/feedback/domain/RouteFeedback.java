@@ -171,11 +171,11 @@ public class RouteFeedback {
         return request.executeAsString().replace("\"", "");
     }
 
-    private static String createDataSourceXml(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) throws IOException {
+    private static String createDataSourceXml(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
         slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
 
         DatasourcesType datasourcesType = objectFactory.createDatasourcesType();
-        DatasourceType datasourceType = asDatasourceType(dataSource, fileAndChecksums, filterUrls);
+        DatasourceType datasourceType = asDatasourceType(dataSource, fileToFragments, filterUrls);
         datasourcesType.getDatasource().add(datasourceType);
 
         return DataSourcesUtil.toXml(datasourcesType);
@@ -185,9 +185,9 @@ public class RouteFeedback {
         return rootUrl + DATASOURCES_URI;
     }
 
-    public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums, String... filterUrls) throws IOException {
-        String xml = createDataSourceXml(dataSource, fileAndChecksums, filterUrls);
-        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileAndChecksums, printArrayToDialogString(filterUrls), xml));
+    public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
+        String xml = createDataSourceXml(dataSource, fileToFragments, filterUrls);
+        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, printArrayToDialogString(filterUrls), xml));
         Post request = new Post(getDataSourcesUrl(), credentials);
         request.addFile("file", xml.getBytes());
 
@@ -198,7 +198,7 @@ public class RouteFeedback {
             throw new IOException("POST on " + getDataSourcesUrl() + " for data source " + dataSource +
                     " not successful: " + result);
 
-        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileAndChecksums, printArrayToDialogString(filterUrls), result));
+        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileToFragments, printArrayToDialogString(filterUrls), result));
         return result;
     }
 }
