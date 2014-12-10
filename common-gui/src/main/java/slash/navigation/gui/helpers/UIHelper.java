@@ -91,7 +91,7 @@ public class UIHelper {
 
     public static ImageIcon loadIcon(String name) {
         URL iconURL = UIHelper.class.getClassLoader().getResource(name);
-        return new ImageIcon(iconURL);
+        return iconURL != null ? new ImageIcon(iconURL) : null;
     }
 
     public static JFileChooser createJFileChooser() {
@@ -114,9 +114,8 @@ public class UIHelper {
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
             try {
-                String text = bundle.getString(key);
-                if (text != null)
-                    UIManager.getDefaults().put(key, text);
+                if (bundle.containsKey(key))
+                    UIManager.getDefaults().put(key, bundle.getString(key));
             } catch (MissingResourceException e) {
                 // intentionally left empty
             }
