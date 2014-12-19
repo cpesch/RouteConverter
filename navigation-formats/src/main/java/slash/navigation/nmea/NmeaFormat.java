@@ -109,12 +109,13 @@ public class NmeaFormat extends BaseNmeaFormat {
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
+    // $GPWPL,3018.000,S,15309.000,E,Coffs Harbor (Sidney)
     private static final Pattern WPL_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "WPL" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "(.*)" +
-                    END_OF_LINE);
+                    "([^\\*]*)" +
+                    "(\\*[0-9A-Fa-f][0-9A-Fa-f])?$");
 
     // $GPZDA,032910.542,07,08,2004,00,00*48
     private static final Pattern ZDA_PATTERN = Pattern.
@@ -188,7 +189,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
-            return hasValidChecksum(line);
+            return wplMatcher.group(6) == null || hasValidChecksum(line);
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
         if (zdaMatcher.matches())
