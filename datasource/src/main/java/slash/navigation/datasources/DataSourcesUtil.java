@@ -120,7 +120,7 @@ public class DataSourcesUtil {
             FileType fileType = objectFactory.createFileType();
             fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
             fileType.setUri(aFile.getUri());
-            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile.getChecksums(), fileToFragments.keySet()));
+            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile, fileToFragments.keySet()));
             replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileToFragments);
             datasourceType.getFile().add(fileType);
         }
@@ -132,7 +132,7 @@ public class DataSourcesUtil {
             MapType mapType = objectFactory.createMapType();
             mapType.setBoundingBox(asBoundingBoxType(map.getBoundingBox()));
             mapType.setUri(map.getUri());
-            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map.getChecksums(), fileToFragments.keySet()));
+            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map, fileToFragments.keySet()));
             replaceFragmentTypes(mapType.getFragment(), map.getFragments(), fileToFragments);
             datasourceType.getMap().add(mapType);
         }
@@ -144,7 +144,7 @@ public class DataSourcesUtil {
             ThemeType themeType = objectFactory.createThemeType();
             themeType.setImageUrl(theme.getImageUrl());
             themeType.setUri(theme.getUri());
-            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme.getChecksums(), fileToFragments.keySet()));
+            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme, fileToFragments.keySet()));
             replaceFragmentTypes(themeType.getFragment(), theme.getFragments(), fileToFragments);
             datasourceType.getTheme().add(themeType);
         }
@@ -169,13 +169,32 @@ public class DataSourcesUtil {
         return positionType;
     }
 
-    private static List<Checksum> filterChecksums(List<Checksum> expectedChecksums, Set<FileAndChecksum> fileAndChecksums) {
+    private static boolean matches(FileAndChecksum fileAndChecksum, Downloadable downloadable) {
+        String filePath = fileAndChecksum.getFile().getAbsolutePath();
+        String uri = downloadable.getUri();
+        return filePath.endsWith(uri);
+    }
+
+    private static List<Checksum> filterChecksums(Downloadable downloadable, Set<FileAndChecksum> fileAndChecksums) {
         List<Checksum> result = new ArrayList<>();
-        for (Checksum expectedChecksum : expectedChecksums) {
-            for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
-                if (fileAndChecksum.getExpectedChecksum().equals(expectedChecksum))
-                    result.add(fileAndChecksum.getActualChecksum());
-            }
+        for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
+            if (matches(fileAndChecksum, downloadable))
+                result.add(fileAndChecksum.getActualChecksum());
+        }
+        return result;
+    }
+
+    private static boolean matches(FileAndChecksum fileAndChecksum, Fragment fragment) {
+        String filePath = fileAndChecksum.getFile().getAbsolutePath();
+        String uri = fragment.getDownloadable().getUri();
+        return filePath.endsWith(uri);
+    }
+
+    private static List<Checksum> filterChecksums(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
+        List<Checksum> result = new ArrayList<>();
+        for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
+            if (matches(fileAndChecksum, fragment))
+                result.add(fileAndChecksum.getActualChecksum());
         }
         return result;
     }
@@ -217,15 +236,11 @@ public class DataSourcesUtil {
     private static Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumsMap) {
         Set<FileAndChecksum> result = new HashSet<>();
         for (FileAndChecksum fileAndChecksum : fileAndChecksumsMap.keySet()) {
-            String path = fileAndChecksum.getFile().getAbsolutePath();
-            String uri = fragment.getDownloadable().getUri();
-            if (path.endsWith(uri)) {
+            if (matches(fileAndChecksum, fragment.getDownloadable())) {
                 List<FileAndChecksum> fragmentAndChecksums = fileAndChecksumsMap.get(fileAndChecksum);
                 if (fragmentAndChecksums != null)
                     for (FileAndChecksum fragmentChecksum : fragmentAndChecksums) {
-                        String pathf = fragmentChecksum.getFile().getAbsolutePath();
-                        String key = fragment.getKey();
-                        if (pathf.endsWith(key))
+                        if (matches(fragmentChecksum, fragment))
                             result.add(fragmentChecksum);
                     }
             }
@@ -246,7 +261,7 @@ public class DataSourcesUtil {
     private static FragmentType asFragmentType(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
         fragmentType.setKey(fragment.getKey());
-        replaceChecksumTypes(fragmentType.getChecksum(), filterChecksums(fragment.getChecksums(), fileAndChecksums));
+        replaceChecksumTypes(fragmentType.getChecksum(), filterChecksums(fragment, fileAndChecksums));
         return fragmentType;
     }
 
