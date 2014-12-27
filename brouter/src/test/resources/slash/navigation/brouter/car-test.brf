@@ -1,5 +1,5 @@
 #
-# Moped-Routing is experimantal !!!
+# Car-Routing is experimantal !!!
 #
 # DO NOT USE FOR ACTUAL NAVIGATION
 #
@@ -13,48 +13,41 @@ assign downhillcutoff 0
 assign uphillcost 0
 assign uphillcutoff 0
 
-assign   validForBikes       1
-assign   validForCars        1
+assign validForCars 1
+assign pass1coefficient 1.3
 
 ---context:way   # following code refers to way-tags
 
-assign turncost 90
-assign initialcost switch highway=ferry 20000 0
+assign turncost 200
+assign initialcost switch route=ferry 20000 0
 
 
 #
 # calculate logical car access
 #
-assign motorverhicleaccess
+assign caraccess
+       switch motorcar=
               switch motor_vehicle=
                      switch vehicle=
                             switch access=
+                                   switch or highway=motorway highway=motorway_link    1
                                    switch or highway=trunk highway=trunk_link          1
                                    switch or highway=primary highway=primary_link      1
                                    switch or highway=secondary highway=secondary_link  1
                                    switch or highway=tertiary highway=tertiary_link    1
                                    switch    highway=unclassified                      1
-                                   switch    highway=ferry                             1
+                                   switch    route=ferry                               1
                                    switch or highway=residential highway=living_street 1
                                    switch    highway=service                           1
                                    0
-                                   or access=yes or access=designated access=destination
+                                   or access=yes or access=permissive or access=designated access=destination
                             or vehicle=yes or vehicle=designated vehicle=destination
-                     or motor_vehicle=yes or motor_vehicle=designated motor_vehicle=destination
-
-assign caraccess
-       switch motorcar=
-              motorverhicleaccess
-              or motorcar=yes or motorcar=designated motorcar=destination
-
-assign motorcycleaccess
-       switch motorcycle=
-              motorverhicleaccess
-              or motorcycle=yes or motorcycle=designated motorcycle=destination
+                     or motor_vehicle=yes or motor_vehicle=permissive or motor_vehicle=designated motor_vehicle=destination
+              or motorcar=yes or motorcar=permissive or motorcar=designated motorcar=destination
 
 assign accesspenalty
-       switch or caraccess motorcycleaccess
-              switch motorroad=yes 10000 0
+       switch caraccess
+              0
               10000
 
 assign onewaypenalty
@@ -73,12 +66,15 @@ assign costfactor
 
  add max onewaypenalty accesspenalty
 
- switch or highway=trunk highway=trunk_link          1.5
+ switch and highway= not route=ferry  100000
+
+ switch or highway=motorway highway=motorway_link    1
+ switch or highway=trunk highway=trunk_link          1
  switch or highway=primary highway=primary_link      switch maxspeed=30 2.0 switch maxspeed=50 1.5 1.2
- switch or highway=secondary highway=secondary_link  1.4
- switch or highway=tertiary highway=tertiary_link    1.3
- switch    highway=unclassified                      1.2
- switch    highway=ferry                             5.67
+ switch or highway=secondary highway=secondary_link  1.3
+ switch or highway=tertiary highway=tertiary_link    1.4
+ switch    highway=unclassified                      1.5
+ switch    route=ferry                               5.67
  switch    highway=bridleway                         5
  switch or highway=residential highway=living_street 2
  switch    highway=service                           2
@@ -93,7 +89,8 @@ assign costfactor
 #
 # calculate logical car access to nodes
 #
-assign motorvehicleaccess
+assign caraccess
+       switch motorcar=
               switch motor_vehicle=
                      switch vehicle=
                             switch access=
@@ -102,21 +99,12 @@ assign motorvehicleaccess
                                    switch barrier=lift_gate 0
                                    switch barrier=cycle_barrier 0
                                    1
-                                   or access=yes or access=designated access=destination
-                            or vehicle=yes or vehicle=designated vehicle=destination
-                     or motor_vehicle=yes or motor_vehicle=designated motor_vehicle=destination
-
-assign caraccess
-       switch motorcar=
-              motorvehicleaccess
-              or motorcar=yes or motorcar=designated motorcar=destination
-
-assign motorcycleaccess
-       switch motorcycle=
-              motorvehicleaccess
-              or motorcycle=yes or motorcycle=designated motorcycle=destination
+                                   or access=yes or access=permissive or access=designated access=destination
+                            or vehicle=yes or vehicle=permissive or vehicle=designated vehicle=destination
+                     or motor_vehicle=yes or motor_vehicle=permissive or motor_vehicle=designated motor_vehicle=destination
+              or motorcar=yes or motorcar=permissive or motorcar=designated motorcar=destination
 
 assign initialcost
-       switch or caraccess motorcycleaccess
+       switch caraccess
               0
               1000000

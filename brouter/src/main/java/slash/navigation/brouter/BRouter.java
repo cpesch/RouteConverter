@@ -33,7 +33,8 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -42,7 +43,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Externalization.extractFile;
+import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Action.Copy;
 
@@ -56,40 +58,33 @@ public class BRouter implements RoutingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(BRouter.class);
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
-    private static final String BASE_URL_PREFERENCE = "baseUrl";
+    private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
+    private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("fastbike"), MOPED,
-            new TravelMode("safety"), new TravelMode("shortest"), new TravelMode("trekking"),
-            new TravelMode("trekking-ignore-cr"), new TravelMode("trekking-noferries"),
-            new TravelMode("trekking-nosteps"), new TravelMode("trekking-steep"), new TravelMode("car-test"));
     private static final int MAX_RUNNING_TIME = 1000;
 
-    private final DataSource dataSource;
+    private final DataSource profiles, segments;
     private final DownloadManager downloadManager;
 
     private final RoutingContext routingContext = new RoutingContext();
 
-    public BRouter(DataSource dataSource, DownloadManager downloadManager) {
-        this.dataSource = dataSource;
+    public BRouter(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
+        this.profiles = profiles;
+        this.segments = segments;
         this.downloadManager = downloadManager;
     }
 
-    private void initialize() {
-        try {
-            extractFile("slash/navigation/brouter/lookups.dat");
-        } catch (IOException e) {
-            log.warning("Cannot initialize BRouter: " + e);
-        }
-    }
-
     public String getName() {
-        return dataSource.getName();
+        return segments.getName();
     }
 
-    private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, dataSource.getBaseUrl());
+    private String getProfilesBaseUrl() {
+        return preferences.get(PROFILES_BASE_URL_PREFERENCE, profiles.getBaseUrl());
     }
 
+    private String getSegmentsBaseUrl() {
+        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, segments.getBaseUrl());
+    }
     public boolean isDownload() {
         return true;
     }
@@ -99,7 +94,18 @@ public class BRouter implements RoutingService {
     }
 
     public List<TravelMode> getAvailableTravelModes() {
-        return TRAVEL_MODES;
+        List<TravelMode> result = new ArrayList<>();
+        File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return getExtension(name).equals(".brf");
+            }
+        });
+        if (files != null) {
+            for(File file : files) {
+                result.add(new TravelMode(removeExtension(file.getName())));
+            }
+        }
+        return result;
     }
 
     public TravelMode getPreferredTravelMode() {
@@ -114,7 +120,7 @@ public class BRouter implements RoutingService {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    private java.io.File getDirectory() {
+    private java.io.File getDirectory(DataSource dataSource) {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
         if (!f.exists())
@@ -122,8 +128,20 @@ public class BRouter implements RoutingService {
         return ensureDirectory(directoryName);
     }
 
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), key);
+    private java.io.File getProfilesDirectory() {
+        return getDirectory(profiles);
+    }
+
+    private java.io.File createProfileFile(String key) {
+        return new java.io.File(getProfilesDirectory(), key);
+    }
+
+    private java.io.File getSegmentsDirectory() {
+        return getDirectory(segments);
+    }
+
+    private java.io.File createSegmentFile(String key) {
+        return new java.io.File(getSegmentsDirectory(), key);
     }
 
     String createFileKey(double longitude, double latitude) {
@@ -137,14 +155,21 @@ public class BRouter implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        initialize();
-        try {
-            routingContext.localFunction = extractFile("slash/navigation/brouter/" + travelMode.getName() + ".brf").getPath();
-        } catch (IOException e) {
-            log.warning(format("Cannot configure travel mode %s: %s", travelMode, e));
-        }
+        File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
+        if (!profile.exists()) {
+            List<TravelMode> availableTravelModes = getAvailableTravelModes();
+            if(availableTravelModes.size() == 0) {
+                log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
+                return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+            }
 
-        RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
+            TravelMode firstTravelMode = availableTravelModes.get(0);
+            profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
+            log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
+        }
+        routingContext.localFunction = profile.getPath();
+
+        RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
         routingEngine.quite = true;
         routingEngine.doRun(MAX_RUNNING_TIME);
         if (routingEngine.getErrorMessage() != null) {
@@ -201,30 +226,35 @@ public class BRouter implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        initialize();
-
         Set<String> uris = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             uris.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Collection<Downloadable> downloadables = new HashSet<>();
+        Collection<Downloadable> downloadableSegments = new HashSet<>();
         for (String key : uris) {
-            Downloadable downloadable = dataSource.getDownloadable(key);
+            Downloadable downloadable = segments.getDownloadable(key);
             if (downloadable != null)
-                downloadables.add(downloadable);
+                downloadableSegments.add(downloadable);
         }
 
-        final Collection<Downloadable> notExistingFiles = new HashSet<>();
-        for (Downloadable downloadable : downloadables) {
-            if (createFile(downloadable.getUri()).exists())
+        final Collection<Downloadable> notExistingProfiles = new HashSet<>();
+        for (Downloadable downloadable : profiles.getFiles()) {
+            if (createProfileFile(downloadable.getUri()).exists())
                 continue;
-            notExistingFiles.add(downloadable);
+            notExistingProfiles.add(downloadable);
+        }
+
+        final Collection<Downloadable> notExistingSegments = new HashSet<>();
+        for (Downloadable downloadable : downloadableSegments) {
+            if (createSegmentFile(downloadable.getUri()).exists())
+                continue;
+            notExistingSegments.add(downloadable);
         }
 
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
-                return !notExistingFiles.isEmpty();
+                return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
             }
 
             public boolean isRequiresProcessing() {
@@ -232,7 +262,7 @@ public class BRouter implements RoutingService {
             }
 
             public void download() {
-                downloadAll(notExistingFiles);
+                downloadAll(notExistingProfiles, notExistingSegments);
             }
 
             public void process() {
@@ -241,19 +271,28 @@ public class BRouter implements RoutingService {
         };
     }
 
-    private void downloadAll(Collection<Downloadable> downloadables) {
+    private void downloadAll(Collection<Downloadable> profiles, Collection<Downloadable> segments) {
         Collection<Download> downloads = new HashSet<>();
-        for (Downloadable downloadable : downloadables)
-            downloads.add(download(downloadable));
+        for (Downloadable downloadable : profiles)
+            downloads.add(downloadProfile(downloadable));
+        for (Downloadable downloadable : segments)
+            downloads.add(downloadSegment(downloadable));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(Downloadable downloadable) {
+    private Download downloadProfile(Downloadable downloadable) {
         String uri = downloadable.getUri();
-        String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + ": Routing Data " + uri, url, Copy,
-                null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+        String url = getProfilesBaseUrl() + uri;
+        return downloadManager.queueForDownload(getName() + ": Routing Profile " + uri, url, Copy,
+                null, new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+    }
+
+    private Download downloadSegment(Downloadable downloadable) {
+        String uri = downloadable.getUri();
+        String url = getSegmentsBaseUrl() + uri;
+        return downloadManager.queueForDownload(getName() + ": Routing Segment " + uri, url, Copy,
+                null, new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 }

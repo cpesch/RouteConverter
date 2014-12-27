@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.btools</groupId>
             <artifactId>brouter-core</artifactId>
-            <version>0.9.8-20140416</version>
+            <version>${brouter.version}</version>
         </dependency>
     </dependencies>
 </project>

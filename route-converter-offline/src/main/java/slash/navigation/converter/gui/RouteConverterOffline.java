@@ -51,9 +51,10 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
-        DataSource brouter = getDataSourceManager().getDataSourceService().getDataSourceById("brouter");
-        if (brouter != null) {
-            BRouter router = new BRouter(brouter, getDataSourceManager().getDownloadManager());
+        DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
+        if (brouterProfiles != null && brouterSegments != null) {
+            BRouter router = new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
             getRoutingServiceFacade().addRoutingService(router);
             log.info(String.format("Added routing service '%s'", router.getName()));
         }

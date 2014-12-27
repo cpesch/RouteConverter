@@ -31,6 +31,7 @@ import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.TravelMode;
 
+import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
@@ -39,26 +40,51 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Externalization.extractFile;
 
 public class BRouterIT {
     private static final NavigationPosition FROM = new SimpleNavigationPosition(10.18587, 53.40451);
     private static final NavigationPosition TO = new SimpleNavigationPosition(10.06767, 53.49249);
-    private static final String URI = "E10_N50.rd5";
+    private static final String CAR_PROFILE_URI = "car-test.brf";
+    private static final String TREKKING_PROFILE_URI = "trekking.brf";
+    private static final String SEGMENT_URI = "E10_N50.rd5";
 
     private BRouter router;
 
     @Before
     public void setUp() throws IOException {
-        Downloadable downloadable = mock(Downloadable.class);
-        when(downloadable.getUri()).thenReturn(URI);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getDownloadable(URI)).thenReturn(downloadable);
-        when(dataSource.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments2/");
-        when(dataSource.getDirectory()).thenReturn("test");
-        router = new BRouter(dataSource, new DownloadManager(createTempFile("queueFile", ".xml")));
+        Downloadable car = mock(Downloadable.class);
+        when(car.getUri()).thenReturn(CAR_PROFILE_URI);
+        Downloadable trekking = mock(Downloadable.class);
+        when(trekking.getUri()).thenReturn(TREKKING_PROFILE_URI);
+        DataSource brouterProfiles = mock(DataSource.class);
+        when(brouterProfiles.getDownloadable(CAR_PROFILE_URI)).thenReturn(car);
+        when(brouterProfiles.getDownloadable(TREKKING_PROFILE_URI)).thenReturn(trekking);
+        when(brouterProfiles.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/profiles2/");
+        when(brouterProfiles.getDirectory()).thenReturn("test");
+        prepareFile(brouterProfiles.getDirectory(), CAR_PROFILE_URI);
+        prepareFile(brouterProfiles.getDirectory(), TREKKING_PROFILE_URI);
+        prepareFile(brouterProfiles.getDirectory(), "lookups.dat");
+
+        Downloadable segment = mock(Downloadable.class);
+        when(segment.getUri()).thenReturn(SEGMENT_URI);
+        DataSource brouterSegments = mock(DataSource.class);
+        when(brouterSegments.getDownloadable(SEGMENT_URI)).thenReturn(segment);
+        when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments3/");
+        when(brouterSegments.getDirectory()).thenReturn("test");
+
+        router = new BRouter(brouterProfiles, brouterSegments, new DownloadManager(createTempFile("queueFile", ".xml")));
         DownloadFuture future = router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();
+    }
+
+    private void prepareFile(String directory, String fileName) throws IOException {
+        File src = extractFile("slash/navigation/brouter/" + fileName);
+        File dest = new File(getApplicationDirectory(directory), src.getName());
+        if (!dest.exists())
+            assertTrue(src.renameTo(dest));
     }
 
     private TravelMode getTravelMode(String lookupName) {
@@ -72,18 +98,18 @@ public class BRouterIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
-        assertEquals(162, result.getPositions().size());
-        assertEquals(13810.0, result.getDistance(), 5.0);
-        assertEquals(0, result.getTime());
         assertTrue(result.isValid());
+        assertEquals(172, result.getPositions().size());
+        assertEquals(13820.0, result.getDistance(), 5.0);
+        assertEquals(0, result.getTime());
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
-        assertEquals(110, result.getPositions().size());
-        assertEquals(13945.0, result.getDistance(), 5.0);
-        assertEquals(0, result.getTime());
         assertTrue(result.isValid());
+        assertEquals(115, result.getPositions().size());
+        assertEquals(13963.0, result.getDistance(), 5.0);
+        assertEquals(0, result.getTime());
     }
 }

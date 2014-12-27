@@ -36,7 +36,7 @@ import java.util.List;
 
 public class CreateBrouterDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
     protected boolean isIncludeAnchor(String anchor) {
-        return anchor.endsWith(".rd5");
+        return anchor.endsWith(".rd5") || anchor.endsWith(".dat") || anchor.endsWith(".brf");
     }
 
     protected boolean isRecurseAnchor(String anchor) {
