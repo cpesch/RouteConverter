@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <title>RouteConverter MapView</title>
-    <script src="http://${mapserver}/maps/api/js?v=3.17&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
+    <script src="http://${mapserver}/maps/api/js?v=3.18&sensor=false&libraries=geometry&language=${language}&region=${country}" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenu.js" type="text/javascript"></script>
     <script src="./keydragzoom.js" type="text/javascript"></script>
@@ -594,7 +594,7 @@
            }));
            map.mapTypes.set(HIKE_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
-                   return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                maxZoom: 18,
@@ -603,7 +603,7 @@
            }));
            map.mapTypes.set(HIKE_MAPTYPE_SYMBOL_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
-                   return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                maxZoom: 18,
@@ -652,6 +652,14 @@
                name: TOPOGRAPHIC_MAPTYPE_ID
            }));
 
+           var hillshadingMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hillshading/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               isPng: true,
+               name: "Hillshading"
+           });
            var hikingSymbolsMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://tile.lonvia.de/hiking/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
@@ -659,14 +667,6 @@
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
                name: "Hiking Symbols"
-           });
-           var reliefMapType = new google.maps.ImageMapType({
-               getTileUrl: function(coord, zoom) {
-                   return "http://toolserver.org/~cmarqu/hill/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               isPng: true,
-               name: "Relief"
            });
 
            var copyrightControl = document.createElement('div');
@@ -697,12 +697,13 @@
                } else {
                    copyrightControl.innerHTML = '';
                }
-               
-               if (mapTypeId == HIKE_MAPTYPE_SYMBOL_ID){
+
+               if (mapTypeId == HIKE_MAPTYPE_ID){
+                   map.overlayMapTypes.setAt(0, hillshadingMapType);
+               } else if (mapTypeId == HIKE_MAPTYPE_SYMBOL_ID){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
-            	   map.overlayMapTypes.setAt(1, reliefMapType);
-               }
-               else {
+            	   map.overlayMapTypes.setAt(1, hillshadingMapType);
+               } else {
             	   map.overlayMapTypes.setAt(0, null);
             	   map.overlayMapTypes.setAt(1, null);
                }
