@@ -85,6 +85,7 @@ import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
+import slash.navigation.routing.BeelineRoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -1107,6 +1108,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
+        getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
     }
 
     protected void configureRoutingServices() {
