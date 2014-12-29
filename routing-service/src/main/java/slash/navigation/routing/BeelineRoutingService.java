@@ -17,38 +17,28 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.helpers;
+
+package slash.navigation.routing;
 
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.mapview.MapView;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
- * Encapsulates access to Google Directions service.
+ * A routing service that does no routing, i.e. returns beelines.
  *
  * @author Christian Pesch
  */
 
-public class GoogleDirections implements RoutingService {
-    private static final TravelMode DRIVING = new TravelMode("Driving");
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
-
-    private final MapView mapView;
-
-    public GoogleDirections(MapView mapView) {
-        this.mapView = mapView;
-    }
+public class BeelineRoutingService implements RoutingService {
+    private static final TravelMode BEELINE = new TravelMode("Beeline");
 
     public String getName() {
-        return "Google Directions";
+        return "Beeline";
     }
 
     public boolean isInitialized() {
@@ -60,15 +50,15 @@ public class GoogleDirections implements RoutingService {
     }
 
     public boolean isSupportTurnpoints() {
-        return true;
+        return false;
     }
 
     public List<TravelMode> getAvailableTravelModes() {
-        return TRAVEL_MODES;
+        return asList(BEELINE);
     }
 
     public TravelMode getPreferredTravelMode() {
-        return DRIVING;
+        return BEELINE;
     }
 
     public String getPath() {
@@ -80,18 +70,10 @@ public class GoogleDirections implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        throw new UnsupportedOperationException();
+        return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         throw new UnsupportedOperationException();
-    }
-
-    public void insertAllWaypoints(int[] selectedRows) {
-        mapView.insertAllWaypoints(selectedRows);
-    }
-
-    public void insertOnlyTurnpoints(int[] selectedRows) {
-        mapView.insertOnlyTurnpoints(selectedRows);
     }
 }

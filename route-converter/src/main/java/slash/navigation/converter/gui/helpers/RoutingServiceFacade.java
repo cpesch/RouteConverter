@@ -59,6 +59,14 @@ public class RoutingServiceFacade {
         routingServices.add(0, routingService);
     }
 
+    public <T extends RoutingService> T findRoutingService(Class<T> clazz) {
+        for(RoutingService service : getRoutingServices()) {
+            if (service.getClass().isAssignableFrom(clazz))
+                return (T)service;
+        }
+        return null;
+    }
+
     public RoutingService getRoutingService() {
         RoutingService firstRoutingService = getRoutingServices().size() > 0 ? getRoutingServices().get(0) : null;
         if (firstRoutingService == null)

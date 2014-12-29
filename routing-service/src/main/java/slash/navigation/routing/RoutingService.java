@@ -33,6 +33,7 @@ import java.util.List;
 
 public interface RoutingService {
     String getName();
+    boolean isInitialized();
     boolean isDownload();
     boolean isSupportTurnpoints();
     List<TravelMode> getAvailableTravelModes();
