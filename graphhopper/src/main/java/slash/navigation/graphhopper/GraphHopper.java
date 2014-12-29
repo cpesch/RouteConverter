@@ -63,23 +63,23 @@ public class GraphHopper implements RoutingService {
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
 
-    private final DataSource dataSource;
-    private final DownloadManager downloadManager;
+    private DataSource dataSource;
+    private DownloadManager downloadManager;
 
     private com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile = null;
 
-    public GraphHopper(DataSource dataSource, DownloadManager downloadManager) {
+    public synchronized void setDataSource(DataSource dataSource, DownloadManager downloadManager) {
         this.dataSource = dataSource;
         this.downloadManager = downloadManager;
     }
 
     public String getName() {
-        return dataSource.getName();
+        return "GraphHopper";
     }
 
-    private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, dataSource.getBaseUrl());
+    public synchronized boolean isInitialized() {
+        return dataSource != null && downloadManager != null;
     }
 
     public boolean isDownload() {
@@ -104,6 +104,10 @@ public class GraphHopper implements RoutingService {
 
     public void setPath(String path) {
         preferences.put(DIRECTORY_PREFERENCE, path);
+    }
+
+    private String getBaseUrl() {
+        return preferences.get(BASE_URL_PREFERENCE, dataSource.getBaseUrl());
     }
 
     private java.io.File getDirectory() {

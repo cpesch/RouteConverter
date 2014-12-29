@@ -79,6 +79,7 @@ import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
+import static java.lang.Thread.sleep;
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -395,6 +396,30 @@ public class MapsforgeMapView implements MapView {
                 executor.execute(new Runnable() {
                     public void run() {
                         RoutingService service = mapViewCallback.getRoutingService();
+                        waitForInitialization(service);
+                        waitForDownload(service);
+                        drawRoute(pairWithLayers);
+                        fireDistanceAndTime();
+                    }
+
+                    private void waitForInitialization(RoutingService service) {
+                        if (!service.isInitialized()) {
+                            drawBeeline(pairWithLayers);
+                            fireDistanceAndTime();
+
+                            while (!service.isInitialized()) {
+                                try {
+                                    sleep(100);
+                                } catch (InterruptedException e) {
+                                    // intentionally left empty
+                                }
+                            }
+
+                            removeLines(pairWithLayers, true);
+                        }
+                    }
+
+                    private void waitForDownload(RoutingService service) {
                         if (service.isDownload()) {
                             DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
                             if (future.isRequiresDownload() || future.isRequiresProcessing()) {
@@ -407,15 +432,8 @@ public class MapsforgeMapView implements MapView {
                                     future.process();
 
                                 removeLines(pairWithLayers, true);
-                                drawRoute(pairWithLayers);
-                                fireDistanceAndTime();
-                                return;
                             }
                         }
-
-                        // no download possible or required
-                        drawRoute(pairWithLayers);
-                        fireDistanceAndTime();
                     }
                 });
             }

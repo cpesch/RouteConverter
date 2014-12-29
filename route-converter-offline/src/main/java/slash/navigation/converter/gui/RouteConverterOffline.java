@@ -51,19 +51,27 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
+        getRoutingServiceFacade().addRoutingService(new GraphHopper());
+        getRoutingServiceFacade().addRoutingService(new BRouter());
+    }
+
+    protected void configureRoutingServices() {
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
         DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
         if (brouterProfiles != null && brouterSegments != null) {
-            BRouter router = new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
-            getRoutingServiceFacade().addRoutingService(router);
-            log.info(String.format("Added routing service '%s'", router.getName()));
+            BRouter router = getRoutingServiceFacade().findRoutingService(BRouter.class);
+            router.setDataSource(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
+            log.info(String.format("Configured routing service '%s'", router.getName()));
         }
+
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
         if (graphhopper != null) {
-            GraphHopper hopper = new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager());
-            getRoutingServiceFacade().addRoutingService(hopper);
-            log.info(String.format("Added routing service '%s'", hopper.getName()));
+            GraphHopper hopper = getRoutingServiceFacade().findRoutingService(GraphHopper.class);
+            hopper.setDataSource(graphhopper, getDataSourceManager().getDownloadManager());
+            log.info(String.format("Configured routing service '%s'", hopper.getName()));
         }
+
+        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getAction());
     }
 
     private NotificationManager getNotificationManager() {

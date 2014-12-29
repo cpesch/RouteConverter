@@ -63,28 +63,25 @@ public class BRouter implements RoutingService {
     private static final TravelMode MOPED = new TravelMode("moped");
     private static final int MAX_RUNNING_TIME = 1000;
 
-    private final DataSource profiles, segments;
-    private final DownloadManager downloadManager;
+    private DataSource profiles, segments;
+    private DownloadManager downloadManager;
 
     private final RoutingContext routingContext = new RoutingContext();
 
-    public BRouter(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
+    public synchronized void setDataSource(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
         this.profiles = profiles;
         this.segments = segments;
         this.downloadManager = downloadManager;
     }
 
     public String getName() {
-        return segments.getName();
+        return "BRouter";
     }
 
-    private String getProfilesBaseUrl() {
-        return preferences.get(PROFILES_BASE_URL_PREFERENCE, profiles.getBaseUrl());
+    public synchronized boolean isInitialized() {
+        return profiles != null && segments != null && downloadManager != null;
     }
 
-    private String getSegmentsBaseUrl() {
-        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, segments.getBaseUrl());
-    }
     public boolean isDownload() {
         return true;
     }
@@ -120,16 +117,24 @@ public class BRouter implements RoutingService {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    private java.io.File getDirectory(DataSource dataSource) {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
+    private String getProfilesBaseUrl() {
+        return preferences.get(PROFILES_BASE_URL_PREFERENCE, profiles.getBaseUrl());
+    }
+
+    private String getSegmentsBaseUrl() {
+        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, segments.getBaseUrl());
+    }
+
+    private java.io.File getDirectory(DataSource dataSource, String directoryName) {
+        String path = getPath() + "/" + directoryName;
+        java.io.File f = new java.io.File(path);
         if (!f.exists())
             directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
     private java.io.File getProfilesDirectory() {
-        return getDirectory(profiles);
+        return getDirectory(profiles, "profiles");
     }
 
     private java.io.File createProfileFile(String key) {
@@ -137,7 +142,7 @@ public class BRouter implements RoutingService {
     }
 
     private java.io.File getSegmentsDirectory() {
-        return getDirectory(segments);
+        return getDirectory(segments, "segments");
     }
 
     private java.io.File createSegmentFile(String key) {
@@ -156,6 +161,10 @@ public class BRouter implements RoutingService {
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
+        if (!profile.exists()) {
+            profile = new File(getProfilesDirectory(), getPreferredTravelMode().getName() + ".brf");
+            log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
+        }
         if (!profile.exists()) {
             List<TravelMode> availableTravelModes = getAvailableTravelModes();
             if(availableTravelModes.size() == 0) {

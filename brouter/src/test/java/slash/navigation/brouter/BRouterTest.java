@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class BRouterTest {
-    private BRouter router = new BRouter(null, null, null);
+    private BRouter router = new BRouter();
 
     @Test
     public void testLongitude() {
