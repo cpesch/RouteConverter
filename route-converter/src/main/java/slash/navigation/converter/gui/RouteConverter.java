@@ -1032,9 +1032,9 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
-                scanLocalMapsAndThemes();
-                getDownloadManager().loadQueue();
+                initializeRoutingServices();
 
+                getDownloadManager().loadQueue();
                 try {
                     getDataSourceManager().initialize(getEdition());
                 } catch (final Exception e) {
@@ -1046,7 +1046,8 @@ public class RouteConverter extends SingleFrameApplication {
                 }
 
                 initializeElevationServices();
-                initializeRoutingServices();
+                configureRoutingServices();
+                scanLocalMapsAndThemes();
                 scanRemoteMapsAndThemes();
             }
         }, "DataSourceInitializer").start();
@@ -1061,6 +1062,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
+    }
+
+    protected void configureRoutingServices() {
     }
 
     protected void scanLocalMapsAndThemes() {

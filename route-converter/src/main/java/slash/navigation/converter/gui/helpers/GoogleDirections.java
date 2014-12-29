@@ -51,6 +51,10 @@ public class GoogleDirections implements RoutingService {
         return "Google Directions";
     }
 
+    public boolean isInitialized() {
+        return true;
+    }
+
     public boolean isDownload() {
         return false;
     }

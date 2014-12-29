@@ -41,6 +41,10 @@ public class BeelineRoutingService implements RoutingService {
         return "Beeline";
     }
 
+    public boolean isInitialized() {
+        return true;
+    }
+
     public boolean isDownload() {
         return false;
     }
