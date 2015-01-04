@@ -57,7 +57,6 @@ public class EclipseSWTMapView extends BaseMapView {
     private static final String DEBUG_PREFERENCE = "debug";
 
     private JWebBrowser webBrowser;
-    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     public boolean isSupportedPlatform() {
         return isLinux() || isMac() || isWindows();
@@ -334,6 +333,7 @@ public class EclipseSWTMapView extends BaseMapView {
         if (script.length() == 0)
             return null;
 
+        final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
         if (!isEventDispatchThread()) {
