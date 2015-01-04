@@ -378,7 +378,7 @@ public class MapsforgeMapView implements MapView {
             private java.util.Map<PairWithLayer, Double> pairsToDistances = new HashMap<>();
             private java.util.Map<PairWithLayer, Long> pairsToTimes = new HashMap<>();
 
-            public void add(final List<PairWithLayer> pairWithLayers) {
+            public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
             }
 
@@ -393,20 +393,21 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
+                drawBeeline(pairWithLayers);
+                fireDistanceAndTime();
+
                 executor.execute(new Runnable() {
                     public void run() {
                         RoutingService service = mapViewCallback.getRoutingService();
                         waitForInitialization(service);
                         waitForDownload(service);
+
                         drawRoute(pairWithLayers);
                         fireDistanceAndTime();
                     }
 
                     private void waitForInitialization(RoutingService service) {
                         if (!service.isInitialized()) {
-                            drawBeeline(pairWithLayers);
-                            fireDistanceAndTime();
-
                             while (!service.isInitialized()) {
                                 try {
                                     sleep(100);
@@ -414,8 +415,6 @@ public class MapsforgeMapView implements MapView {
                                     // intentionally left empty
                                 }
                             }
-
-                            removeLines(pairWithLayers, true);
                         }
                     }
 
@@ -423,15 +422,10 @@ public class MapsforgeMapView implements MapView {
                         if (service.isDownload()) {
                             DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
                             if (future.isRequiresDownload() || future.isRequiresProcessing()) {
-                                drawBeeline(pairWithLayers);
-                                fireDistanceAndTime();
-
                                 if (future.isRequiresDownload())
                                     future.download();
                                 if (future.isRequiresProcessing())
                                     future.process();
-
-                                removeLines(pairWithLayers, true);
                             }
                         }
                     }
@@ -452,30 +446,16 @@ public class MapsforgeMapView implements MapView {
                 }
             }
 
-            private void removeLines(List<PairWithLayer> pairWithLayers, boolean removeDistancesAndTimes) {
-                for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    Layer layer = pairWithLayer.getLayer();
-                    if (layer != null)
-                        getLayerManager().getLayers().remove(layer);
-                    else
-                        log.warning("Could not find layer for route pair " + pairWithLayer);
-                    pairWithLayer.setLayer(null);
-
-                    if(removeDistancesAndTimes) {
-                        pairsToDistances.remove(pairWithLayer);
-                        pairsToTimes.remove(pairWithLayer);
-                    }
-                }
-            }
-
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
                     Polyline polyline = new Polyline(intermediateRoute.latLongs, intermediateRoute.valid ? ROUTE_PAINT : ROUTE_NOT_VALID_PAINT, tileSize);
-                    pairWithLayer.setLayer(polyline);
+                    // remove beeline layer then add polyline layer from routing
+                    removeLayer(pairWithLayer);
                     getLayerManager().getLayers().add(polyline);
+                    pairWithLayer.setLayer(polyline);
                 }
             }
 
@@ -491,8 +471,22 @@ public class MapsforgeMapView implements MapView {
                 return new IntermediateRoute(latLongs, intermediate.isValid());
             }
 
+            private void removeLayer(PairWithLayer pairWithLayer) {
+                Layer layer = pairWithLayer.getLayer();
+                if (layer != null)
+                    getLayerManager().getLayers().remove(layer);
+                else
+                    log.warning("Could not find layer for route pair " + pairWithLayer);
+                pairWithLayer.setLayer(null);
+            }
+
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                removeLines(pairWithLayers, true);
+                for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    removeLayer(pairWithLayer);
+
+                    pairsToDistances.remove(pairWithLayer);
+                    pairsToTimes.remove(pairWithLayer);
+                }
                 fireDistanceAndTime();
             }
 

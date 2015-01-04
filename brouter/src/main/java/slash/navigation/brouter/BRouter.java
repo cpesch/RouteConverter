@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -61,7 +62,6 @@ public class BRouter implements RoutingService {
     private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
-    private static final int MAX_RUNNING_TIME = 1000;
 
     private DataSource profiles, segments;
     private DownloadManager downloadManager;
@@ -160,35 +160,41 @@ public class BRouter implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
-        if (!profile.exists()) {
-            profile = new File(getProfilesDirectory(), getPreferredTravelMode().getName() + ".brf");
-            log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
-        }
-        if (!profile.exists()) {
-            List<TravelMode> availableTravelModes = getAvailableTravelModes();
-            if(availableTravelModes.size() == 0) {
-                log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
+        long start = currentTimeMillis();
+        try {
+            File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
+            if (!profile.exists()) {
+                profile = new File(getProfilesDirectory(), getPreferredTravelMode().getName() + ".brf");
+                log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
+            }
+            if (!profile.exists()) {
+                List<TravelMode> availableTravelModes = getAvailableTravelModes();
+                if (availableTravelModes.size() == 0) {
+                    log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
+                    return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+                }
+
+                TravelMode firstTravelMode = availableTravelModes.get(0);
+                profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
+                log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
+            }
+            routingContext.localFunction = profile.getPath();
+
+            RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
+            routingEngine.quite = true;
+            routingEngine.doRun(preferences.getLong("routingTimeout", 30 * 1000L));
+            if (routingEngine.getErrorMessage() != null) {
+                log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
                 return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
             }
 
-            TravelMode firstTravelMode = availableTravelModes.get(0);
-            profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
-            log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
+            OsmTrack track = routingEngine.getFoundTrack();
+            int distance = routingEngine.getDistance();
+            return new RoutingResult(asPositions(track), distance, 0L, true);
+        } finally {
+            long end = currentTimeMillis();
+            System.out.println(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
         }
-        routingContext.localFunction = profile.getPath();
-
-        RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
-        routingEngine.quite = true;
-        routingEngine.doRun(MAX_RUNNING_TIME);
-        if (routingEngine.getErrorMessage() != null) {
-            log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
-            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
-        }
-
-        OsmTrack track = routingEngine.getFoundTrack();
-        int distance = routingEngine.getDistance();
-        return new RoutingResult(asPositions(track), distance, 0L, true);
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
