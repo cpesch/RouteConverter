@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import static slash.common.io.Transfer.UTF16LE_ENCODING;
-import static slash.common.io.Transfer.UTF16_ENCODING;
 
 /**
  * Reads and writes CoPilot 9 (.trp) files.
@@ -45,7 +44,7 @@ public class CoPilot9Format extends CoPilotFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
-        read(source, startDate, UTF16_ENCODING, context);
+        read(source, startDate, UTF16LE_ENCODING, context);
     }
 
     protected boolean isDataVersion(String line) {
