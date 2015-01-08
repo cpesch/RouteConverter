@@ -45,9 +45,12 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.lang.String.format;
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -61,8 +64,9 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
  */
 
 public class FindPlaceDialog extends SimpleDialog {
-    private JPanel contentPane;
+    private static final Logger log = getLogger(FindPlaceDialog.class.getName());
 
+    private JPanel contentPane;
     private JTextField textFieldSearch;
     private JButton buttonSearchPositions;
     private JList listResult;
@@ -135,8 +139,9 @@ public class FindPlaceDialog extends SimpleDialog {
         DefaultListModel listModel = new DefaultListModel();
         listResult.setModel(listModel);
         GoogleMapsService service = new GoogleMapsService();
+        String address = textFieldSearch.getText();
         try {
-            List<NavigationPosition> positions = service.getPositionsFor(textFieldSearch.getText());
+            List<NavigationPosition> positions = service.getPositionsFor(address);
             if (positions != null) {
                 for (NavigationPosition position : positions) {
                     listModel.addElement(position);
@@ -147,8 +152,9 @@ public class FindPlaceDialog extends SimpleDialog {
                 }
             }
         } catch (IOException e) {
+            log.severe(format("Could find place %s: %s", address, e));
             showMessageDialog(this,
-                    MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getLocalizedMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), e.getLocalizedMessage()),
                     getTitle(), ERROR_MESSAGE);
         }
         savePreferences();
