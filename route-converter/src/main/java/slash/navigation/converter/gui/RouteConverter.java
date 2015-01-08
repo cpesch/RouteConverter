@@ -1086,7 +1086,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (final Exception e) {
                     invokeLater(new Runnable() {
                         public void run() {
-                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), e.getLocalizedMessage()), frame.getTitle(), ERROR_MESSAGE);
                         }
                     });
                 }

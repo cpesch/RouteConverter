@@ -867,7 +867,7 @@ public class ConvertPanel implements PanelInTab {
             log.severe(String.format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
 
             showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getLocalizedMessage()),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());

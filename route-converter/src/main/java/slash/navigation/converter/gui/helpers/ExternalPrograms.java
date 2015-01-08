@@ -89,7 +89,7 @@ public class ExternalPrograms {
                 log.severe("Start browser error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getLocalizedMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -107,7 +107,7 @@ public class ExternalPrograms {
                 log.severe("Start mail error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getLocalizedMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
