@@ -1084,12 +1084,10 @@ public class RouteConverter extends SingleFrameApplication {
                 getDownloadManager().loadQueue();
                 try {
                     getDataSourceManager().initialize(getEdition());
-                } catch (final Exception e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), getLocalizedMessage(e)), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
+                } catch (Exception e) {
+                    log.warning("Could not download data from datasources: " + e);
+                    getContext().getNotificationManager().showNotification(MessageFormat.format(
+                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
                 }
 
                 initializeElevationServices();
