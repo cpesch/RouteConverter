@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
 
-import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -32,7 +31,9 @@ import static java.awt.Desktop.getDesktop;
 import static java.awt.Desktop.isDesktopSupported;
 import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -89,8 +90,8 @@ public class ExternalPrograms {
                 log.severe("Start browser error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getLocalizedMessage()),
-                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), getLocalizedMessage(e)),
+                        RouteConverter.getTitle(), ERROR_MESSAGE);
             }
         }
     }
@@ -107,8 +108,8 @@ public class ExternalPrograms {
                 log.severe("Start mail error: " + e);
 
                 showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getLocalizedMessage()),
-                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), getLocalizedMessage(e)),
+                        RouteConverter.getTitle(), ERROR_MESSAGE);
             }
         }
     }

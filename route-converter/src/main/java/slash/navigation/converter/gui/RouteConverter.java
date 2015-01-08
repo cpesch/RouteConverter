@@ -137,6 +137,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.findExistingPath;
 import static slash.common.io.Files.printArrayToDialogString;
@@ -588,7 +589,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable);
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), throwable.getLocalizedMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);
@@ -604,7 +605,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable);
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getLocalizedMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);
@@ -1086,7 +1087,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (final Exception e) {
                     invokeLater(new Runnable() {
                         public void run() {
-                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), e.getLocalizedMessage()), frame.getTitle(), ERROR_MESSAGE);
+                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), getLocalizedMessage(e)), frame.getTitle(), ERROR_MESSAGE);
                         }
                     });
                 }

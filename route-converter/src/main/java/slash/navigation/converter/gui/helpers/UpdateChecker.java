@@ -93,7 +93,7 @@ public class UpdateChecker {
                     getStartTime());
             result.setParameters(parameters);
         } catch (Throwable t) {
-            log.severe("Cannot check for update: " + t.getMessage());
+            log.severe("Cannot check for update: " + t);
         }
         return result;
     }

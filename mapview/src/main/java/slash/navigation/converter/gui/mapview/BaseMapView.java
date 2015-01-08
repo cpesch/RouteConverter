@@ -63,6 +63,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.*;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -482,8 +483,7 @@ public abstract class BaseMapView implements MapView {
             if (!ipName.equals("localhost"))
                 throw new Exception("127.0.0.1 does not resolve to localhost");
         } catch (Exception e) {
-            e.printStackTrace();
-            final String message = "Probably faulty network setup: " + e.getLocalizedMessage() + ".\nPlease check your network settings.";
+            final String message = "Probably faulty network setup: " + getLocalizedMessage(e) + ".\nPlease check your network settings.";
             log.severe(message);
             invokeLater(new Runnable() {
                 public void run() {

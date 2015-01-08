@@ -90,7 +90,7 @@ public class EclipseSWTMapView extends BaseMapView {
             browser.setJavascriptEnabled(true);
             return browser;
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            log.severe("Cannot create WebBrowser: " + t);
             setInitializationCause(t);
             return null;
         }
@@ -129,7 +129,7 @@ public class EclipseSWTMapView extends BaseMapView {
             });
             log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            log.severe("Cannot create WebBrowser: " + t);
             setInitializationCause(t);
             return false;
         }
@@ -155,7 +155,6 @@ public class EclipseSWTMapView extends BaseMapView {
             public void windowClosing(WebBrowserEvent e) {
                 log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
             }
-
             public void locationChanging(WebBrowserNavigationEvent e) {
                 log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }

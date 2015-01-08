@@ -170,7 +170,7 @@ public abstract class WebsiteDataSourcesXmlGenerator extends BaseDataSourcesXmlG
                 return new ContentLengthAndLastModified(head.getContentLength(), head.getLastModified());
             }
         } catch (IOException e) {
-            System.err.println(getClass().getSimpleName() + ": " + e.getMessage());
+            System.err.println(getClass().getSimpleName() + ": " + e);
         }
         return null;
     }

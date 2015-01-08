@@ -55,6 +55,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -69,7 +70,7 @@ public class FindPlaceDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTextField textFieldSearch;
     private JButton buttonSearchPositions;
-    private JList listResult;
+    private JList<NavigationPosition> listResult;
     private JButton buttonInsertPosition;
 
     public FindPlaceDialog() {
@@ -154,7 +155,7 @@ public class FindPlaceDialog extends SimpleDialog {
         } catch (IOException e) {
             log.severe(format("Could find place %s: %s", address, e));
             showMessageDialog(this,
-                    MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), e.getLocalizedMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), getLocalizedMessage(e)),
                     getTitle(), ERROR_MESSAGE);
         }
         savePreferences();
@@ -167,9 +168,9 @@ public class FindPlaceDialog extends SimpleDialog {
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-        Object[] objects = listResult.getSelectedValues();
-        for (int i = objects.length - 1; i >= 0; i -= 1) {
-            NavigationPosition position = (NavigationPosition) objects[i];
+        List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
+        for (int i = selectedValues.size() - 1; i >= 0; i -= 1) {
+            NavigationPosition position = selectedValues.get(i);
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
 

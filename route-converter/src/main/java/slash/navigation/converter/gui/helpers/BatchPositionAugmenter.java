@@ -52,6 +52,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.intrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
@@ -208,7 +209,7 @@ public class BatchPositionAugmenter {
 
                     if (lastException[0] != null)
                         showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), lastException[0].getLocalizedMessage()),
+                                MessageFormat.format(operation.getErrorMessage(), getLocalizedMessage(lastException[0])),
                                 frame.getTitle(), ERROR_MESSAGE);
                 } finally {
                     invokeLater(new Runnable() {

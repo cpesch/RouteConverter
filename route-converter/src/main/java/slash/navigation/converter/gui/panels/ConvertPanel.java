@@ -157,6 +157,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Files.calculateConvertFileName;
 import static slash.common.io.Files.createGoPalFileName;
 import static slash.common.io.Files.createReadablePath;
@@ -709,7 +710,7 @@ public class ConvertPanel implements PanelInTab {
                 } catch (OutOfMemoryError e) {
                     r.handleOutOfMemoryError();
                 } catch (Throwable t) {
-                    log.severe("Append error: " + t.getMessage());
+                    log.severe("Append error: " + t);
                     r.handleOpenError(t, urls);
                 }
             }
@@ -864,10 +865,10 @@ public class ConvertPanel implements PanelInTab {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
+            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t));
 
             showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getLocalizedMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, getLocalizedMessage(t)),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());

@@ -367,7 +367,7 @@ public class BrowsePanel implements PanelInTab {
         } catch (FileNotFoundException e) {
             r.handleFileNotFound(path);
         } catch (Throwable t) {
-            log.severe("Cannot parse description from route " + path + ": " + t.getMessage());
+            log.severe(String.format("Cannot parse description from route %s: %s", path, t));
             r.handleOpenError(t, path);
         }
     }

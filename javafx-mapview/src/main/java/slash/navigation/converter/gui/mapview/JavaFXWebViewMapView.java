@@ -86,7 +86,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
             });
             return webView;
         } catch (Throwable t) {
-            log.severe("Cannot create WebView: " + t.getMessage());
+            log.severe("Cannot create WebView: " + t);
             setInitializationCause(t);
             return null;
         }
@@ -120,7 +120,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
             webView.getEngine().load(url);
             log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            log.severe("Cannot create WebBrowser: " + t);
             setInitializationCause(t);
             return false;
         }
