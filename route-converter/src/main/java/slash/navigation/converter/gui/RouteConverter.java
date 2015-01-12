@@ -348,9 +348,11 @@ public class RouteConverter extends SingleFrameApplication {
             mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView != null)
-            getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
-        else
+        if (mapView != null) {
+            GoogleDirections googleDirections = new GoogleDirections(mapView);
+            getRoutingServiceFacade().addRoutingService(googleDirections);
+            getRoutingServiceFacade().setRoutingService(googleDirections);
+        } else
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
 
         if (mapView != null && mapView.isSupportedPlatform()) {
