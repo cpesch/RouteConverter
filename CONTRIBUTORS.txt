@@ -27,6 +27,7 @@ Rainer Ippen for usuability improvements
 Robert Dziczek for the Polish translation
 Vincent Di Sanzo for the French translation
 Xiaoming Huang and LXLXJ for the Chinese translation
+Ricardo Barbosa for the Portuguese translation
 
 Of course a lot more people helped. If your name is missing drop me an email or a patch!
 
