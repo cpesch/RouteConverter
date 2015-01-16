@@ -158,6 +158,11 @@
                     <version>2.3</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jarsigner-plugin</artifactId>
+                    <version>1.3.2</version>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
                     <version>1.3</version>
@@ -260,11 +265,9 @@
         <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
-        <module>RouteConverterLinux64</module>
         <module>RouteConverterMac</module>
         <module>RouteConverterMac64</module>
         <module>RouteConverterWindows</module>
-        <module>RouteConverterWindows64</module>
         <module>RouteConverterWebstart</module>
     </modules>
 </project>

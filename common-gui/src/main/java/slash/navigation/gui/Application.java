@@ -25,23 +25,20 @@ import slash.navigation.jnlp.SingleInstanceCallback;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.*;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.system.Platform.getBits;
+import static slash.common.system.Platform.getOperationSystem;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
+import static slash.navigation.gui.jarinjar.JarInJarLoader.loadJar;
 
 /**
  * The base of all graphical user interfaces.
@@ -98,6 +95,16 @@ public abstract class Application {
         Locale.setDefault(new Locale(language, country));
     }
 
+    private static ClassLoader loadSWT() {
+        String jarFileName = "swt-" + getOperationSystem() + "-" + getBits() + ".jar";
+        try {
+            return loadJar(jarFileName);
+        } catch (Exception e) {
+            log.info("Cannot load SWT from " + jarFileName + ": " + e);
+            return null;
+        }
+    }
+
     private static void invokeNativeInterfaceMethod(String name) {
         try {
             Class<?> clazz = Class.forName("chrriis.dj.nativeswing.swtimpl.NativeInterface");
@@ -131,6 +138,9 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
+        final ClassLoader contextClassLoader = loadSWT();
+        if (contextClassLoader != null)
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         setLookAndFeel();
         openNativeInterface();
         initializeLocale(userNodeForPackage(applicationClass));
@@ -138,6 +148,8 @@ public abstract class Application {
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
                 try {
+                    if (contextClassLoader != null)
+                        Thread.currentThread().setContextClassLoader(contextClassLoader);
                     Application application = create(applicationClass);
                     setInstance(application);
                     application.initializeSingleInstance();
@@ -173,9 +185,7 @@ public abstract class Application {
         if (bundle == null)
             bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
         ctx.setBundle(bundle);
-        String helpSetUrl = bundle.getString("help-set");
-        if (helpSetUrl != null)
-            ctx.setHelpBrokerUrl(helpSetUrl);
+        ctx.setHelpBrokerUrl(bundle.getString("help-set"));
         ctx.setHelpBrokerClassLoader(applicationClass.getClassLoader());
         return application;
     }

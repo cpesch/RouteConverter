@@ -68,14 +68,15 @@ public class VersionTest {
 
     @Test
     public void testGetPlatform() {
-        assertEquals("Windows", new Version(null, null, "Windows64").getOperationSystem());
-        assertEquals("Linux", new Version(null, null, "Linux32").getOperationSystem());
-    }
-
-    @Test
-    public void testGetBits() {
-        assertEquals("64", new Version(null, null, "Windows64").getBits());
-        assertEquals("32", new Version(null, null, "Linux32").getBits());
+        assertEquals("Windows", new Version(null, null, "Windows").getOperationSystem());
+        assertEquals("?", new Version(null, null, null).getOperationSystem());
+        try {
+            System.setProperty("javawebstart.version", "1.0");
+            assertEquals("Webstart", new Version(null, null, null).getOperationSystem());
+        }
+        finally {
+            System.clearProperty("javawebstart.version");
+        }
     }
 
     @Test
