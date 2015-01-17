@@ -22,6 +22,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.gui.Application;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -37,7 +38,10 @@ public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RoutingService service = RoutingService.class.cast(value);
-        label.setText(service.getName());
+        String text = service.getName();
+        if(!service.isDownload())
+            text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
+        label.setText(text);
         return label;
     }
 }

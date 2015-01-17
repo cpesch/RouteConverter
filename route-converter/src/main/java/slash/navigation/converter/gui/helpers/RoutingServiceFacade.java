@@ -48,6 +48,7 @@ public class RoutingServiceFacade {
     private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
     private final List<RoutingService> routingServices = new ArrayList<>();
+    private RoutingService preferredRoutingService = null;
     private final EventListenerList listenerList = new EventListenerList();
     private boolean loggedFailedRoutingServiceWarning = false, loggedFailedTravelModeWarning = false;
 
@@ -56,23 +57,15 @@ public class RoutingServiceFacade {
     }
 
     public void addRoutingService(RoutingService routingService) {
-        routingServices.add(0, routingService);
+        routingServices.add(routingService);
     }
 
-    public <T extends RoutingService> T findRoutingService(Class<T> clazz) {
-        for(RoutingService service : getRoutingServices()) {
-            if (service.getClass().isAssignableFrom(clazz))
-                return (T)service;
-        }
-        return null;
+    public void setPreferredRoutingService(RoutingService preferredRoutingService) {
+        this.preferredRoutingService = preferredRoutingService;
     }
 
     public RoutingService getRoutingService() {
-        RoutingService firstRoutingService = getRoutingServices().size() > 0 ? getRoutingServices().get(0) : null;
-        if (firstRoutingService == null)
-            return null;
-
-        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, firstRoutingService.getName());
+        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, preferredRoutingService.getName());
 
         for (RoutingService service : getRoutingServices()) {
             if (lookupServiceName.endsWith(service.getName()))
@@ -80,10 +73,10 @@ public class RoutingServiceFacade {
         }
 
         if (!loggedFailedRoutingServiceWarning) {
-            log.warning(format("Failed to find routing service %s; using first", lookupServiceName));
+            log.warning(format("Failed to find routing service %s; using preferred %s", lookupServiceName, preferredRoutingService.getName()));
             loggedFailedRoutingServiceWarning = true;
         }
-        return firstRoutingService;
+        return preferredRoutingService;
     }
 
     public void setRoutingService(RoutingService service) {

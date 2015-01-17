@@ -21,10 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.elevation.ElevationService;
-import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleMapsService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,16 +44,15 @@ public class ElevationServiceFacade {
     private static final String ELEVATION_SERVICE = "elevationService";
 
     private final List<ElevationService> elevationServices = new ArrayList<>();
+    private ElevationService preferredElevationService;
     private boolean loggedFailedWarning = false;
 
-    public ElevationServiceFacade() {
-        elevationServices.add(new GeoNamesService());
-        elevationServices.add(new GoogleMapsService());
-        elevationServices.add(new EarthToolsService());
+    public void addElevationService(ElevationService elevationService) {
+        elevationServices.add(elevationService);
     }
 
-    public void addElevationService(ElevationService elevationService) {
-        elevationServices.add(0, elevationService);
+    public void setPreferredElevationService(ElevationService preferredElevationService) {
+        this.preferredElevationService = preferredElevationService;
     }
 
     public List<ElevationService> getElevationServices() {
@@ -64,11 +60,7 @@ public class ElevationServiceFacade {
     }
 
     public ElevationService getElevationService() {
-        ElevationService firstElevationService = getElevationServices().size() > 0 ? getElevationServices().get(0) : null;
-        if (firstElevationService == null)
-            return null;
-
-        String lookupServiceName = preferences.get(ELEVATION_SERVICE, firstElevationService.getName());
+        String lookupServiceName = preferences.get(ELEVATION_SERVICE, preferredElevationService.getName());
 
         for (ElevationService service : getElevationServices()) {
             if (lookupServiceName.endsWith(service.getName()))
@@ -76,10 +68,10 @@ public class ElevationServiceFacade {
         }
 
         if (!loggedFailedWarning) {
-            log.warning(format("Failed to find elevation service %s; using first %s", lookupServiceName, firstElevationService.getName()));
+            log.warning(format("Failed to find elevation service %s; using preferred %s", lookupServiceName, preferredElevationService.getName()));
             loggedFailedWarning = true;
         }
-        return firstElevationService;
+        return preferredElevationService;
     }
 
     public void setElevationService(ElevationService service) {

@@ -45,7 +45,10 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.feedback.domain.RouteFeedback;
+import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -290,8 +293,11 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView != null) {
             GoogleDirections googleDirections = new GoogleDirections(mapView);
             getRoutingServiceFacade().addRoutingService(googleDirections);
-            getRoutingServiceFacade().setRoutingService(googleDirections);
-        } else
+            getRoutingServiceFacade().setPreferredRoutingService(googleDirections);
+        } else {
+            getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
+        }
+        if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
 
         if (mapView != null && mapView.isSupportedPlatform()) {
@@ -1040,6 +1046,12 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeElevationServices() {
+        getElevationServiceFacade().addElevationService(new EarthToolsService());
+        getElevationServiceFacade().addElevationService(new GeoNamesService());
+        GoogleMapsService googleMapsService = new GoogleMapsService();
+        getElevationServiceFacade().addElevationService(googleMapsService);
+        getElevationServiceFacade().setPreferredElevationService(googleMapsService);
+
         hgtFilesService.initialize();
         for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
@@ -1048,7 +1060,6 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
-        getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
     }
 
     protected void configureRoutingServices() {
