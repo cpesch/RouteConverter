@@ -82,7 +82,6 @@ public class UpdateChecker {
         UpdateResult result = new UpdateResult(myRouteConverterVersion, myJavaVersion);
         try {
             String parameters = routeFeedback.checkForUpdate(myRouteConverterVersion,
-                    parseVersionFromManifest().getBits(),
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
@@ -93,7 +92,7 @@ public class UpdateChecker {
                     getStartTime());
             result.setParameters(parameters);
         } catch (Throwable t) {
-            log.severe("Cannot check for update: " + t.getMessage());
+            log.severe("Cannot check for update: " + t);
         }
         return result;
     }
@@ -163,7 +162,7 @@ public class UpdateChecker {
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
-        private Map<String, String> parameters = new HashMap<String, String>();
+        private Map<String, String> parameters = new HashMap<>();
 
         public UpdateResult(String myRouteConverterVersion, String myJavaVersion) {
             this.myRouteConverterVersion = myRouteConverterVersion;
@@ -209,7 +208,7 @@ public class UpdateChecker {
 
         private Map<String, String> parseParameters(String parameters) {
             StringTokenizer tokenizer = new StringTokenizer(parameters, ",");
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             while (tokenizer.hasMoreTokens()) {
                 String nv = tokenizer.nextToken();
                 StringTokenizer nvTokenizer = new StringTokenizer(nv, "=");

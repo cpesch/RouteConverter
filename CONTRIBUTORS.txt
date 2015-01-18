@@ -24,6 +24,7 @@ Philippe Vandekerckhove for the Dutch translation
 Pietro Sarkocci for the Czech and Slovakian translation
 R.-Michael Teichert for the program icon
 Rainer Ippen for usuability improvements
+Ricardo Barbosa for the Portuguese translation
 Robert Dziczek for the Polish translation
 Vincent Di Sanzo for the French translation
 Xiaoming Huang and LXLXJ for the Chinese translation

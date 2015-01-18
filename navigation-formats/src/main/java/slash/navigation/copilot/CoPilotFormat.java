@@ -100,8 +100,8 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        Map<String, String> map = new HashMap<String, String>();
+        List<Wgs84Position> positions = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         String routeName = null;
 
         while (true) {

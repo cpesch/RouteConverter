@@ -127,6 +127,6 @@ public class DataSourceImpl implements DataSource {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[baseUrl=" + getBaseUrl() + "]";
+        return getClass().getSimpleName() + "[id=" + getId() + ", baseUrl=" + getBaseUrl() + "]";
     }
 }

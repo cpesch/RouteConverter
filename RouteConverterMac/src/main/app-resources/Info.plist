@@ -35,5 +35,7 @@
             <key>ClassPath</key>
             <string>$JAVAROOT/RouteConverterMac.jar</string>
         </dict>
+        <key>NSHighResolutionCapable</key>
+        <true/>
     </dict>
 </plist>

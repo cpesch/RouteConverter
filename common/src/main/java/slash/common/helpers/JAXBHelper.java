@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -43,7 +42,7 @@ public class JAXBHelper {
     private static final Preferences preferences = Preferences.userNodeForPackage(JAXBHelper.class);
     public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders".intern();
 
-    private static Map<List<Class<?>>, JAXBContext> classesToContext = new HashMap<List<Class<?>>, JAXBContext>();
+    private static Map<List<Class<?>>, JAXBContext> classesToContext = new HashMap<>();
     private static boolean cacheContexts = false;
 
     public static void setCacheContexts(boolean cacheContexts) {
@@ -81,11 +80,5 @@ public class JAXBHelper {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static Map<String, String> map(String... keyValue) {
-        Map<String, String> result = new LinkedHashMap<String, String>();
-        for (int i = 0; i < keyValue.length; i += 2) result.put(keyValue[i], keyValue[i + 1]);
-        return result;
     }
 }

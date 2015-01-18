@@ -57,7 +57,6 @@ public class EclipseSWTMapView extends BaseMapView {
     private static final String DEBUG_PREFERENCE = "debug";
 
     private JWebBrowser webBrowser;
-    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     public boolean isSupportedPlatform() {
         return isLinux() || isMac() || isWindows();
@@ -91,7 +90,7 @@ public class EclipseSWTMapView extends BaseMapView {
             browser.setJavascriptEnabled(true);
             return browser;
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            log.severe("Cannot create WebBrowser: " + t);
             setInitializationCause(t);
             return null;
         }
@@ -130,7 +129,7 @@ public class EclipseSWTMapView extends BaseMapView {
             });
             log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            log.severe("Cannot create WebBrowser: " + t);
             setInitializationCause(t);
             return false;
         }
@@ -156,7 +155,6 @@ public class EclipseSWTMapView extends BaseMapView {
             public void windowClosing(WebBrowserEvent e) {
                 log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
             }
-
             public void locationChanging(WebBrowserNavigationEvent e) {
                 log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
@@ -334,6 +332,7 @@ public class EclipseSWTMapView extends BaseMapView {
         if (script.length() == 0)
             return null;
 
+        final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
         if (!isEventDispatchThread()) {
@@ -350,9 +349,7 @@ public class EclipseSWTMapView extends BaseMapView {
                         });
                     }
                 });
-            } catch (InterruptedException e) {
-                log.severe("Cannot execute script with result: " + e);
-            } catch (InvocationTargetException e) {
+            } catch (InterruptedException | InvocationTargetException e) {
                 log.severe("Cannot execute script with result: " + e);
             }
         } else {

@@ -41,9 +41,9 @@ public class Directories {
     private static final String TEMPORARY_DIRECTORY_PREFERENCE = "temporaryDirectory";
 
     private static final String applicationDirectory = preferences.get(APPLICATION_DIRECTORY_PREFERENCE,
-                    System.getProperty("user.home") + separator + ".routeconverter");
+            System.getProperty("user.home") + separator + ".routeconverter");
     private static final String temporaryDirectory = preferences.get(TEMPORARY_DIRECTORY_PREFERENCE,
-                    System.getProperty("java.io.tmpdir") + separator + "routeconverter" + (!isWindows() ? "-" + System.getProperty("user.name") : ""));
+            System.getProperty("java.io.tmpdir") + separator + "routeconverter" + (!isWindows() ? "-" + System.getProperty("user.name") : ""));
 
     public static File ensureDirectory(File directory) {
         if (!directory.exists()) {

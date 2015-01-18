@@ -63,6 +63,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.*;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -96,7 +97,7 @@ public abstract class BaseMapView implements MapView {
     private PositionsModel positionsModel;
     private List<NavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
-    private List<NavigationPosition> lastSelectedPositions;
+    private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
     private int lastZoom = -1;
 
@@ -482,8 +483,7 @@ public abstract class BaseMapView implements MapView {
             if (!ipName.equals("localhost"))
                 throw new Exception("127.0.0.1 does not resolve to localhost");
         } catch (Exception e) {
-            e.printStackTrace();
-            final String message = "Probably faulty network setup: " + e.getLocalizedMessage() + ".\nPlease check your network settings.";
+            final String message = "Probably faulty network setup: " + getLocalizedMessage(e) + ".\nPlease check your network settings.";
             log.severe(message);
             invokeLater(new Runnable() {
                 public void run() {
@@ -684,6 +684,7 @@ public abstract class BaseMapView implements MapView {
     private int getZoom() {
         return preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
     }
+
     private void setZoom(int zoom) {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
     }
@@ -693,9 +694,11 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract NavigationPosition getNorthEastBounds();
+
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
+
     protected abstract Integer getCurrentZoom();
 
     protected abstract String getCallbacks();
@@ -779,6 +782,8 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
+        String color = preferences.get("routeLineColor", "6CB1F3");
+        int width = preferences.getInt("routeLineWidth", 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
@@ -808,7 +813,7 @@ public abstract class BaseMapView implements MapView {
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
-            buffer.append(lastSegment).append(");\n");
+            buffer.append(lastSegment).append(",\"#").append(color).append("\",").append(width).append(");\n");
             try {
                 sleep(preferences.getInt("routeSegmentTimeout", 250));
             } catch (InterruptedException e) {
@@ -839,7 +844,7 @@ public abstract class BaseMapView implements MapView {
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
-            executeScript("addPolyline([" + latlngs + "], \"#" + color + "\"," + width + ");");
+            executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + width + ");");
         }
         removeOverlays();
         removeDirections();
@@ -914,8 +919,7 @@ public abstract class BaseMapView implements MapView {
 
         if (center != null && center.hasCoordinates())
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
-        if (lastSelectedPositions.size() > 0)
-            buffer.append("removeSelectedPositions();");
+        buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
     }
 
@@ -1000,6 +1004,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
+
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks
@@ -1311,7 +1316,7 @@ public abstract class BaseMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-            // directions are automatically scaled by the Google Maps API when zooming
+                // directions are automatically scaled by the Google Maps API when zooming
             else if (positionsModel.getRoute().getCharacteristics() != Route ||
                     positionReducer.hasFilteredVisibleArea() || recenterAfterZooming) {
                 haveToRepaintRouteImmediately = true;
@@ -1465,7 +1470,7 @@ public abstract class BaseMapView implements MapView {
                     continue;
 
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                                Arrays.<Object>asList( position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
+                        Arrays.<Object>asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
             } else {
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                         Arrays.<Object>asList(longitude, latitude)), false, true);

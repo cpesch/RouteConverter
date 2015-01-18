@@ -45,12 +45,17 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.lang.String.format;
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -60,11 +65,12 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
  */
 
 public class FindPlaceDialog extends SimpleDialog {
-    private JPanel contentPane;
+    private static final Logger log = getLogger(FindPlaceDialog.class.getName());
 
+    private JPanel contentPane;
     private JTextField textFieldSearch;
     private JButton buttonSearchPositions;
-    private JList listResult;
+    private JList<NavigationPosition> listResult;
     private JButton buttonInsertPosition;
 
     public FindPlaceDialog() {
@@ -97,7 +103,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
 
@@ -106,7 +112,7 @@ public class FindPlaceDialog extends SimpleDialog {
             public void run() {
                 searchPositions();
             }
-        }, KeyStroke.getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
         listResult.addListSelectionListener(new ListSelectionListener() {
@@ -134,8 +140,9 @@ public class FindPlaceDialog extends SimpleDialog {
         DefaultListModel listModel = new DefaultListModel();
         listResult.setModel(listModel);
         GoogleMapsService service = new GoogleMapsService();
+        String address = textFieldSearch.getText();
         try {
-            List<NavigationPosition> positions = service.getPositionsFor(textFieldSearch.getText());
+            List<NavigationPosition> positions = service.getPositionsFor(address);
             if (positions != null) {
                 for (NavigationPosition position : positions) {
                     listModel.addElement(position);
@@ -146,8 +153,9 @@ public class FindPlaceDialog extends SimpleDialog {
                 }
             }
         } catch (IOException e) {
+            log.severe(format("Could find place %s: %s", address, e));
             showMessageDialog(this,
-                    MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getLocalizedMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), getLocalizedMessage(e)),
                     getTitle(), ERROR_MESSAGE);
         }
         savePreferences();
@@ -160,9 +168,9 @@ public class FindPlaceDialog extends SimpleDialog {
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-        Object[] objects = listResult.getSelectedValues();
-        for (int i = objects.length - 1; i >= 0; i -= 1) {
-            NavigationPosition position = (NavigationPosition) objects[i];
+        List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
+        for (int i = selectedValues.size() - 1; i >= 0; i -= 1) {
+            NavigationPosition position = selectedValues.get(i);
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
 

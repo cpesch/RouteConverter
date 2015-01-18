@@ -22,7 +22,6 @@ package slash.navigation.converter.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.common.log.LoggingHelper;
-import slash.common.system.Platform;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
@@ -98,6 +97,7 @@ import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
@@ -145,7 +145,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private static String getRouteConverter() {
         Version version = parseVersionFromManifest();
-        return version.getOperationSystem() + " (" + version.getBits() + "-bit)";
+        return version.getOperationSystem();
     }
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
@@ -245,7 +245,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private List<String> getLanguagesWithActiveTranslators() {
         List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
-                POLAND, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
+                POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());
@@ -348,7 +348,6 @@ public class RouteConverter extends SingleFrameApplication {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
                     mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                            parseVersionFromManifest().getBits(), Platform.getBits(),
                             stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
@@ -534,7 +533,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable);
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), throwable.getLocalizedMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);
@@ -550,7 +549,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable);
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getLocalizedMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);

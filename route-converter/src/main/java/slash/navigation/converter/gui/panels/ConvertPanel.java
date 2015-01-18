@@ -157,6 +157,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Files.calculateConvertFileName;
 import static slash.common.io.Files.createGoPalFileName;
 import static slash.common.io.Files.createReadablePath;
@@ -677,15 +678,20 @@ public class ConvertPanel implements PanelInTab {
                             // avoid parallelism to ensure the URLs are processed in order
                             invokeAndWait(new Runnable() {
                                 public void run() {
-                                    if (getFormatAndRoutesModel().getFormat().isSupportsMultipleRoutes()) {
+                                    // when called from openPositionList() and the format supports more than one position list:
+                                    // append the position lists at the end
+                                    if (row == -1 && getFormatAndRoutesModel().getFormat().isSupportsMultipleRoutes()) {
                                         for (BaseRoute route : result.getAllRoutes()) {
                                             int appendIndex = getFormatAndRoutesModel().getSize();
                                             getFormatAndRoutesModel().addPositionList(appendIndex, route);
                                         }
                                     } else {
+                                        // insert all position lists, which are in reverse order, at the given row or at the end
                                         try {
-                                            int appendRow = row > 0 ? row : getPositionsModel().getRowCount();
-                                            getPositionsModel().add(appendRow, result.getTheRoute());
+                                            int insertRow = row > 0 ? row : getPositionsModel().getRowCount();
+                                            for (BaseRoute route : result.getAllRoutes()) {
+                                                getPositionsModel().add(insertRow, route);
+                                            }
                                         } catch (FileNotFoundException e) {
                                             r.handleFileNotFound(finalPath);
                                         } catch (IOException e) {
@@ -704,7 +710,7 @@ public class ConvertPanel implements PanelInTab {
                 } catch (OutOfMemoryError e) {
                     r.handleOutOfMemoryError();
                 } catch (Throwable t) {
-                    log.severe("Append error: " + t.getMessage());
+                    log.severe("Append error: " + t);
                     r.handleOpenError(t, urls);
                 }
             }
@@ -859,10 +865,10 @@ public class ConvertPanel implements PanelInTab {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
+            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t));
 
             showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, getLocalizedMessage(t)),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());

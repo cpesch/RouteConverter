@@ -14,6 +14,41 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>eclipse.swt</groupId>
+                                    <artifactId>win32.win32.x86</artifactId>
+                                    <version>4.4</version>
+                                    <classifier>stripped</classifier>
+                                    <overWrite>false</overWrite>
+                                    <destFileName>swt-windows-32.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>eclipse.swt</groupId>
+                                    <artifactId>win32.win32.x86_64</artifactId>
+                                    <version>4.4</version>
+                                    <classifier>stripped</classifier>
+                                    <overWrite>false</overWrite>
+                                    <destFileName>swt-windows-64.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
@@ -30,7 +65,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Implementation-Vendor>Windows32</Implementation-Vendor>
+                                        <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                     </manifestEntries>
@@ -62,7 +97,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jarsigner-plugin</artifactId>
-                <version>1.2</version>
                 <executions>
                     <execution>
                         <id>sign</id>
@@ -94,8 +128,8 @@
             </plugin>
 
             <plugin>
-                <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-                <artifactId>launch4j-plugin</artifactId>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -119,7 +153,7 @@
                             </classPath>
                             <jre>
                                 <minVersion>1.7.0</minVersion>
-                                <maxHeapSize>512</maxHeapSize>
+                                <maxHeapSize>1024</maxHeapSize>
                             </jre>
                             <versionInfo>
                                 <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
@@ -129,7 +163,7 @@
                                 <productName>RouteConverter</productName>
                                 <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
                                 <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
-                                <internalName>RouteConverter for Windows as 32 Bit Executable</internalName>
+                                <internalName>RouteConverter for Windows Executable</internalName>
                                 <originalFilename>RouteConverterWindows.exe</originalFilename>
                             </versionInfo>
                         </configuration>
@@ -150,18 +184,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>swt-mapview</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>jna</artifactId>
-            <version>3.2.4</version>
-            <classifier>stripped</classifier>
-        </dependency>
-       <dependency>
-            <groupId>eclipse.swt</groupId>
-            <artifactId>win32.win32.x86</artifactId>
-            <version>4.4</version>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>

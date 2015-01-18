@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTerms;
 
@@ -237,8 +238,8 @@ public class LoginDialog extends SimpleDialog {
             labelRegisterResult.setText(RouteConverter.getBundle().getString("register-username-exists-error"));
             pack();
         } catch (Throwable t) {
-            log.severe("Could not register: " + t.getMessage());
-            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getLocalizedMessage()));
+            log.severe("Could not register: " + t);
+            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), getLocalizedMessage(t)));
             pack();
         }
     }

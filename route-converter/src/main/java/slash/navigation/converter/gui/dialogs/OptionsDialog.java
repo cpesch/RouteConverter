@@ -140,7 +140,7 @@ public class OptionsDialog extends SimpleDialog {
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA,
-                ITALY, NEDERLANDS, POLAND, RUSSIA, SLOVAKIA, SERBIA, ROOT
+                ITALY, NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, ROOT
         });
         localeModel.setSelectedItem(Application.getInstance().getLocale());
         comboBoxLocale.setModel(localeModel);

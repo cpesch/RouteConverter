@@ -120,17 +120,9 @@ public class Version {
 
     public String getOperationSystem() {
         if (name != null)
-            return name.substring(0, name.length() - 2);
+            return name;
         if (System.getProperty("javawebstart.version") != null)
             return "Webstart";
-        return "?";
-    }
-
-    public String getBits() {
-        if (name != null)
-            return name.substring(name.length() - 2, name.length());
-        if (System.getProperty("javawebstart.version") != null)
-            return "32/64";
         return "?";
     }
 

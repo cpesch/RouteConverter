@@ -45,13 +45,16 @@ import static slash.navigation.gui.helpers.UIHelper.ARABIA;
 import static slash.navigation.gui.helpers.UIHelper.CROATIA;
 import static slash.navigation.gui.helpers.UIHelper.CZECH;
 import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
+import static slash.navigation.gui.helpers.UIHelper.POLAND;
+import static slash.navigation.gui.helpers.UIHelper.PORTUGAL;
+import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
 import static slash.navigation.gui.helpers.UIHelper.SERBIA;
 import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
 import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
-            SERBIA, SLOVAKIA, SPAIN, US);
+            POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return asList(new Locale(locale.getLanguage()));
@@ -114,7 +117,7 @@ public class ResourceBundleTest {
     private void checkMnemonicsAreUnique(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, NO_FALLBACK_CONTROL);
         Enumeration<String> keys = bundle.getKeys();
-        Map<String, Set<String>> mnemonics = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mnemonics = new HashMap<>();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             if (!key.endsWith("mnemonic"))
@@ -123,7 +126,7 @@ public class ResourceBundleTest {
             String mnemonic = bundle.getString(key);
             Set<String> existing = mnemonics.get(mnemonic);
             if (existing == null) {
-                existing = new HashSet<String>();
+                existing = new HashSet<>();
                 mnemonics.put(mnemonic, existing);
             }
             existing.add(key);

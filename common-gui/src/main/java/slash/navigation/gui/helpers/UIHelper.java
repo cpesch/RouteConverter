@@ -52,6 +52,7 @@ public class UIHelper {
     public static final Locale CROATIA = new Locale("hr", "HR");
     public static final Locale NEDERLANDS = new Locale("nl", "NL");
     public static final Locale POLAND = new Locale("pl", "PL");
+    public static final Locale PORTUGAL = new Locale("pt", "PT");
     public static final Locale RUSSIA = new Locale("ru", "RU");
     public static final Locale SERBIA = new Locale("sr", "SR");
     public static final Locale SLOVAKIA = new Locale("sk", "SK");
@@ -96,7 +97,7 @@ public class UIHelper {
 
     public static ImageIcon loadIcon(String name) {
         URL iconURL = UIHelper.class.getClassLoader().getResource(name);
-        return new ImageIcon(iconURL);
+        return iconURL != null ? new ImageIcon(iconURL) : null;
     }
 
     public static JFileChooser createJFileChooser() {
@@ -119,9 +120,8 @@ public class UIHelper {
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
             try {
-                String text = bundle.getString(key);
-                if (text != null)
-                    UIManager.getDefaults().put(key, text);
+                if (bundle.containsKey(key))
+                    UIManager.getDefaults().put(key, bundle.getString(key));
             } catch (MissingResourceException e) {
                 // intentionally left empty
             }

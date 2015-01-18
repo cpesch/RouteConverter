@@ -36,6 +36,7 @@ public class GpxUtil {
     public static final String GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/WaypointExtension/v1";
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
+    public static final String GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TripExtensions/v1";
     public static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
     public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
     public static final String XML_SCHEMA_INSTANCE_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
@@ -52,6 +53,7 @@ public class GpxUtil {
         return newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
                 slash.navigation.gpx.garmin3.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint2.ObjectFactory.class,
+                slash.navigation.gpx.trip1.ObjectFactory.class,
                 slash.navigation.gpx.routecatalog10.ObjectFactory.class);
     }
 
