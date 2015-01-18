@@ -76,7 +76,7 @@ public class DataSourceManager {
     }
 
     private void initializeDataSources() throws JAXBException, FileNotFoundException {
-        for(DataSource dataSource : dataSourceService.getDataSources()) {
+        for(DataSource dataSource : new ArrayList<>(dataSourceService.getDataSources())) {
             for(File file : dataSource.getFiles()) {
                 java.io.File target = new java.io.File(getTarget(), file.getUri().toLowerCase());
                 log.info(format("Updating data source '%s'", target));
