@@ -43,8 +43,8 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirections && r.isMapViewInitialized()) {
-            ((GoogleDirections) routingService).insertAllWaypoints(selectedRows);
+        if (routingService instanceof GoogleDirectionsService && r.isMapViewInitialized()) {
+            ((GoogleDirectionsService) routingService).insertAllWaypoints(selectedRows);
         } else
             insertWithRoutingService(routingService, selectedRows);
     }
@@ -55,8 +55,8 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirections && r.isMapViewInitialized()) {
-            ((GoogleDirections) service).insertOnlyTurnpoints(selectedRows);
+        if (service instanceof GoogleDirectionsService && r.isMapViewInitialized()) {
+            ((GoogleDirectionsService) service).insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }

@@ -63,12 +63,12 @@ public class BRouter implements RoutingService {
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
 
-    private DataSource profiles, segments;
-    private DownloadManager downloadManager;
+    private final DataSource profiles, segments;
+    private final DownloadManager downloadManager;
 
     private final RoutingContext routingContext = new RoutingContext();
 
-    public synchronized void setDataSource(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
+    public BRouter(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
         this.profiles = profiles;
         this.segments = segments;
         this.downloadManager = downloadManager;

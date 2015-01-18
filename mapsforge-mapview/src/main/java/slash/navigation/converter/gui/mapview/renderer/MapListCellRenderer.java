@@ -26,8 +26,6 @@ import slash.navigation.maps.models.OnlineMap;
 import javax.swing.*;
 import java.awt.*;
 
-import static java.text.MessageFormat.format;
-
 /**
  * Renders the {@link LocalMap} labels of the map and theme selector combo box.
  *
@@ -50,7 +48,9 @@ public class MapListCellRenderer extends DefaultListCellRenderer {
             text = Application.getInstance().getContext().getBundle().getString("download-map-text");
             tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
         } else if (map != null) {
-            text = format(Application.getInstance().getContext().getBundle().getString(map.isVector() ? "vector-map" : "download-map"), map.getDescription());
+            text = map.getDescription();
+            if(!map.isVector())
+                text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
             tooltip = map.getUrl();
         }
 

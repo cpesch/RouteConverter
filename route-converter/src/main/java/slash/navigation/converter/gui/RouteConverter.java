@@ -33,6 +33,7 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
+import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -47,7 +48,10 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.feedback.domain.RouteFeedback;
+import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -58,6 +62,8 @@ import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.MapManager;
 import slash.navigation.rest.Credentials;
+import slash.navigation.routing.BeelineService;
+import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -167,7 +173,7 @@ public class RouteConverter extends SingleFrameApplication {
     private DataSourceManager dataSourceManager;
     private MapManager mapManager;
     private HgtFilesService hgtFilesService;
-    private ElevationServiceFacade elevationServiceFacade;
+    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
@@ -269,8 +275,6 @@ public class RouteConverter extends SingleFrameApplication {
                 "FileChooser.acceptAllFileFilterText");
         initializePreferences(preferences);
 
-        createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
-
         addExitListener(new ExitListener() {
             public boolean canExit(EventObject event) {
                 return getConvertPanel().confirmDiscard();
@@ -285,26 +289,13 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        if (isJavaFX())
-            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView != null)
-            getRoutingServiceFacade().addRoutingService(new GoogleDirections(mapView));
-        else
-            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-
-        if (mapView != null && mapView.isSupportedPlatform()) {
-            mapPanel.setVisible(true);
-            openMapView();
-        } else {
-            mapPanel.setVisible(false);
-        }
-        openProfileView();
-
         initializeServices();
         initializeActions();
         initializeDatasources();
+        updateDatasources();
+
+        openMapView();
+        openProfileView();
     }
 
     private MapView createMapView(String className) {
@@ -317,6 +308,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
+        createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
+
         new Thread(new Runnable() {
             public void run() {
                 invokeLater(new Runnable() {
@@ -329,6 +322,15 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
+        if (isJavaFX())
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+        if (mapView == null || !mapView.isSupportedPlatform())
+            return;
+
         invokeLater(new Runnable() {
             public void run() {
                 mapView.initialize(getPositionsModel(),
@@ -351,6 +353,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
                 }
+                mapPanel.setVisible(true);
 
                 int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location < 1)
@@ -816,6 +819,7 @@ public class RouteConverter extends SingleFrameApplication {
         mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
         mapPanel.setPreferredSize(new Dimension(300, 560));
+        mapPanel.setVisible(false);
         mapSplitPane.setLeftComponent(mapPanel);
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(1);
@@ -918,7 +922,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     mapView.resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.fine("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.finer("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
@@ -953,7 +957,7 @@ public class RouteConverter extends SingleFrameApplication {
                         mapView.resize();
                     }
                     preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
-                    log.fine("Changed profile divider to " + profileSplitPane.getDividerLocation());
+                    log.finer("Changed profile divider to " + profileSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
@@ -978,7 +982,6 @@ public class RouteConverter extends SingleFrameApplication {
         dataSourceManager = new DataSourceManager(downloadManager);
         mapManager = new MapManager(dataSourceManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
-        elevationServiceFacade = new ElevationServiceFacade();
     }
 
     private void initializeActions() {
@@ -1030,41 +1033,64 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDatasources() {
+        try {
+            getDataSourceManager().initialize(getEdition());
+        } catch (Exception e) {
+            log.warning("Could not initialize datasource manager: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("datasource-error"), e.getLocalizedMessage()), null);
+        }
+
         new Thread(new Runnable() {
             public void run() {
-                initializeRoutingServices();
-
-                getDownloadManager().loadQueue();
-                try {
-                    getDataSourceManager().initialize(getEdition());
-                } catch (final Exception e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("datasource-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
-                }
+                scanLocalMapsAndThemes();
 
                 initializeElevationServices();
-                configureRoutingServices();
-                scanLocalMapsAndThemes();
-                scanRemoteMapsAndThemes();
+                initializeRoutingServices();
             }
         }, "DataSourceInitializer").start();
     }
 
     private void initializeElevationServices() {
+        getElevationServiceFacade().clear();
+        getElevationServiceFacade().addElevationService(new EarthToolsService());
+        GeoNamesService geoNames = new GeoNamesService();
+        getElevationServiceFacade().addElevationService(geoNames);
+        getElevationServiceFacade().setPreferredElevationService(geoNames);
+        getElevationServiceFacade().addElevationService(new GoogleMapsService());
+
         hgtFilesService.initialize();
         for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
-            log.info(String.format("Added elevation service '%s'", hgtFile.getName()));
+            getElevationServiceFacade().setPreferredElevationService(hgtFile);
         }
     }
 
     protected void initializeRoutingServices() {
+        getRoutingServiceFacade().clear();
+        RoutingService service = mapView instanceof BaseMapView ? new GoogleDirectionsService(mapView) : new BeelineService();
+        getRoutingServiceFacade().addRoutingService(service);
+        getRoutingServiceFacade().setPreferredRoutingService(service);
     }
 
-    protected void configureRoutingServices() {
+    private void updateDatasources() {
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().loadQueue();
+                try {
+                    getDataSourceManager().update(getEdition());
+                } catch (Exception e) {
+                    log.warning("Could not download data from datasources: " + e);
+                    getContext().getNotificationManager().showNotification(MessageFormat.format(
+                            getBundle().getString("datasource-error"), e.getLocalizedMessage()), null);
+                }
+
+                initializeElevationServices();
+                initializeRoutingServices();
+
+                scanRemoteMapsAndThemes();
+            }
+        }, "DataSourceUpdater").start();
     }
 
     protected void scanLocalMapsAndThemes() {
@@ -1072,6 +1098,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void scanRemoteMapsAndThemes() {
     }
+
 
     private class PrintMapAction extends FrameAction {
         private boolean withRoute;

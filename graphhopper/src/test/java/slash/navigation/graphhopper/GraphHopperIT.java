@@ -62,8 +62,7 @@ public class GraphHopperIT {
         when(file.getBoundingBox()).thenReturn(new BoundingBox(10.33637, 53.7465, 9.613465, 53.38581));
         when(file.getUri()).thenReturn(URI);
         when(dataSource.getFiles()).thenReturn(asList(file));
-        hopper = new GraphHopper();
-        hopper.setDataSource(dataSource, new DownloadManager(createTempFile("queueFile", ".xml")));
+        hopper = new GraphHopper(dataSource, new DownloadManager(createTempFile("queueFile", ".xml")));
         DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();

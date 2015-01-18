@@ -20,8 +20,6 @@
 package slash.navigation.hgt;
 
 import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.DataSourceService;
-import slash.navigation.download.DownloadManager;
 import slash.navigation.datasources.DataSourceManager;
 
 import java.util.ArrayList;
@@ -53,12 +51,10 @@ public class HgtFilesService {
     }
 
     public void initialize() {
-        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
-        DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
-
-        for (DataSource dataSource : dataSourceService.getDataSources()) {
+        hgtFiles.clear();
+        for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
             if (DATASOURCE_URIS.contains(dataSource.getId()))
-                hgtFiles.add(new HgtFiles(dataSource, downloadManager));
+                hgtFiles.add(new HgtFiles(dataSource, dataSourceManager.getDownloadManager()));
         }
     }
 

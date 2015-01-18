@@ -24,7 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.routing.BeelineRoutingService;
+import slash.navigation.routing.BeelineService;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -50,26 +50,17 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeRoutingServices() {
-        getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
-        getRoutingServiceFacade().addRoutingService(new GraphHopper());
-        getRoutingServiceFacade().addRoutingService(new BRouter());
-    }
-
-    protected void configureRoutingServices() {
-        DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
-        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
-        if (brouterProfiles != null && brouterSegments != null) {
-            BRouter router = getRoutingServiceFacade().findRoutingService(BRouter.class);
-            router.setDataSource(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
-            log.info(String.format("Configured routing service '%s'", router.getName()));
-        }
+        getRoutingServiceFacade().clear();
+        getRoutingServiceFacade().addRoutingService(new BeelineService());
 
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
-        if (graphhopper != null) {
-            GraphHopper hopper = getRoutingServiceFacade().findRoutingService(GraphHopper.class);
-            hopper.setDataSource(graphhopper, getDataSourceManager().getDownloadManager());
-            log.info(String.format("Configured routing service '%s'", hopper.getName()));
-        }
+        if (graphhopper != null)
+            getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager()));
+
+        DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
+        if (brouterProfiles != null && brouterSegments != null)
+            getRoutingServiceFacade().addRoutingService(new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager()));
 
         getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getAction());
     }

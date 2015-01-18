@@ -63,13 +63,13 @@ public class GraphHopper implements RoutingService {
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
 
-    private DataSource dataSource;
-    private DownloadManager downloadManager;
+    private final DataSource dataSource;
+    private final DownloadManager downloadManager;
 
     private com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile = null;
 
-    public synchronized void setDataSource(DataSource dataSource, DownloadManager downloadManager) {
+    public GraphHopper(DataSource dataSource, DownloadManager downloadManager) {
         this.dataSource = dataSource;
         this.downloadManager = downloadManager;
     }
