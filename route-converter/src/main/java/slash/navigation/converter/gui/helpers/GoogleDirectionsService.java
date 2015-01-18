@@ -37,13 +37,13 @@ import static java.util.Arrays.asList;
  * @author Christian Pesch
  */
 
-public class GoogleDirections implements RoutingService {
+public class GoogleDirectionsService implements RoutingService {
     private static final TravelMode DRIVING = new TravelMode("Driving");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
 
     private final MapView mapView;
 
-    public GoogleDirections(MapView mapView) {
+    public GoogleDirectionsService(MapView mapView) {
         this.mapView = mapView;
     }
 

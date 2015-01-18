@@ -40,17 +40,21 @@ import static slash.navigation.datasources.DataSourcesUtil.unmarshal;
 public class DataSourceService {
     private List<DataSource> dataSources = new ArrayList<>();
 
-    public void load(InputStream inputStream) throws JAXBException {
+    public synchronized void load(InputStream inputStream) throws JAXBException {
         DatasourcesType datasourcesType = unmarshal(inputStream);
-        for(DatasourceType datasourceType : datasourcesType.getDatasource())
+        for (DatasourceType datasourceType : datasourcesType.getDatasource())
             dataSources.add(new DataSourceImpl(datasourceType));
     }
 
-    public List<DataSource> getDataSources() {
+    public synchronized void clear() {
+        dataSources.clear();
+    }
+
+    public synchronized List<DataSource> getDataSources() {
         return dataSources;
     }
 
-    public DataSource getDataSourceByUrlPrefix(String url) {
+    public synchronized DataSource getDataSourceByUrlPrefix(String url) {
         for (DataSource dataSource : getDataSources()) {
             if (url.startsWith(dataSource.getBaseUrl()))
                 return dataSource;
@@ -58,7 +62,7 @@ public class DataSourceService {
         return null;
     }
 
-    public DataSource getDataSourceById(String id) {
+    public synchronized DataSource getDataSourceById(String id) {
         for (DataSource dataSource : getDataSources()) {
             if (id.equals(dataSource.getId()))
                 return dataSource;

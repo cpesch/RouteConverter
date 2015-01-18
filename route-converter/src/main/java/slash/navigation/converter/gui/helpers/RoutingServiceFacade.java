@@ -52,16 +52,21 @@ public class RoutingServiceFacade {
     private final EventListenerList listenerList = new EventListenerList();
     private boolean loggedFailedRoutingServiceWarning = false, loggedFailedTravelModeWarning = false;
 
-    public List<RoutingService> getRoutingServices() {
-        return routingServices;
-    }
-
     public void addRoutingService(RoutingService routingService) {
         routingServices.add(routingService);
+        log.info(format("Added routing service '%s'", routingService.getName()));
     }
 
     public void setPreferredRoutingService(RoutingService preferredRoutingService) {
         this.preferredRoutingService = preferredRoutingService;
+    }
+
+    public void clear() {
+        routingServices.clear();
+    }
+
+    public List<RoutingService> getRoutingServices() {
+        return routingServices;
     }
 
     public RoutingService getRoutingService() {

@@ -31,6 +31,7 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
+import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -58,7 +59,8 @@ import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.BeelineRoutingService;
+import slash.navigation.routing.BeelineService;
+import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -270,8 +272,6 @@ public class RouteConverter extends SingleFrameApplication {
                 "FileChooser.acceptAllFileFilterText");
         initializePreferences(preferences);
 
-        createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
-
         addExitListener(new ExitListener() {
             public boolean canExit(EventObject event) {
                 return getConvertPanel().confirmDiscard();
@@ -286,31 +286,13 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        if (isJavaFX())
-            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView != null) {
-            GoogleDirections googleDirections = new GoogleDirections(mapView);
-            getRoutingServiceFacade().addRoutingService(googleDirections);
-            getRoutingServiceFacade().setPreferredRoutingService(googleDirections);
-        } else {
-            getRoutingServiceFacade().addRoutingService(new BeelineRoutingService());
-        }
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-
-        if (mapView != null && mapView.isSupportedPlatform()) {
-            mapPanel.setVisible(true);
-            openMapView();
-        } else {
-            mapPanel.setVisible(false);
-        }
-        openProfileView();
-
         initializeServices();
         initializeActions();
         initializeDatasources();
+        updateDatasources();
+
+        openMapView();
+        openProfileView();
     }
 
     private MapView createMapView(String className) {
@@ -323,6 +305,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
+        createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
+
         new Thread(new Runnable() {
             public void run() {
                 invokeLater(new Runnable() {
@@ -335,6 +319,15 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
+        if (isJavaFX())
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        if (mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
+        if (mapView == null || !mapView.isSupportedPlatform())
+            return;
+
         invokeLater(new Runnable() {
             public void run() {
                 mapView.initialize(getPositionsModel(),
@@ -1024,28 +1017,26 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDatasources() {
+        try {
+            getDataSourceManager().initialize(getEdition());
+        } catch (Exception e) {
+            log.warning("Could not initialize datasource manager: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
+        }
+
         new Thread(new Runnable() {
             public void run() {
-                initializeRoutingServices();
-
-                getDownloadManager().loadQueue();
-                try {
-                    getDataSourceManager().initialize(getEdition());
-                } catch (Exception e) {
-                    log.warning("Could not download data from datasources: " + e);
-                    getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
-                }
+                scanLocalMapsAndThemes();
 
                 initializeElevationServices();
-                configureRoutingServices();
-                scanLocalMapsAndThemes();
-                scanRemoteMapsAndThemes();
+                initializeRoutingServices();
             }
         }, "DataSourceInitializer").start();
     }
 
     private void initializeElevationServices() {
+        getElevationServiceFacade().clear();
         getElevationServiceFacade().addElevationService(new EarthToolsService());
         getElevationServiceFacade().addElevationService(new GeoNamesService());
         GoogleMapsService googleMapsService = new GoogleMapsService();
@@ -1060,9 +1051,30 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
+        getRoutingServiceFacade().clear();
+        RoutingService service = mapView instanceof BaseMapView ? new GoogleDirectionsService(mapView) : new BeelineService();
+        getRoutingServiceFacade().addRoutingService(service);
+        getRoutingServiceFacade().setPreferredRoutingService(service);
     }
 
-    protected void configureRoutingServices() {
+    private void updateDatasources() {
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().loadQueue();
+                try {
+                    getDataSourceManager().update(getEdition());
+                } catch (Exception e) {
+                    log.warning("Could not download data from datasources: " + e);
+                    getContext().getNotificationManager().showNotification(MessageFormat.format(
+                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
+                }
+
+                initializeElevationServices();
+                initializeRoutingServices();
+
+                scanRemoteMapsAndThemes();
+            }
+        }, "DataSourceUpdater").start();
     }
 
     protected void scanLocalMapsAndThemes() {

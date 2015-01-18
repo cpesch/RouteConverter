@@ -49,10 +49,15 @@ public class ElevationServiceFacade {
 
     public void addElevationService(ElevationService elevationService) {
         elevationServices.add(elevationService);
+        log.info(format("Added elevation service '%s'", elevationService.getName()));
     }
 
     public void setPreferredElevationService(ElevationService preferredElevationService) {
         this.preferredElevationService = preferredElevationService;
+    }
+
+    public void clear() {
+        elevationServices.clear();
     }
 
     public List<ElevationService> getElevationServices() {
