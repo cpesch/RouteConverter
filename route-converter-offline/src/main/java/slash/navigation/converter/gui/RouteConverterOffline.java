@@ -51,7 +51,9 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().clear();
-        getRoutingServiceFacade().addRoutingService(new BeelineService());
+        BeelineService beeline = new BeelineService();
+        getRoutingServiceFacade().addRoutingService(beeline);
+        getRoutingServiceFacade().setPreferredRoutingService(beeline);
 
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
         if (graphhopper != null)
@@ -59,8 +61,11 @@ public class RouteConverterOffline extends RouteConverter {
 
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
         DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
-        if (brouterProfiles != null && brouterSegments != null)
-            getRoutingServiceFacade().addRoutingService(new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager()));
+        if (brouterProfiles != null && brouterSegments != null) {
+            BRouter router = new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
+            getRoutingServiceFacade().addRoutingService(router);
+            getRoutingServiceFacade().setPreferredRoutingService(router);
+        }
 
         getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getAction());
     }

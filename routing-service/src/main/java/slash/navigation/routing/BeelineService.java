@@ -46,7 +46,7 @@ public class BeelineService implements RoutingService {
     }
 
     public boolean isDownload() {
-        return false;
+        return true;
     }
 
     public boolean isSupportTurnpoints() {

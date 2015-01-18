@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.graphhopper.util.CmdArgs.read;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -126,10 +127,16 @@ public class GraphHopper implements RoutingService {
         if(osmPbfFile == null)
             return null;
 
-        GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
-        request.setVehicle(travelMode.getName().toUpperCase());
-        GHResponse response = hopper.route(request);
-        return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis(), true);
+        long start = currentTimeMillis();
+        try {
+            GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
+            request.setVehicle(travelMode.getName().toUpperCase());
+            GHResponse response = hopper.route(request);
+            return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis(), true);
+        } finally {
+            long end = currentTimeMillis();
+            log.fine(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
+        }
     }
 
     private String getAvailableTravelModeNames() {

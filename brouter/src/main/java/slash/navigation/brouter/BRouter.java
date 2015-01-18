@@ -193,7 +193,7 @@ public class BRouter implements RoutingService {
             return new RoutingResult(asPositions(track), distance, 0L, true);
         } finally {
             long end = currentTimeMillis();
-            System.out.println(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
+            log.fine(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
         }
     }
 
