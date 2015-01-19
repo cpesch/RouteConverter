@@ -150,7 +150,7 @@ public class RouteFeedback {
         return request.getLocation();
     }
 
-    public String checkForUpdate(String routeConverterVersion, long startCount,
+    public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
                                  String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
                                  String webstartVersion, long startTime) throws IOException {
@@ -165,7 +165,7 @@ public class RouteFeedback {
         request.addString("osVersion", osVersion);
         request.addString("rcStartCount", Long.toString(startCount));
         request.addString("rcVersion", routeConverterVersion);
-        request.addString("rcBits", "both");
+        request.addString("rcBits", routeConverterBits);
         if (webstartVersion != null)
             request.addString("webstartVersion", webstartVersion);
         return request.executeAsString().replace("\"", "");
