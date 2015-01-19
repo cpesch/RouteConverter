@@ -82,6 +82,7 @@ public class UpdateChecker {
         UpdateResult result = new UpdateResult(myRouteConverterVersion, myJavaVersion);
         try {
             String parameters = routeFeedback.checkForUpdate(myRouteConverterVersion,
+                    RouteConverter.getInstance().getEdition(),
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),

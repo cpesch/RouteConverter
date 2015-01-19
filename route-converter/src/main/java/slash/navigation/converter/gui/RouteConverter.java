@@ -139,13 +139,8 @@ public class RouteConverter extends SingleFrameApplication {
         return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
     }
 
-    protected String getEdition() {
+    public String getEdition() {
         return "Online";
-    }
-
-    private static String getRouteConverter() {
-        Version version = parseVersionFromManifest();
-        return version.getOperationSystem();
     }
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
@@ -239,7 +234,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
             loggingHelper.logToConsole();
         }
-        log.info("Started " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
+        log.info("Started " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
     }
 
@@ -302,7 +297,7 @@ public class RouteConverter extends SingleFrameApplication {
         try {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
-            log.info("Cannot create " + className + ": " + e);
+            log.fine("Cannot create " + className + ": " + e);
             return null;
         }
     }
@@ -330,6 +325,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
         if (mapView == null || !mapView.isSupportedPlatform())
             return;
+        log.info("Using map view " + mapView);
 
         invokeLater(new Runnable() {
             public void run() {
@@ -396,7 +392,7 @@ public class RouteConverter extends SingleFrameApplication {
         getDownloadManager().saveQueue();
         super.shutdown();
 
-        log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
+        log.info("Shutdown " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
     }
 
