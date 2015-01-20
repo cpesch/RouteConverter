@@ -45,7 +45,7 @@ public class RouteConverterOffline extends RouteConverter {
         launch(RouteConverterOffline.class, args);
     }
 
-    protected String getEdition() {
+    public String getEdition() {
         return "Offline";
     }
 
@@ -67,14 +67,14 @@ public class RouteConverterOffline extends RouteConverter {
             getRoutingServiceFacade().setPreferredRoutingService(router);
         }
 
-        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getAction());
+        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getSelectMapsAction());
     }
 
     private NotificationManager getNotificationManager() {
         return Application.getInstance().getContext().getNotificationManager();
     }
 
-    private Action getAction() {
+    private Action getSelectMapsAction() {
         return Application.getInstance().getContext().getActionManager().get("select-maps");
     }
 
@@ -82,7 +82,7 @@ public class RouteConverterOffline extends RouteConverter {
         try {
             getMapManager().scanDirectories();
 
-            getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getAction());
+            getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getSelectMapsAction());
         } catch (final IOException e) {
             invokeLater(new Runnable() {
                 public void run() {
