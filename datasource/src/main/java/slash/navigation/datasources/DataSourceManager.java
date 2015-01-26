@@ -117,7 +117,7 @@ public class DataSourceManager {
 
     private void updateDataSources() throws JAXBException, FileNotFoundException {
         List<Download> downloads = new ArrayList<>();
-        for(DataSource dataSource : dataSourceService.getDataSources()) {
+        for(DataSource dataSource : new ArrayList<>(dataSourceService.getDataSources())) {
             for(File file : dataSource.getFiles()) {
                 String url = dataSource.getBaseUrl() + file.getUri();
                 log.info(format("Updating data source '%s'", url));
