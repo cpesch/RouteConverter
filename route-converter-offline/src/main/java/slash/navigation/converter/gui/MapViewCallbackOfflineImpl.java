@@ -17,29 +17,21 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.converter.gui;
 
-package slash.navigation.converter.gui.mapview;
-
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
-
-import javax.swing.event.ChangeListener;
+import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
+import slash.navigation.converter.gui.mapview.MapView;
+import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
+import slash.navigation.maps.MapManager;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
+ * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapManager}
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallback {
-    String createDescription(int index, String description);
-    String createCoordinates(Double longitude, Double latitude);
-    void complementData(int[] rows, boolean description, boolean time, boolean elevation);
-
-    RoutingService getRoutingService();
-    TravelMode getTravelMode();
-    boolean isAvoidFerries();
-    boolean isAvoidHighways();
-    boolean isAvoidTolls();
-    void addChangeListener(ChangeListener l);
+public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements MapViewCallbackOffline {
+    public MapManager getMapManager() {
+        return ((RouteConverterOffline)RouteConverter.getInstance()).getMapManager();
+    }
 }

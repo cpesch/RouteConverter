@@ -60,6 +60,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.LocalTheme;
+import slash.navigation.maps.MapManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -119,7 +120,7 @@ public class MapsforgeMapView implements MapView {
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
-    private MapViewCallback mapViewCallback;
+    private MapViewCallbackOffline mapViewCallback;
     private UnitSystemModel unitSystemModel;
 
     private MapSelector mapSelector;
@@ -145,7 +146,7 @@ public class MapsforgeMapView implements MapView {
                            boolean showCoordinates,
                            boolean showWaypointDescription,
                            UnitSystemModel unitSystemModel) {
-        this.mapViewCallback = mapViewCallback;
+        this.mapViewCallback = (MapViewCallbackOffline)mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
@@ -162,6 +163,14 @@ public class MapsforgeMapView implements MapView {
         actionManager.register("center-here", new CenterAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
+    }
+
+    private MapManager getMapManager() {
+        return mapViewCallback.getMapManager();
+    }
+
+    private LayerManager getLayerManager() {
+        return mapView.getLayerManager();
     }
 
     private void initializeMapView() {
@@ -193,7 +202,7 @@ public class MapsforgeMapView implements MapView {
         ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
-        mapSelector = new MapSelector(mapViewCallback.getMapManager(), mapView);
+        mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
         new MapViewPopupMenu(mapView, createPopupMenu());
@@ -253,23 +262,23 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        mapViewCallback.getMapManager().getDisplayedMapModel().addChangeListener(new ChangeListener() {
+        getMapManager().getDisplayedMapModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 handleMapAndThemeUpdate(true, !isVisible(mapView.getModel().mapViewPosition.getCenter(), 20));
             }
         });
-        mapViewCallback.getMapManager().getAppliedThemeModel().addChangeListener(new ChangeListener() {
+        getMapManager().getAppliedThemeModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 handleMapAndThemeUpdate(false, false);
             }
         });
 
-        LocalTheme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
-        LocalMap oceansMap = mapViewCallback.getMapManager().getMap("routeconverter/oceans.map");
+        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
+        LocalMap oceansMap = getMapManager().getMap("routeconverter/oceans.map");
         if(oceansMap != null)
             oceansLayer = createTileRendererLayer(oceansMap, theme);
 
-        LocalMap worldMap = mapViewCallback.getMapManager().getMap("routeconverter/world.map");
+        LocalMap worldMap = getMapManager().getMap("routeconverter/world.map");
         if(worldMap != null)
             worldLayer = createTileRendererLayer(worldMap, theme);
     }
@@ -649,8 +658,8 @@ public class MapsforgeMapView implements MapView {
         Layers layers = getLayerManager().getLayers();
 
         // add new map with a theme
-        LocalMap map = mapViewCallback.getMapManager().getDisplayedMapModel().getItem();
-        LocalTheme theme = mapViewCallback.getMapManager().getAppliedThemeModel().getItem();
+        LocalMap map = getMapManager().getDisplayedMapModel().getItem();
+        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
         Layer layer;
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
@@ -718,10 +727,6 @@ public class MapsforgeMapView implements MapView {
         // select current event map updater and let him add all
         eventMapUpdater = getEventMapUpdaterFor(characteristics);
         eventMapUpdater.handleAdd(0, getPositionsModel().getRowCount() - 1);
-    }
-
-    private LayerManager getLayerManager() {
-        return mapView.getLayerManager();
     }
 
     private EventMapUpdater getEventMapUpdaterFor(RouteCharacteristics characteristics) {

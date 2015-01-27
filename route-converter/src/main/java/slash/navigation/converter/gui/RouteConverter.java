@@ -59,7 +59,6 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
-import slash.navigation.maps.MapManager;
 import slash.navigation.rest.Credentials;
 import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.RoutingService;
@@ -166,12 +165,10 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
-    private MapManager mapManager;
     private HgtFilesService hgtFilesService;
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
-    private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -386,7 +383,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
-        hgtFilesService.dispose();
+        getHgtFilesService().dispose();
         getBatchPositionAugmenter().dispose();
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
@@ -656,16 +653,16 @@ public class RouteConverter extends SingleFrameApplication {
         return routingServiceFacade;
     }
 
+    protected HgtFilesService getHgtFilesService() {
+        return hgtFilesService;
+    }
+
     public DataSourceManager getDataSourceManager() {
         return dataSourceManager;
     }
 
     private DownloadManager getDownloadManager() {
         return getDataSourceManager().getDownloadManager();
-    }
-
-    public MapManager getMapManager() {
-        return mapManager;
     }
 
     private File getDownloadQueueFile() {
@@ -681,8 +678,8 @@ public class RouteConverter extends SingleFrameApplication {
         return batchPositionAugmenter;
     }
 
-    private MapViewCallback getMapViewCallback() {
-        return mapViewCallback;
+    protected MapViewCallback getMapViewCallback() {
+        return new MapViewCallbackImpl();
     }
 
     public JTable getPositionsView() {
@@ -966,7 +963,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeServices() {
+    protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
@@ -975,11 +972,10 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
-        mapManager = new MapManager(dataSourceManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
     }
 
-    private void initializeActions() {
+    protected void initializeActions() {
         final ActionManager actionManager = getContext().getActionManager();
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
@@ -996,7 +992,6 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("show-downloads", new ShowDownloadsAction());
-        actionManager.register("select-maps", new ShowMapsAndThemesAction());
         actionManager.register("show-options", new ShowOptionsAction());
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
@@ -1033,7 +1028,7 @@ public class RouteConverter extends SingleFrameApplication {
         } catch (Exception e) {
             log.warning("Could not initialize datasource manager: " + e);
             getContext().getNotificationManager().showNotification(MessageFormat.format(
-                    getBundle().getString("datasource-error"), e.getLocalizedMessage()), null);
+                    getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
         }
 
         new Thread(new Runnable() {
@@ -1046,18 +1041,17 @@ public class RouteConverter extends SingleFrameApplication {
         }, "DataSourceInitializer").start();
     }
 
-    private void initializeElevationServices() {
+    protected void initializeElevationServices() {
         getElevationServiceFacade().clear();
         getElevationServiceFacade().addElevationService(new EarthToolsService());
-        GeoNamesService geoNames = new GeoNamesService();
-        getElevationServiceFacade().addElevationService(geoNames);
-        getElevationServiceFacade().setPreferredElevationService(geoNames);
-        getElevationServiceFacade().addElevationService(new GoogleMapsService());
+        getElevationServiceFacade().addElevationService(new GeoNamesService());
+        GoogleMapsService googleMapsService = new GoogleMapsService();
+        getElevationServiceFacade().addElevationService(googleMapsService);
+        getElevationServiceFacade().setPreferredElevationService(googleMapsService);
 
-        hgtFilesService.initialize();
-        for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
-            getElevationServiceFacade().setPreferredElevationService(hgtFile);
         }
     }
 
@@ -1077,7 +1071,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (Exception e) {
                     log.warning("Could not download data from datasources: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-error"), e.getLocalizedMessage()), null);
+                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
                 }
 
                 initializeElevationServices();
@@ -1093,7 +1087,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void scanRemoteMapsAndThemes() {
     }
-
 
     private class PrintMapAction extends FrameAction {
         private boolean withRoute;

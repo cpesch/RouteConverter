@@ -20,37 +20,14 @@
 
 package slash.navigation.converter.gui;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.gui.helpers.UIHelper.ARABIA;
-import static slash.navigation.gui.helpers.UIHelper.CROATIA;
-import static slash.navigation.gui.helpers.UIHelper.CZECH;
-import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
-import static slash.navigation.gui.helpers.UIHelper.POLAND;
-import static slash.navigation.gui.helpers.UIHelper.PORTUGAL;
-import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
-import static slash.navigation.gui.helpers.UIHelper.SERBIA;
-import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
-import static slash.navigation.gui.helpers.UIHelper.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
@@ -66,7 +43,6 @@ public class ResourceBundleTest {
     };
 
     @Test
-    @Ignore // TODO just as long as the -mapsforge branch is in experimental mode
     public void englishAgainstOtherBundles() {
         compareEnglishAgainstOtherBundles(true);
     }

@@ -20,26 +20,14 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
-
-import javax.swing.event.ChangeListener;
+import slash.navigation.maps.MapManager;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
+ * Interface for callbacks from the {@link MapView} to the other RouteConverter services including offline.
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallback {
-    String createDescription(int index, String description);
-    String createCoordinates(Double longitude, Double latitude);
-    void complementData(int[] rows, boolean description, boolean time, boolean elevation);
-
-    RoutingService getRoutingService();
-    TravelMode getTravelMode();
-    boolean isAvoidFerries();
-    boolean isAvoidHighways();
-    boolean isAvoidTolls();
-    void addChangeListener(ChangeListener l);
+public interface MapViewCallbackOffline extends MapViewCallback {
+    MapManager getMapManager();
 }

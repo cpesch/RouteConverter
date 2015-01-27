@@ -20,10 +20,18 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
+import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
+import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.earthtools.EarthToolsService;
+import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.notifications.NotificationManager;
+import slash.navigation.hgt.HgtFiles;
+import slash.navigation.maps.MapManager;
 import slash.navigation.routing.BeelineService;
 
 import javax.swing.*;
@@ -41,12 +49,48 @@ import static javax.swing.SwingUtilities.invokeLater;
  */
 
 public class RouteConverterOffline extends RouteConverter {
+    private MapManager mapManager;
+
     public static void main(String[] args) {
         launch(RouteConverterOffline.class, args);
     }
 
     public String getEdition() {
         return "Offline";
+    }
+
+    protected void initializeServices() {
+        super.initializeServices();
+        mapManager = new MapManager(getDataSourceManager());
+    }
+
+    protected void initializeActions() {
+        super.initializeActions();
+        ActionManager actionManager = getContext().getActionManager();
+        actionManager.register("select-maps", new ShowMapsAndThemesAction());
+    }
+
+    public MapManager getMapManager() {
+        return mapManager;
+    }
+
+    protected MapViewCallbackOffline getMapViewCallback() {
+        return new MapViewCallbackOfflineImpl();
+    }
+
+    protected void initializeElevationServices() {
+        getElevationServiceFacade().clear();
+        getElevationServiceFacade().addElevationService(new EarthToolsService());
+        GeoNamesService geoNames = new GeoNamesService();
+        getElevationServiceFacade().addElevationService(geoNames);
+        getElevationServiceFacade().setPreferredElevationService(geoNames);
+        getElevationServiceFacade().addElevationService(new GoogleMapsService());
+
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+            getElevationServiceFacade().setPreferredElevationService(hgtFile);
+        }
     }
 
     protected void initializeRoutingServices() {

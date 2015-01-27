@@ -23,6 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.RouteConverterOffline;
 import slash.navigation.converter.gui.renderer.MapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ResourcesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
@@ -248,7 +249,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
     }
 
     private MapManager getMapManager() {
-        return RouteConverter.getInstance().getMapManager();
+        return ((RouteConverterOffline) RouteConverter.getInstance()).getMapManager();
     }
 
     private NotificationManager getNotificationManager() {
