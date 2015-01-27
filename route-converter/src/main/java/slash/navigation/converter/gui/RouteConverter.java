@@ -248,7 +248,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void checkForMissingTranslator() {
         List<String> activeLanguages = getLanguagesWithActiveTranslators();
         String language = Locale.getDefault().getLanguage();
-        if (!activeLanguages.contains(language)) {
+        if (!activeLanguages.contains(language) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), language));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
