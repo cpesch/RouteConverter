@@ -164,8 +164,8 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
-    private ElevationServiceFacade elevationServiceFacade;
     private HgtFilesService hgtFilesService;
+    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
@@ -962,7 +962,6 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
-        elevationServiceFacade = new ElevationServiceFacade();
     }
 
     private void initializeActions() {
@@ -1031,7 +1030,7 @@ public class RouteConverter extends SingleFrameApplication {
         }, "DataSourceInitializer").start();
     }
 
-    private void initializeElevationServices() {
+    protected void initializeElevationServices() {
         getElevationServiceFacade().clear();
         getElevationServiceFacade().addElevationService(new EarthToolsService());
         getElevationServiceFacade().addElevationService(new GeoNamesService());
@@ -1042,7 +1041,6 @@ public class RouteConverter extends SingleFrameApplication {
         hgtFilesService.initialize();
         for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
-            log.info(String.format("Added elevation service '%s'", hgtFile.getName()));
         }
     }
 

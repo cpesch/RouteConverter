@@ -67,6 +67,18 @@ public class DownloadManager {
         BlockingQueue<Runnable> queue = new PriorityBlockingQueue<>(1, new DownloadExecutorComparator());
         pool = new ThreadPoolExecutor(PARALLEL_DOWNLOAD_COUNT, PARALLEL_DOWNLOAD_COUNT * 2, 60, SECONDS, queue);
         pool.allowCoreThreadTimeOut(true);
+        addDownloadListener(new DownloadListener() {
+            public void progressed(Download download, int percentage) {
+            }
+
+            public void failed(Download download) {
+                saveQueue();
+            }
+
+            public void succeeded(Download download) {
+                saveQueue();
+            }
+        });
     }
 
     public void loadQueue() {
@@ -147,7 +159,6 @@ public class DownloadManager {
         DownloadExecutor executor = new DownloadExecutor(download, this);
         model.addOrUpdateDownload(download);
         pool.execute(executor);
-        saveQueue();
     }
 
     private static final Set<State> RESTART_WHEN_QUEUED_AGAIN = new HashSet<>(asList(NotModified, Succeeded, NoFileError, ChecksumError, Failed));
