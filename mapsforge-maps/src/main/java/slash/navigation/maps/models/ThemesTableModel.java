@@ -59,7 +59,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     public LocalTheme getTheme(String url) {
-        for (LocalTheme theme : new ArrayList<LocalTheme>(themes)) {
+        for (LocalTheme theme : new ArrayList<>(themes)) {
             if (theme.getUrl().equals(url))
                 return theme;
         }
@@ -121,7 +121,7 @@ public class ThemesTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        this.themes = new ArrayList<LocalTheme>();
+        this.themes = new ArrayList<>();
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {

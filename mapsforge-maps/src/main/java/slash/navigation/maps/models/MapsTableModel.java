@@ -26,7 +26,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
@@ -37,7 +36,6 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class MapsTableModel extends AbstractTableModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapsTableModel.class);
     private List<LocalMap> maps = new ArrayList<LocalMap>();
 
     public List<LocalMap> getMaps() {
@@ -49,7 +47,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 2;
+        return 1;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -61,7 +59,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     public LocalMap getMap(String url) {
-        for (LocalMap map : new ArrayList<LocalMap>(maps)) {
+        for (LocalMap map : new ArrayList<>(maps)) {
             if (map.getUrl().equals(url))
                 return map;
         }
@@ -123,7 +121,7 @@ public class MapsTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        this.maps = new ArrayList<LocalMap>();
+        this.maps = new ArrayList<>();
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {

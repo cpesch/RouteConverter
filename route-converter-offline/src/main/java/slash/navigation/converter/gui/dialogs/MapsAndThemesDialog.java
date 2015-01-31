@@ -89,27 +89,17 @@ public class MapsAndThemesDialog extends SimpleDialog {
 
         tableAvailableMaps.setModel(getMapManager().getMapsModel());
         tableAvailableMaps.setDefaultRenderer(Object.class, new MapsTableCellRenderer());
-        TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description", "offline");
+        TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description");
         TableColumnModel mapsColumns = tableAvailableMaps.getColumnModel();
         for (int i = 0; i < mapsColumns.getColumnCount(); i++) {
             TableColumn column = mapsColumns.getColumn(i);
             column.setHeaderRenderer(availableMapsHeaderRenderer);
-            if (i == 1) {
-                int width = getMaxWidth("offline", 6);
-                column.setPreferredWidth(width);
-                column.setMaxWidth(width);
-            }
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
         sorterAvailableMaps.setComparator(0, new Comparator<LocalMap>() {
             public int compare(LocalMap m1, LocalMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
-            }
-        });
-        sorterAvailableMaps.setComparator(1, new Comparator<LocalMap>() {
-            public int compare(LocalMap m1, LocalMap m2) {
-                return m1.isVector() ? m2.isVector() ? 0 : -1 : 1;
             }
         });
         tableAvailableMaps.setRowSorter(sorterAvailableMaps);

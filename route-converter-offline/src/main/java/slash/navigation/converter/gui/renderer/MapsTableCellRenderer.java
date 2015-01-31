@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
 
 import javax.swing.*;
@@ -32,21 +33,17 @@ import java.awt.*;
  */
 
 public class MapsTableCellRenderer extends AlternatingColorTableCellRenderer {
-    private final JCheckBox checkBox = new JCheckBox();
-
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         LocalMap map = (LocalMap) value;
         switch (columnIndex) {
             case 0:
                 JLabel label = (JLabel) component;
-                label.setText(map.getDescription());
+                String text = map.getDescription();
+                if(!map.isVector())
+                    text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
+                label.setText(text);
                 label.setToolTipText(map.getUrl());
-                break;
-            case 1:
-                checkBox.setBackground(component.getBackground());
-                checkBox.setSelected(map.isVector());
-                component = checkBox;
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

@@ -56,6 +56,7 @@ import slash.navigation.converter.gui.mapview.overlays.DraggableMarker;
 import slash.navigation.converter.gui.mapview.updater.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
@@ -664,8 +665,8 @@ public class MapsforgeMapView implements MapView {
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
-            showMessageDialog(getComponent(), format(ResourceBundle.getBundle("slash/navigation/converter/gui/mapview/MapsforgeMapView").
-                    getString("cannot-load-map"), map.getDescription(), e, "Error", ERROR_MESSAGE));
+            showMessageDialog(getComponent(), format(Application.getInstance().getContext().getBundle().getString("cannot-display-map"),
+                    map.getDescription(), e), ((SingleFrameApplication)Application.getInstance()).getFrame().getTitle(), ERROR_MESSAGE);
             return;
         }
 

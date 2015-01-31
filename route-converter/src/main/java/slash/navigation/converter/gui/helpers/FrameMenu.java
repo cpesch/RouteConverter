@@ -92,8 +92,6 @@ public class FrameMenu {
         positionlistMenu.add(createItem("export-positionlist"));
 
         JMenu viewMenu = createMenu("view");
-        viewMenu.add(createItem("select-maps"));
-        viewMenu.addSeparator();
         viewMenu.add(createItem("show-map-and-positionlist"));
         viewMenu.add(createItem("show-profile"));
         viewMenu.add(createItem("maximize-map"));

@@ -28,7 +28,6 @@ import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.MapManager;
@@ -41,6 +40,8 @@ import java.text.MessageFormat;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * A small graphical user interface for the offline route conversion.
@@ -66,8 +67,10 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeActions() {
         super.initializeActions();
-        ActionManager actionManager = getContext().getActionManager();
-        actionManager.register("select-maps", new ShowMapsAndThemesAction());
+        getContext().getActionManager().register("show-maps-and-themes", new ShowMapsAndThemesAction());
+        JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
+        viewMenu.add(createItem("show-maps-and-themes"), 0);
+        viewMenu.add(new JPopupMenu.Separator(), 1);
     }
 
     public MapManager getMapManager() {
@@ -99,10 +102,6 @@ public class RouteConverterOffline extends RouteConverter {
         getRoutingServiceFacade().addRoutingService(beeline);
         getRoutingServiceFacade().setPreferredRoutingService(beeline);
 
-        DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
-        if (graphhopper != null)
-            getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager()));
-
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
         DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
         if (brouterProfiles != null && brouterSegments != null) {
@@ -110,6 +109,10 @@ public class RouteConverterOffline extends RouteConverter {
             getRoutingServiceFacade().addRoutingService(router);
             getRoutingServiceFacade().setPreferredRoutingService(router);
         }
+
+        DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
+        if (graphhopper != null)
+            getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager()));
 
         getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getSelectMapsAction());
     }
@@ -119,7 +122,7 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     private Action getSelectMapsAction() {
-        return Application.getInstance().getContext().getActionManager().get("select-maps");
+        return Application.getInstance().getContext().getActionManager().get("show-maps-and-themes");
     }
 
     protected void scanLocalMapsAndThemes() {
