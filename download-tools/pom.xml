@@ -17,6 +17,72 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>CreateBrouterDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateBrouterDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateBrouterDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateBrouterDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>CreateGraphHopperDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateGraphHopperDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateGraphHopperDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateGraphHopperDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>CreateHgtDataSourcesXml</id>
                         <phase>package</phase>
                         <goals>
@@ -48,6 +114,105 @@
                             </filters>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>CreateMapDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateMapDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateMapDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateMapDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>CreateFSThemeDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateFSThemeDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateFSThemeDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateFSThemeDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>CreateWebThemeDataSourcesXml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>CreateWebThemeDataSourcesXml</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>CreateWebThemeDataSourcesXml for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.CreateWebThemeDataSourcesXml</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -57,6 +222,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>graphhopper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapsforge-maps</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -75,7 +75,7 @@ public class RecentFormatsModelTest {
 
     @Test
     public void testLatestFirst() throws IOException {
-        List<NavigationFormat> expected = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> expected = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             NavigationFormat format = getWriteFormats().get(i);
             recentFormatsModel.addFormat(format);
@@ -86,7 +86,7 @@ public class RecentFormatsModelTest {
 
     @Test
     public void testLimit() throws IOException {
-        List<NavigationFormat> collected = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
             NavigationFormat format = getWriteFormats().get(i);
             recentFormatsModel.addFormat(format);

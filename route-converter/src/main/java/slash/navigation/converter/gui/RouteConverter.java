@@ -25,6 +25,7 @@ import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -168,7 +169,6 @@ public class RouteConverter extends SingleFrameApplication {
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
-    private MapViewCallbackImpl mapViewCallback = new MapViewCallbackImpl();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
@@ -345,6 +345,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
                 }
+                mapPanel.setVisible(true);
 
                 int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location < 1)
@@ -382,7 +383,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             mapView.dispose();
         getConvertPanel().dispose();
-        hgtFilesService.dispose();
+        getHgtFilesService().dispose();
         getBatchPositionAugmenter().dispose();
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
@@ -594,8 +595,8 @@ public class RouteConverter extends SingleFrameApplication {
         if (dataSource == null)
             return;
 
-        final Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums = new HashMap<>();
-        fileAndChecksums.put(download.getFile(), download.getFragments());
+        final Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments = new HashMap<>();
+        fileToFragments.put(download.getFile(), download.getFragments());
 
         getRouteServiceOperator().executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
@@ -603,7 +604,7 @@ public class RouteConverter extends SingleFrameApplication {
             }
 
             public void run() throws IOException {
-                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, fileAndChecksums, download.getUrl());
+                getRouteServiceOperator().getRouteFeedback().sendChecksums(dataSource, fileToFragments, download.getUrl());
             }
         });
     }
@@ -652,6 +653,10 @@ public class RouteConverter extends SingleFrameApplication {
         return routingServiceFacade;
     }
 
+    protected HgtFilesService getHgtFilesService() {
+        return hgtFilesService;
+    }
+
     public DataSourceManager getDataSourceManager() {
         return dataSourceManager;
     }
@@ -673,8 +678,8 @@ public class RouteConverter extends SingleFrameApplication {
         return batchPositionAugmenter;
     }
 
-    private MapViewCallback getMapViewCallback() {
-        return mapViewCallback;
+    protected MapViewCallback getMapViewCallback() {
+        return new MapViewCallbackImpl();
     }
 
     public JTable getPositionsView() {
@@ -729,6 +734,11 @@ public class RouteConverter extends SingleFrameApplication {
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         if (isMapViewAvailable())
             mapView.setShowWaypointDescription(showWaypointDescription);
+    }
+
+    public void showMapBorder(BoundingBox mapBoundingBox) {
+        if (isMapViewAvailable())
+            mapView.showMapBorder(mapBoundingBox);
     }
 
     // profile view related helpers
@@ -801,6 +811,7 @@ public class RouteConverter extends SingleFrameApplication {
         mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
         mapPanel.setPreferredSize(new Dimension(300, 560));
+        mapPanel.setVisible(false);
         mapSplitPane.setLeftComponent(mapPanel);
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(1);
@@ -903,7 +914,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     mapView.resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.fine("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.finer("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
@@ -938,7 +949,7 @@ public class RouteConverter extends SingleFrameApplication {
                         mapView.resize();
                     }
                     preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
-                    log.fine("Changed profile divider to " + profileSplitPane.getDividerLocation());
+                    log.finer("Changed profile divider to " + profileSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
@@ -952,7 +963,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void initializeServices() {
+    protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
@@ -964,7 +975,7 @@ public class RouteConverter extends SingleFrameApplication {
         hgtFilesService = new HgtFilesService(dataSourceManager);
     }
 
-    private void initializeActions() {
+    protected void initializeActions() {
         final ActionManager actionManager = getContext().getActionManager();
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
@@ -1038,8 +1049,8 @@ public class RouteConverter extends SingleFrameApplication {
         getElevationServiceFacade().addElevationService(googleMapsService);
         getElevationServiceFacade().setPreferredElevationService(googleMapsService);
 
-        hgtFilesService.initialize();
-        for (HgtFiles hgtFile : hgtFilesService.getHgtFiles()) {
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
     }

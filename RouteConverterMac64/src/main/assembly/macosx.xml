@@ -22,7 +22,7 @@
         </file>
         <file>
             <source>target/RouteConverterMac64.jar</source>
-            <outputDirectory>/Contents/Resources/Java</outputDirectory>
+            <outputDirectory>/Contents/Java/</outputDirectory>
         </file>
     </files>
 </assembly>

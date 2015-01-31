@@ -52,6 +52,9 @@
 
     <properties>
         <targetJdk>1.7</targetJdk>
+        <brouter.version>1.1</brouter.version>
+        <graphhopper.version>0.3</graphhopper.version>
+        <mapsforge.version>0.5.0</mapsforge.version>
     </properties>
 
     <build>
@@ -235,6 +238,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>brouter</module>
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
@@ -247,11 +251,14 @@
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
         <module>javafx-mapview</module>
         <module>jnlp</module>
         <module>kml</module>
+        <module>mapsforge-maps</module>
+        <module>mapsforge-mapview</module>
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>profileview</module>
@@ -262,12 +269,16 @@
         <module>route-converter-cmdline</module>
         <module>route-converter-build</module>
         <module>route-converter-license</module>
+        <module>route-converter-offline</module>
         <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
+        <module>RouteConverterLinuxOffline</module>
         <module>RouteConverterMac</module>
         <module>RouteConverterMac64</module>
+        <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindows</module>
+        <module>RouteConverterWindowsOffline</module>
         <module>RouteConverterWebstart</module>
     </modules>
 </project>

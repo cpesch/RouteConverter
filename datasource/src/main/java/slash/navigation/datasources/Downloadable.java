@@ -33,7 +33,7 @@ public interface Downloadable {
     DataSource getDataSource();
     String getUri();
     List<Checksum> getChecksums();
-    List<Fragment> getFragments();
+    List<Fragment<Downloadable>> getFragments();
 
     Checksum getLatestChecksum();
 }

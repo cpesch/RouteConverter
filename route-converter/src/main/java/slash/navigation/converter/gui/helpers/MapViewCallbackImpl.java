@@ -28,6 +28,9 @@ import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
 
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
+
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services.
  *
@@ -35,8 +38,13 @@ import javax.swing.event.ChangeListener;
  */
 
 public class MapViewCallbackImpl implements MapViewCallback {
+
     public String createDescription(int index, String description) {
         return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
+    }
+
+    public String createCoordinates(Double longitude, Double latitude) {
+        return formatLongitude(longitude) + "," + formatLatitude(latitude);
     }
 
     public void complementData(int[] rows, boolean description, boolean time, boolean elevation) {

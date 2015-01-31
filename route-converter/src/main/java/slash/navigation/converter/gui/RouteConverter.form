@@ -45,6 +45,7 @@
                 <properties>
                   <minimumSize width="-1" height="-1"/>
                   <preferredSize width="300" height="560"/>
+                  <visible value="false"/>
                 </properties>
                 <border type="none"/>
                 <children/>

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -53,6 +54,7 @@ public interface MapView extends PositionsSelectionModel {
     void setRecenterAfterZooming(boolean recenterAfterZooming);
     void setShowCoordinates(boolean showCoordinates);
     void setShowWaypointDescription(boolean showWaypointDescription);
+    void showMapBorder(BoundingBox mapBoundingBox);
 
     NavigationPosition getCenter();
     void print(String title, boolean withDirections);

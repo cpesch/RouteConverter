@@ -58,15 +58,15 @@ public class DownloadableImpl implements Downloadable {
     }
 
     public List<Checksum> getChecksums() {
-        List<Checksum> result = new ArrayList<Checksum>();
+        List<Checksum> result = new ArrayList<>();
         if (downloadableType != null)
             for (ChecksumType checksumType : downloadableType.getChecksum())
                 result.add(asChecksum(checksumType));
         return result;
     }
 
-    public List<Fragment> getFragments() {
-        List<Fragment> result = new ArrayList<Fragment>();
+    public List<Fragment<Downloadable>> getFragments() {
+        List<Fragment<Downloadable>> result = new ArrayList<>();
         if (downloadableType != null)
             for (FragmentType fragmentType : downloadableType.getFragment())
                 result.add(new FragmentImpl(fragmentType, this));

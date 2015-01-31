@@ -7,7 +7,8 @@ java -jar download-tools\target\CreateMapDataSourcesXml.jar "testId" "testName" 
 
 Production:
 
-java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "brouter" "BRouter" "http://h2096617.stratoserver.net/brouter/segments2/" "http://h2096617.stratoserver.net/brouter/segments2/" "brouter" "C:\Temp\brouter-datasources.xml"
+java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "brouter-profiles" "BRouter" "http://h2096617.stratoserver.net/brouter/profiles2/" "http://h2096617.stratoserver.net/brouter/profiles2/" "brouter/profiles" "C:\Temp\brouter-profiles-datasources.xml"
+java -jar download-tools\target\CreateBrouterDataSourcesXml.jar "brouter-segments" "BRouter" "http://h2096617.stratoserver.net/brouter/segments3/" "http://h2096617.stratoserver.net/brouter/segments3/" "brouter/segments" "C:\Temp\brouter-segments-datasources.xml"
 
 java -jar download-tools\target\CreateGraphHopperDataSourcesXml.jar "graphhopper" "GraphHopper" "http://download.geofabrik.de/" "http://download.geofabrik.de/" "graphhopper" "C:\Temp\graphhopper-datasources.xml"
 
