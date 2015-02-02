@@ -30,7 +30,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                        <Implementation-Vendor>Mac32</Implementation-Vendor>
+                                        <Implementation-Vendor>Mac</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>

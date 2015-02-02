@@ -50,7 +50,7 @@ How to develop for RouteConverter
    Let JAVA_HOME refer to the Java 7 SDK
    > set JAVA_HOME=c:\Programm Files\Java\jdk1.7.0_71
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.2.3
+   > set M2_HOME=c:\Program Files\apache-maven-3.2.5
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
    Call
@@ -61,7 +61,6 @@ How to develop for RouteConverter
    > java -jar RouteConverterLinux/target/RouteConverterLinux.jar
    > java -jar RouteConverterLinuxOffline/target/RouteConverterLinuxOffline.jar
    > java -jar RouteConverterMac/target/RouteConverterMac.jar
-   > java -jar RouteConverterMac64/target/RouteConverterMac64.jar
    > java -jar RouteConverterMacOffline/target/RouteConverterMacOffline.jar
    > java -jar RouteConverterWindows/target/RouteConverterWindows.jar
    > java -jar RouteConverterWindowsOffline/target/RouteConverterWindowsOffline.jar

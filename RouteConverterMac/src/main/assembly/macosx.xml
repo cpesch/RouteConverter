@@ -7,7 +7,7 @@
     </formats>
     <files>
         <file>
-            <source>src/main/app-resources/JavaApplicationStub</source>
+            <source>src/main/app-resources/JavaAppLauncher</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
@@ -22,7 +22,7 @@
         </file>
         <file>
             <source>target/RouteConverterMac.jar</source>
-            <outputDirectory>/Contents/Resources/Java</outputDirectory>
+            <outputDirectory>/Contents/Java/</outputDirectory>
         </file>
     </files>
 </assembly>
