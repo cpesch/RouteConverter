@@ -54,12 +54,9 @@ public class CreateWebThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator
 
     protected void parseUri(String baseUrl, String uri, int index, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes) throws IOException {
         Get get = new Get(baseUrl + uri);
-        InputStream inputStream = get.executeAsStream();
 
         List<FragmentType> fragmentTypes = new ArrayList<>();
-        ZipInputStream zipInputStream = null;
-        try {
-            zipInputStream = new ZipInputStream(inputStream);
+        try (InputStream inputStream = get.executeAsStream(); ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 if (!entry.isDirectory()) {
@@ -72,12 +69,7 @@ public class CreateWebThemeDataSourcesXml extends WebsiteDataSourcesXmlGenerator
 
                 entry = zipInputStream.getNextEntry();
             }
-        } finally {
-            if (zipInputStream != null)
-                closeQuietly(zipInputStream);
         }
-
-        closeQuietly(inputStream);
 
         Get checksumGet = new Get(baseUrl + uri);
         InputStream checksumInputStream = checksumGet.executeAsStream();

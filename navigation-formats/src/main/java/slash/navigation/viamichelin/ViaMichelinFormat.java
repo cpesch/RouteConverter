@@ -113,13 +113,9 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<ViaMichelinRoute> context) throws Exception {
-        InputStreamReader reader = new InputStreamReader(source);
-        try {
+        try (InputStreamReader reader = new InputStreamReader(source)) {
             PoiList poiList = unmarshal(reader);
             context.appendRoute(process(poiList));
-        }
-        finally {
-            reader.close();
         }
     }
 

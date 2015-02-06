@@ -82,8 +82,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<BaseRoute> parserContext) throws Exception {
-        ZipInputStream zip = new ZipInputStream(source);
-        try {
+        try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
@@ -95,12 +94,6 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
             }
         } catch (IOException e) {
             log.fine("Error reading invalid zip entry from " + source + ": " + e);
-        } finally {
-            try {
-                zip.close();
-            } catch (IOException e) {
-                log.fine("Error closing zip from " + source + ": " + e);
-            }
         }
     }
 

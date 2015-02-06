@@ -39,35 +39,19 @@ public class GoogleMapsUtil {
         return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class));
     }
 
-    private static ElevationResponse unmarshalElevation(StringReader reader) throws JAXBException {
-        ElevationResponse result = null;
-        try {
-            result = (ElevationResponse) newUnmarshallerElevation().unmarshal(reader);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
-        } finally {
-            reader.close();
-        }
-        return result;
-    }
-
     public static ElevationResponse unmarshalElevation(String string) throws JAXBException {
-        return unmarshalElevation(new StringReader(string));
-    }
-
-    private static GeocodeResponse unmarshalGeocode(StringReader reader) throws JAXBException {
-        GeocodeResponse result = null;
-        try {
-            result = (GeocodeResponse) newUnmarshallerGeocode().unmarshal(reader);
+        try (StringReader reader = new StringReader(string)) {
+            return (ElevationResponse) newUnmarshallerElevation().unmarshal(reader);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
-        } finally {
-            reader.close();
         }
-        return result;
     }
 
     public static GeocodeResponse unmarshalGeocode(String string) throws JAXBException {
-        return unmarshalGeocode(new StringReader(string));
+        try (StringReader reader = new StringReader(string)) {
+            return (GeocodeResponse) newUnmarshallerGeocode().unmarshal(reader);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error: " + e, e);
+        }
     }
 }

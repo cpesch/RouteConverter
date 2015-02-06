@@ -47,13 +47,9 @@ public class BrokenKml21LittleEndianFormat extends Kml21Format {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING);
-        try {
+        try (InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING)) {
             KmlType kmlType = unmarshal21(reader);
             process(kmlType, startDate, context);
-        }
-        finally {
-            reader.close();
         }
     }
 }

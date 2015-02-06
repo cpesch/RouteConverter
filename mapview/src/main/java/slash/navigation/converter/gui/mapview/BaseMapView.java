@@ -1010,12 +1010,9 @@ public abstract class BaseMapView implements MapView {
     // browser callbacks
 
     private void processStream(Socket socket) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
-        OutputStream outputStream = socket.getOutputStream();
-
         List<String> lines = new ArrayList<>();
         boolean processingPost = false, processingBody = false;
-        try {
+        try (OutputStream ignored = socket.getOutputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024)) {
             while (true) {
                 try {
                     String line = trim(reader.readLine());
@@ -1035,9 +1032,6 @@ public abstract class BaseMapView implements MapView {
                     break;
                 }
             }
-        } finally {
-            reader.close();
-            outputStream.close();
         }
 
         StringBuilder buffer = new StringBuilder();

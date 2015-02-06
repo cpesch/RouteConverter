@@ -52,9 +52,7 @@ public class Extractor {
     }
 
     private void doExtract(File tempFile, File destination, boolean flatten) throws IOException {
-        ZipInputStream zipInputStream = null;
-        try {
-            zipInputStream = new ZipInputStream(new FileInputStream(tempFile));
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(tempFile))) {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 if (entry.isDirectory()) {
@@ -82,10 +80,6 @@ public class Extractor {
 
                 entry = zipInputStream.getNextEntry();
             }
-        }
-        finally {
-            if (zipInputStream != null)
-                closeQuietly(zipInputStream);
         }
     }
 

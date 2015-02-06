@@ -86,11 +86,8 @@ public abstract class BaseDataSourcesXmlGenerator {
     }
 
     private ChecksumType createChecksumType(File file) throws IOException {
-        FileInputStream inputStream = new FileInputStream(file);
-        try {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
             return createChecksumType(file.lastModified(), file.length(), inputStream);
-        } finally {
-            closeQuietly(inputStream);
         }
     }
 

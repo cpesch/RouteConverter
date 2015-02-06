@@ -77,9 +77,7 @@ public class CreateMapDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
                 MapType mapType = createMapType(uri, meta.lastModified, meta.contentLength, null);
                 mapTypes.add(mapType);
 
-                ZipInputStream zipInputStream = null;
-                try {
-                    zipInputStream = new ZipInputStream(new FileInputStream(file));
+                try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
                     ZipEntry entry = zipInputStream.getNextEntry();
                     while (entry != null) {
                         if (!entry.isDirectory() && entry.getName().endsWith(".map")) {
@@ -104,9 +102,6 @@ public class CreateMapDataSourcesXml extends WebsiteDataSourcesXmlGenerator {
                             entry = null;
                         }
                     }
-                } finally {
-                    if (zipInputStream != null)
-                        closeQuietly(zipInputStream);
                 }
 
             } else {

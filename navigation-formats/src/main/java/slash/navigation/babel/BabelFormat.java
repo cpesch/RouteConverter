@@ -275,11 +275,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             }
         }
 
-        if (!hasExitValue) {
-            log.severe("Command doesn't return exit value. Shutting down args...");
-            process.destroy();
-        }
-
         try {
             readStream(inputStream, "input");
             readStream(errorStream, "error");

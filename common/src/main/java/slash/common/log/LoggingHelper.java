@@ -99,7 +99,15 @@ public class LoggingHelper {
 
     public String getLogFileAsString() {
         logAsDefault();
-        String logAsString = readFile(getLogFile());
+
+        File logFile = getLogFile();
+        String logAsString;
+        try {
+            logAsString = readFile(logFile);
+        } catch (IOException e) {
+            logAsString = "Cannot read file " + logFile + ":" + e;
+        }
+
         logToFile();
         return logAsString;
     }
@@ -114,28 +122,15 @@ public class LoggingHelper {
         return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
     }
 
-    private String readFile(File file) {
+    private String readFile(File file) throws IOException {
         StringBuilder buffer = new StringBuilder();
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (buffer.length() < LOG_SIZE) {
                 String line = reader.readLine();
                 if (line == null)
                     break;
                 buffer.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            System.err.println("Cannot read file " + file.getAbsolutePath());
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    // intentionally left empty
-                }
             }
         }
 

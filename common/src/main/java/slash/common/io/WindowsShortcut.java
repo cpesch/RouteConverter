@@ -64,20 +64,14 @@ public class WindowsShortcut {
         if (!file.isFile() || !getExtension(file).equals(".lnk"))
             return false;
 
-        InputStream fis = new FileInputStream(file);
-        try {
-            return fis.available() >= MINIMUM_LENGTH && isMagicPresent(getBytes(fis, 32));
-        } finally {
-            fis.close();
+        try (InputStream in = new FileInputStream(file)) {
+            return in.available() >= MINIMUM_LENGTH && isMagicPresent(getBytes(in, 32));
         }
     }
 
     public WindowsShortcut(File file) throws IOException {
-        InputStream in = new FileInputStream(file);
-        try {
+        try (InputStream in = new FileInputStream(file)) {
             parseLink(getBytes(in));
-        } finally {
-            in.close();
         }
     }
 

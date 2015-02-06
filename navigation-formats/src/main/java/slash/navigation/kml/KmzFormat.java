@@ -66,14 +66,11 @@ public abstract class KmzFormat extends BaseKmlFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        ZipInputStream zip = new ZipInputStream(source);
-        try {
+        try (ZipInputStream zip = new ZipInputStream(source)) {
             while ((zip.getNextEntry()) != null) {
                 delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
                 zip.closeEntry();
             }
-        } finally {
-            zip.close();
         }
     }
 

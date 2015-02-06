@@ -51,13 +51,8 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     }
 
     protected void read(InputStream source, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
-        Reader reader = new InputStreamReader(source, encoding);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        try {
-            read(bufferedReader, startDate, encoding, context);
-        }
-        finally {
-            reader.close();
+        try (Reader reader = new InputStreamReader(source, encoding)) {
+            read(new BufferedReader(reader), startDate, encoding, context);
         }
     }
 

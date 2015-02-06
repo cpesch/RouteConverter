@@ -35,19 +35,11 @@ class EarthToolsUtil {
         return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
-    private static Height unmarshal(StringReader reader) throws JAXBException {
-        Height result = null;
-        try {
+    public static Height unmarshal(String string) throws JAXBException {
+        try (StringReader reader = new StringReader(string)) {
             return (Height) newUnmarshaller().unmarshal(reader);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
         }
-        finally {
-            reader.close();
-        }
-    }
-
-    public static Height unmarshal(String string) throws JAXBException {
-        return unmarshal(new StringReader(string));
     }
 }

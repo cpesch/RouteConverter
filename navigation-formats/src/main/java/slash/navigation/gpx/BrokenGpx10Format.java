@@ -45,13 +45,9 @@ public class BrokenGpx10Format extends Gpx10Format {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        InputStreamReader reader = new InputStreamReader(source);
-        try {
+        try (InputStreamReader reader = new InputStreamReader(source)) {
             Gpx gpx = unmarshal10(reader);
             process(gpx, context);
-        }
-        finally {
-            reader.close();
         }
     }
 }

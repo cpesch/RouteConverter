@@ -46,13 +46,9 @@ public class BrokenKml22Format extends Kml22Format {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        InputStreamReader reader = new InputStreamReader(source);
-        try {
+        try (InputStreamReader reader = new InputStreamReader(source)) {
             KmlType kmlType = unmarshal22(reader);
             process(kmlType, startDate, context);
-        }
-        finally {
-            reader.close();
         }
     }
 }

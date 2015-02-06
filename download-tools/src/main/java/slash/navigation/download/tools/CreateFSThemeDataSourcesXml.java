@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-
 /**
  * Creates a map theme data sources XML from a file system mirror.
  *
@@ -45,12 +43,9 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 public class CreateFSThemeDataSourcesXml extends FileDataSourcesXmlGenerator {
     protected void parseFile(File file, List<FileType> fileTypes, List<MapType> mapTypes, List<ThemeType> themeTypes, File baseDirectory) throws IOException {
         String uri = relativizeUri(file, baseDirectory);
-        InputStream inputStream = new FileInputStream(file);
-
         List<FragmentType> fragmentTypes = new ArrayList<>();
-        ZipInputStream zipInputStream = null;
-        try {
-            zipInputStream = new ZipInputStream(inputStream);
+
+        try (InputStream inputStream = new FileInputStream(file); ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 if (!entry.isDirectory()) {
@@ -63,12 +58,7 @@ public class CreateFSThemeDataSourcesXml extends FileDataSourcesXmlGenerator {
 
                 entry = zipInputStream.getNextEntry();
             }
-        } finally {
-            if (zipInputStream != null)
-                closeQuietly(zipInputStream);
         }
-
-        closeQuietly(inputStream);
 
         ThemeType themeType = createThemeType(uri, file, null);
         themeType.getFragment().addAll(sortFragmentTypes(fragmentTypes));

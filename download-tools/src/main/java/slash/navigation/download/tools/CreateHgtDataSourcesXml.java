@@ -36,7 +36,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
  * Creates a HGT data sources XML from a file system mirror.
@@ -60,9 +59,7 @@ public class CreateHgtDataSourcesXml extends FileDataSourcesXmlGenerator {
         String uri = relativizeUri(file, baseDirectory);
         List<FragmentType> fragmentTypes = new ArrayList<>();
 
-        ZipInputStream zipInputStream = null;
-        try {
-            zipInputStream = new ZipInputStream(new FileInputStream(file));
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 if (!entry.isDirectory()) {
@@ -77,9 +74,6 @@ public class CreateHgtDataSourcesXml extends FileDataSourcesXmlGenerator {
                 }
                 entry = zipInputStream.getNextEntry();
             }
-        } finally {
-            if (zipInputStream != null)
-                closeQuietly(zipInputStream);
         }
 
         FileType fileType = createFileType(uri, file, null);

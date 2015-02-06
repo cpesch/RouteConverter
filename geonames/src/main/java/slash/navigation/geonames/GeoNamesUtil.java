@@ -35,20 +35,11 @@ class GeoNamesUtil {
         return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
-    private static Geonames unmarshal(StringReader reader) throws JAXBException {
-        Geonames result = null;
-        try {
-            result = (Geonames) newUnmarshaller().unmarshal(reader);
+    public static Geonames unmarshal(String string) throws JAXBException {
+        try (StringReader reader = new StringReader(string)){
+            return (Geonames) newUnmarshaller().unmarshal(reader);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
         }
-        finally {
-            reader.close();
-        }
-        return result;
-    }
-
-    public static Geonames unmarshal(String string) throws JAXBException {
-        return unmarshal(new StringReader(string));
     }
 }

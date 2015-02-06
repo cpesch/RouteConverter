@@ -156,12 +156,9 @@ public class LocalCategory implements Category {
 
     public Route createRoute(String description, String fileUrl) throws IOException {
         File destination = new File(directory, encodeFileName(description));
-        PrintWriter writer = new PrintWriter(destination);
-        try {
+        try (PrintWriter writer = new PrintWriter(destination)) {
             writer.println("[InternetShortcut]");
             writer.println("URL=" + fileUrl);
-        } finally {
-            writer.close();
         }
         return new LocalRoute(catalog, destination);
     }
