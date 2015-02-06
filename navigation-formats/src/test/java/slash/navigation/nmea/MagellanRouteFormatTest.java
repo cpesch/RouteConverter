@@ -114,7 +114,7 @@ public class MagellanRouteFormatTest {
                         "$PMGNWPL,4816.58588,N,01133.75379,E,0,M,2-geradeaus,,a*30\n" +
                         "$PMGNWPL,4816.68827,N,01133.85421,E,0,M,3-rechtsab,,a*50\n"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
         format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());

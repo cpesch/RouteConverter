@@ -196,7 +196,7 @@ public class MTP0607FormatTest {
     public void testReaddescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
-        ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
+        ParserContext<BcrRoute> context = new ParserContextImpl<>();
         format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());

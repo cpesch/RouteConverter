@@ -81,7 +81,7 @@ public class Kml22Format extends KmlFormat {
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
-        List<JAXBElement<T>> result = new ArrayList<JAXBElement<T>>();
+        List<JAXBElement<T>> result = new ArrayList<>();
         for (JAXBElement<? extends AbstractFeatureType> element : elements) {
             if (name.equals(element.getName().getLocalPart()))
                 result.add((JAXBElement<T>) element);
@@ -163,7 +163,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate, ParserContext<KmlRoute> context) {
-        List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
+        List<KmlPosition> waypoints = new ArrayList<>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asDescription(trim(placemarkTypeValue.getName()), trim(placemarkTypeValue.getDescription()));
@@ -213,7 +213,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private List<KmlPosition> asExtendedKmlPositions(List<String> strings) {
-        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        List<KmlPosition> result = new ArrayList<>();
         for (String string : strings) {
             for (NavigationPosition position : parseExtensionPositions(string)) {
                 result.add(asKmlPosition(position));
@@ -238,7 +238,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositionsFromGeometry(JAXBElement<? extends AbstractGeometryType> geometryType) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        List<KmlPosition> positions = new ArrayList<>();
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
         if (geometryTypeValue instanceof PointType) {
             PointType point = (PointType) geometryTypeValue;
@@ -270,7 +270,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositionsFromTour(List<JAXBElement<? extends AbstractTourPrimitiveType>> tourPrimitives) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        List<KmlPosition> positions = new ArrayList<>();
         for (JAXBElement<? extends AbstractTourPrimitiveType> tourPrimitive : tourPrimitives) {
             AbstractTourPrimitiveType tourPrimitiveValue = tourPrimitive.getValue();
             if (tourPrimitiveValue instanceof FlyToType) {
@@ -424,7 +424,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private List<StyleType> createSpeedTrackColors(float width) {
-        List<StyleType> styleTypeList = new ArrayList<StyleType>();
+        List<StyleType> styleTypeList = new ArrayList<>();
         for (int i = 0; i < SPEED_COLORS.length; i++) {
             String styleName = getSpeedColor(i);
             StyleType styleType = createLineStyle(styleName, width, decodeBytes(SPEED_COLORS[i]));
@@ -467,7 +467,7 @@ public class Kml22Format extends KmlFormat {
         folderType.getAbstractFeatureGroup().add(objectFactory.createScreenOverlay(createSpeedbar()));
 
         int segmentIndex = 0;
-        List<String> coordinates = new ArrayList<String>();
+        List<String> coordinates = new ArrayList<>();
         Integer previousSpeedClass = null;
         Double previousSpeed = null;
         KmlPosition previous = null;

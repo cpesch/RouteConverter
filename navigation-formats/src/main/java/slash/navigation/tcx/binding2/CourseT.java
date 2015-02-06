@@ -119,7 +119,7 @@ public class CourseT {
      */
     public List<CourseLapT> getLap() {
         if (lap == null) {
-            lap = new ArrayList<CourseLapT>();
+            lap = new ArrayList<>();
         }
         return this.lap;
     }
@@ -148,7 +148,7 @@ public class CourseT {
      */
     public List<TrackT> getTrack() {
         if (track == null) {
-            track = new ArrayList<TrackT>();
+            track = new ArrayList<>();
         }
         return this.track;
     }
@@ -201,7 +201,7 @@ public class CourseT {
      */
     public List<CoursePointT> getCoursePoint() {
         if (coursePoint == null) {
-            coursePoint = new ArrayList<CoursePointT>();
+            coursePoint = new ArrayList<>();
         }
         return this.coursePoint;
     }

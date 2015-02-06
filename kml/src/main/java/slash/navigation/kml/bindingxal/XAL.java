@@ -61,7 +61,7 @@ public class XAL {
     @XmlSchemaType(name = "anySimpleType")
     protected String version;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressDetails property.
@@ -87,7 +87,7 @@ public class XAL {
      */
     public List<AddressDetails> getAddressDetails() {
         if (addressDetails == null) {
-            addressDetails = new ArrayList<AddressDetails>();
+            addressDetails = new ArrayList<>();
         }
         return this.addressDetails;
     }
@@ -116,7 +116,7 @@ public class XAL {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

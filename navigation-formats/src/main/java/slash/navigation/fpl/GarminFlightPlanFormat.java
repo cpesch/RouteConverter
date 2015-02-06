@@ -114,7 +114,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     private GarminFlightPlanRoute process(FlightPlan flightPlan) {
-        List<GarminFlightPlanPosition> positions = new ArrayList<GarminFlightPlanPosition>();
+        List<GarminFlightPlanPosition> positions = new ArrayList<>();
 
         List<FlightPlan.Route.RoutePoint> routePoints = flightPlan.getRoute().getRoutePoint();
         for (FlightPlan.Route.RoutePoint routePoint : routePoints) {

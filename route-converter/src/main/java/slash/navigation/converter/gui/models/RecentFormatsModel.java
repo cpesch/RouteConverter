@@ -86,7 +86,7 @@ public class RecentFormatsModel {
     }
 
     public List<NavigationFormat> getFormats() {
-        List<NavigationFormat> result = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> result = new ArrayList<>();
         String recentFormats = preferences.get(RECENT_FORMATS_PREFERENCE, "");
         for (char c : recentFormats.toCharArray()) {
             String formatString = preferences.get(RECENT_FORMAT_PREFERENCE + c, null);

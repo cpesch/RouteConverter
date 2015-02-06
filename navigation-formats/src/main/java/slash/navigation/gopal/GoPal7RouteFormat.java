@@ -53,7 +53,7 @@ public class GoPal7RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
     private static final String VERSION_PREFIX = "v7";
 
-    private static final Map<String, Short> COUNTRY_TO_CODE = new HashMap<String, Short>();
+    private static final Map<String, Short> COUNTRY_TO_CODE = new HashMap<>();
     static {
         COUNTRY_TO_CODE.put("Deutschland", (short)49);
         COUNTRY_TO_CODE.put("Frankreich", (short)31);
@@ -75,7 +75,7 @@ public class GoPal7RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     }
 
     private GoPalRoute process(Tour tour) {
-        List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> positions = new ArrayList<>();
         Tour.Start start = tour.getStart();
         if (start != null) {
             Short country = start.getCountry() != null ? start.getCountry().getCode() : null;

@@ -49,7 +49,7 @@ public class PositionReducerTest {
     }
 
     private void filterEveryNthPosition(int positionCount, int maximumPositionCount) {
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition first = asPosition(0.0, 0.0);
         positions.add(first);
 
@@ -83,7 +83,7 @@ public class PositionReducerTest {
 
     @Test
     public void testFilterVisiblePosition() throws Exception {
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);
         NavigationPosition two = asPosition(0.1, 0.1);
@@ -108,7 +108,7 @@ public class PositionReducerTest {
 
     @Test
     public void testFilterVisiblePositionIncludingFirstAndLast() throws Exception {
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);
         NavigationPosition two = asPosition(0.1, 0.1);

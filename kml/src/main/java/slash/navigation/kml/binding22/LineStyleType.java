@@ -104,7 +104,7 @@ public class LineStyleType
      */
     public List<Object> getLineStyleSimpleExtensionGroup() {
         if (lineStyleSimpleExtensionGroup == null) {
-            lineStyleSimpleExtensionGroup = new ArrayList<Object>();
+            lineStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.lineStyleSimpleExtensionGroup;
     }
@@ -133,7 +133,7 @@ public class LineStyleType
      */
     public List<AbstractObjectType> getLineStyleObjectExtensionGroup() {
         if (lineStyleObjectExtensionGroup == null) {
-            lineStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            lineStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.lineStyleObjectExtensionGroup;
     }

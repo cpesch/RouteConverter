@@ -65,7 +65,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2005/Atom", name = "name")
     public JAXBElement<String> createName(String value) {
-        return new JAXBElement<String>(_Name_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Name_QNAME, String.class, null, value);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2005/Atom", name = "uri")
     public JAXBElement<String> createUri(String value) {
-        return new JAXBElement<String>(_Uri_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Uri_QNAME, String.class, null, value);
     }
 
     /**
@@ -83,7 +83,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2005/Atom", name = "author")
     public JAXBElement<AtomPersonConstruct> createAuthor(AtomPersonConstruct value) {
-        return new JAXBElement<AtomPersonConstruct>(_Author_QNAME, AtomPersonConstruct.class, null, value);
+        return new JAXBElement<>(_Author_QNAME, AtomPersonConstruct.class, null, value);
     }
 
     /**
@@ -92,7 +92,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2005/Atom", name = "email")
     public JAXBElement<String> createEmail(String value) {
-        return new JAXBElement<String>(_Email_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Email_QNAME, String.class, null, value);
     }
 
 }

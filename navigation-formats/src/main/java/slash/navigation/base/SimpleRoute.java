@@ -94,7 +94,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
+        List<BcrPosition> bcrPositions = new ArrayList<>();
         for (P position : positions) {
             bcrPositions.add(position.asMTPPosition());
         }
@@ -102,7 +102,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (P position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
@@ -110,7 +110,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        List<GpxPosition> gpxPositions = new ArrayList<>();
         for (P position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
@@ -118,7 +118,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        List<KmlPosition> kmlPositions = new ArrayList<>();
         for (P position : positions) {
             kmlPositions.add(position.asKmlPosition());
         }
@@ -126,7 +126,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        List<NmeaPosition> nmeaPositions = new ArrayList<>();
         for (P position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
@@ -134,7 +134,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        List<NmnPosition> nmnPositions = new ArrayList<>();
         for (P position : positions) {
             nmnPositions.add(position.asNmnPosition());
         }
@@ -142,7 +142,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -150,7 +150,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -158,7 +158,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        List<TomTomPosition> tomTomPositions = new ArrayList<>();
         for (P position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }

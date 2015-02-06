@@ -73,7 +73,7 @@ public class ItemIconType
      */
     public List<ItemIconStateEnumType> getState() {
         if (state == null) {
-            state = new ArrayList<ItemIconStateEnumType>();
+            state = new ArrayList<>();
         }
         return this.state;
     }

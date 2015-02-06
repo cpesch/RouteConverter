@@ -45,7 +45,7 @@ public class RouteModelHelper {
 
     public static List<RouteModel> getSelectedRouteModels(JTable table) {
         int[] rows = table.getSelectedRows();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        List<RouteModel> routeModels = new ArrayList<>();
         for (int row : rows) {
             Object value = table.getModel().getValueAt(row, 1);
             if (value instanceof RouteModel)
@@ -67,7 +67,7 @@ public class RouteModelHelper {
 
     public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {
         TreePath[] treePaths = tree.getSelectionPaths();
-        List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
+        List<CategoryTreeNode> treeNodes = new ArrayList<>();
         if (treePaths != null) {
             for (TreePath treePath : treePaths) {
                 Object treeNode = treePath.getLastPathComponent();
@@ -86,7 +86,7 @@ public class RouteModelHelper {
     }
 
     public static List<String> asNames(List<CategoryTreeNode> categories) {
-        List<String> names = new ArrayList<String>(categories.size());
+        List<String> names = new ArrayList<>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {
             names.add(categoryTreeNode.getName());
         }
@@ -94,7 +94,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParents(List<CategoryTreeNode> categories) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
+        List<CategoryTreeNode> parents = new ArrayList<>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {
             parents.add((CategoryTreeNode) categoryTreeNode.getParent());
         }
@@ -102,7 +102,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParentsFromRoutes(List<RouteModel> routes) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(routes.size());
+        List<CategoryTreeNode> parents = new ArrayList<>(routes.size());
         for (RouteModel routeModel : routes) {
             parents.add(routeModel.getCategory());
         }
@@ -110,7 +110,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParents(CategoryTreeNode parent, int count) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(count);
+        List<CategoryTreeNode> parents = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             parents.add(parent);
         }

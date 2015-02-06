@@ -323,7 +323,7 @@ public class FlightPlan {
          */
         public List<FlightPlan.Route.RoutePoint> getRoutePoint() {
             if (routePoint == null) {
-                routePoint = new ArrayList<FlightPlan.Route.RoutePoint>();
+                routePoint = new ArrayList<>();
             }
             return this.routePoint;
         }
@@ -510,7 +510,7 @@ public class FlightPlan {
          */
         public List<FlightPlan.WaypointTable.Waypoint> getWaypoint() {
             if (waypoint == null) {
-                waypoint = new ArrayList<FlightPlan.WaypointTable.Waypoint>();
+                waypoint = new ArrayList<>();
             }
             return this.waypoint;
         }

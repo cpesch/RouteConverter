@@ -74,7 +74,7 @@ public class FragmentType {
      */
     public List<ChecksumType> getChecksum() {
         if (checksum == null) {
-            checksum = new ArrayList<ChecksumType>();
+            checksum = new ArrayList<>();
         }
         return this.checksum;
     }

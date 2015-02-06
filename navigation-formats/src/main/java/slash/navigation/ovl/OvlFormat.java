@@ -93,7 +93,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<OvlRoute> context) throws IOException {
-        List<OvlSection> sections = new ArrayList<OvlSection>();
+        List<OvlSection> sections = new ArrayList<>();
         OvlSection current = null;
 
         while (true) {
@@ -170,7 +170,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private List<OvlRoute> extractRoutes(List<OvlSection> sections) {
-        List<OvlRoute> result = new ArrayList<OvlRoute>();
+        List<OvlRoute> result = new ArrayList<>();
 
         OvlSection mapLage = findSection(sections, MAPLAGE_TITLE);
         if(mapLage == null)
@@ -180,8 +180,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         int symbolCount = getSymbolCount(overlay);
 
         // process all sections with same group into one route
-        Map<Integer, List<OvlSection>> sectionsByGroup = new LinkedHashMap<Integer, List<OvlSection>>();
-        List<OvlSection> sectionsWithoutGroup = new ArrayList<OvlSection>();
+        Map<Integer, List<OvlSection>> sectionsByGroup = new LinkedHashMap<>();
+        List<OvlSection> sectionsWithoutGroup = new ArrayList<>();
         for (int i = 0; i < symbolCount; i++) {
             OvlSection section = findSection(sections, SYMBOL_TITLE + " " + (i + 1));
             if (section != null) {
@@ -189,7 +189,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
                 if (group != null) {
                     List<OvlSection> groupedSections = sectionsByGroup.get(group);
                     if (groupedSections == null) {
-                        groupedSections = new ArrayList<OvlSection>();
+                        groupedSections = new ArrayList<>();
                         sectionsByGroup.put(group, groupedSections);
                     }
                     groupedSections.add(section);
@@ -217,7 +217,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private OvlRoute extractRoute(OvlSection symbol, OvlSection overlay, OvlSection mapLage) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         int positionCount = symbol.getPositionCount();
         for (int i = 0; i < positionCount; i++) {
             positions.add(symbol.getPosition(i));
@@ -227,7 +227,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private OvlRoute extractRoute(List<OvlSection> symbols, OvlSection overlay, OvlSection mapLage) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (OvlSection symbol : symbols) {
             int positionCount = symbol.getPositionCount();
             for (int i = 0; i < positionCount; i++) {

@@ -354,7 +354,7 @@ public class NetworkLinkControlType {
      */
     public List<Object> getNetworkLinkControlSimpleExtensionGroup() {
         if (networkLinkControlSimpleExtensionGroup == null) {
-            networkLinkControlSimpleExtensionGroup = new ArrayList<Object>();
+            networkLinkControlSimpleExtensionGroup = new ArrayList<>();
         }
         return this.networkLinkControlSimpleExtensionGroup;
     }
@@ -383,7 +383,7 @@ public class NetworkLinkControlType {
      */
     public List<AbstractObjectType> getNetworkLinkControlObjectExtensionGroup() {
         if (networkLinkControlObjectExtensionGroup == null) {
-            networkLinkControlObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            networkLinkControlObjectExtensionGroup = new ArrayList<>();
         }
         return this.networkLinkControlObjectExtensionGroup;
     }

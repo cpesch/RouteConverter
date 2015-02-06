@@ -159,7 +159,7 @@ public class LinearRingType
      */
     public List<String> getCoordinates() {
         if (coordinates == null) {
-            coordinates = new ArrayList<String>();
+            coordinates = new ArrayList<>();
         }
         return this.coordinates;
     }

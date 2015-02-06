@@ -81,7 +81,7 @@ public class LocalCategory implements Category {
     }
 
     public List<Category> getCategories() throws IOException {
-        List<Category> categories = new ArrayList<Category>();
+        List<Category> categories = new ArrayList<>();
         for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
             String name = decodeUri(subDirectory.getName());
             if (isPotentialValidLink(subDirectory)) {
@@ -132,7 +132,7 @@ public class LocalCategory implements Category {
     }
 
     public List<Route> getRoutes() throws IOException {
-        List<Route> routes = new ArrayList<Route>();
+        List<Route> routes = new ArrayList<>();
         for (File file : directory.listFiles(new FileFileFilter())) {
             String name = decodeUri(file.getName());
             if (isPotentialValidLink(file)) {

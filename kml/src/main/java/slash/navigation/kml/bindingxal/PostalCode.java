@@ -123,7 +123,7 @@ public class PostalCode {
     @XmlSchemaType(name = "anySimpleType")
     protected String type;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -149,7 +149,7 @@ public class PostalCode {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -178,7 +178,7 @@ public class PostalCode {
      */
     public List<PostalCode.PostalCodeNumber> getPostalCodeNumber() {
         if (postalCodeNumber == null) {
-            postalCodeNumber = new ArrayList<PostalCode.PostalCodeNumber>();
+            postalCodeNumber = new ArrayList<>();
         }
         return this.postalCodeNumber;
     }
@@ -207,7 +207,7 @@ public class PostalCode {
      */
     public List<PostalCode.PostalCodeNumberExtension> getPostalCodeNumberExtension() {
         if (postalCodeNumberExtension == null) {
-            postalCodeNumberExtension = new ArrayList<PostalCode.PostalCodeNumberExtension>();
+            postalCodeNumberExtension = new ArrayList<>();
         }
         return this.postalCodeNumberExtension;
     }
@@ -260,7 +260,7 @@ public class PostalCode {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -365,7 +365,7 @@ public class PostalCode {
         @XmlSchemaType(name = "anySimpleType")
         protected String type;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the addressLine property.
@@ -391,7 +391,7 @@ public class PostalCode {
          */
         public List<AddressLine> getAddressLine() {
             if (addressLine == null) {
-                addressLine = new ArrayList<AddressLine>();
+                addressLine = new ArrayList<>();
             }
             return this.addressLine;
         }
@@ -420,7 +420,7 @@ public class PostalCode {
          */
         public List<PostalCode.PostTown.PostTownName> getPostTownName() {
             if (postTownName == null) {
-                postTownName = new ArrayList<PostalCode.PostTown.PostTownName>();
+                postTownName = new ArrayList<>();
             }
             return this.postTownName;
         }
@@ -525,7 +525,7 @@ public class PostalCode {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+            private Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -649,7 +649,7 @@ public class PostalCode {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+            private Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -755,7 +755,7 @@ public class PostalCode {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -887,7 +887,7 @@ public class PostalCode {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.

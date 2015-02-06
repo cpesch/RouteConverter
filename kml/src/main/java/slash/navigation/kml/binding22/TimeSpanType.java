@@ -130,7 +130,7 @@ public class TimeSpanType
      */
     public List<Object> getTimeSpanSimpleExtensionGroup() {
         if (timeSpanSimpleExtensionGroup == null) {
-            timeSpanSimpleExtensionGroup = new ArrayList<Object>();
+            timeSpanSimpleExtensionGroup = new ArrayList<>();
         }
         return this.timeSpanSimpleExtensionGroup;
     }
@@ -159,7 +159,7 @@ public class TimeSpanType
      */
     public List<AbstractObjectType> getTimeSpanObjectExtensionGroup() {
         if (timeSpanObjectExtensionGroup == null) {
-            timeSpanObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            timeSpanObjectExtensionGroup = new ArrayList<>();
         }
         return this.timeSpanObjectExtensionGroup;
     }

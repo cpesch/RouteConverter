@@ -77,7 +77,7 @@ public class Status {
      */
     public List<Serializable> getCodeOrRequest() {
         if (codeOrRequest == null) {
-            codeOrRequest = new ArrayList<Serializable>();
+            codeOrRequest = new ArrayList<>();
         }
         return this.codeOrRequest;
     }

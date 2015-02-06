@@ -76,7 +76,7 @@ public class DocumentType
      */
     public List<SchemaType> getSchema() {
         if (schema == null) {
-            schema = new ArrayList<SchemaType>();
+            schema = new ArrayList<>();
         }
         return this.schema;
     }
@@ -114,7 +114,7 @@ public class DocumentType
      */
     public List<JAXBElement<? extends AbstractFeatureType>> getAbstractFeatureGroup() {
         if (abstractFeatureGroup == null) {
-            abstractFeatureGroup = new ArrayList<JAXBElement<? extends AbstractFeatureType>>();
+            abstractFeatureGroup = new ArrayList<>();
         }
         return this.abstractFeatureGroup;
     }

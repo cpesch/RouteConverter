@@ -34,8 +34,8 @@ import java.util.List;
  */
 
 public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> {
-    private List<R> routes = new ArrayList<R>();
-    private List<NavigationFormat<R>> formats = new ArrayList<NavigationFormat<R>>();
+    private List<R> routes = new ArrayList<>();
+    private List<NavigationFormat<R>> formats = new ArrayList<>();
 
     public void prependRoute(R route) {
         this.routes.add(0, route);
@@ -58,7 +58,7 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     }
 
     public List<R> getRoutes() {
-        return new ArrayList<R>(routes);
+        return new ArrayList<>(routes);
     }
 
     public List<NavigationFormat<R>> getFormats() {

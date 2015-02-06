@@ -79,7 +79,7 @@ public class ExtendedDataType {
      */
     public List<DataType> getData() {
         if (data == null) {
-            data = new ArrayList<DataType>();
+            data = new ArrayList<>();
         }
         return this.data;
     }
@@ -108,7 +108,7 @@ public class ExtendedDataType {
      */
     public List<SchemaDataType> getSchemaData() {
         if (schemaData == null) {
-            schemaData = new ArrayList<SchemaDataType>();
+            schemaData = new ArrayList<>();
         }
         return this.schemaData;
     }
@@ -138,7 +138,7 @@ public class ExtendedDataType {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

@@ -113,7 +113,7 @@ public class MultiGeometry {
      */
     public List<Object> getExtrudeOrTessellateOrAltitudeMode() {
         if (extrudeOrTessellateOrAltitudeMode == null) {
-            extrudeOrTessellateOrAltitudeMode = new ArrayList<Object>();
+            extrudeOrTessellateOrAltitudeMode = new ArrayList<>();
         }
         return this.extrudeOrTessellateOrAltitudeMode;
     }

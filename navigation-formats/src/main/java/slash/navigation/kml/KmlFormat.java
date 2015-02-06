@@ -86,7 +86,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             // to make sure the numbers are separated if they were already parsed by the XML parse
             buffer.append(' ');
         }
-        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        List<KmlPosition> result = new ArrayList<>();
         for (NavigationPosition position : parsePositions(buffer.toString()))
             result.add(asKmlPosition(position));
         return result;

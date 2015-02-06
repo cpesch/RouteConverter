@@ -92,7 +92,7 @@ class OvlSection extends IniFileSection {
     }
 
     void removePositions() {
-        for (String key : new HashSet<String>(keySet())) {
+        for (String key : new HashSet<>(keySet())) {
             if (key.startsWith(X_POSITION) || key.startsWith(Y_POSITION))
                 remove(key);
         }

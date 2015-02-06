@@ -134,7 +134,7 @@ public class Placemark {
      */
     public List<Object> getDescriptionOrNameOrSnippet() {
         if (descriptionOrNameOrSnippet == null) {
-            descriptionOrNameOrSnippet = new ArrayList<Object>();
+            descriptionOrNameOrSnippet = new ArrayList<>();
         }
         return this.descriptionOrNameOrSnippet;
     }

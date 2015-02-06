@@ -188,7 +188,7 @@ public class ImagePyramidType
      */
     public List<Object> getImagePyramidSimpleExtensionGroup() {
         if (imagePyramidSimpleExtensionGroup == null) {
-            imagePyramidSimpleExtensionGroup = new ArrayList<Object>();
+            imagePyramidSimpleExtensionGroup = new ArrayList<>();
         }
         return this.imagePyramidSimpleExtensionGroup;
     }
@@ -217,7 +217,7 @@ public class ImagePyramidType
      */
     public List<AbstractObjectType> getImagePyramidObjectExtensionGroup() {
         if (imagePyramidObjectExtensionGroup == null) {
-            imagePyramidObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            imagePyramidObjectExtensionGroup = new ArrayList<>();
         }
         return this.imagePyramidObjectExtensionGroup;
     }

@@ -37,8 +37,8 @@ import java.util.Map;
  */
 
 public class ActionManager {
-    private Map<String, Action> actionMap = new HashMap<String, Action>();
-    private Map<String, ProxyAction> proxyActionMap = new HashMap<String, ProxyAction>();
+    private Map<String, Action> actionMap = new HashMap<>();
+    private Map<String, ProxyAction> proxyActionMap = new HashMap<>();
 
     public Action get(String actionName) {
         Action action = actionMap.get(actionName);

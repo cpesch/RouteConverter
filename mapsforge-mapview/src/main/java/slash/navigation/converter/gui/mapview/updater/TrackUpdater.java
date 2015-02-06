@@ -37,7 +37,7 @@ import static java.lang.Math.min;
 public class TrackUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final TrackOperation trackOperation;
-    private final List<PairWithLayer> pairWithLayers = new ArrayList<PairWithLayer>();
+    private final List<PairWithLayer> pairWithLayers = new ArrayList<>();
 
     public TrackUpdater(PositionsModel positionsModel, TrackOperation trackOperation) {
         this.positionsModel = positionsModel;
@@ -48,11 +48,11 @@ public class TrackUpdater implements EventMapUpdater {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : lastRow;
 
-        List<PairWithLayer> removed = new ArrayList<PairWithLayer>();
+        List<PairWithLayer> removed = new ArrayList<>();
         if (beforeFirstRow < pairWithLayers.size())
             removed.add(pairWithLayers.remove(beforeFirstRow));
 
-        List<PairWithLayer> added = new ArrayList<PairWithLayer>();
+        List<PairWithLayer> added = new ArrayList<>();
         for (int i = beforeFirstRow; i < afterLastRow; i++) {
             PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1));
             pairWithLayers.add(i, pairWithLayer);
@@ -71,7 +71,7 @@ public class TrackUpdater implements EventMapUpdater {
         int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
         int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 
-        List<PairWithLayer> updated = new ArrayList<PairWithLayer>();
+        List<PairWithLayer> updated = new ArrayList<>();
         for (int i = beforeFirstRow; i < afterLastRow; i++)
             updated.add(pairWithLayers.get(i));
 
@@ -84,11 +84,11 @@ public class TrackUpdater implements EventMapUpdater {
         int validLastRow = min(lastRow, pairWithLayers.size() - 1);
         int afterLastRow = lastRow < pairWithLayers.size() ? lastRow + 1 : validLastRow;
 
-        List<PairWithLayer> removed = new ArrayList<PairWithLayer>();
+        List<PairWithLayer> removed = new ArrayList<>();
         for (int i = validLastRow; i >= beforeFirstRow; i--)
             removed.add(pairWithLayers.remove(i));
 
-        List<PairWithLayer> added = new ArrayList<PairWithLayer>();
+        List<PairWithLayer> added = new ArrayList<>();
         if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1) {
             PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(beforeFirstRow), positionsModel.getPosition(afterLastRow));
             pairWithLayers.add(beforeFirstRow, pairWithLayer);

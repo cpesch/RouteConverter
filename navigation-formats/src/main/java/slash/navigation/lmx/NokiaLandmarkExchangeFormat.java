@@ -89,7 +89,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
     }
 
     private NokiaLandmarkExchangeRoute process(Lmx lmx) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
 
         String name = null, description = null;
         LandmarkType aLandmark = lmx.getLandmark();

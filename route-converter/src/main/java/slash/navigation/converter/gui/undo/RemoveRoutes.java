@@ -44,10 +44,10 @@ import static slash.common.io.Files.toFile;
 class RemoveRoutes extends AbstractUndoableEdit {
     private final UndoCatalogModel catalogModel;
     private final List<RouteModel> routes;
-    private final List<CategoryTreeNode> categories = new ArrayList<CategoryTreeNode>();
-    private final List<String> descriptions = new ArrayList<String>();
-    private final List<URL> files = new ArrayList<URL>();
-    private final List<String> urls = new ArrayList<String>();
+    private final List<CategoryTreeNode> categories = new ArrayList<>();
+    private final List<String> descriptions = new ArrayList<>();
+    private final List<URL> files = new ArrayList<>();
+    private final List<String> urls = new ArrayList<>();
 
     public RemoveRoutes(UndoCatalogModel catalogModel, List<RouteModel> routes) {
         this.catalogModel = catalogModel;

@@ -111,7 +111,7 @@ public class Route {
      */
     public List<Route.Point> getPoint() {
         if (point == null) {
-            point = new ArrayList<Route.Point>();
+            point = new ArrayList<>();
         }
         return this.point;
     }

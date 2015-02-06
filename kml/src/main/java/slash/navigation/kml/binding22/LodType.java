@@ -188,7 +188,7 @@ public class LodType
      */
     public List<Object> getLodSimpleExtensionGroup() {
         if (lodSimpleExtensionGroup == null) {
-            lodSimpleExtensionGroup = new ArrayList<Object>();
+            lodSimpleExtensionGroup = new ArrayList<>();
         }
         return this.lodSimpleExtensionGroup;
     }
@@ -217,7 +217,7 @@ public class LodType
      */
     public List<AbstractObjectType> getLodObjectExtensionGroup() {
         if (lodObjectExtensionGroup == null) {
-            lodObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            lodObjectExtensionGroup = new ArrayList<>();
         }
         return this.lodObjectExtensionGroup;
     }

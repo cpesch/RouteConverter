@@ -90,7 +90,7 @@ public abstract class AbstractGeometryType
      */
     public List<Object> getAbstractGeometrySimpleExtensionGroup() {
         if (abstractGeometrySimpleExtensionGroup == null) {
-            abstractGeometrySimpleExtensionGroup = new ArrayList<Object>();
+            abstractGeometrySimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractGeometrySimpleExtensionGroup;
     }
@@ -119,7 +119,7 @@ public abstract class AbstractGeometryType
      */
     public List<AbstractObjectType> getAbstractGeometryObjectExtensionGroup() {
         if (abstractGeometryObjectExtensionGroup == null) {
-            abstractGeometryObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractGeometryObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractGeometryObjectExtensionGroup;
     }

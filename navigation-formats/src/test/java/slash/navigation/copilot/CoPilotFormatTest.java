@@ -51,7 +51,7 @@ public class CoPilotFormatTest {
 
     @Test
     public void testParsePosition() {
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,String> map = new HashMap<>();
             map.put("Longitude", "11753270");
         map.put("Latitude", "47688350");
 

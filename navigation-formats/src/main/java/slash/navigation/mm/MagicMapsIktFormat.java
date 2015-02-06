@@ -125,7 +125,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {
         boolean hasValidRoot = false, nextIsProjectName = false, nextIsDescription = false, nextIsName = false;
         String projectName = null, description = null, name = null;
-        List<MagicMapsIktRoute> routes = new ArrayList<MagicMapsIktRoute>();
+        List<MagicMapsIktRoute> routes = new ArrayList<>();
         List<Wgs84Position> positions = null;
 
         while (eventReader.hasNext()) {
@@ -156,7 +156,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
                 } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
                     name = null;
-                    positions = new ArrayList<Wgs84Position>();
+                    positions = new ArrayList<>();
                 } else if (elementName.startsWith(GEO_POSITION_ELEMENT)) {
                     positions.add(processPosition(startElement));
                 }
@@ -191,7 +191,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
         writer.add(eventFactory.createStartDocument(UTF8_ENCODING, "1.0", true));
-        List<Attribute> rootAttributes = new ArrayList<Attribute>();
+        List<Attribute> rootAttributes = new ArrayList<>();
         rootAttributes.add(eventFactory.createAttribute(FILE_FORMAT_ATTRIBUTE, FILE_FORMAT));
         writer.add(eventFactory.createStartElement(new QName(ROOT_ELEMENT), rootAttributes.iterator(), null));
 
@@ -211,7 +211,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     private void writePosition(Wgs84Position position, int index, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
         writer.add(eventFactory.createStartElement(new QName(POINT_ELEMENT + "_" + index), null, null));
 
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        List<Attribute> attributes = new ArrayList<>();
         attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, formatPositionAsString(position.getLongitude())));
         attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, formatPositionAsString(position.getLatitude())));
         writer.add(eventFactory.createStartElement(new QName(GEO_POSITION_ELEMENT), attributes.iterator(), null));

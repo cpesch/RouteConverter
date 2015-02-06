@@ -71,7 +71,7 @@ public class CreateType {
      */
     public List<JAXBElement<? extends AbstractContainerType>> getAbstractContainerGroup() {
         if (abstractContainerGroup == null) {
-            abstractContainerGroup = new ArrayList<JAXBElement<? extends AbstractContainerType>>();
+            abstractContainerGroup = new ArrayList<>();
         }
         return this.abstractContainerGroup;
     }

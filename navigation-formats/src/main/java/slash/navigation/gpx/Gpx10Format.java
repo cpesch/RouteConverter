@@ -96,7 +96,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxRoute> extractRoutes(Gpx gpx, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
 
         for (Gpx.Rte rte : gpx.getRte()) {
             String name = rte.getName();
@@ -125,7 +125,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxRoute> extractTracks(Gpx gpx, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
         for (Gpx.Trk trk : gpx.getTrk()) {
             String name = trk.getName();
             String desc = trk.getDesc();
@@ -138,7 +138,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxPosition> extractRoute(Gpx.Rte rte, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
                 positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(rtept.getCourse()), parseTime(rtept.getTime()), asDescription(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
@@ -148,7 +148,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         for (Gpx.Wpt wpt : wpts) {
             positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(wpt.getCourse()), parseTime(wpt.getTime()), asWayPointDescription(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
         }
@@ -156,7 +156,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxPosition> extractTrack(Gpx.Trk trk, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
@@ -193,7 +193,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Wpt> wpts = new ArrayList<Gpx.Wpt>();
+        List<Gpx.Wpt> wpts = new ArrayList<>();
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
@@ -227,7 +227,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Rte> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Rte> rtes = new ArrayList<Gpx.Rte>();
+        List<Gpx.Rte> rtes = new ArrayList<>();
 
         Gpx.Rte rte = route.getOrigin(Gpx.Rte.class);
         if (rte != null && reuseReadObjectsForWriting)
@@ -273,7 +273,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Trk> createTrack(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Trk> trks = new ArrayList<Gpx.Trk>();
+        List<Gpx.Trk> trks = new ArrayList<>();
 
         Gpx.Trk trk = route.getOrigin(Gpx.Trk.class);
         if (trk != null && reuseReadObjectsForWriting)

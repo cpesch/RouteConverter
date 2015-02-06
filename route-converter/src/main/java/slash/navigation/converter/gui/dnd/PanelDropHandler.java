@@ -45,7 +45,7 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
 public class PanelDropHandler extends TransferHandler {
     private List<File> toFilesOnly(List<File> files) {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         for (File file : files) {
             if (file.isFile())
                 result.add(file);

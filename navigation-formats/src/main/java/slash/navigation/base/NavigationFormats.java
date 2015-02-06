@@ -81,7 +81,7 @@ import static slash.common.io.Transfer.trim;
  */
 
 public final class NavigationFormats {
-    private static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS = new ArrayList<Class<? extends NavigationFormat>>();
+    private static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS = new ArrayList<>();
 
     static {
         // self-implemented formats
@@ -204,7 +204,7 @@ public final class NavigationFormats {
     }
 
     private static List<NavigationFormat> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
-        List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> formats = new ArrayList<>();
         for (Class<? extends NavigationFormat> formatClass : SUPPORTED_FORMATS) {
             try {
                 NavigationFormat format = formatClass.newInstance();
@@ -249,20 +249,20 @@ public final class NavigationFormats {
     }
 
     public static List<NavigationFormat> getReadFormatsPreferredByExtension(String preferredExtension) {
-        List<NavigationFormat> preferredFormats = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> preferredFormats = new ArrayList<>();
         for(NavigationFormat format : getReadFormats()) {
             if(format.getExtension().equals(preferredExtension))
                 preferredFormats.add(format);
         }
 
-        List<NavigationFormat> result = new ArrayList<NavigationFormat>(getReadFormats());
+        List<NavigationFormat> result = new ArrayList<>(getReadFormats());
         result.removeAll(preferredFormats);
         result.addAll(0, preferredFormats);
         return result;
     }
 
     public static List<NavigationFormat> getReadFormatsWithPreferredFormat(NavigationFormat preferredFormat) {
-        List<NavigationFormat> formats = new ArrayList<NavigationFormat>(getReadFormats());
+        List<NavigationFormat> formats = new ArrayList<>(getReadFormats());
         if (preferredFormat != null) {
             formats.remove(preferredFormat);
             formats.add(0, preferredFormat);
@@ -271,7 +271,7 @@ public final class NavigationFormats {
     }
 
     public static List<NavigationFormat> getWriteFormatsWithPreferredFormats(List<NavigationFormat> preferredFormats) {
-        List<NavigationFormat> formats = new ArrayList<NavigationFormat>(getWriteFormatsSortedByName());
+        List<NavigationFormat> formats = new ArrayList<>(getWriteFormatsSortedByName());
         formats.removeAll(preferredFormats);
         formats.addAll(0, preferredFormats);
         return formats;
@@ -305,7 +305,7 @@ public final class NavigationFormats {
     }
 
     public static List<BaseNavigationPosition> asFormatForPositions(List<NavigationPosition> positions, NavigationFormat format) throws IOException {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(positions.size());
+        List<BaseNavigationPosition> result = new ArrayList<>(positions.size());
         for (NavigationPosition position : positions) {
             result.add(asFormat(position, format));
         }
@@ -326,7 +326,7 @@ public final class NavigationFormats {
     }
 
     public static List<BaseRoute> asFormatForRoutes(List<BaseRoute> routes, NavigationFormat format) throws IOException {
-        List<BaseRoute> result = new ArrayList<BaseRoute>(routes.size());
+        List<BaseRoute> result = new ArrayList<>(routes.size());
         for (BaseRoute route : routes) {
             result.add(asFormat(route, format));
         }

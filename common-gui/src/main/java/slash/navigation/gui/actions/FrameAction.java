@@ -37,7 +37,7 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
  */
 
 public abstract class FrameAction extends AbstractAction implements ActionListener {
-    private static ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<ActionEvent>();
+    private static ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<>();
 
     protected JFrame getFrame() {
         Application application = Application.getInstance();

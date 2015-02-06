@@ -38,7 +38,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class ResourcesTableModel extends AbstractTableModel {
-    private List<RemoteResource> resources = new ArrayList<RemoteResource>();
+    private List<RemoteResource> resources = new ArrayList<>();
 
     public List<RemoteResource> getResources() {
         return resources;

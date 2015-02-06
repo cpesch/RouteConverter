@@ -64,7 +64,7 @@ public class TreePathStringConversion {
     }
 
     public static TreePath fromString(CategoryTreeNode root, String path) {
-        List<CategoryTreeNode> result = new ArrayList<CategoryTreeNode>();
+        List<CategoryTreeNode> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(path, "/");
         CategoryTreeNode current = root;
         result.add(root);

@@ -244,7 +244,7 @@ public class StyleType
      */
     public List<Object> getStyleSimpleExtensionGroup() {
         if (styleSimpleExtensionGroup == null) {
-            styleSimpleExtensionGroup = new ArrayList<Object>();
+            styleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.styleSimpleExtensionGroup;
     }
@@ -273,7 +273,7 @@ public class StyleType
      */
     public List<AbstractObjectType> getStyleObjectExtensionGroup() {
         if (styleObjectExtensionGroup == null) {
-            styleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            styleObjectExtensionGroup = new ArrayList<>();
         }
         return this.styleObjectExtensionGroup;
     }

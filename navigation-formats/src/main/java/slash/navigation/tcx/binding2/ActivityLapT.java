@@ -312,7 +312,7 @@ public class ActivityLapT {
      */
     public List<TrackT> getTrack() {
         if (track == null) {
-            track = new ArrayList<TrackT>();
+            track = new ArrayList<>();
         }
         return this.track;
     }

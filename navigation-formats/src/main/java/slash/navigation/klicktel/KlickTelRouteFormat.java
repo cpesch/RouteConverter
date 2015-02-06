@@ -72,7 +72,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
     }
 
     private KlickTelRoute process(KDRoute route) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (KDRoute.Stations.Station station : route.getStations().getStation()) {
             KDRoute.Stations.Station.Point point = station.getPoint();
             String description = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +

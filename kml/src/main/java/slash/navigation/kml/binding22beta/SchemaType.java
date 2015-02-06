@@ -80,7 +80,7 @@ public class SchemaType {
      */
     public List<SimpleFieldType> getSimpleField() {
         if (simpleField == null) {
-            simpleField = new ArrayList<SimpleFieldType>();
+            simpleField = new ArrayList<>();
         }
         return this.simpleField;
     }

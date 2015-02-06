@@ -150,7 +150,7 @@ public class TrackType
      */
     public List<String> getWhen() {
         if (when == null) {
-            when = new ArrayList<String>();
+            when = new ArrayList<>();
         }
         return this.when;
     }
@@ -179,7 +179,7 @@ public class TrackType
      */
     public List<String> getCoord() {
         if (coord == null) {
-            coord = new ArrayList<String>();
+            coord = new ArrayList<>();
         }
         return this.coord;
     }
@@ -208,7 +208,7 @@ public class TrackType
      */
     public List<String> getAngles() {
         if (angles == null) {
-            angles = new ArrayList<String>();
+            angles = new ArrayList<>();
         }
         return this.angles;
     }
@@ -285,7 +285,7 @@ public class TrackType
      */
     public List<Object> getAbstractTrackSimpleExtensionGroup() {
         if (abstractTrackSimpleExtensionGroup == null) {
-            abstractTrackSimpleExtensionGroup = new ArrayList<Object>();
+            abstractTrackSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractTrackSimpleExtensionGroup;
     }

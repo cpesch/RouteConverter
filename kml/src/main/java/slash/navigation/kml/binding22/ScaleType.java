@@ -160,7 +160,7 @@ public class ScaleType
      */
     public List<Object> getScaleSimpleExtensionGroup() {
         if (scaleSimpleExtensionGroup == null) {
-            scaleSimpleExtensionGroup = new ArrayList<Object>();
+            scaleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.scaleSimpleExtensionGroup;
     }
@@ -189,7 +189,7 @@ public class ScaleType
      */
     public List<AbstractObjectType> getScaleObjectExtensionGroup() {
         if (scaleObjectExtensionGroup == null) {
-            scaleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            scaleObjectExtensionGroup = new ArrayList<>();
         }
         return this.scaleObjectExtensionGroup;
     }

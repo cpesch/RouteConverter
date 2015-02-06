@@ -149,7 +149,7 @@ public class CompactCalendar {
             // add new timezone to new version of global map.
             // The following call is allegedly expensive (that's why we go through all this trouble)
             result = TimeZone.getTimeZone(getTimeZoneId());
-            Map<String, TimeZone> newTimeZones = new HashMap<String, TimeZone>(timeZones);
+            Map<String, TimeZone> newTimeZones = new HashMap<>(timeZones);
             newTimeZones.put(getTimeZoneId(), result);
             newTimeZones = unmodifiableMap(newTimeZones); // paranoia
             timeZones = newTimeZones;

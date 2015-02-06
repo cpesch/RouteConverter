@@ -101,7 +101,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
+        List<BcrPosition> bcrPositions = new ArrayList<>();
         for (TomTomPosition tomTomPosition : positions) {
             BcrPosition bcrPosition = tomTomPosition.asMTPPosition();
             // shortens description to better fit to Map&Guide Tourenplaner station list
@@ -114,7 +114,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (TomTomPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
@@ -122,7 +122,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        List<GpxPosition> gpxPositions = new ArrayList<>();
         for (TomTomPosition tomTomPosition : positions) {
             gpxPositions.add(tomTomPosition.asGpxPosition());
         }
@@ -130,7 +130,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        List<KmlPosition> kmlPositions = new ArrayList<>();
         for (TomTomPosition tomTomPosition : positions) {
             kmlPositions.add(tomTomPosition.asKmlPosition());
         }
@@ -138,7 +138,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        List<NmeaPosition> nmeaPositions = new ArrayList<>();
         for (TomTomPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
@@ -146,7 +146,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        List<NmnPosition> nmnPositions = new ArrayList<>();
         for (TomTomPosition tomTomPosition : positions) {
             nmnPositions.add(tomTomPosition.asNmnPosition());
         }
@@ -154,7 +154,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> simplePositions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> simplePositions = new ArrayList<>();
         for (TomTomPosition tomTomPosition : positions) {
             simplePositions.add(tomTomPosition.asWgs84Position());
         }
@@ -162,7 +162,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -170,7 +170,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>(getPositions());
+        List<TomTomPosition> tomTomPositions = new ArrayList<>(getPositions());
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
     }
 

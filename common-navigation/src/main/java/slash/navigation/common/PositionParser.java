@@ -57,7 +57,7 @@ public class PositionParser {
     }
 
     public static List<NavigationPosition> parsePositions(String listOfCoordinates) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         Matcher matcher = POSITION_PATTERN.matcher(listOfCoordinates);
         while (matcher.find()) {
             result.add(parsePosition(matcher.group(0), null));
@@ -66,7 +66,7 @@ public class PositionParser {
     }
 
     public static List<NavigationPosition> parseExtensionPositions(String listOfCoordinates) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         Matcher matcher = EXTENSION_POSITION_PATTERN.matcher(listOfCoordinates);
         while (matcher.find()) {
             String longitude = matcher.group(1);

@@ -35,7 +35,7 @@ public class BaseMapViewTest {
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 4;
 
     private List<Integer> createIntervals(int size) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         int directionsCount = ceiling(size, MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < directionsCount; j++) {
             int start = max(0, j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH - 1);

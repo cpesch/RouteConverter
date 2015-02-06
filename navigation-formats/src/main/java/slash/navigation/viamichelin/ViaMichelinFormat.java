@@ -95,7 +95,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
 
     private ViaMichelinRoute process(PoiList poiList) {
         String routeName = null;
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (Object itineraryOrPoi : poiList.getItineraryOrPoi()) {
             if (itineraryOrPoi instanceof Itinerary) {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;

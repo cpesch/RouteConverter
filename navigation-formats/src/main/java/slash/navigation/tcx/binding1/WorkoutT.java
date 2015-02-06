@@ -114,7 +114,7 @@ public class WorkoutT {
      */
     public List<AbstractStepT> getStep() {
         if (step == null) {
-            step = new ArrayList<AbstractStepT>();
+            step = new ArrayList<>();
         }
         return this.step;
     }
@@ -143,7 +143,7 @@ public class WorkoutT {
      */
     public List<XMLGregorianCalendar> getScheduledOn() {
         if (scheduledOn == null) {
-            scheduledOn = new ArrayList<XMLGregorianCalendar>();
+            scheduledOn = new ArrayList<>();
         }
         return this.scheduledOn;
     }

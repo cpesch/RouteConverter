@@ -54,7 +54,7 @@ public class NavigationFormatParserIT {
     }
 
     private List<BaseRoute> getRouteCharacteristics(List<BaseRoute> routes, RouteCharacteristics characteristics) {
-        List<BaseRoute> result = new ArrayList<BaseRoute>();
+        List<BaseRoute> result = new ArrayList<>();
         for (BaseRoute route : routes) {
             if (route.getCharacteristics().equals(characteristics))
                 result.add(route);
@@ -114,7 +114,7 @@ public class NavigationFormatParserIT {
 
     @Test
     public void testReadWithFormatList() throws IOException {
-        List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> formats = new ArrayList<>();
         ParserResult result1 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertFalse(result1.isSuccessful());
         formats.add(new TomTom8RouteFormat());

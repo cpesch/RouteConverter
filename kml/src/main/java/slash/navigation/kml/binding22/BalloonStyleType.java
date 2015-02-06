@@ -222,7 +222,7 @@ public class BalloonStyleType
      */
     public List<Object> getBalloonStyleSimpleExtensionGroup() {
         if (balloonStyleSimpleExtensionGroup == null) {
-            balloonStyleSimpleExtensionGroup = new ArrayList<Object>();
+            balloonStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.balloonStyleSimpleExtensionGroup;
     }
@@ -251,7 +251,7 @@ public class BalloonStyleType
      */
     public List<AbstractObjectType> getBalloonStyleObjectExtensionGroup() {
         if (balloonStyleObjectExtensionGroup == null) {
-            balloonStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            balloonStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.balloonStyleObjectExtensionGroup;
     }

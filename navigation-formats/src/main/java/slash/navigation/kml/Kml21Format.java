@@ -66,7 +66,7 @@ public class Kml21Format extends KmlFormat {
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends FeatureType>> elements, String name, Class<T> resultClass) {
-        List<JAXBElement<T>> result = new ArrayList<JAXBElement<T>>();
+        List<JAXBElement<T>> result = new ArrayList<>();
         for (JAXBElement<? extends FeatureType> element : elements) {
             if (name.equals(element.getName().getLocalPart()))
                 result.add((JAXBElement<T>) element);
@@ -122,7 +122,7 @@ public class Kml21Format extends KmlFormat {
     }
 
     private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate, ParserContext<KmlRoute> context) {
-        List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
+        List<KmlPosition> waypoints = new ArrayList<>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asDescription(trim(placemarkTypeValue.getName()),
@@ -159,7 +159,7 @@ public class Kml21Format extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends GeometryType> geometryType) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        List<KmlPosition> positions = new ArrayList<>();
         if (geometryType != null) {
             GeometryType geometryTypeValue = geometryType.getValue();
             if (geometryTypeValue instanceof PointType) {

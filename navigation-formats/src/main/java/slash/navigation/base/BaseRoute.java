@@ -202,7 +202,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int[] getContainedPositions(BoundingBox boundingBox) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); i++) {
             P position = positions.get(i);
@@ -213,7 +213,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         List<P> positions = getPositions();
         if (positions.size() <= 2)
             return new int[0];
@@ -429,7 +429,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public void revert() {
         List<P> positions = getPositions();
-        List<P> reverted = new ArrayList<P>();
+        List<P> reverted = new ArrayList<>();
         for (P position : positions) {
             reverted.add(0, position);
         }
@@ -509,7 +509,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof GarminFlightPlanFormat)
             return (GarminFlightPlanRoute) this;
 
-        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
+        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<>();
         for (P position : getPositions()) {
             flightPlanPositions.add(position.asGarminFlightPlanPosition());
         }
@@ -626,7 +626,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof KlickTelRouteFormat)
             return (KlickTelRoute) this;
 
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -722,7 +722,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof MagicMapsIktFormat)
             return (MagicMapsIktRoute) this;
 
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -734,7 +734,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof MagicMapsPthFormat)
             return (MagicMapsPthRoute) this;
 
-        List<GkPosition> gkPositions = new ArrayList<GkPosition>();
+        List<GkPosition> gkPositions = new ArrayList<>();
         for (P position : getPositions()) {
             gkPositions.add(position.asGkPosition());
         }
@@ -827,7 +827,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof NokiaLandmarkExchangeFormat)
             return (NokiaLandmarkExchangeRoute) this;
 
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -846,7 +846,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof OvlFormat)
             return (OvlRoute) this;
 
-        List<Wgs84Position> ovlPositions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> ovlPositions = new ArrayList<>();
         for (P position : getPositions()) {
             ovlPositions.add(position.asOvlPosition());
         }
@@ -914,7 +914,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof TourFormat)
             return (TourRoute) this;
 
-        List<TourPosition> tourPositions = new ArrayList<TourPosition>();
+        List<TourPosition> tourPositions = new ArrayList<>();
         for (P position : getPositions()) {
             tourPositions.add(position.asTourPosition());
         }
@@ -926,7 +926,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof ViaMichelinFormat)
             return (ViaMichelinRoute) this;
 
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }

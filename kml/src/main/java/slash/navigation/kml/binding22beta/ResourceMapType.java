@@ -70,7 +70,7 @@ public class ResourceMapType
      */
     public List<AliasType> getAlias() {
         if (alias == null) {
-            alias = new ArrayList<AliasType>();
+            alias = new ArrayList<>();
         }
         return this.alias;
     }

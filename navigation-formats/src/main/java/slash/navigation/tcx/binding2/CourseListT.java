@@ -68,7 +68,7 @@ public class CourseListT {
      */
     public List<CourseT> getCourse() {
         if (course == null) {
-            course = new ArrayList<CourseT>();
+            course = new ArrayList<>();
         }
         return this.course;
     }

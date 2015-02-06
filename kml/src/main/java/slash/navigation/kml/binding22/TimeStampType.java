@@ -103,7 +103,7 @@ public class TimeStampType
      */
     public List<Object> getTimeStampSimpleExtensionGroup() {
         if (timeStampSimpleExtensionGroup == null) {
-            timeStampSimpleExtensionGroup = new ArrayList<Object>();
+            timeStampSimpleExtensionGroup = new ArrayList<>();
         }
         return this.timeStampSimpleExtensionGroup;
     }
@@ -132,7 +132,7 @@ public class TimeStampType
      */
     public List<AbstractObjectType> getTimeStampObjectExtensionGroup() {
         if (timeStampObjectExtensionGroup == null) {
-            timeStampObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            timeStampObjectExtensionGroup = new ArrayList<>();
         }
         return this.timeStampObjectExtensionGroup;
     }

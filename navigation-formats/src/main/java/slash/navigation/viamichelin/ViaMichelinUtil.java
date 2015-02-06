@@ -108,7 +108,7 @@ class ViaMichelinUtil {
                 String header = XML_PREAMBLE + "\n" +
                         "<!DOCTYPE poi_list SYSTEM \"" + VIAMICHELIN_NAMESPACE_URI + "\">";
                 fos.write(header.getBytes());
-                newMarshaller().marshal(new JAXBElement<PoiList>(new QName("poi_list"), PoiList.class, poiList), fos);
+                newMarshaller().marshal(new JAXBElement<>(new QName("poi_list"), PoiList.class, poiList), fos);
             }
             finally {
                 fos.flush();

@@ -70,7 +70,7 @@ public class Nmn7Format extends NmnFormat {
     }
 
     private NmnRoute process(Route route) {
-        List<NmnPosition> positions = new ArrayList<NmnPosition>();
+        List<NmnPosition> positions = new ArrayList<>();
         for (Route.Point point : route.getPoint()) {
             positions.add(new NmnPosition(formatDouble(point.getX()), formatDouble(point.getY()), (Double) null, null, null, point.getName()));
         }

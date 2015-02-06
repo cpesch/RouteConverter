@@ -78,7 +78,7 @@ public class PlaylistType
      */
     public List<JAXBElement<? extends AbstractTourPrimitiveType>> getAbstractTourPrimitiveGroup() {
         if (abstractTourPrimitiveGroup == null) {
-            abstractTourPrimitiveGroup = new ArrayList<JAXBElement<? extends AbstractTourPrimitiveType>>();
+            abstractTourPrimitiveGroup = new ArrayList<>();
         }
         return this.abstractTourPrimitiveGroup;
     }

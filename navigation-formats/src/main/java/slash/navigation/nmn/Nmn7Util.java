@@ -68,7 +68,7 @@ class Nmn7Util {
     public static void marshal(Route route, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<Route>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), out);
             }
             finally {
                 out.flush();

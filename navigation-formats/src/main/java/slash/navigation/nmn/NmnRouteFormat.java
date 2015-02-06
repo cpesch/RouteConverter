@@ -217,7 +217,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 log.fine("Unknown 13-16: seen " + unknown + ", not expected 0 or 1");
             }
 
-            List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+            List<NavigationPosition> positions = new ArrayList<>();
             int readedPositions = 0;
             //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
             //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.

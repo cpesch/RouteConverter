@@ -88,7 +88,7 @@ public class DocumentType
      */
     public List<SchemaType> getSchema() {
         if (schema == null) {
-            schema = new ArrayList<SchemaType>();
+            schema = new ArrayList<>();
         }
         return this.schema;
     }
@@ -127,7 +127,7 @@ public class DocumentType
      */
     public List<JAXBElement<? extends AbstractFeatureType>> getAbstractFeatureGroup() {
         if (abstractFeatureGroup == null) {
-            abstractFeatureGroup = new ArrayList<JAXBElement<? extends AbstractFeatureType>>();
+            abstractFeatureGroup = new ArrayList<>();
         }
         return this.abstractFeatureGroup;
     }
@@ -156,7 +156,7 @@ public class DocumentType
      */
     public List<Object> getDocumentSimpleExtensionGroup() {
         if (documentSimpleExtensionGroup == null) {
-            documentSimpleExtensionGroup = new ArrayList<Object>();
+            documentSimpleExtensionGroup = new ArrayList<>();
         }
         return this.documentSimpleExtensionGroup;
     }
@@ -185,7 +185,7 @@ public class DocumentType
      */
     public List<AbstractObjectType> getDocumentObjectExtensionGroup() {
         if (documentObjectExtensionGroup == null) {
-            documentObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            documentObjectExtensionGroup = new ArrayList<>();
         }
         return this.documentObjectExtensionGroup;
     }

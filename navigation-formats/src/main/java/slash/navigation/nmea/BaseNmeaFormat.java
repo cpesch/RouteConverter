@@ -101,7 +101,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<NmeaRoute> context) throws IOException {
-        List<NmeaPosition> positions = new ArrayList<NmeaPosition>();
+        List<NmeaPosition> positions = new ArrayList<>();
 
         CompactCalendar originalStartDate = startDate;
         int lineCount = 0;

@@ -77,7 +77,7 @@ public class NavigationFormatParser {
     private static final Logger log = Logger.getLogger(NavigationFormatParser.class.getName());
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
-    private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<NavigationFormatParserListener>();
+    private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<>();
 
     public void addNavigationFileParserListener(NavigationFormatParserListener listener) {
         listeners.add(listener);
@@ -94,7 +94,7 @@ public class NavigationFormatParser {
     }
 
     private List<Integer> getPositionCounts(List<BaseRoute> routes) {
-        List<Integer> positionCounts = new ArrayList<Integer>();
+        List<Integer> positionCounts = new ArrayList<>();
         for (BaseRoute route : routes)
             positionCounts.add(route.getPositionCount());
         return positionCounts;
@@ -224,7 +224,7 @@ public class NavigationFormatParser {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source));
         buffer.mark(readBufferSize + 1);
         try {
-            ParserContext<BaseRoute> context = new InternalParserContext<BaseRoute>();
+            ParserContext<BaseRoute> context = new InternalParserContext<>();
             internalRead(buffer, startDate, formats, context);
             return createResult(context);
         } finally {
@@ -275,18 +275,18 @@ public class NavigationFormatParser {
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
         if (isGoogleMapsProfileUrl(url)) {
             url = new URL(url.toExternalForm() + "&output=kml");
-            formats = new ArrayList<NavigationFormat>(formats);
+            formats = new ArrayList<>(formats);
             formats.add(0, new Kml22Format());
 
         } else if (isGoogleMapsLinkUrl(url)) {
             byte[] bytes = url.toExternalForm().getBytes();
-            List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
+            List<NavigationFormat> readFormats = new ArrayList<>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());
             return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
 
         } else if (isMotoPlanerUrl(url)) {
             byte[] bytes = url.toExternalForm().getBytes();
-            List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
+            List<NavigationFormat> readFormats = new ArrayList<>(formats);
             readFormats.add(0, new MotoPlanerUrlFormat());
             return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
         }
@@ -391,7 +391,7 @@ public class NavigationFormatParser {
         log.info("Writing '" + format.getName() + "' with with " + routes.size() + " routes and " +
                 getPositionCounts(routes) + " positions");
 
-        List<BaseRoute> routesToWrite = new ArrayList<BaseRoute>(routes.size());
+        List<BaseRoute> routesToWrite = new ArrayList<>(routes.size());
         for (BaseRoute route : routes) {
             BaseRoute routeToWrite = asFormat(route, format);
             commentRoute(routeToWrite);

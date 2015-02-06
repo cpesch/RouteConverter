@@ -88,7 +88,7 @@ public class HistoryFolderT {
      */
     public List<HistoryFolderT> getFolder() {
         if (folder == null) {
-            folder = new ArrayList<HistoryFolderT>();
+            folder = new ArrayList<>();
         }
         return this.folder;
     }
@@ -117,7 +117,7 @@ public class HistoryFolderT {
      */
     public List<ActivityReferenceT> getActivityRef() {
         if (activityRef == null) {
-            activityRef = new ArrayList<ActivityReferenceT>();
+            activityRef = new ArrayList<>();
         }
         return this.activityRef;
     }
@@ -146,7 +146,7 @@ public class HistoryFolderT {
      */
     public List<WeekT> getWeek() {
         if (week == null) {
-            week = new ArrayList<WeekT>();
+            week = new ArrayList<>();
         }
         return this.week;
     }

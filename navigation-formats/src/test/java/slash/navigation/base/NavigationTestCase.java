@@ -128,7 +128,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     public static void assertDescriptionEquals(List<String> expected, List<String> was) {
-        List<String> wasFiltered = new ArrayList<String>();
+        List<String> wasFiltered = new ArrayList<>();
         if (was != null)
             for (String w : was) {
                 if (!w.equals(GENERATED_BY))
@@ -1003,7 +1003,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     public static List<GpxRoute> readGpxFile(GpxFormat format, String fileName) throws Exception {
         File source = new File(fileName);
-        ParserContext<GpxRoute> context = new ParserContextImpl<GpxRoute>();
+        ParserContext<GpxRoute> context = new ParserContextImpl<>();
         format.read(new FileInputStream(source), null, context);
         return context.getRoutes();
     }
@@ -1012,7 +1012,7 @@ public abstract class NavigationTestCase extends TestCase {
         File source = new File(fileName);
         NavigationFormatParser parser = new NavigationFormatParser();
         ParserResult result = parser.read(source, asList((NavigationFormat) format));
-        List<KmlRoute> routes = new ArrayList<KmlRoute>();
+        List<KmlRoute> routes = new ArrayList<>();
         for (BaseRoute route : result.getAllRoutes()) {
             if (route instanceof KmlRoute)
                 routes.add((KmlRoute) route);
@@ -1028,7 +1028,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
+        ParserContext<TomTomRoute> context = new ParserContextImpl<>();
         new TomTom5RouteFormat().read(new FileInputStream(source), startDate, context);
         return context.getRoutes();
     }
@@ -1041,7 +1041,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
         new NmeaFormat().read(new FileInputStream(source), startDate, context);
         return context.getRoutes();
     }
@@ -1054,7 +1054,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<SimpleRoute> context = new ParserContextImpl<SimpleRoute>();
+        ParserContext<SimpleRoute> context = new ParserContextImpl<>();
         new GoPalTrackFormat().read(new FileInputStream(source), startDate, context);
         return context.getRoutes();
     }

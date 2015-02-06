@@ -456,7 +456,7 @@ public abstract class AbstractFeatureType
      */
     public List<JAXBElement<? extends AbstractStyleSelectorType>> getAbstractStyleSelectorGroup() {
         if (abstractStyleSelectorGroup == null) {
-            abstractStyleSelectorGroup = new ArrayList<JAXBElement<? extends AbstractStyleSelectorType>>();
+            abstractStyleSelectorGroup = new ArrayList<>();
         }
         return this.abstractStyleSelectorGroup;
     }

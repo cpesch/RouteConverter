@@ -37,7 +37,7 @@ import static java.lang.Math.min;
 public class WaypointUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final WaypointOperation waypointOperation;
-    private final List<PositionWithLayer> positionWithLayers = new ArrayList<PositionWithLayer>();
+    private final List<PositionWithLayer> positionWithLayers = new ArrayList<>();
 
     public WaypointUpdater(PositionsModel positionsModel, WaypointOperation waypointOperation) {
         this.positionsModel = positionsModel;
@@ -45,7 +45,7 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleAdd(int firstRow, int lastRow) {
-        List<PositionWithLayer> added = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> added = new ArrayList<>();
         for (int i = firstRow; i <= lastRow; i++) {
             PositionWithLayer positionWithLayer = new PositionWithLayer(positionsModel.getPosition(i));
             positionWithLayers.add(i, positionWithLayer);
@@ -57,7 +57,7 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleUpdate(int firstRow, int lastRow) {
-        List<PositionWithLayer> updated = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> updated = new ArrayList<>();
         int endIndex = min(lastRow, positionsModel.getRowCount() - 1);
         for (int i = firstRow; i <= endIndex; i++) {
             updated.add(positionWithLayers.get(i));
@@ -68,7 +68,7 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleRemove(int firstRow, int lastRow) {
-        List<PositionWithLayer> removed = new ArrayList<PositionWithLayer>();
+        List<PositionWithLayer> removed = new ArrayList<>();
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
         for (int i = validLastRow; i >= firstRow; i--) {
             removed.add(positionWithLayers.get(i));

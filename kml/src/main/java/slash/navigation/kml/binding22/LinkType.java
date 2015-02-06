@@ -270,7 +270,7 @@ public class LinkType
      */
     public List<Object> getLinkSimpleExtensionGroup() {
         if (linkSimpleExtensionGroup == null) {
-            linkSimpleExtensionGroup = new ArrayList<Object>();
+            linkSimpleExtensionGroup = new ArrayList<>();
         }
         return this.linkSimpleExtensionGroup;
     }
@@ -299,7 +299,7 @@ public class LinkType
      */
     public List<AbstractObjectType> getLinkObjectExtensionGroup() {
         if (linkObjectExtensionGroup == null) {
-            linkObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            linkObjectExtensionGroup = new ArrayList<>();
         }
         return this.linkObjectExtensionGroup;
     }

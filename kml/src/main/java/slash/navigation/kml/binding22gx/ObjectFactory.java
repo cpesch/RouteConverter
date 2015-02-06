@@ -186,7 +186,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "MultiTrack", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<MultiTrackType> createMultiTrack(MultiTrackType value) {
-        return new JAXBElement<MultiTrackType>(_MultiTrack_QNAME, MultiTrackType.class, null, value);
+        return new JAXBElement<>(_MultiTrack_QNAME, MultiTrackType.class, null, value);
     }
 
     /**
@@ -195,7 +195,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "altitudeMode", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "altitudeModeGroup")
     public JAXBElement<AltitudeModeEnumType> createAltitudeMode(AltitudeModeEnumType value) {
-        return new JAXBElement<AltitudeModeEnumType>(_AltitudeMode_QNAME, AltitudeModeEnumType.class, null, value);
+        return new JAXBElement<>(_AltitudeMode_QNAME, AltitudeModeEnumType.class, null, value);
     }
 
     /**
@@ -204,7 +204,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "LatLonQuad", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "GroundOverlayObjectExtensionGroup")
     public JAXBElement<LatLonQuadType> createLatLonQuad(LatLonQuadType value) {
-        return new JAXBElement<LatLonQuadType>(_LatLonQuad_QNAME, LatLonQuadType.class, null, value);
+        return new JAXBElement<>(_LatLonQuad_QNAME, LatLonQuadType.class, null, value);
     }
 
     /**
@@ -213,7 +213,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "AnimatedUpdate", substitutionHeadNamespace = "http://www.google.com/kml/ext/2.2", substitutionHeadName = "AbstractTourPrimitiveGroup")
     public JAXBElement<AnimatedUpdateType> createAnimatedUpdate(AnimatedUpdateType value) {
-        return new JAXBElement<AnimatedUpdateType>(_AnimatedUpdate_QNAME, AnimatedUpdateType.class, null, value);
+        return new JAXBElement<>(_AnimatedUpdate_QNAME, AnimatedUpdateType.class, null, value);
     }
 
     /**
@@ -222,7 +222,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "coord")
     public JAXBElement<String> createCoord(String value) {
-        return new JAXBElement<String>(_Coord_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Coord_QNAME, String.class, null, value);
     }
 
     /**
@@ -231,7 +231,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "TimeSpan", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractViewObjectExtensionGroup")
     public JAXBElement<TimeSpanType> createTimeSpan(TimeSpanType value) {
-        return new JAXBElement<TimeSpanType>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
+        return new JAXBElement<>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
     }
 
     /**
@@ -240,7 +240,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "Track", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<TrackType> createTrack(TrackType value) {
-        return new JAXBElement<TrackType>(_Track_QNAME, TrackType.class, null, value);
+        return new JAXBElement<>(_Track_QNAME, TrackType.class, null, value);
     }
 
     /**
@@ -249,7 +249,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "h", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "BasicLinkSimpleExtensionGroup")
     public JAXBElement<BigInteger> createH(BigInteger value) {
-        return new JAXBElement<BigInteger>(_H_QNAME, BigInteger.class, null, value);
+        return new JAXBElement<>(_H_QNAME, BigInteger.class, null, value);
     }
 
     /**
@@ -258,7 +258,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "y", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "BasicLinkSimpleExtensionGroup")
     public JAXBElement<BigInteger> createY(BigInteger value) {
-        return new JAXBElement<BigInteger>(_Y_QNAME, BigInteger.class, null, value);
+        return new JAXBElement<>(_Y_QNAME, BigInteger.class, null, value);
     }
 
     /**
@@ -267,7 +267,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "x", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "BasicLinkSimpleExtensionGroup")
     public JAXBElement<BigInteger> createX(BigInteger value) {
-        return new JAXBElement<BigInteger>(_X_QNAME, BigInteger.class, null, value);
+        return new JAXBElement<>(_X_QNAME, BigInteger.class, null, value);
     }
 
     /**
@@ -276,7 +276,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "Tour", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureGroup")
     public JAXBElement<TourType> createTour(TourType value) {
-        return new JAXBElement<TourType>(_Tour_QNAME, TourType.class, null, value);
+        return new JAXBElement<>(_Tour_QNAME, TourType.class, null, value);
     }
 
     /**
@@ -285,7 +285,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "w", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "BasicLinkSimpleExtensionGroup")
     public JAXBElement<BigInteger> createW(BigInteger value) {
-        return new JAXBElement<BigInteger>(_W_QNAME, BigInteger.class, null, value);
+        return new JAXBElement<>(_W_QNAME, BigInteger.class, null, value);
     }
 
     /**
@@ -294,7 +294,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "TimeStamp", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractViewObjectExtensionGroup")
     public JAXBElement<TimeStampType> createTimeStamp(TimeStampType value) {
-        return new JAXBElement<TimeStampType>(_TimeStamp_QNAME, TimeStampType.class, null, value);
+        return new JAXBElement<>(_TimeStamp_QNAME, TimeStampType.class, null, value);
     }
 
     /**
@@ -303,7 +303,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "SimpleArrayData", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "SchemaDataExtension")
     public JAXBElement<SimpleArrayDataType> createSimpleArrayData(SimpleArrayDataType value) {
-        return new JAXBElement<SimpleArrayDataType>(_SimpleArrayData_QNAME, SimpleArrayDataType.class, null, value);
+        return new JAXBElement<>(_SimpleArrayData_QNAME, SimpleArrayDataType.class, null, value);
     }
 
     /**
@@ -312,7 +312,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "flyToMode", defaultValue = "bounce")
     public JAXBElement<FlyToModeEnumType> createFlyToMode(FlyToModeEnumType value) {
-        return new JAXBElement<FlyToModeEnumType>(_FlyToMode_QNAME, FlyToModeEnumType.class, null, value);
+        return new JAXBElement<>(_FlyToMode_QNAME, FlyToModeEnumType.class, null, value);
     }
 
     /**
@@ -321,7 +321,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "Playlist", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<PlaylistType> createPlaylist(PlaylistType value) {
-        return new JAXBElement<PlaylistType>(_Playlist_QNAME, PlaylistType.class, null, value);
+        return new JAXBElement<>(_Playlist_QNAME, PlaylistType.class, null, value);
     }
 
     /**
@@ -330,7 +330,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "SimpleArrayDataExtension")
     public JAXBElement<Object> createSimpleArrayDataExtension(Object value) {
-        return new JAXBElement<Object>(_SimpleArrayDataExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_SimpleArrayDataExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -339,7 +339,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "interpolate", defaultValue = "false")
     public JAXBElement<Boolean> createInterpolate(Boolean value) {
-        return new JAXBElement<Boolean>(_Interpolate_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Interpolate_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -348,7 +348,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "balloonVisibility", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureSimpleExtensionGroup", defaultValue = "true")
     public JAXBElement<Boolean> createBalloonVisibility(Boolean value) {
-        return new JAXBElement<Boolean>(_BalloonVisibility_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_BalloonVisibility_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -357,7 +357,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "AbstractTrackSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractTrackSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractTrackSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractTrackSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -366,7 +366,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "playMode", defaultValue = "pause")
     public JAXBElement<PlayModeEnumType> createPlayMode(PlayModeEnumType value) {
-        return new JAXBElement<PlayModeEnumType>(_PlayMode_QNAME, PlayModeEnumType.class, null, value);
+        return new JAXBElement<>(_PlayMode_QNAME, PlayModeEnumType.class, null, value);
     }
 
     /**
@@ -375,7 +375,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "TourControl", substitutionHeadNamespace = "http://www.google.com/kml/ext/2.2", substitutionHeadName = "AbstractTourPrimitiveGroup")
     public JAXBElement<TourControlType> createTourControl(TourControlType value) {
-        return new JAXBElement<TourControlType>(_TourControl_QNAME, TourControlType.class, null, value);
+        return new JAXBElement<>(_TourControl_QNAME, TourControlType.class, null, value);
     }
 
     /**
@@ -384,7 +384,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "SimpleArrayField", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "SchemaExtension")
     public JAXBElement<SimpleArrayFieldType> createSimpleArrayField(SimpleArrayFieldType value) {
-        return new JAXBElement<SimpleArrayFieldType>(_SimpleArrayField_QNAME, SimpleArrayFieldType.class, null, value);
+        return new JAXBElement<>(_SimpleArrayField_QNAME, SimpleArrayFieldType.class, null, value);
     }
 
     /**
@@ -393,7 +393,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "SimpleArrayFieldExtension")
     public JAXBElement<Object> createSimpleArrayFieldExtension(Object value) {
-        return new JAXBElement<Object>(_SimpleArrayFieldExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_SimpleArrayFieldExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -402,7 +402,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "rank", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureSimpleExtensionGroup", defaultValue = "0.0")
     public JAXBElement<Double> createRank(Double value) {
-        return new JAXBElement<Double>(_Rank_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Rank_QNAME, Double.class, null, value);
     }
 
     /**
@@ -411,7 +411,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "AbstractTourPrimitive")
     public JAXBElement<AbstractTourPrimitiveType> createAbstractTourPrimitive(AbstractTourPrimitiveType value) {
-        return new JAXBElement<AbstractTourPrimitiveType>(_AbstractTourPrimitive_QNAME, AbstractTourPrimitiveType.class, null, value);
+        return new JAXBElement<>(_AbstractTourPrimitive_QNAME, AbstractTourPrimitiveType.class, null, value);
     }
 
     /**
@@ -420,7 +420,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "AbstractTourPrimitiveGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractTourPrimitiveType> createAbstractTourPrimitiveGroup(AbstractTourPrimitiveType value) {
-        return new JAXBElement<AbstractTourPrimitiveType>(_AbstractTourPrimitiveGroup_QNAME, AbstractTourPrimitiveType.class, null, value);
+        return new JAXBElement<>(_AbstractTourPrimitiveGroup_QNAME, AbstractTourPrimitiveType.class, null, value);
     }
 
     /**
@@ -429,7 +429,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "Wait", substitutionHeadNamespace = "http://www.google.com/kml/ext/2.2", substitutionHeadName = "AbstractTourPrimitiveGroup")
     public JAXBElement<WaitType> createWait(WaitType value) {
-        return new JAXBElement<WaitType>(_Wait_QNAME, WaitType.class, null, value);
+        return new JAXBElement<>(_Wait_QNAME, WaitType.class, null, value);
     }
 
     /**
@@ -438,7 +438,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "value")
     public JAXBElement<String> createValue(String value) {
-        return new JAXBElement<String>(_Value_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Value_QNAME, String.class, null, value);
     }
 
     /**
@@ -447,7 +447,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "SoundCue", substitutionHeadNamespace = "http://www.google.com/kml/ext/2.2", substitutionHeadName = "AbstractTourPrimitiveGroup")
     public JAXBElement<SoundCueType> createSoundCue(SoundCueType value) {
-        return new JAXBElement<SoundCueType>(_SoundCue_QNAME, SoundCueType.class, null, value);
+        return new JAXBElement<>(_SoundCue_QNAME, SoundCueType.class, null, value);
     }
 
     /**
@@ -456,7 +456,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "angles")
     public JAXBElement<String> createAngles(String value) {
-        return new JAXBElement<String>(_Angles_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Angles_QNAME, String.class, null, value);
     }
 
     /**
@@ -465,7 +465,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "FlyTo", substitutionHeadNamespace = "http://www.google.com/kml/ext/2.2", substitutionHeadName = "AbstractTourPrimitiveGroup")
     public JAXBElement<FlyToType> createFlyTo(FlyToType value) {
-        return new JAXBElement<FlyToType>(_FlyTo_QNAME, FlyToType.class, null, value);
+        return new JAXBElement<>(_FlyTo_QNAME, FlyToType.class, null, value);
     }
 
     /**
@@ -474,7 +474,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.google.com/kml/ext/2.2", name = "duration", defaultValue = "0.0")
     public JAXBElement<Double> createDuration(Double value) {
-        return new JAXBElement<Double>(_Duration_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Duration_QNAME, Double.class, null, value);
     }
 
 }

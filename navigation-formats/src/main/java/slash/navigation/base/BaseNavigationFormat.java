@@ -42,7 +42,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     protected List<String> asDescription(String string) {
         if (string == null || string.length() == 0)
             return null;
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(string, ",\n");
         while (tokenizer.hasMoreTokens()) {
             strings.add(tokenizer.nextToken().trim());

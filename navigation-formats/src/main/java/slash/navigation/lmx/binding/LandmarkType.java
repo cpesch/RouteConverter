@@ -216,7 +216,7 @@ public class LandmarkType {
      */
     public List<MediaLinkType> getMediaLink() {
         if (mediaLink == null) {
-            mediaLink = new ArrayList<MediaLinkType>();
+            mediaLink = new ArrayList<>();
         }
         return this.mediaLink;
     }
@@ -245,7 +245,7 @@ public class LandmarkType {
      */
     public List<CategoryType> getCategory() {
         if (category == null) {
-            category = new ArrayList<CategoryType>();
+            category = new ArrayList<>();
         }
         return this.category;
     }

@@ -82,7 +82,7 @@ public abstract class AbstractSubStyleType
      */
     public List<Object> getAbstractSubStyleSimpleExtensionGroup() {
         if (abstractSubStyleSimpleExtensionGroup == null) {
-            abstractSubStyleSimpleExtensionGroup = new ArrayList<Object>();
+            abstractSubStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractSubStyleSimpleExtensionGroup;
     }
@@ -111,7 +111,7 @@ public abstract class AbstractSubStyleType
      */
     public List<AbstractObjectType> getAbstractSubStyleObjectExtensionGroup() {
         if (abstractSubStyleObjectExtensionGroup == null) {
-            abstractSubStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractSubStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractSubStyleObjectExtensionGroup;
     }

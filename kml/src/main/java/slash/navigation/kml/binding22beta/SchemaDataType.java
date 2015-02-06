@@ -74,7 +74,7 @@ public class SchemaDataType
      */
     public List<SimpleDataType> getSimpleData() {
         if (simpleData == null) {
-            simpleData = new ArrayList<SimpleDataType>();
+            simpleData = new ArrayList<>();
         }
         return this.simpleData;
     }

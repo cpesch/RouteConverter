@@ -805,7 +805,7 @@ public class KDRoute {
          */
         public List<KDRoute.Stations.Station> getStation() {
             if (station == null) {
-                station = new ArrayList<KDRoute.Stations.Station>();
+                station = new ArrayList<>();
             }
             return this.station;
         }

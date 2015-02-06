@@ -81,7 +81,7 @@ public class Department {
     @XmlAttribute(name = "Type")
     protected String type;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -107,7 +107,7 @@ public class Department {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -136,7 +136,7 @@ public class Department {
      */
     public List<Department.DepartmentName> getDepartmentName() {
         if (departmentName == null) {
-            departmentName = new ArrayList<Department.DepartmentName>();
+            departmentName = new ArrayList<>();
         }
         return this.departmentName;
     }
@@ -213,7 +213,7 @@ public class Department {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -292,7 +292,7 @@ public class Department {
         @XmlAttribute(name = "Code")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.

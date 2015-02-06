@@ -102,7 +102,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     List<Wgs84Position> parsePositions(String url) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         String[] segments = url.split("/");
         for (String segment : segments) {
             if (segment.startsWith("@") || segment.startsWith("data"))
@@ -136,7 +136,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     List<Wgs84Position> parseDestinationPositions(String destinationComments) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         int startIndex = 0;
         while (startIndex < destinationComments.length()) {
             int endIndex = destinationComments.indexOf(DESTINATION_SEPARATOR, startIndex);
@@ -150,7 +150,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     List<Wgs84Position> extractGeocodePositions(List<Wgs84Position> positions) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>(positions);
+        List<Wgs84Position> result = new ArrayList<>(positions);
         for (int i = result.size() - 1; i >= 0; i--) {
             Wgs84Position position = result.get(i);
             if (trim(position.getDescription()) == null)
@@ -160,7 +160,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         if (parameters == null)
             return result;
 

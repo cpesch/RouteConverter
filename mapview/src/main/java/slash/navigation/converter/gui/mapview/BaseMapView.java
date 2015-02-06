@@ -923,11 +923,11 @@ public abstract class BaseMapView implements MapView {
         executeScript(buffer.toString());
     }
 
-    private final Map<Integer, PositionPair> insertWaypointsQueue = new LinkedHashMap<Integer, PositionPair>();
+    private final Map<Integer, PositionPair> insertWaypointsQueue = new LinkedHashMap<>();
     private final ExecutorService insertWaypointsExecutor = newSingleThreadExecutor();
 
     private void insertWaypoints(final String mode, int[] startPositions) {
-        final Map<Integer, PositionPair> addToQueue = new LinkedHashMap<Integer, PositionPair>();
+        final Map<Integer, PositionPair> addToQueue = new LinkedHashMap<>();
         Random random = new Random();
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
@@ -1013,7 +1013,7 @@ public abstract class BaseMapView implements MapView {
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
         OutputStream outputStream = socket.getOutputStream();
 
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         boolean processingPost = false, processingBody = false;
         try {
             while (true) {

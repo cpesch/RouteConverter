@@ -102,7 +102,7 @@ public class BoundaryType {
      */
     public List<Object> getBoundarySimpleExtensionGroup() {
         if (boundarySimpleExtensionGroup == null) {
-            boundarySimpleExtensionGroup = new ArrayList<Object>();
+            boundarySimpleExtensionGroup = new ArrayList<>();
         }
         return this.boundarySimpleExtensionGroup;
     }
@@ -131,7 +131,7 @@ public class BoundaryType {
      */
     public List<AbstractObjectType> getBoundaryObjectExtensionGroup() {
         if (boundaryObjectExtensionGroup == null) {
-            boundaryObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            boundaryObjectExtensionGroup = new ArrayList<>();
         }
         return this.boundaryObjectExtensionGroup;
     }

@@ -94,7 +94,7 @@ public class FolderType
      */
     public List<JAXBElement<? extends AbstractFeatureType>> getAbstractFeatureGroup() {
         if (abstractFeatureGroup == null) {
-            abstractFeatureGroup = new ArrayList<JAXBElement<? extends AbstractFeatureType>>();
+            abstractFeatureGroup = new ArrayList<>();
         }
         return this.abstractFeatureGroup;
     }
@@ -123,7 +123,7 @@ public class FolderType
      */
     public List<Object> getFolderSimpleExtensionGroup() {
         if (folderSimpleExtensionGroup == null) {
-            folderSimpleExtensionGroup = new ArrayList<Object>();
+            folderSimpleExtensionGroup = new ArrayList<>();
         }
         return this.folderSimpleExtensionGroup;
     }
@@ -152,7 +152,7 @@ public class FolderType
      */
     public List<AbstractObjectType> getFolderObjectExtensionGroup() {
         if (folderObjectExtensionGroup == null) {
-            folderObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            folderObjectExtensionGroup = new ArrayList<>();
         }
         return this.folderObjectExtensionGroup;
     }

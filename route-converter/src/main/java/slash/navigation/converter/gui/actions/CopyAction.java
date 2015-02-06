@@ -50,7 +50,7 @@ public class CopyAction extends FrameAction {
     }
 
     private List<NavigationPosition> copy(List<NavigationPosition> positions) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (NavigationPosition position : positions) {
             // TODO should copy extra properties, too
             result.add(new GpxPosition(position.getLongitude(), position.getLatitude(), position.getElevation(),

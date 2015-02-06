@@ -86,7 +86,7 @@ class GoPalUtil {
     public static void marshal3(slash.navigation.gopal.binding3.Tour tour, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller3().marshal(new JAXBElement<slash.navigation.gopal.binding3.Tour>(new QName(GOPAL_NAMESPACE_URI, "tour"), slash.navigation.gopal.binding3.Tour.class, tour), out);
+                newMarshaller3().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "tour"), slash.navigation.gopal.binding3.Tour.class, tour), out);
             }
             finally {
                 out.flush();
@@ -100,7 +100,7 @@ class GoPalUtil {
     public static void marshal5(slash.navigation.gopal.binding5.Tour tour, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller5().marshal(new JAXBElement<slash.navigation.gopal.binding5.Tour>(new QName(GOPAL_NAMESPACE_URI, "Tour"), slash.navigation.gopal.binding5.Tour.class, tour), out);
+                newMarshaller5().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "Tour"), slash.navigation.gopal.binding5.Tour.class, tour), out);
             }
             finally {
                 out.flush();

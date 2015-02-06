@@ -91,8 +91,8 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<BcrRoute> context) throws IOException {
-        List<BcrSection> sections = new ArrayList<BcrSection>();
-        List<BcrPosition> positions = new ArrayList<BcrPosition>();
+        List<BcrSection> sections = new ArrayList<>();
+        List<BcrPosition> positions = new ArrayList<>();
         BcrSection current = null;
 
         while (true) {

@@ -95,7 +95,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     protected abstract boolean isIso885915ButReadWithUtf8(String string);
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<TomTomRoute> context) throws IOException {
-        List<TomTomPosition> positions = new ArrayList<TomTomPosition>();
+        List<TomTomPosition> positions = new ArrayList<>();
         String routeName = null;
 
         while (true) {

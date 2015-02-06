@@ -46,7 +46,7 @@ public class SelectionUpdaterTest {
         assertNotEquals(p1.hashCode(), p2.hashCode());
         assertEquals(p1, p1);
         assertNotEquals(p1, p2);
-        Set<NavigationPosition> set = new HashSet<NavigationPosition>();
+        Set<NavigationPosition> set = new HashSet<>();
         set.add(p1);
         assertTrue(set.contains(p1));
         assertFalse(set.contains(p2));

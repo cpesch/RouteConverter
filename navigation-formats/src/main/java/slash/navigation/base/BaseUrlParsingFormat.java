@@ -80,7 +80,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
     private void putMapEntry(Map<String, List<String>> map, String name, String value) {
         List<String> values = map.get(name);
         if (values == null) {
-            values = new ArrayList<String>(1);
+            values = new ArrayList<>(1);
             map.put(name, values);
         }
         values.add(value);
@@ -90,7 +90,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         if (data == null || data.length == 0)
             return null;
 
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        Map<String, List<String>> result = new HashMap<>();
         int ix = 0;
         int ox = 0;
         String key = null;

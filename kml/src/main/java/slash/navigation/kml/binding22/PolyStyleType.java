@@ -132,7 +132,7 @@ public class PolyStyleType
      */
     public List<Object> getPolyStyleSimpleExtensionGroup() {
         if (polyStyleSimpleExtensionGroup == null) {
-            polyStyleSimpleExtensionGroup = new ArrayList<Object>();
+            polyStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.polyStyleSimpleExtensionGroup;
     }
@@ -161,7 +161,7 @@ public class PolyStyleType
      */
     public List<AbstractObjectType> getPolyStyleObjectExtensionGroup() {
         if (polyStyleObjectExtensionGroup == null) {
-            polyStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            polyStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.polyStyleObjectExtensionGroup;
     }

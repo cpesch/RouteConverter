@@ -30,7 +30,7 @@ import java.util.Set;
  */
 
 public abstract class IniFileSection {
-    protected final Map<String, String> nameValues = new LinkedHashMap<String, String>();
+    protected final Map<String, String> nameValues = new LinkedHashMap<>();
     protected final String title;
 
     public IniFileSection(String title) {

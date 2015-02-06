@@ -178,7 +178,7 @@ public class PolygonType
      */
     public List<BoundaryType> getInnerBoundaryIs() {
         if (innerBoundaryIs == null) {
-            innerBoundaryIs = new ArrayList<BoundaryType>();
+            innerBoundaryIs = new ArrayList<>();
         }
         return this.innerBoundaryIs;
     }

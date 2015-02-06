@@ -62,7 +62,7 @@ public class PositionSelection implements Transferable {
 
     private String createStringFor(List<NavigationPosition> sourcePositions) {
         GlopusFormat targetFormat = new GlopusFormat();
-        List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
+        List<BaseNavigationPosition> targetPositions = new ArrayList<>();
         try {
             targetPositions = asFormatForPositions(sourcePositions, targetFormat);
         } catch (IOException e) {

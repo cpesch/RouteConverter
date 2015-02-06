@@ -100,8 +100,8 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<TourRoute> context) throws IOException {
-        List<TourPosition> positions = new ArrayList<TourPosition>();
-        Map<String, String> map = new HashMap<String, String>();
+        List<TourPosition> positions = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         String sectionTitle = null, routeName = null;
 
         while (true) {
@@ -129,7 +129,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                         TourPosition position = parsePosition(map, sectionTitle);
                         if (position != null)
                             positions.add(position);
-                        map = new HashMap<String, String>();
+                        map = new HashMap<>();
                     }
                 }
                 sectionTitle = parseSectionTitle(line);
@@ -149,7 +149,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private List<TourPosition> sortPositions(List<TourPosition> positions) {
         TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
         sort(positionArray, new PositionInListComparator());
-        return new ArrayList<TourPosition>(asList(positionArray));
+        return new ArrayList<>(asList(positionArray));
     }
 
     boolean isSectionTitle(String line) {

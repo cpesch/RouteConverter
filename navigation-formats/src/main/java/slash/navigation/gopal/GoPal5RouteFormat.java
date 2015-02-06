@@ -65,7 +65,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     }
 
     private GoPalRoute process(Tour tour) {
-        List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> positions = new ArrayList<>();
         Tour.Start start = tour.getStart();
         if (start != null) {
             Short country = start.getCountry() != null ? start.getCountry().getCode() : null;

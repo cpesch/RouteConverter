@@ -68,7 +68,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
-        List<GkPosition> positions = new ArrayList<GkPosition>();
+        List<GkPosition> positions = new ArrayList<>();
 
         while (true) {
             String line = reader.readLine();

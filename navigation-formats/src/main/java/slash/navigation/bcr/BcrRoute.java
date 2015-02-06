@@ -119,7 +119,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     public List<String> getDescription() {
-        List<String> descriptions = new ArrayList<String>();
+        List<String> descriptions = new ArrayList<>();
         BcrSection client = findSection(CLIENT_TITLE);
         int count = getDescriptionCount();
         for (int i = 0; i < count; i++) {
@@ -132,7 +132,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         BcrSection client = findSection(CLIENT_TITLE);
         client.remove(DESCRIPTION_LINE_COUNT);
 
-        Set<String> removeNames = new HashSet<String>();
+        Set<String> removeNames = new HashSet<>();
         for (String name : client.keySet()) {
             if (name.startsWith(DESCRIPTION))
                 removeNames.add(name);
@@ -166,12 +166,12 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>(getPositions());
+        List<BcrPosition> bcrPositions = new ArrayList<>(getPositions());
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (BcrPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
@@ -179,7 +179,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        List<GpxPosition> gpxPositions = new ArrayList<>();
         for (BcrPosition bcrPosition : positions) {
             gpxPositions.add(bcrPosition.asGpxPosition());
         }
@@ -187,7 +187,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
+        List<KmlPosition> kmlPositions = new ArrayList<>();
         for (BcrPosition bcrPosition : positions) {
             kmlPositions.add(bcrPosition.asKmlPosition());
         }
@@ -195,7 +195,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        List<NmeaPosition> nmeaPositions = new ArrayList<>();
         for (BcrPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
@@ -203,7 +203,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        List<NmnPosition> nmnPositions = new ArrayList<>();
         for (BcrPosition bcrPosition : positions) {
             nmnPositions.add(bcrPosition.asNmnPosition());
         }
@@ -211,7 +211,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (BcrPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -219,7 +219,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (BcrPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -227,7 +227,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        List<TomTomPosition> tomTomPositions = new ArrayList<>();
         for (BcrPosition bcrPosition : positions) {
             TomTomPosition tomTomPosition = bcrPosition.asTomTomRoutePosition();
             // shortens description to better fit to Tom Tom Rider display

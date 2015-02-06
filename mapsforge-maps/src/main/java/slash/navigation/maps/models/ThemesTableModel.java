@@ -36,7 +36,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class ThemesTableModel extends AbstractTableModel {
-    private List<LocalTheme> themes = new ArrayList<LocalTheme>();
+    private List<LocalTheme> themes = new ArrayList<>();
 
     public List<LocalTheme> getThemes() {
         return themes;

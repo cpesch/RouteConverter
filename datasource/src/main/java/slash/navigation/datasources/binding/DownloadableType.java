@@ -83,7 +83,7 @@ public class DownloadableType {
      */
     public List<ChecksumType> getChecksum() {
         if (checksum == null) {
-            checksum = new ArrayList<ChecksumType>();
+            checksum = new ArrayList<>();
         }
         return this.checksum;
     }
@@ -112,7 +112,7 @@ public class DownloadableType {
      */
     public List<FragmentType> getFragment() {
         if (fragment == null) {
-            fragment = new ArrayList<FragmentType>();
+            fragment = new ArrayList<>();
         }
         return this.fragment;
     }

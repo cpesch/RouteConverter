@@ -84,7 +84,7 @@ public class RemoteCategory implements Category {
     }
 
     private List<RemoteCategory> getCachedSubCategories() {
-        List<RemoteCategory> categories = new ArrayList<RemoteCategory>();
+        List<RemoteCategory> categories = new ArrayList<>();
         if (gpx != null)
             for (LinkType linkType : gpx.getMetadata().getLink()) {
                 categories.add(new RemoteCategory(getCatalog(), linkType.getHref(), linkType.getText()));
@@ -104,7 +104,7 @@ public class RemoteCategory implements Category {
     }
 
     public List<Category> getCategories() throws IOException {
-        List<Category> categories = new ArrayList<Category>();
+        List<Category> categories = new ArrayList<>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
             categories.add(new RemoteCategory(getCatalog(), linkType.getHref(), linkType.getText()));
         }
@@ -112,7 +112,7 @@ public class RemoteCategory implements Category {
     }
 
     public List<Route> getRoutes() throws IOException {
-        List<Route> routes = new ArrayList<Route>();
+        List<Route> routes = new ArrayList<>();
         for (RteType rteType : getGpx().getRte()) {
             routes.add(new RemoteRoute(this, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
         }

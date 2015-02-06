@@ -163,7 +163,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         source.position(startDataAddress);
         source.order(LITTLE_ENDIAN);
 
-        List<Wgs84Route> result = new ArrayList<Wgs84Route>();
+        List<Wgs84Route> result = new ArrayList<>();
 
         List<NavigationPosition> trackPoints = null;
         List<NavigationPosition> pushPoints = null;
@@ -183,7 +183,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
             if ((trackFlag & 1) == 1) {
                 // new track
-                trackPoints = new ArrayList<NavigationPosition>();
+                trackPoints = new ArrayList<>();
                 Wgs84Route track = createRoute(Track, null, trackPoints);
                 result.add(track);
                 trackPointNo = 1;
@@ -196,7 +196,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             if ((trackFlag & 2) == 2) {
                 // track pushpoint
                 if (pushPoints == null) {
-                    pushPoints = new ArrayList<NavigationPosition>();
+                    pushPoints = new ArrayList<>();
                     Wgs84Route points = createRoute(Waypoints, "Pushpoints", pushPoints);
                     result.add(points);
                 }

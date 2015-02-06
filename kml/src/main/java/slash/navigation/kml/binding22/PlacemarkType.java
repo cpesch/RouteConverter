@@ -125,7 +125,7 @@ public class PlacemarkType
      */
     public List<Object> getPlacemarkSimpleExtensionGroup() {
         if (placemarkSimpleExtensionGroup == null) {
-            placemarkSimpleExtensionGroup = new ArrayList<Object>();
+            placemarkSimpleExtensionGroup = new ArrayList<>();
         }
         return this.placemarkSimpleExtensionGroup;
     }
@@ -154,7 +154,7 @@ public class PlacemarkType
      */
     public List<AbstractObjectType> getPlacemarkObjectExtensionGroup() {
         if (placemarkObjectExtensionGroup == null) {
-            placemarkObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            placemarkObjectExtensionGroup = new ArrayList<>();
         }
         return this.placemarkObjectExtensionGroup;
     }

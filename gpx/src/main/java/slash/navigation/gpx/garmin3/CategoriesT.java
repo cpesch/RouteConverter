@@ -74,7 +74,7 @@ public class CategoriesT {
      */
     public List<String> getCategory() {
         if (category == null) {
-            category = new ArrayList<String>();
+            category = new ArrayList<>();
         }
         return this.category;
     }

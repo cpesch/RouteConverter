@@ -61,7 +61,7 @@ class GarminFlightPlanUtil {
     public static void marshal(FlightPlan plan, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<FlightPlan>(new QName(FPL_NAMESPACE_URI, "flight-plan"), FlightPlan.class, plan), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(FPL_NAMESPACE_URI, "flight-plan"), FlightPlan.class, plan), out);
             } finally {
                 out.flush();
                 out.close();

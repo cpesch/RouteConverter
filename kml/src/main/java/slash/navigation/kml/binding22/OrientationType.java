@@ -160,7 +160,7 @@ public class OrientationType
      */
     public List<Object> getOrientationSimpleExtensionGroup() {
         if (orientationSimpleExtensionGroup == null) {
-            orientationSimpleExtensionGroup = new ArrayList<Object>();
+            orientationSimpleExtensionGroup = new ArrayList<>();
         }
         return this.orientationSimpleExtensionGroup;
     }
@@ -189,7 +189,7 @@ public class OrientationType
      */
     public List<AbstractObjectType> getOrientationObjectExtensionGroup() {
         if (orientationObjectExtensionGroup == null) {
-            orientationObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            orientationObjectExtensionGroup = new ArrayList<>();
         }
         return this.orientationObjectExtensionGroup;
     }

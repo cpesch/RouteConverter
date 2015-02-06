@@ -72,7 +72,7 @@ class PositionReducer {
     private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = THRESHOLD_PER_ZOOM.length;
 
     private final Callback callback;
-    private final Map<Integer, List<NavigationPosition>> reducedPositions = new HashMap<Integer, List<NavigationPosition>>(THRESHOLD_PER_ZOOM.length);
+    private final Map<Integer, List<NavigationPosition>> reducedPositions = new HashMap<>(THRESHOLD_PER_ZOOM.length);
     private BoundingBox visible;
 
     PositionReducer(Callback callback) {
@@ -193,7 +193,7 @@ class PositionReducer {
     private List<NavigationPosition> filterPositionsWithoutCoordinates(List<NavigationPosition> positions) {
         long start = currentTimeMillis();
 
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (NavigationPosition position : positions) {
             if (position.hasCoordinates())
                 result.add(position);
@@ -209,7 +209,7 @@ class PositionReducer {
     private List<NavigationPosition> filterSignificantPositions(List<NavigationPosition> positions, int zoom) {
         long start = currentTimeMillis();
 
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         if (zoom < MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
             double threshold = THRESHOLD_PER_ZOOM[zoom];
             int[] significantPositions = getSignificantPositions(positions, threshold);
@@ -249,7 +249,7 @@ class PositionReducer {
         southWest.setLatitude(southWest.getLatitude() - height);
         BoundingBox boundingBox = new BoundingBox(northEast, southWest);
 
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
 
         if (includeFirstAndLastPosition)
             result.add(positions.get(0));
@@ -293,7 +293,7 @@ class PositionReducer {
     List<NavigationPosition> filterEveryNthPosition(List<NavigationPosition> positions, int maximumPositionCount) {
         long start = currentTimeMillis();
 
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         result.add(positions.get(0));
 
         double increment = (positions.size() - 1) / (double) (maximumPositionCount - 1);
@@ -312,7 +312,7 @@ class PositionReducer {
     private List<NavigationPosition> filterSelectedPositions(List<NavigationPosition> positions, int[] selectedIndices) {
         long start = currentTimeMillis();
 
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (int selectedIndex : selectedIndices) {
             if (selectedIndex >= positions.size())
                 continue;

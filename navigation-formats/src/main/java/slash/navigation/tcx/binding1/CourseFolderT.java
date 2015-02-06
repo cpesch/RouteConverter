@@ -84,7 +84,7 @@ public class CourseFolderT {
      */
     public List<CourseFolderT> getFolder() {
         if (folder == null) {
-            folder = new ArrayList<CourseFolderT>();
+            folder = new ArrayList<>();
         }
         return this.folder;
     }
@@ -113,7 +113,7 @@ public class CourseFolderT {
      */
     public List<CourseT> getCourse() {
         if (course == null) {
-            course = new ArrayList<CourseT>();
+            course = new ArrayList<>();
         }
         return this.course;
     }

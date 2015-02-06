@@ -81,7 +81,7 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
     }
 
     List<Wgs84Position> parsePositions(String data) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(data, ";");
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();

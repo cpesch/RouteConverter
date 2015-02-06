@@ -69,7 +69,7 @@ public class CatalogModelImpl implements CatalogModel {
 
     public void setCurrentCategory(CategoryTreeNode category) {
         List<Route> routes = category.getRoutes();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        List<RouteModel> routeModels = new ArrayList<>();
         if (routes != null) {
             Route[] routesArray = routes.toArray(new Route[routes.size()]);
             sort(routesArray, routeComparator);
@@ -86,7 +86,7 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                final List<CategoryTreeNode> categories = new ArrayList<CategoryTreeNode>();
+                final List<CategoryTreeNode> categories = new ArrayList<>();
                 for (int i = 0; i < parents.size(); i++) {
                     CategoryTreeNode parent = parents.get(i);
                     Category category = parent.getCategory().create(names.get(i));

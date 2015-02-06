@@ -81,7 +81,7 @@ public abstract class AbstractContainerType
      */
     public List<Object> getAbstractContainerSimpleExtensionGroup() {
         if (abstractContainerSimpleExtensionGroup == null) {
-            abstractContainerSimpleExtensionGroup = new ArrayList<Object>();
+            abstractContainerSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractContainerSimpleExtensionGroup;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractContainerType
      */
     public List<AbstractObjectType> getAbstractContainerObjectExtensionGroup() {
         if (abstractContainerObjectExtensionGroup == null) {
-            abstractContainerObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractContainerObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractContainerObjectExtensionGroup;
     }

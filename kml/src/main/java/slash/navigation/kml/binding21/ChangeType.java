@@ -115,7 +115,7 @@ public class ChangeType {
      */
     public List<JAXBElement<? extends ObjectType>> getObjectOrFeatureOrGeometry() {
         if (objectOrFeatureOrGeometry == null) {
-            objectOrFeatureOrGeometry = new ArrayList<JAXBElement<? extends ObjectType>>();
+            objectOrFeatureOrGeometry = new ArrayList<>();
         }
         return this.objectOrFeatureOrGeometry;
     }

@@ -81,7 +81,7 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testLatestFirst() throws IOException {
-        List<URL> expected = new ArrayList<URL>();
+        List<URL> expected = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
             model.addUrl(url);
@@ -92,7 +92,7 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testLimit() throws IOException {
-        List<URL> collected = new ArrayList<URL>();
+        List<URL> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
             URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
             model.addUrl(url);
@@ -106,7 +106,7 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testSkipNotExistentFiles() throws IOException {
-        List<URL> collected = new ArrayList<URL>();
+        List<URL> collected = new ArrayList<>();
         for (int i = 0; i < LIMIT; i++) {
             URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
             model.addUrl(url);

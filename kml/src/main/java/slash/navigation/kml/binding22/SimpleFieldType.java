@@ -102,7 +102,7 @@ public class SimpleFieldType {
      */
     public List<Object> getSimpleFieldExtension() {
         if (simpleFieldExtension == null) {
-            simpleFieldExtension = new ArrayList<Object>();
+            simpleFieldExtension = new ArrayList<>();
         }
         return this.simpleFieldExtension;
     }

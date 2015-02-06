@@ -119,7 +119,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     // stream
 
     private Process execute(String babel, String sourceFormat, String targetFormat, String[] globalFlags) throws IOException {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         args.add(babel);
         args.addAll(asList(globalFlags));
         args.addAll(asList("-i", sourceFormat, "-f", "-",
@@ -213,7 +213,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                                String[] globalFlags, String formatFlags,
                                int timeout) throws IOException {
         String babel = findBabel();
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         args.add(babel);
         args.addAll(asList(globalFlags));
         args.addAll(asList("-i", sourceFormat,
@@ -396,7 +396,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         if (routes == null)
             return null;
 
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
         for (GpxRoute aRoute : routes) {
             GpxRoute route = sanitizeRoute(aRoute);
             if (isValidRoute(route))
@@ -422,7 +422,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<GpxRoute>();
+        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<>();
         if (isStreamingCapable()) {
             readStream(source, startDate, gpxContext);
         } else {

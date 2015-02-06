@@ -86,7 +86,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private static final String VISIBLE_PREFERENCE = "visible";
     private static final String ORDER_PREFERENCE = "order";
 
-    private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
+    private final List<PositionTableColumn> predefinedColumns = new ArrayList<>();
 
     public PositionsTableColumnModel() {
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();

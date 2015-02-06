@@ -62,7 +62,7 @@ public class NokiaLandmarkExchangeUtil {
     public static void marshal(Lmx lmx, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<Lmx>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), out);
             }
             finally {
                 out.flush();

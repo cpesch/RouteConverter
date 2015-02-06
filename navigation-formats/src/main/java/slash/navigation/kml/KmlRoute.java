@@ -99,7 +99,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
+        List<BcrPosition> bcrPositions = new ArrayList<>();
         for (KmlPosition kmlPosition : positions) {
             bcrPositions.add(kmlPosition.asMTPPosition());
         }
@@ -107,7 +107,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (KmlPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
@@ -115,7 +115,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
+        List<GpxPosition> gpxPositions = new ArrayList<>();
         for (KmlPosition kmlPosition : positions) {
             gpxPositions.add(kmlPosition.asGpxPosition());
         }
@@ -123,12 +123,12 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>(getPositions());
+        List<KmlPosition> kmlPositions = new ArrayList<>(getPositions());
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
+        List<NmeaPosition> nmeaPositions = new ArrayList<>();
         for (KmlPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
@@ -136,7 +136,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
+        List<NmnPosition> nmnPositions = new ArrayList<>();
         for (KmlPosition kmlPosition : positions) {
             nmnPositions.add(kmlPosition.asNmnPosition());
         }
@@ -144,7 +144,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (KmlPosition kmlPosition : positions) {
             wgs84Positions.add(kmlPosition.asWgs84Position());
         }
@@ -152,7 +152,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (KmlPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
@@ -160,7 +160,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        List<TomTomPosition> tomTomPositions = new ArrayList<>();
         for (KmlPosition position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }

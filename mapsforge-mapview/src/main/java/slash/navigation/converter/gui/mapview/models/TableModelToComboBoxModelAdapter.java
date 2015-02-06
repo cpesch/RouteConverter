@@ -39,7 +39,7 @@ import static javax.swing.event.TableModelEvent.*;
 public class TableModelToComboBoxModelAdapter<E> implements ComboBoxModel<E> {
     private final TableModel modelDelegate;
     private final ItemModel<E> selectedDelegate;
-    private final Map<ListDataListener, TableModelListener> listToTableListener = new HashMap<ListDataListener, TableModelListener>();
+    private final Map<ListDataListener, TableModelListener> listToTableListener = new HashMap<>();
 
     public TableModelToComboBoxModelAdapter(TableModel modelDelegate, ItemModel<E> selectedDelegate) {
         this.modelDelegate = modelDelegate;

@@ -542,7 +542,7 @@ public class Tour {
      */
     public List<Tour.Destination> getDestination() {
         if (destination == null) {
-            destination = new ArrayList<Tour.Destination>();
+            destination = new ArrayList<>();
         }
         return this.destination;
     }

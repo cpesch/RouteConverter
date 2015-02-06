@@ -130,7 +130,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/GpxExtensions/v3", name = "TrackPointExtension")
     public JAXBElement<TrackPointExtensionT> createTrackPointExtension(TrackPointExtensionT value) {
-        return new JAXBElement<TrackPointExtensionT>(_TrackPointExtension_QNAME, TrackPointExtensionT.class, null, value);
+        return new JAXBElement<>(_TrackPointExtension_QNAME, TrackPointExtensionT.class, null, value);
     }
 
     /**
@@ -139,7 +139,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/GpxExtensions/v3", name = "RouteExtension")
     public JAXBElement<RouteExtensionT> createRouteExtension(RouteExtensionT value) {
-        return new JAXBElement<RouteExtensionT>(_RouteExtension_QNAME, RouteExtensionT.class, null, value);
+        return new JAXBElement<>(_RouteExtension_QNAME, RouteExtensionT.class, null, value);
     }
 
     /**
@@ -148,7 +148,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/GpxExtensions/v3", name = "WaypointExtension")
     public JAXBElement<WaypointExtensionT> createWaypointExtension(WaypointExtensionT value) {
-        return new JAXBElement<WaypointExtensionT>(_WaypointExtension_QNAME, WaypointExtensionT.class, null, value);
+        return new JAXBElement<>(_WaypointExtension_QNAME, WaypointExtensionT.class, null, value);
     }
 
     /**
@@ -157,7 +157,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/GpxExtensions/v3", name = "TrackExtension")
     public JAXBElement<TrackExtensionT> createTrackExtension(TrackExtensionT value) {
-        return new JAXBElement<TrackExtensionT>(_TrackExtension_QNAME, TrackExtensionT.class, null, value);
+        return new JAXBElement<>(_TrackExtension_QNAME, TrackExtensionT.class, null, value);
     }
 
     /**
@@ -166,7 +166,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/GpxExtensions/v3", name = "RoutePointExtension")
     public JAXBElement<RoutePointExtensionT> createRoutePointExtension(RoutePointExtensionT value) {
-        return new JAXBElement<RoutePointExtensionT>(_RoutePointExtension_QNAME, RoutePointExtensionT.class, null, value);
+        return new JAXBElement<>(_RoutePointExtension_QNAME, RoutePointExtensionT.class, null, value);
     }
 
 }

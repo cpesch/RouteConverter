@@ -97,7 +97,7 @@ public class UndoPositionsModel implements PositionsModel {
             return;
 
         if(trackUndo) {
-            List<Object> previousValues = new ArrayList<Object>(columnToValues.getColumnIndices().size());
+            List<Object> previousValues = new ArrayList<>(columnToValues.getColumnIndices().size());
             for (int columnIndex : columnToValues.getColumnIndices()) {
                 previousValues.add(trim(getStringAt(rowIndex, columnIndex)));
             }
@@ -214,7 +214,7 @@ public class UndoPositionsModel implements PositionsModel {
         final RemovePositions edit = new RemovePositions(this);
 
         new ContinousRange(rows, new RangeOperation() {
-            private List<NavigationPosition> removed = new ArrayList<NavigationPosition>();
+            private List<NavigationPosition> removed = new ArrayList<>();
 
             public void performOnIndex(int index) {
                 removed.add(0, getRoute().remove(index));
@@ -246,7 +246,7 @@ public class UndoPositionsModel implements PositionsModel {
     void sort(Comparator<NavigationPosition> comparator, boolean trackUndo) {
         @SuppressWarnings("unchecked")
         List<NavigationPosition> original = getRoute().getPositions();
-        List<NavigationPosition> positions = new ArrayList<NavigationPosition>(original);
+        List<NavigationPosition> positions = new ArrayList<>(original);
         delegate.sort(comparator);
         if (trackUndo)
             undoManager.addEdit(new SortPositions(this, comparator, positions));

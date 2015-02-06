@@ -76,7 +76,7 @@ public class ItemIconType
      */
     public List<JAXBElement<List<ItemIconStateEnum>>> getState() {
         if (state == null) {
-            state = new ArrayList<JAXBElement<List<ItemIconStateEnum>>>();
+            state = new ArrayList<>();
         }
         return this.state;
     }

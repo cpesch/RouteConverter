@@ -126,7 +126,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.routeconverter.de/xmlschemas/Datasources/1.0", name = "datasources")
     public JAXBElement<DatasourcesType> createDatasources(DatasourcesType value) {
-        return new JAXBElement<DatasourcesType>(_Datasources_QNAME, DatasourcesType.class, null, value);
+        return new JAXBElement<>(_Datasources_QNAME, DatasourcesType.class, null, value);
     }
 
 }

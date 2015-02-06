@@ -129,7 +129,7 @@ public class ListStyleType
      */
     public List<ItemIconType> getItemIcon() {
         if (itemIcon == null) {
-            itemIcon = new ArrayList<ItemIconType>();
+            itemIcon = new ArrayList<>();
         }
         return this.itemIcon;
     }

@@ -49,14 +49,14 @@ public class Range {
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices, int maximumRangeLength) {
         sort(indices);
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
-        List<Integer> range = new ArrayList<Integer>();
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> range = new ArrayList<>();
         for (int index : indices) {
             if ((range.size() == 0 || index == range.get(range.size() - 1) + 1) && range.size() < maximumRangeLength) {
                 range.add(index);
             } else {
                 result.add(range);
-                range = new ArrayList<Integer>();
+                range = new ArrayList<>();
                 range.add(index);
             }
         }
@@ -66,14 +66,14 @@ public class Range {
 
     public static List<List<Integer>> asContinuousMonotonicallyDecreasingRanges(int[] indices) {
         indices = revert(indices);
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
-        List<Integer> range = new ArrayList<Integer>();
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> range = new ArrayList<>();
         for (int index : indices) {
             if (range.size() == 0 || index == range.get(range.size() - 1) - 1) {
                 range.add(index);
             } else {
                 result.add(range);
-                range = new ArrayList<Integer>();
+                range = new ArrayList<>();
                 range.add(index);
             }
         }
@@ -102,7 +102,7 @@ public class Range {
         if (nth < 1)
             throw new IllegalArgumentException("nth has to be more than zero");
 
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         for (int i = 1; i < maximum; i += nth) {
             int intervalMaximum = i + nth - 1;
             if (intervalMaximum > maximum)

@@ -310,7 +310,7 @@ public class GoogleMapsUrlFormatTest {
 
     @Test
     public void testCreateURL() {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
         positions.add(new Wgs84Position(10.20026067, 53.57662034, null, 4.5, null, "Stemwarde, Germany"));
         positions.add(new Wgs84Position(10.35735078, 53.59171021, null, 3.5, null, "Gro\u00dfensee, Germany"));

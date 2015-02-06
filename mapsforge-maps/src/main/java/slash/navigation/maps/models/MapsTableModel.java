@@ -36,7 +36,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class MapsTableModel extends AbstractTableModel {
-    private List<LocalMap> maps = new ArrayList<LocalMap>();
+    private List<LocalMap> maps = new ArrayList<>();
 
     public List<LocalMap> getMaps() {
         return maps;

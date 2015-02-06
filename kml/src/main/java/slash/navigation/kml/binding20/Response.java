@@ -79,7 +79,7 @@ public class Response {
      */
     public List<Object> getNameOrStatusOrPlacemark() {
         if (nameOrStatusOrPlacemark == null) {
-            nameOrStatusOrPlacemark = new ArrayList<Object>();
+            nameOrStatusOrPlacemark = new ArrayList<>();
         }
         return this.nameOrStatusOrPlacemark;
     }

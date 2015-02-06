@@ -160,7 +160,7 @@ public class LocationType
      */
     public List<Object> getLocationSimpleExtensionGroup() {
         if (locationSimpleExtensionGroup == null) {
-            locationSimpleExtensionGroup = new ArrayList<Object>();
+            locationSimpleExtensionGroup = new ArrayList<>();
         }
         return this.locationSimpleExtensionGroup;
     }
@@ -189,7 +189,7 @@ public class LocationType
      */
     public List<AbstractObjectType> getLocationObjectExtensionGroup() {
         if (locationObjectExtensionGroup == null) {
-            locationObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            locationObjectExtensionGroup = new ArrayList<>();
         }
         return this.locationObjectExtensionGroup;
     }

@@ -80,7 +80,7 @@ public class WorkoutFolderT {
      */
     public List<WorkoutFolderT> getFolder() {
         if (folder == null) {
-            folder = new ArrayList<WorkoutFolderT>();
+            folder = new ArrayList<>();
         }
         return this.folder;
     }
@@ -109,7 +109,7 @@ public class WorkoutFolderT {
      */
     public List<NameKeyReferenceT> getWorkoutNameRef() {
         if (workoutNameRef == null) {
-            workoutNameRef = new ArrayList<NameKeyReferenceT>();
+            workoutNameRef = new ArrayList<>();
         }
         return this.workoutNameRef;
     }

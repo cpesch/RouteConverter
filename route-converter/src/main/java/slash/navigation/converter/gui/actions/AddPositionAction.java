@@ -84,7 +84,7 @@ public class AddPositionAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         boolean hasInsertedRowInMapCenter = false;
-        List<NavigationPosition> insertedPositions = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> insertedPositions = new ArrayList<>();
         int[] rowIndices = revert(table.getSelectedRows());
         // append to table if there is nothing selected
         boolean areRowsSelected = rowIndices.length > 0;                        // TODO complicated logic, unify with BaseMapView#getAddRow
@@ -107,7 +107,7 @@ public class AddPositionAction extends FrameAction {
         }
 
         if (insertedPositions.size() > 0) {
-            List<Integer> insertedRows = new ArrayList<Integer>();
+            List<Integer> insertedRows = new ArrayList<>();
             for (NavigationPosition position : insertedPositions) {
                 int index = positionsModel.getIndex(position);
                 insertedRows.add(index);

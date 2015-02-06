@@ -79,7 +79,7 @@ public class SimpleArrayDataType
      */
     public List<String> getValue() {
         if (value == null) {
-            value = new ArrayList<String>();
+            value = new ArrayList<>();
         }
         return this.value;
     }
@@ -108,7 +108,7 @@ public class SimpleArrayDataType
      */
     public List<Object> getSimpleArrayDataExtension() {
         if (simpleArrayDataExtension == null) {
-            simpleArrayDataExtension = new ArrayList<Object>();
+            simpleArrayDataExtension = new ArrayList<>();
         }
         return this.simpleArrayDataExtension;
     }

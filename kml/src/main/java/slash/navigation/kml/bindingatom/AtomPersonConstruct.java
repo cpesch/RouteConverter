@@ -78,7 +78,7 @@ public class AtomPersonConstruct {
      */
     public List<JAXBElement<String>> getNameOrUriOrEmail() {
         if (nameOrUriOrEmail == null) {
-            nameOrUriOrEmail = new ArrayList<JAXBElement<String>>();
+            nameOrUriOrEmail = new ArrayList<>();
         }
         return this.nameOrUriOrEmail;
     }

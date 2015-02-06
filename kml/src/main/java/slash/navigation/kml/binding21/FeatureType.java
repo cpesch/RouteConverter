@@ -361,7 +361,7 @@ public abstract class FeatureType
      */
     public List<JAXBElement<? extends StyleSelectorType>> getStyleSelector() {
         if (styleSelector == null) {
-            styleSelector = new ArrayList<JAXBElement<? extends StyleSelectorType>>();
+            styleSelector = new ArrayList<>();
         }
         return this.styleSelector;
     }

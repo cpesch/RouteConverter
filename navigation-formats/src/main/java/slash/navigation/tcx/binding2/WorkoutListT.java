@@ -68,7 +68,7 @@ public class WorkoutListT {
      */
     public List<WorkoutT> getWorkout() {
         if (workout == null) {
-            workout = new ArrayList<WorkoutT>();
+            workout = new ArrayList<>();
         }
         return this.workout;
     }

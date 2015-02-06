@@ -163,7 +163,7 @@ class RestrictedFileSystemView extends FileSystemView {
     }
 
     public File[] getFiles(File dir, boolean useFileHiding) {
-        Vector<File> files = new Vector<File>();
+        Vector<File> files = new Vector<>();
 
         File[] names;
         names = dir.listFiles();

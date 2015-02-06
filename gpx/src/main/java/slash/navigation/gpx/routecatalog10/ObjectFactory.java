@@ -54,7 +54,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0", name = "userextension")
     public JAXBElement<UserextensionType> createUserextension(UserextensionType value) {
-        return new JAXBElement<UserextensionType>(_Userextension_QNAME, UserextensionType.class, null, value);
+        return new JAXBElement<>(_Userextension_QNAME, UserextensionType.class, null, value);
     }
 
 }

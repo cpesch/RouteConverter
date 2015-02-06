@@ -54,7 +54,7 @@ public class FragmentImpl<T extends Downloadable> implements Fragment {
     }
 
     public List<Checksum> getChecksums() {
-        List<Checksum> result = new ArrayList<Checksum>();
+        List<Checksum> result = new ArrayList<>();
         for (ChecksumType checksumType : fragmentType.getChecksum())
             result.add(asChecksum(checksumType));
         return result;

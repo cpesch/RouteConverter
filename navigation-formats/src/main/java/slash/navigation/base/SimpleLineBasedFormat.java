@@ -47,7 +47,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     }
 
     public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
 
         int lineCount = 0;
         while (true) {

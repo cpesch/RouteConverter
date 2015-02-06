@@ -32,7 +32,7 @@ import java.util.List;
  */
 
 public class RoutesTableModel extends AbstractTableModel {
-    private List<RouteModel> routes = new ArrayList<RouteModel>();
+    private List<RouteModel> routes = new ArrayList<>();
 
     public void setRoutes(List<RouteModel> routes) {
         this.routes = routes;

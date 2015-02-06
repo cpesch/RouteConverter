@@ -70,7 +70,7 @@ class KlickTelUtil {
     public static void marshal(KDRoute route, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<KDRoute>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), out);
             }
             finally {
                 out.flush();

@@ -164,7 +164,7 @@ public class KmlUtil {
     public static void marshal20(slash.navigation.kml.binding20.Kml kml, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller20().marshal(new JAXBElement<slash.navigation.kml.binding20.Kml>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), out);
+                newMarshaller20().marshal(new JAXBElement<>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), out);
             } finally {
                 out.flush();
                 out.close();

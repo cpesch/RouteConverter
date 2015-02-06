@@ -62,7 +62,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2", name = "TrackPointExtension")
     public JAXBElement<TrackPointExtensionT> createTrackPointExtension(TrackPointExtensionT value) {
-        return new JAXBElement<TrackPointExtensionT>(_TrackPointExtension_QNAME, TrackPointExtensionT.class, null, value);
+        return new JAXBElement<>(_TrackPointExtension_QNAME, TrackPointExtensionT.class, null, value);
     }
 
 }

@@ -88,7 +88,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/TripExtensions/v1", name = "Trip")
     public JAXBElement<TripExtensionT> createTrip(TripExtensionT value) {
-        return new JAXBElement<TripExtensionT>(_Trip_QNAME, TripExtensionT.class, null, value);
+        return new JAXBElement<>(_Trip_QNAME, TripExtensionT.class, null, value);
     }
 
     /**
@@ -97,7 +97,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/TripExtensions/v1", name = "ShapingPoint")
     public JAXBElement<ShapingPointExtensionT> createShapingPoint(ShapingPointExtensionT value) {
-        return new JAXBElement<ShapingPointExtensionT>(_ShapingPoint_QNAME, ShapingPointExtensionT.class, null, value);
+        return new JAXBElement<>(_ShapingPoint_QNAME, ShapingPointExtensionT.class, null, value);
     }
 
     /**
@@ -106,7 +106,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/TripExtensions/v1", name = "ViaPoint")
     public JAXBElement<ViaPointExtensionT> createViaPoint(ViaPointExtensionT value) {
-        return new JAXBElement<ViaPointExtensionT>(_ViaPoint_QNAME, ViaPointExtensionT.class, null, value);
+        return new JAXBElement<>(_ViaPoint_QNAME, ViaPointExtensionT.class, null, value);
     }
 
 }

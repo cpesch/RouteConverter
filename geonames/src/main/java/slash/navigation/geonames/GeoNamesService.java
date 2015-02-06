@@ -127,7 +127,7 @@ public class GeoNamesService implements ElevationService {
             return null;
         if (geonames.getStatus() != null)
             throw new IOException(geonames.getStatus().getMessage());
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Geonames.Geoname geoname : geonames.getGeoname()) {
             result.add(geoname.getName());
         }
@@ -153,7 +153,7 @@ public class GeoNamesService implements ElevationService {
         Geonames geonames = getGeonamesFor("findNearbyPostalCodes", longitude, latitude);
         if (geonames == null || geonames.getCode() == null)
             return null;
-        List<PostalCode> result = new ArrayList<PostalCode>();
+        List<PostalCode> result = new ArrayList<>();
         for (Geonames.Code code : geonames.getCode()) {
             result.add(new PostalCode(code.getCountryCode(), code.getPostalcode(), code.getName()));
         }
@@ -164,7 +164,7 @@ public class GeoNamesService implements ElevationService {
         Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode=" + postalCode + "&country=" + countryCode);
         if (geonames == null || geonames.getCode() == null)
             return null;
-        List<PostalCode> result = new ArrayList<PostalCode>();
+        List<PostalCode> result = new ArrayList<>();
         for (Geonames.Code code : geonames.getCode()) {
             result.add(new PostalCode(code.getCountryCode(), code.getPostalcode(), code.getName()));
         }
@@ -183,7 +183,7 @@ public class GeoNamesService implements ElevationService {
         Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode=" + postalCode + "&country=" + countryCode);
         if (geonames == null || geonames.getCode() == null)
             return null;
-        List<Double> result = new ArrayList<Double>();
+        List<Double> result = new ArrayList<>();
         for (Geonames.Code code : geonames.getCode()) {
             result.add(code.getLng().doubleValue());
             result.add(code.getLat().doubleValue());

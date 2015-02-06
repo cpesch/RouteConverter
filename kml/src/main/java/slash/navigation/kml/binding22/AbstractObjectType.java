@@ -117,7 +117,7 @@ public abstract class AbstractObjectType {
      */
     public List<Object> getObjectSimpleExtensionGroup() {
         if (objectSimpleExtensionGroup == null) {
-            objectSimpleExtensionGroup = new ArrayList<Object>();
+            objectSimpleExtensionGroup = new ArrayList<>();
         }
         return this.objectSimpleExtensionGroup;
     }

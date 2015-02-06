@@ -132,7 +132,7 @@ public class RegionType
      */
     public List<Object> getRegionSimpleExtensionGroup() {
         if (regionSimpleExtensionGroup == null) {
-            regionSimpleExtensionGroup = new ArrayList<Object>();
+            regionSimpleExtensionGroup = new ArrayList<>();
         }
         return this.regionSimpleExtensionGroup;
     }
@@ -161,7 +161,7 @@ public class RegionType
      */
     public List<AbstractObjectType> getRegionObjectExtensionGroup() {
         if (regionObjectExtensionGroup == null) {
-            regionObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            regionObjectExtensionGroup = new ArrayList<>();
         }
         return this.regionObjectExtensionGroup;
     }

@@ -115,7 +115,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         ByteBuffer sbpRecordByteBuffer = ByteBuffer.wrap(record);
         sbpRecordByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        List<Wgs84Route> result = new ArrayList<Wgs84Route>();
+        List<Wgs84Route> result = new ArrayList<>();
         Wgs84Route activeRoute = null;
         Wgs84Position position;
         Wgs84Position previousPosition = null;

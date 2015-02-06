@@ -107,7 +107,7 @@ public class RoutePointExtensionT {
      */
     public List<AutoroutePointT> getRpt() {
         if (rpt == null) {
-            rpt = new ArrayList<AutoroutePointT>();
+            rpt = new ArrayList<>();
         }
         return this.rpt;
     }

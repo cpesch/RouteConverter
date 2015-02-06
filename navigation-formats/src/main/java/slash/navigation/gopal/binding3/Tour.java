@@ -133,7 +133,7 @@ public class Tour {
      */
     public List<Tour.Dest> getDest() {
         if (dest == null) {
-            dest = new ArrayList<Tour.Dest>();
+            dest = new ArrayList<>();
         }
         return this.dest;
     }

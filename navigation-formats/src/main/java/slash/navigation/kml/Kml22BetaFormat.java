@@ -67,7 +67,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
-        List<JAXBElement<T>> result = new ArrayList<JAXBElement<T>>();
+        List<JAXBElement<T>> result = new ArrayList<>();
         for (JAXBElement<? extends AbstractFeatureType> element : elements) {
             if (name.equals(element.getName().getLocalPart()))
                 result.add((JAXBElement<T>) element);
@@ -123,7 +123,7 @@ public class Kml22BetaFormat extends KmlFormat {
     }
 
     private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate, ParserContext<KmlRoute> context) {
-        List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
+        List<KmlPosition> waypoints = new ArrayList<>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asDescription(trim(placemarkTypeValue.getNameElement()),
@@ -170,7 +170,7 @@ public class Kml22BetaFormat extends KmlFormat {
     }
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends AbstractGeometryType> geometryType) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        List<KmlPosition> positions = new ArrayList<>();
         if (geometryType == null)
             return positions;
         AbstractGeometryType geometryTypeValue = geometryType.getValue();

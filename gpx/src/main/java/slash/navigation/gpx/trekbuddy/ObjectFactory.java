@@ -48,7 +48,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://trekbuddy.net/2009/01/gpx/nmea", name = "speed")
     public JAXBElement<BigDecimal> createSpeed(BigDecimal value) {
-        return new JAXBElement<BigDecimal>(_Speed_QNAME, BigDecimal.class, null, value);
+        return new JAXBElement<>(_Speed_QNAME, BigDecimal.class, null, value);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://trekbuddy.net/2009/01/gpx/nmea", name = "course")
     public JAXBElement<BigDecimal> createCourse(BigDecimal value) {
-        return new JAXBElement<BigDecimal>(_Course_QNAME, BigDecimal.class, null, value);
+        return new JAXBElement<>(_Course_QNAME, BigDecimal.class, null, value);
     }
 
 }
