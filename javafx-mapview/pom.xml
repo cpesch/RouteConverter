@@ -34,7 +34,10 @@
             <!--suppress MavenModelInspection -->
             <version>2.0</version>
             <!--suppress MavenModelInspection -->
+            <!-- JavaFX path on Windows -->
             <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+            <!-- JavaFX path on Mac OS X -->
+            <!-- <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath> -->
             <scope>system</scope>
         </dependency>
     </dependencies>
