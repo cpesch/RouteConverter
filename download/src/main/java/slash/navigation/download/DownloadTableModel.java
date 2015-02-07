@@ -104,7 +104,7 @@ public class DownloadTableModel extends AbstractTableModel {
             updateDownload(download);
     }
 
-    private void removeDownload(Download download) {
+    void removeDownload(Download download) {
         final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);

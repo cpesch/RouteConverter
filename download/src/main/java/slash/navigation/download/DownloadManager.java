@@ -26,6 +26,7 @@ import slash.navigation.download.queue.QueuePersister;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -122,6 +123,11 @@ public class DownloadManager {
             e.printStackTrace();
             log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
         }
+    }
+
+    public void clearQueue() {
+        for(Download download : new ArrayList<>(model.getDownloads()))
+            model.removeDownload(download);
     }
 
     public void dispose() {
