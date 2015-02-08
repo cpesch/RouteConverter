@@ -38,7 +38,7 @@ import static slash.navigation.datasources.DataSourcesUtil.unmarshal;
  */
 
 public class DataSourceService {
-    private List<DataSource> dataSources = new ArrayList<>();
+    private final List<DataSource> dataSources = new ArrayList<>();
 
     public synchronized void load(InputStream inputStream) throws JAXBException {
         DatasourcesType datasourcesType = unmarshal(inputStream);
