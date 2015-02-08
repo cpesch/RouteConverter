@@ -33,7 +33,8 @@
         <key>JVMVersion</key>
         <string>1.7+</string>
         <key>JVMOptions</key>
-        <array><string>-Xmx1024m</string><string>-Dapple.laf.useScreenMenuBar=true</string></array>
+        <array><string>-Xmx1024m</string><string>-Dapple.laf.useScreenMenuBar=true</string>
+        <string>-Xdock:name=RouteConverter</string><string>-Xdock:icon=RouteConverter.icns</string></array>
         <key>JVMArguments</key>
         <array/>
     </dict>
