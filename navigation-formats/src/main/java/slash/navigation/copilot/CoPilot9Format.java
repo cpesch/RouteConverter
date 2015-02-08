@@ -48,7 +48,9 @@ public class CoPilot9Format extends CoPilotFormat {
     }
 
     protected boolean isDataVersion(String line) {
-        return line.startsWith(DATA_VERSION + ":2") || line.startsWith(DATA_VERSION + ":3");
+        // remove BOM for data version test since reading with UTF-16LE doesn't hide it
+        String data = line.charAt(0) == BYTE_ORDER_MARK ? line.substring(1) : line;
+        return data.startsWith(DATA_VERSION + ":2") || data.startsWith(DATA_VERSION + ":3");
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
