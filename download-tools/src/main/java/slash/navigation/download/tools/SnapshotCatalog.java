@@ -31,10 +31,10 @@ import slash.navigation.datasources.DataSourceService;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.download.tools.base.BaseDownloadTool;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static slash.common.io.Directories.ensureDirectory;
-import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.navigation.download.Action.Copy;
 
@@ -53,19 +51,12 @@ import static slash.navigation.download.Action.Copy;
  * @author Christian Pesch
  */
 
-public class SnapshotCatalog {
+public class SnapshotCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(SnapshotCatalog.class.getName());
-    private static final String URL_ARGUMENT = "url";
     private static final String[] EDITIONS = {"Online", "Offline"};
+
+    private String url;
     private DownloadManager downloadManager = new DownloadManager(new File(getTemporaryDirectory(), "snapshot-queue.xml"));
-
-    private File getDataSourcesTarget() {
-        return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());
-    }
-
-    private File getEditionTarget() {
-        return ensureDirectory(new File(getDataSourcesTarget(), "editions"));
-    }
 
     private void deleteAll(File directory) throws IOException {
         File[] files = directory.listFiles();
@@ -79,34 +70,25 @@ public class SnapshotCatalog {
         }
     }
 
-    private DataSourceService loadDataSources(File directory) throws JAXBException, FileNotFoundException {
-        DataSourceService dataSourceService = new DataSourceService();
-        File[] files = directory.listFiles();
-        if (files != null)
-            for (File file : files)
-                dataSourceService.load(new FileInputStream(file));
-        return dataSourceService;
-    }
-
-    private void snapshot(String baseUrl) throws IOException, JAXBException {
+    private void snapshot() throws IOException, JAXBException {
         downloadManager.clearQueue();
         deleteAll(getDataSourcesTarget());
 
-        snapshotEditions(baseUrl, getEditionTarget());
+        snapshotEditions(getEditionTarget());
         DataSourceService dataSourceService = loadDataSources(getEditionTarget());
         snapshotDataSources(dataSourceService, getDataSourcesTarget());
     }
 
-    private void snapshotEditions(String baseUrl, File target) {
+    private void snapshotEditions(File target) {
         List<Download> downloads = new ArrayList<>();
         // TODO remove hardcoded EDITIONS by scanning http://www.routeconverter.com/datasources/edition/
         for (String edition : EDITIONS) {
-            String uri = edition.toLowerCase() + ".xml";
-            String url = baseUrl + "edition/" + uri;
+            String editionUri = edition.toLowerCase() + ".xml";
+            String editionUrl = url + "edition/" + editionUri;
             Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources",
-                    url, Copy, null, new FileAndChecksum(new File(target, uri), null), null);
+                    editionUrl, Copy, null, new FileAndChecksum(new File(target, editionUri), null), null);
             downloads.add(download);
-            log.info(format("Downloading '%s'", url));
+            log.info(format("Downloading '%s'", editionUrl));
         }
         downloadManager.waitForCompletion(downloads);
     }
@@ -128,7 +110,8 @@ public class SnapshotCatalog {
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
-        snapshot(line.getOptionValue(URL_ARGUMENT));
+        url = line.getOptionValue(URL_ARGUMENT);
+        snapshot();
         System.exit(0);
     }
 

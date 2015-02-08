@@ -27,10 +27,17 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceService;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Map;
+import slash.navigation.datasources.Theme;
+import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.rest.Get;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -46,13 +53,13 @@ import static java.util.Arrays.sort;
  * @author Christian Pesch
  */
 
-public class ScanWebsite {
+public class ScanWebsite extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
-    private static final String URL_ARGUMENT = "url";
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String EXTENSION_ARGUMENT = "extension";
+    private static final String ID_ARGUMENT = "id";
 
-    private String url, baseUrl;
+    private String url, baseUrl, id;
     private Set<String> extensions;
 
     private String appendURIs(String uri, String anchor) {
@@ -93,9 +100,38 @@ public class ScanWebsite {
         return asList(sortedUris);
     }
 
-    private void scan() throws IOException {
+    private Set<String> collectURIs(DataSource source) {
+        Set<String> result = new HashSet<>();
+        for(File file : source.getFiles())
+            result.add(file.getUri());
+        for(Map map : source.getMaps())
+            result.add(map.getUri());
+        for(Theme theme : source.getThemes())
+            result.add(theme.getUri());
+        return result;
+    }
+
+    private void scan() throws IOException, JAXBException {
         List<String> collectedUris = collectUris();
         log.info("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
+
+        DataSourceService service = loadDataSources(getDataSourcesTarget());
+        DataSource source = service.getDataSourceById(id);
+        if (source == null)
+            throw new IllegalArgumentException("Unknown data source: " + id);
+        if (!url.equals(source.getBaseUrl()))
+            throw new IllegalArgumentException("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + url);
+
+        Set<String> files = collectURIs(source);
+
+        Set<String> addedUris = new HashSet<>(collectedUris);
+        addedUris.removeAll(files);
+
+        Set<String> removedUris = new HashSet<>(files);
+        removedUris.removeAll(collectedUris);
+
+        log.info("Added URIs: " + addedUris + " (" + addedUris.size() + " elements)");
+        log.info("Removed URIs: " + removedUris + " (" + removedUris.size() + " elements)");
     }
 
     private void run(String[] args) throws Exception {
@@ -104,8 +140,9 @@ public class ScanWebsite {
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
         url = line.getOptionValue(URL_ARGUMENT);
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
-        if(baseUrl == null)
+        if (baseUrl == null)
             baseUrl = url;
+        id = line.getOptionValue(ID_ARGUMENT);
         scan();
         System.exit(0);
     }
@@ -120,6 +157,8 @@ public class ScanWebsite {
                 withDescription("URL to use as a base for resources").create());
         options.addOption(OptionBuilder.withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
                 withDescription("Extensions to scan for").create());
+        options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
+                withDescription("ID of the data source").create());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
