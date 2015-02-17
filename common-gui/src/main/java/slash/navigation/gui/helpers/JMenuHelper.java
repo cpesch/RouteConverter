@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
