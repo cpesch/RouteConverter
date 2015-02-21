@@ -126,7 +126,7 @@
                             <group>
                                 <title>Utilities</title>
                                 <packages>
-                                    slash.common.io:slash.common.hex:slash.common.log:slash.common.util:slash.navigation.util
+                                    slash.common.io:slash.common.log:slash.common.system:slash.common.type:slash.navigation.common
                                 </packages>
                             </group>
                         </groups>
