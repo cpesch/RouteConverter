@@ -35,12 +35,12 @@
         <repository>
             <id>routeconverter-release</id>
             <name>RouteConverter Release Repository</name>
-            <url>scpexe://www.routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/release</url>
+            <url>scpexe://www.routeconverter.com:/downloads/release</url>
         </repository>
         <snapshotRepository>
             <id>routeconverter-prerelease</id>
             <name>RouteConverter Prerelease Snapshot Repository</name>
-            <url>scpexe://www.routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
+            <url>scpexe://www.routeconverter.com:/downloads/prerelease</url>
         </snapshotRepository>
     </distributionManagement>
 
