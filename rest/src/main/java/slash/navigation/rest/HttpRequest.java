@@ -139,7 +139,7 @@ public abstract class HttpRequest {
             // HEAD requests don't have a body
             String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
             if (!isSuccessful() && body != null)
-                log.warning(body);
+                log.warning(format("Body of %s not null: %s", response, body));
             return body;
         } finally {
             release();

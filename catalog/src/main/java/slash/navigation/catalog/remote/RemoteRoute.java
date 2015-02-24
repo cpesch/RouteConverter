@@ -87,7 +87,8 @@ public class RemoteRoute implements Route {
     public synchronized String getName() throws IOException {
         if (fromCategory)
             return name;
-        return getRte().getName();
+        RteType rte = getRte();
+        return rte != null ? rte.getName() : "?";
     }
 
     public synchronized String getDescription() throws IOException {
