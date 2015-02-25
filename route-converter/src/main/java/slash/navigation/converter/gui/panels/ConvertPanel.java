@@ -191,6 +191,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.helpers.PreferencesHelper.count;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -1133,17 +1134,12 @@ public class ConvertPanel implements PanelInTab {
         log.info("Format usage:" + builder.toString());
     }
 
-    private void count(String preferenceName) {
-        int count = preferences.getInt(preferenceName, 0);
-        preferences.putInt(preferenceName, count + 1);
-    }
-
     private void countRead(NavigationFormat format) {
-        count(READ_COUNT_PREFERENCE + format.getClass().getName());
+        count(preferences, READ_COUNT_PREFERENCE + format.getClass().getName());
     }
 
     private void countWrite(NavigationFormat format) {
-        count(WRITE_COUNT_PREFERENCE + format.getClass().getName());
+        count(preferences, WRITE_COUNT_PREFERENCE + format.getClass().getName());
     }
 
     // map view related helpers

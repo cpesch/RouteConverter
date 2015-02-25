@@ -94,13 +94,13 @@ public abstract class SingleFrameApplication extends Application {
         frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                exit(e);
+                Application.getInstance().getContext().getActionManager().run("exit");
             }
         });
 
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exit(e);
+                Application.getInstance().getContext().getActionManager().run("exit");
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 

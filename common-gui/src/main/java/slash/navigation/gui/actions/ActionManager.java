@@ -29,6 +29,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
+import static javax.swing.Action.NAME;
+import static slash.navigation.gui.helpers.PreferencesHelper.count;
 
 /**
  * Manages the {@link Action}s of an {@link Application}.
@@ -37,6 +42,10 @@ import java.util.Map;
  */
 
 public class ActionManager {
+    private static final Logger log = Logger.getLogger(ActionManager.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(ActionManager.class);
+    private static final String RUN_COUNT_PREFERENCE = "runCount";
+
     private Map<String, Action> actionMap = new HashMap<>();
     private Map<String, ProxyAction> proxyActionMap = new HashMap<>();
 
@@ -57,10 +66,13 @@ public class ActionManager {
         if (found != null)
             throw new IllegalArgumentException("action '" + found + "' for '" + actionName + "' already registered");
         actionMap.put(actionName, action);
-        action.putValue(Action.NAME, actionName);
+        action.putValue(NAME, actionName);
         ProxyAction proxyAction = proxyActionMap.get(actionName);
-        if (proxyAction != null)
+        if (proxyAction != null) {
             proxyAction.setDelegate(action);
+        } else {
+            proxyActionMap.put(actionName, new ProxyAction(action));
+        }
     }
 
     public void run(String actionName) {
@@ -71,7 +83,7 @@ public class ActionManager {
         Action action = actionMap.get(actionName);
         if (action == null)
             throw new IllegalArgumentException("no action registered for '" + actionName + "'");
-        action.actionPerformed(actionEvent);
+        perform(action, actionEvent);
     }
 
     public void enable(String actionName, boolean enable) {
@@ -81,10 +93,31 @@ public class ActionManager {
         action.setEnabled(enable);
     }
 
+    private static void perform(Action action, ActionEvent event) {
+        count(preferences, RUN_COUNT_PREFERENCE + action.getValue(NAME));
+        action.actionPerformed(event);
+    }
+
+    public void logUsage() {
+        StringBuilder builder = new StringBuilder();
+        for (String actionName : actionMap.keySet()) {
+            int runs = preferences.getInt(RUN_COUNT_PREFERENCE + actionName, 0);
+            if (runs > 0)
+                builder.append(String.format("\n%s, runs: %d", actionName, runs));
+        }
+        log.info("Action usage:" + builder.toString());
+    }
 
     private static class ProxyAction implements Action, PropertyChangeListener {
         private Action delegate = null;
         private SwingPropertyChangeSupport changeSupport = new SwingPropertyChangeSupport(this);
+
+        private ProxyAction() {
+        }
+
+        private ProxyAction(Action delegate) {
+            this.delegate = delegate;
+        }
 
         public void setDelegate(Action delegate) {
             if (this.delegate != null)
@@ -127,7 +160,7 @@ public class ActionManager {
 
         public void actionPerformed(ActionEvent e) {
             if(delegate != null)
-                delegate.actionPerformed(e);
+                perform(delegate, e);
         }
     }
 }

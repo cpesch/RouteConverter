@@ -288,6 +288,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         openMapView();
         openProfileView();
+
+        getContext().getActionManager().logUsage();
     }
 
     private MapView createMapView(String className) {
