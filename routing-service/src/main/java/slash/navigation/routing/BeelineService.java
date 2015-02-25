@@ -62,11 +62,10 @@ public class BeelineService implements RoutingService {
     }
 
     public String getPath() {
-        throw new UnsupportedOperationException();
+        return "";
     }
 
     public void setPath(String path) {
-        throw new UnsupportedOperationException();
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
