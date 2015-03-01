@@ -20,14 +20,14 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>http://www.routeconverter.com/svn/RouteThirdParty</url>
+            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>routeconverter-thirdparty</id>
-            <url>http://www.routeconverter.com/svn/RouteThirdParty</url>
+            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
         </pluginRepository>
     </pluginRepositories>
 
