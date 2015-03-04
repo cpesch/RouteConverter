@@ -30,7 +30,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Implementation-Vendor>LinuxNA</Implementation-Vendor>
+                                        <Implementation-Vendor>Linux</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverterOffline</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
