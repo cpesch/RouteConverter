@@ -5,7 +5,7 @@
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleExecutable</key>
-        <string>JavaApplicationStub</string>
+        <string>JavaAppLauncher</string>
         <key>CFBundleGetInfoString</key>
         <string>RouteConverter for Mac OS X</string>
         <key>CFBundleIconFile</key>
@@ -34,7 +34,7 @@
         <string>1.7+</string>
         <key>JVMOptions</key>
         <array><string>-Xmx1024m</string><string>-Dapple.laf.useScreenMenuBar=true</string>
-        <string>-Xdock:name=RouteConverter</string><string>-Xdock:icon=RouteConverter.icns</string></array>
+               <string>-Xdock:name=RouteConverter</string><string>-Xdock:icon=RouteConverter.icns</string></array>
         <key>JVMArguments</key>
         <array/>
     </dict>
