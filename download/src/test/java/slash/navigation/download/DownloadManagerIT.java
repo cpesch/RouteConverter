@@ -36,6 +36,7 @@ import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -49,9 +50,9 @@ public class DownloadManagerIT {
     private static final String EXPECTED = LOREM_IPSUM_DOLOR_SIT_AMET + ", consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
 
-    private static final CompactCalendar LAST_MODIFIED = fromMillis(1387698493000L);
+    private static final CompactCalendar LAST_MODIFIED = calendar(2015, 1, 3, 9, 9, 19);
     private static final long CONTENT_LENGTH = 447L;
-    private static final String ETAG = "\"40e0167-1bf-4ee1abbbb0940\"-gzip";
+    private static final String ETAG = "\"1bf-50bbbcff309d2-gzip\"";
     private static final String SHA1 = "597D5107C0DC296DF4F6128257F6F8D2079FA11A";
 
     private static final CompactCalendar ZIP_LAST_MODIFIED = fromMillis(1394029600000L);
@@ -96,7 +97,8 @@ public class DownloadManagerIT {
         if (target.exists())
             assertTrue(target.delete());
         if (queueFile.exists())
-            assertTrue(queueFile.delete());
+            if(!queueFile.delete())
+                queueFile.deleteOnExit();
         manager.dispose();
     }
 
