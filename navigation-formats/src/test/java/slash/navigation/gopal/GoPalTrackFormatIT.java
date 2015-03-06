@@ -22,18 +22,22 @@ package slash.navigation.gopal;
 
 import org.junit.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
+import org.junit.Test;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoPalTrackFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private NavigationFormatParser parser = new NavigationFormatParser();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
     @Test
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {

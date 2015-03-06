@@ -20,6 +20,7 @@
 
 package slash.navigation.gopal;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
