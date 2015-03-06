@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.common.NavigationConversion.formatSpeed;
@@ -49,7 +48,6 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal5;
  */
 
 public class GoPal7RouteFormat extends GoPalRouteFormat<GoPalRoute> {
-    private static final Preferences preferences = Preferences.userNodeForPackage(GoPal7RouteFormat.class);
     private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
     private static final String VERSION_PREFIX = "v7";
 
@@ -65,8 +63,8 @@ public class GoPal7RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         return "GoPal 7 Route (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return preferences.getInt(VERSION_PREFIX + "MaximumPositionCount", UNLIMITED_MAXIMUM_POSITION_COUNT);
+    protected String getVersion() {
+        return VERSION_PREFIX;
     }
 
     @SuppressWarnings("unchecked")

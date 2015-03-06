@@ -85,10 +85,6 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return "MagicMaps Project (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return true;
     }

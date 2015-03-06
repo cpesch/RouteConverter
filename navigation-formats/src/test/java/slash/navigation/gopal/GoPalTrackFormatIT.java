@@ -20,16 +20,21 @@
 
 package slash.navigation.gopal;
 
+import org.junit.Test;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
-public class GoPalTrackFormatIT extends NavigationTestCase {
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+
+public class GoPalTrackFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
 
+    @Test
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
         File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
         ParserResult result = parser.read(source);

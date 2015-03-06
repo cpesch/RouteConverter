@@ -387,10 +387,11 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNull(sourceHeading);
                 assertNotNull(targetHeading);
             }
-        } else if ((sourceFormat instanceof GoPalTrackFormat && targetFormat instanceof NmeaFormat) ||
+        } else if ((sourceHeading != null && targetHeading != null) &&
+                ((sourceFormat instanceof GoPalTrackFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
-                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat)) {
+                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat))) {
             assertEquals("Heading " + index + " does not match", roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0));
         } else if ((sourceHeading != null && targetHeading != null) &&
                 (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
