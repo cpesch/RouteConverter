@@ -808,7 +808,7 @@ public class ConvertPanel implements PanelInTab {
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
                 ParserCallback parserCallback = new ParserCallback() {
-                    public void preprocess(BaseRoute route, NavigationFormat format) {
+                    public void process(BaseRoute route, NavigationFormat format) {
                         if (format instanceof GarminFlightPlanFormat) {
                             GarminFlightPlanRoute garminFlightPlanRoute = (GarminFlightPlanRoute) route;
                             completeGarminFlightPlan(garminFlightPlanRoute);

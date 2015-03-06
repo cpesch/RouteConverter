@@ -21,11 +21,11 @@
 package slash.navigation.base;
 
 /**
- * The callback used to preprocess routes before writing them by the {@link NavigationFormatParser}.
+ * The callback used to process routes after reading and before writing them by the {@link NavigationFormatParser}.
  *
  * @author Christian Pesch
  */
 
 public interface ParserCallback {
-    void preprocess(BaseRoute route, NavigationFormat format);
+    void process(BaseRoute route, NavigationFormat format);
 }
