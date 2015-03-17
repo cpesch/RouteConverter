@@ -168,7 +168,11 @@ public class ProfileView implements PositionsSelectionModel {
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
                 "{2} " + yAxisUnit + " @ {1} " + unitSystem.getDistanceName(),
-                getIntegerInstance(), getIntegerInstance()));
+                getIntegerInstance(), getIntegerInstance()) {
+            public String generateLabelString(XYDataset dataset, int series, int item) {
+                return super.generateLabelString(dataset, series, item).replaceAll("null", "?");
+            }
+        });
     }
 
     public void setSelectedPositions(int[] selectPositions, boolean replaceSelection) {
