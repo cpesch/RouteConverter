@@ -225,7 +225,7 @@ public class UndoPositionsModel implements PositionsModel {
                     delegate.fireTableRowsDeletedInContinousRange(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, removed);
-                removed.clear();
+                removed = new ArrayList<>();
             }
 
             public boolean isInterrupted() {
