@@ -38,5 +38,5 @@ public interface ElevationService {
     void setPath(String path);
 
     Double getElevationFor(double longitude, double latitude) throws IOException;
-    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload);
 }

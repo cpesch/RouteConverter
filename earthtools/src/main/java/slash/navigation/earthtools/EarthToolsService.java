@@ -77,7 +77,7 @@ public class EarthToolsService implements ElevationService {
         throw new UnsupportedOperationException();
     }
 
-    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
         throw new UnsupportedOperationException();
     }
 }

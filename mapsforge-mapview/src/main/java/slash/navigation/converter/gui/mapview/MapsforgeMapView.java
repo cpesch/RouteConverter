@@ -1033,7 +1033,7 @@ public class MapsforgeMapView implements MapView {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
             positionsSelectionModel.setSelectedPositions(rows, true);
-            mapViewCallback.complementData(rows, true, true, true);
+            mapViewCallback.complementData(rows, true, true, true, true, false);
         }
 
         public void run() {

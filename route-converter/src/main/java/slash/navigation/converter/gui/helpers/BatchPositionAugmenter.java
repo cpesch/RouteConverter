@@ -279,7 +279,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public void performOnStart() {
-                        downloadElevationData(rows);
+                        downloadElevationData(rows, true);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
@@ -298,7 +298,7 @@ public class BatchPositionAugmenter {
         );
     }
 
-    private void downloadElevationData(int[] rows) {
+    private void downloadElevationData(int[] rows, boolean waitForDownload) {
         if (!elevationServiceFacade.isDownload())
             return;
         List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
@@ -307,7 +307,7 @@ public class BatchPositionAugmenter {
             if (position.hasCoordinates())
                 longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
         }
-        elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes);
+        elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes, waitForDownload);
     }
 
     public void addElevations(int[] rows) {
@@ -541,7 +541,9 @@ public class BatchPositionAugmenter {
                          final OverwritePredicate predicate,
                          final boolean complementDescription,
                          final boolean complementTime,
-                         final boolean complementElevation) {
+                         final boolean complementElevation,
+                         final boolean waitForDownload,
+                         final boolean trackUndo) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     public String getName() {
@@ -553,7 +555,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public void performOnStart() {
-                        downloadElevationData(rows);
+                        downloadElevationData(rows, waitForDownload);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
@@ -561,12 +563,9 @@ public class BatchPositionAugmenter {
                         List<Object> columnValues = new ArrayList<>(3);
 
                         if (complementDescription) {
-                            String nextDescription = getLocationFor(position);
-                            if (nextDescription == null)
-                                nextDescription = getNearByFor(position);
-                            if (nextDescription != null) {
+                            String nextDescription = waitForDownload ? getDescriptionFor(position) : null;
+                            if (nextDescription != null)
                                 nextDescription = createDescription(index + 1, nextDescription);
-                            }
                             String previousDescription = position.getDescription();
                             boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
                             if (changed) {
@@ -577,7 +576,7 @@ public class BatchPositionAugmenter {
 
                         if (complementElevation) {
                             Double previousElevation = position.getElevation();
-                            Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
+                            Double nextElevation = waitForDownload || elevationServiceFacade.isDownload() ? elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude()) : null;
                             boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
                             if (changed) {
                                 columnIndices.add(ELEVATION_COLUMN_INDEX);
@@ -599,7 +598,7 @@ public class BatchPositionAugmenter {
                             }
                         }
 
-                        positionsModel.edit(index, new PositionColumnValues(columnIndices, columnValues), false, true);
+                        positionsModel.edit(index, new PositionColumnValues(columnIndices, columnValues), false, trackUndo);
                         return complementDescription && columnIndices.contains(DESCRIPTION_COLUMN_INDEX) &&
                                 complementElevation && columnIndices.contains(ELEVATION_COLUMN_INDEX) &&
                                 complementTime && columnIndices.contains(DATE_TIME_COLUMN_INDEX);
@@ -610,6 +609,13 @@ public class BatchPositionAugmenter {
                     }
                 }
         );
+    }
+
+    private String getDescriptionFor(NavigationPosition position) {
+        String description = getLocationFor(position);
+        if (description == null)
+            description = getNearByFor(position);
+        return description;
     }
 
     private String getLocationFor(NavigationPosition position) {
@@ -628,8 +634,8 @@ public class BatchPositionAugmenter {
         }
     }
 
-    public void addData(int[] rows, boolean description, boolean time, boolean elevation) {
-        addData(positionsView, positionsModel, rows, COORDINATE_PREDICATE, description, time, elevation);
+    public void addData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
+        addData(positionsView, positionsModel, rows, COORDINATE_PREDICATE, description, time, elevation, waitForDownload, trackUndo);
     }
 
 

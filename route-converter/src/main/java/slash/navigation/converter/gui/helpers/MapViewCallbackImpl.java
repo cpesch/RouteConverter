@@ -47,8 +47,8 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return formatLongitude(longitude) + "," + formatLatitude(latitude);
     }
 
-    public void complementData(int[] rows, boolean description, boolean time, boolean elevation) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation);
+    public void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
+        RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }
 
     public RoutingService getRoutingService() {

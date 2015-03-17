@@ -34,7 +34,7 @@ import javax.swing.event.ChangeListener;
 public interface MapViewCallback {
     String createDescription(int index, String description);
     String createCoordinates(Double longitude, Double latitude);
-    void complementData(int[] rows, boolean description, boolean time, boolean elevation);
+    void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo);
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();

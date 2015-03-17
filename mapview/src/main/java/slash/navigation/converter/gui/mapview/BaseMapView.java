@@ -1412,14 +1412,14 @@ public abstract class BaseMapView implements MapView {
     private void complementPositions(int row, BaseRoute route) {
         int[] rows = asRange(row, row + route.getPositions().size());
         // do not complement description since this is limited to 2500 calls/day
-        mapViewCallback.complementData(rows, false, true, true);
+        mapViewCallback.complementData(rows, false, true, true, false, false);
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         int[] rows = new int[]{row};
         positionsSelectionModel.setSelectedPositions(rows, true);
-        mapViewCallback.complementData(rows, true, true, true);
+        mapViewCallback.complementData(rows, true, true, true, true, false);
     }
 
     private int getAddRow() {
@@ -1476,7 +1476,7 @@ public abstract class BaseMapView implements MapView {
                 positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, null), false, false);
 
             if (complementTime || complementElevation)
-                mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation);
+                mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation, true, false);
         }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

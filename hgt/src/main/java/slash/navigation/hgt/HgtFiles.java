@@ -122,7 +122,7 @@ public class HgtFiles implements ElevationService {
         randomAccessFileCache.clear();
     }
 
-    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
         Set<String> keys = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
@@ -142,7 +142,7 @@ public class HgtFiles implements ElevationService {
             downloads.add(download(fragment));
         }
 
-        if (!downloads.isEmpty())
+        if (!downloads.isEmpty() && waitForDownload)
             downloadManager.waitForCompletion(downloads);
     }
 

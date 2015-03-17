@@ -92,7 +92,7 @@ public class ElevationServiceFacade {
         return getElevationService().isDownload();
     }
 
-    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        getElevationService().downloadElevationDataFor(longitudeAndLatitudes);
+    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
+        getElevationService().downloadElevationDataFor(longitudeAndLatitudes, waitForDownload);
     }
 }

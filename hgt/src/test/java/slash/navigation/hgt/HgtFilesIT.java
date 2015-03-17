@@ -80,7 +80,7 @@ public class HgtFilesIT {
     public void testElevationFor() throws IOException {
         HgtFiles files = new HgtFiles(createDataSource("test id", "test plain", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test"),
                 new DownloadManager(createTempFile("queueFile", ".xml")));
-        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)));
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)), true);
 
         Double elevation1 = files.getElevationFor(11.2, 59.0);
         assertNotNull(elevation1);
@@ -95,7 +95,7 @@ public class HgtFilesIT {
     public void testDownloadElevationDataInZipFile() throws IOException {
         HgtFiles files = new HgtFiles(createDataSource("test id", "test zip", "http://www.viewfinderpanoramas.org/dem3/", "test"),
                 new DownloadManager(createTempFile("queueFile", ".xml")));
-        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(35.71, 32.51)));
+        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(35.71, 32.51)), true);
 
         Double elevation1 = files.getElevationFor(35.71, 32.51);
         assertNotNull(elevation1);
