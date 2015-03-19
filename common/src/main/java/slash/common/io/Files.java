@@ -296,11 +296,17 @@ public class Files {
         return fromMillis(file.lastModified());
     }
 
+    public static void setLastModified(File file, Long lastModified) throws IOException {
+        if (lastModified == null)
+            return;
+        if (!file.setLastModified(lastModified))
+            throw new IOException(format("Could not set last modified of %s to %s", file, lastModified));
+    }
+
     public static void setLastModified(File file, CompactCalendar lastModified) throws IOException {
         if (lastModified == null)
             return;
-        if (!file.setLastModified(lastModified.getTimeInMillis()))
-            throw new IOException(format("Could not set last modified of %s to %s", file, lastModified));
+        setLastModified(file, lastModified.getTimeInMillis());
     }
 
     /**

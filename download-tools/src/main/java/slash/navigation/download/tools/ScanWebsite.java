@@ -20,25 +20,22 @@
 package slash.navigation.download.tools;
 
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.DataSourceService;
-import slash.navigation.datasources.File;
-import slash.navigation.datasources.Map;
-import slash.navigation.datasources.Theme;
+import org.apache.commons.cli.*;
+import slash.navigation.datasources.*;
+import slash.navigation.datasources.binding.*;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
+import slash.navigation.rest.Delete;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.SimpleCredentials;
+import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,11 +52,14 @@ import static java.util.Arrays.sort;
 
 public class ScanWebsite extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
+    private static final String ID_ARGUMENT = "id";
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String EXTENSION_ARGUMENT = "extension";
-    private static final String ID_ARGUMENT = "id";
+    private static final String DATASOURCES_SERVER_ARGUMENT = "server";
+    private static final String DATASOURCES_USERNAME_ARGUMENT = "username";
+    private static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
 
-    private String url, baseUrl, id;
+    private String id, url, baseUrl, datasourcesServer, datasourcesUserName, datasourcesPassword;
     private Set<String> extensions;
 
     private String appendURIs(String uri, String anchor) {
@@ -80,7 +80,9 @@ public class ScanWebsite extends BaseDownloadTool {
 
         List<String> includes = new AnchorFilter().filterAnchors(baseUrl, anchors, extensions);
         for (String anchor : includes) {
-            uris.add(anchor);
+            // create the anchor relative to the current uri
+            String nextUri = appendURIs(uri, anchor);
+            uris.add(nextUri);
         }
 
         List<String> recurse = new AnchorFilter().filterAnchors(baseUrl, anchors, new HashSet<>(asList(".html", "/")));
@@ -102,11 +104,11 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private Set<String> collectURIs(DataSource source) {
         Set<String> result = new HashSet<>();
-        for(File file : source.getFiles())
+        for (File file : source.getFiles())
             result.add(file.getUri());
-        for(Map map : source.getMaps())
+        for (Map map : source.getMaps())
             result.add(map.getUri());
-        for(Theme theme : source.getThemes())
+        for (Theme theme : source.getThemes())
             result.add(theme.getUri());
         return result;
     }
@@ -115,7 +117,7 @@ public class ScanWebsite extends BaseDownloadTool {
         List<String> collectedUris = collectUris();
         log.info("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
 
-        DataSourceService service = loadDataSources(getDataSourcesTarget());
+        DataSourceService service = loadDataSources(getDataSourcesDirectory());
         DataSource source = service.getDataSourceById(id);
         if (source == null)
             throw new IllegalArgumentException("Unknown data source: " + id);
@@ -132,17 +134,96 @@ public class ScanWebsite extends BaseDownloadTool {
 
         log.info("Added URIs: " + addedUris + " (" + addedUris.size() + " elements)");
         log.info("Removed URIs: " + removedUris + " (" + removedUris.size() + " elements)");
+
+        if (datasourcesServer != null && datasourcesUserName != null && datasourcesPassword != null) {
+            addUris(source, addedUris);
+            removeUris(source, removedUris);
+        }
     }
+
+    private String getDataSourcesUrl() {
+        return datasourcesServer + "/datasources/datasources/";
+    }
+
+    private static DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        DatasourceType datasourceType = objectFactory.createDatasourceType();
+        datasourceType.setId(dataSource.getId());
+        datasourceType.setName(dataSource.getName());
+        datasourceType.setBaseUrl(dataSource.getBaseUrl());
+        datasourceType.setDirectory(dataSource.getDirectory());
+
+        for (String uri : uris) {
+            FileType fileType = objectFactory.createFileType();
+            // fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
+            fileType.setUri(uri);
+            // replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile, fileToFragments.keySet()));
+            // replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileToFragments);
+            datasourceType.getFile().add(fileType);
+        }
+
+        // TODO: maps, themes, fragments, checksums?
+        return datasourceType;
+    }
+
+    private String createXml(DataSource dataSource, Collection<String> uris) throws IOException {
+        slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
+
+        CatalogType datasourcesType = objectFactory.createCatalogType();
+        DatasourceType datasourceType = asDatasourceType(dataSource, uris);
+        datasourcesType.getDatasource().add(datasourceType);
+
+        return DataSourcesUtil.toXml(datasourcesType);
+    }
+
+    public String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
+        log.fine("Adding " + uris);
+        String xml = createXml(dataSource, uris);
+        String dataSourcesUrl = getDataSourcesUrl();
+        Post request = new Post(dataSourcesUrl, new SimpleCredentials(datasourcesUserName, datasourcesPassword));
+        request.addFile("file", xml.getBytes());
+
+        String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Cannot add uris " + uris, dataSourcesUrl);
+        if (request.isForbidden())
+            throw new DuplicateNameException("Cannot add uris " + uris, dataSourcesUrl);
+        if (!request.isSuccessful())
+            throw new IOException("POST on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
+        return result;
+    }
+
+    private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
+        log.fine("Removing " + uris);
+        String xml = createXml(dataSource, uris);
+        String dataSourcesUrl = getDataSourcesUrl();
+        Delete request = new Delete(dataSourcesUrl, new SimpleCredentials(datasourcesUserName, datasourcesPassword));
+        // TODO NOBODY request.addFile("file", xml.getBytes());
+
+        String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Cannot remove uris " + uris, dataSourcesUrl);
+        if (request.isForbidden())
+            throw new DuplicateNameException("Cannot remove uris " + uris, dataSourcesUrl);
+        if (!request.isSuccessful())
+            throw new IOException("DELETE on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
+        return result;
+    }
+
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
-        extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
+        id = line.getOptionValue(ID_ARGUMENT);
         url = line.getOptionValue(URL_ARGUMENT);
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
         if (baseUrl == null)
             baseUrl = url;
-        id = line.getOptionValue(ID_ARGUMENT);
+        extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
+        datasourcesServer = line.getOptionValue(DATASOURCES_SERVER_ARGUMENT);
+        datasourcesUserName = line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT);
+        datasourcesPassword = line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT);
         scan();
         System.exit(0);
     }
@@ -151,14 +232,20 @@ public class ScanWebsite extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
+        options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
+                withDescription("ID of the data source").create());
         options.addOption(OptionBuilder.withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
                 withDescription("URL to scan for resources").create());
         options.addOption(OptionBuilder.withArgName(BASE_URL_ARGUMENT).hasArgs(1).withLongOpt("baseUrl").
                 withDescription("URL to use as a base for resources").create());
         options.addOption(OptionBuilder.withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
                 withDescription("Extensions to scan for").create());
-        options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
-                withDescription("ID of the data source").create());
+        options.addOption(OptionBuilder.withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
+                withDescription("Data sources server").create());
+        options.addOption(OptionBuilder.withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
+                withDescription("Data sources server user name").create());
+        options.addOption(OptionBuilder.withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
+                withDescription("Data sources server password").create());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {

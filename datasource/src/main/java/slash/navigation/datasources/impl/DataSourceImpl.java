@@ -76,6 +76,10 @@ public class DataSourceImpl implements DataSource {
         return datasourceType.getBaseUrl();
     }
 
+    public String getHref() {
+        return datasourceType.getHref();
+    }
+
     public String getDirectory() {
         return datasourceType.getDirectory();
     }
@@ -117,16 +121,16 @@ public class DataSourceImpl implements DataSource {
 
         DataSource dataSource = (DataSource) o;
 
-        return getBaseUrl().equals(dataSource.getBaseUrl());
+        return getId().equals(dataSource.getId());
     }
 
     public int hashCode() {
         int result;
-        result = getBaseUrl().hashCode();
+        result = getId().hashCode();
         return result;
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[id=" + getId() + ", baseUrl=" + getBaseUrl() + "]";
+        return getClass().getSimpleName() + "[id=" + getId() + "]";
     }
 }

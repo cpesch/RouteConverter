@@ -207,19 +207,19 @@ public class DownloadExecutor implements Runnable {
         File target = download.getFile().getFile();
         ensureDirectory(target.getParent());
         new Copier(modelUpdater).copyAndClose(download.getTempFile(), target);
-        setLastModified(target, fromMillis(get.getLastModified()));
+        setLastModified(target, get.getLastModified());
     }
 
     private void flatten() throws IOException {
         File target = download.getFile().getFile();
         new Extractor(modelUpdater).flatten(download.getTempFile(), target);
-        setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
+        setLastModified(download.getTempFile(), get.getLastModified());
     }
 
     private void extract() throws IOException {
         File target = download.getFile().getFile();
         new Extractor(modelUpdater).extract(download.getTempFile(), target);
-        setLastModified(download.getTempFile(), fromMillis(get.getLastModified()));
+        setLastModified(download.getTempFile(), get.getLastModified());
     }
 
     private boolean validate() throws IOException {

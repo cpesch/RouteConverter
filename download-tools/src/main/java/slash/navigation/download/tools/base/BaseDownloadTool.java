@@ -39,12 +39,20 @@ import static slash.common.io.Directories.getApplicationDirectory;
 public class BaseDownloadTool {
     protected static final String URL_ARGUMENT = "url";
 
-    protected File getDataSourcesTarget() {
+    protected File getSnapshotDirectory() {
         return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());
     }
 
-    protected File getEditionTarget() {
-        return ensureDirectory(new File(getDataSourcesTarget(), "editions"));
+    protected File getRootDirectory() {
+        return ensureDirectory(new File(getSnapshotDirectory(), "root"));
+    }
+
+    protected File getEditionsDirectory() {
+        return ensureDirectory(new File(getSnapshotDirectory(), "editions"));
+    }
+
+    protected File getDataSourcesDirectory() {
+        return ensureDirectory(new File(getSnapshotDirectory(), "datasources"));
     }
 
     protected DataSourceService loadDataSources(File directory) throws JAXBException, FileNotFoundException {

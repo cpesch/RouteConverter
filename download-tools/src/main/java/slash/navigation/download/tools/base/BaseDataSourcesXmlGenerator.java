@@ -159,10 +159,10 @@ public abstract class BaseDataSourcesXmlGenerator {
     }
 
     protected void writeXml(DatasourceType datasourceType, File file) throws JAXBException, FileNotFoundException {
-        DatasourcesType datasourcesType = new ObjectFactory().createDatasourcesType();
-        datasourcesType.getDatasource().add(datasourceType);
+        CatalogType catalogType = new ObjectFactory().createCatalogType();
+        catalogType.getDatasource().add(datasourceType);
         FileOutputStream out = new FileOutputStream(file);
-        marshal(datasourcesType, out);
+        marshal(catalogType, out);
         closeQuietly(out);
     }
 }

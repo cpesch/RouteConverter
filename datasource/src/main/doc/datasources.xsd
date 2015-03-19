@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
-            targetNamespace="http://www.routeconverter.de/xmlschemas/Datasources/1.0"
+            xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/datasource-catalog"
             elementFormDefault="qualified">
 
-    <xsd:element name="datasources" type="datasourcesType">
+    <xsd:element name="catalog" type="catalogType">
         <xsd:annotation>
             <xsd:documentation>
-                datasources is the root element in the XML file.
+                catalog is the root element in the XML file.
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
 
-    <xsd:complexType name="datasourcesType">
+    <xsd:complexType name="catalogType">
         <xsd:annotation>
             <xsd:documentation>
-                datasources contain datasource definitions.
+                catalog contains edition and datasource definitions.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
+            <xsd:element name="edition" type="editionType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-edtion-id">
+                    <xsd:selector xpath="edition"/>
+                    <xsd:field xpath="@id"/>
+                </xsd:unique>
+            </xsd:element>
             <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded">
-                <xsd:unique name="unique-id">
+                <xsd:unique name="unique-datasource-id">
                     <xsd:selector xpath="datasource"/>
                     <xsd:field xpath="@id"/>
                 </xsd:unique>
@@ -28,10 +34,24 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="editionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                an edition contains a name, a href and datasources
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="href" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
     <xsd:complexType name="datasourceType">
         <xsd:annotation>
             <xsd:documentation>
-                a datasource contains a name, a base url, a directory, files, themes and maps
+                a datasource contains a name, and optionally a href, a base url, a directory, files, themes and maps
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -55,9 +75,10 @@
             </xsd:element>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="baseUrl" type="xsd:string" use="required"/>
-        <xsd:attribute name="directory" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="href" type="xsd:string"/>
+        <xsd:attribute name="baseUrl" type="xsd:string"/>
+        <xsd:attribute name="directory" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="fragmentType">

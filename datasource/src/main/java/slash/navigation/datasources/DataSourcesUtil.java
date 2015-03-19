@@ -52,10 +52,10 @@ public class DataSourcesUtil {
         return JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
     }
 
-    public static DatasourcesType unmarshal(InputStream in) throws JAXBException {
-        DatasourcesType result;
+    public static CatalogType unmarshal(InputStream in) throws JAXBException {
+        CatalogType result;
         try {
-            JAXBElement<DatasourcesType> element = (JAXBElement<DatasourcesType>) newUnmarshaller().unmarshal(in);
+            JAXBElement<CatalogType> element = (JAXBElement<CatalogType>) newUnmarshaller().unmarshal(in);
             result = element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
@@ -63,10 +63,10 @@ public class DataSourcesUtil {
         return result;
     }
 
-    public static void marshal(DatasourcesType datasourcesType, OutputStream out) throws JAXBException {
+    public static void marshal(CatalogType catalogType, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new ObjectFactory().createDatasources(datasourcesType), out);
+                newMarshaller().marshal(new ObjectFactory().createCatalog(catalogType), out);
             } finally {
                 out.flush();
                 out.close();
@@ -76,8 +76,8 @@ public class DataSourcesUtil {
         }
     }
 
-    public static void marshal(DatasourcesType datasourcesType, Writer writer) throws JAXBException {
-        newMarshaller().marshal(new ObjectFactory().createDatasources(datasourcesType), writer);
+    public static void marshal(CatalogType catalogType, Writer writer) throws JAXBException {
+        newMarshaller().marshal(new ObjectFactory().createCatalog(catalogType), writer);
     }
 
 
@@ -265,12 +265,12 @@ public class DataSourcesUtil {
         return fragmentType;
     }
 
-    public static String toXml(DatasourcesType datasourcesType) throws IOException {
+    public static String toXml(CatalogType catalogType) throws IOException {
         StringWriter writer = new StringWriter();
         try {
-            marshal(datasourcesType, writer);
+            marshal(catalogType, writer);
         } catch (JAXBException e) {
-            throw new IOException("Cannot marshall " + datasourcesType + ": " + e, e);
+            throw new IOException("Cannot marshall " + catalogType + ": " + e, e);
         }
         return writer.toString();
     }

@@ -20,9 +20,11 @@
 
 package slash.navigation.datasources;
 
+import slash.navigation.datasources.binding.CatalogType;
 import slash.navigation.datasources.binding.DatasourceType;
-import slash.navigation.datasources.binding.DatasourcesType;
+import slash.navigation.datasources.binding.EditionType;
 import slash.navigation.datasources.impl.DataSourceImpl;
+import slash.navigation.datasources.impl.EditionImpl;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -38,16 +40,23 @@ import static slash.navigation.datasources.DataSourcesUtil.unmarshal;
  */
 
 public class DataSourceService {
-    private final List<DataSource> dataSources = new ArrayList<>();
+    private final List<Edition> editions = new ArrayList<>(1);
+    private final List<DataSource> dataSources = new ArrayList<>(1);
 
     public synchronized void load(InputStream inputStream) throws JAXBException {
-        DatasourcesType datasourcesType = unmarshal(inputStream);
-        for (DatasourceType datasourceType : datasourcesType.getDatasource())
+        CatalogType catalogType = unmarshal(inputStream);
+        for (DatasourceType datasourceType : catalogType.getDatasource())
             dataSources.add(new DataSourceImpl(datasourceType));
+        for (EditionType editionType : catalogType.getEdition())
+            editions.add(new EditionImpl(editionType));
     }
 
     public synchronized void clear() {
         dataSources.clear();
+    }
+
+    public synchronized List<Edition> getEditions() {
+        return editions;
     }
 
     public synchronized List<DataSource> getDataSources() {

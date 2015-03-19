@@ -58,7 +58,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         DatasourceType datasourceType = new DatasourceType();
         datasourceType.setId("id" + id);
         datasourceType.setName("name" + id);
-        datasourceType.setBaseUrl("baseUrl" + id);
+        datasourceType.setBaseUrl("url" + id);
         datasourceType.setDirectory("directory" + id);
 
         FileType file2 = new FileType();

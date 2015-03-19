@@ -17,28 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.datasources;
 
 import java.util.List;
 
 /**
- * A {@link DataSource} that provides {@link File}s, {@link Map}s and {@link Theme}s for download.
+ * An {@link Edition} provides {@link DataSource}s for download.
  *
  * @author Christian Pesch
  */
 
-public interface DataSource {
+public interface Edition {
     String getId();
     String getName();
     String getHref();
-    String getBaseUrl();
-    String getDirectory();
 
-    List<File> getFiles();
-    List<Map> getMaps();
-    List<Theme> getThemes();
-
-    Downloadable getDownloadable(String uri);
-    Fragment<Downloadable> getFragment(String key);
+    List<DataSource> getDataSources();
 }

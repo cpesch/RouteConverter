@@ -98,7 +98,7 @@ public class DataSourceManager {
 
     private void updateEdition(String edition) throws JAXBException, FileNotFoundException {
         String uri = edition.toLowerCase() + ".xml";
-        String url = System.getProperty("datasources", "http://www.routeconverter.com/datasources/") + "edition/" + uri;
+        String url = System.getProperty("datasources", "http://www.routeconverter.com/datasources/") + "editions/" + uri;
         log.info(format("Updating edition '%s' from '%s'", edition, url));
 
         Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources", url, Copy,

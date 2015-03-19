@@ -22,8 +22,8 @@ package slash.navigation.feedback.domain;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourcesUtil;
+import slash.navigation.datasources.binding.CatalogType;
 import slash.navigation.datasources.binding.DatasourceType;
-import slash.navigation.datasources.binding.DatasourcesType;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.ExtensionsType;
@@ -174,11 +174,11 @@ public class RouteFeedback {
     private static String createDataSourceXml(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
         slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
 
-        DatasourcesType datasourcesType = objectFactory.createDatasourcesType();
+        CatalogType catalogType = objectFactory.createCatalogType();
         DatasourceType datasourceType = asDatasourceType(dataSource, fileToFragments, filterUrls);
-        datasourcesType.getDatasource().add(datasourceType);
+        catalogType.getDatasource().add(datasourceType);
 
-        return DataSourcesUtil.toXml(datasourcesType);
+        return DataSourcesUtil.toXml(catalogType);
     }
 
     private String getDataSourcesUrl() {
