@@ -632,7 +632,7 @@
            }));
            map.mapTypes.set(OUTDOOR_CH_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
-                   return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/ch/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                   return "http://s0.outdooractive.com/ch/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                minZoom: 10,
