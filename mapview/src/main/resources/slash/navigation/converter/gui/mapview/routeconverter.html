@@ -548,13 +548,13 @@
 
        addDebug("1. initialize()");
        try {
-           var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle", 
-                   HIKE_MAPTYPE_ID = "Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols",
+           var MAPNIK_MAPTYPE_ID = "OSM Mapnik", CYCLE_MAPTYPE_ID = "OSM Cycle", TOPO_MAPTYPE_ID = "OSM Topo",
+                   HIKE_MAPTYPE_ID = "OSM Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols",
                    OUTDOOR_D_MAPTYPE_ID = "Outdoor D", OUTDOOR_A_MAPTYPE_ID = "Outdoor A",
-                   OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
+                   OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Outdoor Topo";
            var MAPTYPE_IDS = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
-               MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID,
+               MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, TOPO_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID,
                OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID];
            var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
            var mapOptions = {
@@ -591,6 +591,15 @@
                maxZoom: 18,
                alt: "OpenCycleMap rendering of OpenStreetMap data",
                name: CYCLE_MAPTYPE_ID
+           }));
+           map.mapTypes.set(TOPO_MAPTYPE_ID, new google.maps.ImageMapType({
+               getTileUrl: function(coordinates, zoom) {
+                   return "http://" + getOpenStreetMapServerIndex() + ".tile.opentopomap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               maxZoom: 18,
+               alt: "OpenTopoMap rendering of OpenStreetMap data",
+               name: TOPO_MAPTYPE_ID
            }));
            map.mapTypes.set(HIKE_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
