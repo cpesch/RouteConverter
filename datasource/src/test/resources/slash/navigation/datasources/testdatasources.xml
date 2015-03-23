@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datasources xmlns="http://www.routeconverter.de/xmlschemas/Datasources/1.0">
+<catalog xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog">
     <datasource id="id1" name="name1" baseUrl="http://local1/1/" directory="dir1">
         <file uri="x/y/z.data">
             <checksum contentLength="1" sha1="x"/>
@@ -23,4 +23,4 @@
         </file>
     </datasource>
     <datasource id="id3" name="name3" baseUrl="http://local3/3/" directory="dir4"/>
-</datasources>
+</catalog>
