@@ -19,12 +19,10 @@
 */
 package slash.navigation.maps.helpers;
 
-import org.mapsforge.map.reader.MapDatabase;
-import org.mapsforge.map.reader.header.FileOpenResult;
+import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 
 import java.io.*;
-import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
 import static java.lang.String.format;
@@ -37,18 +35,10 @@ import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
  */
 
 public class MapUtil {
-    private static final Logger log = Logger.getLogger(MapUtil.class.getName());
-
     public static BoundingBox extractBoundingBox(File file) {
-        MapDatabase mapDatabase = new MapDatabase();
-        FileOpenResult result = mapDatabase.openFile(file);
-        if (!result.isSuccess()) {
-            log.warning(format("Could not open map file '%s': %s", file, result.getErrorMessage()));
-            return null;
-        }
-
-        org.mapsforge.core.model.BoundingBox boundingBox = mapDatabase.getMapFileInfo().boundingBox;
-        mapDatabase.closeFile();
+        MapFile mapFile = new MapFile(file);
+        org.mapsforge.core.model.BoundingBox boundingBox = mapFile.boundingBox();
+        mapFile.close();
         return toBoundingBox(boundingBox);
     }
 

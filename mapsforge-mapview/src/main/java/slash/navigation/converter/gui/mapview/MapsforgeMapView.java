@@ -35,6 +35,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
+import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
@@ -322,8 +323,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(LocalMap map, LocalTheme theme) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
-        tileRendererLayer.setMapFile(map.getFile());
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map.getFile()), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
         tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         return tileRendererLayer;
     }
@@ -829,7 +829,7 @@ public class MapsforgeMapView implements MapView {
             Layer layer = values.iterator().next();
             if (layer instanceof TileRendererLayer) {
                 TileRendererLayer tileRendererLayer = (TileRendererLayer) layer;
-                return toBoundingBox(tileRendererLayer.getMapDatabase().getMapFileInfo().boundingBox);
+                return toBoundingBox(tileRendererLayer.getMapDataStore().boundingBox());
             }
         }
         return null;
