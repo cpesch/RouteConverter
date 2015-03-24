@@ -22,13 +22,11 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.CatalogType;
-import slash.navigation.datasources.binding.DatasourceType;
-import slash.navigation.datasources.binding.FileType;
-import slash.navigation.datasources.binding.ObjectFactory;
+import slash.navigation.datasources.binding.*;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
+import slash.navigation.download.tools.helpers.DownloadableType;
 import slash.navigation.rest.*;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
@@ -43,6 +41,7 @@ import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**
  * Scans a website for resources for the DataSources catalog.
@@ -52,14 +51,12 @@ import static java.util.Arrays.sort;
 
 public class ScanWebsite extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
-    private static final String ID_ARGUMENT = "id";
     private static final String BASE_URL_ARGUMENT = "baseUrl";
+    private static final String TYPE_ARGUMENT = "type";
     private static final String EXTENSION_ARGUMENT = "extension";
-    private static final String DATASOURCES_SERVER_ARGUMENT = "server";
-    private static final String DATASOURCES_USERNAME_ARGUMENT = "username";
-    private static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
 
     private String id, url, baseUrl, datasourcesServer, datasourcesUserName, datasourcesPassword;
+    private DownloadableType type;
     private Set<String> extensions;
 
     private String appendURIs(String uri, String anchor) {
@@ -104,12 +101,22 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private Set<String> collectURIs(DataSource source) {
         Set<String> result = new HashSet<>();
-        for (File file : source.getFiles())
-            result.add(file.getUri());
-        for (Map map : source.getMaps())
-            result.add(map.getUri());
-        for (Theme theme : source.getThemes())
-            result.add(theme.getUri());
+        switch (type) {
+            case File:
+                for (File file : source.getFiles())
+                    result.add(file.getUri());
+                break;
+
+            case Map:
+                for (Map map : source.getMaps())
+                    result.add(map.getUri());
+                break;
+
+            case Theme:
+                for (Theme theme : source.getThemes())
+                    result.add(theme.getUri());
+                break;
+        }
         return result;
     }
 
@@ -136,8 +143,10 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info("Removed URIs: " + removedUris + " (" + removedUris.size() + " elements)");
 
         if (datasourcesServer != null && datasourcesUserName != null && datasourcesPassword != null) {
-            addUris(source, addedUris);
-            removeUris(source, removedUris);
+            if (addedUris.size() > 0)
+                addUris(source, addedUris);
+            if (removedUris.size() > 0)
+                removeUris(source, removedUris);
         }
     }
 
@@ -145,7 +154,7 @@ public class ScanWebsite extends BaseDownloadTool {
         return datasourcesServer + "/v1/datasources/" + id + "/";
     }
 
-    private static DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
+    private DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DatasourceType datasourceType = objectFactory.createDatasourceType();
@@ -155,15 +164,26 @@ public class ScanWebsite extends BaseDownloadTool {
         datasourceType.setDirectory(dataSource.getDirectory());
 
         for (String uri : uris) {
-            FileType fileType = objectFactory.createFileType();
-            // fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
-            fileType.setUri(uri);
-            // replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile, fileToFragments.keySet()));
-            // replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileToFragments);
-            datasourceType.getFile().add(fileType);
-        }
+            switch (type) {
+                case File:
+                    FileType fileType = objectFactory.createFileType();
+                    fileType.setUri(uri);
+                    datasourceType.getFile().add(fileType);
+                    break;
 
-        // TODO: maps, themes, fragments, checksums?
+                case Map:
+                    MapType mapType = objectFactory.createMapType();
+                    mapType.setUri(uri);
+                    datasourceType.getMap().add(mapType);
+                    break;
+
+                case Theme:
+                    ThemeType themeType = objectFactory.createThemeType();
+                    themeType.setUri(uri);
+                    datasourceType.getTheme().add(themeType);
+                    break;
+            }
+        }
         return datasourceType;
     }
 
@@ -189,6 +209,7 @@ public class ScanWebsite extends BaseDownloadTool {
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
+        request.setSocketTimeout(900 * 1000);
 
         String result = request.executeAsString();
         System.out.println(result); // TODO
@@ -208,6 +229,7 @@ public class ScanWebsite extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
+        request.setAccept("application/xml");
 
         String result = request.executeAsString();
         System.out.println(result); // TODO
@@ -224,12 +246,14 @@ public class ScanWebsite extends BaseDownloadTool {
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
+        String typeArgument = line.getOptionValue(TYPE_ARGUMENT);
         id = line.getOptionValue(ID_ARGUMENT);
         url = line.getOptionValue(URL_ARGUMENT);
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
         if (baseUrl == null)
             baseUrl = url;
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
+        type = typeArgument != null ? DownloadableType.fromValue(typeArgument) : File;
         datasourcesServer = line.getOptionValue(DATASOURCES_SERVER_ARGUMENT);
         datasourcesUserName = line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT);
         datasourcesPassword = line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT);
@@ -249,6 +273,8 @@ public class ScanWebsite extends BaseDownloadTool {
                 withDescription("URL to use as a base for resources").create());
         options.addOption(OptionBuilder.withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
                 withDescription("Extensions to scan for").create());
+        options.addOption(OptionBuilder.withArgName(TYPE_ARGUMENT).hasArgs(1).withLongOpt("type").
+                withDescription("Type of the resources").create());
         options.addOption(OptionBuilder.withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
                 withDescription("Data sources server").create());
         options.addOption(OptionBuilder.withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").

@@ -64,13 +64,13 @@ public abstract class HttpRequest {
     private final HttpRequestBase method;
     private HttpResponse response;
     private HttpClientContext context;
+    private RequestConfig.Builder requestConfigBuilder;
 
     HttpRequest(HttpRequestBase method) {
         this.log = Logger.getLogger(getClass().getName());
-        RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+        requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setConnectTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(90 * 1000);
-        clientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
         setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.6"));
         this.method = method;
@@ -106,6 +106,10 @@ public abstract class HttpRequest {
         clientBuilder.setUserAgent(userAgent);
     }
 
+    public void setSocketTimeout(int socketTimeout) {
+        requestConfigBuilder.setSocketTimeout(socketTimeout);
+    }
+
     protected void setHeader(String name, String value) {
         getMethod().setHeader(name, value);
     }
@@ -119,6 +123,7 @@ public abstract class HttpRequest {
     }
 
     protected HttpResponse execute() throws IOException {
+        clientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
         try {
             return clientBuilder.build().execute(method, context);
         } catch (SocketException e) {

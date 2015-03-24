@@ -38,6 +38,10 @@ import static slash.common.io.Directories.getApplicationDirectory;
 
 public class BaseDownloadTool {
     protected static final String URL_ARGUMENT = "url";
+    protected static final String ID_ARGUMENT = "id";
+    protected static final String DATASOURCES_SERVER_ARGUMENT = "server";
+    protected static final String DATASOURCES_USERNAME_ARGUMENT = "username";
+    protected static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
 
     protected File getSnapshotDirectory() {
         return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());

@@ -70,17 +70,6 @@ public class SnapshotCatalog extends BaseDownloadTool {
         }
     }
 
-    private void snapshot() throws IOException, JAXBException {
-        downloadManager.clearQueue();
-        deleteAll(getSnapshotDirectory());
-
-        snapshotRoot(getRootDirectory());
-        DataSourceService editions = loadDataSources(getRootDirectory());
-        snapshotEditions(editions, getEditionsDirectory());
-        DataSourceService datasources = loadDataSources(getEditionsDirectory());
-        snapshotDataSources(datasources, getDataSourcesDirectory());
-    }
-
     private void snapshotRoot(File directory) {
         String editionsUrl = url + EDITIONS_URI + FORMAT_XML;
         Download download = downloadManager.queueForDownload("RouteConverter Editions",
@@ -115,6 +104,17 @@ public class SnapshotCatalog extends BaseDownloadTool {
             log.info(format("Downloading '%s'", datasourceUrl));
         }
         downloadManager.waitForCompletion(downloads);
+    }
+
+    private void snapshot() throws IOException, JAXBException {
+        downloadManager.clearQueue();
+        deleteAll(getSnapshotDirectory());
+
+        snapshotRoot(getRootDirectory());
+        DataSourceService editions = loadDataSources(getRootDirectory());
+        snapshotEditions(editions, getEditionsDirectory());
+        DataSourceService datasources = loadDataSources(getEditionsDirectory());
+        snapshotDataSources(datasources, getDataSourcesDirectory());
     }
 
     private void run(String[] args) throws Exception {

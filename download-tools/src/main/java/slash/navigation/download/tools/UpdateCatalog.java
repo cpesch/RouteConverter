@@ -20,12 +20,15 @@
 package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceService;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 
-import java.util.HashSet;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.logging.Logger;
-
-import static java.util.Arrays.asList;
 
 /**
  * Updates the resources from the DataSources catalog from websites
@@ -36,19 +39,23 @@ import static java.util.Arrays.asList;
 public class UpdateCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
 
+    private String id, datasourcesServer, datasourcesUserName, datasourcesPassword;
+
+    private void update() throws IOException, JAXBException {
+        DataSourceService dataSourceService = new DataSourceService();
+        dataSourceService.load(new FileInputStream(new File(getDataSourcesDirectory(), id + ".xml")));
+        DataSource source = dataSourceService.getDataSourceById(id);
+        if(source == null)
+            throw new IllegalArgumentException("Unknown data source: " + id);
+    }
+
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
-        String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
         id = line.getOptionValue(ID_ARGUMENT);
-        url = line.getOptionValue(URL_ARGUMENT);
-        baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
-        if (baseUrl == null)
-            baseUrl = url;
-        extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
         datasourcesServer = line.getOptionValue(DATASOURCES_SERVER_ARGUMENT);
         datasourcesUserName = line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT);
         datasourcesPassword = line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT);
-        scan();
+        update();
         System.exit(0);
     }
 
@@ -58,12 +65,6 @@ public class UpdateCatalog extends BaseDownloadTool {
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
                 withDescription("ID of the data source").create());
-        options.addOption(OptionBuilder.withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
-                withDescription("URL to scan for resources").create());
-        options.addOption(OptionBuilder.withArgName(BASE_URL_ARGUMENT).hasArgs(1).withLongOpt("baseUrl").
-                withDescription("URL to use as a base for resources").create());
-        options.addOption(OptionBuilder.withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
-                withDescription("Extensions to scan for").create());
         options.addOption(OptionBuilder.withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
                 withDescription("Data sources server").create());
         options.addOption(OptionBuilder.withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
