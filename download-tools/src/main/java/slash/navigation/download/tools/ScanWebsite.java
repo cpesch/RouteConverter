@@ -22,15 +22,15 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.binding.CatalogType;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.ObjectFactory;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.SimpleCredentials;
-import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.*;
+import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
@@ -142,7 +142,7 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private String getDataSourcesUrl() {
-        return datasourcesServer + "/datasources/datasources/";
+        return datasourcesServer + "/v1/datasources/" + id + "/";
     }
 
     private static DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
@@ -177,18 +177,25 @@ public class ScanWebsite extends BaseDownloadTool {
         return DataSourcesUtil.toXml(datasourcesType);
     }
 
+    private Credentials getCredentials() {
+        return new SimpleCredentials(datasourcesUserName, datasourcesPassword);
+    }
+
     public String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
         log.fine("Adding " + uris);
         String xml = createXml(dataSource, uris);
+        System.out.println(xml); // TODO
         String dataSourcesUrl = getDataSourcesUrl();
-        Post request = new Post(dataSourcesUrl, new SimpleCredentials(datasourcesUserName, datasourcesPassword));
+        Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
+        request.setAccept("application/xml");
 
         String result = request.executeAsString();
+        System.out.println(result); // TODO
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add uris " + uris, dataSourcesUrl);
         if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add uris " + uris, dataSourcesUrl);
+            throw new ForbiddenException("Cannot add uris " + uris, dataSourcesUrl);
         if (!request.isSuccessful())
             throw new IOException("POST on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
         return result;
@@ -197,15 +204,17 @@ public class ScanWebsite extends BaseDownloadTool {
     private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
         log.fine("Removing " + uris);
         String xml = createXml(dataSource, uris);
+        System.out.println(xml); // TODO
         String dataSourcesUrl = getDataSourcesUrl();
-        Delete request = new Delete(dataSourcesUrl, new SimpleCredentials(datasourcesUserName, datasourcesPassword));
-        // TODO NOBODY request.addFile("file", xml.getBytes());
+        Delete request = new Delete(dataSourcesUrl, getCredentials());
+        request.addFile("file", xml.getBytes());
 
         String result = request.executeAsString();
+        System.out.println(result); // TODO
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot remove uris " + uris, dataSourcesUrl);
         if (request.isForbidden())
-            throw new DuplicateNameException("Cannot remove uris " + uris, dataSourcesUrl);
+            throw new ForbiddenException("Cannot remove uris " + uris, dataSourcesUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
         return result;

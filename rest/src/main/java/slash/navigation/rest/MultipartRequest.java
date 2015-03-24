@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 import static slash.common.io.Transfer.encodeUri;
@@ -86,5 +87,9 @@ abstract class MultipartRequest extends HttpRequest {
 
     public String getLocation() throws IOException {
         return getHeader(LOCATION);
+    }
+
+    public void setAccept(String accept) {
+        setHeader(ACCEPT, accept);
     }
 }
