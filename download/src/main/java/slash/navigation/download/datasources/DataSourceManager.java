@@ -56,7 +56,7 @@ public class DataSourceManager {
 
     public void initialize(String edition) throws IOException, JAXBException {
         java.io.File target = new java.io.File(getTarget(), edition.toLowerCase() + ".xml");
-        Download download = downloadManager.queueForDownload(edition + " Edition datasources", "http://localhost:8000/datasources/edition/" + edition.toLowerCase() + ".xml",
+        Download download = downloadManager.queueForDownload(edition + " Edition datasources", "http://wwww.routeconverter.com/datasources/edition/" + edition.toLowerCase() + ".xml",
                 new Checksum(null, null, fromMillis(target.lastModified())), Copy, target);
         downloadManager.waitForCompletion(asList(download));
 

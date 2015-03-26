@@ -1067,7 +1067,6 @@ public class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 getDownloadManager().loadQueue();
-                /*
                 try {
                     getDataSourceManager().initialize(getEdition());
                 } catch (final Exception e) {
@@ -1079,7 +1078,6 @@ public class RouteConverter extends SingleFrameApplication {
                         }
                     });
                 }
-                */
             }
         }, "DownloadManagerInitializer").start();
     }
