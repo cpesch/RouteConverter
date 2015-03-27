@@ -47,7 +47,7 @@ public class BaseDownloadTool {
         return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());
     }
 
-    protected File getRootDirectory() {
+    public File getRootDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "root"));
     }
 

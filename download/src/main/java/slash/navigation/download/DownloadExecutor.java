@@ -36,7 +36,6 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.setLastModified;
-import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.State.*;
 
 /**
@@ -235,6 +234,7 @@ public class DownloadExecutor implements Runnable {
             updateState(download, ChecksumError);
             return false;
         }
+        download.getFile().setExpectedChecksum(download.getFile().getActualChecksum());
         return true;
     }
 }

@@ -29,7 +29,7 @@ import java.io.File;
 
 public class FileAndChecksum {
     private final File file;
-    private final Checksum expectedChecksum;
+    private Checksum expectedChecksum;
     private Checksum actualChecksum;
 
     public FileAndChecksum(File file, Checksum expectedChecksum) {
@@ -43,6 +43,10 @@ public class FileAndChecksum {
 
     public Checksum getExpectedChecksum() {
         return expectedChecksum;
+    }
+
+    public void setExpectedChecksum(Checksum expectedChecksum) {
+        this.expectedChecksum = expectedChecksum;
     }
 
     public Checksum getActualChecksum() {

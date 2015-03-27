@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -51,14 +50,37 @@ import static slash.navigation.download.Action.Copy;
 
 public class SnapshotCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(SnapshotCatalog.class.getName());
+    private static final String RESET_ARGUMENT = "reset";
     private static final String EDITIONS_URI = "editions/";
     private static final String FORMAT_XML = "?format=xml";
     private static final String DOT_XML = ".xml";
 
+    private DownloadManager downloadManager = new DownloadManager(new File(getSnapshotDirectory(), "snapshot-queue.xml"));
     private String url;
-    private DownloadManager downloadManager = new DownloadManager(new File(getTemporaryDirectory(), "snapshot-queue.xml"));
+    private boolean reset = false;
 
-    private void deleteAll(File directory) throws IOException {
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setReset(boolean reset) {
+        this.reset = reset;
+    }
+
+    void close() {
+        downloadManager.saveQueue();
+        downloadManager.dispose();
+    }
+
+    private void open() throws IOException {
+        if(reset) {
+            downloadManager.clearQueue();
+            deleteAll(getSnapshotDirectory());
+        }  else
+            downloadManager.loadQueue();
+    }
+
+    void deleteAll(File directory) throws IOException {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -70,11 +92,12 @@ public class SnapshotCatalog extends BaseDownloadTool {
         }
     }
 
-    private void snapshotRoot(File directory) {
+    void snapshotRoot(File directory) {
         String editionsUrl = url + EDITIONS_URI + FORMAT_XML;
-        Download download = downloadManager.queueForDownload("RouteConverter Editions",
-                editionsUrl, Copy, null, new FileAndChecksum(new File(directory, "editions" + DOT_XML), null), null);
-        log.info(format("Downloading '%s'", editionsUrl));
+        File file = new File(directory, "editions" + DOT_XML);
+        Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy, null,
+                new FileAndChecksum(file, null), null);
+        log.info(format("Downloading %s to %s", editionsUrl, file));
         downloadManager.waitForCompletion(asList(download));
     }
 
@@ -82,10 +105,11 @@ public class SnapshotCatalog extends BaseDownloadTool {
         List<Download> downloads = new ArrayList<>();
         for (Edition edition : dataSourceService.getEditions()) {
             String editionUrl = edition.getHref() + FORMAT_XML;
+            File file = new File(directory, edition.getId() + DOT_XML);
             Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition.getId(),
-                    editionUrl, Copy, null, new FileAndChecksum(new File(directory, edition.getId() + DOT_XML), null), null);
+                    editionUrl, Copy, null, new FileAndChecksum(file, null), null);
             downloads.add(download);
-            log.info(format("Downloading '%s'", editionUrl));
+            log.info(format("Downloading %s to %s", editionUrl, file));
         }
         downloadManager.waitForCompletion(downloads);
     }
@@ -98,38 +122,43 @@ public class SnapshotCatalog extends BaseDownloadTool {
         List<Download> downloads = new ArrayList<>();
         for (DataSource dataSource : dataSources) {
             String datasourceUrl = dataSource.getHref() + FORMAT_XML;
+            File file = new File(directory, dataSource.getId() + DOT_XML);
             Download download = downloadManager.queueForDownload("RouteConverter DataSource: " + dataSource.getId(),
-                    datasourceUrl, Copy, null, new FileAndChecksum(new File(directory, dataSource.getId() + DOT_XML), null), null);
+                    datasourceUrl, Copy, null, new FileAndChecksum(file, null), null);
             downloads.add(download);
-            log.info(format("Downloading '%s'", datasourceUrl));
+            log.info(format("Downloading %s to %s", datasourceUrl, file));
         }
         downloadManager.waitForCompletion(downloads);
     }
 
     private void snapshot() throws IOException, JAXBException {
-        downloadManager.clearQueue();
-        deleteAll(getSnapshotDirectory());
+        open();
 
         snapshotRoot(getRootDirectory());
         DataSourceService editions = loadDataSources(getRootDirectory());
         snapshotEditions(editions, getEditionsDirectory());
         DataSourceService datasources = loadDataSources(getEditionsDirectory());
         snapshotDataSources(datasources, getDataSourcesDirectory());
+
+        close();
     }
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
-        url = line.getOptionValue(URL_ARGUMENT);
+        setUrl(line.getOptionValue(URL_ARGUMENT));
+        reset = line.hasOption(RESET_ARGUMENT);
         snapshot();
         System.exit(0);
     }
 
+    @SuppressWarnings("AccessStaticViaInstance")
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
-        //noinspection AccessStaticViaInstance
         options.addOption(OptionBuilder.withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
                 withDescription("URL to take a snapshot from").create());
+        options.addOption(OptionBuilder.withArgName(RESET_ARGUMENT).withLongOpt("reset").
+                withDescription("Reset local snapshot").create());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
