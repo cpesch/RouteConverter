@@ -98,6 +98,7 @@ import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
@@ -660,10 +661,6 @@ public class RouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private File getDownloadQueueFile() {
-        return new File(getTemporaryDirectory(), "download-queue.xml");
-    }
-
     private BatchPositionAugmenter batchPositionAugmenter = null;
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
@@ -960,10 +957,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
-        DownloadManager downloadManager = new DownloadManager(getDownloadQueueFile());
+        DownloadManager downloadManager = new DownloadManager(new File(getTemporaryDirectory(), "download-queue.xml"));
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
@@ -1017,17 +1014,25 @@ public class RouteConverter extends SingleFrameApplication {
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }
 
-    private void initializeDatasources() {
-        try {
-            getDataSourceManager().initialize(getEdition());
-        } catch (Exception e) {
-            log.warning("Could not initialize datasource manager: " + e);
-            getContext().getNotificationManager().showNotification(MessageFormat.format(
-                    getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
-        }
+    private String getApiUrl() {
+        return System.getProperty("api", "http://api.routeconverter.com/");
+    }
 
+    private File getDataSourcesDirectory() {
+        return getApplicationDirectory("datasources");
+    }
+
+    private void initializeDatasources() {
         new Thread(new Runnable() {
             public void run() {
+                try {
+                    getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
+                } catch (Exception e) {
+                    log.warning("Could not initialize datasource manager: " + e);
+                    getContext().getNotificationManager().showNotification(MessageFormat.format(
+                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
+                }
+
                 scanLocalMapsAndThemes();
 
                 initializeElevationServices();
@@ -1062,7 +1067,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 getDownloadManager().loadQueue();
                 try {
-                    getDataSourceManager().update(getEdition());
+                    getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());
                 } catch (Exception e) {
                     log.warning("Could not download data from datasources: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(

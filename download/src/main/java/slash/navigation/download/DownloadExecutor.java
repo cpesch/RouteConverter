@@ -157,7 +157,7 @@ public class DownloadExecutor implements Runnable {
             get.setIfNoneMatch(download.getETag());
 
         InputStream inputStream = get.executeAsStream();
-        log.info(format("Download from %s returned with status code %s", download.getUrl(), get.getStatusCode()));
+        log.info(format("Download of %d bytes from %s returned with status code %s", get.getContentLength(), download.getUrl(), get.getStatusCode()));
         if (get.isSuccessful() && inputStream != null) {
             if(contentLength == null)
                 contentLength = get.getContentLength();

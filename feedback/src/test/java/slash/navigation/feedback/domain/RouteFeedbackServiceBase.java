@@ -25,6 +25,7 @@ import slash.navigation.rest.SimpleCredentials;
 public abstract class RouteFeedbackServiceBase {
     protected static final String DATASOURCES = System.getProperty("feedback", "http://localhost:8000/datasources/");
     protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
+    protected static final String API = System.getProperty("api", "http://localhost:8000/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
 
@@ -32,6 +33,6 @@ public abstract class RouteFeedbackServiceBase {
 
     @Before
     public void setUp() throws Exception {
-        routeFeedback = new RouteFeedback(FEEDBACK, new SimpleCredentials(USERNAME, PASSWORD));
+        routeFeedback = new RouteFeedback(FEEDBACK, API, new SimpleCredentials(USERNAME, PASSWORD));
     }
 }

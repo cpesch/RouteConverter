@@ -25,18 +25,14 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static slash.common.io.Directories.ensureDirectory;
-import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.Action.Copy;
 
@@ -48,112 +44,16 @@ import static slash.navigation.download.Action.Copy;
 
 public class DataSourceManager {
     private static final Logger log = Logger.getLogger(DataSourceManager.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(DataSourceManager.class);
-    private static final String DIRECTORY_PREFERENCE = "directory";
+    private static final String EDITIONS = "editions";
+    private static final String EDITIONS_URI = "v1/" + EDITIONS + "/";
+    private static final String FORMAT_XML = "?format=xml";
+    private static final String DOT_XML = ".xml";
 
     private final DownloadManager downloadManager;
-    private final DataSourceService dataSourceService = new DataSourceService();
+    private DataSourceService dataSourceService = new DataSourceService();
 
     public DataSourceManager(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
-    }
-
-    public void initialize(String edition) throws JAXBException, FileNotFoundException {
-        initializeEdition(edition);
-        initializeDataSources();
-    }
-
-    private void initializeEdition(String edition) throws JAXBException, FileNotFoundException {
-        log.info(format("Initializing edition '%s'", edition));
-
-        String uri = edition.toLowerCase() + ".xml";
-        java.io.File target = new java.io.File(getTarget(), uri);
-        if (!target.exists()) {
-            log.warning(format("Cannot find %s to initialize '%s' edition", target, edition));
-            return;
-        }
-        dataSourceService.load(new FileInputStream(target));
-    }
-
-    private void initializeDataSources() throws JAXBException, FileNotFoundException {
-        for(DataSource dataSource : new ArrayList<>(dataSourceService.getDataSources())) {
-            for(File file : dataSource.getFiles()) {
-                java.io.File target = new java.io.File(getTarget(), file.getUri().toLowerCase());
-                log.info(format("Updating data source '%s'", target));
-
-                if (!target.exists()) {
-                    log.warning(format("Cannot find %s to initialize '%s' datasource", target, dataSource.getName()));
-                    continue;
-                }
-                dataSourceService.load(new FileInputStream(target));
-            }
-        }
-    }
-
-    public void update(String edition) throws IOException, JAXBException {
-        updateEdition(edition);
-        updateDataSources();
-        downloadManager.setLastSync(now());
-    }
-
-    private void updateEdition(String edition) throws JAXBException, FileNotFoundException {
-        String uri = edition.toLowerCase() + ".xml";
-        String url = System.getProperty("datasources", "http://www.routeconverter.com/datasources/") + "editions/" + uri;
-        log.info(format("Updating edition '%s' from '%s'", edition, url));
-
-        Download download = downloadManager.queueForDownload("RouteConverter " + edition + " Edition: Catalog of Data Sources", url, Copy,
-                null, new FileAndChecksum(new java.io.File(getTarget(), uri), null), null);
-        downloadManager.waitForCompletion(asList(download));
-
-        java.io.File target = download.getFile().getFile();
-        if (!target.exists()) {
-            log.warning(format("Cannot find %s to update '%s' edition", target, download.getDescription()));
-            return;
-        }
-
-        dataSourceService.clear();
-        dataSourceService.load(new FileInputStream(download.getFile().getFile()));
-    }
-
-    private void updateDataSources() throws JAXBException, FileNotFoundException {
-        List<Download> downloads = new ArrayList<>();
-        for(DataSource dataSource : new ArrayList<>(dataSourceService.getDataSources())) {
-            for(File file : dataSource.getFiles()) {
-                String url = dataSource.getBaseUrl() + file.getUri();
-                log.info(format("Updating data source '%s'", url));
-
-                Download download = downloadManager.queueForDownload(dataSource.getName() + ": Data Source " + file.getUri(),
-                        url, Copy, null, new FileAndChecksum(new java.io.File(getTarget(), file.getUri().toLowerCase()), file.getLatestChecksum()),
-                        null);
-                downloads.add(download);
-            }
-        }
-        downloadManager.waitForCompletion(downloads);
-
-        for(Download download : downloads) {
-            java.io.File target = download.getFile().getFile();
-            if (!target.exists()) {
-                log.warning(format("Cannot find %s to update '%s' datasource", target, download.getDescription()));
-                continue;
-            }
-            dataSourceService.load(new FileInputStream(target));
-        }
-    }
-
-    public String getPath() {
-        return preferences.get(DIRECTORY_PREFERENCE, "");
-    }
-
-    public void setPath(String path) {
-        preferences.put(DIRECTORY_PREFERENCE, path);
-    }
-
-    private java.io.File getTarget() {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
-            directoryName = getApplicationDirectory("datasources").getAbsolutePath();
-        return ensureDirectory(directoryName);
     }
 
     public DataSourceService getDataSourceService() {
@@ -165,6 +65,113 @@ public class DataSourceManager {
     }
 
     public void dispose() {
+        dataSourceService.clear();
         getDownloadManager().dispose();
+    }
+
+    public void initialize(String edition, java.io.File directory) throws JAXBException, FileNotFoundException {
+        java.io.File file = new File(directory, edition + DOT_XML);
+        log.info(format("Initializing edition '%s' from %s", edition, file));
+        Edition anEdition = loadEdition(file);
+        if(anEdition == null)
+            return;
+
+        this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
+    }
+
+    private Edition loadEdition(java.io.File file) throws FileNotFoundException, JAXBException {
+        if (!file.exists()) {
+            log.warning(format("Cannot find edition file %s", file));
+            return null;
+        }
+
+        DataSourceService service = loadDataSource(file);
+        List<Edition> editions = service.getEditions();
+        return editions.size() > 0 ? editions.get(0) : null;
+    }
+
+    private DataSourceService loadDataSources(List<DataSource> dataSources, java.io.File directory) throws JAXBException, FileNotFoundException {
+        DataSourceService result = new DataSourceService();
+        for (DataSource dataSource : new ArrayList<>(dataSources)) {
+            java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
+            log.info(format("Initializing data source from %s", file));
+            if (!file.exists()) {
+                log.warning(format("Cannot find data source file %s", file));
+                continue;
+            }
+            result.load(new FileInputStream(file));
+        }
+        return result;
+    }
+
+    public void update(String edition, String url, java.io.File directory) throws FileNotFoundException, JAXBException {
+        log.info(format("Updating edition '%s' from %s to %s", edition, url, directory));
+        java.io.File file = new java.io.File(directory, edition + DOT_XML);
+        downloadEdition(edition, url, file);
+        Edition anEdition = loadEdition(file);
+        if(anEdition == null)
+            return;
+
+        downloadDataSources(anEdition.getDataSources(), directory);
+        this.dataSourceService = loadDataSources(directory);
+        downloadManager.setLastSync(now());
+    }
+
+    public void downloadRoot(String url, java.io.File directory) {
+        String editionsUrl = url + EDITIONS_URI + FORMAT_XML;
+        java.io.File file = new java.io.File(directory, EDITIONS + DOT_XML);
+        Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy, null,
+                new FileAndChecksum(file, null), null);
+        downloadManager.waitForCompletion(asList(download));
+    }
+
+    private void downloadEdition(String edition, String url, java.io.File file) {
+        String editionUrl = url + EDITIONS_URI + edition + "/" + FORMAT_XML;
+        Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition, editionUrl, Copy,
+                null, new FileAndChecksum(file, null), null);
+        downloadManager.waitForCompletion(asList(download));
+    }
+
+    public void downloadEditions(List<Edition> editions, java.io.File directory) throws JAXBException, FileNotFoundException {
+        List<Download> downloads = new ArrayList<>();
+        for (Edition edition : editions) {
+            String editionUrl = edition.getHref() + FORMAT_XML;
+            java.io.File file = new java.io.File(directory, edition.getId() + DOT_XML);
+            Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition.getId(),
+                    editionUrl, Copy, null, new FileAndChecksum(file, null), null);
+            downloads.add(download);
+        }
+        downloadManager.waitForCompletion(downloads);
+    }
+
+    public void downloadDataSources(List<DataSource> dataSources, java.io.File directory) throws JAXBException, FileNotFoundException {
+        List<Download> downloads = new ArrayList<>();
+        for (DataSource dataSource : dataSources) {
+            String datasourceUrl = dataSource.getHref() + FORMAT_XML;
+            java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
+            Download download = downloadManager.queueForDownload("RouteConverter DataSource: " + dataSource.getId(),
+                    datasourceUrl, Copy, null, new FileAndChecksum(file, null), null);
+            downloads.add(download);
+        }
+        downloadManager.waitForCompletion(downloads);
+    }
+
+    private static DataSourceService loadDataSource(java.io.File file) throws FileNotFoundException, JAXBException {
+        DataSourceService result = new DataSourceService();
+        result.load(new FileInputStream(file));
+        return result;
+    }
+
+    public static DataSourceService loadDataSources(java.io.File directory) throws FileNotFoundException, JAXBException {
+        DataSourceService result = new DataSourceService();
+        java.io.File[] files = directory.listFiles(new FilenameFilter() {
+            public boolean accept(java.io.File dir, String name) {
+                return name.endsWith(DOT_XML);
+            }
+        });
+        if (files != null)
+            for (java.io.File file : files)
+                result.load(new FileInputStream(file));
+        return result;
     }
 }

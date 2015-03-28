@@ -29,6 +29,7 @@ import slash.navigation.datasources.impl.DataSourceImpl;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.SimpleCredentials;
 
 import java.io.File;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         DatasourceType datasourceType = new DatasourceType();
         datasourceType.setId("id" + id);
         datasourceType.setName("name" + id);
-        datasourceType.setBaseUrl("url" + id);
+        datasourceType.setBaseUrl("baseUrl" + id);
         datasourceType.setDirectory("directory" + id);
 
         FileType file2 = new FileType();
@@ -105,9 +106,22 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         return new DataSourceImpl(datasourceType);
     }
 
+    private Map<FileAndChecksum, List<FileAndChecksum>> createFiles(long id) {
+        Map<FileAndChecksum, List<FileAndChecksum>> result = new HashMap<>();
+        result.put(createFile("file2uri" + id), null);
+        result.put(createFile("file3uri" + id),
+                asList(createFile("fragment1key"),
+                        createFile("fragment2key")));
+        result.put(createFile("mapuri" + id),
+                asList(createFile("fragmentkey" + id)));
+        result.put(createFile("themeuri" + id),
+                asList(createFile("fragmentkey" + id)));
+        return result;
+    }
+
     private Map<FileAndChecksum, List<FileAndChecksum>> createFileAndChecksums(long id) {
         Map<FileAndChecksum, List<FileAndChecksum>> result = new HashMap<>();
-        result.put(createFileAndChecksum("file2uri" + id, CALENDARF2, 2L, "file2"), null);
+        result.put(createFile("file2uri" + id), null);
         result.put(createFileAndChecksum("file3uri" + id, CALENDARF3, 3L, "file3"),
                 asList(createFileAndChecksum("fragment1key", CALENDARF3F1, 31L, "file3 fragment1"),
                         createFileAndChecksum("fragment2key", CALENDARF3F2, 32L, "file3 fragment2")));
@@ -116,6 +130,10 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         result.put(createFileAndChecksum("themeuri" + id, CALENDART, 200L, "theme"),
                 asList(createFileAndChecksum("fragmentkey" + id, CALENDARTF, 201L, "theme fragment")));
         return result;
+    }
+
+    private FileAndChecksum createFile(String fileUri) {
+        return new FileAndChecksum(new File(fileUri), null);
     }
 
     private FileAndChecksum createFileAndChecksum(String fileUri, CompactCalendar lastModified, long contentLength, String sha1) {
@@ -133,7 +151,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
     @Test
     public void testSendChecksum() throws Exception {
         long id = currentTimeMillis();
-        assertEquals("created datasource id" + id + "\n" +
+        assertEquals("created DataSource id" + id + "\n" +
                         "created File file2uri" + id + "\n" +
                         "created FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
                         "created File file3uri" + id + "\n" +
@@ -156,7 +174,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
     @Test
     public void testSendChecksumTwice() throws Exception {
         long id = currentTimeMillis();
-        assertEquals("created datasource id" + id + "\n" +
+        assertEquals("created DataSource id" + id + "\n" +
                         "created File file2uri" + id + "\n" +
                         "created FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
                         "created File file3uri" + id + "\n" +
@@ -175,10 +193,10 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
                 routeFeedback.sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
 
-        Get get = new Get(DATASOURCES + "datasource/id" + id + ".xml");
+        Get get = new Get(API + "v1/datasources/id" + id + ".xml");
         assertTrue(get.executeAsString().contains(Long.toString(id)));
 
-        assertEquals("existing datasource id" + id + "\n" +
+        assertEquals("existing DataSource id" + id + "\n" +
                         "existing File file2uri" + id + "\n" +
                         "existing FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
                         "existing File file3uri" + id + "\n" +
@@ -196,5 +214,45 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "existing ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
                         "existing ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
                 routeFeedback.sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
+    }
+
+    @Test
+    public void testSendChecksumsUnauthenticated() throws Exception {
+        long id = currentTimeMillis();
+        assertEquals("created DataSource id" + id + "\n" +
+                        "created File file2uri" + id + "\n" +
+                        "created FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
+                        "created File file3uri" + id + "\n" +
+                        "created FileFragment file3uri" + id + " -> fragment1key\n" +
+                        "created FileFragment file3uri" + id + " -> fragment2key\n" +
+                        "created Map mapuri" + id + "\n" +
+                        "created MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created Theme themeuri" + id + "\n" +
+                        "created ThemeFragment themeuri" + id + " -> fragmentkey" + id,
+                routeFeedback.sendChecksums(createDataSource(id), createFiles(id), createFilterUris(id)));
+
+        Get get = new Get(API + "v1/datasources/id" + id + "/");
+        String result = get.executeAsString();
+        assertTrue(get.isSuccessful());
+        assertTrue(result.contains(Long.toString(id)));
+
+        assertEquals("existing DataSource id" + id + "\n" +
+                        "existing File file2uri" + id + "\n" +
+                        "existing FileFragment file2uri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing File file3uri" + id + "\n" +
+                        "created FileChecksum 2014-01-01 01:03:01, 4, file3-actual for file3uri" + id + "\n" +
+                        "existing FileFragment file3uri" + id + " -> fragment1key\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:02, 32, file3 fragment1-actual for file3uri" + id + " -> fragment1key\n" +
+                        "existing FileFragment file3uri" + id + " -> fragment2key\n" +
+                        "created FileFragmentChecksum 2014-01-01 01:03:03, 33, file3 fragment2-actual for file3uri" + id + " -> fragment2key\n" +
+                        "existing Map mapuri" + id + "\n" +
+                        "created MapChecksum 2014-01-02 01:01:01, 101, map-actual for mapuri" + id + "\n" +
+                        "existing MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created MapFragmentChecksum 2014-01-02 01:01:01, 102, map fragment-actual for mapuri" + id + " -> fragmentkey" + id + "\n" +
+                        "existing Theme themeuri" + id + "\n" +
+                        "created ThemeChecksum 2014-01-03 01:01:01, 201, theme-actual for themeuri" + id + "\n" +
+                        "existing ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
+                new RouteFeedback(FEEDBACK, API, new SimpleCredentials("not-existing-user", "not-existing-password")).sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
     }
 }

@@ -34,10 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Transfer.formatTime;
@@ -186,8 +183,8 @@ public class DataSourcesUtil {
 
     private static boolean matches(FileAndChecksum fileAndChecksum, Fragment fragment) {
         String filePath = fileAndChecksum.getFile().getAbsolutePath();
-        String uri = fragment.getDownloadable().getUri();
-        return filePath.endsWith(uri);
+        String key = fragment.getKey();
+        return filePath.endsWith(key);
     }
 
     private static List<Checksum> filterChecksums(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
@@ -210,8 +207,10 @@ public class DataSourcesUtil {
             return null;
 
         List<ChecksumType> checksumTypes = new ArrayList<>();
-        for (Checksum checksum : checksums)
-            checksumTypes.add(asChecksumType(checksum));
+        for (Checksum checksum : checksums) {
+            if (checksum != null)
+                checksumTypes.add(asChecksumType(checksum));
+        }
         return checksumTypes;
     }
 

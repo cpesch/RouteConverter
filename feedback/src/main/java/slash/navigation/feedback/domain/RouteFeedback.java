@@ -31,9 +31,7 @@ import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.MetadataType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.rest.Credentials;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.Post;
+import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
@@ -63,13 +61,14 @@ public class RouteFeedback {
     private static final String ERROR_REPORT_URI = "error-report/";
     private static final String UPDATE_CHECK_URI = "update-check/";
     private static final String USERS_URI = "users/";
-    private static final String DATASOURCES_URI = "datasources/";
 
     private final String rootUrl;
+    private final String apiUrl;
     private final Credentials credentials;
 
-    public RouteFeedback(String rootUrl, Credentials credentials) {
+    public RouteFeedback(String rootUrl, String apiUrl, Credentials credentials) {
         this.rootUrl = rootUrl;
+        this.apiUrl = apiUrl;
         this.credentials = credentials;
     }
 
@@ -181,22 +180,22 @@ public class RouteFeedback {
         return DataSourcesUtil.toXml(catalogType);
     }
 
-    private String getDataSourcesUrl() {
-        return rootUrl + DATASOURCES_URI;
+    private String getDataSourcesUrl(String dataSourceId) {
+        return apiUrl + "v1/datasources/" + dataSourceId + "/";
     }
 
     public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
         String xml = createDataSourceXml(dataSource, fileToFragments, filterUrls);
         log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, printArrayToDialogString(filterUrls), xml));
-        Post request = new Post(getDataSourcesUrl(), credentials);
+        String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
+        Put request = new Put(dataSourcesUrl, credentials);
         request.addFile("file", xml.getBytes());
 
         String result = request.executeAsString();
         if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot send checksums ", getDataSourcesUrl());
+            throw new UnAuthorizedException("Cannot send checksums ", dataSourcesUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getDataSourcesUrl() + " for data source " + dataSource +
-                    " not successful: " + result);
+            throw new IOException("PUT on " + dataSourcesUrl + " for data source " + dataSource + " not successful: " + result);
 
         log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileToFragments, printArrayToDialogString(filterUrls), result));
         return result;

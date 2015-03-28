@@ -155,7 +155,7 @@ public class HgtFiles implements ElevationService {
 
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + ": Elevation Data " + uri, url, Flatten,
+        return downloadManager.queueForDownload(getName() + " Elevation Tile: " + uri, url, Flatten,
                 null, new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
     }
 }

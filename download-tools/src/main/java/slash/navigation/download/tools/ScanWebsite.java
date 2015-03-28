@@ -39,8 +39,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static slash.navigation.datasources.DataSourceManager.loadDataSources;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**
@@ -128,7 +130,7 @@ public class ScanWebsite extends BaseDownloadTool {
         DataSource source = service.getDataSourceById(id);
         if (source == null)
             throw new IllegalArgumentException("Unknown data source: " + id);
-        if (!url.equals(source.getBaseUrl()))
+        if (!url.equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
             throw new IllegalArgumentException("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + url);
 
         Set<String> files = collectURIs(source);
@@ -151,7 +153,7 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private String getDataSourcesUrl() {
-        return datasourcesServer + "/v1/datasources/" + id + "/";
+        return datasourcesServer + "v1/datasources/" + id + "/";
     }
 
     private DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
@@ -202,9 +204,8 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     public String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
-        log.fine("Adding " + uris);
         String xml = createXml(dataSource, uris);
-        System.out.println(xml); // TODO
+        log.info(format("Adding URIs %s:\n%s", uris, xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
@@ -212,7 +213,7 @@ public class ScanWebsite extends BaseDownloadTool {
         request.setSocketTimeout(900 * 1000);
 
         String result = request.executeAsString();
-        System.out.println(result); // TODO
+        log.info(format("Added URIs %s with result:\n%s", uris, result));
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add uris " + uris, dataSourcesUrl);
         if (request.isForbidden())
@@ -223,16 +224,15 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
-        log.fine("Removing " + uris);
         String xml = createXml(dataSource, uris);
-        System.out.println(xml); // TODO
+        log.info(format("Removing URIs %s:\n%s", uris, xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
 
         String result = request.executeAsString();
-        System.out.println(result); // TODO
+        log.info(format("Removed URIs %s with result:\n%s", uris, result));
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot remove uris " + uris, dataSourcesUrl);
         if (request.isForbidden())

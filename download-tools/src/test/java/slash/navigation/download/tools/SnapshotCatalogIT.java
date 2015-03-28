@@ -19,54 +19,48 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static slash.navigation.download.tools.base.BaseDownloadTool.getRootDirectory;
 
 public class SnapshotCatalogIT {
-    private static final String API = System.getProperty("api", "http://localhost:8000/v1/");
-    private SnapshotCatalog snapshot;
+    private static final String API = System.getProperty("api", "http://localhost:8000/");
 
     @Before
     public void setUp() throws IOException {
-        snapshot = new SnapshotCatalog();
-        snapshot.setUrl(API);
-        snapshot.setReset(true);
-
         File editionsXml = createEditionsXml();
         if (editionsXml.exists())
             assertTrue(editionsXml.delete());
     }
 
-    @After
-    public void tearDown() {
-        snapshot.close();
-    }
-
     private File createEditionsXml() {
-        return new File(snapshot.getRootDirectory(), "editions.xml");
+        return new File(getRootDirectory(), "editions.xml");
     }
 
     @Test
-    public void snapshotEditions() {
+    public void snapshotEditions() throws IOException, JAXBException {
         File before = createEditionsXml();
         assertFalse(before.exists());
 
-        snapshot.snapshotRoot(snapshot.getRootDirectory());
+        SnapshotCatalog snapshot1 = new SnapshotCatalog();
+        snapshot1.setUrl(API);
+        snapshot1.setReset(true);
+        snapshot1.snapshot();
 
         File after = createEditionsXml();
         assertTrue(after.exists());
         long length = after.length();
         long lastModified = after.lastModified();
 
-        snapshot.snapshotRoot(snapshot.getRootDirectory());
+        SnapshotCatalog snapshot2 = new SnapshotCatalog();
+        snapshot2.setUrl(API);
+        snapshot2.snapshot();
 
         File second = createEditionsXml();
         assertTrue(second.exists());

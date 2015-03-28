@@ -19,13 +19,7 @@
 */
 package slash.navigation.download.tools.base;
 
-import slash.navigation.datasources.DataSourceService;
-
-import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -43,32 +37,19 @@ public class BaseDownloadTool {
     protected static final String DATASOURCES_USERNAME_ARGUMENT = "username";
     protected static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
 
-    protected File getSnapshotDirectory() {
+    protected static File getSnapshotDirectory() {
         return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());
     }
 
-    public File getRootDirectory() {
+    public static File getRootDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "root"));
     }
 
-    protected File getEditionsDirectory() {
+    protected static File getEditionsDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "editions"));
     }
 
-    protected File getDataSourcesDirectory() {
+    protected static File getDataSourcesDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "datasources"));
-    }
-
-    protected DataSourceService loadDataSources(File directory) throws JAXBException, FileNotFoundException {
-        DataSourceService dataSourceService = new DataSourceService();
-        File[] files = directory.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".xml");
-            }
-        });
-        if (files != null)
-            for (File file : files)
-                dataSourceService.load(new FileInputStream(file));
-        return dataSourceService;
     }
 }

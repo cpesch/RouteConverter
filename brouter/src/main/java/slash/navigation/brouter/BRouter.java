@@ -300,14 +300,14 @@ public class BRouter implements RoutingService {
     private Download downloadProfile(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getProfilesBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + ": Routing Profile " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Copy,
                 null, new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     private Download downloadSegment(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getSegmentsBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + ": Routing Segment " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Copy,
                 null, new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 }

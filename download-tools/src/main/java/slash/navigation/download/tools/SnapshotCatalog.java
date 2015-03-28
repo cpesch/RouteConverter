@@ -21,16 +21,14 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.DataSourceService;
 import slash.navigation.datasources.Edition;
-import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.FileAndChecksum;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,9 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static slash.navigation.download.Action.Copy;
+import static slash.navigation.datasources.DataSourceManager.loadDataSources;
 
 /**
  * Performs a filesystem mirror from the DataSources catalog.
@@ -51,11 +47,8 @@ import static slash.navigation.download.Action.Copy;
 public class SnapshotCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(SnapshotCatalog.class.getName());
     private static final String RESET_ARGUMENT = "reset";
-    private static final String EDITIONS_URI = "editions/";
-    private static final String FORMAT_XML = "?format=xml";
-    private static final String DOT_XML = ".xml";
 
-    private DownloadManager downloadManager = new DownloadManager(new File(getSnapshotDirectory(), "snapshot-queue.xml"));
+    private DataSourceManager dataSourceManager = new DataSourceManager(new DownloadManager(new File(getSnapshotDirectory(), "download-queue.xml")));
     private String url;
     private boolean reset = false;
 
@@ -68,16 +61,16 @@ public class SnapshotCatalog extends BaseDownloadTool {
     }
 
     void close() {
-        downloadManager.saveQueue();
-        downloadManager.dispose();
+        dataSourceManager.getDownloadManager().saveQueue();
+        dataSourceManager.dispose();
     }
 
     private void open() throws IOException {
         if(reset) {
-            downloadManager.clearQueue();
+            dataSourceManager.getDownloadManager().clearQueue();
             deleteAll(getSnapshotDirectory());
         }  else
-            downloadManager.loadQueue();
+            dataSourceManager.getDownloadManager().loadQueue();
     }
 
     void deleteAll(File directory) throws IOException {
@@ -92,53 +85,27 @@ public class SnapshotCatalog extends BaseDownloadTool {
         }
     }
 
-    void snapshotRoot(File directory) {
-        String editionsUrl = url + EDITIONS_URI + FORMAT_XML;
-        File file = new File(directory, "editions" + DOT_XML);
-        Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy, null,
-                new FileAndChecksum(file, null), null);
-        log.info(format("Downloading %s to %s", editionsUrl, file));
-        downloadManager.waitForCompletion(asList(download));
-    }
-
-    private void snapshotEditions(DataSourceService dataSourceService, File directory) throws JAXBException, FileNotFoundException {
-        List<Download> downloads = new ArrayList<>();
-        for (Edition edition : dataSourceService.getEditions()) {
-            String editionUrl = edition.getHref() + FORMAT_XML;
-            File file = new File(directory, edition.getId() + DOT_XML);
-            Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition.getId(),
-                    editionUrl, Copy, null, new FileAndChecksum(file, null), null);
-            downloads.add(download);
-            log.info(format("Downloading %s to %s", editionUrl, file));
+    private List<DataSource> createDataSourceSet(List<Edition> editions) {
+        Set<DataSource> result = new HashSet<>();
+        for(Edition edition : editions) {
+            for (DataSource dataSource : edition.getDataSources())
+                result.add(dataSource);
         }
-        downloadManager.waitForCompletion(downloads);
+        return new ArrayList(result);
     }
 
-    private void snapshotDataSources(DataSourceService dataSourceService, File directory) throws JAXBException, FileNotFoundException {
-        Set<DataSource> dataSources = new HashSet<>();
-        for(Edition edition : dataSourceService.getEditions())
-            dataSources.addAll(edition.getDataSources());
-
-        List<Download> downloads = new ArrayList<>();
-        for (DataSource dataSource : dataSources) {
-            String datasourceUrl = dataSource.getHref() + FORMAT_XML;
-            File file = new File(directory, dataSource.getId() + DOT_XML);
-            Download download = downloadManager.queueForDownload("RouteConverter DataSource: " + dataSource.getId(),
-                    datasourceUrl, Copy, null, new FileAndChecksum(file, null), null);
-            downloads.add(download);
-            log.info(format("Downloading %s to %s", datasourceUrl, file));
-        }
-        downloadManager.waitForCompletion(downloads);
-    }
-
-    private void snapshot() throws IOException, JAXBException {
+    public void snapshot() throws IOException, JAXBException {
         open();
 
-        snapshotRoot(getRootDirectory());
-        DataSourceService editions = loadDataSources(getRootDirectory());
-        snapshotEditions(editions, getEditionsDirectory());
-        DataSourceService datasources = loadDataSources(getEditionsDirectory());
-        snapshotDataSources(datasources, getDataSourcesDirectory());
+        dataSourceManager.downloadRoot(url, getRootDirectory());
+        DataSourceService root = loadDataSources(getRootDirectory());
+
+        dataSourceManager.downloadEditions(root.getEditions(), getEditionsDirectory());
+        DataSourceService editions = loadDataSources(getEditionsDirectory());
+
+        dataSourceManager.downloadDataSources(createDataSourceSet(editions.getEditions()), getDataSourcesDirectory());
+        DataSourceService dataSources = loadDataSources(getDataSourcesDirectory());
+        log.info(String.format("Snapshot contains %d editions and %d datasources", editions.getEditions().size(), dataSources.getDataSources().size()));
 
         close();
     }
