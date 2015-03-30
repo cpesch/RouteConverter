@@ -281,6 +281,10 @@
                    }
                    callJavaWithPost("Insert-All-Waypoints: " + index + "/" + waypoints.join("/") + "\n\n");
                }
+
+           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+               callJavaWithUri("over-query-limit");
+
            } else {
                setError("<p>Sorry, could not insert all waypoints.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
@@ -320,6 +324,10 @@
                    }
                    callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + turnpoints.join("/") + "\n\n");
                }
+
+           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+               callJavaWithUri("over-query-limit");
+
            } else {
                setError("<p>Sorry, could not insert only turnpoints.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
