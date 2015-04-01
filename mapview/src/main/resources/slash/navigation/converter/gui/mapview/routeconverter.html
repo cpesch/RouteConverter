@@ -707,7 +707,7 @@
            }
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                var mapTypeId = map.getMapTypeId();
-               if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
+               if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == TOPO_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
                } else if (mapTypeId == OUTDOOR_D_MAPTYPE_ID || mapTypeId == OUTDOOR_A_MAPTYPE_ID || mapTypeId == OUTDOOR_CH_MAPTYPE_ID || mapTypeId == TOPOGRAPHIC_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a>';
