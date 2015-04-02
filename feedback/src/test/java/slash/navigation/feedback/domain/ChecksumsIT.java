@@ -72,34 +72,34 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
         FileType file3 = new FileType();
         file3.setUri("file3uri" + id);
         file3.setBoundingBox(asBoundingBoxType(new BoundingBox(new SimpleNavigationPosition(1.0, 2.0), new SimpleNavigationPosition(3.0, 4.0))));
-        file3.getChecksum().add(createChecksumType(3L, CALENDARF3, "file3"));
+        file3.getChecksum().add(createChecksumType(CALENDARF3, 3L, "file3"));
         FragmentType fileType3fragment1 = new FragmentType();
         fileType3fragment1.setKey("fragment1key");
-        fileType3fragment1.getChecksum().add(createChecksumType(31L, CALENDARF3F1, "file3 fragment1"));
+        fileType3fragment1.getChecksum().add(createChecksumType(CALENDARF3F1, 31L, "file3 fragment1"));
         file3.getFragment().add(fileType3fragment1);
         FragmentType fileType3fragment2 = new FragmentType();
         fileType3fragment2.setKey("fragment2key");
-        fileType3fragment2.getChecksum().add(createChecksumType(32L, CALENDARF3F2, "file3 fragment2"));
+        fileType3fragment2.getChecksum().add(createChecksumType(CALENDARF3F2, 32L, "file3 fragment2"));
         file3.getFragment().add(fileType3fragment2);
         datasourceType.getFile().add(file3);
 
         MapType map = new MapType();
         map.setUri("mapuri" + id);
         map.setBoundingBox(asBoundingBoxType(new BoundingBox(new SimpleNavigationPosition(1.0, 2.0), new SimpleNavigationPosition(3.0, 4.0))));
-        map.getChecksum().add(createChecksumType(100L, CALENDARM, "map"));
+        map.getChecksum().add(createChecksumType(CALENDARM, 100L, "map"));
         FragmentType mapfragment = new FragmentType();
         mapfragment.setKey("fragmentkey" + id);
-        mapfragment.getChecksum().add(createChecksumType(101L, CALENDARMF, "map fragment"));
+        mapfragment.getChecksum().add(createChecksumType(CALENDARMF, 101L, "map fragment"));
         map.getFragment().add(mapfragment);
         datasourceType.getMap().add(map);
 
         ThemeType theme = new ThemeType();
         theme.setUri("themeuri" + id);
         theme.setImageUrl("imageurl");
-        theme.getChecksum().add(createChecksumType(200L, CALENDART, "theme"));
+        theme.getChecksum().add(createChecksumType(CALENDART, 200L, "theme"));
         FragmentType themefragment = new FragmentType();
         themefragment.setKey("fragmentkey" + id);
-        themefragment.getChecksum().add(createChecksumType(201L, CALENDARTF, "theme fragment"));
+        themefragment.getChecksum().add(createChecksumType(CALENDARTF, 201L, "theme fragment"));
         theme.getFragment().add(themefragment);
         datasourceType.getTheme().add(theme);
 

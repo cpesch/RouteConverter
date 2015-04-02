@@ -22,15 +22,9 @@ package slash.navigation.feedback.domain;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourcesUtil;
-import slash.navigation.datasources.binding.CatalogType;
-import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
-import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
@@ -45,8 +39,6 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Transfer.asUtf8;
-import static slash.navigation.datasources.DataSourcesUtil.asDatasourceType;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**
@@ -86,34 +78,13 @@ public class RouteFeedback {
             return null;
     }
 
-    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        ObjectFactory objectFactory = new ObjectFactory();
-        MetadataType metadataType = objectFactory.createMetadataType();
-        metadataType.setName(asUtf8(userName));
-
-        UserextensionType userextensionType = new slash.navigation.gpx.routecatalog10.ObjectFactory().createUserextensionType();
-        userextensionType.setEmail(asUtf8(email));
-        userextensionType.setFirstname(asUtf8(firstName));
-        userextensionType.setLastname(asUtf8(lastName));
-        userextensionType.setPassword(asUtf8(password));
-
-        ExtensionsType extensionsType = objectFactory.createExtensionsType();
-        extensionsType.getAny().add(userextensionType);
-        metadataType.setExtensions(extensionsType);
-
-        GpxType gpxType = GpxUtil.createGpxType();
-        gpxType.setMetadata(metadataType);
-
-        return GpxUtil.toXml(gpxType);
-    }
-
     private String getUsersUrl() {
         return rootUrl + USERS_URI;
     }
 
     public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
         log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
-        String xml = createUserXml(userName, password, firstName, lastName, email);
+        String xml = GpxUtil.createXml(userName, password, firstName, lastName, email);
         Post request = new Post(getUsersUrl(), credentials);
         request.addFile("file", xml.getBytes());
 
@@ -170,22 +141,12 @@ public class RouteFeedback {
         return request.executeAsString().replace("\"", "");
     }
 
-    private static String createDataSourceXml(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
-        slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
-
-        CatalogType catalogType = objectFactory.createCatalogType();
-        DatasourceType datasourceType = asDatasourceType(dataSource, fileToFragments, filterUrls);
-        catalogType.getDatasource().add(datasourceType);
-
-        return DataSourcesUtil.toXml(catalogType);
-    }
-
     private String getDataSourcesUrl(String dataSourceId) {
         return apiUrl + "v1/datasources/" + dataSourceId + "/";
     }
 
     public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
-        String xml = createDataSourceXml(dataSource, fileToFragments, filterUrls);
+        String xml = DataSourcesUtil.createXml(dataSource, fileToFragments, filterUrls);
         log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, printArrayToDialogString(filterUrls), xml));
         String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
         Put request = new Put(dataSourcesUrl, credentials);

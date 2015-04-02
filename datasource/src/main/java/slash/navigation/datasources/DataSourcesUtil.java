@@ -101,14 +101,9 @@ public class DataSourcesUtil {
         return false;
     }
 
-    public static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) {
+    private static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) {
         ObjectFactory objectFactory = new ObjectFactory();
-
-        DatasourceType datasourceType = objectFactory.createDatasourceType();
-        datasourceType.setId(dataSource.getId());
-        datasourceType.setName(dataSource.getName());
-        datasourceType.setBaseUrl(dataSource.getBaseUrl());
-        datasourceType.setDirectory(dataSource.getDirectory());
+        DatasourceType datasourceType = asDatasourceType(dataSource);
 
         for (File aFile : dataSource.getFiles()) {
             if (!contains(filterUrls, dataSource.getBaseUrl() + aFile.getUri()))
@@ -146,6 +141,25 @@ public class DataSourcesUtil {
             datasourceType.getTheme().add(themeType);
         }
 
+        return datasourceType;
+    }
+
+    public static String createXml(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        CatalogType catalogType = objectFactory.createCatalogType();
+        DatasourceType datasourceType = asDatasourceType(dataSource, fileToFragments, filterUrls);
+        catalogType.getDatasource().add(datasourceType);
+
+        return toXml(catalogType);
+    }
+
+    public static DatasourceType asDatasourceType(DataSource dataSource) {
+        DatasourceType datasourceType = new ObjectFactory().createDatasourceType();
+        datasourceType.setId(dataSource.getId());
+        datasourceType.setName(dataSource.getName());
+        datasourceType.setBaseUrl(dataSource.getBaseUrl());
+        datasourceType.setDirectory(dataSource.getDirectory());
         return datasourceType;
     }
 
@@ -215,10 +229,10 @@ public class DataSourcesUtil {
     }
 
     public static ChecksumType asChecksumType(Checksum checksum) {
-        return createChecksumType(checksum.getContentLength(), checksum.getLastModified(), checksum.getSHA1());
+        return createChecksumType(checksum.getLastModified(), checksum.getContentLength(), checksum.getSHA1());
     }
 
-    public static ChecksumType createChecksumType(Long contentLength, CompactCalendar lastModified, String sha1) {
+    public static ChecksumType createChecksumType(CompactCalendar lastModified, Long contentLength, String sha1) {
         ChecksumType checksumType = new ObjectFactory().createChecksumType();
         checksumType.setContentLength(contentLength);
         checksumType.setLastModified(formatTime(lastModified, true));
