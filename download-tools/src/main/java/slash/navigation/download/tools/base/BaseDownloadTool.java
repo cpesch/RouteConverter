@@ -33,9 +33,24 @@ import static slash.common.io.Directories.getApplicationDirectory;
 public class BaseDownloadTool {
     protected static final String URL_ARGUMENT = "url";
     protected static final String ID_ARGUMENT = "id";
-    protected static final String DATASOURCES_SERVER_ARGUMENT = "server";
-    protected static final String DATASOURCES_USERNAME_ARGUMENT = "username";
-    protected static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
+
+    private String url, id;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     protected static File getSnapshotDirectory() {
         return ensureDirectory(getApplicationDirectory("snapshot").getAbsolutePath());

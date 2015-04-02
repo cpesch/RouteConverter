@@ -214,7 +214,7 @@ public class DataSourcesUtil {
         return checksumTypes;
     }
 
-    private static ChecksumType asChecksumType(Checksum checksum) {
+    public static ChecksumType asChecksumType(Checksum checksum) {
         return createChecksumType(checksum.getContentLength(), checksum.getLastModified(), checksum.getSHA1());
     }
 

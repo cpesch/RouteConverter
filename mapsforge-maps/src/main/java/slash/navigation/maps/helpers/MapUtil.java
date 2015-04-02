@@ -26,6 +26,7 @@ import java.io.*;
 
 import static java.io.File.createTempFile;
 import static java.lang.String.format;
+import static slash.common.io.InputOutput.copy;
 import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
 
 /**
@@ -50,8 +51,16 @@ public class MapUtil {
         return result;
     }
 
+    public static File writeFile(InputStream inputStream) throws IOException {
+        File file = createTempFile("completefile", ".tmp");
+        FileOutputStream output = new FileOutputStream(file);
+        copy(inputStream, output);
+        output.close();
+        return file;
+    }
+
     public static File writePartialFile(InputStream inputStream, long fileSize) throws IOException {
-        File file = createTempFile("partialmap", ".tmp");
+        File file = createTempFile("partialfile", ".tmp");
         RandomAccessFile raf = new RandomAccessFile(file, "rw");
 
         byte[] buffer = new byte[1024];

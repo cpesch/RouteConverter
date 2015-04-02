@@ -167,7 +167,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "created Theme themeuri" + id + "\n" +
                         "created ThemeChecksum 2014-01-03 01:01:01, 201, theme-actual for themeuri" + id + "\n" +
                         "created ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id + "\n",
                 routeFeedback.sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
     }
 
@@ -190,7 +190,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "created Theme themeuri" + id + "\n" +
                         "created ThemeChecksum 2014-01-03 01:01:01, 201, theme-actual for themeuri" + id + "\n" +
                         "created ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id + "\n",
                 routeFeedback.sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
 
         Get get = new Get(API + "v1/datasources/id" + id + ".xml");
@@ -212,7 +212,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "existing Theme themeuri" + id + "\n" +
                         "existing ThemeChecksum 2014-01-03 01:01:01, 201, theme-actual for themeuri" + id + "\n" +
                         "existing ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "existing ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
+                        "existing ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id + "\n",
                 routeFeedback.sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
     }
 
@@ -228,7 +228,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "created Map mapuri" + id + "\n" +
                         "created MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
                         "created Theme themeuri" + id + "\n" +
-                        "created ThemeFragment themeuri" + id + " -> fragmentkey" + id,
+                        "created ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n",
                 routeFeedback.sendChecksums(createDataSource(id), createFiles(id), createFilterUris(id)));
 
         Get get = new Get(API + "v1/datasources/id" + id + "/");
@@ -252,7 +252,7 @@ public class ChecksumsIT extends RouteFeedbackServiceBase {
                         "existing Theme themeuri" + id + "\n" +
                         "created ThemeChecksum 2014-01-03 01:01:01, 201, theme-actual for themeuri" + id + "\n" +
                         "existing ThemeFragment themeuri" + id + " -> fragmentkey" + id + "\n" +
-                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id,
+                        "created ThemeFragmentChecksum 2014-01-03 01:01:01, 202, theme fragment-actual for themeuri" + id + " -> fragmentkey" + id + "\n",
                 new RouteFeedback(FEEDBACK, API, new SimpleCredentials("not-existing-user", "not-existing-password")).sendChecksums(createDataSource(id), createFileAndChecksums(id), createFilterUris(id)));
     }
 }

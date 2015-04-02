@@ -49,12 +49,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private static final String RESET_ARGUMENT = "reset";
 
     private DataSourceManager dataSourceManager = new DataSourceManager(new DownloadManager(new File(getSnapshotDirectory(), "download-queue.xml")));
-    private String url;
     private boolean reset = false;
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public void setReset(boolean reset) {
         this.reset = reset;
@@ -97,7 +92,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
     public void snapshot() throws IOException, JAXBException {
         open();
 
-        dataSourceManager.downloadRoot(url, getRootDirectory());
+        dataSourceManager.downloadRoot(getUrl(), getRootDirectory());
         DataSourceService root = loadDataSources(getRootDirectory());
 
         dataSourceManager.downloadEditions(root.getEditions(), getEditionsDirectory());

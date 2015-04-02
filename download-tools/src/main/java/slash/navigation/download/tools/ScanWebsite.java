@@ -23,7 +23,7 @@ package slash.navigation.download.tools;
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
-import slash.navigation.download.tools.base.BaseDownloadTool;
+import slash.navigation.download.tools.base.BaseDataSourcesServerTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.download.tools.helpers.DownloadableType;
@@ -42,7 +42,6 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static slash.navigation.datasources.DataSourceManager.loadDataSources;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**
@@ -51,13 +50,13 @@ import static slash.navigation.download.tools.helpers.DownloadableType.File;
  * @author Christian Pesch
  */
 
-public class ScanWebsite extends BaseDownloadTool {
+public class ScanWebsite extends BaseDataSourcesServerTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String TYPE_ARGUMENT = "type";
     private static final String EXTENSION_ARGUMENT = "extension";
 
-    private String id, url, baseUrl, datasourcesServer, datasourcesUserName, datasourcesPassword;
+    private String baseUrl;
     private DownloadableType type;
     private Set<String> extensions;
 
@@ -71,8 +70,8 @@ public class ScanWebsite extends BaseDownloadTool {
             return;
         visitedUris.add(uri);
 
-        log.info("Downloading " + url + uri);
-        Get get = new Get(url + uri);
+        log.info("Downloading " + getUrl() + uri);
+        Get get = new Get(getUrl() + uri);
         String result = get.executeAsString();
 
         List<String> anchors = new AnchorParser().parseAnchors(result.replaceAll("<area", "<a"));
@@ -126,12 +125,9 @@ public class ScanWebsite extends BaseDownloadTool {
         List<String> collectedUris = collectUris();
         log.info("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
 
-        DataSourceService service = loadDataSources(getDataSourcesDirectory());
-        DataSource source = service.getDataSourceById(id);
-        if (source == null)
-            throw new IllegalArgumentException("Unknown data source: " + id);
-        if (!url.equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
-            throw new IllegalArgumentException("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + url);
+        DataSource source = loadDataSource(getId());
+        if (!getUrl().equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
+            throw new IllegalArgumentException("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + getUrl());
 
         Set<String> files = collectURIs(source);
 
@@ -144,7 +140,7 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info("Added URIs: " + addedUris + " (" + addedUris.size() + " elements)");
         log.info("Removed URIs: " + removedUris + " (" + removedUris.size() + " elements)");
 
-        if (datasourcesServer != null && datasourcesUserName != null && datasourcesPassword != null) {
+        if (hasDataSourcesServer()) {
             if (addedUris.size() > 0)
                 addUris(source, addedUris);
             if (removedUris.size() > 0)
@@ -152,18 +148,9 @@ public class ScanWebsite extends BaseDownloadTool {
         }
     }
 
-    private String getDataSourcesUrl() {
-        return datasourcesServer + "v1/datasources/" + id + "/";
-    }
-
     private DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
         ObjectFactory objectFactory = new ObjectFactory();
-
-        DatasourceType datasourceType = objectFactory.createDatasourceType();
-        datasourceType.setId(dataSource.getId());
-        datasourceType.setName(dataSource.getName());
-        datasourceType.setBaseUrl(dataSource.getBaseUrl());
-        datasourceType.setDirectory(dataSource.getDirectory());
+        DatasourceType datasourceType = DataSourcesUtil.asDatasourceType(dataSource);
 
         for (String uri : uris) {
             switch (type) {
@@ -199,13 +186,9 @@ public class ScanWebsite extends BaseDownloadTool {
         return DataSourcesUtil.toXml(datasourcesType);
     }
 
-    private Credentials getCredentials() {
-        return new SimpleCredentials(datasourcesUserName, datasourcesPassword);
-    }
-
-    public String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
+    private String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
         String xml = createXml(dataSource, uris);
-        log.info(format("Adding URIs %s:\n%s", uris, xml));
+        log.info(format("Adding URIs:\n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
@@ -213,7 +196,7 @@ public class ScanWebsite extends BaseDownloadTool {
         request.setSocketTimeout(900 * 1000);
 
         String result = request.executeAsString();
-        log.info(format("Added URIs %s with result:\n%s", uris, result));
+        log.info(format("Added URIs with result:\n%s", result));
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot add uris " + uris, dataSourcesUrl);
         if (request.isForbidden())
@@ -225,14 +208,14 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
         String xml = createXml(dataSource, uris);
-        log.info(format("Removing URIs %s:\n%s", uris, xml));
+        log.info(format("Removing URIs:\n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
 
         String result = request.executeAsString();
-        log.info(format("Removed URIs %s with result:\n%s", uris, result));
+        log.info(format("Removed URIs with result:\n%s", result));
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot remove uris " + uris, dataSourcesUrl);
         if (request.isForbidden())
@@ -247,16 +230,16 @@ public class ScanWebsite extends BaseDownloadTool {
         CommandLine line = parseCommandLine(args);
         String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
         String typeArgument = line.getOptionValue(TYPE_ARGUMENT);
-        id = line.getOptionValue(ID_ARGUMENT);
-        url = line.getOptionValue(URL_ARGUMENT);
+        setId(line.getOptionValue(ID_ARGUMENT));
+        setUrl(line.getOptionValue(URL_ARGUMENT));
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
         if (baseUrl == null)
-            baseUrl = url;
+            baseUrl = getUrl();
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
         type = typeArgument != null ? DownloadableType.fromValue(typeArgument) : File;
-        datasourcesServer = line.getOptionValue(DATASOURCES_SERVER_ARGUMENT);
-        datasourcesUserName = line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT);
-        datasourcesPassword = line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT);
+        setDatasourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
+        setDatasourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
+        setDatasourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
         scan();
         System.exit(0);
     }
