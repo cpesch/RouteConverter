@@ -69,6 +69,7 @@ import slash.navigation.converter.gui.helpers.MergePositionListMenu;
 import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
 import slash.navigation.converter.gui.helpers.TableHeaderMenu;
 import slash.navigation.converter.gui.helpers.TablePopupMenu;
+import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
@@ -487,6 +488,10 @@ public class ConvertPanel implements PanelInTab {
                 convertPanel.requestFocus();
             }
         });
+    }
+
+    public void initializeMapView(MapView mapView) {
+        lengthCalculator.initializeMapView(mapView);
     }
 
     public void dispose() {

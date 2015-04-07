@@ -357,6 +357,8 @@ public class RouteConverter extends SingleFrameApplication {
                 mapSplitPane.setDividerLocation(location);
                 log.fine("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
+
+                getConvertPanel().initializeMapView(mapView);
             }
         });
     }
