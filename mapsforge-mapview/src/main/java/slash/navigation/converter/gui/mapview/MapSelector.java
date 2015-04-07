@@ -38,6 +38,7 @@ import java.util.ResourceBundle;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
+import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.converter.gui.mapview.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
@@ -51,6 +52,9 @@ import static slash.navigation.converter.gui.mapview.renderer.ThemeListCellRende
  */
 
 public class MapSelector {
+    private static final GridConstraints MAP_SELECTOR_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER,
+            FILL_BOTH, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
+            new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, MAX_VALUE), 0, false);
     private JPanel contentPane;
     private JLabel labelZoom;
     private JComboBox<LocalMap> comboBoxMap;
@@ -59,9 +63,7 @@ public class MapSelector {
 
     public MapSelector(final MapManager mapManager, AwtGraphicMapView mapView) {
         $$$setupUI$$$();
-        mapViewPanel.add(mapView, new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
-                SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
-                new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, false));
+        mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(
                         new TableModelToComboBoxModelAdapter<>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
