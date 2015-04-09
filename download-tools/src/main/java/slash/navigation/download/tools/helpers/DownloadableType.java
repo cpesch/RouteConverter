@@ -33,7 +33,7 @@ public enum DownloadableType {
 
     private String value;
 
-    private DownloadableType(String value) {
+    DownloadableType(String value) {
         this.value = value;
     }
 

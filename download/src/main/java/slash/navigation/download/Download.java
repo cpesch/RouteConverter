@@ -98,7 +98,7 @@ public class Download {
         return eTag;
     }
 
-    void setETag(String eTag) {
+    public void setETag(String eTag) {
         this.eTag = eTag != null ? eTag.replaceAll("-gzip", "") : null;
     }
 

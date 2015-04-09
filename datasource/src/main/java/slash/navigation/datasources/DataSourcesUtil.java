@@ -212,8 +212,11 @@ public class DataSourcesUtil {
 
     private static void replaceChecksumTypes(List<ChecksumType> previousChecksumTypes, List<Checksum> nextChecksums) {
         previousChecksumTypes.clear();
-        if (nextChecksums != null)
-            previousChecksumTypes.addAll(asChecksumTypes(nextChecksums));
+        if (nextChecksums != null) {
+            List<ChecksumType> nextChecksumTypes = asChecksumTypes(nextChecksums);
+            if (nextChecksumTypes != null)
+                previousChecksumTypes.addAll(nextChecksumTypes);
+        }
     }
 
     private static List<ChecksumType> asChecksumTypes(List<Checksum> checksums) {
@@ -242,8 +245,11 @@ public class DataSourcesUtil {
 
     public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment<Downloadable>> nextFragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fragments) {
         previousFragmentTypes.clear();
-        if (nextFragments != null)
-            previousFragmentTypes.addAll(asFragmentTypes(nextFragments, fragments));
+        if (nextFragments != null) {
+            List<FragmentType> nextFragmentTypes = asFragmentTypes(nextFragments, fragments);
+            if (nextFragmentTypes != null)
+                previousFragmentTypes.addAll(nextFragmentTypes);
+        }
     }
 
     private static Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumsMap) {

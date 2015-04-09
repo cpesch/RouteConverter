@@ -35,7 +35,7 @@ import java.io.OutputStream;
 import static slash.common.helpers.JAXBHelper.newContext;
 
 class QueueUtil {
-    private static final String QUEUE_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/Queue/1.0";
+    private static final String QUEUE_NAMESPACE_URI = "http://api.routeconverter.com/v1/schemas/download-queue";
     private static final String DATA_SOURCE_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/Datasources/1.0";
 
     private static Unmarshaller newUnmarshaller() {

@@ -79,7 +79,7 @@ public enum UnitSystem {
     private String distanceName, elevationName, speedName;
     private UnitTransfer unitTransfer;
 
-    private UnitSystem(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
+    UnitSystem(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
         this.distanceName = distanceName;
         this.elevationName = elevationName;
         this.speedName = speedName;

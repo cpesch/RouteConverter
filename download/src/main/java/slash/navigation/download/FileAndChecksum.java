@@ -58,7 +58,7 @@ public class FileAndChecksum {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[file=" + file + ", expectedChecksum=" + expectedChecksum +
-                ", actualChecksum=" + actualChecksum + "]";
+        return getClass().getSimpleName() + "[file=" + getFile() + ", expectedChecksum=" + getExpectedChecksum() +
+                ", actualChecksum=" + getActualChecksum() + "]";
     }
 }

@@ -21,6 +21,7 @@ package slash.navigation.graphhopper;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
+import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
@@ -45,6 +46,7 @@ import java.util.prefs.Preferences;
 import static com.graphhopper.util.CmdArgs.read;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
@@ -163,6 +165,7 @@ public class GraphHopper implements RoutingService {
             if (hopper != null)
                 hopper.close();
             hopper = new com.graphhopper.GraphHopper().forDesktop();
+            hopper.setEncodingManager(new EncodingManager(getAvailableTravelModeNames()));
             hopper.init(read(args));
             hopper.importOrLoad();
         } catch (Exception e) {
@@ -225,7 +228,7 @@ public class GraphHopper implements RoutingService {
 
     private void downloadAll(Downloadable downloadable) {
         Download download = download(downloadable);
-        downloadManager.waitForCompletion(asList(download));
+        downloadManager.waitForCompletion(singletonList(download));
     }
 
     private Download download(Downloadable downloadable) {

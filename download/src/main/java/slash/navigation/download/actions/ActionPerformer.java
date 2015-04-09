@@ -17,19 +17,17 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools.helpers;
+package slash.navigation.download.actions;
+
+import slash.navigation.download.Action;
+import slash.navigation.download.DownloadExecutor;
+
+import java.io.IOException;
 
 /**
- * A content length and a last modification date
- *
- * @author Christian Pesch
+ * Tells the {@link DownloadExecutor} what to do for an {@link Action}
  */
-
-public class ContentLengthAndLastModified {
-    public Long contentLength, lastModified;
-
-    public ContentLengthAndLastModified(Long contentLength, Long lastModified) {
-        this.contentLength = contentLength;
-        this.lastModified = lastModified;
-    }
+public interface ActionPerformer {
+    void setDownloadExecutor(DownloadExecutor downloadExecutor);
+    void run() throws IOException;
 }

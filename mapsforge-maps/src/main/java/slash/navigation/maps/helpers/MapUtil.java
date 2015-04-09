@@ -22,11 +22,14 @@ package slash.navigation.maps.helpers;
 import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
 import static java.lang.String.format;
-import static slash.common.io.InputOutput.copy;
+import static slash.common.io.Files.writePartialFile;
 import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
 
 /**
@@ -36,47 +39,31 @@ import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
  */
 
 public class MapUtil {
+    private static final Logger log = Logger.getLogger(MapUtil.class.getName());
+
     public static BoundingBox extractBoundingBox(File file) {
-        MapFile mapFile = new MapFile(file);
-        org.mapsforge.core.model.BoundingBox boundingBox = mapFile.boundingBox();
-        mapFile.close();
-        return toBoundingBox(boundingBox);
-    }
-
-    public static BoundingBox extractBoundingBox(InputStream inputStream, long fileSize) throws IOException {
-        File file = writePartialFile(inputStream, fileSize);
-        BoundingBox result = extractBoundingBox(file);
-        if (!file.delete())
-            throw new IOException(format("Could not delete temporary map file '%s'", file));
-        return result;
-    }
-
-    public static File writeFile(InputStream inputStream) throws IOException {
-        File file = createTempFile("completefile", ".tmp");
-        FileOutputStream output = new FileOutputStream(file);
-        copy(inputStream, output);
-        output.close();
-        return file;
-    }
-
-    public static File writePartialFile(InputStream inputStream, long fileSize) throws IOException {
-        File file = createTempFile("partialfile", ".tmp");
-        RandomAccessFile raf = new RandomAccessFile(file, "rw");
-
-        byte[] buffer = new byte[1024];
-        while (true) {
-            try {
-                int read = inputStream.read(buffer);
-                if (read == -1)
-                    break;
-                raf.write(buffer, 0, read);
-            } catch (EOFException e) {
-                break;
-            }
+        try {
+            MapFile mapFile = new MapFile(file);
+            org.mapsforge.core.model.BoundingBox boundingBox = mapFile.boundingBox();
+            mapFile.close();
+            return toBoundingBox(boundingBox);
+        } catch (Exception e) {
+            log.warning(format("Could not extract mapsforge bounding box from %s: %s", file, e));
         }
+        return null;
+    }
 
-        raf.setLength(fileSize);
-        raf.close();
-        return file;
+    public static BoundingBox extractBoundingBox(InputStream inputStream, long fileSize) {
+        try {
+            File file = createTempFile("partialmap", ".map");
+            writePartialFile(inputStream, fileSize, file);
+            BoundingBox result = extractBoundingBox(file);
+            if (!file.delete())
+                throw new IOException(format("Could not delete temporary partial map file '%s'", file));
+            return result;
+        } catch (Exception e) {
+            log.warning(format("Could not extract mapsforge bounding box: %s", e));
+        }
+        return null;
     }
 }

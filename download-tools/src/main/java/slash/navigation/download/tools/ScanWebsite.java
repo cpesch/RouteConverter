@@ -23,13 +23,13 @@ package slash.navigation.download.tools;
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
-import slash.navigation.download.tools.base.BaseDataSourcesServerTool;
+import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.download.tools.helpers.DownloadableType;
-import slash.navigation.rest.*;
-import slash.navigation.rest.exception.ForbiddenException;
-import slash.navigation.rest.exception.UnAuthorizedException;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**
@@ -50,7 +51,7 @@ import static slash.navigation.download.tools.helpers.DownloadableType.File;
  * @author Christian Pesch
  */
 
-public class ScanWebsite extends BaseDataSourcesServerTool {
+public class ScanWebsite extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String TYPE_ARGUMENT = "type";
@@ -59,6 +60,7 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
     private String baseUrl;
     private DownloadableType type;
     private Set<String> extensions;
+    private int addCount = 0, removeCount = 0;
 
     private String appendURIs(String uri, String anchor) {
         int index = uri.lastIndexOf('/');
@@ -70,7 +72,7 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
             return;
         visitedUris.add(uri);
 
-        log.info("Downloading " + getUrl() + uri);
+        log.info(format("Downloading %s", getUrl() + uri));
         Get get = new Get(getUrl() + uri);
         String result = get.executeAsString();
 
@@ -85,6 +87,8 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
 
         List<String> recurse = new AnchorFilter().filterAnchors(baseUrl, anchors, new HashSet<>(asList(".html", "/")));
         for (String anchor : recurse) {
+            if((getUrl() + anchor).equals(baseUrl))
+                continue;
             // create the anchor relative to the current uri
             String nextUri = appendURIs(uri, anchor);
             recursiveCollect(nextUri, uris, visitedUris);
@@ -123,7 +127,7 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
 
     private void scan() throws IOException, JAXBException {
         List<String> collectedUris = collectUris();
-        log.info("Collected URIs: " + collectedUris + " (" + collectedUris.size() + " elements)");
+        log.info(format("Collected URIs: %s (%d elements)", collectedUris, collectedUris.size()));
 
         DataSource source = loadDataSource(getId());
         if (!getUrl().equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
@@ -137,15 +141,14 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
         Set<String> removedUris = new HashSet<>(files);
         removedUris.removeAll(collectedUris);
 
-        log.info("Added URIs: " + addedUris + " (" + addedUris.size() + " elements)");
-        log.info("Removed URIs: " + removedUris + " (" + removedUris.size() + " elements)");
-
         if (hasDataSourcesServer()) {
             if (addedUris.size() > 0)
-                addUris(source, addedUris);
+                addUrisInChunks(source, addedUris);
             if (removedUris.size() > 0)
                 removeUris(source, removedUris);
         }
+
+        log.info(format("Added %d URIs, removed %d URIs out of %d URIs", addCount, removeCount, collectedUris.size()));
     }
 
     private DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
@@ -186,6 +189,21 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
         return DataSourcesUtil.toXml(datasourcesType);
     }
 
+    private void addUrisInChunks(DataSource dataSource, Collection<String> uris) throws IOException {
+        Collection<String> chunk = new HashSet<>();
+        for(String uri : uris) {
+            chunk.add(uri);
+
+            if(chunk.size() >= MAXIMUM_UPDATE_COUNT) {
+                addUris(dataSource, chunk);
+                chunk.clear();
+            }
+        }
+
+        if (chunk.size() > 0)
+            addUris(dataSource, chunk);
+    }
+
     private String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
         String xml = createXml(dataSource, uris);
         log.info(format("Adding URIs:\n%s", xml));
@@ -193,16 +211,17 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
-        request.setSocketTimeout(900 * 1000);
+        request.setSocketTimeout(SOCKET_TIMEOUT);
 
-        String result = request.executeAsString();
-        log.info(format("Added URIs with result:\n%s", result));
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add uris " + uris, dataSourcesUrl);
-        if (request.isForbidden())
-            throw new ForbiddenException("Cannot add uris " + uris, dataSourcesUrl);
-        if (!request.isSuccessful())
-            throw new IOException("POST on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
+        String result = null;
+        try {
+            result = request.executeAsString();
+            log.info(format("Added URIs with result:\n%s", result));
+            addCount += uris.size();
+        }
+        catch(Exception e) {
+            log.severe(format("Cannot add URIs: %s", e));
+        }
         return result;
     }
 
@@ -214,17 +233,17 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
 
-        String result = request.executeAsString();
-        log.info(format("Removed URIs with result:\n%s", result));
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot remove uris " + uris, dataSourcesUrl);
-        if (request.isForbidden())
-            throw new ForbiddenException("Cannot remove uris " + uris, dataSourcesUrl);
-        if (!request.isSuccessful())
-            throw new IOException("DELETE on " + dataSourcesUrl + " with payload " + uris + " not successful: " + result);
+        String result = null;
+        try {
+            result = request.executeAsString();
+            log.info(format("Removed URIs with result:\n%s", result));
+            removeCount += uris.size();
+        }
+        catch(Exception e) {
+            log.severe(format("Cannot remove URIs: %s", e));
+        }
         return result;
     }
-
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
@@ -237,9 +256,9 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
             baseUrl = getUrl();
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
         type = typeArgument != null ? DownloadableType.fromValue(typeArgument) : File;
-        setDatasourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
-        setDatasourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
-        setDatasourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
+        setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
+        setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
+        setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
         scan();
         System.exit(0);
     }
@@ -248,21 +267,21 @@ public class ScanWebsite extends BaseDataSourcesServerTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
-        options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
+        options.addOption(withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
                 withDescription("ID of the data source").create());
-        options.addOption(OptionBuilder.withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
+        options.addOption(withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
                 withDescription("URL to scan for resources").create());
-        options.addOption(OptionBuilder.withArgName(BASE_URL_ARGUMENT).hasArgs(1).withLongOpt("baseUrl").
+        options.addOption(withArgName(BASE_URL_ARGUMENT).hasArgs(1).withLongOpt("baseUrl").
                 withDescription("URL to use as a base for resources").create());
-        options.addOption(OptionBuilder.withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
+        options.addOption(withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
                 withDescription("Extensions to scan for").create());
-        options.addOption(OptionBuilder.withArgName(TYPE_ARGUMENT).hasArgs(1).withLongOpt("type").
+        options.addOption(withArgName(TYPE_ARGUMENT).hasArgs(1).withLongOpt("type").
                 withDescription("Type of the resources").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
+        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
                 withDescription("Data sources server").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
+        options.addOption(withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
                 withDescription("Data sources server user name").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
+        options.addOption(withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
                 withDescription("Data sources server password").create());
         try {
             return parser.parse(options, args);

@@ -41,8 +41,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static slash.navigation.download.Action.Extract;
-import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;
 
 /**
@@ -53,7 +52,7 @@ import static slash.navigation.download.State.*;
 
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
-    static final int WAIT_TIMEOUT = 15 * 1000;
+    static final int WAIT_TIMEOUT = 60 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
 
     private final File queueFile;
@@ -167,7 +166,7 @@ public class DownloadManager {
         pool.execute(executor);
     }
 
-    private static final Set<State> RESTART_WHEN_QUEUED_AGAIN = new HashSet<>(asList(NotModified, Succeeded, NoFileError, ChecksumError, Failed));
+    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Succeeded, NoFileError, ChecksumError, Failed));
 
     private Download queueForDownload(Download download) {
         if (download.getFile().getFile() == null)
@@ -187,9 +186,14 @@ public class DownloadManager {
 
         Download queued = getModel().getDownload(download.getUrl());
         if (queued != null) {
-            if (RESTART_WHEN_QUEUED_AGAIN.contains(queued.getState())) // && !new Validator(download).existTargets() && lastSync.before(oneWeekAgo()))
-                startExecutor(queued);
-            return queued;
+            // let a GET replace a HEAD
+            if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
+                getModel().removeDownload(queued);
+            else {
+                if (COMPLETED.contains(queued.getState()))
+                    startExecutor(queued);
+                return queued;
+            }
         }
 
         startExecutor(download);
@@ -202,15 +206,15 @@ public class DownloadManager {
         return queueForDownload(new Download(description, url, action, eTag, file, fragments));
     }
 
-    private static final Object notificationMutex = new Object();
-
     private boolean isCompleted(Collection<Download> downloads) {
         for (Download download : downloads) {
-            if (!(Succeeded.equals(download.getState()) || NotModified.equals(download.getState()) || Failed.equals(download.getState())))
+            if (!COMPLETED.contains(download.getState()))
                 return false;
         }
         return true;
     }
+
+    private static final Object notificationMutex = new Object();
 
     public void waitForCompletion(final Collection<Download> downloads) {
         if (isCompleted(downloads))
@@ -251,5 +255,8 @@ public class DownloadManager {
         } finally {
             model.removeTableModelListener(l);
         }
+
+        if (!isCompleted(downloads))
+            throw new IllegalStateException(format("Waited %d seconds without all downloads to finish", WAIT_TIMEOUT / 1000));
     }
 }

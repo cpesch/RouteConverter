@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.navigation.datasources.DataSourceManager.loadDataSources;
 
 /**
@@ -48,24 +49,25 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(SnapshotCatalog.class.getName());
     private static final String RESET_ARGUMENT = "reset";
 
-    private DataSourceManager dataSourceManager = new DataSourceManager(new DownloadManager(new File(getSnapshotDirectory(), "download-queue.xml")));
+    private DataSourceManager dataSourceManager;
     private boolean reset = false;
 
     public void setReset(boolean reset) {
         this.reset = reset;
     }
 
-    void close() {
-        dataSourceManager.getDownloadManager().saveQueue();
-        dataSourceManager.dispose();
-    }
-
     private void open() throws IOException {
+        dataSourceManager = new DataSourceManager(new DownloadManager(new File(getSnapshotDirectory(), "snapshot-queue.xml")));
         if(reset) {
             dataSourceManager.getDownloadManager().clearQueue();
             deleteAll(getSnapshotDirectory());
         }  else
             dataSourceManager.getDownloadManager().loadQueue();
+    }
+
+    private void close() {
+        dataSourceManager.getDownloadManager().saveQueue();
+        dataSourceManager.dispose();
     }
 
     void deleteAll(File directory) throws IOException {
@@ -92,7 +94,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
     public void snapshot() throws IOException, JAXBException {
         open();
 
-        dataSourceManager.downloadRoot(getUrl(), getRootDirectory());
+        dataSourceManager.downloadRoot(getDataSourcesServer(), getRootDirectory());
         DataSourceService root = loadDataSources(getRootDirectory());
 
         dataSourceManager.downloadEditions(root.getEditions(), getEditionsDirectory());
@@ -107,7 +109,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
-        setUrl(line.getOptionValue(URL_ARGUMENT));
+        setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
         reset = line.hasOption(RESET_ARGUMENT);
         snapshot();
         System.exit(0);
@@ -117,9 +119,9 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
-        options.addOption(OptionBuilder.withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
-                withDescription("URL to take a snapshot from").create());
-        options.addOption(OptionBuilder.withArgName(RESET_ARGUMENT).withLongOpt("reset").
+        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
+                withDescription("Data sources server").create());
+        options.addOption(withArgName(RESET_ARGUMENT).withLongOpt("reset").
                 withDescription("Reset local snapshot").create());
         try {
             return parser.parse(options, args);

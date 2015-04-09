@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.routeconverter.de/xmlschemas/Queue/1.0"
-            targetNamespace="http://www.routeconverter.de/xmlschemas/Queue/1.0"
+            xmlns="http://api.routeconverter.com/v1/schemas/download-queue"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/download-queue"
             elementFormDefault="qualified">
 
     <xsd:element name="queue" type="queueType">

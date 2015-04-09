@@ -21,37 +21,42 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.Downloadable;
-import slash.navigation.datasources.File;
-import slash.navigation.datasources.Map;
+import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.download.Checksum;
-import slash.navigation.download.tools.base.BaseDataSourcesServerTool;
+import slash.navigation.download.Download;
+import slash.navigation.download.DownloadManager;
+import slash.navigation.download.FileAndChecksum;
+import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.graphhopper.PbfUtil;
 import slash.navigation.maps.helpers.MapUtil;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.Head;
 import slash.navigation.rest.Post;
-import slash.navigation.rest.exception.ForbiddenException;
-import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import static java.util.Collections.singletonList;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static org.apache.commons.cli.OptionBuilder.withArgName;
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.Transfer.formatTime;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.datasources.DataSourcesUtil.*;
-import static slash.navigation.maps.helpers.MapUtil.*;
+import static slash.navigation.download.Action.*;
+import static slash.navigation.download.State.Failed;
+import static slash.navigation.download.State.NotModified;
 
 /**
  * Updates the resources from the DataSources catalog from websites
@@ -59,178 +64,247 @@ import static slash.navigation.maps.helpers.MapUtil.*;
  * @author Christian Pesch
  */
 
-public class UpdateCatalog extends BaseDataSourcesServerTool {
+public class UpdateCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
-    private static final long PEEK_MAP_HEADER_SIZE = 4 * 4096L;
-    private static final long PEEK_PBF_HEADER_SIZE = 256L;
-    private static final long MAXIMUM_DOWNLOAD_SIZE = 16 * 1024L;
-    private static final int MAXIMUM_UPDATE_COUNT = 10;
+    private static final String MIRROR_ARGUMENT = "mirror";
     private static final String DOT_MAP = ".map";
     private static final String DOT_PBF = ".pbf";
     private static final String DOT_ZIP = ".zip";
 
+    private DataSourceManager dataSourceManager;
+    private java.io.File mirror;
+    private int updateCount = 0;
+
+    private void open() throws IOException {
+        dataSourceManager = new DataSourceManager(new DownloadManager(new java.io.File(getSnapshotDirectory(), "update-queue.xml")));
+        dataSourceManager.getDownloadManager().loadQueue();
+    }
+
+    private void close() {
+        dataSourceManager.getDownloadManager().saveQueue();
+        dataSourceManager.dispose();
+    }
 
     private void update() throws IOException, JAXBException {
         DataSource source = loadDataSource(getId());
+        open();
 
         DatasourceType datasourceType = asDatasourceType(source);
         for (File file : source.getFiles()) {
-            String url = source.getBaseUrl() + file.getUri();
-            if (isDownload(file)) {
-                Checksum checksum = extractChecksum(url);
-                if (checksum != null)
-                    datasourceType.getFile().add(createFileType(file.getUri(), checksum, null));
-
-            } else {
-                Checksum checksum = extractContentLengthAndLastModified(url);
-                if (checksum != null) {
-                    FileType fileType = createFileType(file.getUri(), checksum, null);
-                    datasourceType.getFile().add(fileType);
-
-                    if (file.getUri().endsWith(DOT_PBF)) {
-                        BoundingBox boundingBox = extractBoundingBox(url);
-                        if (boundingBox != null)
-                            fileType.setBoundingBox(asBoundingBoxType(boundingBox));
-                    }
-                }
-            }
-
-            updatePartially(datasourceType);
+            updateFile(datasourceType, file);
         }
 
         for (Map map : source.getMaps()) {
-            String url = source.getBaseUrl() + map.getUri();
-            Checksum checksum = extractContentLengthAndLastModified(url);
-            if (checksum != null) {
-                java.io.File file = downloadPartial(url, checksum.getContentLength());
+            updateMap(datasourceType, map);
+        }
 
-                if (map.getUri().endsWith(DOT_ZIP)) {
-                    MapType mapType = createMapType(map.getUri(), checksum, null);
-                    datasourceType.getMap().add(mapType);
+        for (Theme theme : source.getThemes()) {
+            updateTheme(datasourceType, theme);
+        }
 
-                    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
-                        ZipEntry entry = zipInputStream.getNextEntry();
-                        while (entry != null) {
-                            if (!entry.isDirectory() && entry.getName().endsWith(DOT_MAP)) {
-                                log.info("Found map " + entry.getName() + " in " + map.getUri());
-                                mapType.getFragment().add(createFragmentType(entry.getName(), entry.getTime(), entry.getSize()));
+        if (getDownloadableCount(datasourceType) > 0)
+            updateUris(datasourceType);
 
-                                BoundingBox boundingBox = MapUtil.extractBoundingBox(zipInputStream, entry.getSize());
-                                if (boundingBox != null)
-                                    mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        log.info(format("Updated %d URIs out of %d URIs", updateCount,
+                source.getFiles().size() + source.getMaps().size() + source.getThemes().size()));
+        close();
+    }
 
-                                // do not close zip input stream and cope with partially copied zips
-                                try {
-                                    zipInputStream.closeEntry();
-                                } catch (EOFException e) {
-                                    // intentionally left empty
-                                }
-                            }
+    private void updateFile(DatasourceType datasourceType, File file) throws IOException {
+        String url = datasourceType.getBaseUrl() + file.getUri();
 
-                            try {
-                                entry = zipInputStream.getNextEntry();
-                            } catch (EOFException e) {
-                                entry = null;
-                            }
+        // HEAD for last modified, content length, etag
+        Download download = head(url);
+        if (download.getState().equals(NotModified))
+            return;
+
+        if (download.getState().equals(Failed)) {
+            log.severe(format("Failed to download %s as a file", file.getUri()));
+            return;
+        }
+
+        Checksum checksum = download.getFile().getActualChecksum();
+        FileType fileType = createFileType(file.getUri(), checksum, null);
+        datasourceType.getFile().add(fileType);
+
+        if (file.getUri().endsWith(DOT_ZIP)) {
+            List<FragmentType> fragmentTypes = new ArrayList<>();
+
+            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
+                ZipEntry entry = zipInputStream.getNextEntry();
+                while (entry != null) {
+                    if (!entry.isDirectory()) {
+                        String key = extractKey(entry.getName());
+                        if (key != null) {
+                            log.info(format("Key %s maps to URI %s", key, file.getUri()));
+                            fragmentTypes.add(createFragmentType(key, entry, zipInputStream));
+
+                            // do not close zip input stream
+                            zipInputStream.closeEntry();
+                        }
+                    }
+                    entry = zipInputStream.getNextEntry();
+                }
+            }
+            fileType.getFragment().addAll(fragmentTypes);
+
+        } else if (file.getUri().endsWith(DOT_PBF)) {
+            // GET with range for .pbf header
+            if (!download.getFile().getFile().exists())
+                download = downloadPartial(url, checksum.getContentLength());
+
+            if (download.getState().equals(Failed)) {
+                log.severe(format("Failed to download %s partially as a pbf", file.getUri()));
+            } else {
+
+                BoundingBox boundingBox = PbfUtil.extractBoundingBox(download.getFile().getFile());
+                if (boundingBox != null)
+                    fileType.setBoundingBox(asBoundingBoxType(boundingBox));
+            }
+        }
+
+        updatePartially(datasourceType);
+    }
+
+    private void updateMap(DatasourceType datasourceType, Map map) throws IOException {
+        String url = datasourceType.getBaseUrl() + map.getUri();
+
+        // HEAD for last modified, content length, etag
+        Download download = head(url);
+        if (download.getState().equals(NotModified))
+            return;
+
+        if (download.getState().equals(Failed)) {
+            log.severe(format("Failed to download %s as a map", map.getUri()));
+            return;
+        }
+
+        Checksum checksum = download.getFile().getActualChecksum();
+        MapType mapType = createMapType(map.getUri(), checksum, null);
+        datasourceType.getMap().add(mapType);
+
+        // GET with range for .zip or .map header
+        if (!download.getFile().getFile().exists())
+            download = downloadPartial(url, checksum.getContentLength());
+
+        if (download.getState().equals(Failed)) {
+            log.severe(format("Failed to download %s partially as a map", map.getUri()));
+            return;
+        }
+
+        if (map.getUri().endsWith(DOT_ZIP)) {
+            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
+                ZipEntry entry = zipInputStream.getNextEntry();
+                while (entry != null) {
+                    if (!entry.isDirectory() && entry.getName().endsWith(DOT_MAP)) {
+                        log.info(format("Found map %s in URI %s", entry.getName(), map.getUri()));
+                        mapType.getFragment().add(createFragmentType(entry.getName(), entry.getTime(), entry.getSize()));
+
+                        BoundingBox boundingBox = MapUtil.extractBoundingBox(zipInputStream, entry.getSize());
+                        if (boundingBox != null)
+                            mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+
+                        // do not close zip input stream and cope with partially copied zips
+                        try {
+                            zipInputStream.closeEntry();
+                        } catch (EOFException e) {
+                            // intentionally left empty
                         }
                     }
 
-                } else {
-                    log.info("Found map " + map.getUri());
-                    BoundingBox boundingBox = MapUtil.extractBoundingBox(file);
-                    datasourceType.getMap().add(createMapType(map.getUri(), checksum, boundingBox));
+                    try {
+                        entry = zipInputStream.getNextEntry();
+                    } catch (EOFException e) {
+                        entry = null;
+                    }
                 }
-
-                if (!file.delete())
-                    throw new IOException(format("Could not delete temporary map file '%s'", file));
             }
 
-            updatePartially(datasourceType);
+        } else if (map.getUri().endsWith(DOT_MAP)) {
+            log.info(format("Found map %s", map.getUri()));
+            BoundingBox boundingBox = MapUtil.extractBoundingBox(download.getFile().getFile());
+            if (boundingBox != null)
+                mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        } else
+            log.warning(format("Ignoring %s as a map", map.getUri()));
+
+        updatePartially(datasourceType);
+    }
+
+    private void updateTheme(DatasourceType datasourceType, Theme theme) throws IOException {
+        String url = datasourceType.getBaseUrl() + theme.getUri();
+
+        // GET for local mirror
+        Download download = download(url);
+        if (download.getState().equals(NotModified))
+            return;
+
+        if (download.getState().equals(Failed)) {
+            log.severe(format("Failed to download %s as a theme", theme.getUri()));
+            return;
         }
 
-        updateUris(datasourceType);
-    }
+        Checksum checksum = download.getFile().getActualChecksum();
+        ThemeType themeType = createThemeType(theme.getUri(), checksum, null);
+        datasourceType.getTheme().add(themeType);
 
-    private void updatePartially(DatasourceType datasourceType) throws IOException {
-        int count = datasourceType.getFile().size() + datasourceType.getMap().size() + datasourceType.getTheme().size();
-        if(count >= MAXIMUM_UPDATE_COUNT) {
-            updateUris(datasourceType);
+        if (theme.getUri().endsWith(DOT_ZIP)) {
+            List<FragmentType> fragmentTypes = new ArrayList<>();
+            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
+                ZipEntry entry = zipInputStream.getNextEntry();
+                while (entry != null) {
+                    if (!entry.isDirectory()) {
+                        log.info(format("Found theme file %s in URI %s", entry.getName(), theme.getUri()));
+                        fragmentTypes.add(createFragmentType(entry.getName(), entry, zipInputStream));
 
-            datasourceType.getFile().clear();
-            datasourceType.getMap().clear();
-            datasourceType.getTheme().clear();
-        }
-    }
+                        // do not close zip input stream
+                        zipInputStream.closeEntry();
+                    }
 
-    private boolean isDownload(Downloadable downloadable) {
-        return downloadable.getLatestChecksum() != null &&
-                downloadable.getLatestChecksum().getContentLength() != null &&
-                downloadable.getLatestChecksum().getContentLength() < MAXIMUM_DOWNLOAD_SIZE;
-    }
-
-    private Checksum extractContentLengthAndLastModified(String url) {
-        log.info("Extracting content length and last modified from " + url);
-        try {
-            Head request = new Head(url);
-            request.executeAsString();
-            if (request.isSuccessful()) {
-                return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, request.getContentLength(), null);
+                    entry = zipInputStream.getNextEntry();
+                }
             }
-        } catch (IOException e) {
-            log.warning("Error while extracting content length and last modified: " + e.getMessage());
+            themeType.getFragment().addAll(fragmentTypes);
         }
-        return null;
     }
 
-    private Checksum extractChecksum(String url) {
-        log.info("Extracting checksum from " + url);
-        try {
-            Get request = new Get(url);
-            InputStream inputStream = request.executeAsStream();
-            java.io.File file = writeFile(inputStream);
-            closeQuietly(inputStream);
-            String sha1 = generateChecksum(file);
-            long contentLength = file.length();
-            if(!file.delete())
-                throw new IOException("Cannot delete " + file);
-            return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, contentLength, sha1);
-        } catch (IOException e) {
-            log.warning("Error while extracting checksum: " + e.getMessage());
-        }
-        return null;
+    private Download head(String url) {
+        Download download = dataSourceManager.getDownloadManager().queueForDownload("HEAD for " + url, url, Head,
+                null, new FileAndChecksum(createMirrorFile(url), null), null);
+        dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
+        return download;
     }
 
-    private java.io.File downloadPartial(String url, long fileSize) throws IOException {
-        log.info("Downloading " + PEEK_MAP_HEADER_SIZE + " bytes from " + url);
-        try {
-            Get get = new Get(url);
-            get.setRange(0L, PEEK_MAP_HEADER_SIZE);
-            InputStream inputStream = get.executeAsStream();
-            java.io.File file = writePartialFile(inputStream, fileSize);
-            closeQuietly(inputStream);
-            get.release();
-            return file;
-        } catch (IOException e) {
-            log.warning("Error while extracting bounding box: " + e.getMessage());
-        }
-        return null;
+    private Download download(String url) {
+        Download download = dataSourceManager.getDownloadManager().queueForDownload("GET for " + url, url, Copy,
+                null, new FileAndChecksum(createMirrorFile(url), null), null);
+        dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
+        return download;
     }
 
-    private BoundingBox extractBoundingBox(String url) throws IOException {
-        log.info("Extracting bounding box from " + url);
-        try {
-            Get get = new Get(url);
-            get.setRange(0L, PEEK_PBF_HEADER_SIZE);
-            InputStream inputStream = get.executeAsStream();
-            BoundingBox boundingBox = PbfUtil.extractBoundingBox(inputStream);
-            inputStream.close();
-            closeQuietly(inputStream);
-            get.release();
-            return boundingBox;
-        } catch (IOException e) {
-            log.warning("Error while extracting bounding box: " + e.getMessage());
+    private Download downloadPartial(String url, long fileSize) throws IOException {
+        Download download = dataSourceManager.getDownloadManager().queueForDownload("GET 16k for " + url, url, GetRange,
+                null, new FileAndChecksum(createMirrorFile(url), new Checksum(null, fileSize, null)), null);
+        dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
+        return download;
+    }
+
+    private java.io.File createMirrorFile(String url) {
+        String filePath = url.substring(url.indexOf("//") + 2, url.lastIndexOf('/'));
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+        java.io.File directory = new java.io.File(mirror, filePath);
+        return new java.io.File(ensureDirectory(directory), fileName);
+    }
+
+    private static final Pattern KEY_PATTERN = Pattern.compile(".*([N|S]\\d{2}[E|W]\\d{3}).*", CASE_INSENSITIVE);
+
+    private String extractKey(String string) {
+        Matcher matcher = KEY_PATTERN.matcher(string);
+        if (!matcher.matches()) {
+            log.warning(string + " does not match key pattern");
+            return null;
         }
-        return null;
+        return matcher.group(1).toUpperCase();
     }
 
     private FileType createFileType(String uri, Checksum checksum, BoundingBox boundingBox) throws IOException {
@@ -249,10 +323,25 @@ public class UpdateCatalog extends BaseDataSourcesServerTool {
         return mapType;
     }
 
+    private ThemeType createThemeType(String uri, Checksum checksum, String imageUrl) {
+        ThemeType themeType = new ObjectFactory().createThemeType();
+        themeType.setUri(uri);
+        themeType.setImageUrl(imageUrl);
+        themeType.getChecksum().add(asChecksumType(checksum));
+        return themeType;
+    }
+
     private FragmentType createFragmentType(String key, Long lastModified, Long contentLength) throws IOException {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
         fragmentType.setKey(key);
         fragmentType.getChecksum().add(createChecksumType(lastModified, contentLength));
+        return fragmentType;
+    }
+
+    private FragmentType createFragmentType(String key, ZipEntry entry, InputStream inputStream) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.getChecksum().add(createChecksumType(entry.getTime(), entry.getSize(), inputStream));
         return fragmentType;
     }
 
@@ -275,6 +364,20 @@ public class UpdateCatalog extends BaseDataSourcesServerTool {
         return toXml(catalogType);
     }
 
+    private void updatePartially(DatasourceType datasourceType) throws IOException {
+        if (getDownloadableCount(datasourceType) >= MAXIMUM_UPDATE_COUNT) {
+            updateUris(datasourceType);
+
+            datasourceType.getFile().clear();
+            datasourceType.getMap().clear();
+            datasourceType.getTheme().clear();
+        }
+    }
+
+    private int getDownloadableCount(DatasourceType datasourceType) {
+        return datasourceType.getFile().size() + datasourceType.getMap().size() + datasourceType.getTheme().size();
+    }
+
     private String updateUris(DatasourceType dataSourceType) throws IOException {
         String xml = createXml(dataSourceType);
         log.info(format("Updating URIs:\n%s", xml));
@@ -282,25 +385,27 @@ public class UpdateCatalog extends BaseDataSourcesServerTool {
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
         request.setAccept("application/xml");
-        request.setSocketTimeout(900 * 1000);
+        request.setSocketTimeout(SOCKET_TIMEOUT);
 
-        String result = request.executeAsString();
-        log.info(format("Updated URIs with result:\n%s", result));
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add uris " + dataSourceType, dataSourcesUrl);
-        if (request.isForbidden())
-            throw new ForbiddenException("Cannot add uris " + dataSourceType, dataSourcesUrl);
-        if (!request.isSuccessful())
-            throw new IOException("POST on " + dataSourcesUrl + " with payload " + dataSourceType + " not successful: " + result);
+        String result = null;
+        try {
+            result = request.executeAsString();
+            log.info(format("Updated URIs with result:\n%s", result));
+            updateCount += getDownloadableCount(dataSourceType);
+        }
+        catch(Exception e) {
+            log.severe(format("Cannot update URIs: %s", e));
+        }
         return result;
     }
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         setId(line.getOptionValue(ID_ARGUMENT));
-        setDatasourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
-        setDatasourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
-        setDatasourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
+        setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
+        setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
+        setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
+        mirror = new java.io.File(line.getOptionValue(MIRROR_ARGUMENT));
         update();
         System.exit(0);
     }
@@ -309,14 +414,16 @@ public class UpdateCatalog extends BaseDataSourcesServerTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
-        options.addOption(OptionBuilder.withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
+        options.addOption(withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
                 withDescription("ID of the data source").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
+        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
                 withDescription("Data sources server").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
+        options.addOption(withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
                 withDescription("Data sources server user name").create());
-        options.addOption(OptionBuilder.withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
+        options.addOption(withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
                 withDescription("Data sources server password").create());
+        options.addOption(withArgName(MIRROR_ARGUMENT).hasArgs(1).isRequired().withLongOpt("mirror").
+                withDescription("Filesystem path to mirror resources").create());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {

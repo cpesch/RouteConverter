@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -61,9 +61,9 @@ public class GraphHopperIT {
         slash.navigation.datasources.File file = mock(slash.navigation.datasources.File.class);
         when(file.getBoundingBox()).thenReturn(new BoundingBox(10.33637, 53.7465, 9.613465, 53.38581));
         when(file.getUri()).thenReturn(URI);
-        when(dataSource.getFiles()).thenReturn(asList(file));
+        when(dataSource.getFiles()).thenReturn(singletonList(file));
         hopper = new GraphHopper(dataSource, new DownloadManager(createTempFile("queueFile", ".xml")));
-        DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
+        DownloadFuture future = hopper.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
         else

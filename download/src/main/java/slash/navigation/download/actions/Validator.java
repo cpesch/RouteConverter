@@ -119,4 +119,8 @@ public class Validator {
             }
         return true;
     }
+
+    public void expectedIsActual() {
+        download.getFile().setExpectedChecksum(download.getFile().getActualChecksum());
+    }
 }

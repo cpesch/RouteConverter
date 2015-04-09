@@ -64,7 +64,7 @@ public enum DegreeFormat {
 
     private DegreeTransfer degreeTransfer;
 
-    private DegreeFormat(DegreeTransfer degreeTransfer) {
+    DegreeFormat(DegreeTransfer degreeTransfer) {
         this.degreeTransfer = degreeTransfer;
     }
 

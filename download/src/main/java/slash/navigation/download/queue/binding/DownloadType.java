@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="downloadable" type="{http://www.routeconverter.de/xmlschemas/Queue/1.0}downloadableType"/>
+ *         &lt;element name="downloadable" type="{http://api.routeconverter.com/v1/schemas/download-queue}downloadableType"/>
  *       &lt;/sequence>
  *       &lt;attribute name="description" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="url" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />

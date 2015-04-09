@@ -19,7 +19,6 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
@@ -27,42 +26,37 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
-import static slash.navigation.download.tools.base.BaseDownloadTool.getRootDirectory;
 
 public class SnapshotCatalogIT {
     private static final String API = System.getProperty("api", "http://localhost:8000/");
 
-    @Before
-    public void setUp() throws IOException {
-        File editionsXml = createEditionsXml();
-        if (editionsXml.exists())
-            assertTrue(editionsXml.delete());
-    }
-
-    private File createEditionsXml() {
-        return new File(getRootDirectory(), "editions.xml");
+    private File createEditionsXml(SnapshotCatalog snapshotCatalog) {
+        return new File(snapshotCatalog.getRootDirectory(), "editions.xml");
     }
 
     @Test
     public void snapshotEditions() throws IOException, JAXBException {
-        File before = createEditionsXml();
+        SnapshotCatalog snapshot1 = new SnapshotCatalog();
+        snapshot1.setDataSourcesServer(API);
+        snapshot1.setReset(true);
+
+        File before = createEditionsXml(snapshot1);
+        if (before.exists())
+            assertTrue(before.delete());
         assertFalse(before.exists());
 
-        SnapshotCatalog snapshot1 = new SnapshotCatalog();
-        snapshot1.setUrl(API);
-        snapshot1.setReset(true);
         snapshot1.snapshot();
 
-        File after = createEditionsXml();
+        File after = createEditionsXml(snapshot1);
         assertTrue(after.exists());
         long length = after.length();
         long lastModified = after.lastModified();
 
         SnapshotCatalog snapshot2 = new SnapshotCatalog();
-        snapshot2.setUrl(API);
+        snapshot2.setDataSourcesServer(API);
         snapshot2.snapshot();
 
-        File second = createEditionsXml();
+        File second = createEditionsXml(snapshot2);
         assertTrue(second.exists());
         assertEquals(length, after.length());
         assertEquals(lastModified, second.lastModified());

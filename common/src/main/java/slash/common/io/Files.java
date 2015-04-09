@@ -263,6 +263,25 @@ public class Files {
         return files;
     }
 
+    public static void writePartialFile(InputStream inputStream, long fileSize, File file) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(file, "rw");
+
+        byte[] buffer = new byte[1024];
+        while (true) {
+            try {
+                int read = inputStream.read(buffer);
+                if (read == -1)
+                    break;
+                raf.write(buffer, 0, read);
+            } catch (EOFException e) {
+                break;
+            }
+        }
+
+        raf.setLength(fileSize);
+        raf.close();
+    }
+
     private static final String DEFAULT_ALGORITHM = "SHA1";
 
     public static String generateChecksum(InputStream inputStream) throws IOException {

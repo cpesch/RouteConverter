@@ -346,7 +346,7 @@ public enum CountryCode {
 
     private String value;
 
-    private CountryCode(String value) {
+    CountryCode(String value) {
         this.value = value;
     }
 

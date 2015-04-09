@@ -35,6 +35,7 @@ import java.util.List;
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readBytes;
@@ -239,6 +240,28 @@ public class DownloadManagerIT {
             assertNull(get304Etag.getContentLength());
             System.out.println(get304Etag.getHeaders() + "\n");
         }
+    }
+
+    @Test
+    public void testHeadWithoutETag() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("HEAD for 447 Bytes", DOWNLOAD + "447bytes.txt", Head, null, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
+        waitFor(download, Succeeded);
+
+        assertEquals(Succeeded, download.getState());
+        assertFalse(target.exists());
+    }
+
+    @Test
+    public void testHeadWithETag() throws IOException {
+        assertTrue(target.delete());
+
+        Download download = manager.queueForDownload("HEAD for 447 Bytes", DOWNLOAD + "447bytes.txt", Head, null, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
+        waitFor(download, Succeeded);
+
+        assertEquals(Succeeded, download.getState());
+        assertFalse(target.exists());
     }
 
     @Test

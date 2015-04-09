@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Queue_QNAME = new QName("http://www.routeconverter.de/xmlschemas/Queue/1.0", "queue");
+    private final static QName _Queue_QNAME = new QName("http://api.routeconverter.com/v1/schemas/download-queue", "queue");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: slash.navigation.download.queue.binding
@@ -84,7 +84,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link QueueType }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://www.routeconverter.de/xmlschemas/Queue/1.0", name = "queue")
+    @XmlElementDecl(namespace = "http://api.routeconverter.com/v1/schemas/download-queue", name = "queue")
     public JAXBElement<QueueType> createQueue(QueueType value) {
         return new JAXBElement<>(_Queue_QNAME, QueueType.class, null, value);
     }

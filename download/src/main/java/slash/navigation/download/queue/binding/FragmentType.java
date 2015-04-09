@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="checksum" type="{http://www.routeconverter.de/xmlschemas/Queue/1.0}checksumType" minOccurs="0"/>
+ *         &lt;element name="checksum" type="{http://api.routeconverter.com/v1/schemas/download-queue}checksumType" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="target" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>

@@ -5,5 +5,5 @@
 // Generiert: 2014.07.25 um 04:59:54 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.routeconverter.de/xmlschemas/Queue/1.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/download-queue", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package slash.navigation.download.queue.binding;

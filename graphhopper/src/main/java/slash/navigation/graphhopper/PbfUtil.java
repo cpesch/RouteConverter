@@ -24,9 +24,7 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
 
@@ -41,6 +39,12 @@ public class PbfUtil {
     private static final Logger log = Logger.getLogger(PbfUtil.class.getName());
     private static final String OSM_HEADER = "OSMHeader";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
+
+    public static BoundingBox extractBoundingBox(File file) throws IOException {
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return extractBoundingBox(inputStream);
+        }
+    }
 
     public static BoundingBox extractBoundingBox(InputStream inputStream) {
         try {
@@ -84,7 +88,7 @@ public class PbfUtil {
                     log.info("Skipped block " + blobHeader.getType() + " with " + blobBytes.length + " bytes");
             }
         } catch (IOException e) {
-            log.warning(format("Could not read pbf header: %s", e));
+            log.warning(format("Could not extract pbf bounding box: %s", e));
         }
         return null;
     }

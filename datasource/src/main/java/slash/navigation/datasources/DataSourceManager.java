@@ -25,14 +25,16 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.Action.Copy;
 
@@ -122,14 +124,14 @@ public class DataSourceManager {
         java.io.File file = new java.io.File(directory, EDITIONS + DOT_XML);
         Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy, null,
                 new FileAndChecksum(file, null), null);
-        downloadManager.waitForCompletion(asList(download));
+        downloadManager.waitForCompletion(singletonList(download));
     }
 
     private void downloadEdition(String edition, String url, java.io.File file) {
         String editionUrl = url + EDITIONS_URI + edition + "/" + FORMAT_XML;
         Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition, editionUrl, Copy,
                 null, new FileAndChecksum(file, null), null);
-        downloadManager.waitForCompletion(asList(download));
+        downloadManager.waitForCompletion(singletonList(download));
     }
 
     public void downloadEditions(List<Edition> editions, java.io.File directory) throws JAXBException, FileNotFoundException {
