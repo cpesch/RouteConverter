@@ -49,6 +49,7 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
@@ -208,7 +209,7 @@ public class MapManager {
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();
 
-            Action action = resource.getDownloadable().getUri().endsWith(".zip") ? Extract : Copy;
+            Action action = resource.getDownloadable().getUri().endsWith(DOT_ZIP) ? Extract : Copy;
             File resourceFile = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
 
             List<FileAndChecksum> fragments = new ArrayList<>();

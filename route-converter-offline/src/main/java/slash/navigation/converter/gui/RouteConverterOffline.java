@@ -22,6 +22,7 @@ package slash.navigation.converter.gui;
 import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
+import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.geonames.GeoNamesService;
@@ -30,6 +31,7 @@ import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
+import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.routing.BeelineService;
 
@@ -51,6 +53,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 public class RouteConverterOffline extends RouteConverter {
     private MapManager mapManager;
+    private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
         launch(RouteConverterOffline.class, args);
@@ -63,14 +66,17 @@ public class RouteConverterOffline extends RouteConverter {
     protected void initializeServices() {
         super.initializeServices();
         mapManager = new MapManager(getDataSourceManager());
+        mapAfterStart = getMapManager().getDisplayedMapModel().getItem();
     }
 
     protected void initializeActions() {
         super.initializeActions();
         getContext().getActionManager().register("show-maps-and-themes", new ShowMapsAndThemesAction());
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
-        viewMenu.add(createItem("show-maps-and-themes"), 0);
-        viewMenu.add(new JPopupMenu.Separator(), 1);
+        if(viewMenu != null) {
+            viewMenu.add(createItem("show-maps-and-themes"), 0);
+            viewMenu.add(new JPopupMenu.Separator(), 1);
+        }
     }
 
     public MapManager getMapManager() {
@@ -137,6 +143,10 @@ public class RouteConverterOffline extends RouteConverter {
                 }
             });
         }
+
+        LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
+        if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
+            ((MapsforgeMapView)getMapView()).handleMapAndThemeUpdate(false, false);
     }
 
     protected void scanRemoteMapsAndThemes() {

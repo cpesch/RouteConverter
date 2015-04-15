@@ -20,25 +20,30 @@
 
 package slash.navigation.feedback.domain;
 
-import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.DataSourcesUtil;
+import slash.navigation.datasources.*;
+import slash.navigation.datasources.binding.*;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.rest.*;
+import slash.navigation.rest.Credentials;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.Put;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.datasources.DataSourcesUtil.*;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**
@@ -141,13 +146,82 @@ public class RouteFeedback {
         return request.executeAsString().replace("\"", "");
     }
 
+    private boolean contains(String[] array, String name) {
+        for (String anArray : array) {
+            if (name.equals(anArray))
+                return true;
+
+        }
+        return false;
+    }
+
+    private Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) {
+        Set<FileAndChecksum> result = new HashSet<>();
+        for (List<FileAndChecksum> fileAndChecksums : fileAndChecksumMap.values()) {
+            for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
+                if (fileAndChecksum.getFile().getPath().contains(fragment.getKey()))
+                    result.add(fileAndChecksum);
+            }
+        }
+        return result;
+    }
+
+    private List<FragmentType> createFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
+        if (fragments == null)
+            return null;
+
+        List<FragmentType> fragmentTypes = new ArrayList<>();
+        for (Fragment fragment : fragments)
+            fragmentTypes.add(createFragmentType(fragment, findFile(fragment, fileAndChecksums)));
+        return fragmentTypes;
+    }
+
+    private String toXml(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
+        DatasourceType datasourceType = asDatasourceType(dataSource);
+
+        for (File aFile : dataSource.getFiles()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + aFile.getUri()))
+                continue;
+
+            FileType fileType = createFileType(aFile.getUri(), asChecksums(fileToFragments.keySet()), aFile.getBoundingBox());
+            List<FragmentType> fragmentTypes = createFragmentTypes(aFile.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                fileType.getFragment().addAll(fragmentTypes);
+            datasourceType.getFile().add(fileType);
+        }
+
+        for (slash.navigation.datasources.Map map : dataSource.getMaps()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + map.getUri()))
+                continue;
+
+            MapType mapType = createMapType(map.getUri(), asChecksums(fileToFragments.keySet()), map.getBoundingBox());
+            List<FragmentType> fragmentTypes = createFragmentTypes(map.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                mapType.getFragment().addAll(fragmentTypes);
+            datasourceType.getMap().add(mapType);
+        }
+
+        for (Theme theme : dataSource.getThemes()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + theme.getUri()))
+                continue;
+
+            ThemeType themeType = createThemeType(theme.getUri(), asChecksums(fileToFragments.keySet()), theme.getImageUrl());
+            List<FragmentType> fragmentTypes = createFragmentTypes(theme.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                themeType.getFragment().addAll(fragmentTypes);
+            datasourceType.getTheme().add(themeType);
+        }
+
+        return DataSourcesUtil.toXml(datasourceType);
+    }
+
     private String getDataSourcesUrl(String dataSourceId) {
         return apiUrl + "v1/datasources/" + dataSourceId + "/";
     }
 
-    public String sendChecksums(DataSource dataSource, Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
-        String xml = DataSourcesUtil.createXml(dataSource, fileToFragments, filterUrls);
-        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, printArrayToDialogString(filterUrls), xml));
+    public String sendChecksums(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String filterUrl) throws IOException {
+        String xml = toXml(dataSource, fileToFragments, filterUrl);
+        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, filterUrl, xml));
         String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
         Put request = new Put(dataSourcesUrl, credentials);
         request.addFile("file", xml.getBytes());
@@ -158,7 +232,7 @@ public class RouteFeedback {
         if (!request.isSuccessful())
             throw new IOException("PUT on " + dataSourcesUrl + " for data source " + dataSource + " not successful: " + result);
 
-        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileToFragments, printArrayToDialogString(filterUrls), result));
+        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileToFragments, filterUrl, result));
         return result;
     }
 }

@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.apache.commons.cli.OptionBuilder.withArgName;
-import static slash.navigation.datasources.DataSourceManager.loadDataSources;
+import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
 
 /**
  * Performs a filesystem mirror from the DataSources catalog.
@@ -95,13 +95,13 @@ public class SnapshotCatalog extends BaseDownloadTool {
         open();
 
         dataSourceManager.downloadRoot(getDataSourcesServer(), getRootDirectory());
-        DataSourceService root = loadDataSources(getRootDirectory());
+        DataSourceService root = loadAllDataSources(getRootDirectory());
 
         dataSourceManager.downloadEditions(root.getEditions(), getEditionsDirectory());
-        DataSourceService editions = loadDataSources(getEditionsDirectory());
+        DataSourceService editions = loadAllDataSources(getEditionsDirectory());
 
         dataSourceManager.downloadDataSources(createDataSourceSet(editions.getEditions()), getDataSourcesDirectory());
-        DataSourceService dataSources = loadDataSources(getDataSourcesDirectory());
+        DataSourceService dataSources = loadAllDataSources(getDataSourcesDirectory());
         log.info(String.format("Snapshot contains %d editions and %d datasources", editions.getEditions().size(), dataSources.getDataSources().size()));
 
         close();

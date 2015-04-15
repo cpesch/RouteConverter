@@ -33,12 +33,20 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
 
 import static slash.common.helpers.JAXBHelper.newContext;
+import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.Transfer.formatTime;
 import static slash.common.io.Transfer.parseTime;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 public class DataSourcesUtil {
     private static Unmarshaller newUnmarshaller() {
@@ -60,26 +68,36 @@ public class DataSourcesUtil {
         return result;
     }
 
-    public static void marshal(CatalogType catalogType, OutputStream out) throws JAXBException {
-        try {
-            try {
-                newMarshaller().marshal(new ObjectFactory().createCatalog(catalogType), out);
-            } finally {
-                out.flush();
-                out.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
-        }
-    }
-
     public static void marshal(CatalogType catalogType, Writer writer) throws JAXBException {
         newMarshaller().marshal(new ObjectFactory().createCatalog(catalogType), writer);
     }
 
 
+    public static String toXml(CatalogType catalogType) throws IOException {
+        StringWriter writer = new StringWriter();
+        try {
+            marshal(catalogType, writer);
+        } catch (JAXBException e) {
+            throw new IOException("Cannot marshall " + catalogType + ": " + e, e);
+        }
+        return writer.toString();
+    }
+
+    public static String toXml(DatasourceType datasourceType) throws IOException {
+        CatalogType catalogType = new ObjectFactory().createCatalogType();
+        catalogType.getDatasource().add(datasourceType);
+        return toXml(catalogType);
+    }
+
     public static Checksum asChecksum(ChecksumType checksumType) {
         return new Checksum(parseTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
+    }
+
+    public static List<Checksum> asChecksums(Set<FileAndChecksum> fileAndChecksums) {
+        List<Checksum> result = new ArrayList<>();
+        for (FileAndChecksum fileAndChecksum : fileAndChecksums)
+            result.add(fileAndChecksum.getActualChecksum());
+        return result;
     }
 
     public static BoundingBox asBoundingBox(BoundingBoxType boundingBox) {
@@ -92,68 +110,6 @@ public class DataSourcesUtil {
         return new SimpleNavigationPosition(positionType.getLongitude(), positionType.getLatitude());
     }
 
-    private static boolean contains(String[] array, String name) {
-        for (String anArray : array) {
-            if (name.equals(anArray))
-                return true;
-
-        }
-        return false;
-    }
-
-    private static DatasourceType asDatasourceType(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        DatasourceType datasourceType = asDatasourceType(dataSource);
-
-        for (File aFile : dataSource.getFiles()) {
-            if (!contains(filterUrls, dataSource.getBaseUrl() + aFile.getUri()))
-                continue;
-
-            FileType fileType = objectFactory.createFileType();
-            fileType.setBoundingBox(asBoundingBoxType(aFile.getBoundingBox()));
-            fileType.setUri(aFile.getUri());
-            replaceChecksumTypes(fileType.getChecksum(), filterChecksums(aFile, fileToFragments.keySet()));
-            replaceFragmentTypes(fileType.getFragment(), aFile.getFragments(), fileToFragments);
-            datasourceType.getFile().add(fileType);
-        }
-
-        for (Map map : dataSource.getMaps()) {
-            if (!contains(filterUrls, dataSource.getBaseUrl() + map.getUri()))
-                continue;
-
-            MapType mapType = objectFactory.createMapType();
-            mapType.setBoundingBox(asBoundingBoxType(map.getBoundingBox()));
-            mapType.setUri(map.getUri());
-            replaceChecksumTypes(mapType.getChecksum(), filterChecksums(map, fileToFragments.keySet()));
-            replaceFragmentTypes(mapType.getFragment(), map.getFragments(), fileToFragments);
-            datasourceType.getMap().add(mapType);
-        }
-
-        for (Theme theme : dataSource.getThemes()) {
-            if (!contains(filterUrls, dataSource.getBaseUrl() + theme.getUri()))
-                continue;
-
-            ThemeType themeType = objectFactory.createThemeType();
-            themeType.setImageUrl(theme.getImageUrl());
-            themeType.setUri(theme.getUri());
-            replaceChecksumTypes(themeType.getChecksum(), filterChecksums(theme, fileToFragments.keySet()));
-            replaceFragmentTypes(themeType.getFragment(), theme.getFragments(), fileToFragments);
-            datasourceType.getTheme().add(themeType);
-        }
-
-        return datasourceType;
-    }
-
-    public static String createXml(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
-        ObjectFactory objectFactory = new ObjectFactory();
-
-        CatalogType catalogType = objectFactory.createCatalogType();
-        DatasourceType datasourceType = asDatasourceType(dataSource, fileToFragments, filterUrls);
-        catalogType.getDatasource().add(datasourceType);
-
-        return toXml(catalogType);
-    }
-
     public static DatasourceType asDatasourceType(DataSource dataSource) {
         DatasourceType datasourceType = new ObjectFactory().createDatasourceType();
         datasourceType.setId(dataSource.getId());
@@ -162,6 +118,7 @@ public class DataSourcesUtil {
         datasourceType.setDirectory(dataSource.getDirectory());
         return datasourceType;
     }
+
 
     public static BoundingBoxType asBoundingBoxType(BoundingBox boundingBox) {
         if (boundingBox == null)
@@ -180,43 +137,8 @@ public class DataSourcesUtil {
         return positionType;
     }
 
-    private static boolean matches(FileAndChecksum fileAndChecksum, Downloadable downloadable) {
-        String filePath = fileAndChecksum.getFile().getAbsolutePath();
-        String uri = downloadable.getUri();
-        return filePath.endsWith(uri);
-    }
-
-    private static List<Checksum> filterChecksums(Downloadable downloadable, Set<FileAndChecksum> fileAndChecksums) {
-        List<Checksum> result = new ArrayList<>();
-        for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
-            if (matches(fileAndChecksum, downloadable))
-                result.add(fileAndChecksum.getActualChecksum());
-        }
-        return result;
-    }
-
-    private static boolean matches(FileAndChecksum fileAndChecksum, Fragment fragment) {
-        String filePath = fileAndChecksum.getFile().getAbsolutePath();
-        String key = fragment.getKey();
-        return filePath.endsWith(key);
-    }
-
-    private static List<Checksum> filterChecksums(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
-        List<Checksum> result = new ArrayList<>();
-        for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
-            if (matches(fileAndChecksum, fragment))
-                result.add(fileAndChecksum.getActualChecksum());
-        }
-        return result;
-    }
-
-    private static void replaceChecksumTypes(List<ChecksumType> previousChecksumTypes, List<Checksum> nextChecksums) {
-        previousChecksumTypes.clear();
-        if (nextChecksums != null) {
-            List<ChecksumType> nextChecksumTypes = asChecksumTypes(nextChecksums);
-            if (nextChecksumTypes != null)
-                previousChecksumTypes.addAll(nextChecksumTypes);
-        }
+    private static ChecksumType asChecksumType(Checksum checksum) {
+        return createChecksumType(checksum.getLastModified(), checksum.getContentLength(), checksum.getSHA1());
     }
 
     private static List<ChecksumType> asChecksumTypes(List<Checksum> checksums) {
@@ -224,15 +146,63 @@ public class DataSourcesUtil {
             return null;
 
         List<ChecksumType> checksumTypes = new ArrayList<>();
-        for (Checksum checksum : checksums) {
+        for (Checksum checksum : checksums)
             if (checksum != null)
                 checksumTypes.add(asChecksumType(checksum));
-        }
         return checksumTypes;
     }
 
-    public static ChecksumType asChecksumType(Checksum checksum) {
-        return createChecksumType(checksum.getLastModified(), checksum.getContentLength(), checksum.getSHA1());
+    public static FileType createFileType(String uri, List<Checksum> checksums, BoundingBox boundingBox) {
+        FileType fileType = new ObjectFactory().createFileType();
+        fileType.setUri(uri);
+        fileType.setBoundingBox(asBoundingBoxType(boundingBox));
+        List<ChecksumType> checksumTypes = asChecksumTypes(checksums);
+        if (checksumTypes != null)
+            fileType.getChecksum().addAll(checksumTypes);
+        return fileType;
+    }
+
+    public static MapType createMapType(String uri, List<Checksum> checksums, BoundingBox boundingBox) {
+        MapType mapType = new ObjectFactory().createMapType();
+        mapType.setUri(uri);
+        mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        List<ChecksumType> checksumTypes = asChecksumTypes(checksums);
+        if (checksumTypes != null)
+            mapType.getChecksum().addAll(checksumTypes);
+        return mapType;
+    }
+
+    public static ThemeType createThemeType(String uri, List<Checksum> checksums, String imageUrl) {
+        ThemeType themeType = new ObjectFactory().createThemeType();
+        themeType.setUri(uri);
+        themeType.setImageUrl(imageUrl);
+        List<ChecksumType> checksumTypes = asChecksumTypes(checksums);
+        if (checksumTypes != null)
+            themeType.getChecksum().addAll(checksumTypes);
+        return themeType;
+    }
+
+    public static FragmentType createFragmentType(String key, Long lastModified, Long contentLength) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.getChecksum().add(createChecksumType(lastModified, contentLength, null));
+        return fragmentType;
+    }
+
+    public static FragmentType createFragmentType(String key, ZipEntry entry, InputStream inputStream) throws IOException {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(key);
+        fragmentType.getChecksum().add(createChecksumType(entry.getTime(), entry.getSize(), inputStream));
+        return fragmentType;
+    }
+
+    public static FragmentType createFragmentType(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
+        FragmentType fragmentType = new ObjectFactory().createFragmentType();
+        fragmentType.setKey(fragment.getKey());
+        List<ChecksumType> checksumTypes = asChecksumTypes(asChecksums(fileAndChecksums));
+        if (checksumTypes != null)
+            fragmentType.getChecksum().addAll(checksumTypes);
+        return fragmentType;
     }
 
     public static ChecksumType createChecksumType(CompactCalendar lastModified, Long contentLength, String sha1) {
@@ -243,54 +213,12 @@ public class DataSourcesUtil {
         return checksumType;
     }
 
-    public static void replaceFragmentTypes(List<FragmentType> previousFragmentTypes, List<Fragment<Downloadable>> nextFragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fragments) {
-        previousFragmentTypes.clear();
-        if (nextFragments != null) {
-            List<FragmentType> nextFragmentTypes = asFragmentTypes(nextFragments, fragments);
-            if (nextFragmentTypes != null)
-                previousFragmentTypes.addAll(nextFragmentTypes);
-        }
-    }
-
-    private static Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumsMap) {
-        Set<FileAndChecksum> result = new HashSet<>();
-        for (FileAndChecksum fileAndChecksum : fileAndChecksumsMap.keySet()) {
-            if (matches(fileAndChecksum, fragment.getDownloadable())) {
-                List<FileAndChecksum> fragmentAndChecksums = fileAndChecksumsMap.get(fileAndChecksum);
-                if (fragmentAndChecksums != null)
-                    for (FileAndChecksum fragmentChecksum : fragmentAndChecksums) {
-                        if (matches(fragmentChecksum, fragment))
-                            result.add(fragmentChecksum);
-                    }
-            }
-        }
+    private static ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
+        ChecksumType result = new ChecksumType();
+        result.setLastModified(lastModified != null ? formatTime(fromMillis(lastModified), true) : null);
+        result.setContentLength(contentLength);
+        if (inputStream != null)
+            result.setSha1(generateChecksum(inputStream));
         return result;
-    }
-
-    private static List<FragmentType> asFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
-        if (fragments == null)
-            return null;
-
-        List<FragmentType> fragmentTypes = new ArrayList<>();
-        for (Fragment fragment : fragments)
-            fragmentTypes.add(asFragmentType(fragment, findFile(fragment, fileAndChecksums)));
-        return fragmentTypes;
-    }
-
-    private static FragmentType asFragmentType(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
-        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setKey(fragment.getKey());
-        replaceChecksumTypes(fragmentType.getChecksum(), filterChecksums(fragment, fileAndChecksums));
-        return fragmentType;
-    }
-
-    public static String toXml(CatalogType catalogType) throws IOException {
-        StringWriter writer = new StringWriter();
-        try {
-            marshal(catalogType, writer);
-        } catch (JAXBException e) {
-            throw new IOException("Cannot marshall " + catalogType + ": " + e, e);
-        }
-        return writer.toString();
     }
 }

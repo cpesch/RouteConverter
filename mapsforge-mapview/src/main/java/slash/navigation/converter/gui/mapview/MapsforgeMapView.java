@@ -655,7 +655,7 @@ public class MapsforgeMapView implements MapView {
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
-    private void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
+    public void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
         Layers layers = getLayerManager().getLayers();
 
         // add new map with a theme
@@ -703,7 +703,7 @@ public class MapsforgeMapView implements MapView {
             centerAndZoom(mapBoundingBox, routeBoundingBox, alwaysRecenter);
         }
         limitZoomLevel();
-        log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme);
+        log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme + " with zoom " + getZoom());
     }
 
     private BaseRoute lastRoute = null;
@@ -810,7 +810,7 @@ public class MapsforgeMapView implements MapView {
         if (routeBoundingBox != null)
             routeBorder = drawBorder(routeBoundingBox);
 
-        centerAndZoom(mapBoundingBox, routeBoundingBox, false);
+        centerAndZoom(mapBoundingBox, routeBoundingBox, true);
     }
 
     private Polyline drawBorder(BoundingBox boundingBox) {

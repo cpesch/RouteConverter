@@ -36,7 +36,6 @@ import javax.xml.bind.JAXBException;
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -50,9 +49,7 @@ import static java.util.Collections.singletonList;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
-import static slash.common.io.Files.generateChecksum;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.datasources.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
@@ -69,7 +66,6 @@ public class UpdateCatalog extends BaseDownloadTool {
     private static final String MIRROR_ARGUMENT = "mirror";
     private static final String DOT_MAP = ".map";
     private static final String DOT_PBF = ".pbf";
-    private static final String DOT_ZIP = ".zip";
 
     private DataSourceManager dataSourceManager;
     private java.io.File mirror;
@@ -124,7 +120,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         }
 
         Checksum checksum = download.getFile().getActualChecksum();
-        FileType fileType = createFileType(file.getUri(), checksum, null);
+        FileType fileType = createFileType(file.getUri(), singletonList(checksum), null);
         datasourceType.getFile().add(fileType);
 
         if (file.getUri().endsWith(DOT_ZIP)) {
@@ -180,7 +176,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         }
 
         Checksum checksum = download.getFile().getActualChecksum();
-        MapType mapType = createMapType(map.getUri(), checksum, null);
+        MapType mapType = createMapType(map.getUri(), singletonList(checksum), null);
         datasourceType.getMap().add(mapType);
 
         // GET with range for .zip or .map header
@@ -245,7 +241,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         }
 
         Checksum checksum = download.getFile().getActualChecksum();
-        ThemeType themeType = createThemeType(theme.getUri(), checksum, null);
+        ThemeType themeType = createThemeType(theme.getUri(), singletonList(checksum), null);
         datasourceType.getTheme().add(themeType);
 
         if (theme.getUri().endsWith(DOT_ZIP)) {
@@ -307,63 +303,6 @@ public class UpdateCatalog extends BaseDownloadTool {
         return matcher.group(1).toUpperCase();
     }
 
-    private FileType createFileType(String uri, Checksum checksum, BoundingBox boundingBox) throws IOException {
-        FileType fileType = new ObjectFactory().createFileType();
-        fileType.setUri(uri);
-        fileType.setBoundingBox(asBoundingBoxType(boundingBox));
-        fileType.getChecksum().add(asChecksumType(checksum));
-        return fileType;
-    }
-
-    private MapType createMapType(String uri, Checksum checksum, BoundingBox boundingBox) throws IOException {
-        MapType mapType = new ObjectFactory().createMapType();
-        mapType.setUri(uri);
-        mapType.setBoundingBox(asBoundingBoxType(boundingBox));
-        mapType.getChecksum().add(asChecksumType(checksum));
-        return mapType;
-    }
-
-    private ThemeType createThemeType(String uri, Checksum checksum, String imageUrl) {
-        ThemeType themeType = new ObjectFactory().createThemeType();
-        themeType.setUri(uri);
-        themeType.setImageUrl(imageUrl);
-        themeType.getChecksum().add(asChecksumType(checksum));
-        return themeType;
-    }
-
-    private FragmentType createFragmentType(String key, Long lastModified, Long contentLength) throws IOException {
-        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setKey(key);
-        fragmentType.getChecksum().add(createChecksumType(lastModified, contentLength));
-        return fragmentType;
-    }
-
-    private FragmentType createFragmentType(String key, ZipEntry entry, InputStream inputStream) throws IOException {
-        FragmentType fragmentType = new ObjectFactory().createFragmentType();
-        fragmentType.setKey(key);
-        fragmentType.getChecksum().add(createChecksumType(entry.getTime(), entry.getSize(), inputStream));
-        return fragmentType;
-    }
-
-    private ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
-        ChecksumType result = new ChecksumType();
-        result.setLastModified(lastModified != null ? formatTime(fromMillis(lastModified), true) : null);
-        result.setContentLength(contentLength);
-        if (inputStream != null)
-            result.setSha1(generateChecksum(inputStream));
-        return result;
-    }
-
-    private ChecksumType createChecksumType(Long lastModified, Long contentLength) throws IOException {
-        return createChecksumType(lastModified, contentLength, null);
-    }
-
-    private String createXml(DatasourceType datasourceType) throws IOException {
-        CatalogType catalogType = new ObjectFactory().createCatalogType();
-        catalogType.getDatasource().add(datasourceType);
-        return toXml(catalogType);
-    }
-
     private void updatePartially(DatasourceType datasourceType) throws IOException {
         if (getDownloadableCount(datasourceType) >= MAXIMUM_UPDATE_COUNT) {
             updateUris(datasourceType);
@@ -379,7 +318,7 @@ public class UpdateCatalog extends BaseDownloadTool {
     }
 
     private String updateUris(DatasourceType dataSourceType) throws IOException {
-        String xml = createXml(dataSourceType);
+        String xml = toXml(dataSourceType);
         log.info(format("Updating URIs:\n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());

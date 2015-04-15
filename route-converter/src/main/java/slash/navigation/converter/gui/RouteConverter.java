@@ -35,7 +35,6 @@ import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
-import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -99,7 +98,6 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -320,17 +318,17 @@ public class RouteConverter extends SingleFrameApplication {
     private void openMapView() {
         if (isJavaFX())
             mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
-        if (mapView == null)
+        if (getMapView() == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView == null)
+        if (getMapView() == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-        if (mapView == null || !mapView.isSupportedPlatform())
+        if (getMapView() == null || !getMapView().isSupportedPlatform())
             return;
-        log.info("Using map view " + mapView);
+        log.info("Using map view " + getMapView());
 
         invokeLater(new Runnable() {
             public void run() {
-                mapView.initialize(getPositionsModel(),
+                getMapView().initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getMapViewCallback(),
@@ -340,14 +338,14 @@ public class RouteConverter extends SingleFrameApplication {
                         getUnitSystemModel());
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-                Throwable cause = mapView.getInitializationCause();
-                if (mapView.getComponent() == null || cause != null) {
+                Throwable cause = getMapView().getInitializationCause();
+                if (getMapView().getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
                     mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
                             stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
-                    mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
+                    mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
                 }
                 mapPanel.setVisible(true);
 
@@ -358,9 +356,13 @@ public class RouteConverter extends SingleFrameApplication {
                 log.fine("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
-                getConvertPanel().initializeMapView(mapView);
+                getConvertPanel().initializeMapView(getMapView());
             }
         });
+    }
+
+    protected MapView getMapView() {
+        return mapView;
     }
 
     private void openProfileView() {
@@ -387,7 +389,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void shutdown() {
         if (isMapViewAvailable())
-            mapView.dispose();
+            getMapView().dispose();
         getConvertPanel().dispose();
         getHgtFilesService().dispose();
         getBatchPositionAugmenter().dispose();
@@ -634,7 +636,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
-            mapView.setSelectedPositions(selectedPositions, true);
+            getMapView().setSelectedPositions(selectedPositions, true);
         if (profileView != null)
             profileView.setSelectedPositions(selectedPositions, true);
     }
@@ -699,40 +701,35 @@ public class RouteConverter extends SingleFrameApplication {
     // map view related helpers
 
     public boolean isMapViewAvailable() {
-        return mapView != null;
+        return getMapView() != null;
     }
 
     public boolean isMapViewInitialized() {
-        return isMapViewAvailable() && mapView.isInitialized();
+        return isMapViewAvailable() && getMapView().isInitialized();
     }
 
     public NavigationPosition getMapCenter() {
-        return isMapViewAvailable() ? mapView.getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
-    }
-
-    public void addMapViewListener(MapViewListener mapViewListener) {
-        if (isMapViewAvailable())
-            mapView.addMapViewListener(mapViewListener);
+        return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         if (isMapViewAvailable())
-            mapView.setRecenterAfterZooming(recenterAfterZooming);
+            getMapView().setRecenterAfterZooming(recenterAfterZooming);
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
         if (isMapViewAvailable())
-            mapView.setShowCoordinates(showCoordinates);
+            getMapView().setShowCoordinates(showCoordinates);
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         if (isMapViewAvailable())
-            mapView.setShowWaypointDescription(showWaypointDescription);
+            getMapView().setShowWaypointDescription(showWaypointDescription);
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
         if (isMapViewAvailable())
-            mapView.showMapBorder(mapBoundingBox);
+            getMapView().showMapBorder(mapBoundingBox);
     }
 
     // profile view related helpers
@@ -906,7 +903,7 @@ public class RouteConverter extends SingleFrameApplication {
             if (e.getPropertyName().equals(DIVIDER_LOCATION_PROPERTY)) {
                 if (mapSplitPane.getDividerLocation() != location) {
                     location = mapSplitPane.getDividerLocation();
-                    mapView.resize();
+                    getMapView().resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
                     log.finer("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
@@ -937,10 +934,10 @@ public class RouteConverter extends SingleFrameApplication {
                     if (isMapViewAvailable()) {
                         // make sure the one touch expandable to minimize the map works fine
                         if (location == 1)
-                            mapView.getComponent().setVisible(false);
+                            getMapView().getComponent().setVisible(false);
                         else if ((Integer) e.getOldValue() == 1)
-                            mapView.getComponent().setVisible(true);
-                        mapView.resize();
+                            getMapView().getComponent().setVisible(true);
+                        getMapView().resize();
                     }
                     preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
                     log.finer("Changed profile divider to " + profileSplitPane.getDividerLocation());
@@ -962,7 +959,7 @@ public class RouteConverter extends SingleFrameApplication {
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
-        DownloadManager downloadManager = new DownloadManager(new File(getTemporaryDirectory(), "download-queue.xml"));
+        DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), "download-queue.xml"));
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
@@ -1059,7 +1056,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().clear();
-        RoutingService service = mapView instanceof BaseMapView ? new GoogleDirectionsService(mapView) : new BeelineService();
+        RoutingService service = getMapView() instanceof BaseMapView ? new GoogleDirectionsService(getMapView()) : new BeelineService();
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
     }
@@ -1071,7 +1068,7 @@ public class RouteConverter extends SingleFrameApplication {
                 try {
                     getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());
                 } catch (Exception e) {
-                    log.warning("Could not download data from datasources: " + e);
+                    log.warning("Could not update datasource manager: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(
                             getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
                 }
@@ -1099,7 +1096,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         public void run() {
             String title = getConvertPanel().getUrlModel().getShortUrl() + " / " + getConvertPanel().getFormatAndRoutesModel().getSelectedRoute().getName();
-            mapView.print(title, withRoute);
+            getMapView().print(title, withRoute);
         }
     }
 

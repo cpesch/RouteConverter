@@ -30,7 +30,7 @@ import java.io.FileNotFoundException;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.datasources.DataSourceManager.loadDataSources;
+import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
 
 /**
  * Base for the download tools.
@@ -94,7 +94,7 @@ public class BaseDownloadTool {
     }
 
     protected DataSource loadDataSource(String id) throws FileNotFoundException, JAXBException {
-        DataSourceService service = loadDataSources(getDataSourcesDirectory());
+        DataSourceService service = loadAllDataSources(getDataSourcesDirectory());
         DataSource source = service.getDataSourceById(id);
         if (source == null)
             throw new IllegalArgumentException("Unknown data source: " + id);

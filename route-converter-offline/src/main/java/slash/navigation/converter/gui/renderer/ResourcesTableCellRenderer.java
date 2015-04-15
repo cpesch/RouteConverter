@@ -50,13 +50,17 @@ public class ResourcesTableCellRenderer extends AlternatingColorTableCellRendere
                 label.setToolTipText(resource.getUrl());
                 break;
             case 2:
-                label.setText(asSize(resource.getDownloadable().getLatestChecksum().getContentLength()));
+                label.setText(asSize(getContentLength(resource)));
                 label.setToolTipText(resource.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
+    }
+
+    private Long getContentLength(RemoteResource resource) {
+        return resource.getDownloadable().getLatestChecksum() != null ? resource.getDownloadable().getLatestChecksum().getContentLength() : null;
     }
 
     private static String asSize(Long size) {

@@ -22,7 +22,10 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
@@ -43,6 +46,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
+import static slash.navigation.datasources.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**
@@ -151,42 +155,29 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info(format("Added %d URIs, removed %d URIs out of %d URIs", addCount, removeCount, collectedUris.size()));
     }
 
-    private DatasourceType asDatasourceType(DataSource dataSource, Collection<String> uris) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        DatasourceType datasourceType = DataSourcesUtil.asDatasourceType(dataSource);
+    private String toXml(DataSource dataSource, Collection<String> uris, DownloadableType type) throws IOException {
+        DatasourceType datasourceType = asDatasourceType(dataSource);
 
         for (String uri : uris) {
             switch (type) {
                 case File:
-                    FileType fileType = objectFactory.createFileType();
-                    fileType.setUri(uri);
+                    FileType fileType = createFileType(uri, null, null);
                     datasourceType.getFile().add(fileType);
                     break;
 
                 case Map:
-                    MapType mapType = objectFactory.createMapType();
-                    mapType.setUri(uri);
+                    MapType mapType = createMapType(uri, null, null);
                     datasourceType.getMap().add(mapType);
                     break;
 
                 case Theme:
-                    ThemeType themeType = objectFactory.createThemeType();
-                    themeType.setUri(uri);
+                    ThemeType themeType = createThemeType(uri, null, null);
                     datasourceType.getTheme().add(themeType);
                     break;
             }
         }
-        return datasourceType;
-    }
 
-    private String createXml(DataSource dataSource, Collection<String> uris) throws IOException {
-        slash.navigation.datasources.binding.ObjectFactory objectFactory = new slash.navigation.datasources.binding.ObjectFactory();
-
-        CatalogType datasourcesType = objectFactory.createCatalogType();
-        DatasourceType datasourceType = asDatasourceType(dataSource, uris);
-        datasourcesType.getDatasource().add(datasourceType);
-
-        return DataSourcesUtil.toXml(datasourcesType);
+        return DataSourcesUtil.toXml(datasourceType);
     }
 
     private void addUrisInChunks(DataSource dataSource, Collection<String> uris) throws IOException {
@@ -205,7 +196,7 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
-        String xml = createXml(dataSource, uris);
+        String xml = toXml(dataSource, uris, type);
         log.info(format("Adding URIs:\n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
@@ -226,7 +217,7 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
-        String xml = createXml(dataSource, uris);
+        String xml = toXml(dataSource, uris, type);
         log.info(format("Removing URIs:\n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());

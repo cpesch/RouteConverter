@@ -50,6 +50,7 @@ public class DataSourceManager {
     private static final String EDITIONS_URI = "v1/" + EDITIONS + "/";
     private static final String FORMAT_XML = "?format=xml";
     private static final String DOT_XML = ".xml";
+    public static final String DOT_ZIP = ".zip";
 
     private final DownloadManager downloadManager;
     private DataSourceService dataSourceService = new DataSourceService();
@@ -115,7 +116,7 @@ public class DataSourceManager {
             return;
 
         downloadDataSources(anEdition.getDataSources(), directory);
-        this.dataSourceService = loadDataSources(directory);
+        this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
         downloadManager.setLastSync(now());
     }
 
@@ -164,7 +165,7 @@ public class DataSourceManager {
         return result;
     }
 
-    public static DataSourceService loadDataSources(java.io.File directory) throws FileNotFoundException, JAXBException {
+    public static DataSourceService loadAllDataSources(java.io.File directory) throws FileNotFoundException, JAXBException {
         DataSourceService result = new DataSourceService();
         java.io.File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(java.io.File dir, String name) {
