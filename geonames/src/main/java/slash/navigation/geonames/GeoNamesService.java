@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 
 /**
  * Encapsulates REST access to the geonames.org service.
@@ -72,7 +72,7 @@ public class GeoNamesService implements ElevationService {
         String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude);
         if (result != null) {
             try {
-                Integer elevation = parseInt(result);
+                Integer elevation = parseInteger(result);
                 if (elevation != null && !elevation.equals(nullValue))
                     return elevation;
             } catch (NumberFormatException e) {

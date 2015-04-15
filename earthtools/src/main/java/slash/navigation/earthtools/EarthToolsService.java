@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.navigation.earthtools.EarthToolsUtil.unmarshal;
 
 /**
@@ -56,7 +56,7 @@ public class EarthToolsService implements ElevationService {
         if (get.isSuccessful())
             try {
                 Height height = unmarshal(result);
-                Integer elevation = parseInt(height.getMeters());
+                Integer elevation = parseInteger(height.getMeters());
                 if (elevation != null && !elevation.equals(-9999))
                     return elevation.doubleValue();
             } catch (Exception e) {

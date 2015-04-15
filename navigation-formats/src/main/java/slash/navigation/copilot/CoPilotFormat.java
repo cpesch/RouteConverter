@@ -43,7 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -157,8 +157,8 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     Wgs84Position parsePosition(Map<String, String> map) {
-        Integer latitude = parseInt(map.get(LATITUDE));
-        Integer longitude = parseInt(map.get(LONGITUDE));
+        Integer latitude = parseInteger(map.get(LATITUDE));
+        Integer longitude = parseInteger(map.get(LONGITUDE));
         String state = trim(map.get(STATE));
         String zip = trim(map.get(ZIP));
         String city = trim(map.get(CITY));

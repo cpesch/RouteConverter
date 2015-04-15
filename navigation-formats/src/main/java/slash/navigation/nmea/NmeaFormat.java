@@ -38,7 +38,7 @@ import static java.util.Locale.US;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
@@ -234,7 +234,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String altitude = ggaMatcher.group(8);
             NmeaPosition position = new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
                     parseDouble(altitude), null, null, parseTime(time), null);
-            position.setSatellites(parseInt(satellites));
+            position.setSatellites(parseInteger(satellites));
             return position;
         }
 

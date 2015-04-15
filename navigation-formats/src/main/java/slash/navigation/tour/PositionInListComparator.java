@@ -22,7 +22,7 @@ package slash.navigation.tour;
 
 import java.util.Comparator;
 
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 
 /**
  * Compares {@link TourPosition} by the PositionInList attribute.
@@ -32,7 +32,7 @@ import static slash.common.io.Transfer.parseInt;
 
 class PositionInListComparator implements Comparator<TourPosition> {
     private int extractPositionInList(TourPosition position) {
-        Integer integer = parseInt(position.get(TourFormat.POSITION_IN_LIST));
+        Integer integer = parseInteger(position.get(TourFormat.POSITION_IN_LIST));
         return integer != null ? integer : position.hashCode();
     }
 

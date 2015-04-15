@@ -40,7 +40,7 @@ import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.SECOND;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -109,7 +109,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Integer satellites = parseInt(matcher.group(7));
+        Integer satellites = parseInteger(matcher.group(7));
         return satellites != null && satellites > 0;
     }
 
@@ -141,7 +141,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
             position.setStartDate(startDate);
         position.setHeading(parseDouble(heading));
         position.setHdop(parseDouble(hdop));
-        position.setSatellites(parseInt(satellites));
+        position.setSatellites(parseInteger(satellites));
         return position;
     }
 

@@ -36,9 +36,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.parseLong;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 
 /**
@@ -158,6 +156,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
             BcrSection description = findSection(sections, DESCRIPTION_TITLE);
             return isValidDescription(description) &&
+                    client != null && coordinates != null && description != null &&
                     client.getStationCount() == coordinates.getStationCount() &&
                     coordinates.getStationCount() == description.getStationCount();
         }
@@ -168,6 +167,9 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         BcrSection client = findSection(sections, CLIENT_TITLE);
         BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
         BcrSection description = findSection(sections, DESCRIPTION_TITLE);
+        if(client == null || coordinates == null || description == null)
+            return;
+
         for (int i = 1; i < client.getStationCount(); i++) {
             String clientStr = client.getStation(i);
             String coordinatesStr = coordinates.getStation(i);
@@ -191,11 +193,10 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (!clientMatcher.matches())
             log.info("'" + client + "' does not match client station pattern; ignoring it");
         else {
-            String altitudeString = trim(clientMatcher.group(2));
-            if (altitudeString != null)
-                altitude = parseLong(altitudeString);
+            Long aLong = parseLong(clientMatcher.group(2));
+            if (aLong != null)
+                altitude = aLong;
         }
-
         return new BcrPosition(parseInt(x), parseInt(y), altitude, trim(description));
     }
 

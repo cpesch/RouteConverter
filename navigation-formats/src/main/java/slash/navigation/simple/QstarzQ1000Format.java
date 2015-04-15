@@ -38,7 +38,7 @@ import static java.lang.Math.abs;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
@@ -148,7 +148,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), null);
         position.setHdop(parseDouble(hdop));
-        position.setSatellites(parseInt(satellites));
+        position.setSatellites(parseInteger(satellites));
         return position;
     }
 

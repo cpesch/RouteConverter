@@ -211,7 +211,7 @@ public class Transfer {
         return formatIntAsString((int) hours, 2) + ":" + formatIntAsString((int) minutes % 60, 2) + ":" + formatIntAsString((int) seconds % 60, 2);
     }
 
-    public static Integer parseInt(String string) {
+    public static Integer parseInteger(String string) {
         String trimmed = trim(string);
         if (trimmed != null) {
             if (trimmed.startsWith("+"))
@@ -219,6 +219,11 @@ public class Transfer {
             return Integer.parseInt(trimmed);
         } else
             return null;
+    }
+
+    public static int parseInt(String string) {
+        Integer integer = parseInteger(string);
+        return integer != null ? integer : -1;
     }
 
     public static Long parseLong(String string) {

@@ -1074,7 +1074,6 @@ public abstract class BaseMapView implements MapView {
     void processLines(List<String> lines) {
         boolean hasValidCallbackNumber = false;
         for (String line : lines) {
-            // log.fine("processing line " + line);
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
             if (matcher.matches()) {
                 int callbackNumber = parseInt(matcher.group(2));
@@ -1216,7 +1215,7 @@ public abstract class BaseMapView implements MapView {
 
         Matcher zoomChangedMatcher = ZOOM_CHANGED_PATTERN.matcher(callback);
         if (zoomChangedMatcher.matches()) {
-            Integer zoom = parseInt(zoomChangedMatcher.group(1));
+            Integer zoom = parseInteger(zoomChangedMatcher.group(1));
             zoomChanged(zoom);
             return true;
         }
@@ -1252,7 +1251,7 @@ public abstract class BaseMapView implements MapView {
 
         Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
-            Integer key = parseInt(insertWaypointsMatcher.group(2));
+            Integer key = parseInteger(insertWaypointsMatcher.group(2));
             List<String> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
 
             PositionPair pair;

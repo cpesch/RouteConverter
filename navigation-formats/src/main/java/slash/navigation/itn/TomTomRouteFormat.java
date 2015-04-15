@@ -37,7 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -160,7 +160,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String description = lineMatcher.group(3);
-        return new TomTomPosition(parseInt(longitude), parseInt(latitude), trim(description));
+        return new TomTomPosition(parseInteger(longitude), parseInteger(latitude), trim(description));
     }
 
     String parseName(String line) {
