@@ -24,65 +24,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.FormatAndRoutes;
-import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatParserListener;
-import slash.navigation.base.ParserCallback;
-import slash.navigation.base.ParserResult;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
-import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
-import slash.navigation.converter.gui.actions.AddNumberToPositionsAction;
-import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositionsAction;
-import slash.navigation.converter.gui.actions.AddPositionAction;
-import slash.navigation.converter.gui.actions.AddPositionListAction;
-import slash.navigation.converter.gui.actions.AddPostalAddressToPositionsAction;
-import slash.navigation.converter.gui.actions.AddSpeedToPositionsAction;
-import slash.navigation.converter.gui.actions.AddTimeToPositionsAction;
-import slash.navigation.converter.gui.actions.CopyAction;
-import slash.navigation.converter.gui.actions.CutAction;
-import slash.navigation.converter.gui.actions.DeleteAction;
-import slash.navigation.converter.gui.actions.ExportPositionListAction;
-import slash.navigation.converter.gui.actions.ImportPositionListAction;
-import slash.navigation.converter.gui.actions.NewFileAction;
-import slash.navigation.converter.gui.actions.OpenAction;
-import slash.navigation.converter.gui.actions.PasteAction;
-import slash.navigation.converter.gui.actions.RemovePositionListAction;
-import slash.navigation.converter.gui.actions.RenamePositionListAction;
-import slash.navigation.converter.gui.actions.SaveAction;
-import slash.navigation.converter.gui.actions.SaveAsAction;
-import slash.navigation.converter.gui.actions.SelectAllAction;
-import slash.navigation.converter.gui.actions.SplitPositionListAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
-import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
-import slash.navigation.converter.gui.helpers.AbstractListDataListener;
-import slash.navigation.converter.gui.helpers.LengthCalculator;
-import slash.navigation.converter.gui.helpers.MergePositionListMenu;
-import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
-import slash.navigation.converter.gui.helpers.TableHeaderMenu;
-import slash.navigation.converter.gui.helpers.TablePopupMenu;
+import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.mapview.MapView;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
-import slash.navigation.converter.gui.models.FormatAndRoutesModel;
-import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
-import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.PositionsTableColumnModel;
-import slash.navigation.converter.gui.models.RecentFormatsModel;
-import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.models.UrlDocument;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
@@ -107,14 +59,7 @@ import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -128,74 +73,39 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.ItemEvent.SELECTED;
-import static java.awt.event.KeyEvent.VK_DELETE;
-import static java.awt.event.KeyEvent.VK_END;
-import static java.awt.event.KeyEvent.VK_HOME;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.NO_OPTION;
-import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
-import static javax.swing.JOptionPane.showConfirmDialog;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.io.Files.calculateConvertFileName;
-import static slash.common.io.Files.createGoPalFileName;
-import static slash.common.io.Files.createReadablePath;
-import static slash.common.io.Files.createTargetFiles;
-import static slash.common.io.Files.findExistingPath;
-import static slash.common.io.Files.getExtension;
-import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.reverse;
-import static slash.common.io.Files.shortenPath;
-import static slash.common.io.Files.toFile;
-import static slash.common.io.Files.toUrls;
+import static slash.common.io.Files.*;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
-import static slash.navigation.base.NavigationFormats.getFormatsSortedByName;
-import static slash.navigation.base.NavigationFormats.getReadFormats;
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
-import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
-import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
-import static slash.navigation.base.NavigationFormats.getWriteFormatsWithPreferredFormats;
+import static slash.navigation.base.NavigationFormats.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
-import static slash.navigation.gui.events.Range.increment;
-import static slash.navigation.gui.events.Range.revert;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
-import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
-import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.events.Range.*;
+import static slash.navigation.gui.helpers.JMenuHelper.*;
+import static slash.navigation.gui.helpers.JTableHelper.*;
 import static slash.navigation.gui.helpers.PreferencesHelper.count;
-import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * The convert panel of the route converter user interface.
@@ -404,7 +314,6 @@ public class ConvertPanel implements PanelInTab {
                     return;
                 if (getPositionsModel().isContinousRange())
                     return;
-
                 handlePositionsUpdate();
             }
         });
@@ -780,7 +689,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<BaseRoute> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -838,7 +747,7 @@ public class ConvertPanel implements PanelInTab {
             if (!checkWriteFormat(format))
                 return;
             if (format.isSupportsMultipleRoutes()) {
-                List<BaseRoute> routes = exportSelectedRoute ? asList(route) : formatAndRoutesModel.getRoutes();
+                List<BaseRoute> routes = exportSelectedRoute ? singletonList(route) : formatAndRoutesModel.getRoutes();
                 new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, files[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
@@ -931,7 +840,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<BaseRoute> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -1014,19 +923,12 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-profile", existsAPosition);
     }
 
-    private int[] selectedPositions = null;
-
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
-        // avoid firing events of the selection hasn't changed
-        if (Arrays.equals(this.selectedPositions, selectedRows))
-            return;
 
-        this.selectedPositions = selectedRows;
-
-        boolean existsASelectedPosition = selectedPositions.length > 0;
-        boolean allPositionsSelected = selectedPositions.length == tablePositions.getRowCount();
-        boolean firstRowNotSelected = existsASelectedPosition && selectedPositions[0] != 0;
+        boolean existsASelectedPosition = selectedRows.length > 0;
+        boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
+        boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
@@ -1034,7 +936,7 @@ public class ConvertPanel implements PanelInTab {
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
-        boolean lastRowNotSelected = existsASelectedPosition && selectedPositions[selectedPositions.length - 1] != tablePositions.getRowCount() - 1;
+        boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
         buttonMovePositionDown.setEnabled(lastRowNotSelected);
         buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
 
@@ -1061,7 +963,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
         actionManager.enable("print-profile", existsAPosition);
 
-        r.selectPositions(selectedPositions);
+        r.selectPositions(selectedRows);
     }
 
     // helpers
