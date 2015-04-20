@@ -223,8 +223,7 @@
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                    </properties>
+                    <properties/>
                   </component>
                   <component id="b3ea2" class="javax.swing.JLabel">
                     <constraints>
@@ -238,9 +237,7 @@
                     <constraints>
                       <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                    </properties>
+                    <properties/>
                   </component>
                   <component id="f0b56" class="javax.swing.JLabel">
                     <constraints>
@@ -254,9 +251,7 @@
                     <constraints>
                       <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                    </properties>
+                    <properties/>
                   </component>
                   <grid id="c1ced" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="3" left="0" bottom="0" right="0"/>
@@ -279,9 +274,7 @@
                     <constraints>
                       <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                    </properties>
+                    <properties/>
                   </component>
                 </children>
               </grid>
@@ -324,8 +317,7 @@
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                    </properties>
+                    <properties/>
                   </component>
                 </children>
               </grid>

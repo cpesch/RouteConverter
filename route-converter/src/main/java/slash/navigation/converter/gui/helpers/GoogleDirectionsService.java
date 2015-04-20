@@ -63,6 +63,18 @@ public class GoogleDirectionsService implements RoutingService {
         return true;
     }
 
+    public boolean isSupportAvoidFerries() {
+        return true;
+    }
+
+    public boolean isSupportAvoidHighways() {
+        return true;
+    }
+
+    public boolean isSupportAvoidTolls() {
+        return true;
+    }
+
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
     }

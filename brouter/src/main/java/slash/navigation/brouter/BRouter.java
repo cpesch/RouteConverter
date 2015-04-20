@@ -90,6 +90,18 @@ public class BRouter implements RoutingService {
         return false;
     }
 
+    public boolean isSupportAvoidFerries() {
+        return false;
+    }
+
+    public boolean isSupportAvoidHighways() {
+        return false;
+    }
+
+    public boolean isSupportAvoidTolls() {
+        return false;
+    }
+
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
         File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {

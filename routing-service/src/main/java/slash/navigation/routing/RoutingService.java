@@ -36,6 +36,9 @@ public interface RoutingService {
     boolean isInitialized();
     boolean isDownload();
     boolean isSupportTurnpoints();
+    boolean isSupportAvoidFerries();
+    boolean isSupportAvoidHighways();
+    boolean isSupportAvoidTolls();
     List<TravelMode> getAvailableTravelModes();
     TravelMode getPreferredTravelMode();
     String getPath();

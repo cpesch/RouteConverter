@@ -53,6 +53,18 @@ public class BeelineService implements RoutingService {
         return false;
     }
 
+    public boolean isSupportAvoidFerries() {
+        return false;
+    }
+
+    public boolean isSupportAvoidHighways() {
+        return false;
+    }
+
+    public boolean isSupportAvoidTolls() {
+        return false;
+    }
+
     public List<TravelMode> getAvailableTravelModes() {
         return asList(BEELINE);
     }
