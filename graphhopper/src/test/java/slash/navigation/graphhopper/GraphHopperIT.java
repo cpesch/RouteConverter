@@ -90,9 +90,9 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
-        assertEquals(120, result.getPositions().size());
-        assertEquals(13576.477825153423, result.getDistance(), 5.0);
-        assertEquals(3113034.0, result.getTime(), 100);
+        assertEquals(107, result.getPositions().size());
+        assertEquals(13655.4, result.getDistance(), 5.0);
+        assertEquals(2752267.0, result.getTime(), 100);
         assertTrue(result.isValid());
     }
 }
