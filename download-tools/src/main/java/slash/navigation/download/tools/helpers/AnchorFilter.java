@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Provides anchor filtering makes absolute paths and URLs relative, removes dot slashes at
@@ -36,7 +38,8 @@ import java.util.logging.Logger;
 public class AnchorFilter {
     private static final Logger log = Logger.getLogger(AnchorFilter.class.getName());
 
-    public List<String> filterAnchors(String url, List<String> anchors, Set<String> extensions) {
+    public List<String> filterAnchors(String url, List<String> anchors, Set<String> extensions,
+                                      Set<String> includes, Set<String> excludes) {
         List<String> result = new ArrayList<>();
         for (String anchor : anchors) {
             try {
@@ -45,10 +48,10 @@ public class AnchorFilter {
                 anchor = makeAbsolutePathRelative(url, anchor);
                 anchor = makeAbsoluteURLRelative(url, anchor);
 
-                if(anchor.equals("index.html") || anchor.startsWith(".."))
+                if (anchor.equals("index.html") || anchor.startsWith(".."))
                     anchor = "";
 
-                if (anchor.length() > 0 && filterExtension(anchor, extensions))
+                if (anchor.length() > 0 && filterExtension(anchor, extensions) && filterIncludes(anchor, includes) && !filterExcludes(anchor, excludes))
                     result.add(anchor);
             } catch (URISyntaxException e) {
                 log.warning("No valid uri: " + e);
@@ -66,8 +69,32 @@ public class AnchorFilter {
         return false;
     }
 
+    private boolean filterIncludes(String anchor, Set<String> includes) {
+        if (includes == null)
+            return true;
+        for (String include : includes) {
+            Pattern pattern = Pattern.compile(include);
+            Matcher matcher = pattern.matcher(anchor);
+            if (matcher.matches())
+                return true;
+        }
+        return false;
+    }
+
+    private boolean filterExcludes(String anchor, Set<String> excludes) {
+        if (excludes == null)
+            return false;
+        for (String exclude : excludes) {
+            Pattern pattern = Pattern.compile(exclude);
+            Matcher matcher = pattern.matcher(anchor);
+            if (matcher.matches())
+                return true;
+        }
+        return false;
+    }
+
     private String makeAbsoluteURLRelative(String baseUrl, String url) throws URISyntaxException {
-        if(url.startsWith(baseUrl))
+        if (url.startsWith(baseUrl))
             url = url.substring(baseUrl.length());
         URI uri = new URI(url);
         if (uri.isAbsolute())

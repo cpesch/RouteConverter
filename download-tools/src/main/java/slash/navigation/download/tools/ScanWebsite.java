@@ -22,6 +22,7 @@ package slash.navigation.download.tools;
 
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.*;
+import slash.navigation.datasources.Map;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
@@ -36,10 +37,7 @@ import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -60,10 +58,12 @@ public class ScanWebsite extends BaseDownloadTool {
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String TYPE_ARGUMENT = "type";
     private static final String EXTENSION_ARGUMENT = "extension";
+    private static final String INCLUDE_ARGUMENT = "include";
+    private static final String EXCLUDE_ARGUMENT = "exclude";
 
     private String baseUrl;
     private DownloadableType type;
-    private Set<String> extensions;
+    private Set<String> extensions, includes, excludes;
     private int addCount = 0, removeCount = 0;
 
     private String appendURIs(String uri, String anchor) {
@@ -82,16 +82,16 @@ public class ScanWebsite extends BaseDownloadTool {
 
         List<String> anchors = new AnchorParser().parseAnchors(result.replaceAll("<area", "<a"));
 
-        List<String> includes = new AnchorFilter().filterAnchors(baseUrl, anchors, extensions);
-        for (String anchor : includes) {
+        List<String> included = new AnchorFilter().filterAnchors(baseUrl, anchors, extensions, includes, excludes);
+        for (String anchor : included) {
             // create the anchor relative to the current uri
             String nextUri = appendURIs(uri, anchor);
             uris.add(nextUri);
         }
 
-        List<String> recurse = new AnchorFilter().filterAnchors(baseUrl, anchors, new HashSet<>(asList(".html", "/")));
+        List<String> recurse = new AnchorFilter().filterAnchors(baseUrl, anchors, new HashSet<>(asList(".html", "/")), null, null);
         for (String anchor : recurse) {
-            if((getUrl() + anchor).equals(baseUrl))
+            if((getUrl() + anchor).equals(baseUrl) || baseUrl.endsWith(anchor))
                 continue;
             // create the anchor relative to the current uri
             String nextUri = appendURIs(uri, anchor);
@@ -238,14 +238,18 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
-        String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
         String typeArgument = line.getOptionValue(TYPE_ARGUMENT);
         setId(line.getOptionValue(ID_ARGUMENT));
         setUrl(line.getOptionValue(URL_ARGUMENT));
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
         if (baseUrl == null)
             baseUrl = getUrl();
+        String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
+        String[] includeArguments = line.getOptionValues(INCLUDE_ARGUMENT);
+        includes = includeArguments != null ? new HashSet<>(asList(includeArguments)) : null;
+        String[] excludeArguments = line.getOptionValues(EXCLUDE_ARGUMENT);
+        excludes = excludeArguments != null ? new HashSet<>(asList(excludeArguments)) : null;
         type = typeArgument != null ? DownloadableType.fromValue(typeArgument) : File;
         setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
         setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
@@ -266,6 +270,10 @@ public class ScanWebsite extends BaseDownloadTool {
                 withDescription("URL to use as a base for resources").create());
         options.addOption(withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
                 withDescription("Extensions to scan for").create());
+        options.addOption(withArgName(INCLUDE_ARGUMENT).hasArgs().withLongOpt("include").
+                withDescription("Regex for resources to include").create());
+        options.addOption(withArgName(EXCLUDE_ARGUMENT).hasArgs().withLongOpt("exclude").
+                withDescription("Regex for resources to exclude").create());
         options.addOption(withArgName(TYPE_ARGUMENT).hasArgs(1).withLongOpt("type").
                 withDescription("Type of the resources").create());
         options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").

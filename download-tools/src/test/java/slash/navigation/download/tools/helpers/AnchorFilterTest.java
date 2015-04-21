@@ -21,7 +21,11 @@ package slash.navigation.download.tools.helpers;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class AnchorFilterTest {
@@ -32,7 +36,7 @@ public class AnchorFilterTest {
         String ABSOLUTE_URL = "http://www.routeconverter.com";
         String ANOTHER_ABSOLUTE_URL = "http://www.routeconverter.de";
         String RELATIVE_URL = "page.html";
-        assertEquals(asList(RELATIVE_URL), filter.filterAnchors(ABSOLUTE_URL, asList(ABSOLUTE_URL, ANOTHER_ABSOLUTE_URL, RELATIVE_URL), null));
+        assertEquals(singletonList(RELATIVE_URL), filter.filterAnchors(ABSOLUTE_URL, asList(ABSOLUTE_URL, ANOTHER_ABSOLUTE_URL, RELATIVE_URL), null, null, null));
     }
 
     @Test
@@ -40,6 +44,34 @@ public class AnchorFilterTest {
         String ABSOLUTE_URL = "http://www.routeconverter.com";
         String URI = "page.html";
         String INDEX_URI = "index.html";
-        assertEquals(asList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, INDEX_URI), null));
+        assertEquals(singletonList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, INDEX_URI), null, null, null));
+    }
+
+    @Test
+    public void testFilterExtensions() {
+        String ABSOLUTE_URL = "http://www.routeconverter.com";
+        String URI = "page.html";
+        String ZIP_URI = "page.zip";
+        assertEquals(singletonList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, ZIP_URI), createSet(".html"), null, null));
+    }
+
+    private Set<String> createSet(String string) {
+        return new HashSet<>(singletonList(string));
+    }
+
+    @Test
+    public void testFilterIncludes() {
+        String ABSOLUTE_URL = "http://www.routeconverter.com";
+        String URI = "page.html";
+        String ZIP_URI = "page.zip";
+        assertEquals(singletonList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, ZIP_URI), null, createSet(".*\\.html"), null));
+    }
+
+    @Test
+    public void testFilterExcludes() {
+        String ABSOLUTE_URL = "http://www.routeconverter.com";
+        String URI = "page.html";
+        String ZIP_URI = "page.zip";
+        assertEquals(singletonList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, ZIP_URI), null, null, createSet(".*\\.zip")));
     }
 }
