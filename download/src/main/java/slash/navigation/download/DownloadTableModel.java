@@ -36,16 +36,16 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 public class DownloadTableModel extends AbstractTableModel {
     private List<Download> downloads = new ArrayList<>();
 
-    public synchronized List<Download> getDownloads() {
+    public List<Download> getDownloads() {
         return downloads;
     }
 
-    public synchronized void setDownloads(List<Download> downloads) {
+    public void setDownloads(List<Download> downloads) {
         this.downloads = downloads;
         fireTableDataChanged();
     }
 
-    public synchronized int getRowCount() {
+    public int getRowCount() {
         return downloads.size();
     }
 
@@ -57,11 +57,11 @@ public class DownloadTableModel extends AbstractTableModel {
         return getDownload(rowIndex);
     }
 
-    public synchronized Download getDownload(int rowIndex) {
+    public Download getDownload(int rowIndex) {
         return downloads.get(rowIndex);
     }
 
-    synchronized Download getDownload(String url) {
+    Download getDownload(String url) {
         for(Download download : downloads) {
             if(download.getUrl().equals(url))
                 return download;
@@ -96,7 +96,7 @@ public class DownloadTableModel extends AbstractTableModel {
         });
     }
 
-    synchronized void addOrUpdateDownload(Download download) {
+    void addOrUpdateDownload(Download download) {
         int index = downloads.indexOf(download);
         if (index == -1)
             addDownload(download);
@@ -104,7 +104,7 @@ public class DownloadTableModel extends AbstractTableModel {
             updateDownload(download);
     }
 
-    synchronized void removeDownload(Download download) {
+    void removeDownload(Download download) {
         final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);

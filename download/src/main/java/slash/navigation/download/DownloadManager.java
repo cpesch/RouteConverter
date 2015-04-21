@@ -117,7 +117,7 @@ public class DownloadManager {
 
     public void saveQueue() {
         try {
-            new QueuePersister().save(queueFile, model.getDownloads(), lastSync);
+            new QueuePersister().save(queueFile, new ArrayList<>(model.getDownloads()), lastSync);
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
