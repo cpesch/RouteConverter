@@ -194,7 +194,7 @@ public class BRouter implements RoutingService {
 
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
-            routingEngine.doRun(preferences.getLong("routingTimeout", 30 * 1000L));
+            routingEngine.doRun(preferences.getLong("routingTimeout", 1000L));
             if (routingEngine.getErrorMessage() != null) {
                 log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
                 return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
@@ -203,9 +203,12 @@ public class BRouter implements RoutingService {
             OsmTrack track = routingEngine.getFoundTrack();
             int distance = routingEngine.getDistance();
             return new RoutingResult(asPositions(track), distance, 0L, true);
+        } catch (Exception e) {
+            log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
+            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         } finally {
             long end = currentTimeMillis();
-            log.fine(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
+            log.info(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
         }
     }
 
@@ -241,7 +244,7 @@ public class BRouter implements RoutingService {
     }
 
     private NavigationPosition asPosition(OsmPathElement element) {
-        return new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), element.message);
+        return new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), null);
     }
 
     double asLongitude(int longitude) {

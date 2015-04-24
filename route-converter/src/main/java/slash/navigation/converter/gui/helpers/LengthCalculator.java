@@ -102,7 +102,7 @@ public class LengthCalculator {
     public void initializeMapView(MapView mapView) {
         mapViewInitialized = true;
         mapView.addMapViewListener(new AbstractMapViewListener() {
-            public void calculatedDistance(int meters, int seconds) {
+            public void calculatedDistance(double meters, long seconds) {
                 fireCalculatedDistance(meters, seconds);
             }
         });
@@ -114,7 +114,7 @@ public class LengthCalculator {
         lengthCalculatorListeners.add(listener);
     }
 
-    public void fireCalculatedDistance(int meters, int seconds) {
+    public void fireCalculatedDistance(double meters, long seconds) {
         for (LengthCalculatorListener listener : lengthCalculatorListeners) {
             listener.calculatedDistance(meters, seconds);
         }
@@ -162,14 +162,14 @@ public class LengthCalculator {
             }
 
             if (i > 0 && i % 100 == 0)
-                fireCalculatedDistance((int) distanceMeters, totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
+                fireCalculatedDistance(distanceMeters, totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0);
 
             previous = next;
         }
 
         long summedUp = totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0;
         long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000 : 0;
-        fireCalculatedDistance((int) distanceMeters, (int) max(maxMinusMin, summedUp));
+        fireCalculatedDistance(distanceMeters, max(maxMinusMin, summedUp));
     }
 
     private void initialize() {

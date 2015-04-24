@@ -108,6 +108,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract String getName();
+
     public abstract void setName(String name);
 
     public abstract List<String> getDescription();
@@ -403,9 +404,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         NavigationPosition previous = index > 0 ? positions.get(index - 1) : null;
         NavigationPosition current = index < positions.size() ? positions.get(index) : null;
-        if(previous != null && current != null) {
+        if (previous != null && current != null) {
             Double elevation = previous.calculateElevation(current);
-            if(elevation != null)
+            if (elevation != null)
                 return elevation;
         }
         return 0;
@@ -446,13 +447,21 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
+
     protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
+
     protected abstract GpxRoute asGpxFormat(GpxFormat format);
+
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
+
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
+
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
+
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+
     protected abstract TcxRoute asTcxFormat(TcxFormat format);
+
     protected abstract TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format);
 
     @SuppressWarnings("UnusedDeclaration")
@@ -959,5 +968,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof WintecWbt202TesFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new WintecWbt202TesFormat());
+    }
+
+    public String toString() {
+        return super.toString() + "[name=" + getName() + ", positionCount=" + getPositionCount() + "]";
     }
 }

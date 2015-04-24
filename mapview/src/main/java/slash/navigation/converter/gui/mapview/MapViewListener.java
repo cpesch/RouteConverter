@@ -27,6 +27,6 @@ package slash.navigation.converter.gui.mapview;
  */
 
 public interface MapViewListener {
-    void calculatedDistance(int meters, int seconds);
+    void calculatedDistance(double meters, long seconds);
     void receivedCallback(int port);
 }

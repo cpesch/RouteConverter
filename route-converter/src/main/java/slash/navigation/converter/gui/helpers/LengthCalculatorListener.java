@@ -27,5 +27,5 @@ package slash.navigation.converter.gui.helpers;
  */
 
 public interface LengthCalculatorListener {
-    void calculatedDistance(int meters, int seconds);
+    void calculatedDistance(double meters, long seconds);
 }

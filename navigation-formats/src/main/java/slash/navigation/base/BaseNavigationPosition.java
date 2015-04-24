@@ -118,12 +118,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
             Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
             Double distanceAtoD = bearingAD.getDistance();
-            if (distanceAtoD != null) {
-                double courseAtoD = toRadians(bearingAD.getAngle());
-                double courseAtoB = toRadians(pointA.calculateAngle(pointB));
-                return asin(sin(distanceAtoD / EARTH_RADIUS) *
-                        sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
-            }
+            double courseAtoD = toRadians(bearingAD.getAngle());
+            double courseAtoB = toRadians(pointA.calculateAngle(pointB));
+            return asin(sin(distanceAtoD / EARTH_RADIUS) *
+                    sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
         }
         return null;
     }
@@ -375,5 +373,9 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTesPosition() {
         return asWgs84Position();
+    }
+
+    public String toString() {
+        return super.toString() + "[longitude=" + getLongitude() + ", latitude=" + getLatitude() + "]";
     }
 }

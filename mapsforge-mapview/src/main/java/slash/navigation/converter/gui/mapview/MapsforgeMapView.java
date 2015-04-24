@@ -502,12 +502,12 @@ public class MapsforgeMapView implements MapView {
 
             private void fireDistanceAndTime() {
                 double totalDistance = 0.0;
-                for (Double distance : pairsToDistances.values()) {
+                for (Double distance : new ArrayList<>(pairsToDistances.values())) {
                     if (distance != null)
                         totalDistance += distance;
                 }
                 long totalTime = 0;
-                for (Long time : pairsToTimes.values()) {
+                for (Long time : new ArrayList<>(pairsToTimes.values())) {
                     if (time != null)
                         totalTime += time;
                 }

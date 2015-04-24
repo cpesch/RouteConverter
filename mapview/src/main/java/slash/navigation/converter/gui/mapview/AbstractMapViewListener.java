@@ -27,7 +27,7 @@ package slash.navigation.converter.gui.mapview;
  */
 
 public abstract class AbstractMapViewListener implements MapViewListener {
-    public void calculatedDistance(int meters, int seconds) {
+    public void calculatedDistance(double meters, long seconds) {
     }
 
     public void receivedCallback(int port) {
