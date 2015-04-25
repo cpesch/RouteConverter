@@ -98,6 +98,7 @@ import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.mapview.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.converter.gui.mapview.MapViewConstants.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -130,7 +131,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
-    private static Paint TRACK_PAINT, ROUTE_PAINT, ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
+    private static Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
     private TileRendererLayer oceansLayer, worldLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
@@ -190,12 +191,6 @@ public class MapsforgeMapView implements MapView {
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e);
         }
-        TRACK_PAINT = GRAPHIC_FACTORY.createPaint();
-        TRACK_PAINT.setColor(BLUE);
-        TRACK_PAINT.setStrokeWidth(2);
-        ROUTE_PAINT = GRAPHIC_FACTORY.createPaint();
-        ROUTE_PAINT.setColor(0x993379FF);
-        ROUTE_PAINT.setStrokeWidth(5);
         ROUTE_NOT_VALID_PAINT = GRAPHIC_FACTORY.createPaint();
         ROUTE_NOT_VALID_PAINT.setColor(0xFFFF0000);
         ROUTE_NOT_VALID_PAINT.setStrokeWidth(5);
@@ -457,11 +452,15 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
+                Paint routePaint = GRAPHIC_FACTORY.createPaint();
+                // routePaint.setColor(0x993379FF);
+                routePaint.setColor(preferences.getInt(ROUTE_LINE_COLOR_PREFERENCE, 0x993379FF));
+                routePaint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
-                    Polyline polyline = new Polyline(intermediateRoute.latLongs, intermediateRoute.valid ? ROUTE_PAINT : ROUTE_NOT_VALID_PAINT, tileSize);
+                    Polyline polyline = new Polyline(intermediateRoute.latLongs, intermediateRoute.valid ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
                     removeLayer(pairWithLayer);
                     getLayerManager().getLayers().add(polyline);
@@ -531,9 +530,12 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
+                Paint paint = GRAPHIC_FACTORY.createPaint();
+                paint.setColor(preferences.getInt(TRACK_LINE_COLOR_PREFERENCE, 0xFF0000FF));
+                paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), TRACK_PAINT, tileSize);
+                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
                     getLayerManager().getLayers().add(line);
                 }

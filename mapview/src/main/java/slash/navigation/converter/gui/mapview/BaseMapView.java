@@ -68,6 +68,7 @@ import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.converter.gui.mapview.MapViewConstants.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.Range.asRange;
@@ -782,8 +783,8 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
-        String color = preferences.get("routeLineColor", "6CB1F3");
-        int width = preferences.getInt("routeLineWidth", 5);
+        String color = preferences.get(ROUTE_LINE_COLOR_PREFERENCE, "6CB1F3");
+        int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
@@ -830,8 +831,8 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
-        String color = preferences.get("trackLineColor", "0033FF");
-        int width = preferences.getInt("trackLineWidth", 2);
+        String color = preferences.get(TRACK_LINE_COLOR_PREFERENCE, "0033FF");
+        int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
