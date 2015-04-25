@@ -26,6 +26,7 @@ import slash.navigation.common.NavigationPosition;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
@@ -66,7 +67,7 @@ public class BeelineService implements RoutingService {
     }
 
     public List<TravelMode> getAvailableTravelModes() {
-        return asList(BEELINE);
+        return singletonList(BEELINE);
     }
 
     public TravelMode getPreferredTravelMode() {

@@ -196,6 +196,7 @@ public class BRouter implements RoutingService {
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", 1000L));
             if (routingEngine.getErrorMessage() != null) {
+                // TODO handle routing timeouts differently
                 log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
                 return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
             }
@@ -238,13 +239,9 @@ public class BRouter implements RoutingService {
     private List<NavigationPosition> asPositions(OsmTrack track) {
         List<NavigationPosition> result = new ArrayList<>();
         for (OsmPathElement element : track.nodes) {
-            result.add(asPosition(element));
+            result.add(new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), null));
         }
         return result;
-    }
-
-    private NavigationPosition asPosition(OsmPathElement element) {
-        return new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), null);
     }
 
     double asLongitude(int longitude) {

@@ -112,7 +112,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidFerries() {
-        return preferences.getBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), true);
+        return preferences.getBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), false);
     }
 
     public void setAvoidFerries(boolean avoidFerries) {
@@ -121,7 +121,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidHighways() {
-        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), true);
+        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), false);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
@@ -130,7 +130,7 @@ public class RoutingServiceFacade {
     }
 
     public boolean isAvoidTolls() {
-        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), true);
+        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), false);
     }
 
     public void setAvoidTolls(boolean avoidTolls) {

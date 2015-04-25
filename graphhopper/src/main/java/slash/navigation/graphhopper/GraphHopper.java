@@ -44,12 +44,14 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.graphhopper.util.CmdArgs.read;
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
+import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -138,8 +140,10 @@ public class GraphHopper implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        if(osmPbfFile == null)
-            return null;
+        if(osmPbfFile == null){
+            log.warning(format("Cannot route between %s and %s since there is no OSM .pbf file", from, to));
+            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+        }
 
         long start = currentTimeMillis();
         try {
@@ -192,7 +196,7 @@ public class GraphHopper implements RoutingService {
     private List<NavigationPosition> asPositions(PointList points) {
         List<NavigationPosition> result = new ArrayList<>();
         for (int i = 0, c = points.getSize(); i < c; i++) {
-            result.add(new SimpleNavigationPosition(points.getLongitude(i), points.getLatitude(i)));
+            result.add(new SimpleNavigationPosition(points.getLongitude(i), points.getLatitude(i), points.getElevation(i), null));
         }
         return result;
     }

@@ -162,7 +162,7 @@ public abstract class BaseMapView implements MapView {
                                     e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                     e.getColumn() == ALL_COLUMNS))
                         return;
-                    update(allRowsChanged || insertOrDelete);
+                    update(allRowsChanged);
                 }
                 // update position marker on updates of longitude and latitude
                 if (e.getType() == UPDATE &&
@@ -179,6 +179,7 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         });
+
         characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
             }
@@ -193,17 +194,20 @@ public abstract class BaseMapView implements MapView {
                 updateRouteButDontRecenter();
             }
         });
+
         unitSystemModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setDegreeFormat();
             }
         });
+
         mapViewCallback.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 if (positionsModel.getRoute().getCharacteristics().equals(Route))
                     update(false);
             }
         });
+
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
             public int getZoom() {
                 return BaseMapView.this.getZoom();
@@ -949,17 +953,14 @@ public abstract class BaseMapView implements MapView {
                     PositionPair pair = addToQueue.get(key);
                     NavigationPosition origin = pair.getFirst();
                     NavigationPosition destination = pair.getSecond();
-                    StringBuilder buffer = new StringBuilder();
-                    buffer.append(mode).append("({");
-                    buffer.append("origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
-                    buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
-                    buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
-                    buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(", ");
-                    buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
-                    buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
-                    buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
-                    buffer.append(key).append(");\n");
-                    executeScript(buffer.toString());
+                    executeScript(mode +
+                            "({" + "origin: new google.maps.LatLng(" + origin.getLatitude() + "," + origin.getLongitude() + "), " +
+                            "destination: new google.maps.LatLng(" + destination.getLatitude() + "," + destination.getLongitude() + "), " +
+                            "travelMode: google.maps.DirectionsTravelMode." + mapViewCallback.getTravelMode().getName().toUpperCase() + ", " +
+                            "avoidFerries: " + mapViewCallback.isAvoidFerries() + ", " +
+                            "avoidHighways: " + mapViewCallback.isAvoidHighways() + ", " +
+                            "avoidTolls: " + mapViewCallback.isAvoidTolls() + ", " +
+                            "region: \"" + Locale.getDefault().getCountry().toLowerCase() + "\"}, " + key + ");\n");
                     try {
                         sleep(preferences.getInt("insertWaypointsSegmentTimeout", 1000));
                     } catch (InterruptedException e) {
