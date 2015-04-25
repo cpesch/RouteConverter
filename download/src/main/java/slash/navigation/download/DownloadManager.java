@@ -21,6 +21,8 @@
 package slash.navigation.download;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.download.executor.DownloadExecutor;
+import slash.navigation.download.executor.DownloadExecutorComparator;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
@@ -141,20 +143,24 @@ public class DownloadManager {
         downloadListeners.add(listener);
     }
 
-    void fireDownloadProgressed(Download download) {
+    public void updateDownload(Download download) {
+        model.updateDownload(download);
+    }
+
+    public void fireDownloadProgressed(Download download) {
         int percentage = download.getPercentage();
         for (DownloadListener listener : downloadListeners) {
             listener.progressed(download, percentage);
         }
     }
 
-    void fireDownloadFailed(Download download) {
+    public void fireDownloadFailed(Download download) {
         for (DownloadListener listener : downloadListeners) {
             listener.failed(download);
         }
     }
 
-    void fireDownloadSucceeded(Download download) {
+    public void fireDownloadSucceeded(Download download) {
         for (DownloadListener listener : downloadListeners) {
             listener.succeeded(download);
         }
@@ -184,11 +190,11 @@ public class DownloadManager {
             }
         }
 
-        Download queued = getModel().getDownload(download.getUrl());
+        Download queued = model.getDownload(download.getUrl());
         if (queued != null) {
             // let a GET replace a HEAD
             if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
-                getModel().removeDownload(queued);
+                model.removeDownload(queued);
             else {
                 if (COMPLETED.contains(queued.getState()))
                     startExecutor(queued);

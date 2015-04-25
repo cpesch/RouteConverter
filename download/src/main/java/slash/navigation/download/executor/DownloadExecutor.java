@@ -18,9 +18,15 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.download;
+package slash.navigation.download.executor;
 
-import slash.navigation.download.actions.*;
+import slash.navigation.download.Download;
+import slash.navigation.download.DownloadManager;
+import slash.navigation.download.State;
+import slash.navigation.download.performer.ActionPerformer;
+import slash.navigation.download.performer.GetPerformer;
+import slash.navigation.download.performer.GetRangePerformer;
+import slash.navigation.download.performer.HeadPerformer;
 
 import java.util.logging.Logger;
 
@@ -39,12 +45,13 @@ public class DownloadExecutor implements Runnable {
 
     private final Download download;
     private final DownloadManager downloadManager;
-    private ModelUpdater modelUpdater = new ModelUpdater();
+    private final ModelUpdater modelUpdater;
 
     public DownloadExecutor(Download download, DownloadManager downloadManager) {
         this.download = download;
         this.downloadManager = downloadManager;
         download.setState(Queued);
+        modelUpdater = new ModelUpdater(download, downloadManager);
     }
 
     public Download getDownload() {
@@ -85,7 +92,7 @@ public class DownloadExecutor implements Runnable {
 
     public void updateState(State state) {
         download.setState(state);
-        downloadManager.getModel().updateDownload(download);
+        downloadManager.updateDownload(download);
         log.fine(format("State for download from %s changed to %s", download.getUrl(), state));
     }
 
@@ -107,16 +114,4 @@ public class DownloadExecutor implements Runnable {
         downloadManager.fireDownloadSucceeded(download);
     }
 
-    public class ModelUpdater implements CopierListener {
-        public void expectingBytes(long byteCount) {
-            download.setExpectedBytes(byteCount);
-        }
-
-        public void processedBytes(long byteCount) {
-            download.setProcessedBytes(byteCount);
-            downloadManager.getModel().updateDownload(download);
-            if (download.getState().equals(Downloading))
-                downloadManager.fireDownloadProgressed(download);
-        }
-    }
 }

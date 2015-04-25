@@ -17,9 +17,10 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download;
+package slash.navigation.download.executor;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.download.Checksum;
 
 import java.util.Comparator;
 
@@ -28,7 +29,7 @@ import java.util.Comparator;
  *
  * @author Christian Pesch
  */
-class DownloadExecutorComparator implements Comparator<Runnable> {
+public class DownloadExecutorComparator implements Comparator<Runnable> {
     public int compare(Runnable r1, Runnable r2) {
         if (!(r1 instanceof DownloadExecutor))
             return -1;
