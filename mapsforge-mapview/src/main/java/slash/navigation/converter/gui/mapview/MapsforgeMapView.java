@@ -453,7 +453,6 @@ public class MapsforgeMapView implements MapView {
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 Paint routePaint = GRAPHIC_FACTORY.createPaint();
-                // routePaint.setColor(0x993379FF);
                 routePaint.setColor(preferences.getInt(ROUTE_LINE_COLOR_PREFERENCE, 0x993379FF));
                 routePaint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
