@@ -121,7 +121,11 @@ public class NotificationManager {
 
     private void show(String message) {
         label.setText(message);
-        Point locationOnScreen = getFrame().getLocationOnScreen();
+        JFrame frame = getFrame();
+        if(frame == null)
+            return;
+
+        Point locationOnScreen = frame.getLocationOnScreen();
         Dimension frameSize = getFrame().getSize();
         window.pack();
         window.setLocation(locationOnScreen.x + frameSize.width - label.getWidth() - 25,
