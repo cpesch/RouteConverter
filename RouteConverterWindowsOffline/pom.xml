@@ -123,7 +123,7 @@
                                 <versionInfo>
                                     <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
                                     <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
-                                    <fileDescription>RouteConverter displays, modifies and converts GPS data between over 70 formats</fileDescription>
+                                    <fileDescription>RouteConverter displays, modifies and converts GPS data between over 75 formats</fileDescription>
                                     <copyright>Christian Pesch</copyright>
                                     <productName>RouteConverter</productName>
                                     <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>

@@ -26,25 +26,21 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
-import slash.common.io.TokenResolver;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
-import java.util.Locale;
 import java.util.logging.Logger;
 
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
 import static javafx.application.Platform.isFxApplicationThread;
 import static javafx.application.Platform.runLater;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
-import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.parseDouble;
+import static slash.common.system.Platform.isJavaFX;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -55,15 +51,12 @@ import static slash.common.io.Transfer.parseDouble;
 
 public class JavaFXWebViewMapView extends BaseMapView {
     private static final Logger log = Logger.getLogger(JavaFXWebViewMapView.class.getName());
-    private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "mapServer";  // TODO push up?
-    private static final String DEBUG_PREFERENCE = "debug"; // TODO push up?
 
     private JFXPanel panel;
     private WebView webView;
-    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false); // TODO push up?
 
     public boolean isSupportedPlatform() {
-        return true;
+        return isJavaFX();
     }
 
     public Component getComponent() {
@@ -92,35 +85,12 @@ public class JavaFXWebViewMapView extends BaseMapView {
         }
     }
 
-    private boolean loadWebPage() { // TODO unify with EclipseSWTMapView?
+    private boolean loadWebPage() {
         try {
-            final String language = Locale.getDefault().getLanguage().toLowerCase();
-            final String country = Locale.getDefault().getCountry().toLowerCase();
-            File html = extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
-                public String resolveToken(String tokenName) {
-                    if (tokenName.equals("language"))
-                        return language;
-                    if (tokenName.equals("country"))
-                        return country;
-                    if (tokenName.equals("mapserver"))
-                        return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
-                    if (tokenName.equals("maptype"))
-                        return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
-                    return tokenName;
-                }
-            });
-            if (html == null)
-                throw new IllegalArgumentException("Cannot extract routeconverter.html");
-            extractFile("slash/navigation/converter/gui/mapview/contextmenu.js");
-            extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
-            extractFile("slash/navigation/converter/gui/mapview/label.js");
-            extractFile("slash/navigation/converter/gui/mapview/latlngcontrol.js");
-
-            final String url = html.toURI().toURL().toExternalForm();
+            final String url = prepareWebPage();
             webView.getEngine().load(url);
-            log.fine(currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
-            log.severe("Cannot create WebBrowser: " + t);
+            log.severe("Cannot load web page: " + t);
             setInitializationCause(t);
             return false;
         }
@@ -155,86 +125,9 @@ public class JavaFXWebViewMapView extends BaseMapView {
         });
     }
 
-    private void tryToInitialize(int count, long start) { // TODO unify with EclipseSWTMapView?
-        boolean initialized = getComponent() != null && isMapInitialized();
-        synchronized (this) {
-            this.initialized = initialized;
-        }
-        log.fine("Initialized map: " + initialized);
-
-        if (isInitialized()) {
-            runBrowserInteractionCallbacksAndTests(start);
-        } else {
-            long end = currentTimeMillis();
-            int timeout = count++ * 100;
-            if (timeout > 3000)
-                timeout = 3000;
-            log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
-
-            try {
-                Thread.sleep(timeout);
-            } catch (InterruptedException e) {
-                // intentionally left empty
-            }
-            tryToInitialize(count, start);
-        }
-    }
-
-    private void runBrowserInteractionCallbacksAndTests(long start) { // TODO unify with EclipseSWTMapView?
-        long end = currentTimeMillis();
-        log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
-        initializeAfterLoading();
-        initializeBrowserInteraction();
-        initializeCallbackListener();
-        checkLocalhostResolution();
-        checkCallback();
-        end = currentTimeMillis();
-        log.fine("Browser interaction is running after " + (end - start) + " ms");
-    }
-
-    private boolean isMapInitialized() {   // TODO unify with EclipseSWTMapView?
+    protected boolean isMapInitialized() {
         String result = executeScriptWithResult("isInitialized();");
         return parseBoolean(result);
-    }
-
-    private void initializeAfterLoading() { // TODO unify with EclipseSWTMapView?
-        resize();
-        update(true);
-    }
-
-    // resizing
-
-    private boolean hasBeenResizedToInvisible = false;
-
-    public void resize() { // TODO unify with EclipseSWTMapView?
-        if (!isInitialized() || !getComponent().isShowing())
-            return;
-
-        synchronized (notificationMutex) {
-            // if map is not visible remember to update and resize it again
-            // once the map becomes visible again
-            if (!isVisible()) {
-                hasBeenResizedToInvisible = true;
-            } else if (hasBeenResizedToInvisible) {
-                hasBeenResizedToInvisible = false;
-                update(true);
-            }
-            resizeMap();
-        }
-    }
-
-    private int lastWidth = -1, lastHeight = -1;
-
-    private void resizeMap() { // TODO unify with EclipseSWTMapView?
-        synchronized (notificationMutex) {
-            int width = max(getComponent().getWidth(), 0);
-            int height = max(getComponent().getHeight(), 0);
-            if (width != lastWidth || height != lastHeight) {
-                executeScript("resize(" + width + "," + height + ");");
-            }
-            lastWidth = width;
-            lastHeight = height;
-        }
     }
 
     // bounds and center
@@ -283,6 +176,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
         if (script.length() == 0)
             return null;
 
+        final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
         if (!isFxApplicationThread()) {

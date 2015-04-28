@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -65,6 +66,7 @@ import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
@@ -84,7 +86,9 @@ public abstract class BaseMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    protected static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "mapServer";
+    private static final String MAP_TYPE_PREFERENCE = "mapType";
+    protected static final String DEBUG_PREFERENCE = "debug";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
@@ -137,6 +141,79 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void initializeBrowser();
+
+    protected String prepareWebPage() throws IOException {
+        final String language = Locale.getDefault().getLanguage().toLowerCase();
+        final String country = Locale.getDefault().getCountry().toLowerCase();
+        File html = extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
+            public String resolveToken(String tokenName) {
+                if (tokenName.equals("language"))
+                    return language;
+                if (tokenName.equals("country"))
+                    return country;
+                if (tokenName.equals("mapserver"))
+                    return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
+                if (tokenName.equals("maptype"))
+                    return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
+                return tokenName;
+            }
+        });
+        if (html == null)
+            throw new IllegalArgumentException("Cannot extract routeconverter.html");
+
+        extractFile("slash/navigation/converter/gui/mapview/contextmenu.js");
+        extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
+        extractFile("slash/navigation/converter/gui/mapview/label.js");
+        extractFile("slash/navigation/converter/gui/mapview/latlngcontrol.js");
+
+        return html.toURI().toURL().toExternalForm();
+    }
+
+    protected void tryToInitialize(int count, long start) {
+        boolean initialized = getComponent() != null && isMapInitialized();
+        synchronized (this) {
+            this.initialized = initialized;
+        }
+        log.fine("Initialized map: " + initialized);
+
+        if (isInitialized()) {
+            runBrowserInteractionCallbacksAndTests(start);
+        } else {
+            long end = currentTimeMillis();
+            int timeout = count++ * 100;
+            if (timeout > 3000)
+                timeout = 3000;
+            log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
+
+            try {
+                sleep(timeout);
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
+            tryToInitialize(count, start);
+        }
+    }
+
+    protected void runBrowserInteractionCallbacksAndTests(long start) {
+        long end = currentTimeMillis();
+        log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
+        initializeAfterLoading();
+        initializeBrowserInteraction();
+        initializeCallbackListener();
+        checkLocalhostResolution();
+        checkCallback();
+        setDegreeFormat();
+        setShowCoordinates();
+        end = currentTimeMillis();
+        log.fine("Browser interaction is running after " + (end - start) + " ms");
+    }
+
+    protected abstract boolean isMapInitialized();
+
+    protected void initializeAfterLoading() {
+        resize();
+        update(true);
+    }
 
     protected void setModel(final PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
@@ -551,6 +628,41 @@ public abstract class BaseMapView implements MapView {
         });
     }
 
+    // resizing
+
+    private boolean hasBeenResizedToInvisible = false;
+
+    public void resize() {
+        if (!isInitialized() || !getComponent().isShowing())
+            return;
+
+        synchronized (notificationMutex) {
+            // if map is not visible remember to update and resize it again
+            // once the map becomes visible again
+            if (!isVisible()) {
+                hasBeenResizedToInvisible = true;
+            } else if (hasBeenResizedToInvisible) {
+                hasBeenResizedToInvisible = false;
+                update(true);
+            }
+            resizeMap();
+        }
+    }
+
+    private int lastWidth = -1, lastHeight = -1;
+
+    private void resizeMap() {
+        synchronized (notificationMutex) {
+            int width = max(getComponent().getWidth(), 0);
+            int height = max(getComponent().getHeight(), 0);
+            if (width != lastWidth || height != lastHeight) {
+                executeScript("resize(" + width + "," + height + ");");
+            }
+            lastWidth = width;
+            lastHeight = height;
+        }
+    }
+
     // disposal
 
     public void dispose() {
@@ -697,6 +809,8 @@ public abstract class BaseMapView implements MapView {
     private boolean isRecenteringMap() {
         return preferences.getBoolean(RECENTER_MAP_PREFERENCE, true);
     }
+
+    // bounds and center
 
     protected abstract NavigationPosition getNorthEastBounds();
 
