@@ -327,6 +327,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         invokeLater(new Runnable() {
             public void run() {
+                initializeRoutingServices();
+
                 getMapView().initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
