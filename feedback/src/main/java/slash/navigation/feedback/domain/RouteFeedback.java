@@ -22,6 +22,7 @@ package slash.navigation.feedback.domain;
 
 import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
@@ -43,7 +44,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.navigation.datasources.DataSourcesUtil.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**

@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.Route;
+import slash.navigation.routes.impl.RouteModel;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

@@ -20,15 +20,15 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.domain.Category;
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeModel;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.CategoryTreeNodeImpl;
-import slash.navigation.catalog.model.RouteComparator;
-import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesTableModel;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.Route;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNodeImpl;
+import slash.navigation.routes.impl.RouteComparator;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 
 import javax.swing.tree.TreeModel;

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.*;
 import java.awt.*;

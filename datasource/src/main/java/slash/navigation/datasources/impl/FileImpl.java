@@ -24,7 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 import slash.navigation.datasources.binding.FileType;
 
-import static slash.navigation.datasources.DataSourcesUtil.asBoundingBox;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asBoundingBox;
 
 /**
  * Implementation of a {@link File} based on a {@link FileType}.

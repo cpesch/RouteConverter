@@ -27,6 +27,7 @@ import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
@@ -44,7 +45,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
-import static slash.navigation.datasources.DataSourcesUtil.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 
 /**

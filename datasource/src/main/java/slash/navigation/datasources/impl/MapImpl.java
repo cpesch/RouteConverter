@@ -24,7 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Map;
 import slash.navigation.datasources.binding.MapType;
 
-import static slash.navigation.datasources.DataSourcesUtil.asBoundingBox;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asBoundingBox;
 
 /**
  * Implementation of a {@link Map} based on a {@link MapType}.

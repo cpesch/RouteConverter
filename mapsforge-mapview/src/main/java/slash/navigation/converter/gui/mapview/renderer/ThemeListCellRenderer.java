@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.models.VectorTheme;
+import slash.navigation.maps.impl.VectorTheme;
 
 import javax.swing.*;
 import java.awt.*;

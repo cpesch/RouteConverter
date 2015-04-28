@@ -1,5 +1,5 @@
 /**
- * The base API.
+ * Core of the Conversion API.
  * <p>
  * This package facilitates the implementation of the <a href="NavigationFormatParser.html">NavigationFormatParser</a>.
  * The formats are based on the interfaces <a href="BaseRoute.html">BaseRoute</a>,

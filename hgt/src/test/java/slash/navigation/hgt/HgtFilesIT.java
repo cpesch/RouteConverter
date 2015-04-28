@@ -34,7 +34,7 @@ import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
-import static slash.navigation.datasources.DataSourcesUtil.createChecksumType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createChecksumType;
 
 public class HgtFilesIT {
 

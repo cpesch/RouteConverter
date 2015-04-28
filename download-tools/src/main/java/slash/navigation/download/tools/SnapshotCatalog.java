@@ -22,7 +22,7 @@ package slash.navigation.download.tools;
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
-import slash.navigation.datasources.DataSourceService;
+import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.datasources.Edition;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.tools.base.BaseDownloadTool;

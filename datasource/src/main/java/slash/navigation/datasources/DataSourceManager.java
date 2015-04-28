@@ -20,6 +20,7 @@
 
 package slash.navigation.datasources;
 
+import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;

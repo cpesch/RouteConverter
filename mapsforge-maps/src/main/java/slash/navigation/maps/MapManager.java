@@ -29,7 +29,7 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.maps.models.*;
+import slash.navigation.maps.impl.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;

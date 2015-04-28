@@ -28,7 +28,7 @@ import slash.navigation.download.Checksum;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.datasources.DataSourcesUtil.asChecksum;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksum;
 
 /**
  * Implementation of a {@link Downloadable} based on a {@link DownloadableType}.

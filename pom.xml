@@ -106,11 +106,11 @@
                         <doctitle>RouteConverter ${project.version} API</doctitle>
                         <windowtitle>RouteConverter ${project.version} API</windowtitle>
                         <encoding>Cp1252</encoding>
-                        <header>RouteConverter API</header>
+                        <header>Conversion API</header>
                         <bottom>Created by Christian Pesch</bottom>
                         <detectLinks>true</detectLinks>
                         <excludePackageNames>
-                            slash.common.helpers*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.download*:slash.navigation.earthtools*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.rest*:slash.navigation.routing*:*binding*
+                            slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.earthtools*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.maps*:slash.navigation.rest*:slash.navigation.routing*:*binding*
                         </excludePackageNames>
                         <groups>
                             <group>

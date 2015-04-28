@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;

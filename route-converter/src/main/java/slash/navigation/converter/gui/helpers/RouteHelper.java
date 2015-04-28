@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 
 /**
