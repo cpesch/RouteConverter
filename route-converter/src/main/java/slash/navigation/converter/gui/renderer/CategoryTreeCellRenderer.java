@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;

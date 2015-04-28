@@ -28,7 +28,7 @@ import slash.navigation.datasources.binding.FragmentType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.datasources.DataSourcesUtil.asChecksum;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksum;
 
 /**
  * Implementation of a {@link Fragment} based on a {@link FragmentType}.

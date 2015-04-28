@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.datasources.DataSourcesUtil.asBoundingBoxType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asBoundingBoxType;
 
 public class SendChecksumsIT extends RouteFeedbackServiceBase {
     private static final CompactCalendar CALENDARF1 = calendar(2014, 1, 1, 1, 1, 1);

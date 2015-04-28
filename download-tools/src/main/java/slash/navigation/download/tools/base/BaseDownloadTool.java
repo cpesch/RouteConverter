@@ -20,7 +20,7 @@
 package slash.navigation.download.tools.base;
 
 import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.DataSourceService;
+import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.rest.Credentials;
 import slash.navigation.rest.SimpleCredentials;
 

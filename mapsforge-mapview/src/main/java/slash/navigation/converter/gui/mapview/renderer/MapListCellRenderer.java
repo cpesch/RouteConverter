@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.mapview.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.models.OnlineMap;
+import slash.navigation.maps.impl.OnlineMap;
 
 import javax.swing.*;
 import java.awt.*;

@@ -21,7 +21,7 @@ package slash.navigation.maps;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
-import slash.navigation.datasources.DataSourceService;
+import slash.navigation.datasources.helpers.DataSourceService;
 
 import java.util.ArrayList;
 import java.util.List;

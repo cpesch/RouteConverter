@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

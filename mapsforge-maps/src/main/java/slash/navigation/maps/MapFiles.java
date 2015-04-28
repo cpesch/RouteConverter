@@ -21,8 +21,8 @@ package slash.navigation.maps;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Theme;
-import slash.navigation.maps.models.RemoteMapImpl;
-import slash.navigation.maps.models.RemoteThemeImpl;
+import slash.navigation.maps.impl.RemoteMapImpl;
+import slash.navigation.maps.impl.RemoteThemeImpl;
 
 import java.util.ArrayList;
 import java.util.List;

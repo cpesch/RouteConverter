@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.mapview.models;
 
-import slash.navigation.maps.models.ItemModel;
+import slash.navigation.maps.impl.ItemModel;
 
 import javax.swing.*;
 import javax.swing.event.*;

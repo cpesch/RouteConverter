@@ -50,7 +50,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
-import static slash.navigation.datasources.DataSourcesUtil.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;

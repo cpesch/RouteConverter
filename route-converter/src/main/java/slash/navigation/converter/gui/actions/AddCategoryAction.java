@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.domain.Category;
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
