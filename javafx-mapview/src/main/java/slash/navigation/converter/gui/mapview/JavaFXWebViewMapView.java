@@ -89,12 +89,12 @@ public class JavaFXWebViewMapView extends BaseMapView {
         try {
             final String url = prepareWebPage();
             webView.getEngine().load(url);
+            return true;
         } catch (Throwable t) {
             log.severe("Cannot load web page: " + t);
             setInitializationCause(t);
             return false;
         }
-        return true;
     }
 
     protected void initializeBrowser() {
@@ -112,8 +112,12 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     private int startCount = 0;
 
                     public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
-                        // log.fine("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
+                        log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                         if (newState == SUCCEEDED) {
+                            if (!isMapInitialized()) {
+                                log.info("WebView map not initialized, calling initialize()");
+                                executeScript("initialize();");
+                            }
                             tryToInitialize(startCount++, currentTimeMillis());
                         }
                     }
@@ -184,7 +188,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
                 public void run() {
                     result[0] = webView.getEngine().executeScript(script);
                     if (debug && pollingCallback) {
-                        log.info("After invokeLater, executeScript with result " + result[0]);
+                        log.info("After runLater, executeScript with result " + result[0]);
                     }
                 }
             });
