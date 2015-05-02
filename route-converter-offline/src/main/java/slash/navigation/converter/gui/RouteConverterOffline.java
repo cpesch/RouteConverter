@@ -24,13 +24,9 @@ import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
-import slash.navigation.earthtools.EarthToolsService;
-import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.routing.BeelineService;
@@ -85,21 +81,6 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected MapViewCallbackOffline getMapViewCallback() {
         return new MapViewCallbackOfflineImpl();
-    }
-
-    protected void initializeElevationServices() {
-        getElevationServiceFacade().clear();
-        getElevationServiceFacade().addElevationService(new EarthToolsService());
-        GeoNamesService geoNames = new GeoNamesService();
-        getElevationServiceFacade().addElevationService(geoNames);
-        getElevationServiceFacade().setPreferredElevationService(geoNames);
-        getElevationServiceFacade().addElevationService(new GoogleMapsService());
-
-        getHgtFilesService().initialize();
-        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
-            getElevationServiceFacade().addElevationService(hgtFile);
-            getElevationServiceFacade().setPreferredElevationService(hgtFile);
-        }
     }
 
     protected void initializeRoutingServices() {

@@ -70,6 +70,10 @@ public class HgtFiles implements ElevationService {
         return true;
     }
 
+    public boolean isSupportsPath() {
+        return true;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE + getName(), "");
     }

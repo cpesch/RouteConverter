@@ -1194,7 +1194,7 @@ public abstract class BaseMapView implements MapView {
             if (matcher.matches()) {
                 int callbackNumber = parseInt(matcher.group(2));
                 if (lastCallbackNumber >= callbackNumber) {
-                    log.info("ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber);
+                    log.info("Ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber);
                     break;
                 }
                 lastCallbackNumber = callbackNumber;
@@ -1202,14 +1202,14 @@ public abstract class BaseMapView implements MapView {
 
                 String callback = matcher.group(3);
                 if (processCallback(callback)) {
-                    log.fine("processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
+                    log.fine("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
                     break;
                 }
             }
 
             // process body of POST requests
             if (hasValidCallbackNumber && processCallback(line)) {
-                log.fine("processed POST callback " + line + " with number: " + lastCallbackNumber);
+                log.fine("Processed POST callback " + line + " with number: " + lastCallbackNumber);
                 break;
             }
         }

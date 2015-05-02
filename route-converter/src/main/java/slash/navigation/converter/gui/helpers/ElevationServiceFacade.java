@@ -24,8 +24,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -64,13 +63,20 @@ public class ElevationServiceFacade {
         return elevationServices;
     }
 
+    public ElevationService findElevationService(String elevationServiceName) {
+        for (ElevationService service : getElevationServices()) {
+            if (elevationServiceName.endsWith(service.getName()))
+                return service;
+        }
+        return null;
+    }
+
     public ElevationService getElevationService() {
         String lookupServiceName = preferences.get(ELEVATION_SERVICE, preferredElevationService.getName());
 
-        for (ElevationService service : getElevationServices()) {
-            if (lookupServiceName.endsWith(service.getName()))
-                return service;
-        }
+        ElevationService service = findElevationService(lookupServiceName);
+        if (service != null)
+            return service;
 
         if (!loggedFailedWarning) {
             log.warning(format("Failed to find elevation service %s; using preferred %s", lookupServiceName, preferredElevationService.getName()));

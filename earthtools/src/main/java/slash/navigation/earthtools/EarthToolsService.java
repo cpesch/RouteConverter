@@ -69,6 +69,10 @@ public class EarthToolsService implements ElevationService {
         return false;
     }
 
+    public boolean isSupportsPath() {
+        return false;
+    }
+
     public String getPath() {
         throw new UnsupportedOperationException();
     }

@@ -30,13 +30,7 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
-import slash.navigation.converter.gui.renderer.DegreeFormatListCellRenderer;
-import slash.navigation.converter.gui.renderer.ElevationServiceListCellRenderer;
-import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
-import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutingServiceListCellRenderer;
-import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
-import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
+import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
@@ -61,43 +55,15 @@ import java.util.TimeZone;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Arrays.sort;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
-import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JFileChooser.*;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.common.DegreeFormat.Degrees;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
-import static slash.navigation.common.NumberPattern.Description_Only;
-import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
-import static slash.navigation.common.NumberPattern.Number_Only;
-import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
-import static slash.navigation.common.UnitSystem.Metric;
-import static slash.navigation.common.UnitSystem.Nautic;
-import static slash.navigation.common.UnitSystem.Statute;
-import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
-import static slash.navigation.converter.gui.RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE;
-import static slash.navigation.converter.gui.RouteConverter.SHOW_COORDINATES_PREFERENCE;
-import static slash.navigation.converter.gui.RouteConverter.SHOW_WAYPOINT_DESCRIPTION_PREFERENCE;
-import static slash.navigation.converter.gui.RouteConverter.getPreferences;
-import static slash.navigation.gui.helpers.UIHelper.ARABIA;
-import static slash.navigation.gui.helpers.UIHelper.CROATIA;
-import static slash.navigation.gui.helpers.UIHelper.CZECH;
-import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
-import static slash.navigation.gui.helpers.UIHelper.POLAND;
-import static slash.navigation.gui.helpers.UIHelper.PORTUGAL;
-import static slash.navigation.gui.helpers.UIHelper.RUSSIA;
-import static slash.navigation.gui.helpers.UIHelper.SERBIA;
-import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
-import static slash.navigation.gui.helpers.UIHelper.SPAIN;
-import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.common.DegreeFormat.*;
+import static slash.navigation.common.NumberPattern.*;
+import static slash.navigation.common.UnitSystem.*;
+import static slash.navigation.converter.gui.RouteConverter.*;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * Dialog to show options for the program.
@@ -277,9 +243,7 @@ public class OptionsDialog extends SimpleDialog {
         DefaultComboBoxModel<ElevationService> elevationServiceModel = new DefaultComboBoxModel<>();
         for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
             elevationServiceModel.addElement(service);
-        ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
-        if (elevationService != null)
-            elevationServiceModel.setSelectedItem(elevationService);
+        elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
         comboBoxElevationService.setModel(elevationServiceModel);
         comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
@@ -294,7 +258,9 @@ public class OptionsDialog extends SimpleDialog {
 
         textFieldElevationServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                r.getElevationServiceFacade().getElevationService().setPath(textFieldElevationServicePath.getText());
+                ElevationService service = r.getElevationServiceFacade().getElevationService();
+                if (service.isSupportsPath())
+                    service.setPath(textFieldElevationServicePath.getText());
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -313,7 +279,7 @@ public class OptionsDialog extends SimpleDialog {
         handleElevationServiceUpdate();
 
         ComboBoxModel<UnitSystem> unitSystemModel = new DefaultComboBoxModel<>(new UnitSystem[]{
-                Metric, Statute, Nautic
+                Metric, Nautic, Statute
         });
         unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
         comboBoxUnitSystem.setModel(unitSystemModel);
@@ -401,9 +367,9 @@ public class OptionsDialog extends SimpleDialog {
 
     private void handleElevationServiceUpdate() {
         ElevationService service = RouteConverter.getInstance().getElevationServiceFacade().getElevationService();
-        textFieldElevationServicePath.setEnabled(service.isDownload());
-        textFieldElevationServicePath.setText(service.isDownload() ? service.getPath() : "");
-        buttonChooseElevationServicePath.setEnabled(service.isDownload());
+        textFieldElevationServicePath.setEnabled(service.isSupportsPath());
+        textFieldElevationServicePath.setText(service.isSupportsPath() ? service.getPath() : "");
+        buttonChooseElevationServicePath.setEnabled(service.isSupportsPath());
     }
 
     private void chooseBabelPath() {

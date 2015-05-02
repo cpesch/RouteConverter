@@ -295,7 +295,7 @@ public class RouteConverter extends SingleFrameApplication {
         try {
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
-            log.fine("Cannot create " + className + ": " + e);
+            log.info("Cannot create " + className + ": " + e);
             return null;
         }
     }
@@ -525,8 +525,9 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(new Runnable() {
             public void run() {
-                throwable.printStackTrace();
-                log.severe("Open error: " + throwable);
+                StringWriter stackTrace = new StringWriter();
+                throwable.printStackTrace(new PrintWriter(stackTrace));
+                log.severe("Open error from " + path + ": " + throwable + "\n" + stackTrace.toString());
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
@@ -541,9 +542,11 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         invokeLater(new Runnable() {
             public void run() {
-                throwable.printStackTrace();
-                log.severe("Open error: " + throwable);
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), getLocalizedMessage(throwable)));
+                StringWriter stackTrace = new StringWriter();
+                throwable.printStackTrace(new PrintWriter(stackTrace));
+                String dialogUrls = printArrayToDialogString(urls.toArray(new URL[urls.size()]));
+                log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + stackTrace.toString());
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);
@@ -1058,17 +1061,20 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void initializeElevationServices() {
         getElevationServiceFacade().clear();
+
+        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
+        getElevationServiceFacade().addElevationService(automaticElevationService);
+        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+
         getElevationServiceFacade().addElevationService(new EarthToolsService());
         getElevationServiceFacade().addElevationService(new GeoNamesService());
-        GoogleMapsService googleMapsService = new GoogleMapsService();
-        getElevationServiceFacade().addElevationService(googleMapsService);
-        getElevationServiceFacade().setPreferredElevationService(googleMapsService);
+        getElevationServiceFacade().addElevationService(new GoogleMapsService());
 
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
-    }
+   }
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().clear();
