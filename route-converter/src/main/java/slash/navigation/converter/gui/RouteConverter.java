@@ -59,7 +59,6 @@ import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
-import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.RoutingService;
 
@@ -436,7 +435,16 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public Credentials getCredentials() {
-        return new SimpleCredentials(preferences.get(USERNAME_PREFERENCE, ""), new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0])));
+        // important: return the current values since the Credentials is passed to the RemoteCatalog
+        return new Credentials() {
+            public String getUserName() {
+                return preferences.get(USERNAME_PREFERENCE, "");
+            }
+
+            public String getPassword() {
+                return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
+            }
+        };
     }
 
     public void setUserNamePreference(String userNamePreference, String passwordPreference) {
@@ -1015,7 +1023,7 @@ public class RouteConverter extends SingleFrameApplication {
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }
 
-    private String getApiUrl() {
+    public String getApiUrl() {
         return System.getProperty("api", "http://api.routeconverter.com/");
     }
 
