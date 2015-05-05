@@ -239,7 +239,6 @@
 
     <modules>
         <module>brouter</module>
-        <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
         <module>common-navigation</module>
@@ -263,6 +262,7 @@
         <module>navigation-formats</module>
         <module>profileview</module>
         <module>rest</module>
+        <module>route</module>
         <module>routing-service</module>
         <module>swt-mapview</module>
         <module>route-converter</module>
