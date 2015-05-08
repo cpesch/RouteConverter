@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createChecksumType;
@@ -95,7 +96,7 @@ public class HgtFilesIT {
     public void testDownloadElevationDataInZipFile() throws IOException {
         HgtFiles files = new HgtFiles(createDataSource("test id", "test zip", "http://www.viewfinderpanoramas.org/dem3/", "test"),
                 new DownloadManager(createTempFile("queueFile", ".xml")));
-        files.downloadElevationDataFor(asList(new LongitudeAndLatitude(35.71, 32.51)), true);
+        files.downloadElevationDataFor(singletonList(new LongitudeAndLatitude(35.71, 32.51)), true);
 
         Double elevation1 = files.getElevationFor(35.71, 32.51);
         assertNotNull(elevation1);

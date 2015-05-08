@@ -33,6 +33,7 @@ import java.util.List;
 
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static slash.navigation.base.NavigationFormats.getWriteFormats;
 
@@ -49,7 +50,7 @@ public class RecentFormatsModelTest {
     public void testAddFormat() throws IOException {
         NavigationFormat format = new Gpx11Format();
         recentFormatsModel.addFormat(format);
-        assertEquals(asList(format), recentFormatsModel.getFormats());
+        assertEquals(singletonList(format), recentFormatsModel.getFormats());
     }
 
     @Test
@@ -58,7 +59,7 @@ public class RecentFormatsModelTest {
         recentFormatsModel.addFormat(format);
         recentFormatsModel.addFormat(format);
         recentFormatsModel.addFormat(format);
-        assertEquals(asList(format), recentFormatsModel.getFormats());
+        assertEquals(singletonList(format), recentFormatsModel.getFormats());
     }
 
     @Test

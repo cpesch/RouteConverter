@@ -29,21 +29,37 @@ import slash.navigation.rest.Head;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static junit.framework.Assert.assertFalse;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.download.Action.*;
+import static slash.navigation.download.Action.Copy;
+import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.Head;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
-import static slash.navigation.download.State.*;
+import static slash.navigation.download.State.ChecksumError;
+import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Failed;
+import static slash.navigation.download.State.NotModified;
+import static slash.navigation.download.State.Processing;
+import static slash.navigation.download.State.Succeeded;
 
 public class DownloadManagerIT {
     private static final String DOWNLOAD = System.getProperty("download", "http://static.routeconverter.com/test/");
@@ -358,7 +374,7 @@ public class DownloadManagerIT {
         FileAndChecksum extracted = new FileAndChecksum(new File(target.getParentFile(), "447bytes.txt"), null);
 
         try {
-            List<FileAndChecksum> fragments = asList(extracted);
+            List<FileAndChecksum> fragments = singletonList(extracted);
             Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", Flatten,
                     null, new FileAndChecksum(target.getParentFile(), null), fragments);
             waitFor(download, Processing);
@@ -381,7 +397,7 @@ public class DownloadManagerIT {
         FileAndChecksum extracted = new FileAndChecksum(new File(target.getParentFile(), "first/second/447bytes.txt"), new Checksum(EXTRACTED_LAST_MODIFIED, CONTENT_LENGTH, SHA1));
 
         try {
-            List<FileAndChecksum> fragments = asList(extracted);
+            List<FileAndChecksum> fragments = singletonList(extracted);
             Download download = manager.queueForDownload("447 Bytes in a ZIP", DOWNLOAD + "447bytes.zip", Extract,
                     null, new FileAndChecksum(target.getParentFile(), new Checksum(ZIP_LAST_MODIFIED, ZIP_CONTENT_LENGTH, ZIP_SHA1)),
                     fragments);

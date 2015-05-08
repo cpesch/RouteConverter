@@ -21,7 +21,11 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.common.NavigationPosition;
 
 import javax.xml.namespace.QName;
@@ -43,7 +47,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
@@ -115,7 +119,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE));
+        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE), null);
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {
@@ -254,7 +258,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void write(MagicMapsIktRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        write(asList(route), target);
+        write(singletonList(route), target);
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {

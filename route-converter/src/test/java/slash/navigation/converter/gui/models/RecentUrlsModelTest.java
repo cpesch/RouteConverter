@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,7 +34,9 @@ import java.util.prefs.Preferences;
 import static java.io.File.createTempFile;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.io.Files.toFile;
 
@@ -55,7 +58,7 @@ public class RecentUrlsModelTest {
     public void testAddUrl() throws IOException {
         URL url = createTempFile("recent", ".url").toURI().toURL();
         model.addUrl(url);
-        assertEquals(asList(url), model.getUrls());
+        assertEquals(singletonList(url), model.getUrls());
     }
 
     @Test
@@ -64,7 +67,7 @@ public class RecentUrlsModelTest {
         model.addUrl(url);
         model.addUrl(url);
         model.addUrl(url);
-        assertEquals(asList(url), model.getUrls());
+        assertEquals(singletonList(url), model.getUrls());
     }
 
     @Test
@@ -114,7 +117,9 @@ public class RecentUrlsModelTest {
         }
 
         for (int i = 0; i < LIMIT; i++) {
-            assertTrue(toFile(collected.get(i)).delete());
+            File file = toFile(collected.get(i));
+            assertNotNull(file);
+            assertTrue(file.delete());
             List<URL> expected = collected.subList(i + 1, min(collected.size(), LIMIT));
             List<URL> actual = model.getUrls();
             assertEquals(expected.size(), actual.size());

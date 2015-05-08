@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -66,8 +67,8 @@ public class WaypointUpdaterTest {
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
         waypointUpdater.handleAdd(0, 0);
 
-        assertEquals(asList(w1), waypointUpdater.getPositionWithLayers());
-        verify(waypointOperation, times(1)).add(asList(w1));
+        assertEquals(singletonList(w1), waypointUpdater.getPositionWithLayers());
+        verify(waypointOperation, times(1)).add(singletonList(w1));
         verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
@@ -103,7 +104,7 @@ public class WaypointUpdaterTest {
         waypointUpdater.handleAdd(2, 2);
 
         assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
-        verify(waypointOperation, times(1)).add(asList(w3));
+        verify(waypointOperation, times(1)).add(singletonList(w3));
         verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
@@ -173,7 +174,7 @@ public class WaypointUpdaterTest {
         assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, never()).add(new ArrayList<PositionWithLayer>());
         verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
-        verify(waypointOperation, times(1)).update(asList(w2));
+        verify(waypointOperation, times(1)).update(singletonList(w2));
     }
 
     @Test

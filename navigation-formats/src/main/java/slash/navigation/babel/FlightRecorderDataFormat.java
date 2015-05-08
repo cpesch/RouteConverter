@@ -24,7 +24,7 @@ import slash.navigation.base.RouteCharacteristics;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -47,7 +47,7 @@ public class FlightRecorderDataFormat extends BabelFormat {
     }
 
     protected List<RouteCharacteristics> getBabelCharacteristics() {
-        return asList(Track);
+        return singletonList(Track);
     }
 
     public boolean isSupportsMultipleRoutes() {

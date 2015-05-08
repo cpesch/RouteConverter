@@ -21,13 +21,13 @@
 package slash.navigation.ovl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,11 +42,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.ovl.OvlSection.GROUP;
+import static slash.navigation.ovl.OvlSection.TEXT;
 
 /**
  * Reads and writes Top50 OVL ASCII (.ovl) files.
@@ -258,9 +260,9 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
 
     private void writeSymbol(OvlRoute route, PrintWriter writer, int startIndex, int endIndex, int symbolIndex) {
         writer.println(SECTION_PREFIX + SYMBOL_TITLE + " " + symbolIndex + SECTION_POSTFIX);
-        writer.println(OvlSection.GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
+        writer.println(GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
 
-        writeSection(route.getSymbol(), writer, asList(OvlSection.TEXT));
+        writeSection(route.getSymbol(), writer, singletonList(TEXT));
         writeMissingAttribute(route.getSymbol(), writer, "Typ", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Col", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Zoom", "1");
@@ -276,18 +278,18 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             writer.println(OvlSection.Y_POSITION + index + NAME_VALUE_SEPARATOR + position.getLatitude());
             index++;
         }
-        writer.println(OvlSection.TEXT + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
+        writer.println(TEXT + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
     }
 
     private void writeOverlay(OvlRoute route, PrintWriter writer, int symbolCount) {
         writer.println(SECTION_PREFIX + OVERLAY_TITLE + SECTION_POSTFIX);
-        writeSection(route.getOverlay(), writer, asList(SYMBOL_COUNT));
+        writeSection(route.getOverlay(), writer, singletonList(SYMBOL_COUNT));
         writer.println(SYMBOL_COUNT + NAME_VALUE_SEPARATOR + symbolCount);
     }
 
     private void writeMapLage(OvlRoute route, PrintWriter writer) {
         writer.println(SECTION_PREFIX + MAPLAGE_TITLE + SECTION_POSTFIX);
-        writeSection(route.getMapLage(), writer, asList(CREATOR));
+        writeSection(route.getMapLage(), writer, singletonList(CREATOR));
         // Top. Karte 1:50.000 Hessen
         // Top. Karte 1:50.000 Nieders.
         // Top. Karte 1:50000 Sh/HH

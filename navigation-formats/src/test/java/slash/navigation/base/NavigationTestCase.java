@@ -107,7 +107,7 @@ import java.util.List;
 import static java.io.File.separator;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
@@ -1012,7 +1012,7 @@ public abstract class NavigationTestCase extends TestCase {
     public static List<KmlRoute> readKmlFile(BaseKmlFormat format, String fileName) throws Exception {
         File source = new File(fileName);
         NavigationFormatParser parser = new NavigationFormatParser();
-        ParserResult result = parser.read(source, asList((NavigationFormat) format));
+        ParserResult result = parser.read(source, singletonList((NavigationFormat) format));
         List<KmlRoute> routes = new ArrayList<>();
         for (BaseRoute route : result.getAllRoutes()) {
             if (route instanceof KmlRoute)

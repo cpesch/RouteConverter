@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +65,7 @@ public class GoogleMapsServiceIT {
     public void getPositionsFor() throws IOException {
         NavigationPosition expected = new SimpleNavigationPosition(10.2004684, 50.0010183, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        assertEquals(asList(expected), actual);
+        assertEquals(singletonList(expected), actual);
     }
 
     @Test

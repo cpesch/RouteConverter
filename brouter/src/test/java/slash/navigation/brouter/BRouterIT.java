@@ -35,8 +35,9 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,13 +76,14 @@ public class BRouterIT {
         when(brouterSegments.getDirectory()).thenReturn("test");
 
         router = new BRouter(brouterProfiles, brouterSegments, new DownloadManager(createTempFile("queueFile", ".xml")));
-        DownloadFuture future = router.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.18587, 53.40451)));
+        DownloadFuture future = router.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();
     }
 
     private void prepareFile(String directory, String fileName) throws IOException {
         File src = extractFile("slash/navigation/brouter/" + fileName);
+        assertNotNull(src);
         File dest = new File(getApplicationDirectory(directory), src.getName());
         if (!dest.exists())
             assertTrue(src.renameTo(dest));
