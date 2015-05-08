@@ -44,14 +44,34 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static javax.swing.event.TableModelEvent.*;
+import static java.util.Collections.singletonList;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormatForPositions;
-import static slash.navigation.common.UnitConversion.*;
-import static slash.navigation.converter.gui.helpers.PositionHelper.*;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.common.UnitConversion.ddmm2latitude;
+import static slash.navigation.common.UnitConversion.ddmm2longitude;
+import static slash.navigation.common.UnitConversion.ddmmss2latitude;
+import static slash.navigation.common.UnitConversion.ddmmss2longitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -310,7 +330,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
-        add(rowIndex, asList(position));
+        add(rowIndex, singletonList(position));
     }
 
     @SuppressWarnings("unchecked")

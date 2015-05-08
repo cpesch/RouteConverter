@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class BaseMapViewProcessLinesTest {
@@ -58,7 +59,7 @@ public class BaseMapViewProcessLinesTest {
 
     @Test
     public void testGetCallback() throws InterruptedException {
-        processLines(asList("GET /0/callback-port/49632 HTTP/1.1"));
+        processLines(singletonList("GET /0/callback-port/49632 HTTP/1.1"));
     }
 
     @Test
@@ -83,7 +84,7 @@ public class BaseMapViewProcessLinesTest {
         new Thread(new Runnable() {
             public void run() {
                 for (String line : lines)
-                    view.processLines(asList(line));
+                    view.processLines(singletonList(line));
             }
         }).start();
 

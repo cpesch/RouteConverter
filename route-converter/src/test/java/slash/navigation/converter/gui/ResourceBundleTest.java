@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.gui.helpers.UIHelper.*;
@@ -34,7 +35,7 @@ public class ResourceBundleTest {
             POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-            return asList(new Locale(locale.getLanguage()));
+            return singletonList(new Locale(locale.getLanguage()));
         }
 
         public Locale getFallbackLocale(String baseName, Locale locale) {

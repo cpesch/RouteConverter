@@ -20,17 +20,17 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.routes.Category;
-import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 
 import static java.text.MessageFormat.format;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
@@ -65,7 +65,7 @@ public class AddCategoryAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        catalogModel.addCategories(asList(category), asList(name),
+        catalogModel.addCategories(singletonList(category), singletonList(name),
                 new Runnable() {
                     public void run() {
                         TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));

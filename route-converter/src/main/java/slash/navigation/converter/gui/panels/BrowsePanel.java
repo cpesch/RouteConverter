@@ -30,14 +30,6 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
-import slash.navigation.routes.Catalog;
-import slash.navigation.routes.local.LocalCatalog;
-import slash.navigation.routes.impl.CategoryTreeNode;
-import slash.navigation.routes.impl.CategoryTreeNodeImpl;
-import slash.navigation.routes.impl.RootTreeNode;
-import slash.navigation.routes.impl.RouteModel;
-import slash.navigation.routes.impl.RoutesTableModel;
-import slash.navigation.routes.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCategoryAction;
 import slash.navigation.converter.gui.actions.AddFileAction;
@@ -60,6 +52,14 @@ import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNodeImpl;
+import slash.navigation.routes.impl.RootTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
+import slash.navigation.routes.local.LocalCatalog;
+import slash.navigation.routes.remote.RemoteCatalog;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -91,7 +91,7 @@ import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.awt.event.KeyEvent.VK_END;
 import static java.awt.event.KeyEvent.VK_HOME;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -324,7 +324,7 @@ public class BrowsePanel implements PanelInTab {
             getOperator().handleServiceError(t);
             return;
         }
-        RouteConverter.getInstance().openPositionList(asList(url));
+        RouteConverter.getInstance().openPositionList(singletonList(url));
     }
 
     private RoutesTableModel getRoutesListModel() {

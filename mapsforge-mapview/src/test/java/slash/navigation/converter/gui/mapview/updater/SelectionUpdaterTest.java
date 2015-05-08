@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -73,8 +74,8 @@ public class SelectionUpdaterTest {
         SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
         selectionUpdater.setSelectedPositions(new int[]{1}, false);
 
-        assertEquals(asList(w1), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).add(asList(w1));
+        assertEquals(singletonList(w1), selectionUpdater.getPositionWithLayers());
+        verify(selectionOperation, times(1)).add(singletonList(w1));
         verify(selectionOperation, never()).remove(new ArrayList<PositionWithLayer>());
     }
 
@@ -94,9 +95,9 @@ public class SelectionUpdaterTest {
 
         selectionUpdater.setSelectedPositions(new int[]{1}, false);
 
-        assertEquals(asList(w1), selectionUpdater.getPositionWithLayers());
+        assertEquals(singletonList(w1), selectionUpdater.getPositionWithLayers());
         verify(selectionOperation, never()).add(new ArrayList<PositionWithLayer>());
-        verify(selectionOperation, times(1)).remove(asList(w2));
+        verify(selectionOperation, times(1)).remove(singletonList(w2));
     }
 
     @Test
@@ -135,9 +136,9 @@ public class SelectionUpdaterTest {
         verify(selectionOperation, times(1)).add(asList(w1, w2));
         verify(selectionOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
-        selectionUpdater.removedPositions(asList(p1));
+        selectionUpdater.removedPositions(singletonList(p1));
 
-        assertEquals(asList(w2), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).remove(asList(w1));
+        assertEquals(singletonList(w2), selectionUpdater.getPositionWithLayers());
+        verify(selectionOperation, times(1)).remove(singletonList(w1));
     }
 }

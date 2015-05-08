@@ -42,6 +42,7 @@ import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -172,7 +173,7 @@ public class UndoPositionsModel implements PositionsModel {
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, description);
-        add(rowIndex, asList(position));
+        add(rowIndex, singletonList(position));
 
     }
 
