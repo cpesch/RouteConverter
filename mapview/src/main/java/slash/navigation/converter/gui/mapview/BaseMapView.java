@@ -775,7 +775,7 @@ public abstract class BaseMapView implements MapView {
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         this.showWaypointDescription = showWaypointDescription;
-        if (positionsModel.getRoute().getCharacteristics() == Waypoints)
+        if (positionsModel.getRoute().getCharacteristics().equals(Waypoints))
             update(false);
     }
 
@@ -1426,7 +1426,7 @@ public abstract class BaseMapView implements MapView {
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
                 // directions are automatically scaled by the Google Maps API when zooming
-            else if (positionsModel.getRoute().getCharacteristics() != Route ||
+            else if (!positionsModel.getRoute().getCharacteristics().equals(Route) ||
                     positionReducer.hasFilteredVisibleArea() || recenterAfterZooming) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
