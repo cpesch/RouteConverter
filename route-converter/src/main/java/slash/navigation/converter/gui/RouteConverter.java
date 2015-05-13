@@ -314,8 +314,11 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        if (isJavaFX())
-            mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        log.info("JavaFX: " + isJavaFX() + " java.vendor: " + System.getProperty("java.vendor") +
+                " is Oracle: " + System.getProperty("java.vendor").contains("Oracle") +
+                " java.version" + System.getProperty("java.version") +
+                " later than 1.7.0_40: " + (System.getProperty("java.version").compareTo("1.7.0_40") >= 0));
+        mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
         if (getMapView() == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
         if (getMapView() == null)
