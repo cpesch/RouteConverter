@@ -53,6 +53,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.intrapolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
@@ -285,7 +286,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         Double previousElevation = position.getElevation();
                         Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
-                        boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
+                        boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                         if (changed)
                             positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, nextElevation), false, true);
                         return changed;
@@ -413,7 +414,7 @@ public class BatchPositionAugmenter {
                         if (predecessor != null) {
                             Double previousSpeed = position.getSpeed();
                             Double nextSpeed = position.calculateSpeed(predecessor);
-                            boolean changed = nextSpeed == null || !nextSpeed.equals(previousSpeed);
+                            boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
                                 positionsModel.edit(index, new PositionColumnValues(SPEED_COLUMN_INDEX, nextSpeed), false, true);
                             return changed;
@@ -473,7 +474,7 @@ public class BatchPositionAugmenter {
                         if (predecessor != null && successor != null) {
                             CompactCalendar previousTime = position.getTime();
                             CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
-                            boolean changed = nextTime == null || !nextTime.equals(previousTime);
+                            boolean changed = nextTime != null && !nextTime.equals(previousTime);
                             if (changed)
                                 positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, nextTime), false, true);
                             return changed;
@@ -515,7 +516,7 @@ public class BatchPositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String previousDescription = position.getDescription();
                         String nextDescription = getNumberedPosition(position, index, digitCount, numberPattern);
-                        boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
+                        boolean changed = nextDescription != null && !nextDescription.equals(previousDescription);
                         if (changed)
                             positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, nextDescription), false, true);
                         return changed;
@@ -567,7 +568,7 @@ public class BatchPositionAugmenter {
                             if (nextDescription != null)
                                 nextDescription = createDescription(index + 1, nextDescription);
                             String previousDescription = position.getDescription();
-                            boolean changed = nextDescription == null || !nextDescription.equals(previousDescription);
+                            boolean changed = nextDescription != null && !nextDescription.equals(previousDescription);
                             if (changed) {
                                 columnIndices.add(DESCRIPTION_COLUMN_INDEX);
                                 columnValues.add(nextDescription);
@@ -576,8 +577,9 @@ public class BatchPositionAugmenter {
 
                         if (complementElevation) {
                             Double previousElevation = position.getElevation();
-                            Double nextElevation = waitForDownload || elevationServiceFacade.isDownload() ? elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude()) : null;
-                            boolean changed = nextElevation == null || !nextElevation.equals(previousElevation);
+                            Double nextElevation = waitForDownload || elevationServiceFacade.isDownload() ?
+                                    elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude()) : null;
+                            boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                             if (changed) {
                                 columnIndices.add(ELEVATION_COLUMN_INDEX);
                                 columnValues.add(nextElevation);
@@ -590,7 +592,7 @@ public class BatchPositionAugmenter {
                             if (predecessor != null && successor != null) {
                                 CompactCalendar previousTime = position.getTime();
                                 CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
-                                boolean changed = nextTime == null || !nextTime.equals(previousTime);
+                                boolean changed = nextTime != null && !nextTime.equals(previousTime);
                                 if (changed) {
                                     columnIndices.add(DATE_TIME_COLUMN_INDEX);
                                     columnValues.add(nextTime);
@@ -615,7 +617,7 @@ public class BatchPositionAugmenter {
         String description = getLocationFor(position);
         if (description == null)
             description = getNearByFor(position);
-        return description;
+        return trim(description);
     }
 
     private String getLocationFor(NavigationPosition position) {
