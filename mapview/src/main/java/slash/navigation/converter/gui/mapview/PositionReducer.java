@@ -179,8 +179,8 @@ class PositionReducer {
         if (positions.size() > maximumSignificantPositionCount)
             positions = filterEveryNthPosition(positions, maximumSignificantPositionCount);
 
-        // determine significant result for routes and tracks for this zoom level
-        if (!characteristics.equals(Waypoints))
+        // determine significant result for routes and tracks for this zoom level if there are too many positions
+        if (!characteristics.equals(Waypoints) && positions.size() > getMaximumPositionCount(characteristics, showWaypointDescription))
             positions = filterSignificantPositions(positions, zoom);
 
         // reduce the number of result to ensure browser stability

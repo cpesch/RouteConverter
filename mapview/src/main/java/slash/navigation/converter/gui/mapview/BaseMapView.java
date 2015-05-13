@@ -1425,9 +1425,10 @@ public abstract class BaseMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-                // directions are automatically scaled by the Google Maps API when zooming
-            else if (!positionsModel.getRoute().getCharacteristics().equals(Route) ||
-                    positionReducer.hasFilteredVisibleArea() || recenterAfterZooming) {
+            else if (recenterAfterZooming ||
+                    // directions are automatically scaled by the Google Maps API when zooming
+                    !positionsModel.getRoute().getCharacteristics().equals(Route) ||
+                    positionReducer.hasFilteredVisibleArea()) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
                 if (recenterAfterZooming)
