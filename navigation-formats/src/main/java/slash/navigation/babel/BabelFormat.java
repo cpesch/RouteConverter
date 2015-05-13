@@ -346,7 +346,8 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         // 4. extract from classpath into temp directrory and execute there
         if (babelFile == null) {
-            String path = getOperationSystem() + "/" + getArchitecture() + "/";
+            // x86 since there is only one gpsbabel executable for 32- and 64-bit
+            String path = getOperationSystem() + "/x86/";
             if (isWindows()) {
                 extractFile(path + "libexpat.dll");
                 babelFile = extractFile(path + "gpsbabel.exe");
