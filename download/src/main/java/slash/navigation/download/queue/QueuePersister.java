@@ -24,10 +24,7 @@ import slash.navigation.download.*;
 import slash.navigation.download.queue.binding.*;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,10 +46,9 @@ public class QueuePersister {
             return null;
 
         QueueType queueType;
-        try {
-            queueType = unmarshal(new FileInputStream(file));
+        try (InputStream inputStream = new FileInputStream(file)) {
+            queueType = unmarshal(inputStream);
         } catch (JAXBException e) {
-            e.printStackTrace();
             throw new IOException("Cannot unmarshall " + file + ": " + e, e);
         }
         return new Result(asDownloads(queueType), parseTime(queueType.getLastSync()));

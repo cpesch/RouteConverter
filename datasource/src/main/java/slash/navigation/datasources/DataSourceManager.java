@@ -27,9 +27,7 @@ import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -73,7 +71,7 @@ public class DataSourceManager {
         getDownloadManager().dispose();
     }
 
-    public void initialize(String edition, java.io.File directory) throws JAXBException, FileNotFoundException {
+    public void initialize(String edition, java.io.File directory) throws IOException, JAXBException {
         java.io.File file = new File(directory, edition + DOT_XML);
         log.info(format("Initializing edition '%s' from %s", edition, file));
         Edition anEdition = loadEdition(file);
@@ -83,7 +81,7 @@ public class DataSourceManager {
         this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
     }
 
-    private Edition loadEdition(java.io.File file) throws FileNotFoundException, JAXBException {
+    private Edition loadEdition(java.io.File file) throws IOException, JAXBException {
         if (!file.exists()) {
             log.warning(format("Cannot find edition file %s", file));
             return null;
@@ -94,7 +92,7 @@ public class DataSourceManager {
         return editions.size() > 0 ? editions.get(0) : null;
     }
 
-    private DataSourceService loadDataSources(List<DataSource> dataSources, java.io.File directory) throws JAXBException, FileNotFoundException {
+    private DataSourceService loadDataSources(List<DataSource> dataSources, java.io.File directory) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
         for (DataSource dataSource : new ArrayList<>(dataSources)) {
             java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
@@ -103,12 +101,15 @@ public class DataSourceManager {
                 log.warning(format("Cannot find data source file %s", file));
                 continue;
             }
-            result.load(new FileInputStream(file));
+
+            try (InputStream inputStream = new FileInputStream(file)) {
+                result.load(inputStream);
+            }
         }
         return result;
     }
 
-    public void update(String edition, String url, java.io.File directory) throws FileNotFoundException, JAXBException {
+    public void update(String edition, String url, java.io.File directory) throws IOException, JAXBException {
         log.info(format("Updating edition '%s' from %s to %s", edition, url, directory));
         java.io.File file = new java.io.File(directory, edition + DOT_XML);
         downloadEdition(edition, url, file);
@@ -160,22 +161,28 @@ public class DataSourceManager {
         downloadManager.waitForCompletion(downloads);
     }
 
-    private static DataSourceService loadDataSource(java.io.File file) throws FileNotFoundException, JAXBException {
+    private static DataSourceService loadDataSource(java.io.File file) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
-        result.load(new FileInputStream(file));
+        try (InputStream inputStream = new FileInputStream(file)) {
+            result.load(inputStream);
+        }
         return result;
     }
 
-    public static DataSourceService loadAllDataSources(java.io.File directory) throws FileNotFoundException, JAXBException {
+    public static DataSourceService loadAllDataSources(java.io.File directory) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
         java.io.File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(java.io.File dir, String name) {
                 return name.endsWith(DOT_XML);
             }
         });
-        if (files != null)
-            for (java.io.File file : files)
-                result.load(new FileInputStream(file));
+        if (files != null) {
+            for (java.io.File file : files) {
+                try (InputStream inputStream = new FileInputStream(file)) {
+                    result.load(inputStream);
+                }
+            }
+        }
         return result;
     }
 }

@@ -34,7 +34,6 @@ import java.util.List;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
@@ -50,7 +49,7 @@ public class Files {
     /**
      * @param file the file to find the extension
      * @return the extension of the file, which are the characters
-     *         starting with the last dot in the file name in lowercase characters
+     * starting with the last dot in the file name in lowercase characters
      */
     public static String getExtension(File file) {
         return getExtension(file.getName());
@@ -59,7 +58,7 @@ public class Files {
     /**
      * @param name the file name to find the extension
      * @return the extension of a file name, which are the characters
-     *         starting with the last dot in the file name in lowercase characters
+     * starting with the last dot in the file name in lowercase characters
      */
     public static String getExtension(String name) {
         int index = name.lastIndexOf(".");
@@ -303,11 +302,8 @@ public class Files {
     }
 
     public static String generateChecksum(File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        try {
-            return generateChecksum(fis);
-        } finally {
-            closeQuietly(fis);
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return generateChecksum(inputStream);
         }
     }
 
@@ -371,7 +367,7 @@ public class Files {
      * @param path      the path to collect files below
      * @param extension the case insensitively compare extension
      * @return the list of files found below the given path and
-     *         with the given extension
+     * with the given extension
      */
     public static List<File> collectFiles(File path, String extension) {
         List<File> list = new ArrayList<>(1);
@@ -385,6 +381,18 @@ public class Files {
             path = path.getParentFile();
         }
         return path != null && path.exists() ? path : null;
+    }
+
+    public static void recursiveDelete(File path) throws IOException {
+        File[] files = path.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory())
+                    recursiveDelete(file);
+                if (!file.delete())
+                    throw new IOException("Could not delete " + file);
+            }
+        }
     }
 
     public static String printArrayToDialogString(Object[] array) {

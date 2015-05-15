@@ -65,6 +65,7 @@ import slash.navigation.routing.RoutingService;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.bind.UnmarshalException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1047,8 +1048,16 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (Exception e) {
                     log.warning("Could not initialize datasource manager: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
-                }
+                            getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
+
+                    if (e instanceof UnmarshalException) {
+                        log.info("Deleting old datasources");
+                        try {
+                            recursiveDelete(getDataSourcesDirectory());
+                        } catch (IOException e2) {
+                            log.warning("Could not delete old datasources: " + e2);
+                        }
+                    }                }
 
                 scanLocalMapsAndThemes();
 
@@ -1092,6 +1101,26 @@ public class RouteConverter extends SingleFrameApplication {
         RoutingService service = getMapView() instanceof BaseMapView ? new GoogleDirectionsService(getMapView()) : new BeelineService();
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
+    }
+
+    private void updateDatasources() {
+        new Thread(new Runnable() {
+            public void run() {
+                getDownloadManager().loadQueue();
+                try {
+                    getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());
+                } catch (Exception e) {
+                    log.warning("Could not update datasource manager: " + e);
+                    getContext().getNotificationManager().showNotification(MessageFormat.format(
+                            getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
+                }
+
+                initializeElevationServices();
+                initializeRoutingServices();
+
+                scanRemoteMapsAndThemes();
+            }
+        }, "DataSourceUpdater").start();
     }
 
     protected void scanLocalMapsAndThemes() {
