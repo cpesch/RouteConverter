@@ -1057,7 +1057,8 @@ public class RouteConverter extends SingleFrameApplication {
                         } catch (IOException e2) {
                             log.warning("Could not delete old datasources: " + e2);
                         }
-                    }                }
+                    }
+                }
 
                 scanLocalMapsAndThemes();
 
