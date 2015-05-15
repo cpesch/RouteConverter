@@ -22,8 +22,8 @@ package slash.navigation.download.tools;
 import org.apache.commons.cli.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
-import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.datasources.Edition;
+import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 
@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.apache.commons.cli.OptionBuilder.withArgName;
+import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
 
 /**
@@ -60,7 +61,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
         dataSourceManager = new DataSourceManager(new DownloadManager(new File(getSnapshotDirectory(), "snapshot-queue.xml")));
         if(reset) {
             dataSourceManager.getDownloadManager().clearQueue();
-            deleteAll(getSnapshotDirectory());
+            recursiveDelete(getSnapshotDirectory());
         }  else
             dataSourceManager.getDownloadManager().loadQueue();
     }
@@ -68,18 +69,6 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private void close() {
         dataSourceManager.getDownloadManager().saveQueue();
         dataSourceManager.dispose();
-    }
-
-    void deleteAll(File directory) throws IOException {
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    deleteAll(file);
-                if (!file.delete())
-                    throw new IOException("Could not delete " + file);
-            }
-        }
     }
 
     private List<DataSource> createDataSourceSet(List<Edition> editions) {

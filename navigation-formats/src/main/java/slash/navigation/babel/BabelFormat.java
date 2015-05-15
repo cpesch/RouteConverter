@@ -304,10 +304,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             targetFile = createTempFile("babel-read-target", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
-                InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile));
-                getGpxFormat().read(target, startDate, context);
-                target.close();
-                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+                try (InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile))) {
+                    getGpxFormat().read(target, startDate, context);
+                    log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+                }
             }
         } finally {
             delete(sourceFile);
