@@ -1068,7 +1068,7 @@ public class RouteConverter extends SingleFrameApplication {
                 } catch (Exception e) {
                     log.warning("Could not update datasource manager: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-error"), getLocalizedMessage(e)), null);
+                            getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
                 }
 
                 initializeElevationServices();
@@ -1101,26 +1101,6 @@ public class RouteConverter extends SingleFrameApplication {
         RoutingService service = getMapView() instanceof BaseMapView ? new GoogleDirectionsService(getMapView()) : new BeelineService();
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
-    }
-
-    private void updateDatasources() {
-        new Thread(new Runnable() {
-            public void run() {
-                getDownloadManager().loadQueue();
-                try {
-                    getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());
-                } catch (Exception e) {
-                    log.warning("Could not update datasource manager: " + e);
-                    getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
-                }
-
-                initializeElevationServices();
-                initializeRoutingServices();
-
-                scanRemoteMapsAndThemes();
-            }
-        }, "DataSourceUpdater").start();
     }
 
     protected void scanLocalMapsAndThemes() {
