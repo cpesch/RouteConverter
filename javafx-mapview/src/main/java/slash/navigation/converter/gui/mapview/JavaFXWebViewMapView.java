@@ -40,7 +40,6 @@ import static javafx.application.Platform.runLater;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.system.Platform.isJavaFX;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -172,22 +171,43 @@ public class JavaFXWebViewMapView extends BaseMapView {
         }
     }
 
-    protected String executeScriptWithResult(final String script) {
+    private static final Object LOCK = new Object();
+
+    protected synchronized String executeScriptWithResult(final String script) {
         if (script.length() == 0)
             return null;
 
         final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
-        final Object[] result = new Object[1];
+        final Object[] result = new Object[2];
+
         if (!isFxApplicationThread()) {
+            result[1] = false;
+
             runLater(new Runnable() {
                 public void run() {
-                    result[0] = webView.getEngine().executeScript(script);
+                    Object r = webView.getEngine().executeScript(script);
                     if (debug && pollingCallback) {
-                        log.info("After runLater, executeScript with result " + result[0]);
+                        log.info("After runLater, executeScript with result " + r);
+                    }
+
+                    synchronized (LOCK) {
+                        result[0] = r;
+                        result[1] = true;
+                        LOCK.notifyAll();
                     }
                 }
             });
+
+            synchronized (LOCK) {
+                while(result[1] == false) {
+                    try {
+                        LOCK.wait();
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
+                    }
+                }
+            }
         } else {
             result[0] = webView.getEngine().executeScript(script);
             if (debug && pollingCallback) {

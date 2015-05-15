@@ -813,7 +813,6 @@ public abstract class BaseMapView implements MapView {
     // bounds and center
 
     protected abstract NavigationPosition getNorthEastBounds();
-
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
