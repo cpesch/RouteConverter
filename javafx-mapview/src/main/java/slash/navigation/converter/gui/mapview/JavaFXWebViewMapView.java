@@ -295,9 +295,6 @@ public class JavaFXWebViewMapView extends BaseMapView {
                 public void run() {
                     Object r = webView.getEngine().executeScript(script);
                     if (debug && pollingCallback) {
-<<<<<<< HEAD
-                        log.info("After invokeLater, executeScript with result " + result[0]);
-=======
                         log.info("After runLater, executeScript with result " + r);
                     }
 
@@ -305,7 +302,6 @@ public class JavaFXWebViewMapView extends BaseMapView {
                         result[0] = r;
                         result[1] = true;
                         LOCK.notifyAll();
->>>>>>> 92a1143... fix JavaFX thread synchronization
                     }
                 }
             });
