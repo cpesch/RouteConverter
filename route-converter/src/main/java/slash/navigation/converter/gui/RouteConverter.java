@@ -293,6 +293,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private MapView createMapView(String className) {
         try {
+            log.info("Before creating map view from " + className);
             return (MapView) Class.forName(className).newInstance();
         } catch (Exception e) {
             log.info("Cannot create " + className + ": " + e);
@@ -320,11 +321,14 @@ public class RouteConverter extends SingleFrameApplication {
                 " java.version" + System.getProperty("java.version") +
                 " later than 1.7.0_40: " + (System.getProperty("java.version").compareTo("1.7.0_40") >= 0));
         mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
+        log.info("map view 1 is " + mapView);
         if (getMapView() == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        log.info("map view 2 is " + mapView);
         if (getMapView() == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-        if (getMapView() == null || !getMapView().isSupportedPlatform())
+        log.info("map view 3 is " + mapView);
+        if (getMapView() == null)
             return;
         log.info("Using map view " + getMapView());
 
@@ -1095,7 +1099,7 @@ public class RouteConverter extends SingleFrameApplication {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
-   }
+    }
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().clear();

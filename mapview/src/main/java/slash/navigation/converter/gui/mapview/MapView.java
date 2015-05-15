@@ -43,7 +43,6 @@ public interface MapView extends PositionsSelectionModel {
                     boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,
                     UnitSystemModel unitSystemModel);
-    boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
     void dispose();

@@ -757,10 +757,6 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    public boolean isSupportedPlatform() {
-        return true;
-    }
-
     public boolean isInitialized() {
         return true;
     }

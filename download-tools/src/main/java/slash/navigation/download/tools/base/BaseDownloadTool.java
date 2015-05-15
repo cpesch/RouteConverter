@@ -27,6 +27,7 @@ import slash.navigation.rest.SimpleCredentials;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -93,7 +94,7 @@ public class BaseDownloadTool {
         return new SimpleCredentials(dataSourcesUserName, dataSourcesPassword);
     }
 
-    protected DataSource loadDataSource(String id) throws FileNotFoundException, JAXBException {
+    protected DataSource loadDataSource(String id) throws IOException, JAXBException {
         DataSourceService service = loadAllDataSources(getDataSourcesDirectory());
         DataSource source = service.getDataSourceById(id);
         if (source == null)

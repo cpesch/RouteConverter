@@ -55,10 +55,6 @@ public class JavaFXWebViewMapView extends BaseMapView {
     private JFXPanel panel;
     private WebView webView;
 
-    public boolean isSupportedPlatform() {
-        return isJavaFX();
-    }
-
     public Component getComponent() {
         return panel;
     }

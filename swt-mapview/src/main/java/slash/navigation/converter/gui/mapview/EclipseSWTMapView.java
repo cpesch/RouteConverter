@@ -36,7 +36,7 @@ import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.system.Platform.*;
+import static slash.common.system.Platform.isLinux;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -49,10 +49,6 @@ public class EclipseSWTMapView extends BaseMapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
 
     private JWebBrowser webBrowser;
-
-    public boolean isSupportedPlatform() {
-        return isLinux() || isMac() || isWindows();
-    }
 
     public Component getComponent() {
         return webBrowser;
