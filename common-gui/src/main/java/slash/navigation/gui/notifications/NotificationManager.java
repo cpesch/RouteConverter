@@ -86,7 +86,8 @@ public class NotificationManager {
 
                         if (!running)
                             break;
-                        else if (nextMessage != null) {
+
+                        if (nextMessage != null) {
                             final String showMessage = nextMessage;
                             nextMessage = null;
                             lastEvent = currentTimeMillis();
@@ -97,6 +98,12 @@ public class NotificationManager {
                                         show(showMessage);
                                     }
                                 });
+
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    // intentionally left empty
+                                }
                             }
                         } else if (currentTimeMillis() - lastEvent > DISPLAY_TIMEOUT) {
                             invokeInAwtEventQueue(new Runnable() {
