@@ -338,8 +338,6 @@ public class RouteConverter extends SingleFrameApplication {
 
         invokeLater(new Runnable() {
             public void run() {
-                initializeRoutingServices();
-
                 getMapView().initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
@@ -1043,31 +1041,31 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDatasources() {
+        try {
+            getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
+        } catch (Exception e) {
+            log.warning("Could not initialize datasource manager: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
+
+            if (e instanceof UnmarshalException) {
+                log.info("Deleting old datasources");
+                try {
+                    recursiveDelete(getDataSourcesDirectory());
+                } catch (IOException e2) {
+                    log.warning("Could not delete old datasources: " + e2);
+                }
+            }
+        }
+
         initializeElevationServices();
         initializeRoutingServices();
 
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
-                } catch (Exception e) {
-                    log.warning("Could not initialize datasource manager: " + e);
-                    getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
-
-                    if (e instanceof UnmarshalException) {
-                        log.info("Deleting old datasources");
-                        try {
-                            recursiveDelete(getDataSourcesDirectory());
-                        } catch (IOException e2) {
-                            log.warning("Could not delete old datasources: " + e2);
-                        }
-                    }
-                }
+                getDownloadManager().loadQueue();
 
                 scanLocalMapsAndThemes();
-
-                getDownloadManager().loadQueue();
 
                 try {
                     getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());

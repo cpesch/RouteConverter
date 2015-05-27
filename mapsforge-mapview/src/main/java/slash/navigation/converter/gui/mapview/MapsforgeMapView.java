@@ -664,6 +664,11 @@ public class MapsforgeMapView implements MapView {
         selectionUpdater.removedPositions(new ArrayList<>(removed));
     }
 
+    public void updateMapAndThemesAfterDirectoryScanning() {
+        if (mapView != null)
+            handleMapAndThemeUpdate(false, false);
+    }
+
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
     public void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
