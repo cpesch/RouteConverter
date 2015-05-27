@@ -43,19 +43,25 @@ public class Copier {
     }
 
     public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(input);
+        BufferedOutputStream bos = new BufferedOutputStream(output);
         try {
-            return copy(input, output, startByte, expectingBytes);
+            return copy(bis, bos, startByte, expectingBytes);
         } finally {
             try {
-                closeQuietly(input);
+                closeQuietly(bis);
             } finally {
-                closeQuietly(output);
+                closeQuietly(bos);
             }
         }
     }
 
-    public long copy(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
-        listener.expectingBytes(expectingBytes != null ? expectingBytes : input.available());
+    public long copy(InputStream input, OutputStream output, long startByte, Long bytes) throws IOException {
+        Long expectingBytes = bytes != null && bytes > 10 ? bytes : null;
+        if (expectingBytes == null)
+            expectingBytes = input.available() > 10 ? (long) input.available() : null;
+        if (expectingBytes != null)
+            listener.expectingBytes(expectingBytes);
 
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long totalBytes = startByte;
