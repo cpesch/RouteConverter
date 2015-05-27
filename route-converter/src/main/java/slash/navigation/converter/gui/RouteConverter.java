@@ -294,9 +294,13 @@ public class RouteConverter extends SingleFrameApplication {
     private MapView createMapView(String className) {
         try {
             log.info("Before creating map view from " + className);
-            return (MapView) Class.forName(className).newInstance();
-        } catch (Exception e) {
-            log.info("Cannot create " + className + ": " + e);
+            Class<?> aClass = Class.forName(className);
+            log.info("After creating class " + aClass);
+            MapView mapView = (MapView) aClass.newInstance();
+            log.info("After creating map view " + mapView);
+            return mapView;
+        } catch (Throwable t) {
+            log.info("Cannot create " + className + ": " + t);
             return null;
         }
     }
@@ -334,8 +338,6 @@ public class RouteConverter extends SingleFrameApplication {
 
         invokeLater(new Runnable() {
             public void run() {
-                initializeRoutingServices();
-
                 getMapView().initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
@@ -1042,31 +1044,31 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeDatasources() {
+        try {
+            getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
+        } catch (Exception e) {
+            log.warning("Could not initialize datasource manager: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
+
+            if (e instanceof UnmarshalException) {
+                log.info("Deleting old datasources");
+                try {
+                    recursiveDelete(getDataSourcesDirectory());
+                } catch (IOException e2) {
+                    log.warning("Could not delete old datasources: " + e2);
+                }
+            }
+        }
+
         initializeElevationServices();
         initializeRoutingServices();
 
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
-                } catch (Exception e) {
-                    log.warning("Could not initialize datasource manager: " + e);
-                    getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
-
-                    if (e instanceof UnmarshalException) {
-                        log.info("Deleting old datasources");
-                        try {
-                            recursiveDelete(getDataSourcesDirectory());
-                        } catch (IOException e2) {
-                            log.warning("Could not delete old datasources: " + e2);
-                        }
-                    }
-                }
+                getDownloadManager().loadQueue();
 
                 scanLocalMapsAndThemes();
-
-                getDownloadManager().loadQueue();
 
                 try {
                     getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());

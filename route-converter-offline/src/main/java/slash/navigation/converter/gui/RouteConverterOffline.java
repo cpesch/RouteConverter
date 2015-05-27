@@ -129,7 +129,7 @@ public class RouteConverterOffline extends RouteConverter {
 
                 LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
                 if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
-                    ((MapsforgeMapView)getMapView()).handleMapAndThemeUpdate(false, false);
+                    ((MapsforgeMapView)getMapView()).updateMapAndThemesAfterDirectoryScanning();
 
             }
         }, "DirectoryScanner").start();
