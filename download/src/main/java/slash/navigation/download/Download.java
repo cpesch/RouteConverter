@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.io.File.createTempFile;
+import static java.lang.String.format;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.navigation.download.State.Queued;
 
@@ -66,7 +67,7 @@ public class Download {
     private static File newTempFile() {
         try {
             File file = createTempFile("download", ".tmp", getTemporaryDirectory());
-            if(!file.delete())
+            if (!file.delete())
                 throw new IllegalArgumentException("Cannot delete temp file");
             return file;
         } catch (IOException e) {
@@ -114,19 +115,45 @@ public class Download {
         return tempFile;
     }
 
-    private static final int UNKNOWN_EXPECTED_BYTES = 1024 * 1024 * 1024;
+    private static final int KILO_BYTE = 1024;
+    private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
 
-    public int getPercentage() {
-        long totalBytes = expectedBytes != null ? expectedBytes : UNKNOWN_EXPECTED_BYTES;
-        return new Double((double) processedBytes / totalBytes * 100).intValue();
+    private static String formatSize(long size) {
+        String unit;
+        if (size > 2 * MEGA_BYTE) {
+            size = size / MEGA_BYTE;
+            unit = "MByte";
+        } else if (size > 2 * KILO_BYTE) {
+            size = size / KILO_BYTE;
+            unit = "kByte";
+        } else {
+            unit = "bytes";
+        }
+        return format("%d %s", size, unit);
+    }
+
+    public Integer getPercentage() {
+        return expectedBytes != null ? new Double((double) processedBytes / expectedBytes * 100).intValue() : null;
+    }
+
+    public String getProcessedBytes() {
+        return formatSize(processedBytes);
     }
 
     public void setProcessedBytes(long processedBytes) {
         this.processedBytes = processedBytes;
     }
 
+    public String getExpectedBytes() {
+        return formatSize(expectedBytes);
+    }
+
     public void setExpectedBytes(Long expectedBytes) {
         this.expectedBytes = expectedBytes;
+    }
+
+    public String toString() {
+        return super.toString() + "[url=" + getUrl() + "]";
     }
 
     public boolean equals(Object o) {

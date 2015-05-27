@@ -36,7 +36,7 @@ public class ChecksumSender implements DownloadListener {
         RouteConverter.getInstance().sendChecksums(download);
     }
 
-    public void progressed(Download download, int percentage) {
+    public void progressed(Download download) {
     }
 
     public void failed(Download download) {

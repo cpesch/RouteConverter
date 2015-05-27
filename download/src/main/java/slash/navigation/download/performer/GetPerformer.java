@@ -105,7 +105,8 @@ public class GetPerformer implements ActionPerformer {
         if (get.isSuccessful() && inputStream != null) {
             if(contentLength == null)
                 contentLength = get.getContentLength();
-            getModelUpdater().expectingBytes(contentLength != null ? contentLength : 0);
+            if (contentLength != null)
+                getModelUpdater().expectingBytes(contentLength);
             new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, contentLength);
             getDownload().setETag(get.getETag());
             return new Result(true, get.getLastModified());

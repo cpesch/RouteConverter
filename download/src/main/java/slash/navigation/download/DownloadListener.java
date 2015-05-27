@@ -27,7 +27,7 @@ package slash.navigation.download;
  */
 
 public interface DownloadListener {
-    void progressed(Download download, int percentage);
+    void progressed(Download download);
     void failed(Download download);
     void succeeded(Download download);
 }

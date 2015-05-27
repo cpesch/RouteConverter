@@ -46,11 +46,12 @@ public class DownloadNotifier implements DownloadListener {
         Application.getInstance().getContext().getNotificationManager().showNotification(message, getAction());
     }
 
-    public void progressed(Download download, int percentage) {
-        if (percentage % 5 == 0) {
-            String message = MessageFormat.format(getBundle().getString("download-progressed"), percentage, download.getDescription());
-            showNotification(message);
-        }
+    public void progressed(Download download) {
+        Integer percentage = download.getPercentage();
+        String message = MessageFormat.format(getBundle().getString("download-progressed"),
+                percentage != null ? percentage + "%" : download.getProcessedBytes(),
+                percentage != null ? download.getExpectedBytes() : "", download.getDescription());
+        showNotification(message);
     }
 
     public void failed(Download download) {

@@ -70,7 +70,7 @@ public class DownloadsDialog extends SimpleDialog {
             TableColumn column = columns.getColumn(i);
             column.setHeaderRenderer(headerRenderer);
             if (i == 1) {
-                int width = getMaxWidth("Downloading (100%)", 10);
+                int width = getMaxWidth("Downloading (1000 kByte)", 10);
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             }

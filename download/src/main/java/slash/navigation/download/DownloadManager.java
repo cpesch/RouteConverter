@@ -70,7 +70,7 @@ public class DownloadManager {
         pool = new ThreadPoolExecutor(PARALLEL_DOWNLOAD_COUNT, PARALLEL_DOWNLOAD_COUNT * 2, 60, SECONDS, queue);
         pool.allowCoreThreadTimeOut(true);
         addDownloadListener(new DownloadListener() {
-            public void progressed(Download download, int percentage) {
+            public void progressed(Download download) {
             }
 
             public void failed(Download download) {
@@ -99,17 +99,16 @@ public class DownloadManager {
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
-        restartDownloadsWithState(Running);
-        restartDownloadsWithState(Resuming);
-        restartDownloadsWithState(Downloading);
-        restartDownloadsWithState(Processing);
-        restartDownloadsWithState(Queued);
+        restartDownloadsWithState(Running, Resuming, Downloading, Processing, Queued);
     }
 
-    private void restartDownloadsWithState(State state) {
-        for (Download download : model.getDownloads()) {
-            if (state.equals(download.getState()))
+    private void restartDownloadsWithState(State... states) {
+        List<State> restartStates = asList(states);
+        for (Download download : new ArrayList<>(model.getDownloads())) {
+            if (restartStates.contains(download.getState())) {
+                log.info("Restarting download " + download + " from state " + download.getState());
                 startExecutor(download);
+            }
         }
     }
 
@@ -148,9 +147,8 @@ public class DownloadManager {
     }
 
     public void fireDownloadProgressed(Download download) {
-        int percentage = download.getPercentage();
         for (DownloadListener listener : downloadListeners) {
-            listener.progressed(download, percentage);
+            listener.progressed(download);
         }
     }
 
@@ -196,12 +194,15 @@ public class DownloadManager {
             if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
                 model.removeDownload(queued);
             else {
-                if (COMPLETED.contains(queued.getState()))
+                if (COMPLETED.contains(queued.getState())) {
+                    log.info("Starting failed download " + download);
                     startExecutor(queued);
+                }
                 return queued;
             }
         }
 
+        log.info("Starting new download " + download);
         startExecutor(download);
         fireDownloadProgressed(download);
         return download;
