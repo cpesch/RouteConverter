@@ -209,7 +209,7 @@ public class BRouter implements RoutingService {
             return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         } finally {
             long end = currentTimeMillis();
-            log.info(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
+            log.info(getClass().getSimpleName() + ": routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
     }
 

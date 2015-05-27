@@ -376,6 +376,6 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     public String toString() {
-        return super.toString() + "[longitude=" + getLongitude() + ", latitude=" + getLatitude() + "]";
+        return super.toString() + "[longitude=" + getLongitude() + ", latitude=" + getLatitude() + ", description=" + getDescription() + "]";
     }
 }
