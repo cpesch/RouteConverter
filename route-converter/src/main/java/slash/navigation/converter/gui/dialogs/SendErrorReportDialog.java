@@ -173,7 +173,7 @@ public class SendErrorReportDialog extends SimpleDialog {
         this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("send-error-report-file"));
         panel3.add(label3, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonChooseFilePath = new JButton();
-        buttonChooseFilePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/select.png")));
+        buttonChooseFilePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/open-action.png")));
         buttonChooseFilePath.setText("");
         panel3.add(buttonChooseFilePath, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldFilePath = new JTextField();

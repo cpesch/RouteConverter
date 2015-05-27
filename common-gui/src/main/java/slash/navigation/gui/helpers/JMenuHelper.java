@@ -118,9 +118,6 @@ public class JMenuHelper {
         String iconUrl = getOptionalString(name + "-action-icon");
         if (iconUrl != null)
             item.setIcon(loadIcon(iconUrl));
-        String disabledIconUrl = getOptionalString(name + "-action-disabled-icon");
-        if (disabledIconUrl != null)
-            item.setDisabledIcon(loadIcon(disabledIconUrl));
     }
 
     public static void registerAction(AbstractButton component, String name) {

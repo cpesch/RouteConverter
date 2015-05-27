@@ -445,7 +445,7 @@
                       <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <icon value="slash/navigation/converter/gui/select.png"/>
+                      <icon value="slash/navigation/converter/gui/open-action.png"/>
                       <text value=""/>
                       <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-gpsbabel-path"/>
                     </properties>
@@ -518,7 +518,7 @@
                       <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <icon value="slash/navigation/converter/gui/select.png"/>
+                      <icon value="slash/navigation/converter/gui/open-action.png"/>
                       <text value=""/>
                       <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-elevation-service-path"/>
                     </properties>
@@ -602,10 +602,10 @@
                   </component>
                   <component id="f4b2f" class="javax.swing.JButton" binding="buttonChooseElevationServicePath">
                     <constraints>
-                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="1" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <icon value="slash/navigation/converter/gui/select.png"/>
+                      <icon value="slash/navigation/converter/gui/open-action.png"/>
                       <text value=""/>
                       <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-elevation-service-path"/>
                     </properties>
