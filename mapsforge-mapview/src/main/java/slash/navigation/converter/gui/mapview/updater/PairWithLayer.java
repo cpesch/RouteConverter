@@ -23,7 +23,7 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 
 /**
- * A pair of {@link NavigationPosition}s with a {@link Layer}.
+ * A pair of {@link NavigationPosition}s with a {@link Layer}, a distance and a time.
  *
  * @author Christian Pesch
  */
@@ -32,6 +32,8 @@ public class PairWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
     private Layer layer;
+    private Double distance;
+    private Long time;
 
     public PairWithLayer(NavigationPosition first, NavigationPosition second) {
         this.first = first;
@@ -54,14 +56,29 @@ public class PairWithLayer {
         this.layer = layer;
     }
 
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         PairWithLayer that = (PairWithLayer) o;
 
-        return first.equals(that.first) && second.equals(that.second) &&
-                !(layer != null ? !layer.equals(that.layer) : that.layer != null);
+        return first.equals(that.first) && second.equals(that.second);
     }
 
     public int hashCode() {

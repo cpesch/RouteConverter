@@ -381,8 +381,7 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private java.util.Map<PairWithLayer, Double> pairsToDistances = new HashMap<>();
-            private java.util.Map<PairWithLayer, Long> pairsToTimes = new HashMap<>();
+            private List<PairWithLayer> pairs = new ArrayList<>();
 
             public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
@@ -399,6 +398,8 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
+                pairs.addAll(pairWithLayers);
+
                 drawBeeline(pairWithLayers);
                 fireDistanceAndTime();
 
@@ -445,10 +446,8 @@ public class MapsforgeMapView implements MapView {
                     pairWithLayer.setLayer(line);
                     getLayerManager().getLayers().add(line);
 
-                    Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
-                    pairsToDistances.put(pairWithLayer, distance);
-                    Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
-                    pairsToTimes.put(pairWithLayer, time);
+                    pairWithLayer.setDistance(pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond()));
+                    pairWithLayer.setTime(pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond()));
                 }
             }
 
@@ -474,8 +473,8 @@ public class MapsforgeMapView implements MapView {
                 RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
                 if (intermediate.isValid())
                     latLongs.addAll(asLatLong(intermediate.getPositions()));
-                pairsToDistances.put(pairWithLayer, intermediate.getDistance());
-                pairsToTimes.put(pairWithLayer, intermediate.getTime());
+                pairWithLayer.setDistance(intermediate.getDistance());
+                pairWithLayer.setTime(intermediate.getTime());
                 latLongs.add(asLatLong(pairWithLayer.getSecond()));
                 return new IntermediateRoute(latLongs, intermediate.isValid());
             }
@@ -490,23 +489,24 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
+                pairs.removeAll(pairWithLayers);
+
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     removeLayer(pairWithLayer);
-
-                    pairsToDistances.remove(pairWithLayer);
-                    pairsToTimes.remove(pairWithLayer);
+                    pairWithLayer.setDistance(null);
+                    pairWithLayer.setTime(null);
                 }
                 fireDistanceAndTime();
             }
 
             private void fireDistanceAndTime() {
                 double totalDistance = 0.0;
-                for (Double distance : new ArrayList<>(pairsToDistances.values())) {
+                long totalTime = 0;
+                for (PairWithLayer pairWithLayer : pairs) {
+                    Double distance = pairWithLayer.getDistance();
                     if (distance != null)
                         totalDistance += distance;
-                }
-                long totalTime = 0;
-                for (Long time : new ArrayList<>(pairsToTimes.values())) {
+                    Long time = pairWithLayer.getTime();
                     if (time != null)
                         totalTime += time;
                 }
@@ -841,6 +841,7 @@ public class MapsforgeMapView implements MapView {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private BoundingBox getRouteBoundingBox() {
         BaseRoute route = positionsModel.getRoute();
         return route != null && route.getPositions().size() > 0 ? new BoundingBox(route.getPositions()) : null;
