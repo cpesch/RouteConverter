@@ -43,6 +43,7 @@ import static javafx.application.Platform.isFxApplicationThread;
 import static javafx.application.Platform.runLater;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.parseDouble;
 
@@ -142,9 +143,13 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     private int startCount = 0;
 
                     public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
-                        // log.fine("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
+                        log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                         if (newState == SUCCEEDED) {
-                            tryToInitialize(startCount++, currentTimeMillis());
+                            invokeLater(new Runnable() {
+                                public void run() {
+                                    tryToInitialize(startCount++, currentTimeMillis());
+                                }
+                            });
                         }
                     }
                 });
