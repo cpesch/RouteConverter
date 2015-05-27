@@ -32,7 +32,7 @@ import static org.apache.commons.io.IOUtils.copyLarge;
  */
 
 public class InputOutput {
-    public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    public static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
 
     public static void copy(InputStream input, OutputStream output) throws IOException {
         try {
