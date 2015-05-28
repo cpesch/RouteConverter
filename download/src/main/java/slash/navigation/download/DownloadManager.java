@@ -106,10 +106,13 @@ public class DownloadManager {
         restartDownloadsWithState(Queued);
     }
 
-    private void restartDownloadsWithState(State state) {
-        for (Download download : model.getDownloads()) {
-            if (state.equals(download.getState()))
+    private void restartDownloadsWithState(State... states) {
+        List<State> restartStates = asList(states);
+        for (Download download : new ArrayList<>(model.getDownloads())) {
+            if (restartStates.contains(download.getState())) {
+                log.info("Restarting download " + download + " from state " + download.getState());
                 startExecutor(download);
+            }
         }
     }
 
