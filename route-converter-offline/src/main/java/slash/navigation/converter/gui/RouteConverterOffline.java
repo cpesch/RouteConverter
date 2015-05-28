@@ -132,21 +132,26 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void scanLocalMapsAndThemes() {
-        try {
-            getMapManager().scanDirectories();
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    getMapManager().scanDirectories();
 
-            getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getSelectMapsAction());
-        } catch (final IOException e) {
-            invokeLater(new Runnable() {
-                public void run() {
-                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                    getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getSelectMapsAction());
+                } catch (final IOException e) {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                        }
+                    });
                 }
-            });
-        }
 
-        LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
-        if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
-            ((MapsforgeMapView)getMapView()).handleMapAndThemeUpdate(false, false);
+                LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
+                if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
+                    ((MapsforgeMapView)getMapView()).handleMapAndThemeUpdate(false, false);
+
+            }
+        }, "DirectoryScanner").start();
     }
 
     protected void scanRemoteMapsAndThemes() {
