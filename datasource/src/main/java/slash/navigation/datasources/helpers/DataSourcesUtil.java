@@ -62,8 +62,8 @@ public class DataSourcesUtil {
     public static CatalogType unmarshal(InputStream in) throws JAXBException {
         CatalogType result;
         try {
-            JAXBElement<CatalogType> element = (JAXBElement<CatalogType>) newUnmarshaller().unmarshal(in);
-            result = element.getValue();
+            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            result = (CatalogType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
         }

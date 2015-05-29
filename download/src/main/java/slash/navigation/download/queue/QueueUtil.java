@@ -35,9 +35,6 @@ import java.io.OutputStream;
 import static slash.common.helpers.JAXBHelper.newContext;
 
 class QueueUtil {
-    private static final String QUEUE_NAMESPACE_URI = "http://api.routeconverter.com/v1/schemas/download-queue";
-    private static final String DATA_SOURCE_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/Datasources/1.0";
-
     private static Unmarshaller newUnmarshaller() {
         return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
@@ -49,8 +46,8 @@ class QueueUtil {
     public static QueueType unmarshal(InputStream in) throws JAXBException {
         QueueType result;
         try {
-            JAXBElement<QueueType> element = (JAXBElement<QueueType>) newUnmarshaller().unmarshal(in);
-            result = element.getValue();
+            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            result = (QueueType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
         }
