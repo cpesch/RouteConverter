@@ -77,7 +77,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
             for (DataSource dataSource : edition.getDataSources())
                 result.add(dataSource);
         }
-        return new ArrayList(result);
+        return new ArrayList<>(result);
     }
 
     public void snapshot() throws IOException, JAXBException {

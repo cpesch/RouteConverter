@@ -86,15 +86,6 @@ public class PanelDropHandler extends TransferHandler {
     public boolean importData(TransferSupport support) {
         Transferable transferable = support.getTransferable();
         try {
-            if (support.isDataFlavorSupported(javaFileListFlavor)) {
-                Object data = transferable.getTransferData(javaFileListFlavor);
-                if (data != null) {
-                    List<File> files = (List<File>) data;
-                    openOrAdd(files);
-                    return true;
-                }
-            }
-
             if (support.isDataFlavorSupported(stringFlavor)) {
                 Object data = transferable.getTransferData(stringFlavor);
                 if (data != null) {
@@ -103,9 +94,16 @@ public class PanelDropHandler extends TransferHandler {
                     return true;
                 }
             }
-        } catch (UnsupportedFlavorException e) {
-            // intentionally left empty
-        } catch (IOException e) {
+
+            if (support.isDataFlavorSupported(javaFileListFlavor)) {
+                Object data = transferable.getTransferData(javaFileListFlavor);
+                if (data != null) {
+                    List<File> files = (List<File>) data;
+                    openOrAdd(files);
+                    return true;
+                }
+            }
+        } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty
         }
         return false;

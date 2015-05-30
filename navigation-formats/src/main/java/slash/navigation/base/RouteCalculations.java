@@ -121,7 +121,7 @@ public class RouteCalculations {
         return fromMillis(time);
     }
 
-    public static Wgs84Position asWgs84Position(double longitude, double latitude) {
+    public static Wgs84Position asWgs84Position(Double longitude, Double latitude) {
         return asWgs84Position(longitude, latitude, null);
     }
 
