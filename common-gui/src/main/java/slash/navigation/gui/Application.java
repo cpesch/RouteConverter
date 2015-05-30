@@ -185,7 +185,7 @@ public abstract class Application {
         if (bundle == null)
             bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
         ctx.setBundle(bundle);
-        ctx.setHelpBrokerUrl(bundle.getString("help-set"));
+        ctx.setHelpBrokerUrl(bundle != null ? bundle.getString("help-set") : null);
         ctx.setHelpBrokerClassLoader(applicationClass.getClassLoader());
         return application;
     }
