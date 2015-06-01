@@ -51,7 +51,7 @@ public class UsersIT extends RouteFeedbackServiceBase {
 
     @Test
     public void testAddUserWithUmlauts() throws Exception {
-        String name = "User äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
+        String name = "User with Umlauts " + UMLAUTS + " " + System.currentTimeMillis();
         String location = routeFeedback.addUser(name, "secretÄÖÜ", "First ÄÖÜ", "Last ÄÖÜ", "first@last.com");
         assertNotNull(location);
         GpxType gpxType = routeFeedback.fetchGpx(location);

@@ -166,18 +166,18 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         DatasourceType dataSourceType = createDataSourceType(id);
         FileType fileType = createFileType(id);
         dataSourceType.getFile().add(fileType);
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndNoChecksumsForFile(id), createFilterUriForFile(id)));
 
         Get get = new Get(API + "v1/datasources/id" + id + ".xml");
         assertTrue(get.executeAsString().contains(Long.toString(id)));
 
         fileType.setBoundingBox(asBoundingBoxType(new BoundingBox(new SimpleNavigationPosition(1.0, 2.0), new SimpleNavigationPosition(3.0, 4.0))));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndNoChecksumsForFile(id), createFilterUriForFile(id)));
     }
 
@@ -186,11 +186,11 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceType = createDataSourceType(id);
         dataSourceType.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
     }
 
@@ -199,27 +199,27 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceTypeFirst = createDataSourceType(id);
         dataSourceTypeFirst.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeFirst), createFileAndNoChecksumsForFile(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeLater = createDataSourceType(id);
         dataSourceTypeLater.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeLater), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeRead = createDataSourceType(id);
         dataSourceTypeRead.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "read FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "read FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "read FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "read FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeRead), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
     }
 
@@ -228,20 +228,20 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceTypeFirst = createDataSourceType(id);
         dataSourceTypeFirst.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeFirst), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeSecond = createDataSourceType(id);
         dataSourceTypeSecond.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-02-02 02:03:02, 1002, file-sha-2-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-02-02 02:07:02, 1021, file-fragment-sha-2-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "create FileChecksum 2014-02-02 02:03:02, 1002, file-sha-2-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-02-02 02:07:02, 1021, file-fragment-sha-2-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeSecond), createFileAndChecksumForFileOtherSHA(id), createFilterUriForFile(id)));
     }
 
@@ -250,20 +250,20 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceTypeFirst = createDataSourceType(id);
         dataSourceTypeFirst.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeFirst), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeSecond = createDataSourceType(id);
         dataSourceTypeSecond.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "read FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "read FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "read FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "read FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeSecond), createFileAndChecksumForFileOtherLastModified(id), createFilterUriForFile(id)));
     }
 
@@ -272,20 +272,20 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceTypeFirst = createDataSourceType(id);
         dataSourceTypeFirst.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, None for fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, None for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, None for fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, None for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeFirst), createFileAndChecksumForFileNoSHA(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeSecond = createDataSourceType(id);
         dataSourceTypeSecond.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeSecond), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
     }
 
@@ -294,20 +294,20 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceTypeFirst = createDataSourceType(id);
         dataSourceTypeFirst.getFile().add(createFileType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create File fileuri" + id + "\n" +
-                        "create FileChecksum None, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum None, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create File fileuri" + id + ", " +
+                        "create FileChecksum None, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum None, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeFirst), createFileAndChecksumForFileNoLastModified(id), createFilterUriForFile(id)));
 
         DatasourceType dataSourceTypeSecond = createDataSourceType(id);
         dataSourceTypeSecond.getFile().add(createFileType(id));
-        assertEquals("read DataSource id" + id + "\n" +
-                        "read File fileuri" + id + "\n" +
-                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + "\n" +
-                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"read DataSource id" + id + ", " +
+                        "read File fileuri" + id + ", " +
+                        "create FileChecksum 2014-01-01 01:02:01, 1001, file-sha-actual for fileuri" + id + ", " +
+                        "read FileFragment fileuri" + id + " -> fragmentkey" + id + ", " +
+                        "create FileFragmentChecksum 2014-01-01 01:04:01, 1011, file-fragment-sha-actual for fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceTypeSecond), createFileAndChecksumForFile(id), createFilterUriForFile(id)));
     }
 
@@ -316,11 +316,11 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceType = createDataSourceType(id);
         dataSourceType.getMap().add(createMapType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create Map mapuri" + id + "\n" +
-                        "create MapChecksum 2014-01-01 01:02:01, 1100, map-sha-actual for mapuri" + id + "\n" +
-                        "create MapFragment mapuri" + id + " -> fragmentkey" + id + "\n" +
-                        "create MapFragmentChecksum 2014-01-01 01:04:01, 1110, map-fragment-sha-actual for mapuri" + id + " -> fragmentkey" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create Map mapuri" + id + ", " +
+                        "create MapChecksum 2014-01-01 01:02:01, 1100, map-sha-actual for mapuri" + id + ", " +
+                        "create MapFragment mapuri" + id + " -> fragmentkey" + id + ", " +
+                        "create MapFragmentChecksum 2014-01-01 01:04:01, 1110, map-fragment-sha-actual for mapuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndChecksumForMap(id), "baseUrl" + id + "mapuri" + id));
     }
 
@@ -329,13 +329,13 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         long id = currentTimeMillis();
         DatasourceType dataSourceType = createDataSourceType(id);
         dataSourceType.getTheme().add(createThemeType(id));
-        assertEquals("create DataSource id" + id + "\n" +
-                        "create Theme themeuri" + id + "\n" +
-                        "create ThemeChecksum 2014-01-01 01:02:01, 1005, theme-sha-actual for themeuri" + id + "\n" +
-                        "create ThemeFragment themeuri" + id + " -> fragment1key" + id + "\n" +
-                        "create ThemeFragmentChecksum 2014-01-01 01:04:01, 1006, theme-fragment1-sha-actual for themeuri" + id + " -> fragment1key" + id + "\n" +
-                        "create ThemeFragment themeuri" + id + " -> fragment2key" + id + "\n" +
-                        "create ThemeFragmentChecksum 2014-02-02 02:07:02, 1007, theme-fragment2-sha-actual for themeuri" + id + " -> fragment2key" + id + "\n",
+        assertEquals("\"create DataSource id" + id + ", " +
+                        "create Theme themeuri" + id + ", " +
+                        "create ThemeChecksum 2014-01-01 01:02:01, 1005, theme-sha-actual for themeuri" + id + ", " +
+                        "create ThemeFragment themeuri" + id + " -> fragment1key" + id + ", " +
+                        "create ThemeFragmentChecksum 2014-01-01 01:04:01, 1006, theme-fragment1-sha-actual for themeuri" + id + " -> fragment1key" + id + ", " +
+                        "create ThemeFragment themeuri" + id + " -> fragment2key" + id + ", " +
+                        "create ThemeFragmentChecksum 2014-02-02 02:07:02, 1007, theme-fragment2-sha-actual for themeuri" + id + " -> fragment2key" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndChecksumForTheme(id), "baseUrl" + id + "themeuri" + id));
     }
 }

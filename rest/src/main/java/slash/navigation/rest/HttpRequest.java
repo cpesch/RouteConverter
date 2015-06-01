@@ -59,6 +59,8 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
  */
 
 public abstract class HttpRequest {
+    public static final String APPLICATION_JSON = "application/json";
+
     private final Logger log;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpRequestBase method;

@@ -28,6 +28,7 @@ public abstract class RouteFeedbackServiceBase {
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
+    protected static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     protected RouteFeedback routeFeedback;
 

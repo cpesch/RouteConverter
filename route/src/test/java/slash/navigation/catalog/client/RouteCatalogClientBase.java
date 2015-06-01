@@ -51,6 +51,7 @@ public abstract class RouteCatalogClientBase {
     protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
+    protected static final String SUPER_USERNAME = "super";
 
     protected static final String CATEGORIES_URL = CATALOG + "categories/";
     protected static final String ROUTES_URL = CATALOG + "routes/";
@@ -184,7 +185,7 @@ public abstract class RouteCatalogClientBase {
 
     private void forceDeleteCategory(String categoryName) {
         try {
-            deleteCategory(categoryName).executeAsString();
+            deleteCategory(categoryName, SUPER_USERNAME, PASSWORD).executeAsString();
         } catch (IOException e) {
             // intentionally left empty
         }
@@ -228,13 +229,9 @@ public abstract class RouteCatalogClientBase {
         return new Delete(USERS_URL + userName + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
     }
 
-    protected Delete deleteUser(String userName) throws IOException {
-        return deleteUser(userName, USERNAME, PASSWORD);
-    }
-
     private void forceDeleteUser(String userName) {
         try {
-            deleteUser(userName).executeAsString();
+            deleteUser(userName, SUPER_USERNAME, PASSWORD).executeAsString();
         } catch (IOException e) {
             // intentionally left empty
         }

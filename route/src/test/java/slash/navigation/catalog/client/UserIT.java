@@ -130,7 +130,7 @@ public class UserIT extends RouteCatalogClientBase {
         Post request1 = createUser("userstest.gpx");
         request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
-        HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD);
+        HttpRequest request2 = updateUser(key, "alif", "topf", "Ali", "Top", "ali@top.org", SUPER_USERNAME, PASSWORD);
         String result2 = request2.executeAsString();
         assertEquals("user alif updated", result2);
         assertEquals(200, request2.getStatusCode());
@@ -185,7 +185,7 @@ public class UserIT extends RouteCatalogClientBase {
         Post request1 = createUser("userstest.gpx");
         request1.executeAsString();
         String key = parseUserKey(request1.getLocation());
-        HttpRequest request2 = deleteUser(key);
+        HttpRequest request2 = deleteUser(key, SUPER_USERNAME, PASSWORD);
         String result2 = request2.executeAsString();
         assertEquals("user ivan deleted", result2);
         assertEquals(200, request2.getStatusCode());
