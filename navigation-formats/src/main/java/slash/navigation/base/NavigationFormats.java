@@ -174,10 +174,10 @@ public final class NavigationFormats {
         addFormat(GarminFitFormat.class);
         addFormat(WintecWbt202TesFormat.class);
 
-        addFormat(UrlFormat.class);
         addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
         addFormat(MotoPlanerUrlFormat.class);
+        addFormat(UrlFormat.class);
 
         // second try for broken files
         addFormat(BrokenColumbusV900StandardFormat.class);
