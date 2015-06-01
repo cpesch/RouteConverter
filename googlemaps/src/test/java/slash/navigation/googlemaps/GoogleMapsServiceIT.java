@@ -31,6 +31,7 @@ import java.util.Locale;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class GoogleMapsServiceIT {
@@ -45,13 +46,13 @@ public class GoogleMapsServiceIT {
     public void getLocationFor() throws IOException {
         assertEquals("Chammstrasse 28, 8638 Goldingen, Switzerland", service.getLocationFor(9.0, 47.3));
         assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Germany", service.getLocationFor(10.2, 50.001));
-        assertEquals("Sch\u00f6ng\u00E4nge, 82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
+        assertTrue(service.getLocationFor(11.06561, 47.42428).endsWith("82467 Garmisch-Partenkirchen, Germany"));
         assertEquals(null, service.getLocationFor(0.0, 0.0));
-        assertEquals(null, service.getLocationFor(0.0, 90.0));
+        assertNotNull(service.getLocationFor(0.0, 90.0));
         assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarctica"));
         assertEquals("Ecuador", service.getLocationFor(-90.0, 0.0));
         assertTrue(service.getLocationFor(-90.0, -90.0).contains("Antarctica"));
-        assertEquals(null, service.getLocationFor(90.0, 90.0));
+        assertNotNull(service.getLocationFor(90.0, 90.0));
     }
 
     @Test

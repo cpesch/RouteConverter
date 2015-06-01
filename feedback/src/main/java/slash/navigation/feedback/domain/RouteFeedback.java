@@ -26,10 +26,7 @@ import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.rest.Credentials;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
+import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
@@ -46,6 +43,7 @@ import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
+import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
  * Encapsulates REST access to the RouteFeedback service of RouteConverter.
@@ -225,6 +223,7 @@ public class RouteFeedback {
         log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, filterUrl, xml));
         String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
         Put request = new Put(dataSourcesUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
         request.addFile("file", xml.getBytes());
 
         String result = request.executeAsString();
