@@ -23,21 +23,17 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.nmn.NmnUrlFormat;
+import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 public class NavigationFormatParserIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
@@ -257,9 +253,16 @@ public class NavigationFormatParserIT {
     }
 
     @Test
-    public void testIsValidUrl() throws IOException {
-        read(TEST_PATH + "from-googlemaps.url");
-        read(TEST_PATH + "from-nmn.txt");
-        read(TEST_PATH + "from-nmn-plain.txt");
+    public void testIsValidGoogleMapsUrl() throws IOException {
+        ParserResult result = read(TEST_PATH + "from-googlemaps.url");
+        assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());
+    }
+
+    @Test
+    public void testIsValidNavigonUrl() throws IOException {
+        ParserResult result = read(TEST_PATH + "from-nmn.txt");
+        assertEquals(NmnUrlFormat.class, result.getFormat().getClass());
+        ParserResult plainResult = read(TEST_PATH + "from-nmn-plain.txt");
+        assertEquals(NmnUrlFormat.class, plainResult.getFormat().getClass());
     }
 }
