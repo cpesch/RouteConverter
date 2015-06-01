@@ -181,13 +181,9 @@ public class BatchPositionAugmenter {
                                 }
                             }
 
-                            invokeLater(new Runnable() {
-                                public void run() {
-                                    int percent = count++ * 100 / rows.length;
-                                    getNotificationManager().showNotification(MessageFormat.format(
-                                            RouteConverter.getBundle().getString("augment-progressed"), percent), cancelAction);
-                                }
-                            });
+                            int percent = count++ * 100 / rows.length;
+                            getNotificationManager().showNotification(MessageFormat.format(
+                                    RouteConverter.getBundle().getString("augment-progressed"), percent), cancelAction);
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
