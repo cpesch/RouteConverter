@@ -34,8 +34,8 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 public class ConvertRouteToTrackAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        r.setRouteCharacteristics(Track);
         r.getContext().getActionManager().run("select-all");
         r.getInsertPositionFacade().insertAllWaypoints();
+        r.setRouteCharacteristics(Track);
     }
 }
