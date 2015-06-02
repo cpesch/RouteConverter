@@ -925,6 +925,10 @@ public class ConvertPanel implements PanelInTab {
 
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
+        // workaround bug in JTable: it returns selected rows even if there is no row,
+        // this leads to exceptions later when an UPDATE all rows event is fired
+        if (tablePositions.getRowCount() == 0)
+            selectedRows = new int[0];
 
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
