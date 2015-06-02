@@ -78,12 +78,6 @@ public class NotificationManager {
             public void run() {
                 while (true) {
                     synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(1000);
-                        } catch (InterruptedException e) {
-                            // intentionally left empty
-                        }
-
                         if (!running)
                             break;
 
@@ -98,12 +92,6 @@ public class NotificationManager {
                                         show(showMessage);
                                     }
                                 });
-
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    // intentionally left empty
-                                }
                             }
                         } else if (currentTimeMillis() - lastEvent > DISPLAY_TIMEOUT) {
                             invokeInAwtEventQueue(new Runnable() {
@@ -112,6 +100,12 @@ public class NotificationManager {
                                 }
                             });
                         }
+                    }
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
                     }
                 }
             }
