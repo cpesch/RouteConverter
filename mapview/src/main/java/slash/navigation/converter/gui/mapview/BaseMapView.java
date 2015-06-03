@@ -212,7 +212,7 @@ public abstract class BaseMapView implements MapView {
 
     protected void initializeAfterLoading() {
         resize();
-        update(true);
+        update(true, false);
     }
 
     protected void setModel(final PositionsModel positionsModel,
@@ -227,7 +227,7 @@ public abstract class BaseMapView implements MapView {
             public void tableChanged(TableModelEvent e) {
                 boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
                 boolean allRowsChanged = isFirstToLastRow(e);
-                // used to be limited to single rows which did work reliably but with usabilty problems
+                // used to be limited to single rows which did work reliably but with usability problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)
                     updateRouteButDontRecenter();
@@ -239,7 +239,7 @@ public abstract class BaseMapView implements MapView {
                                     e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                     e.getColumn() == ALL_COLUMNS))
                         return;
-                    update(allRowsChanged);
+                    update(true, true);
                 }
                 // update position marker on updates of longitude and latitude
                 if (e.getType() == UPDATE &&
@@ -281,7 +281,7 @@ public abstract class BaseMapView implements MapView {
         mapViewCallback.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                    update(false);
+                    update(false, false);
             }
         });
 
@@ -643,7 +643,7 @@ public abstract class BaseMapView implements MapView {
                 hasBeenResizedToInvisible = true;
             } else if (hasBeenResizedToInvisible) {
                 hasBeenResizedToInvisible = false;
-                update(true);
+                update(true, false);
             }
             resizeMap();
         }
@@ -776,7 +776,7 @@ public abstract class BaseMapView implements MapView {
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         this.showWaypointDescription = showWaypointDescription;
         if (positionsModel.getRoute().getCharacteristics().equals(Waypoints))
-            update(false);
+            update(false, false);
     }
 
     protected void setShowCoordinates() {
@@ -844,7 +844,7 @@ public abstract class BaseMapView implements MapView {
     // draw on map
 
     @SuppressWarnings({"unchecked"})
-    protected void update(boolean haveToReplaceRoute) {
+    protected void update(boolean haveToReplaceRoute, boolean clearPositionReducer) {
         if (!isInitialized() || !getComponent().isShowing())
             return;
 
@@ -855,10 +855,11 @@ public abstract class BaseMapView implements MapView {
             if (haveToReplaceRoute) {
                 this.haveToReplaceRoute = true;
                 routeUpdateReason = "replace route";
-                positionReducer.clear();
                 this.haveToRepaintSelection = true;
                 selectionUpdateReason = "replace route";
             }
+            if (clearPositionReducer)
+                positionReducer.clear();
             notificationMutex.notifyAll();
         }
     }
