@@ -954,8 +954,9 @@ public abstract class BaseMapView implements MapView {
         int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder latlngs = new StringBuilder();
-            int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength + 1);
-            for (int i = j * maximumPolylineSegmentLength; i < maximum; i++) {
+            int minimum = max(0, j * maximumPolylineSegmentLength - 1);
+            int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength);
+            for (int i = minimum; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
                 latlngs.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")");
