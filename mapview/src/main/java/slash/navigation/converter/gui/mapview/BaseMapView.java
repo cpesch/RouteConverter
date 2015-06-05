@@ -100,7 +100,6 @@ public abstract class BaseMapView implements MapView {
     private static final String RECENTER_MAP_PREFERENCE = "recenterMap";
 
     private PositionsModel positionsModel;
-    private List<NavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
     private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
@@ -111,8 +110,8 @@ public abstract class BaseMapView implements MapView {
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean recenterAfterZooming, showCoordinates, showWaypointDescription, running = true,
-            haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
+    private boolean showAllPositionsAfterLoading, recenterAfterZooming, showCoordinates, showWaypointDescription,
+            running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
@@ -129,12 +128,13 @@ public abstract class BaseMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           boolean recenterAfterZooming,
+                           boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
                            UnitSystemModel unitSystemModel) {
         this.mapViewCallback = mapViewCallback;
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
+        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
@@ -239,8 +239,13 @@ public abstract class BaseMapView implements MapView {
                                     e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                     e.getColumn() == ALL_COLUMNS))
                         return;
-                    update(true, true);
+
+                    if (showAllPositionsAfterLoading)
+                        update(true, true);
+                    else
+                        updateRouteButDontRecenter();
                 }
+
                 // update position marker on updates of longitude and latitude
                 if (e.getType() == UPDATE &&
                         (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
@@ -333,6 +338,7 @@ public abstract class BaseMapView implements MapView {
         });
 
         positionListUpdater = new Thread(new Runnable() {
+            @SuppressWarnings("unchecked")
             public void run() {
                 long lastTime = 0;
                 boolean recenter;
@@ -382,7 +388,7 @@ public abstract class BaseMapView implements MapView {
                                     " haveToUpdateRoute:" + haveToUpdateRoute +
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
-                            copiedPositions = new ArrayList<>(positions);
+                            copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
                             recenter = isRecenteringMap() && haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
@@ -416,6 +422,7 @@ public abstract class BaseMapView implements MapView {
         positionListUpdater.start();
 
         selectionUpdater = new Thread(new Runnable() {
+            @SuppressWarnings("unchecked")
             public void run() {
                 long lastTime = 0;
                 while (true) {
@@ -449,7 +456,7 @@ public abstract class BaseMapView implements MapView {
                             haveToRepaintSelection = false;
                             copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                            copiedPositions = new ArrayList<>(positions);
+                            copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
                         } else
                             continue;
                     }
@@ -736,7 +743,7 @@ public abstract class BaseMapView implements MapView {
 
     private boolean hasPositions() {
         synchronized (notificationMutex) {
-            return isInitialized() && positions != null;
+            return isInitialized() && positionsModel.getRoute().getPositions() != null;
         }
     }
 
@@ -764,6 +771,10 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
+    public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
+        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
+    }
+
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         this.recenterAfterZooming = recenterAfterZooming;
     }
@@ -785,6 +796,11 @@ public abstract class BaseMapView implements MapView {
 
     protected void setDegreeFormat() {
         executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void showAllPositions() {
+        setCenterOfMap(new ArrayList<NavigationPosition>(positionsModel.getRoute().getPositions()), true);
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
@@ -813,6 +829,7 @@ public abstract class BaseMapView implements MapView {
     // bounds and center
 
     protected abstract NavigationPosition getNorthEastBounds();
+
     protected abstract NavigationPosition getSouthWestBounds();
 
     protected abstract NavigationPosition getCurrentMapCenter();
@@ -843,13 +860,11 @@ public abstract class BaseMapView implements MapView {
 
     // draw on map
 
-    @SuppressWarnings({"unchecked"})
     protected void update(boolean haveToReplaceRoute, boolean clearPositionReducer) {
         if (!isInitialized() || !getComponent().isShowing())
             return;
 
         synchronized (notificationMutex) {
-            this.positions = positionsModel.getRoute() != null ? positionsModel.getRoute().getPositions() : null;
             this.haveToUpdateRoute = true;
             routeUpdateReason = "update route";
             if (haveToReplaceRoute) {
@@ -1050,6 +1065,8 @@ public abstract class BaseMapView implements MapView {
         final Map<Integer, PositionPair> addToQueue = new LinkedHashMap<>();
         Random random = new Random();
         synchronized (notificationMutex) {
+            @SuppressWarnings("unchecked")
+            List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
             for (int i = 0; i < startPositions.length; i++) {
                 // skip the very last position without successor
                 if (i == positions.size() - 1 || i == startPositions.length - 1)
@@ -1382,6 +1399,8 @@ public abstract class BaseMapView implements MapView {
             final NavigationPosition before = pair.getFirst();
             NavigationPosition after = pair.getSecond();
             final BaseRoute route = parseRoute(coordinates, before, after);
+            @SuppressWarnings("unchecked")
+            final List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
             synchronized (notificationMutex) {
                 int row = positions.indexOf(before) + 1;
                 insertPositions(row, route);
@@ -1551,7 +1570,7 @@ public abstract class BaseMapView implements MapView {
         NavigationPosition position = lastSelectedPositions.get(index);
         final int row;
         synchronized (notificationMutex) {
-            row = positions.indexOf(position);
+            row = positionsModel.getRoute().getPositions().indexOf(position);
         }
         return row;
     }
@@ -1600,7 +1619,7 @@ public abstract class BaseMapView implements MapView {
         // calculation - if that didn't exist the single update of row would be sufficient
         int size;
         synchronized (notificationMutex) {
-            size = positions.size() - 1;
+            size = positionsModel.getRoute().getPositions().size() - 1;
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
             positionReducer.clear();

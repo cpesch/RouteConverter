@@ -143,6 +143,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
+    public static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
@@ -342,6 +343,7 @@ public class RouteConverter extends SingleFrameApplication {
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         getMapViewCallback(),
+                        preferences.getBoolean(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                         preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
@@ -734,6 +736,11 @@ public class RouteConverter extends SingleFrameApplication {
         return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
+    public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
+        if (isMapViewAvailable())
+            getMapView().setShowAllPositionsAfterLoading(showAllPositionsAfterLoading);
+    }
+
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         if (isMapViewAvailable())
             getMapView().setRecenterAfterZooming(recenterAfterZooming);
@@ -999,6 +1006,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("show-profile", new ShowProfileAction());
         actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, MAX_VALUE, profileSplitPane, MAX_VALUE));
         actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, profileSplitPane, MAX_VALUE));
+        actionManager.register("show-all-positions-on-map", new ShowAllPositionsOnMapAction());
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
@@ -1142,6 +1150,13 @@ public class RouteConverter extends SingleFrameApplication {
             if (location > frame.getHeight() - 200)
                 location = frame.getHeight() - 200;
             profileSplitPane.setDividerLocation(location);
+        }
+    }
+
+    private class ShowAllPositionsOnMapAction extends FrameAction {
+        public void run() {
+            if (isMapViewAvailable())
+                getMapView().showAllPositions();
         }
     }
 

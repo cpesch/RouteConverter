@@ -58,6 +58,7 @@ public class TableModelToComboBoxModelAdapter<E> implements ComboBoxModel<E> {
         return modelDelegate.getRowCount();
     }
 
+    @SuppressWarnings("unchecked")
     public E getElementAt(int index) {
         return (E) modelDelegate.getValueAt(index, -1);
     }
@@ -78,6 +79,7 @@ public class TableModelToComboBoxModelAdapter<E> implements ComboBoxModel<E> {
         return selectedDelegate.getItem();
     }
 
+    @SuppressWarnings("unchecked")
     public void setSelectedItem(Object anItem) {
         selectedDelegate.setItem((E) anItem);
     }

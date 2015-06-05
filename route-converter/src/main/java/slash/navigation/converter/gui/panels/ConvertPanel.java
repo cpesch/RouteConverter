@@ -141,8 +141,8 @@ public class ConvertPanel implements PanelInTab {
     private JLabel labelOverallAscend;
     private JLabel labelOverallDescend;
     private JTable tablePositions;
-    private JComboBox comboBoxChoosePositionList;
-    private JComboBox comboBoxChoosePositionListCharacteristics;
+    private JComboBox<FormatAndRoutesModel> comboBoxChoosePositionList;
+    private JComboBox<CharacteristicsModel> comboBoxChoosePositionListCharacteristics;
     private JButton buttonNewPositionList;
     private JButton buttonRenamePositionList;
     private JButton buttonDeletePositionList;
@@ -689,7 +689,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        NavigationFormat<BaseRoute> selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -840,7 +840,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        NavigationFormat<BaseRoute> selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -1127,7 +1127,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void createUIComponents() {
-        comboBoxChoosePositionList = new JComboBox() {
+        comboBoxChoosePositionList = new JComboBox<FormatAndRoutesModel>() {
             public Dimension getPreferredSize() {
                 Dimension preferredSize = super.getPreferredSize();
                 preferredSize.width = convertPanel.getPreferredSize().width - 300;

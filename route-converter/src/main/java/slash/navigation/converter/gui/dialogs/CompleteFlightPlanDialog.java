@@ -67,9 +67,9 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private JPanel contentPane;
     private JLabel labelPosition;
     private JTextField textFieldDescription;
-    private JComboBox comboBoxCountryCode;
+    private JComboBox<CountryCode> comboBoxCountryCode;
     private JTextField textFieldIdentifier;
-    private JComboBox comboBoxWaypointType;
+    private JComboBox<WaypointType> comboBoxWaypointType;
     private JButton buttonPrevious;
     private JButton buttonNextOrFinish;
 
@@ -117,7 +117,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         });
 
         comboBoxCountryCode.setRenderer(new CountryCodeListCellRenderer());
-        comboBoxCountryCode.setModel(new DefaultComboBoxModel(CountryCode.values()));
+        comboBoxCountryCode.setModel(new DefaultComboBoxModel<>(CountryCode.values()));
         comboBoxCountryCode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
@@ -128,7 +128,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             }
         });
         comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer());
-        comboBoxWaypointType.setModel(new DefaultComboBoxModel(WaypointType.values()));
+        comboBoxWaypointType.setModel(new DefaultComboBoxModel<>(WaypointType.values()));
         comboBoxWaypointType.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)

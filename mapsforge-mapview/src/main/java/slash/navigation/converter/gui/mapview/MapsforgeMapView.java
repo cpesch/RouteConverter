@@ -138,7 +138,7 @@ public class MapsforgeMapView implements MapView {
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private ExecutorService executor = newSingleThreadExecutor();
 
-    private boolean recenterAfterZooming;
+    private boolean showAllPositionsAfterLoading, recenterAfterZooming;
 
     // initialization
 
@@ -146,14 +146,14 @@ public class MapsforgeMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           boolean recenterAfterZooming,
-                           boolean showCoordinates,
-                           boolean showWaypointDescription,
+                           boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
+                           boolean showCoordinates, boolean showWaypointDescription,
                            UnitSystemModel unitSystemModel) {
         this.mapViewCallback = (MapViewCallbackOffline)mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();
         initializeMapView();
+        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         setShowCoordinates(showCoordinates);
     }
@@ -612,7 +612,7 @@ public class MapsforgeMapView implements MapView {
                         boolean allRowsChanged = isFirstToLastRow(e);
                         if (!allRowsChanged)
                             eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
-                        if (allRowsChanged)
+                        if (allRowsChanged && showAllPositionsAfterLoading)
                             centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true);
 
                         break;
@@ -790,6 +790,10 @@ public class MapsforgeMapView implements MapView {
         // intentionally left empty
     }
 
+    public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
+        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
+    }
+
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         this.recenterAfterZooming = recenterAfterZooming;
     }
@@ -800,6 +804,16 @@ public class MapsforgeMapView implements MapView {
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
         throw new UnsupportedOperationException(); // TODO implement me
+    }
+
+    @SuppressWarnings("unchecked")
+    public void showAllPositions() {
+        List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
+        if (positions.size() > 0) {
+            BoundingBox both = new BoundingBox(positions);
+            zoomToBounds(both);
+            setCenter(both.getCenter(), true);
+        }
     }
 
     private Polyline mapBorder, routeBorder;

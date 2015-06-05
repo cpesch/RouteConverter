@@ -96,6 +96,7 @@ public class FrameMenu {
         viewMenu.add(createItem("show-profile"));
         viewMenu.add(createItem("maximize-map"));
         viewMenu.add(createItem("maximize-positionlist"));
+        viewMenu.add(createItem("show-all-positions-on-map"));
         viewMenu.addSeparator();
         viewMenu.add(createMenu("show-column"));
         viewMenu.add(createMenu("show-profile"));

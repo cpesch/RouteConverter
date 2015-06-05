@@ -136,6 +136,7 @@ public class FindPlaceDialog extends SimpleDialog {
         buttonInsertPosition.setEnabled(existsSelectedResult);
     }
 
+    @SuppressWarnings("unchecked")
     private void searchPositions() {
         DefaultListModel listModel = new DefaultListModel();
         listResult.setModel(listModel);

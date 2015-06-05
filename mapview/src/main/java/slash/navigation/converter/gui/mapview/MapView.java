@@ -40,7 +40,7 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     MapViewCallback mapViewCallback,
-                    boolean recenterAfterZooming,
+                    boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,
                     UnitSystemModel unitSystemModel);
     boolean isInitialized();
@@ -50,9 +50,11 @@ public interface MapView extends PositionsSelectionModel {
     Component getComponent();
 
     void resize();
+    void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading);
     void setRecenterAfterZooming(boolean recenterAfterZooming);
     void setShowCoordinates(boolean showCoordinates);
     void setShowWaypointDescription(boolean showWaypointDescription);
+    void showAllPositions();
     void showMapBorder(BoundingBox mapBoundingBox);
 
     NavigationPosition getCenter();
