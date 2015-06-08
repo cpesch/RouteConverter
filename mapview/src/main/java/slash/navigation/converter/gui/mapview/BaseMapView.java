@@ -413,8 +413,8 @@ public abstract class BaseMapView implements MapView {
                         default:
                             throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
                     }
-                    log.info("Position list updated for " + render.size() + " positions of type " +
-                            characteristics + ", recentering: " + recenter);
+                    log.info("Position list updated for " + render.size() + " positions of type " + characteristics +
+                            ", reason: " + routeUpdateReason + ", recentering: " + recenter);
                     lastTime = currentTimeMillis();
                 }
             }
@@ -464,7 +464,8 @@ public abstract class BaseMapView implements MapView {
                     List<NavigationPosition> render = positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices);
                     NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
                     selectPositions(render, recenter ? centerPosition : null);
-                    log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
+                    log.info("Selected positions updated for " + render.size() + " positions , reason: " +
+                            selectionUpdateReason + ", recentering: " + recenter + " to: " + centerPosition);
                     lastTime = currentTimeMillis();
                 }
             }
@@ -897,12 +898,8 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void removeOverlays() {
-        executeScript("removeOverlays();");
-    }
-
     private void removeDirections() {
-        executeScript("removeDirections();");
+        executeScript("removeOverlays();\nremoveDirections();");
     }
 
     private void addDirectionsToMap(List<NavigationPosition> positions) {
@@ -914,7 +911,7 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
-        removeOverlays();
+        executeScript("removeOverlays();");
 
         String color = preferences.get(ROUTE_LINE_COLOR_PREFERENCE, "6CB1F3");
         int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
@@ -981,7 +978,6 @@ public abstract class BaseMapView implements MapView {
             }
             executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + width + ");");
         }
-        removeOverlays();
         removeDirections();
     }
 
@@ -1000,7 +996,6 @@ public abstract class BaseMapView implements MapView {
             }
             executeScript(buffer.toString());
         }
-        removeOverlays();
         removeDirections();
     }
 
