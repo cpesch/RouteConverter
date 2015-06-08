@@ -38,6 +38,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.system.Platform.getBits;
 import static slash.common.system.Platform.getOperationSystem;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
+import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
 import static slash.navigation.gui.jarinjar.JarInJarLoader.loadJar;
 
 /**
@@ -142,6 +143,7 @@ public abstract class Application {
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         setLookAndFeel();
+        setUseSystemProxies();
         openNativeInterface();
         initializeLocale(userNodeForPackage(applicationClass));
 

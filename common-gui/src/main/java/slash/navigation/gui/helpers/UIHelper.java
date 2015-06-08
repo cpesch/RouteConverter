@@ -34,6 +34,7 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
+import static slash.common.system.Version.parseVersionFromManifest;
 
 /**
  * Helpers used throughout the UI
@@ -69,6 +70,10 @@ public class UIHelper {
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
+    }
+
+    public static void setUseSystemProxies() {
+        System.setProperty("java.net.useSystemProxies", "true");
     }
 
     public static void startWaitCursor(JComponent component) {
