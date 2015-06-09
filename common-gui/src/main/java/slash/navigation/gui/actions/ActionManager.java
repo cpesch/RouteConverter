@@ -27,11 +27,11 @@ import javax.swing.event.SwingPropertyChangeSupport;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.Collections.sort;
 import static javax.swing.Action.NAME;
 import static slash.navigation.gui.helpers.PreferencesHelper.count;
 
@@ -98,9 +98,15 @@ public class ActionManager {
         action.actionPerformed(event);
     }
 
+    private List<String> getActionsSortedByName() {
+        List<String> result = new ArrayList<>(actionMap.keySet());
+        sort(result);
+        return result;
+    }
+
     public void logUsage() {
         StringBuilder builder = new StringBuilder();
-        for (String actionName : actionMap.keySet()) {
+        for (String actionName : getActionsSortedByName()) {
             int runs = preferences.getInt(RUN_COUNT_PREFERENCE + actionName, 0);
             if (runs > 0)
                 builder.append(String.format("\n%s, runs: %d", actionName, runs));
