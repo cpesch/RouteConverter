@@ -1167,7 +1167,7 @@ public abstract class BaseMapView implements MapView {
         for (String line : lines) {
             buffer.append("  ").append(line).append("\n");
         }
-        log.fine("processing callback: \n" + buffer.toString());
+        log.info("processing callback: \n" + buffer.toString());
 
         if (!isAuthenticated(lines))
             return;
@@ -1215,14 +1215,14 @@ public abstract class BaseMapView implements MapView {
 
                 String callback = matcher.group(3);
                 if (processCallback(callback)) {
-                    log.fine("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
+                    log.info("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
                     break;
                 }
             }
 
             // process body of POST requests
             if (hasValidCallbackNumber && processCallback(line)) {
-                log.fine("Processed POST callback " + line + " with number: " + lastCallbackNumber);
+                log.info("Processed POST callback " + line + " with number: " + lastCallbackNumber);
                 break;
             }
         }
