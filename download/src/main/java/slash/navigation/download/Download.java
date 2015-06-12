@@ -136,15 +136,19 @@ public class Download {
         return expectedBytes != null ? new Double((double) processedBytes / expectedBytes * 100).intValue() : null;
     }
 
-    public String getProcessedBytes() {
+    public String getProcessedBytesAsString() {
         return formatSize(processedBytes);
+    }
+
+    public long getProcessedBytes() {
+        return processedBytes;
     }
 
     public void setProcessedBytes(long processedBytes) {
         this.processedBytes = processedBytes;
     }
 
-    public String getExpectedBytes() {
+    public String getExpectedBytesAsString() {
         return formatSize(expectedBytes);
     }
 

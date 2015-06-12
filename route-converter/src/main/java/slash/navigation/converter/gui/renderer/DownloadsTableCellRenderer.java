@@ -48,7 +48,7 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
                 String text = download.getState().name();
                 if (Downloading.equals(download.getState()) || Processing.equals(download.getState()) || Resuming.equals(download.getState())) {
                     Integer percentage = download.getPercentage();
-                    String progress = percentage != null ? percentage + "%" : download.getProcessedBytes();
+                    String progress = percentage != null ? percentage + "%" : download.getProcessedBytesAsString();
                     text += " (" + progress + ")";
                 }
                 label.setText(text);

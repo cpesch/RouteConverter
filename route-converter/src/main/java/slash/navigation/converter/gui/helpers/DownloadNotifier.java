@@ -48,9 +48,12 @@ public class DownloadNotifier implements DownloadListener {
 
     public void progressed(Download download) {
         Integer percentage = download.getPercentage();
+        if(percentage != null && percentage == 0 || download.getProcessedBytes() == 0)
+            return;
+
         String message = MessageFormat.format(getBundle().getString("download-progressed"),
-                percentage != null ? percentage + "%" : download.getProcessedBytes(),
-                percentage != null ? download.getExpectedBytes() : "", download.getDescription());
+                percentage != null ? percentage + "%" : download.getProcessedBytesAsString(),
+                percentage != null ? download.getExpectedBytesAsString() : "", download.getDescription());
         showNotification(message);
     }
 
