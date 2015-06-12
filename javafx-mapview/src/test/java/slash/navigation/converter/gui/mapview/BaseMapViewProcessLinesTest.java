@@ -46,7 +46,7 @@ public class BaseMapViewProcessLinesTest {
         });
         new Thread(new Runnable() {
             public void run() {
-                view.processLines(lines);
+                view.processLines(lines, 0);
             }
         }).start();
 
@@ -84,7 +84,7 @@ public class BaseMapViewProcessLinesTest {
         new Thread(new Runnable() {
             public void run() {
                 for (String line : lines)
-                    view.processLines(singletonList(line));
+                    view.processLines(singletonList(line), 0);
             }
         }).start();
 
