@@ -159,6 +159,9 @@ public class JavaFXWebViewMapView extends BaseMapView {
         if (webView == null || script.length() == 0)
             return;
 
+        boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
+        if (debug)
+            log.info("Before executeScript " + script);
         if (!isFxApplicationThread()) {
             runLater(new Runnable() {
                 public void run() {
@@ -201,7 +204,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
             });
 
             synchronized (LOCK) {
-                while(result[1] == false) {
+                while (result[1] == false) {
                     try {
                         LOCK.wait();
                     } catch (InterruptedException e) {
