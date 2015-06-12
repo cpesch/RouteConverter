@@ -1145,7 +1145,6 @@ public abstract class BaseMapView implements MapView {
             while (true) {
                 try {
                     String line = trim(reader.readLine());
-                    // log.fine("read line " + line);
                     if (line == null) {
                         if (processingPost && !processingBody) {
                             processingBody = true;
@@ -1167,12 +1166,12 @@ public abstract class BaseMapView implements MapView {
         for (String line : lines) {
             buffer.append("  ").append(line).append("\n");
         }
-        log.info("processing callback: \n" + buffer.toString());
+        log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer.toString());
 
         if (!isAuthenticated(lines))
             return;
 
-        processLines(lines);
+        processLines(lines, socket.getPort());
     }
 
     private boolean isAuthenticated(List<String> lines) {
@@ -1200,14 +1199,14 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern CALLBACK_REQUEST_PATTERN = Pattern.compile("^(GET|OPTIONS|POST) /(\\d+)/(.*) HTTP.+$");
     private int lastCallbackNumber = -1;
 
-    void processLines(List<String> lines) {
+    void processLines(List<String> lines, int port) {
         boolean hasValidCallbackNumber = false;
         for (String line : lines) {
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
             if (matcher.matches()) {
                 int callbackNumber = parseInt(matcher.group(2));
                 if (lastCallbackNumber >= callbackNumber) {
-                    log.info("Ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber);
+                    log.info("Ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber + " port is: " + port);
                     break;
                 }
                 lastCallbackNumber = callbackNumber;
@@ -1215,14 +1214,14 @@ public abstract class BaseMapView implements MapView {
 
                 String callback = matcher.group(3);
                 if (processCallback(callback)) {
-                    log.info("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
+                    log.info("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber + " from port: " + port);
                     break;
                 }
             }
 
             // process body of POST requests
             if (hasValidCallbackNumber && processCallback(line)) {
-                log.info("Processed POST callback " + line + " with number: " + lastCallbackNumber);
+                log.info("Processed POST callback " + line + " with number: " + lastCallbackNumber + " from port: " + port);
                 break;
             }
         }

@@ -1113,7 +1113,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void initializeRoutingServices() {
         getRoutingServiceFacade().clear();
-        RoutingService service = getMapView() instanceof BaseMapView ? new GoogleDirectionsService(getMapView()) : new BeelineService();
+        RoutingService service = new GoogleDirectionsService(getMapView());
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
     }

@@ -489,6 +489,10 @@
        return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
    }
 
+   function round(latOrLng) {
+       return Math.round(latOrLng * 100000) / 100000;
+   }
+
    var debug = document.createElement("div");
 
    function addDebug(text) {
@@ -732,17 +736,23 @@
                        "<p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p>");
            }
 
+           var lastZoom = 0;
            google.maps.event.addListener(map, "zoom_changed", function() {
                var zoom = map.getZoom();
-               callJavaWithUri("zoom-changed/" + zoom);
+               if (lastZoom != zoom) {
+                   lastZoom = zoom;
+                   callJavaWithUri("zoom-changed/" + zoom);
+               }
            });
-           var centerLat = 0.0, centerLng = 0.0;
+
+           var lastCenterLat = 0.0, lastCenterLng = 0.0;
            google.maps.event.addListener(map, "center_changed", function() {
                var center = map.getCenter();
-               var currentLat = Math.round(center.lat() * 100000) / 100000;
-               var currentLng = Math.round(center.lng() * 100000) / 100000;
-               if(currentLat != centerLat && currentLng != centerLng) {
-                   centerLat = currentLat; centerLng = currentLng;
+               var centerLat = round(center.lat());
+               var centerLng = round(center.lng());
+               if(centerLat != lastCenterLat && centerLng != lastCenterLng) {
+                   lastCenterLat = centerLat;
+                   lastCenterLng = centerLng;
                    callJavaWithUri("center-changed/" + centerLat + "/" + centerLng);
                }
            });
