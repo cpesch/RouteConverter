@@ -29,11 +29,14 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
+import slash.navigation.maps.RemoteResource;
 import slash.navigation.routing.BeelineService;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -69,7 +72,7 @@ public class RouteConverterOffline extends RouteConverter {
         super.initializeActions();
         getContext().getActionManager().register("show-maps-and-themes", new ShowMapsAndThemesAction());
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
-        if(viewMenu != null) {
+        if (viewMenu != null) {
             viewMenu.add(createItem("show-maps-and-themes"), 0);
             viewMenu.add(new JPopupMenu.Separator(), 1);
         }
@@ -129,13 +132,38 @@ public class RouteConverterOffline extends RouteConverter {
 
                 LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
                 if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
-                    ((MapsforgeMapView)getMapView()).updateMapAndThemesAfterDirectoryScanning();
-
+                    ((MapsforgeMapView) getMapView()).updateMapAndThemesAfterDirectoryScanning();
             }
         }, "DirectoryScanner").start();
     }
 
     protected void scanRemoteMapsAndThemes() {
         getMapManager().scanDatasources();
+
+        DataSource routeconverterMaps = getDataSourceManager().getDataSourceService().getDataSourceById("routeconverter-maps");
+        if (routeconverterMaps != null)
+            downloadResource(routeconverterMaps, "oceans.map", "world.map");
+    }
+
+    private void downloadResource(DataSource dataSource, String... uris) {
+        List<RemoteResource> resources = new ArrayList<>();
+        boolean updateMap = false;
+        for (String uri : uris) {
+            RemoteResource resource = getMapManager().getResourcesModel().findResource(dataSource, uri);
+            if (resource != null) {
+                resources.add(resource);
+
+                if (!getMapManager().getFile(resource).exists())
+                    updateMap = true;
+            }
+        }
+
+        if (resources.size() > 0)
+            getMapManager().queueForDownload(resources);
+
+        if (updateMap) {
+            scanLocalMapsAndThemes();
+            ((MapsforgeMapView) getMapView()).updateMapAndThemesAfterDirectoryScanning();
+        }
     }
 }

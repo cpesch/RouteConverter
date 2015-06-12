@@ -225,7 +225,7 @@ public class MapManager {
         downloadManager.waitForCompletion(downloads);
     }
 
-    private File getFile(RemoteResource resource) {
+    public File getFile(RemoteResource resource) {
         return new File(getApplicationDirectory(resource.getSubDirectory().toLowerCase()), resource.getDownloadable().getUri().toLowerCase());
     }
 

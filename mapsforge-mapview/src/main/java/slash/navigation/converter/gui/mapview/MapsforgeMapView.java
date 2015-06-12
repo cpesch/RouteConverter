@@ -133,7 +133,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
     private static Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
-    private TileRendererLayer oceansLayer, worldLayer;
+    private TileRendererLayer backgroundLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private ExecutorService executor = newSingleThreadExecutor();
@@ -271,14 +271,19 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
-        LocalMap oceansMap = getMapManager().getMap("routeconverter/oceans.map");
-        if(oceansMap != null)
-            oceansLayer = createTileRendererLayer(oceansMap, theme);
+        initializeBackground();
+    }
 
+    private void initializeBackground() {
+        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
         LocalMap worldMap = getMapManager().getMap("routeconverter/world.map");
         if(worldMap != null)
-            worldLayer = createTileRendererLayer(worldMap, theme);
+            backgroundLayer = createTileRendererLayer(worldMap, theme);
+        else {
+            LocalMap oceansMap = getMapManager().getMap("routeconverter/oceans.map");
+            if (oceansMap != null)
+                backgroundLayer = createTileRendererLayer(oceansMap, theme);
+        }
     }
 
     private AwtGraphicMapView createMapView() {
@@ -665,8 +670,10 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void updateMapAndThemesAfterDirectoryScanning() {
-        if (mapView != null)
+        if (mapView != null) {
+            initializeBackground();
             handleMapAndThemeUpdate(false, false);
+        }
     }
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
@@ -695,15 +702,10 @@ public class MapsforgeMapView implements MapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
-        if(oceansLayer != null) {
-            layers.remove(oceansLayer);
+        if(backgroundLayer != null) {
+            layers.remove(backgroundLayer);
             if (map.isVector())
-                layers.add(0, oceansLayer);
-        }
-        if(worldLayer != null) {
-            layers.remove(worldLayer);
-            if (map.isVector())
-                layers.add(0, worldLayer);
+                layers.add(0, backgroundLayer);
         }
 
         // then start download layer threads

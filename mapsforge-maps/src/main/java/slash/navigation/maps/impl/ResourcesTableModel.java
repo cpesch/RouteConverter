@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps.impl;
 
+import slash.navigation.datasources.DataSource;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
@@ -63,6 +64,15 @@ public class ResourcesTableModel extends AbstractTableModel {
 
     public RemoteResource getResource(int rowIndex) {
         return resources.get(rowIndex);
+    }
+
+    public RemoteResource findResource(DataSource datasource, String uri) {
+        String url = datasource.getBaseUrl() + uri;
+        for(RemoteResource resource : resources) {
+            if(url.equals(resource.getUrl()))
+                return resource;
+        }
+        return null;
     }
 
     private void addResource(RemoteResource resource) {
