@@ -38,7 +38,7 @@ public class GpxUtil {
     public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
     public static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
     public static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-    public static final String GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/WaypointExtension/v1";
+    // public static final String GARMIN_WAYPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/WaypointExtension/v1";
     // public static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
     public static final String GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TripExtensions/v1";
