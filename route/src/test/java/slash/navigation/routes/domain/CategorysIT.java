@@ -25,10 +25,7 @@ import slash.navigation.routes.Category;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CategorysIT extends RouteCatalogServiceBase {
 
@@ -82,22 +79,14 @@ public class CategorysIT extends RouteCatalogServiceBase {
         addSubCategory(category, "Category with Umlauts " + UMLAUTS + " " + currentTimeMillis());
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testAddSubCategoryWithSlashes() throws Exception {
-        try {
-            addSubCategory(catalog.getRootCategory(), "/Slashes/Category/" + currentTimeMillis() + "/");
-            assertTrue(false);
-        } catch (IOException e) {
-        }
+        addSubCategory(catalog.getRootCategory(), "/Slashes/Category/" + currentTimeMillis() + "/");
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testAddSubCategoryWithPluses() throws Exception {
-        try {
-            addSubCategory(catalog.getRootCategory(), "A + B + C" + currentTimeMillis() + "/");
-            assertTrue(false);
-        } catch (IOException e) {
-        }
+        addSubCategory(catalog.getRootCategory(), "A + B + C" + currentTimeMillis() + "/");
     }
 
     @Test
@@ -126,17 +115,13 @@ public class CategorysIT extends RouteCatalogServiceBase {
         assertEquals(rename, find.getName());
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testRenameCategoryWithSlashes() throws Exception {
         String name = "Category " + currentTimeMillis();
         Category root = catalog.getRootCategory();
         Category category = root.create(name);
         String rename = "Slashes / Category / " + name;
-        try {
-            category.update(root, rename);
-            assertTrue(false);
-        } catch (IOException e) {
-        }
+        category.update(root, rename);
     }
 
     @Test
@@ -160,22 +145,17 @@ public class CategorysIT extends RouteCatalogServiceBase {
         assertEquals(rename, find.getName());
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testMoveToSelfAsParent() throws Exception {
         Category root = catalog.getRootCategory();
         String parentName = "Parent " + currentTimeMillis();
         Category parent = root.create(parentName);
         String moveName = "Move " + currentTimeMillis();
         Category move = parent.create(moveName);
-
-        try {
-            move.update(move, move.getName());
-            assertTrue(false);
-        } catch (IOException e) {
-        }
+        move.update(move, move.getName());
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testMoveToOwnChild() throws Exception {
         Category root = catalog.getRootCategory();
         String parentName = "Parent " + currentTimeMillis();
@@ -184,11 +164,6 @@ public class CategorysIT extends RouteCatalogServiceBase {
         Category move = parent.create(moveName);
         String childName = "Child " + currentTimeMillis();
         Category child = move.create(childName);
-
-        try {
-            move.update(child, move.getName());
-            assertTrue(false);
-        } catch (IOException e) {
-        }
+        move.update(child, move.getName());
     }
 }

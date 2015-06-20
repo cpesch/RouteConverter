@@ -73,14 +73,10 @@ public class KmlFormatIT {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
-    @Test
-    public void testUnmarshal20TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal20TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
-        try {
-            unmarshal21(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        unmarshal21(reader);
     }
 
     @Test
@@ -90,14 +86,10 @@ public class KmlFormatIT {
         assertNotNull(kml);
     }
 
-    @Test
-    public void testUnmarshal21TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal21TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
-        try {
-            unmarshal20(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        unmarshal20(reader);
     }
 
     @Test
