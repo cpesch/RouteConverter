@@ -55,7 +55,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.widthInDigits;
-import static slash.navigation.base.RouteCalculations.intrapolateTime;
+import static slash.navigation.base.RouteCalculations.interpolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -469,7 +469,7 @@ public class BatchPositionAugmenter {
                         NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
                         if (predecessor != null && successor != null) {
                             CompactCalendar previousTime = position.getTime();
-                            CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
+                            CompactCalendar nextTime = interpolateTime(position, predecessor, successor);
                             boolean changed = nextTime != null && !nextTime.equals(previousTime);
                             if (changed)
                                 positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, nextTime), false, true);
@@ -587,7 +587,7 @@ public class BatchPositionAugmenter {
                             NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
                             if (predecessor != null && successor != null) {
                                 CompactCalendar previousTime = position.getTime();
-                                CompactCalendar nextTime = intrapolateTime(position, predecessor, successor);
+                                CompactCalendar nextTime = interpolateTime(position, predecessor, successor);
                                 boolean changed = nextTime != null && !nextTime.equals(previousTime);
                                 if (changed) {
                                     columnIndices.add(DATE_TIME_COLUMN_INDEX);
