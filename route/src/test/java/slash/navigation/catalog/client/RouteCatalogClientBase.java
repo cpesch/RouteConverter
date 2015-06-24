@@ -46,7 +46,7 @@ import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 
 public abstract class RouteCatalogClientBase {
-    protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
+    protected static final String TEST_PATH = "route\\src\\test\\resources\\";
     protected static final String CATALOG = System.getProperty("catalog", "http://localhost:8000/catalog/");
     protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
     protected static final String USERNAME = "test";
