@@ -69,6 +69,7 @@ public class SelectionUpdaterTest {
     public void testAdded() {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(1)).thenReturn(p1);
+        when(positionsModel.getRowCount()).thenReturn(2);
         SelectionOperation selectionOperation = mock(SelectionOperation.class);
 
         SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
@@ -84,6 +85,7 @@ public class SelectionUpdaterTest {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(1)).thenReturn(p1);
         when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(3);
         SelectionOperation selectionOperation = mock(SelectionOperation.class);
 
         SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
@@ -105,6 +107,7 @@ public class SelectionUpdaterTest {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(1)).thenReturn(p1);
         when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(3);
         SelectionOperation selectionOperation = mock(SelectionOperation.class);
 
         SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
@@ -126,6 +129,7 @@ public class SelectionUpdaterTest {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(1)).thenReturn(p1);
         when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(3);
         when(positionsModel.getIndex(p1)).thenReturn(-1);
         SelectionOperation selectionOperation = mock(SelectionOperation.class);
 
