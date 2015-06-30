@@ -97,7 +97,8 @@ public class SelectionUpdater {
     private List<PositionWithLayer> asPositionWithLayers(int[] indices) {
         List<PositionWithLayer> result = new ArrayList<>();
         for (int selectedPosition : indices) {
-            result.add(new PositionWithLayer(positionsModel.getPosition(selectedPosition)));
+            if (selectedPosition < positionsModel.getRowCount())
+                result.add(new PositionWithLayer(positionsModel.getPosition(selectedPosition)));
         }
         return result;
     }
