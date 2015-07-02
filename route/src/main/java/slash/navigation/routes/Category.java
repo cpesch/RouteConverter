@@ -30,9 +30,8 @@ import java.util.List;
  */
 
 public interface Category {
-    String getUrl();
+    String getHref();
     String getName() throws IOException;
-    String getDescription() throws IOException;
 
     List<Category> getCategories() throws IOException;
     Category create(String name) throws IOException;
@@ -40,6 +39,6 @@ public interface Category {
     void delete() throws IOException;
 
     List<Route> getRoutes() throws IOException;
-    Route createRoute(String description, File file) throws IOException;
-    Route createRoute(String description, String fileUrl) throws IOException;
+    Route createRoute(String description, File localFile) throws IOException;
+    Route createRoute(String description, String remoteUrl) throws IOException;
 }

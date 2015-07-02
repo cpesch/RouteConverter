@@ -17,27 +17,30 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.routes.domain;
+package slash.navigation.routes.remote;
 
 import org.junit.Test;
 import slash.common.io.Files;
-import slash.common.io.Transfer;
+import slash.navigation.routes.remote.BaseRouteCatalogTest;
 
 import java.io.File;
 import java.io.IOException;
 
+import static java.io.File.createTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertNotEquals;
+import static slash.common.io.Files.removeExtension;
+import static slash.common.io.Transfer.decodeUri;
 
-public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
+public class TempFileIT extends BaseRouteCatalogTest {
     private static final String DEFAULT_PREFIX = "route";
     private static final String DEFAULT_SUFFIX = ".file";
     private static final String A_PREFIX = "nice route";
     private static final String A_SUFFIX = ".kml";
 
-    private File createTempFile(String fileName) throws IOException {
-        File tmp = File.createTempFile(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+    private File createTemporaryFile(String fileName) throws IOException {
+        File tmp = createTempFile(DEFAULT_PREFIX, DEFAULT_SUFFIX);
         File file = new File(tmp.getParentFile(), fileName);
         if (file.exists())
             assertTrue(file.delete());
@@ -48,11 +51,11 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
     private File routeCatalogCreateTempFile(String fileName) throws IOException {
         if (fileName == null)
             fileName = "route.file";
-        String decodedName = Transfer.decodeUri(fileName);
-        String prefix = Files.removeExtension(decodedName);
+        String decodedName = decodeUri(fileName);
+        String prefix = removeExtension(decodedName);
         if (prefix.length() < 3)
             prefix = "rcc" + prefix;
-        File file = File.createTempFile(prefix, Files.getExtension(decodedName));
+        File file = createTempFile(prefix, Files.getExtension(decodedName));
         File tmp = new File(file.getParentFile(), decodedName);
         if (!tmp.exists()) {
             if (file.renameTo(tmp))
@@ -63,7 +66,7 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
 
     @Test
     public void testCreateDefaultTempFile() throws IOException {
-        File expected = createTempFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
+        File expected = createTemporaryFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
         assertTrue(expected.exists());
         assertTrue(expected.delete());
         File file = routeCatalogCreateTempFile(null);
@@ -72,7 +75,7 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
 
     @Test
     public void testCreateDefaultTempFileIfItExists() throws IOException {
-        File expected = createTempFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
+        File expected = createTemporaryFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
         File file = routeCatalogCreateTempFile(null);
         assertNotEquals(expected, file);
         assertTrue(file.getName().startsWith(DEFAULT_PREFIX));
@@ -82,7 +85,7 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
 
     @Test
     public void testCreateTempFile() throws IOException {
-        File expected = createTempFile(A_PREFIX + A_SUFFIX);
+        File expected = createTemporaryFile(A_PREFIX + A_SUFFIX);
         assertTrue(expected.exists());
         assertTrue(expected.delete());
         File file = routeCatalogCreateTempFile(A_PREFIX + A_SUFFIX);
@@ -91,7 +94,7 @@ public class RouteCatalogServiceIT extends RouteCatalogServiceBase {
 
     @Test
     public void testCreateTempFileIfItExists() throws IOException {
-        File expected = createTempFile(A_PREFIX + A_SUFFIX);
+        File expected = createTemporaryFile(A_PREFIX + A_SUFFIX);
         File file = routeCatalogCreateTempFile(A_PREFIX + A_SUFFIX);
         assertNotEquals(expected, file);
         assertTrue(file.getName().startsWith(A_PREFIX));

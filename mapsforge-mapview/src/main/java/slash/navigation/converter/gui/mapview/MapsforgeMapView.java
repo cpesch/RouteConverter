@@ -53,6 +53,7 @@ import slash.navigation.converter.gui.mapview.helpers.MapViewPopupMenu;
 import slash.navigation.converter.gui.mapview.helpers.MapViewResizer;
 import slash.navigation.converter.gui.mapview.lines.Line;
 import slash.navigation.converter.gui.mapview.lines.Polyline;
+import slash.navigation.converter.gui.mapview.models.IntermediateRoute;
 import slash.navigation.converter.gui.mapview.overlays.DraggableMarker;
 import slash.navigation.converter.gui.mapview.updater.*;
 import slash.navigation.converter.gui.models.*;
@@ -464,7 +465,7 @@ public class MapsforgeMapView implements MapView {
                 RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
-                    Polyline polyline = new Polyline(intermediateRoute.latLongs, intermediateRoute.valid ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
+                    Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
                     removeLayer(pairWithLayer);
                     getLayerManager().getLayers().add(polyline);
@@ -648,16 +649,6 @@ public class MapsforgeMapView implements MapView {
                     replaceRoute();
             }
         });
-    }
-
-    private class IntermediateRoute {
-        public List<LatLong> latLongs;
-        public boolean valid;
-
-        private IntermediateRoute(List<LatLong> latLongs, boolean valid) {
-            this.latLongs = latLongs;
-            this.valid = valid;
-        }
     }
 
     private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {

@@ -22,6 +22,7 @@ package slash.navigation.routes.local;
 
 import slash.common.io.FileFileFilter;
 import slash.common.io.WindowsShortcut;
+import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
@@ -64,20 +65,16 @@ public class LocalCategory implements Category {
         this(catalog, directory, directory.getName());
     }
 
-    public String getUrl() {
+    public String getHref() {
         try {
             return directory.toURI().toURL().toString();
         } catch (MalformedURLException e) {
-            throw new IllegalStateException(format("cannot create url for %s", directory));
+            throw new IllegalStateException(format("Cannot create URL for %s", directory));
         }
     }
 
     public String getName() throws IOException {
         return name;
-    }
-
-    public String getDescription() throws IOException {
-        return getName();
     }
 
     public List<Category> getCategories() throws IOException {
@@ -99,20 +96,22 @@ public class LocalCategory implements Category {
 
     public Category create(String name) throws IOException {
         File subDirectory = new File(directory, encodeFileName(name));
+        if (subDirectory.exists())
+            throw new DuplicateNameException(format("%s %s already exists", subDirectory.isDirectory() ? "Category" : "Route", name), subDirectory.getAbsolutePath());
         if (!subDirectory.mkdir())
-            throw new IOException(format("cannot create %s", subDirectory));
+            throw new IOException(format("Cannot create category %s", subDirectory));
         return new LocalCategory(catalog, subDirectory);
     }
 
     public void update(Category parent, String name) throws IOException {
-        File newName = null;
+        File newName;
         try {
-            newName = new File(parent != null ? new File(new URL(parent.getUrl()).toURI()) : directory.getParentFile(), encodeFileName(name));
+            newName = new File(parent != null ? new File(new URL(parent.getHref()).toURI()) : directory.getParentFile(), encodeFileName(name));
         } catch (URISyntaxException e) {
-            throw new IOException(format("cannot rename %s for %s and %s", directory, parent, name));
+            throw new IOException(format("Cannot rename %s for %s and %s", directory, parent, name));
         }
         if (!directory.renameTo(newName))
-            throw new IOException(format("cannot rename %s to %s", directory, newName));
+            throw new IOException(format("Cannot rename %s to %s", directory, newName));
         directory = newName;
     }
 
@@ -128,39 +127,37 @@ public class LocalCategory implements Category {
             }
         }
         if (!file.delete())
-            throw new IOException(format("cannot delete %s", file));
+            throw new IOException(format("Cannot delete %s", file));
     }
 
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<>();
         for (File file : directory.listFiles(new FileFileFilter())) {
-            String name = decodeUri(file.getName());
             if (isPotentialValidLink(file)) {
                 WindowsShortcut shortcut = new WindowsShortcut(file);
-                if (shortcut.isFile()) {
-                    name = removeExtension(name);
+                if (shortcut.isFile())
                     file = new File(shortcut.getRealFilename());
-                } else
+                else
                     continue;
             }
-            routes.add(new LocalRoute(catalog, file, name));
+            routes.add(new LocalRoute(file));
         }
         return routes;
     }
 
-    public Route createRoute(String description, File file) throws IOException {
+    public Route createRoute(String description, File localFile) throws IOException {
         File destination = new File(directory, encodeFileName(description));
-        copy(new FileInputStream(file), new FileOutputStream(destination));
-        return new LocalRoute(catalog, destination);
+        copy(new FileInputStream(localFile), new FileOutputStream(destination));
+        return new LocalRoute(destination);
     }
 
-    public Route createRoute(String description, String fileUrl) throws IOException {
+    public Route createRoute(String description, String url) throws IOException {
         File destination = new File(directory, encodeFileName(description));
         try (PrintWriter writer = new PrintWriter(destination)) {
             writer.println("[InternetShortcut]");
-            writer.println("URL=" + fileUrl);
+            writer.println("URL=" + url);
         }
-        return new LocalRoute(catalog, destination);
+        return new LocalRoute(destination);
     }
 
 
@@ -180,6 +177,6 @@ public class LocalCategory implements Category {
     }
 
     public String toString() {
-        return  getClass().getSimpleName() + "[directory=" + directory + ", name=" + name + "]";
+        return getClass().getSimpleName() + "[directory=" + directory + ", name=" + name + "]";
     }
 }

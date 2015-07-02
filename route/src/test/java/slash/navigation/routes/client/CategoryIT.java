@@ -1,26 +1,52 @@
-package slash.navigation.catalog.client;
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+package slash.navigation.routes.client;
 
 import org.junit.Test;
-import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.HttpRequest;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
-import slash.navigation.rest.SimpleCredentials;
+import slash.navigation.rest.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.io.Transfer.encodeUri;
+import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
+/** @deprecated replace by new remote tests */
 public class CategoryIT extends RouteCatalogClientBase {
+
+    private File writeToTempFile(String string) throws IOException {
+        File tempFile = File.createTempFile("categoryit", ".xml");
+        tempFile.deleteOnExit();
+        FileWriter fileWriter = new FileWriter(tempFile);
+        fileWriter.write(string);
+        fileWriter.close();
+        return tempFile;
+    }
+
+    private String parseCategoryKey(String result) {
+        return result.substring(result.lastIndexOf("categories/") + 11, result.length() - GPX_URL_POSTFIX.length());
+    }
 
     private Post createCategoryFromFile(String fileName,
                                         String authenticationUserName, String authenticationPassword) throws IOException {
@@ -114,7 +140,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
-        GpxType gpxType = GpxUtil.unmarshal11(result2);
+        GpxType gpxType = unmarshal11(result2);
         assertNotNull(gpxType);
         assertEquals("Interesting", gpxType.getMetadata().getName());
         assertEquals(USERNAME, gpxType.getMetadata().getAuthor().getName());
@@ -130,7 +156,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertEquals(200, request1.getStatusCode());
         assertTrue(request1.isSuccessful());
 
-        GpxType gpxType = GpxUtil.unmarshal11(result1);
+        GpxType gpxType = unmarshal11(result1);
         assertNotNull(gpxType);
         assertEquals("", gpxType.getMetadata().getName());
         assertEquals(USERNAME, gpxType.getMetadata().getAuthor().getName());
@@ -151,7 +177,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         assertEquals(200, request2.getStatusCode());
         assertTrue(request2.isSuccessful());
 
-        GpxType gpxType = GpxUtil.unmarshal11(result2);
+        GpxType gpxType = unmarshal11(result2);
         assertNotNull(gpxType);
         assertEquals(name, gpxType.getMetadata().getName());
         assertEquals(USERNAME, gpxType.getMetadata().getAuthor().getName());
@@ -176,7 +202,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         String result3 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
-        GpxType gpxType = GpxUtil.unmarshal11(result3);
+        GpxType gpxType = unmarshal11(result3);
         assertNotNull(gpxType);
     }
 
@@ -185,7 +211,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         Post request1 = createCategory("Upload", "Interesting");
         request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
-        HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "user-does-not-exist", "password-is-wrong");
+        HttpRequest request2 = updateCategory(key, "Interesting" + System.currentTimeMillis(), "userdoesnotexist", "passwordiswrong");
         assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());
@@ -227,7 +253,7 @@ public class CategoryIT extends RouteCatalogClientBase {
         Post request1 = createCategory("Upload", "Interesting");
         request1.executeAsString();
         String key = parseCategoryKey(request1.getLocation());
-        HttpRequest request2 = deleteCategory(key, "user-does-not-exist", "password-is-wrong");
+        HttpRequest request2 = deleteCategory(key, "userdoesnotexist", "passwordiswrong");
         assertNull(request2.executeAsString());
         assertEquals(401, request2.getStatusCode());
         assertFalse(request2.isSuccessful());

@@ -20,7 +20,6 @@
 package slash.navigation.routes;
 
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * Represents a route in the {@link Catalog}.
@@ -29,11 +28,11 @@ import java.net.URL;
  */
 
 public interface Route {
-    String getUrl();
+    String getHref();
     String getName() throws IOException;
     String getDescription() throws IOException;
     String getCreator() throws IOException;
-    URL getDataUrl() throws IOException;
+    String getUrl() throws IOException;
 
     void update(Category parent, String description) throws IOException;
     void delete() throws IOException;

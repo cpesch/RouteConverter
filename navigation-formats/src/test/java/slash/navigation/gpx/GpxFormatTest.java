@@ -27,14 +27,11 @@ import slash.navigation.gpx.routecatalog10.UserextensionType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.NavigationConversion.formatBigDecimal;
+import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class GpxFormatTest {
 
@@ -50,9 +47,7 @@ public class GpxFormatTest {
         gpx.setCreator("CREATOR");
         gpx.setExtensions(extensionsType);
         assertNotNull(gpx);
-        StringWriter writer = new StringWriter();
-        GpxUtil.marshal11(gpx, writer);
-        String string = writer.toString();
+        String string = toXml(gpx);
         assertTrue(string.contains("<gpx creator=\"CREATOR\""));
         assertTrue(string.contains("FIRST"));
         assertTrue(string.contains("firstname"));
@@ -69,9 +64,7 @@ public class GpxFormatTest {
         assertNotNull(gpx);
         gpx.setExtensions(extensionsType);
         assertNotNull(gpx);
-        StringWriter writer = new StringWriter();
-        GpxUtil.marshal11(gpx, writer);
-        String string = writer.toString();
+        String string = toXml(gpx);
         assertTrue(string.contains("<nmea:speed>123.45</nmea:speed>"));
     }
 

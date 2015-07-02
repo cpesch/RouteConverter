@@ -20,25 +20,24 @@
 
 package slash.navigation.routes.remote;
 
-import slash.navigation.routes.Catalog;
-import slash.navigation.routes.Category;
-import slash.navigation.routes.NotFoundException;
-import slash.navigation.routes.NotOwnerException;
-import slash.navigation.gpx.binding11.*;
 import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
-import slash.navigation.rest.exception.UnAuthorizedException;
+import slash.navigation.rest.exception.ForbiddenException;
+import slash.navigation.rest.exception.ServiceUnavailableException;
+import slash.navigation.routes.*;
+import slash.navigation.routes.remote.binding.CatalogType;
+import slash.navigation.routes.remote.binding.CategoryType;
+import slash.navigation.routes.remote.binding.FileType;
+import slash.navigation.routes.remote.binding.RouteType;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.logging.Logger;
 
-import static slash.common.io.Transfer.asUtf8;
-import static slash.common.io.Transfer.decodeUri;
-import static slash.navigation.gpx.GpxUtil.marshal11;
-import static slash.navigation.gpx.GpxUtil.unmarshal11;
+import static java.lang.String.format;
+import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
+import static slash.navigation.routes.remote.helpers.RoutesUtil.unmarshal;
 
 /**
  * Encapsulates REST access to the RemoteCatalog service of RouteConverter.
@@ -49,9 +48,12 @@ import static slash.navigation.gpx.GpxUtil.unmarshal11;
 public class RemoteCatalog implements Catalog {
     private static final Logger log = Logger.getLogger(RemoteCatalog.class.getName());
 
-    private static final String ROOT_CATEGORY_URI = "categories/.gpx";
-    private static final String ROUTES_URI = "routes/";
-    private static final String FILES_URI = "files/";
+    private static final String FORMAT_XML = "?format=xml";
+    private static final String V1 = "v1/";
+    public static final String CATEGORY_URI = V1 + "categories/";
+    private static final String ROOT_CATEGORY_URI = CATEGORY_URI + "1/";
+    public static final String ROUTE_URI = V1 + "routes/";
+    public static final String FILE_URI = V1 + "files/";
 
     private final String rootUrl;
     private final Credentials credentials;
@@ -65,248 +67,183 @@ public class RemoteCatalog implements Catalog {
         return new RemoteCategory(this, rootUrl + ROOT_CATEGORY_URI, "");
     }
 
-    GpxType fetchGpx(String url) throws IOException {
-        log.fine("Fetching gpx from " + url);
-        Get get = new Get(url);
+    CatalogType fetch(String url) throws IOException {
+        String urlWithXml = url + FORMAT_XML;
+        log.info("Fetching from " + urlWithXml);
+        Get get = new Get(urlWithXml);
         String result = get.executeAsString();
         if (get.isSuccessful())
             try {
-                return unmarshal11(result);
+                return unmarshal(result);
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
-        else
+        return null;
+    }
+
+    /*for test only*/Category getCategory(String url) throws IOException {
+        CatalogType catalogType = fetch(url);
+        if (catalogType == null)
             return null;
+        CategoryType categoryType = catalogType.getCategory();
+        return new RemoteCategory(this, url, categoryType.getName());
     }
 
-    private static final ObjectFactory gpxFactory = new ObjectFactory();
-
-    private static GpxType createGpxType() {
-        GpxType gpxType = gpxFactory.createGpxType();
-        gpxType.setCreator("RouteCatalog Client");
-        gpxType.setVersion("1.1");
-        return gpxType;
+    /*for test only*/Route getRoute(String url) throws IOException {
+        CatalogType catalogType = fetch(url);
+        if (catalogType == null)
+            return null;
+        RouteType routeType = catalogType.getRoute();
+        return new RemoteRoute(new RemoteCategory(this, routeType.getCategory()), url, routeType.getDescription(), routeType.getCreator(), routeType.getUrl());
     }
 
-    private static String createCategoryXml(String parentUrl, String name) {
-        MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setName(asUtf8(name));
-        if (parentUrl != null)
-            metadataType.setKeywords(asUtf8(decodeUri(parentUrl)));
-
-        GpxType gpxType = createGpxType();
-        gpxType.setMetadata(metadataType);
-        return toXml(gpxType);
-    }
-
-    private static String createRouteXml(String category, String description, String fileUrl) {
-        MetadataType metadataType = gpxFactory.createMetadataType();
-        if (description != null)
-            metadataType.setDesc(asUtf8(description));
-        if (category != null)
-            metadataType.setKeywords(asUtf8(decodeUri(category)));
-
-        GpxType gpxType = createGpxType();
-        gpxType.setMetadata(metadataType);
-
-        RteType rteType = gpxFactory.createRteType();
-        LinkType linkType = gpxFactory.createLinkType();
-        linkType.setHref(fileUrl);
-        rteType.getLink().add(linkType);
-        gpxType.getRte().add(rteType);
-
-        return toXml(gpxType);
-    }
-
-    private static String toXml(GpxType gpxType) {
-        StringWriter writer = new StringWriter();
-        try {
-            marshal11(gpxType, writer);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Cannot marshall " + gpxType + ": " + e, e);
-        }
-        return writer.toString();
-    }
-
-    private String ensureEndsWithSlash(String url) {
-        if (!url.endsWith("/"))
-            url += "/";
-        return url;
-    }
-
-    private String removeDotGpx(String url) {
-        if (url.endsWith(".gpx"))
-            url = url.substring(0, url.length() - 4);
-        return url;
-    }
-
-    private Delete prepareDelete(String url) {
-        log.fine("Deleting " + url);
-        return new Delete(url, credentials);
-    }
-
-    private Post prepareAddCategory(String categoryUrl, String name) throws IOException {
-        categoryUrl = ensureEndsWithSlash(removeDotGpx(categoryUrl));
-        log.fine("Adding " + name + " to " + categoryUrl);
-        String xml = createCategoryXml(null, name);
-        Post request = new Post(categoryUrl, credentials);
-        request.addFile("file", xml.getBytes());
-        return request;
+    /*for test only*/FileType getFile(String url) throws IOException {
+        CatalogType catalogType = fetch(url);
+        if (catalogType == null)
+            return null;
+        return catalogType.getFile();
     }
 
     String addCategory(String categoryUrl, String name) throws IOException {
-        Post request = prepareAddCategory(categoryUrl, name);
+        log.info(format("Adding category %s to %s", name, categoryUrl));
+        Post request = new Post(rootUrl + CATEGORY_URI, credentials);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("parent", categoryUrl);
+        request.addString("name", name);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add category " + name, categoryUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot add category " + name, categoryUrl);
         if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add category " + name, categoryUrl);
+            throw new ForbiddenException("Not authorized to add category " + name, categoryUrl);
+        if (request.isBadRequest())
+            throw new NotFoundException("Category not found", categoryUrl);
+        if (request.isPreconditionFailed())
+            throw new DuplicateNameException("Category " + name + " already exists", categoryUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + categoryUrl + " with payload " + name + " not successful: " + result);
+            throw new IOException("POST on " + (rootUrl + CATEGORY_URI) + " with payload " + name + " not successful: " + result);
         return request.getLocation();
     }
 
-    private Put prepareUpdateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
-        log.fine("Updating " + categoryUrl + " to " + parentUrl + " with name " + name);
-        String xml = createCategoryXml(parentUrl, name);
+    void updateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
+        log.info(format("Updating category %s to parent %s and name %s", categoryUrl, parentUrl, name));
         Put request = new Put(categoryUrl, credentials);
-        request.addFile("file", xml.getBytes());
-        return request;
-    }
-
-    String updateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
-        Put request = prepareUpdateCategory(categoryUrl, parentUrl, name);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("parent", parentUrl);
+        request.addString("name", name);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot update category to " + name, categoryUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot update category to " + name, categoryUrl);
         if (request.isForbidden())
-            throw new NotOwnerException("Cannot update category to " + name, categoryUrl);
+            throw new ForbiddenException("Not authorized to update category", categoryUrl);
+        if (request.isNotFound())
+            throw new NotFoundException("Category not found", categoryUrl);
+        if (request.isBadRequest())
+            throw new NotOwnerException("Not owner of category to update", categoryUrl);
+        if (request.isPreconditionFailed())
+            throw new DuplicateNameException("Category " + name + " already exists", categoryUrl);
         if (!request.isSuccessful())
-            throw new IOException("PUT on " + categoryUrl + " with payload " + name + " not successful: " + result);
-        return request.getLocation();
+            throw new IOException("PUT on " + categoryUrl + " with payload " + parentUrl + "/" + name + " not successful: " + result);
     }
 
     void deleteCategory(String categoryUrl) throws IOException {
-        Delete request = prepareDelete(categoryUrl);
+        log.info(format("Deleting category %s", categoryUrl));
+        Delete request = new Delete(categoryUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot delete category", categoryUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot delete category", categoryUrl);
         if (request.isForbidden())
-            throw new NotOwnerException("Cannot delete category", categoryUrl);
+            throw new ForbiddenException("Not authorized to delete category", categoryUrl);
+        if (request.isNotFound())
+            throw new NotFoundException("Category not found", categoryUrl);
+        if (request.isBadRequest())
+            throw new NotOwnerException("Not owner of category to delete", categoryUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + categoryUrl + " not successful: " + result);
     }
 
-    private String getFilesUrl() {
-        return rootUrl + FILES_URI;
-    }
-
-    private Post prepareAddFile(File file) throws IOException {
-        log.fine("Adding file " + file.getAbsolutePath());
-        Post request = new Post(getFilesUrl(), credentials);
-        request.addFile("file", file);
-        return request;
-    }
-
-    public String addFile(File file) throws IOException {
-        Post request = prepareAddFile(file);
+    String addRoute(String categoryUrl, String description, String localFile, String remoteUrl) throws IOException {
+        log.info(format("Adding route %s to category %s with remote url %s", description, categoryUrl, remoteUrl));
+        Post request = new Post(rootUrl + ROUTE_URI, credentials);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("category", categoryUrl);
+        request.addString("description", description);
+        if (localFile != null)
+            request.addString("localFile", localFile);
+        if (remoteUrl != null)
+            request.addString("remoteUrl", remoteUrl);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add file " + file.getAbsolutePath(), getFilesUrl());
         if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add file " + file.getAbsolutePath(), getFilesUrl());
+            throw new ForbiddenException("Not authorized to add route " + description, categoryUrl);
+        if (request.isBadRequest())
+            throw new NotFoundException("Category not found", categoryUrl);
+        if (request.isPreconditionFailed())
+            throw new DuplicateNameException("Route " + description + " already exists", categoryUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getFilesUrl() + " with file " + file.getAbsolutePath() + " not successful: " + result);
+            throw new IOException("POST on " + (rootUrl + ROUTE_URI) + " with route " + description + "," + categoryUrl + "," + remoteUrl + " not successful: " + result);
+        return request.getLocation();
+    }
+
+    void updateRoute(String routeUrl, String categoryUrl, String description, String localFile, String remoteUrl) throws IOException {
+        log.info(format("Updating route %s to category %s and description %s with remote url %s", routeUrl, categoryUrl, description, remoteUrl));
+        Put request = new Put(routeUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("category", categoryUrl);
+        request.addString("description", description);
+        if (localFile != null)
+            request.addString("localFile", localFile);
+        if (remoteUrl != null)
+            request.addString("remoteUrl", remoteUrl);
+        String result = request.executeAsString();
+        if (request.isForbidden())
+            throw new ForbiddenException("Not authorized to update route", routeUrl);
+        if (request.isNotFound())
+            throw new NotFoundException("Route not found", routeUrl);
+        if (request.isBadRequest())
+            throw new NotOwnerException("Not owner of route to update", routeUrl);
+        if (request.isPreconditionFailed())
+            throw new DuplicateNameException("Route " + description + " already exists", description);
+        if (!request.isSuccessful())
+            throw new IOException("PUT on " + routeUrl + " with route " + description + "," + categoryUrl + "," + remoteUrl + " not successful: " + result);
+    }
+
+    void deleteRoute(String routeUrl) throws IOException {
+        log.info(format("Deleting route %s", routeUrl));
+        Delete request = new Delete(routeUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
+        String result = request.executeAsString();
+        if (request.isForbidden())
+            throw new ForbiddenException("Not authorized to delete route", routeUrl);
+        if (request.isNotFound())
+            throw new NotFoundException("Route not found", routeUrl);
+        if (request.isBadRequest())
+            throw new NotOwnerException("Not owner of route to delete", routeUrl);
+        if (!request.isSuccessful())
+            throw new IOException("DELETE on " + routeUrl + " not successful: " + result);
+    }
+
+    String addFile(File file) throws IOException {
+        log.info(format("Adding file %s", file));
+        String fileUrl = rootUrl + FILE_URI;
+        Post request = new Post(fileUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("name", file.getName());
+        request.addFile("file", file);
+        String result = request.executeAsString();
+        if (request.isForbidden())
+            throw new ForbiddenException("Not authorized to add file " + file, fileUrl);
+        if (request.isPreconditionFailed())
+            throw new ServiceUnavailableException("File " + file + " is too large", fileUrl);
+        if (!request.isSuccessful())
+            throw new IOException("POST on " + fileUrl + " with file " + file + " not successful: " + result);
         return request.getLocation();
     }
 
     void deleteFile(String fileUrl) throws IOException {
-        if (!fileUrl.startsWith(rootUrl)) {
-            log.fine("Ignoring delete on " + fileUrl + " since it's not part of " + rootUrl);
-            return;
-        }
-
-        Delete request = prepareDelete(fileUrl);
+        log.info(format("Adding file %s", fileUrl));
+        Delete request = new Delete(fileUrl, credentials);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot delete file", fileUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot delete file", fileUrl);
         if (request.isForbidden())
-            throw new NotOwnerException("Cannot delete file", fileUrl);
+            throw new ForbiddenException("Not authorized to delete file", fileUrl);
+        if (request.isNotFound())
+            throw new NotFoundException("File not found", fileUrl);
+        if (request.isBadRequest())
+            throw new NotOwnerException("Not owner of file to delete", fileUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + fileUrl + " not successful: " + result);
-    }
-
-    private String getRoutesUrl() {
-        return rootUrl + ROUTES_URI;
-    }
-
-    private Post prepareAddRoute(String categoryUrl, String description, String fileUrl) throws IOException {
-        log.fine("Adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
-        String xml = createRouteXml(categoryUrl, description, fileUrl);
-        Post request = new Post(getRoutesUrl(), credentials);
-        request.addFile("file", xml.getBytes());
-        return request;
-    }
-
-    private Put prepareUpdateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
-        log.fine("Updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
-        String xml = createRouteXml(categoryUrl, description, fileUrl);
-        Put request = new Put(routeUrl, credentials);
-        request.addFile("file", xml.getBytes());
-        return request;
-    }
-
-    String addRouteAndFile(String categoryUrl, String description, File file) throws IOException {
-        // 1. POST for File
-        String fileUrl = addFile(file);
-
-        // 2. POST for Route with category, description and file
-        return addRoute(categoryUrl, description, fileUrl);
-    }
-
-    public String addRoute(String categoryUrl, String description, String fileUrl) throws IOException {
-        Post request = prepareAddRoute(categoryUrl, description, fileUrl);
-        String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add route " + description, getRoutesUrl());
-        if (request.isForbidden())
-            throw new NotOwnerException("Cannot add route " + description, getRoutesUrl());
-        if (!request.isSuccessful())
-            throw new IOException("POST on " + getRoutesUrl() + " with route " + description + "," + categoryUrl + "," + fileUrl + " not successful: " + result);
-        return request.getLocation();
-    }
-
-    public void updateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
-        Put request = prepareUpdateRoute(categoryUrl, routeUrl, description, fileUrl);
-        String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot update route to " + description, routeUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot update route to " + description, routeUrl);
-        if (request.isForbidden())
-            throw new NotOwnerException("Cannot update route to " + description, routeUrl);
-        if (!request.isSuccessful())
-            throw new IOException("PUT on " + routeUrl + " with payload " + description + " not successful: " + result);
-    }
-
-    void deleteRoute(String routeUrl) throws IOException {
-        Delete request = prepareDelete(routeUrl);
-        String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot delete route", routeUrl);
-        if (request.isNotFound())
-            throw new NotFoundException("Cannot delete route", routeUrl);
-        if (request.isForbidden())
-            throw new NotOwnerException("Cannot delete route", routeUrl);
-        if (!request.isSuccessful())
-            throw new IOException("DELETE on " + routeUrl + " not successful: " + result);
     }
 }

@@ -21,7 +21,7 @@
 package slash.navigation.rest.exception;
 
 /**
- * An url on a RouteConverter service is not delivered by the server.
+ * An url on a RouteConverter service may not be modified without prior authorization.
  *
  * @author Christian Pesch
  */

@@ -20,16 +20,21 @@
 
 package slash.navigation.routes.local;
 
-import slash.common.io.Files;
+import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileOwnerAttributeView;
+import java.nio.file.attribute.UserPrincipal;
 
 import static java.lang.String.format;
-import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Files.toFile;
 import static slash.common.io.Transfer.encodeFileName;
 
 /**
@@ -38,59 +43,52 @@ import static slash.common.io.Transfer.encodeFileName;
  * @author Christian Pesch
  */
 public class LocalRoute implements Route {
-    private final LocalCatalog catalog;
     private File file;
-    private String name;
 
-    public LocalRoute(LocalCatalog catalog, File file, String name) {
-        this.catalog = catalog;
+    public LocalRoute(File file) {
         this.file = file;
-        this.name = decodeUri(name);
     }
 
-    public LocalRoute(LocalCatalog catalog, File file) {
-        this(catalog, file, file.getName());
-    }
-
-    public String getUrl() {
+    public String getHref() {
         try {
-            return getDataUrl().toString();
+            return file.toURI().toURL().toExternalForm();
         } catch (IOException e) {
-            throw new IllegalStateException(format("cannot create url for %s", file));
+            throw new IllegalStateException(format("Cannot create URL for %s", file));
         }
     }
 
     public String getName() throws IOException {
-        return name;
+        return file.getName();
     }
 
     public String getDescription() throws IOException {
-        return null;
+        return getName();
     }
 
     public String getCreator() throws IOException {
-        // with Java 7 there is an API for the owner of a file
-        // FileRef file = Paths.get("/path/to/file.ext");
-        // UserPrincipal principal = Attributes.getOwner(file);
-        // String username = principal.getName();
-        return catalog.getUserName();
+        Path path = Paths.get(file.getAbsolutePath());
+        FileOwnerAttributeView ownerAttributeView = Files.getFileAttributeView(path, FileOwnerAttributeView.class);
+        UserPrincipal owner = ownerAttributeView.getOwner();
+        return owner.getName();
     }
 
-    public URL getDataUrl() throws IOException {
-        return file.toURI().toURL();
+    public String getUrl() throws IOException {
+        return getHref();
     }
 
     public void update(Category parent, String description) throws IOException {
-        File category = Files.toFile(new URL(parent.getUrl()));
+        File category = toFile(new URL(parent.getHref()));
         File newName = new File(category, encodeFileName(description));
+        if (newName.exists())
+            throw new DuplicateNameException(format("%s %s already exists", newName.isDirectory() ? "Category" : "Route", description), newName.getAbsolutePath());
         if (!file.renameTo(newName))
-            throw new IOException(format("cannot rename %s to %s", file, newName));
+            throw new IOException(format("Cannot rename %s to %s", file, newName));
         file = newName;
     }
 
     public void delete() throws IOException {
         if (!file.delete())
-            throw new IOException(format("cannot delete %s", file));
+            throw new IOException(format("Cannot delete %s", file));
     }
 
     public boolean equals(Object o) {
@@ -107,6 +105,6 @@ public class LocalRoute implements Route {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[file=" + file + ", name=" + name + "]";
+        return getClass().getSimpleName() + "[file=" + file + "]";
     }
 }

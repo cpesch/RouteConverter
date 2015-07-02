@@ -61,7 +61,7 @@ abstract class MultipartRequest extends HttpRequest {
     }
 
     public void addString(String name, String value) throws UnsupportedEncodingException {
-        getBuilder().addTextBody(name, value);
+        getBuilder().addTextBody(name, value, TEXT_PLAIN_UTF8);
     }
 
     public void addFile(String name, File value) throws IOException {

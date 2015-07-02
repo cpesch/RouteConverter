@@ -31,6 +31,7 @@ import java.io.IOException;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
 
 /**
@@ -87,7 +88,7 @@ public class BaseDownloadTool {
     }
 
     protected String getDataSourcesUrl() {
-        return getDataSourcesServer() + "v1/datasources/" + getId() + "/";
+        return getDataSourcesServer() + DATASOURCES_URI + getId() + "/";
     }
 
     protected Credentials getCredentials() {

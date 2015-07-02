@@ -55,11 +55,15 @@ public class RoutesTableModel extends AbstractTableModel {
         return routes.get(rowIndex);
     }
 
+    public int getIndex(RouteModel route) {
+        return routes.indexOf(route);
+    }
+
     public void addRoute(RouteModel route) {
         if(!routes.add(route))
             throw new IllegalArgumentException("Route " + route + " not added to " + routes);
 
-        int index = routes.indexOf(route);
+        int index = getIndex(route);
         if (index == -1)
             throw new IllegalArgumentException("Route " + route + " not found in " + routes);
 
@@ -67,14 +71,14 @@ public class RoutesTableModel extends AbstractTableModel {
     }
 
     public void updateRoute(RouteModel route) {
-        int index = routes.indexOf(route);
+        int index = getIndex(route);
         if (index == -1)
             throw new IllegalArgumentException("Route " + route + " not found in " + routes);
         fireTableRowsUpdated(index, index);
     }
 
     public void removeRoute(RouteModel route) {
-        int index = routes.indexOf(route);
+        int index = getIndex(route);
         if (index == -1)
             throw new IllegalArgumentException("Route " + route + " not found in " + routes);
 

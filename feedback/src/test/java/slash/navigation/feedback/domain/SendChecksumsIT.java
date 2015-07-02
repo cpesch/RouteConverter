@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.asBoundingBoxType;
 
 public class SendChecksumsIT extends RouteFeedbackServiceBase {
@@ -171,7 +172,7 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
                         "create FileFragment fileuri" + id + " -> fragmentkey" + id + ", \"",
                 routeFeedback.sendChecksums(new DataSourceImpl(dataSourceType), createFileAndNoChecksumsForFile(id), createFilterUriForFile(id)));
 
-        Get get = new Get(API + "v1/datasources/id" + id + ".xml");
+        Get get = new Get(API + DATASOURCES_URI + "id" + id + ".xml");
         assertTrue(get.executeAsString().contains(Long.toString(id)));
 
         fileType.setBoundingBox(asBoundingBoxType(new BoundingBox(new SimpleNavigationPosition(1.0, 2.0), new SimpleNavigationPosition(3.0, 4.0))));

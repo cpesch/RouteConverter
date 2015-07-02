@@ -20,24 +20,17 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
-import static javax.swing.JOptionPane.showConfirmDialog;
-import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
+import static javax.swing.JOptionPane.*;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 
 /**
  * {@link Action} that renames {@link CategoryTreeNode}s of the {@link CatalogModel}.
@@ -88,8 +81,7 @@ public class RemoveCategoriesAction extends FrameAction {
         catalogModel.removeCategories(categories, new Runnable() {
             public void run() {
                 for (CategoryTreeNode parent : parents) {
-                    TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(parent));
-                    selectCategoryTreePath(tree, treePath);
+                    selectCategory(tree, parent);
                 }
             }
         });

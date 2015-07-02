@@ -66,6 +66,15 @@ public class RouteModel {
         }
     }
 
+    public String getUrl() {
+        try {
+            return getRoute().getUrl();
+        } catch (Exception e) {
+            log.severe("Cannot get URL: " + e);
+            return "?";
+        }
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

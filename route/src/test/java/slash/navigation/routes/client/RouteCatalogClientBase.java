@@ -17,17 +17,11 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.catalog.client;
+package slash.navigation.routes.client;
 
 import org.junit.After;
 import org.junit.Before;
-import slash.navigation.gpx.GpxUtil;
-import slash.navigation.gpx.binding11.ExtensionsType;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.LinkType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.Delete;
 import slash.navigation.rest.Post;
@@ -38,13 +32,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 
 import static java.lang.Integer.parseInt;
 import static org.junit.Assert.assertTrue;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.navigation.gpx.GpxUtil.toXml;
 
+/** @deprecated replace by new remote tests */
 public abstract class RouteCatalogClientBase {
     protected static final String TEST_PATH = "route\\src\\test\\resources\\";
     protected static final String CATALOG = System.getProperty("catalog", "http://localhost:8000/catalog/");
@@ -60,7 +55,6 @@ public abstract class RouteCatalogClientBase {
     protected static final String POST_USERS_URL = FEEDBACK + "users/";
     protected static final String GPX_URL_POSTFIX = ".gpx";
     protected static final String FILE_URL_POSTFIX = "/";
-    protected static final String UMLAUTS = "äöüßÄÖÜ\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     private File tempFile;
     private ObjectFactory gpxFactory = new ObjectFactory();
@@ -85,17 +79,6 @@ public abstract class RouteCatalogClientBase {
         return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), UTF8_ENCODING);
     }
 
-    protected File writeToTempFile(String string) throws IOException {
-        FileWriter fileWriter = new FileWriter(tempFile);
-        fileWriter.write(string);
-        fileWriter.close();
-        return tempFile;
-    }
-
-    protected String parseCategoryKey(String result) {
-        return result.substring(result.lastIndexOf("categories/") + 11, result.length() - GPX_URL_POSTFIX.length());
-    }
-
     protected int parseRouteKey(String result) {
         return parseInt(result.substring(result.lastIndexOf('/') + 1, result.length() - GPX_URL_POSTFIX.length()));
     }
@@ -118,13 +101,7 @@ public abstract class RouteCatalogClientBase {
         return gpxType;
     }
 
-    private String toXml(GpxType gpxType) throws JAXBException {
-        StringWriter writer = new StringWriter();
-        GpxUtil.marshal11(gpxType, writer);
-        return writer.toString();
-    }
-
-    protected String createCategoryXml(String name) throws JAXBException {
+    protected String createCategoryXml(String name) throws IOException {
         MetadataType metadataType = gpxFactory.createMetadataType();
 
         metadataType.setName(name);
@@ -135,7 +112,7 @@ public abstract class RouteCatalogClientBase {
         return toXml(gpxType);
     }
 
-    protected String createRouteXml(String category, Integer fileKey, String description) throws JAXBException {
+    protected String createRouteXml(String category, Integer fileKey, String description) throws IOException {
         MetadataType metadataType = gpxFactory.createMetadataType();
 
         metadataType.setDesc(description);
@@ -155,7 +132,7 @@ public abstract class RouteCatalogClientBase {
         return toXml(gpxType);
     }
 
-    protected String createUserXml(String userName, String password, String firstName, String lastName, String email) throws JAXBException {
+    protected String createUserXml(String userName, String password, String firstName, String lastName, String email) throws IOException {
         MetadataType metadataType = gpxFactory.createMetadataType();
         metadataType.setName(userName);
 

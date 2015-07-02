@@ -24,6 +24,7 @@ import slash.navigation.routes.impl.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.*;
 
@@ -33,6 +34,8 @@ import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.RouteHelper.formatName;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModel;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectRoute;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
  * {@link Action} that renames a {@link RouteModel} of the {@link CatalogModel}.
@@ -52,7 +55,7 @@ public class RenameRouteAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        RouteModel route = getSelectedRouteModel(table);
+        final RouteModel route = getSelectedRouteModel(table);
         if(route == null)
             return;
 
@@ -62,6 +65,12 @@ public class RenameRouteAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        catalogModel.renameRoute(route, name);
+        catalogModel.renameRoute(route, name, new Runnable() {
+            public void run() {
+                final int row = ((RoutesTableModel)table.getModel()).getIndex(route);
+                scrollToPosition(table, row);
+                selectRoute(table, route);
+            }
+        });
     }
 }

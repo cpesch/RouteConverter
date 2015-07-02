@@ -27,7 +27,6 @@ import slash.navigation.routes.Category;
 import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
@@ -35,7 +34,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
 
 /**
  * {@link Action} that adds a {@link Category} to the {@link CatalogModel}.
@@ -68,8 +67,7 @@ public class AddCategoryAction extends FrameAction {
         catalogModel.addCategories(singletonList(category), singletonList(name),
                 new Runnable() {
                     public void run() {
-                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));
-                        selectCategoryTreePath(tree, treePath);
+                        selectCategory(tree, catalogModel.getCategoryTreeModel().getChild(category, name));
                     }
                 });
     }

@@ -23,21 +23,10 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCategoryAction;
-import slash.navigation.converter.gui.actions.AddFileAction;
-import slash.navigation.converter.gui.actions.AddUrlAction;
-import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
-import slash.navigation.converter.gui.actions.RemoveRoutesAction;
-import slash.navigation.converter.gui.actions.RenameCategoryAction;
-import slash.navigation.converter.gui.actions.RenameRouteAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
@@ -53,21 +42,12 @@ import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.Catalog;
-import slash.navigation.routes.impl.CategoryTreeNode;
-import slash.navigation.routes.impl.CategoryTreeNodeImpl;
-import slash.navigation.routes.impl.RootTreeNode;
-import slash.navigation.routes.impl.RouteModel;
-import slash.navigation.routes.impl.RoutesTableModel;
+import slash.navigation.routes.impl.*;
 import slash.navigation.routes.local.LocalCatalog;
 import slash.navigation.routes.remote.RemoteCatalog;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -88,9 +68,7 @@ import java.util.prefs.Preferences;
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
-import static java.awt.event.KeyEvent.VK_DELETE;
-import static java.awt.event.KeyEvent.VK_END;
-import static java.awt.event.KeyEvent.VK_HOME;
+import static java.awt.event.KeyEvent.*;
 import static java.util.Collections.singletonList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -99,14 +77,13 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
+import static slash.common.io.Files.createReadablePath;
 import static slash.navigation.base.RouteComments.createRouteDescription;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
@@ -137,8 +114,6 @@ public class BrowsePanel implements PanelInTab {
     private JButton buttonLogin;
 
     private CatalogModel catalogModel;
-    private final Catalog remoteCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
-    private final Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
 
     public BrowsePanel() {
         initialize();
@@ -147,7 +122,9 @@ public class BrowsePanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
+        Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
         CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
+        Catalog remoteCatalog = new RemoteCatalog(r.getApiUrl(), r.getCredentials());
         final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
         final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
         catalogModel = new UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
@@ -248,7 +225,6 @@ public class BrowsePanel implements PanelInTab {
                 column.setMaxWidth(100);
             }
         }
-
         browsePanel.setTransferHandler(new PanelDropHandler());
 
         new Thread(new Runnable() {
@@ -317,9 +293,10 @@ public class BrowsePanel implements PanelInTab {
         RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
         URL url;
         try {
-            url = route.getRoute().getDataUrl();
-            if (url == null)
+            String urlString = route.getRoute().getUrl();
+            if (urlString == null)
                 return;
+            url = new URL(urlString);
         } catch (Throwable t) {
             getOperator().handleServiceError(t);
             return;
@@ -345,7 +322,7 @@ public class BrowsePanel implements PanelInTab {
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
         RouteConverter r = RouteConverter.getInstance();
-        String path = Files.createReadablePath(file);
+        String path = createReadablePath(file);
         String description = null;
         Double length = null;
         try {
@@ -587,10 +564,8 @@ public class BrowsePanel implements PanelInTab {
         private void moveCategories(final List<CategoryTreeNode> categories, final CategoryTreeNode target) {
             catalogModel.moveCategories(categories, target, new Runnable() {
                 public void run() {
-                    for (CategoryTreeNode category : categories) {
-                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(category));
-                        selectCategoryTreePath(treeCategories, treePath);
-                    }
+                    for (CategoryTreeNode category : categories)
+                        selectCategory(treeCategories, category);
                 }
             });
         }
@@ -599,9 +574,13 @@ public class BrowsePanel implements PanelInTab {
         private void moveRoutes(final List<RouteModel> routes, final CategoryTreeNode target) {
             catalogModel.moveRoutes(routes, target, new Runnable() {
                 public void run() {
-                    TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(target));
-                    selectCategoryTreePath(treeCategories, treePath);
-                    // TODO might want to select the moved routes
+                    selectCategory(treeCategories, target);
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            for (RouteModel route : routes)
+                                selectRoute(tableRoutes, route);
+                        }
+                    });
                 }
             });
         }

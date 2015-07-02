@@ -126,13 +126,13 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new AddRoute(this, category, description, file, url, callback));
     }
 
-    public void renameRoute(RouteModel route, String name) {
-        renameRoute(route, name, true);
+    public void renameRoute(RouteModel route, String name, Runnable invokeLaterRunnable) {
+        renameRoute(route, name, invokeLaterRunnable, true);
     }
 
-    void renameRoute(RouteModel route, String newName, boolean trackUndo) {
+    void renameRoute(RouteModel route, String newName, Runnable invokeLaterRunnable, boolean trackUndo) {
         String oldName = route.getName();
-        delegate.renameRoute(route, newName);
+        delegate.renameRoute(route, newName, invokeLaterRunnable);
         if (trackUndo)
             undoManager.addEdit(new RenameRoute(this, route, oldName, newName));
 

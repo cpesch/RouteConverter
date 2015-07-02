@@ -15,11 +15,13 @@
     <xsd:complexType name="catalogType">
         <xsd:annotation>
             <xsd:documentation>
-                catalog consists of categories with routes.
+                a catalog consists of categories with routes.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-        <xsd:element name="category" type="categoryType"/>
+            <xsd:element name="category" type="categoryType"/>
+            <xsd:element name="route" type="routeType"/>
+            <xsd:element name="file" type="fileType"/>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -43,19 +45,33 @@
                 </xsd:unique>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="parent" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="href" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="routeType">
         <xsd:annotation>
             <xsd:documentation>
-                a route has a category, a description, a creator and an url
+                a route has a category, a description, a creator and an url where to find the route
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:sequence>
-            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
+        <xsd:attribute name="category" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string" use="required"/>
+        <xsd:attribute name="creator" type="xsd:string" use="required"/>
         <xsd:attribute name="url" type="xsd:string" use="required"/>
+        <xsd:attribute name="href" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fileType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a file has a name, a creator and an url where to find the file
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="creator" type="xsd:string" use="required"/>
+        <xsd:attribute name="url" type="xsd:string" use="required"/>
+        <xsd:attribute name="href" type="xsd:string" use="required"/>
     </xsd:complexType>
 </xsd:schema>

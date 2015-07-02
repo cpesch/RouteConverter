@@ -20,13 +20,17 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.routes.impl.CategoryTreeModel;
 import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
  * A helper for simplified {@link RouteModel} operations.
@@ -65,6 +69,18 @@ public class RouteModelHelper {
         return (CategoryTreeNode) value;
     }
 
+    public static void selectRoute(JTable table, RouteModel route) {
+        // search for RouteModel with same Route (Category might be different due to move)
+        RoutesTableModel model = (RoutesTableModel) table.getModel();
+        for(int i = 0; i < model.getRowCount(); i++) {
+            if(model.getRoute(i).getRoute().equals(route.getRoute())) {
+                scrollToPosition(table, i);
+                table.getSelectionModel().addSelectionInterval(i, i);
+                break;
+            }
+        }
+    }
+
     public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {
         TreePath[] treePaths = tree.getSelectionPaths();
         List<CategoryTreeNode> treeNodes = new ArrayList<>();
@@ -77,6 +93,11 @@ public class RouteModelHelper {
             }
         }
         return treeNodes;
+    }
+
+    public static void selectCategory(JTree tree, CategoryTreeNode category) {
+        TreePath treePath = new TreePath(((CategoryTreeModel)tree.getModel()).getPathToRoot(category));
+        selectCategoryTreePath(tree, treePath);
     }
 
     public static void selectCategoryTreePath(JTree tree, TreePath treePath) {

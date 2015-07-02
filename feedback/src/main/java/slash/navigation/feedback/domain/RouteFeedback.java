@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
+import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
@@ -215,7 +216,7 @@ public class RouteFeedback {
     }
 
     private String getDataSourcesUrl(String dataSourceId) {
-        return apiUrl + "v1/datasources/" + dataSourceId + "/";
+        return apiUrl + DATASOURCES_URI + dataSourceId + "/";
     }
 
     public String sendChecksums(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String filterUrl) throws IOException {
@@ -228,7 +229,7 @@ public class RouteFeedback {
 
         String result = request.executeAsString();
         if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot send checksums ", dataSourcesUrl);
+            throw new UnAuthorizedException("Cannot send checksums", dataSourcesUrl);
         if (!request.isSuccessful())
             throw new IOException("PUT on " + dataSourcesUrl + " for data source " + dataSource + " not successful: " + result);
 

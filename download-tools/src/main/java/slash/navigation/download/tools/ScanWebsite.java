@@ -34,6 +34,7 @@ import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.download.tools.helpers.DownloadableType;
 import slash.navigation.rest.Delete;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.HttpRequest;
 import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
@@ -47,6 +48,7 @@ import static java.util.Arrays.sort;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
+import static slash.navigation.rest.HttpRequest.APPLICATION_XML;
 
 /**
  * Scans a website for resources for the DataSources catalog.
@@ -202,7 +204,7 @@ public class ScanWebsite extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
-        request.setAccept("application/xml");
+        request.setAccept(APPLICATION_XML);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
@@ -223,7 +225,7 @@ public class ScanWebsite extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
-        request.setAccept("application/xml");
+        request.setAccept(APPLICATION_XML);
 
         String result = null;
         try {

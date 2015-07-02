@@ -29,10 +29,12 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static slash.common.io.Files.toFile;
 
 /**
@@ -46,7 +48,7 @@ class RemoveRoutes extends AbstractUndoableEdit {
     private final List<RouteModel> routes;
     private final List<CategoryTreeNode> categories = new ArrayList<>();
     private final List<String> descriptions = new ArrayList<>();
-    private final List<URL> files = new ArrayList<>();
+    private final List<String> files = new ArrayList<>();
     private final List<String> urls = new ArrayList<>();
 
     public RemoveRoutes(UndoCatalogModel catalogModel, List<RouteModel> routes) {
@@ -56,11 +58,11 @@ class RemoveRoutes extends AbstractUndoableEdit {
             categories.add(route.getCategory());
             descriptions.add(route.getDescription() != null ? route.getDescription() : route.getName());
             try {
-                files.add(route.getRoute().getDataUrl());
+                files.add(route.getRoute().getUrl());
             } catch (IOException e) {
                 files.add(null);
             }
-            urls.add(route.getRoute().getUrl());
+            urls.add(route.getRoute().getHref());
         }
     }
 
@@ -75,7 +77,12 @@ class RemoveRoutes extends AbstractUndoableEdit {
     public void undo() throws CannotUndoException {
         super.undo();
         for (int i = 0; i < categories.size(); i++) {
-            catalogModel.addRoute(categories.get(i), descriptions.get(i), toFile(files.get(i)), urls.get(i), new AddRouteCallback(), false);
+            String file = files.get(i);
+            try {
+                catalogModel.addRoute(categories.get(i), descriptions.get(i), toFile(new URL(file)), urls.get(i), new AddRouteCallback(), false);
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException(format("Cannot create URL for %s", file));
+            }
         }
     }
 

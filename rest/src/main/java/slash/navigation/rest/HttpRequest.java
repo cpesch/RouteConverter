@@ -59,6 +59,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
  */
 
 public abstract class HttpRequest {
+    public static final String APPLICATION_XML = "application/xml";
     public static final String APPLICATION_JSON = "application/json";
 
     private final Logger log;
@@ -74,7 +75,7 @@ public abstract class HttpRequest {
         requestConfigBuilder.setConnectTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(90 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
-        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.7"));
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.8"));
         this.method = method;
     }
 
@@ -218,5 +219,13 @@ public abstract class HttpRequest {
 
     public boolean isNotFound() throws IOException {
         return getStatusCode() == SC_NOT_FOUND;
+    }
+
+    public boolean isBadRequest() throws IOException {
+        return getStatusCode() == SC_BAD_REQUEST;
+    }
+
+    public boolean isPreconditionFailed() throws IOException {
+        return getStatusCode() == SC_PRECONDITION_FAILED;
     }
 }

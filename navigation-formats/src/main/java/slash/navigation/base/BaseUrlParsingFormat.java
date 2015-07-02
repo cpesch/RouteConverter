@@ -24,12 +24,12 @@ import slash.navigation.common.NavigationPosition;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.net.URLEncoder.encode;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
@@ -150,7 +150,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         if (description == null)
             return "";
         try {
-            description = URLEncoder.encode(description, UTF8_ENCODING);
+            description = encode(description, UTF8_ENCODING);
             description = description.replace("%2C", ",");
             return description;
         } catch (UnsupportedEncodingException e) {

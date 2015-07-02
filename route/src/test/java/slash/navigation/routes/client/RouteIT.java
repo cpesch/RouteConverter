@@ -5,30 +5,22 @@
 
   Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.catalog.client;
+package slash.navigation.routes.client;
 
 import org.junit.Test;
-import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.HttpRequest;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
-import slash.navigation.rest.SimpleCredentials;
+import slash.navigation.rest.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
+/** @deprecated replace by new remote tests */
 public class RouteIT extends RouteCatalogClientBase {
 
     private Get readRoute(int key) {
@@ -98,7 +90,7 @@ public class RouteIT extends RouteCatalogClientBase {
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
 
-        GpxType gpxType = GpxUtil.unmarshal11(result2);
+        GpxType gpxType = unmarshal11(result2);
         assertNotNull(gpxType);
         assertEquals(Integer.toString(routeKey), gpxType.getMetadata().getName());
         assertEquals(USERNAME, gpxType.getMetadata().getAuthor().getName());
@@ -137,7 +129,7 @@ public class RouteIT extends RouteCatalogClientBase {
         String result3 = request3.executeAsString();
         assertEquals(200, request3.getStatusCode());
         assertTrue(request3.isSuccessful());
-        GpxType gpxType = GpxUtil.unmarshal11(result3);
+        GpxType gpxType = unmarshal11(result3);
         assertNotNull(gpxType);
     }
 

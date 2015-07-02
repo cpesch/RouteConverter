@@ -190,12 +190,13 @@ public class CatalogModelImpl implements CatalogModel {
 
                 invokeLater(new Runnable() {
                     public void run() {
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
+
                         for (int i = 0; i < parents.size(); i++) {
                             CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
                             categoryTreeModel.removeNodeFromParent(category);
                         }
-                        if (invokeLaterRunnable != null)
-                            invokeLaterRunnable.run();
                     }
                 });
             }
@@ -222,7 +223,7 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void renameRoute(final RouteModel route, final String name) {
+    public void renameRoute(final RouteModel route, final String name, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RenameRoute";
@@ -234,6 +235,9 @@ public class CatalogModelImpl implements CatalogModel {
                 invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.updateRoute(route);
+
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
                     }
                 });
             }

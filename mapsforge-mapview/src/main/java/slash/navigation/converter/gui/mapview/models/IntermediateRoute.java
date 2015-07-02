@@ -17,26 +17,31 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.routes.domain;
+package slash.navigation.converter.gui.mapview.models;
 
-import org.junit.After;
-import org.junit.Before;
-import slash.navigation.catalog.client.RouteCatalogClientBase;
-import slash.navigation.routes.remote.RemoteCatalog;
-import slash.navigation.rest.SimpleCredentials;
+import org.mapsforge.core.model.LatLong;
 
-public abstract class RouteCatalogServiceBase extends RouteCatalogClientBase {
-    protected RemoteCatalog catalog;
+import java.util.List;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        catalog = new RemoteCatalog(CATALOG, new SimpleCredentials(USERNAME, PASSWORD));
+/**
+ * A container for a {@link List} of {@link LatLong} and the indicator if they present a valid route.
+ *
+ * @author Christian Pesch
+ */
+public class IntermediateRoute {
+    private List<LatLong> latLongs;
+    private boolean valid;
+
+    public IntermediateRoute(List<LatLong> latLongs, boolean valid) {
+        this.latLongs = latLongs;
+        this.valid = valid;
     }
 
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        catalog = null;
+    public List<LatLong> getLatLongs() {
+        return latLongs;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

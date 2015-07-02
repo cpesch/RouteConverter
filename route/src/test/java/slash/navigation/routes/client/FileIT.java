@@ -5,7 +5,7 @@
 
   Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.catalog.client;
+package slash.navigation.routes.client;
 
 import org.junit.Test;
 import slash.navigation.rest.Delete;
@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+/** @deprecated replace by new remote tests */
 public class FileIT extends RouteCatalogClientBase {
 
     private Get readFile(int key) {

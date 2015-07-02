@@ -39,6 +39,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
+import static slash.navigation.gpx.GpxUtil.marshal11;
 
 public class GpxFormatIT {
 
