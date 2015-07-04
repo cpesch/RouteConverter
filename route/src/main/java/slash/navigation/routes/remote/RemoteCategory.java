@@ -144,9 +144,9 @@ public class RemoteCategory implements Category {
     }
 
     public Route createRoute(String description, String remoteUrl) throws IOException {
-        String resultUrl = getCatalog().addRoute(getHref(), description, null, remoteUrl);
+        String routeUrl = getCatalog().addRoute(getHref(), description, null, remoteUrl);
         invalidate();
-        return new RemoteRoute(this, resultUrl);
+        return new RemoteRoute(this, routeUrl);
     }
 
     public boolean equals(Object o) {

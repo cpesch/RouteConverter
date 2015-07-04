@@ -8,22 +8,13 @@
 package slash.navigation.routes.client;
 
 import org.junit.Test;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.HttpRequest;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
-import slash.navigation.rest.SimpleCredentials;
+import slash.navigation.rest.*;
 
 import java.io.File;
 import java.io.IOException;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /** @deprecated replace by new remote tests */
 public class FileIT extends RouteCatalogClientBase {

@@ -47,8 +47,7 @@ public class RemoteRoute implements Route {
     }
 
     public RemoteRoute(RemoteCategory category, String href, String description, String creator, String url) {
-        this.category = category;
-        this.href = href;
+        this(category, href);
         this.creator = creator;
         this.description = description;
         this.url = url;

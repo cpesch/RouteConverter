@@ -28,10 +28,8 @@ import slash.navigation.routes.remote.binding.FileType;
 import java.io.File;
 import java.io.IOException;
 
-import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.*;
-import static slash.common.io.InputOutput.copy;
 import static slash.navigation.routes.remote.RemoteCatalog.FILE_URI;
 
 public class RemoteFileIT extends BaseRouteCatalogTest {
