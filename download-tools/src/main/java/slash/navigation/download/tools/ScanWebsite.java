@@ -21,8 +21,10 @@ package slash.navigation.download.tools;
 
 
 import org.apache.commons.cli.*;
-import slash.navigation.datasources.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.File;
 import slash.navigation.datasources.Map;
+import slash.navigation.datasources.Theme;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
@@ -34,12 +36,14 @@ import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.download.tools.helpers.DownloadableType;
 import slash.navigation.rest.Delete;
 import slash.navigation.rest.Get;
-import slash.navigation.rest.HttpRequest;
 import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
