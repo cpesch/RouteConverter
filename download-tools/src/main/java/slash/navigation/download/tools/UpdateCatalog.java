@@ -54,7 +54,7 @@ import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
-import static slash.navigation.rest.HttpRequest.APPLICATION_XML;
+import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
  * Updates the resources from the DataSources catalog from websites
@@ -324,7 +324,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
-        request.setAccept(APPLICATION_XML);
+        request.setAccept(APPLICATION_JSON);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;

@@ -52,7 +52,7 @@ import static java.util.Arrays.sort;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
-import static slash.navigation.rest.HttpRequest.APPLICATION_XML;
+import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
  * Scans a website for resources for the DataSources catalog.
@@ -208,7 +208,7 @@ public class ScanWebsite extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
-        request.setAccept(APPLICATION_XML);
+        request.setAccept(APPLICATION_JSON);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
@@ -229,7 +229,7 @@ public class ScanWebsite extends BaseDownloadTool {
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes());
-        request.setAccept(APPLICATION_XML);
+        request.setAccept(APPLICATION_JSON);
 
         String result = null;
         try {
