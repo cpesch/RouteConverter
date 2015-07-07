@@ -11,9 +11,9 @@ bin\xjc -verbose -d generated -p slash.navigation.tcx.binding1 c:\p4\RouteConver
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConverter\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev2.xsd
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding20 c:\p4\RouteConverter\kml\src\main\doc\kml20.xsd
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding21 c:\p4\RouteConverter\kml\src\main\doc\kml21.xsd
-bin\xjc -verbose -d generated c:\p4\RouteConverter\kml\src\main\doc\kml\ogckml22.xsd -b c:\p4\RouteConverter\kml\src\main\doc\ogckml22.xjb
-bin\xjc -verbose -d generated c:\p4\RouteConverter\kml\src\main\doc\kml\kml22gx.xsd -b c:\p4\RouteConverter\kml\src\main\doc\kml22gx.xjb
-bin\xjc -verbose -d generated c:\p4\RouteConverter\kml\src\main\doc\kml\kml22beta.xsd -b c:\p4\RouteConverter\kml\src\main\doc\kml22beta.xjb
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\kml\src\main\java c:\p4\RouteConverter\kml\src\main\doc\ogckml22.xsd -b c:\p4\RouteConverter\kml\src\main\doc\ogckml22.xjb
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\kml\src\main\java c:\p4\RouteConverter\kml\src\main\doc\kml22gx.xsd -b c:\p4\RouteConverter\kml\src\main\doc\kml22gx.xjb
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\kml\src\main\java c:\p4\RouteConverter\kml\src\main\doc\kml22beta.xsd -b c:\p4\RouteConverter\kml\src\main\doc\kml22beta.xjb
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding3 c:\p4\RouteConverter\navigation-formats\src\main\doc\gopal\gopal3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding5 c:\p4\RouteConverter\navigation-formats\src\main\doc\gopal\gopal5.xsd
 bin\xjc -verbose -dtd -d generated -p slash.navigation.viamichelin.binding c:\p4\RouteConverter\navigation-formats\src\main\doc\viamichelin\export.dtd
