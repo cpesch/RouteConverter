@@ -32,7 +32,6 @@ import java.io.File;
  */
 
 public class LocalCatalog implements Catalog {
-    private static final String USER_NAME = System.getProperty("user.name");
     private final String rootFolder;
 
     public LocalCatalog(String rootFolder) {
@@ -41,9 +40,5 @@ public class LocalCatalog implements Catalog {
 
     public Category getRootCategory() {
         return new LocalCategory(this, new File(rootFolder));
-    }
-
-    public String getUserName() {
-        return USER_NAME;
     }
 }

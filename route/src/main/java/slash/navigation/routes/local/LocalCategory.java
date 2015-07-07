@@ -23,24 +23,21 @@ package slash.navigation.routes.local;
 import slash.common.io.FileFileFilter;
 import slash.common.io.WindowsShortcut;
 import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.io.File.separator;
 import static java.lang.String.format;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.copy;
-import static slash.common.io.Transfer.decodeUri;
 import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
@@ -53,16 +50,10 @@ import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 public class LocalCategory implements Category {
     private final LocalCatalog catalog;
     private File directory;
-    private String name;
-
-    public LocalCategory(LocalCatalog catalog, File directory, String name) {
-        this.catalog = catalog;
-        this.directory = directory;
-        this.name = decodeUri(name);
-    }
 
     public LocalCategory(LocalCatalog catalog, File directory) {
-        this(catalog, directory, directory.getName());
+        this.catalog = catalog;
+        this.directory = directory;
     }
 
     public String getHref() {
@@ -74,27 +65,27 @@ public class LocalCategory implements Category {
     }
 
     public String getName() throws IOException {
-        return name;
+        return directory.getName();
     }
 
     public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<>();
         for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
-            String name = decodeUri(subDirectory.getName());
             if (isPotentialValidLink(subDirectory)) {
                 WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
                 if (shortcut.isDirectory()) {
-                    name = removeExtension(name);
-                    subDirectory = new File(shortcut.getRealFilename());
+                    subDirectory = new File(removeExtension(shortcut.getRealFilename()));
                 } else
                     continue;
             }
-            categories.add(new LocalCategory(catalog, subDirectory, name));
+            categories.add(new LocalCategory(catalog, subDirectory));
         }
         return categories;
     }
 
     public Category create(String name) throws IOException {
+        if (name.contains("/") || name.contains(separator))
+            throw new ForbiddenException(format("Cannot have slashes in name %s", name), getHref());
         File subDirectory = new File(directory, encodeFileName(name));
         if (subDirectory.exists())
             throw new DuplicateNameException(format("%s %s already exists", subDirectory.isDirectory() ? "Category" : "Route", name), subDirectory.getAbsolutePath());
@@ -104,15 +95,19 @@ public class LocalCategory implements Category {
     }
 
     public void update(Category parent, String name) throws IOException {
-        File newName;
+        File newParent;
+        String newName = encodeFileName(name);
         try {
-            newName = new File(parent != null ? new File(new URL(parent.getHref()).toURI()) : directory.getParentFile(), encodeFileName(name));
+            newParent = parent != null ? new File(new URL(parent.getHref()).toURI()) : directory.getParentFile();
         } catch (URISyntaxException e) {
             throw new IOException(format("Cannot rename %s for %s and %s", directory, parent, name));
         }
-        if (!directory.renameTo(newName))
-            throw new IOException(format("Cannot rename %s to %s", directory, newName));
-        directory = newName;
+
+        File newDirectory = new File(newParent, newName);
+        if (!directory.renameTo(newDirectory))
+            throw new IOException(format("Cannot rename %s to %s", directory, newDirectory));
+
+        this.directory = newDirectory;
     }
 
     public void delete() throws IOException {
@@ -177,6 +172,6 @@ public class LocalCategory implements Category {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[directory=" + directory + ", name=" + name + "]";
+        return getClass().getSimpleName() + "[directory=" + directory + "]";
     }
 }

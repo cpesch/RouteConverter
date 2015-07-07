@@ -96,6 +96,11 @@ public class RemoteCategoryIT extends BaseRouteCatalogTest {
     }
 
     @Test(expected = ForbiddenException.class)
+    public void testCannotCreateCategoryWithBackslashes() throws IOException {
+        createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/");
+    }
+
+    @Test(expected = ForbiddenException.class)
     public void testCreateCategoryForbidden() throws IOException {
         RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
         wrong.addCategory(API, "egal");
@@ -172,18 +177,18 @@ public class RemoteCategoryIT extends BaseRouteCatalogTest {
         assertFalse(catalog.getCategory(firstUrl).getCategories().contains(category2));
         assertTrue(catalog.getCategory(secondUrl).getCategories().contains(category2));
 
-        String name3 = "UpdatedCategory" + currentTimeMillis();
-        catalog.updateCategory(url, secondUrl, name3);
+        String name2 = "UpdatedCategory" + currentTimeMillis();
+        catalog.updateCategory(url, secondUrl, name2);
         Category category3 = catalog.getCategory(url);
         assertNotNull(category3);
-        assertEquals(name3, category3.getName());
+        assertEquals(name2, category3.getName());
         assertEquals(secondUrl, ((RemoteCategory) category3).getParent().getHref());
 
-        String name4 = "UpdatedAndMovedCategory" + currentTimeMillis();
-        catalog.updateCategory(url, firstUrl, name4);
+        String name3 = "UpdatedAndMovedCategory" + currentTimeMillis();
+        catalog.updateCategory(url, firstUrl, name3);
         Category category4 = catalog.getCategory(url);
         assertNotNull(category4);
-        assertEquals(name4, category4.getName());
+        assertEquals(name3, category4.getName());
         assertEquals(firstUrl, ((RemoteCategory) category4).getParent().getHref());
     }
 
