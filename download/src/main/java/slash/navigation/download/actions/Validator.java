@@ -80,6 +80,9 @@ public class Validator {
                 expected.getLastModified().equals(actual.getLastModified());
         if (!lastModifiedEquals)
             log.warning(format("%s has last modified %s but expected %s", file.getFile(), actual.getLastModified(), expected.getLastModified()));
+        boolean hasBeenUpdated = file.getActualChecksum().laterThan(file.getExpectedChecksum());
+        if (!hasBeenUpdated)
+            log.info(format("%s has been updated on server", file.getFile()));
         boolean contentLengthEquals = expected.getContentLength() == null ||
                 expected.getContentLength().equals(actual.getContentLength());
         if (!contentLengthEquals)
@@ -88,8 +91,7 @@ public class Validator {
                 expected.getSHA1().equals(actual.getSHA1());
         if (!sha1Equals)
             log.warning(format("%s has SHA-1 %s but expected %s", file.getFile(), actual.getSHA1(), expected.getSHA1()));
-        // TODO solve timezone problems first before making lastModifiedEquals relevant again
-        boolean valid = /*lastModifiedEquals &&*/ contentLengthEquals && sha1Equals;
+        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || hasBeenUpdated;
         if (valid)
             log.info(format("%s has valid checksum", file.getFile()));
         return valid;
