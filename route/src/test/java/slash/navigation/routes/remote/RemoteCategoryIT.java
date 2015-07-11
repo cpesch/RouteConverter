@@ -34,7 +34,7 @@ import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 
-public class RemoteCategoryIT extends BaseRouteCatalogTest {
+public class RemoteCategoryIT extends BaseRemoteCatalogTest {
     @Test
     public void testGetRoot() throws IOException {
         Category root = catalog.getRootCategory();

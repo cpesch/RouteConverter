@@ -1,9 +1,0 @@
-/**
- * Contains the <a href="https://jaxb.dev.java.net/nonav/2.2.4/docs/api/">JAXB</a> binding for the RouteConverter GPX extensions 1.0.
- */
-@javax.xml.bind.annotation.XmlSchema(namespace = ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
-        @XmlNs(prefix = "rcxx", namespaceURI = ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI) })
-package slash.navigation.gpx.routecatalog10;
-import javax.xml.bind.annotation.XmlNs;
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.gpx.GpxUtil.*;

@@ -21,7 +21,6 @@ package slash.navigation.routes.remote;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import slash.common.io.InputOutput;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routes.Category;
@@ -37,13 +36,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.io.InputOutput.copy;
 
-public abstract class BaseRouteCatalogTest {
+public abstract class BaseRemoteCatalogTest {
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
     protected static final String USERNAME = "test";
     protected static final String ANOTHER_USERNAME = "another";
     protected static final String SUPER_USERNAME = "super";
     protected static final String PASSWORD = "test";
-    protected static final String TEST_PATH = "src\\test\\resources\\";
     protected static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
     protected static final String SPECIAL_CHARACTERS = "@!§$%&()=";
     protected static final String SAMPLE_FILE_NAME = "sample-file.itn";

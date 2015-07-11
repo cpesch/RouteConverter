@@ -54,7 +54,7 @@ public class LocalCategoryIT {
     public void testGetRoot() throws IOException {
         Category root = catalog.getRootCategory();
         assertNotNull(root);
-        assertEquals("", root.getName());
+        assertEquals(path.getName(), root.getName());
 
         String url = root.getHref();
         assertEquals(url, path.toURI().toURL().toString());

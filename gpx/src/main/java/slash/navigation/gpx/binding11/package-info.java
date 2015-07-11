@@ -7,7 +7,6 @@
         @XmlNs(prefix = "gpxtpx", namespaceURI = GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI),
         @XmlNs(prefix = "trp", namespaceURI = GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI),
 		@XmlNs(prefix = "gpxx", namespaceURI = GARMIN_EXTENSIONS_3_NAMESPACE_URI),
-		@XmlNs(prefix = "rcxx", namespaceURI = ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI),
 		@XmlNs(prefix = "nmea", namespaceURI = TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI) })
 package slash.navigation.gpx.binding11;
 

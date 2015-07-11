@@ -81,7 +81,8 @@ public abstract class HttpRequest {
 
     HttpRequest(HttpRequestBase method, Credentials credentials) {
         this(method);
-        setAuthentication(credentials);
+        if (credentials != null)
+            setAuthentication(credentials);
     }
 
     HttpRequestBase getMethod() {

@@ -21,18 +21,13 @@
 package slash.navigation.gpx;
 
 import slash.navigation.gpx.binding10.Gpx;
-import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.routecatalog10.UserextensionType;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
 import static slash.common.helpers.JAXBHelper.*;
-import static slash.common.io.Transfer.asUtf8;
 
 public class GpxUtil {
     public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
@@ -42,7 +37,6 @@ public class GpxUtil {
     // public static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
     public static final String GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TripExtensions/v1";
-    public static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
     public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
     public static final String XML_SCHEMA_INSTANCE_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
@@ -58,8 +52,7 @@ public class GpxUtil {
         return newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
                 slash.navigation.gpx.garmin3.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint2.ObjectFactory.class,
-                slash.navigation.gpx.trip1.ObjectFactory.class,
-                slash.navigation.gpx.routecatalog10.ObjectFactory.class);
+                slash.navigation.gpx.trip1.ObjectFactory.class);
     }
 
     private static Unmarshaller newUnmarshaller11() {
@@ -148,34 +141,6 @@ public class GpxUtil {
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);
         }
-    }
-
-    public static GpxType createGpxType() {
-        GpxType gpxType = new slash.navigation.gpx.binding11.ObjectFactory().createGpxType();
-        gpxType.setCreator("RouteConverter");
-        gpxType.setVersion("1.1");
-        return gpxType;
-    }
-
-    public static String createXml(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        ObjectFactory objectFactory = new ObjectFactory();
-        MetadataType metadataType = objectFactory.createMetadataType();
-        metadataType.setName(asUtf8(userName));
-
-        UserextensionType userextensionType = new slash.navigation.gpx.routecatalog10.ObjectFactory().createUserextensionType();
-        userextensionType.setEmail(asUtf8(email));
-        userextensionType.setFirstname(asUtf8(firstName));
-        userextensionType.setLastname(asUtf8(lastName));
-        userextensionType.setPassword(asUtf8(password));
-
-        ExtensionsType extensionsType = objectFactory.createExtensionsType();
-        extensionsType.getAny().add(userextensionType);
-        metadataType.setExtensions(extensionsType);
-
-        GpxType gpxType = createGpxType();
-        gpxType.setMetadata(metadataType);
-
-        return toXml(gpxType);
     }
 
     public static String toXml(GpxType gpxType) throws IOException {

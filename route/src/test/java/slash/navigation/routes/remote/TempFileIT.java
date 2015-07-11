@@ -21,7 +21,6 @@ package slash.navigation.routes.remote;
 
 import org.junit.Test;
 import slash.common.io.Files;
-import slash.navigation.routes.remote.BaseRouteCatalogTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.decodeUri;
 
-public class TempFileIT extends BaseRouteCatalogTest {
+public class TempFileIT extends BaseRemoteCatalogTest {
     private static final String DEFAULT_PREFIX = "route";
     private static final String DEFAULT_SUFFIX = ".file";
     private static final String A_PREFIX = "nice route";

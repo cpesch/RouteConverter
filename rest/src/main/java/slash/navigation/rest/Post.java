@@ -31,4 +31,8 @@ public class Post extends MultipartRequest {
     public Post(String url, Credentials credentials) {
         super(new HttpPost(url), credentials);
     }
+
+    public Post(String url) {
+        this(url, null);
+    }
 }

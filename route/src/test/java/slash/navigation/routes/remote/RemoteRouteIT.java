@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 import static slash.navigation.routes.remote.RemoteCatalog.ROUTE_URI;
 
-public class RemoteRouteIT extends BaseRouteCatalogTest {
+public class RemoteRouteIT extends BaseRemoteCatalogTest {
     private static final String REMOTE_URL = "http://www.routeconverter.com/";
 
     private void createAndDeleteRoute(String description) throws IOException {

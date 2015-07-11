@@ -24,10 +24,9 @@ import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.rest.*;
-import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
@@ -57,7 +56,8 @@ public class RouteFeedback {
 
     private static final String ERROR_REPORT_URI = "error-report/";
     private static final String UPDATE_CHECK_URI = "update-check/";
-    private static final String USERS_URI = "users/";
+    private static final String V1 = "v1/";
+    static final String USER_URI = V1 + "users/";
 
     private final String rootUrl;
     private final String apiUrl;
@@ -83,24 +83,34 @@ public class RouteFeedback {
             return null;
     }
 
-    private String getUsersUrl() {
-        return rootUrl + USERS_URI;
+    public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
+        log.info("Adding user " + userName + "," + firstName + "," + lastName + "," + email);
+        Post request = new Post(apiUrl + USER_URI);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("username", userName);
+        request.addString("password", password);
+        request.addString("first_name", firstName);
+        request.addString("last_name", lastName);
+        request.addString("email", email);
+        String result = request.executeAsString();
+        if (request.isBadRequest())
+            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
+        if (request.isForbidden())
+            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
+        if (!request.isSuccessful())
+            throw new IOException("POST on " + (apiUrl + USER_URI) + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
+        return request.getLocation();
     }
 
-    public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
-        String xml = GpxUtil.createXml(userName, password, firstName, lastName, email);
-        Post request = new Post(getUsersUrl(), credentials);
-        request.addFile("file", xml.getBytes());
-
+    void deleteUser(String userUrl) throws IOException {
+        log.info("Deleting user " + userUrl);
+        Delete request = new Delete(userUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
         String result = request.executeAsString();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add user " + userName, getUsersUrl());
-        if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add user " + userName, getUsersUrl());
+        if (request.isBadRequest())
+            throw new ForbiddenException("Not authorized to delete user", userUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getUsersUrl() + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
-        return request.getLocation();
+            throw new IOException("DELETE on " + userUrl + " not successful: " + result);
     }
 
     private String getErrorReportUrl() {

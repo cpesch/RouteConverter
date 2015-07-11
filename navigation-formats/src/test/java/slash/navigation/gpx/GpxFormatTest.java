@@ -23,7 +23,6 @@ package slash.navigation.gpx;
 import org.junit.Test;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.routecatalog10.UserextensionType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -34,25 +33,6 @@ import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class GpxFormatTest {
-
-    @Test
-    public void testWritingRouteConverterExtensions() throws IOException, JAXBException {
-        slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
-        UserextensionType userExtensionType = rcFactory.createUserextensionType();
-        userExtensionType.setFirstname("FIRST");
-        slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(userExtensionType);
-        GpxType gpx = gpxFactory.createGpxType();
-        gpx.setCreator("CREATOR");
-        gpx.setExtensions(extensionsType);
-        assertNotNull(gpx);
-        String string = toXml(gpx);
-        assertTrue(string.contains("<gpx creator=\"CREATOR\""));
-        assertTrue(string.contains("FIRST"));
-        assertTrue(string.contains("firstname"));
-        assertTrue(string.contains("<rcxx:firstname>FIRST</rcxx:firstname>"));
-    }
 
     @Test
     public void testWritingTrekBuddyExtensions() throws IOException, JAXBException {

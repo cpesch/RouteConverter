@@ -32,7 +32,7 @@ import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.FILE_URI;
 
-public class RemoteFileIT extends BaseRouteCatalogTest {
+public class RemoteFileIT extends BaseRemoteCatalogTest {
     private static final String STATIC_ROUTES = "static/routes/";
 
     @Test
