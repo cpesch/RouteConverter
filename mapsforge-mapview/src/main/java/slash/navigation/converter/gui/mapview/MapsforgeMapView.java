@@ -448,6 +448,9 @@ public class MapsforgeMapView implements MapView {
             private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pairWithLayer : pairsWithLayer) {
+                    if(!pairWithLayer.hasCoordinates())
+                        continue;
+
                     Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
                     pairWithLayer.setLayer(line);
                     getLayerManager().getLayers().add(line);
@@ -464,6 +467,9 @@ public class MapsforgeMapView implements MapView {
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    if(!pairWithLayer.hasCoordinates())
+                        continue;
+
                     IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
                     Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
@@ -913,11 +919,14 @@ public class MapsforgeMapView implements MapView {
         return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
     }
 
-    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairs) {
+    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
         List<LongitudeAndLatitude> result = new ArrayList<>();
-        for (PairWithLayer pair : pairs) {
-            result.add(asLongitudeAndLatitude(pair.getFirst()));
-            result.add(asLongitudeAndLatitude(pair.getSecond()));
+        for (PairWithLayer pairWithLayer : pairWithLayers) {
+            if(!pairWithLayer.hasCoordinates())
+                continue;
+
+            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
+            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
         }
         return result;
     }

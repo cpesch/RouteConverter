@@ -48,6 +48,10 @@ public class PairWithLayer {
         return second;
     }
 
+    public boolean hasCoordinates() {
+        return getFirst().hasCoordinates() && getSecond().hasCoordinates();
+    }
+
     public Layer getLayer() {
         return layer;
     }

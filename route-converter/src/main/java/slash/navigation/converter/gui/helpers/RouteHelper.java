@@ -65,7 +65,12 @@ public class RouteHelper {
     public static String formatUrl(RouteModel route) {
         String url = route.getUrl();
         url = url.replaceAll("file:/", "");
-        url = decodeUri(url);
+        try {
+            url = decodeUri(url);
+        }
+        catch (IllegalArgumentException e) {
+            // intentionally left empty
+        }
         return url;
     }
 }
