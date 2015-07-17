@@ -110,11 +110,12 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
                         log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                         if (newState == SUCCEEDED) {
-                            invokeLater(new Runnable() {
+                            // get out of the listener callback
+                            new Thread(new Runnable() {
                                 public void run() {
                                     tryToInitialize(startCount++, currentTimeMillis());
                                 }
-                            });
+                            }, "MapViewInitializer").start();
                         }
                     }
                 });
