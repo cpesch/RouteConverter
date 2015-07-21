@@ -184,10 +184,10 @@ public class JavaFXWebViewMapView extends BaseMapView {
 
         final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
-        final Object[] result = new Object[2];
+        final Object[] result = new Object[1];
 
         if (!isFxApplicationThread()) {
-            result[1] = false;
+            final boolean[] haveResult = new boolean[] {false};
 
             runLater(new Runnable() {
                 public void run() {
@@ -198,14 +198,14 @@ public class JavaFXWebViewMapView extends BaseMapView {
 
                     synchronized (LOCK) {
                         result[0] = r;
-                        result[1] = true;
+                        haveResult[0] = true;
                         LOCK.notifyAll();
                     }
                 }
             });
 
             synchronized (LOCK) {
-                while (result[1] == false) {
+                while (!haveResult[0]) {
                     try {
                         LOCK.wait();
                     } catch (InterruptedException e) {
