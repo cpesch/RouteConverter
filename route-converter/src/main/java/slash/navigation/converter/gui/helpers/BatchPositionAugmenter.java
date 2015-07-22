@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
+import slash.navigation.common.NumberingStrategy;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -58,6 +59,7 @@ import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.base.RouteCalculations.interpolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
+import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
@@ -490,11 +492,19 @@ public class BatchPositionAugmenter {
     }
 
 
+    private int findRelativeIndex(int[] selectedIndices, int indexToSearch) {
+        for (int i=0; i < selectedIndices.length; i++)
+            if(selectedIndices[i] == indexToSearch)
+                return i;
+        return indexToSearch;
+    }
+
     private void processNumbers(final JTable positionsTable,
                                 final PositionsModel positionsModel,
                                 final int[] rows,
                                 final int digitCount,
                                 final NumberPattern numberPattern,
+                                final NumberingStrategy numberingStrategy,
                                 final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
@@ -511,7 +521,8 @@ public class BatchPositionAugmenter {
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String previousDescription = position.getDescription();
-                        String nextDescription = getNumberedPosition(position, index, digitCount, numberPattern);
+                        int number = numberingStrategy.equals(Absolute_Position_Within_Position_List) ? index : findRelativeIndex(rows, index);
+                        String nextDescription = getNumberedPosition(position, number, digitCount, numberPattern);
                         boolean changed = nextDescription != null && !nextDescription.equals(previousDescription);
                         if (changed)
                             positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, nextDescription), false, true);
@@ -528,7 +539,8 @@ public class BatchPositionAugmenter {
     public void addNumbers(int[] rows) {
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-        processNumbers(positionsView, positionsModel, rows, digitCount, numberPattern, COORDINATE_PREDICATE);
+        NumberingStrategy numberingStrategy = RouteConverter.getInstance().getNumberingStrategyPreference();
+        processNumbers(positionsView, positionsModel, rows, digitCount, numberPattern, numberingStrategy, COORDINATE_PREDICATE);
     }
 
 

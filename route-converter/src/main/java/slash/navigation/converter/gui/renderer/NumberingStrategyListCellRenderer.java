@@ -20,24 +20,24 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.common.NumberPattern;
+import slash.navigation.common.NumberingStrategy;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link NumberPattern} labels of the options dialog combo box.
+ * Renders the {@link NumberingStrategy} labels of the options dialog combo box.
  *
  * @author Christian Pesch
  */
 
-public class NumberPatternListCellRenderer extends DefaultListCellRenderer {
+public class NumberingStrategyListCellRenderer extends DefaultListCellRenderer {
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        NumberPattern numberPattern = NumberPattern.class.cast(value);
-        String text = RouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase());
+        NumberingStrategy numberingStrategy = NumberingStrategy.class.cast(value);
+        String text = RouteConverter.getBundle().getString("numbering-strategy-" + numberingStrategy.name().toLowerCase());
         label.setText(text);
         return label;
     }

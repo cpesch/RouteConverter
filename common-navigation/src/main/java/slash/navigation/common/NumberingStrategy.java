@@ -18,27 +18,18 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.renderer;
-
-import slash.navigation.common.NumberPattern;
-import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.*;
+package slash.navigation.common;
 
 /**
- * Renders the {@link NumberPattern} labels of the options dialog combo box.
+ * Enumeration of the strategies where the Index 1 is for adding numbers to the descriptions of positions.
+ *
+ * Absolute_Position_Within_Position_List: First position of the position list
+ *
+ * Relative_Position_In_Current_Selection: First position of the current selection
  *
  * @author Christian Pesch
  */
 
-public class NumberPatternListCellRenderer extends DefaultListCellRenderer {
-
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        NumberPattern numberPattern = NumberPattern.class.cast(value);
-        String text = RouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase());
-        label.setText(text);
-        return label;
-    }
+public enum NumberingStrategy {
+    Absolute_Position_Within_Position_List, Relative_Position_In_Current_Selection
 }

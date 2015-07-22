@@ -25,14 +25,10 @@ import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.NumberPattern;
-import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.common.*;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.models.*;
@@ -59,7 +55,6 @@ import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -103,6 +98,7 @@ import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
+import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
@@ -148,6 +144,7 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
+    public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
@@ -365,7 +362,7 @@ public class RouteConverter extends SingleFrameApplication {
                 if (location < 1)
                     location = 300;
                 mapSplitPane.setDividerLocation(location);
-                log.fine("Initialized map divider to " + location);
+                log.info("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 getConvertPanel().initializeMapView(getMapView());
@@ -393,7 +390,7 @@ public class RouteConverter extends SingleFrameApplication {
                 if (location < 2)
                     location = 888;
                 profileSplitPane.setDividerLocation(location);
-                log.fine("Initialized profile divider to " + location);
+                log.info("Initialized profile divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
             }
         });
@@ -490,6 +487,18 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setNumberPatternPreference(NumberPattern numberPattern) {
         preferences.put(NUMBER_PATTERN_PREFERENCE, numberPattern.toString());
+    }
+
+    public NumberingStrategy getNumberingStrategyPreference() {
+        try {
+            return NumberingStrategy.valueOf(preferences.get(NUMBERING_STRATEGY_PREFERENCE, Absolute_Position_Within_Position_List.toString()));
+        } catch (IllegalArgumentException e) {
+            return Absolute_Position_Within_Position_List;
+        }
+    }
+
+    public void setNumberingStrategyPreference(NumberingStrategy numberingStrategy) {
+        preferences.put(NUMBERING_STRATEGY_PREFERENCE, numberingStrategy.toString());
     }
 
     public String getTimeZonePreference() {
@@ -934,7 +943,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     getMapView().resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.finer("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
