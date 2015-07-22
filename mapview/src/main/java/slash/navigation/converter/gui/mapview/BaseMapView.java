@@ -117,7 +117,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
     private UnitSystemModel unitSystemModel;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    private MapViewCallback mapViewCallback;
+    protected MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
     private int overQueryLimitCount = 0, zeroResultsCount = 0;

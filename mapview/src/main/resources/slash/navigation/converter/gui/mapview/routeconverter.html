@@ -558,7 +558,7 @@
            };
        }
 
-       addDebug("1. initialize()");
+      addDebug("1. initialize()");
        try {
            var MAPNIK_MAPTYPE_ID = "OSM Mapnik", CYCLE_MAPTYPE_ID = "OSM Cycle", TOPO_MAPTYPE_ID = "OSM Topo",
                    HIKE_MAPTYPE_ID = "OSM Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols";
@@ -771,6 +771,10 @@
                } else if (!shiftKey && altKey && ctrlKey) {
                    callJavaWithUri("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
+
+               $('body').on('click', 'a', function(e) {
+                   e.target.target = '_blank';
+               });
            });
            addDebug("4. added listeners");
 

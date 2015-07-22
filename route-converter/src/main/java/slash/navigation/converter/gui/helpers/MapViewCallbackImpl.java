@@ -51,6 +51,10 @@ public class MapViewCallbackImpl implements MapViewCallback {
         RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }
 
+    public void startBrowser(String url) {
+        ExternalPrograms.startBrowser(RouteConverter.getInstance().getFrame(), url);
+    }
+
     public RoutingService getRoutingService() {
         return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
     }
