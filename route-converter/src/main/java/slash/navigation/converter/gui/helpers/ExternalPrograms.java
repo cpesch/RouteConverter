@@ -82,17 +82,18 @@ public class ExternalPrograms {
         startBrowser(window, "http://java.com/download/");
     }
 
-    private static void startBrowser(Window window, String uri) {
-        if (isDesktopSupported()) {
-            try {
-                getDesktop().browse(new URI(uri));
-            } catch (Exception e) {
-                log.severe("Start browser error: " + e);
+    public static void startBrowser(Window window, String uri) {
+        try {
+            if (!isDesktopSupported())
+                throw new UnsupportedOperationException("No desktop support available");
 
-                showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), getLocalizedMessage(e)),
-                        RouteConverter.getTitle(), ERROR_MESSAGE);
-            }
+            getDesktop().browse(new URI(uri));
+        } catch (Exception e) {
+            log.severe("Start browser error: " + e);
+
+            showMessageDialog(window,
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), getLocalizedMessage(e)),
+                    RouteConverter.getTitle(), ERROR_MESSAGE);
         }
     }
 
@@ -101,16 +102,17 @@ public class ExternalPrograms {
     }
 
     private static void startMail(Window window, String uri) {
-        if (isDesktopSupported()) {
-            try {
-                getDesktop().mail(new URI(uri));
-            } catch (Exception e) {
-                log.severe("Start mail error: " + e);
+        try {
+            if (!isDesktopSupported())
+                throw new UnsupportedOperationException("No desktop support available");
 
-                showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), getLocalizedMessage(e)),
-                        RouteConverter.getTitle(), ERROR_MESSAGE);
-            }
+            getDesktop().mail(new URI(uri));
+        } catch (Exception e) {
+            log.severe("Start mail error: " + e);
+
+            showMessageDialog(window,
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), getLocalizedMessage(e)),
+                    RouteConverter.getTitle(), ERROR_MESSAGE);
         }
     }
 }

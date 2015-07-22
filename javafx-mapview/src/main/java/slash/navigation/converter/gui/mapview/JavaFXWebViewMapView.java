@@ -25,7 +25,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.web.PopupFeatures;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
@@ -71,6 +74,26 @@ public class JavaFXWebViewMapView extends BaseMapView {
                 public void componentResized(ComponentEvent e) {
                     Dimension size = panel.getSize();
                     webView.setMinSize(size.getWidth(), size.getHeight());
+                }
+            });
+            webView.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
+                public WebEngine call(PopupFeatures config) {
+                    // grab the last hyperlink that has :hover pseudoclass
+                    String url = executeScriptWithResult(
+                            "var list = document.querySelectorAll( ':hover' );" +
+                                    "for (i=list.length-1; i>-1; i--) {" +
+                                    "  if (list.item(i).getAttribute('href')) {" +
+                                    "    list.item(i).getAttribute('href'); break; " +
+                                    "}}");
+
+                    if (url != null) {
+                        mapViewCallback.startBrowser(url);
+                    } else {
+                        log.warning("No result from popup uri detector");
+                    }
+
+                    // prevent from opening in WebView
+                    return null;
                 }
             });
             return webView;
@@ -187,7 +210,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
         final Object[] result = new Object[1];
 
         if (!isFxApplicationThread()) {
-            final boolean[] haveResult = new boolean[] {false};
+            final boolean[] haveResult = new boolean[]{false};
 
             runLater(new Runnable() {
                 public void run() {
