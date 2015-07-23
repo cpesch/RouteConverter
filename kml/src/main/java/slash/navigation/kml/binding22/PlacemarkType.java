@@ -98,7 +98,7 @@ public class PlacemarkType
      *     
      */
     public void setAbstractGeometryGroup(JAXBElement<? extends AbstractGeometryType> value) {
-        this.abstractGeometryGroup = ((JAXBElement<? extends AbstractGeometryType> ) value);
+        this.abstractGeometryGroup = value;
     }
 
     /**

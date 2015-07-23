@@ -116,7 +116,7 @@ public class ListStyleType
      *     
      */
     public void setBgColor(byte[] value) {
-        this.bgColor = ((byte[]) value);
+        this.bgColor = value;
     }
 
     /**

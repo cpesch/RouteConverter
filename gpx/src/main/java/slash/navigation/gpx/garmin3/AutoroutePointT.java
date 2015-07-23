@@ -74,7 +74,7 @@ public class AutoroutePointT {
      *     
      */
     public void setSubclass(byte[] value) {
-        this.subclass = ((byte[]) value);
+        this.subclass = value;
     }
 
     /**

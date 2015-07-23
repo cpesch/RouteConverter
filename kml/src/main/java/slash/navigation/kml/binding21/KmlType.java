@@ -104,7 +104,7 @@ public class KmlType {
      *     
      */
     public void setFeature(JAXBElement<? extends FeatureType> value) {
-        this.feature = ((JAXBElement<? extends FeatureType> ) value);
+        this.feature = value;
     }
 
 }

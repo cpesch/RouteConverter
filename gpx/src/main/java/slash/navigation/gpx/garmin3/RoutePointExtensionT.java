@@ -80,7 +80,7 @@ public class RoutePointExtensionT {
      *     
      */
     public void setSubclass(byte[] value) {
-        this.subclass = ((byte[]) value);
+        this.subclass = value;
     }
 
     /**

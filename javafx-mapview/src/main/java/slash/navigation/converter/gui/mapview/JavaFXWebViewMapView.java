@@ -42,6 +42,7 @@ import static javafx.application.Platform.isFxApplicationThread;
 import static javafx.application.Platform.runLater;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.parseDouble;
 
 /**
@@ -102,7 +103,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                     if (newState == SUCCEEDED) {
                         // get out of the listener callback
-                        runLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 tryToInitialize(startCount++, currentTimeMillis());
                             }

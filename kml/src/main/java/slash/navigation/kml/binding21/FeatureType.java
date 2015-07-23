@@ -308,7 +308,7 @@ public abstract class FeatureType
      *     
      */
     public void setTimePrimitive(JAXBElement<? extends TimePrimitiveType> value) {
-        this.timePrimitive = ((JAXBElement<? extends TimePrimitiveType> ) value);
+        this.timePrimitive = value;
     }
 
     /**

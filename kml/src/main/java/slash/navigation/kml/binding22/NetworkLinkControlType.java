@@ -327,7 +327,7 @@ public class NetworkLinkControlType {
      *     
      */
     public void setAbstractViewGroup(JAXBElement<? extends AbstractViewType> value) {
-        this.abstractViewGroup = ((JAXBElement<? extends AbstractViewType> ) value);
+        this.abstractViewGroup = value;
     }
 
     /**

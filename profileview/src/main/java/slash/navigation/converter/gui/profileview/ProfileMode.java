@@ -25,5 +25,5 @@ package slash.navigation.converter.gui.profileview;
  */
 
 public enum ProfileMode {
-    Elevation, Speed;
+    Elevation, Speed
 }

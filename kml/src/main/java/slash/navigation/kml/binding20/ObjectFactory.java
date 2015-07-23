@@ -1486,7 +1486,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.0", name = "color")
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     public JAXBElement<byte[]> createColor(byte[] value) {
-        return new JAXBElement<>(_Color_QNAME, byte[].class, null, ((byte[]) value));
+        return new JAXBElement<>(_Color_QNAME, byte[].class, null, value);
     }
 
     /**

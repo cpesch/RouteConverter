@@ -296,7 +296,7 @@ public final class NavigationFormats {
         formatName = formatName.replace("Format", "Position");
         formatName = removeDigits(formatName);
         try {
-            Method method = position.getClass().getMethod("as" + formatName, new Class[0]);
+            Method method = position.getClass().getMethod("as" + formatName);
             result = (BaseNavigationPosition) method.invoke(position);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + position, e);
@@ -317,7 +317,7 @@ public final class NavigationFormats {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> result;
         String formatName = getFormatName(format);
         try {
-            Method method = route.getClass().getMethod("as" + formatName, new Class[0]);
+            Method method = route.getClass().getMethod("as" + formatName);
             result = (BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) method.invoke(route);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + route, e);

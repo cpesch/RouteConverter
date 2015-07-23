@@ -82,7 +82,7 @@ public class LabelStyle {
      *     
      */
     public void setColor(byte[] value) {
-        this.color = ((byte[]) value);
+        this.color = value;
     }
 
     /**
