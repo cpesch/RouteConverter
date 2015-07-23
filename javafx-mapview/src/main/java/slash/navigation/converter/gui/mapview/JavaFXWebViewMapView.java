@@ -42,7 +42,6 @@ import static javafx.application.Platform.isFxApplicationThread;
 import static javafx.application.Platform.runLater;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
-import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.parseDouble;
 
 /**
@@ -96,6 +95,21 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     return null;
                 }
             });
+            webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+                private int startCount = 0;
+
+                public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
+                    log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
+                    if (newState == SUCCEEDED) {
+                        // get out of the listener callback
+                        runLater(new Runnable() {
+                            public void run() {
+                                tryToInitialize(startCount++, currentTimeMillis());
+                            }
+                        });
+                    }
+                }
+            });
             return webView;
         } catch (Throwable t) {
             log.severe("Cannot create WebView: " + t);
@@ -126,23 +140,6 @@ public class JavaFXWebViewMapView extends BaseMapView {
                     return;
 
                 log.info("Using JavaFX WebView to create map view");
-
-                webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
-                    private int startCount = 0;
-
-                    public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
-                        log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
-                        if (newState == SUCCEEDED) {
-                            // get out of the listener callback
-                            new Thread(new Runnable() {
-                                public void run() {
-                                    tryToInitialize(startCount++, currentTimeMillis());
-                                }
-                            }, "MapViewInitializer").start();
-                        }
-                    }
-                });
-
                 if (!loadWebPage())
                     dispose();
             }
