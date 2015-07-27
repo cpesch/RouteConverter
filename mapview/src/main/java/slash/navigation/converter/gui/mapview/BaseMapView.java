@@ -241,7 +241,7 @@ public abstract class BaseMapView implements MapView {
                         return;
 
                     if (showAllPositionsAfterLoading)
-                        update(true, true);
+                        update(allRowsChanged, true);
                     else
                         updateRouteButDontRecenter();
                 }
