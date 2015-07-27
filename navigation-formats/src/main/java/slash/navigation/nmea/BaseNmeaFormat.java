@@ -58,7 +58,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BaseNmeaFormat.class);
-    protected static Logger log = Logger.getLogger(BaseNmeaFormat.class.getName());
+    protected final Logger log;
 
     static final char SEPARATOR = ',';
     static final String BEGIN_OF_LINE = "^\\$GP";
@@ -86,6 +86,10 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(maximumFractionDigits);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
+    }
+
+    public BaseNmeaFormat() {
+        this.log = Logger.getLogger(getClass().getName());
     }
 
     public int getMaximumPositionCount() {

@@ -247,7 +247,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             // 4 Byte: unknown
             fileContent.getInt();
             // 4 Byte: number of following data points (1, 2, 4)
-            int numberOfDataPoints = fileContent.getInt();
+            fileContent.getInt();
             // 8 Byte: unknown
             if (fileContent.position() < positionEndPosition)
                 fileContent.getInt();
@@ -492,6 +492,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                     getText(byteBuffer);
                     getText(byteBuffer);
                     break;
+                default:
             }
         }
 

@@ -53,9 +53,6 @@ import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
  */
 
 public class NmeaFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(NmeaFormat.class.getName());
-    }
     private static final Preferences preferences = Preferences.userNodeForPackage(NmeaFormat.class);
 
     private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);

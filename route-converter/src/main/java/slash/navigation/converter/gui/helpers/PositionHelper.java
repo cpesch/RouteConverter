@@ -111,7 +111,7 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
-    private static DateFormat getDateTimeFormat(String timeZonePreference) {
+    private synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
         if (!currentTimeZone.equals(timeZonePreference)) {
             dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentTimeZone = timeZonePreference;
@@ -119,7 +119,7 @@ public class PositionHelper {
         return dateTimeFormat;
     }
 
-    private static DateFormat getTimeFormat(String timeZonePreference) {
+    private synchronized static DateFormat getTimeFormat(String timeZonePreference) {
         if (!currentTimeZone.equals(timeZonePreference)) {
             timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentTimeZone = timeZonePreference;

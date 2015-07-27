@@ -53,9 +53,6 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 
 public class MagellanRouteFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(MagellanRouteFormat.class.getName());
-    }
     private static final Preferences preferences = Preferences.userNodeForPackage(MagellanRouteFormat.class);
 
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);

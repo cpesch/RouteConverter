@@ -67,10 +67,11 @@ public class Kml21Format extends KmlFormat {
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends FeatureType>> elements, String name, Class<T> resultClass) {
         List<JAXBElement<T>> result = new ArrayList<>();
-        for (JAXBElement<? extends FeatureType> element : elements) {
-            if (name.equals(element.getName().getLocalPart()))
-                result.add((JAXBElement<T>) element);
-        }
+        if (elements != null)
+            for (JAXBElement<? extends FeatureType> element : elements) {
+                if (name.equals(element.getName().getLocalPart()))
+                    result.add((JAXBElement<T>) element);
+            }
         return result;
     }
 

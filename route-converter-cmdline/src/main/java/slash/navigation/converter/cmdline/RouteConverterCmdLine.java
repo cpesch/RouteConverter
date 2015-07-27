@@ -30,6 +30,7 @@ import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -56,8 +57,8 @@ public class RouteConverterCmdLine {
     private static final Logger log = Logger.getLogger(RouteConverterCmdLine.class.getName());
 
     private void initializeLogging() {
-        try {
-            LogManager.getLogManager().readConfiguration(RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties"));
+        try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {
+            LogManager.getLogManager().readConfiguration(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }

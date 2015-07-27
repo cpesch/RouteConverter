@@ -126,7 +126,7 @@ public class RemoteCategory implements Category {
         return new RemoteCategory(getCatalog(), resultUrl);
     }
 
-    public void update(Category parent, String name) throws IOException {
+    public synchronized void update(Category parent, String name) throws IOException {
         getCatalog().updateCategory(getHref(), parent != null ? parent.getHref() : getParent().getHref(), name);
         this.name = name;
         recursiveInvalidate();

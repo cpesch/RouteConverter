@@ -400,7 +400,9 @@ public class NavigationFormatParser {
             postProcessRoute(routeToWrite, format, false);
         }
 
-        format.write(routesToWrite, new FileOutputStream(target));
-        log.info("Wrote '" + target.getAbsolutePath() + "'");
+        try (OutputStream outputStream = new FileOutputStream(target)) {
+            format.write(routesToWrite, outputStream);
+            log.info("Wrote '" + target.getAbsolutePath() + "'");
+        }
     }
 }

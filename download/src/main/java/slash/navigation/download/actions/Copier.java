@@ -39,7 +39,9 @@ public class Copier {
 
     public long copyAndClose(File from, File to) throws IOException {
         ensureDirectory(to.getParent());
-        return copyAndClose(new FileInputStream(from), new FileOutputStream(to), 0, from.length());
+        try(InputStream inputStream = new FileInputStream(from); OutputStream outputStream = new FileOutputStream(to)) {
+            return copyAndClose(inputStream, outputStream, 0, from.length());
+        }
     }
 
     public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {

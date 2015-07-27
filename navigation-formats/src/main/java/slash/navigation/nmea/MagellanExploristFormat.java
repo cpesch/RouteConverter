@@ -28,10 +28,6 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class MagellanExploristFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(MagellanExploristFormat.class.getName());
-    }
-
     private static final String HEADER_LINE = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII";
     
     private static final Pattern TRK_PATTERN = Pattern.

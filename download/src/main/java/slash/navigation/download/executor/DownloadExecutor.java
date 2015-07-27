@@ -80,6 +80,8 @@ public class DownloadExecutor implements Runnable {
                 case Head:
                     performer = new HeadPerformer();
                     break;
+                default:
+                    throw new IllegalArgumentException("Action " + download.getAction() + " is not supported");
             }
 
             performer.setDownloadExecutor(this);

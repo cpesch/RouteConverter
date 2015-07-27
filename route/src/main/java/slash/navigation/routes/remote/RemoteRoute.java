@@ -101,7 +101,7 @@ public class RemoteRoute implements Route {
         return getRouteType().getCreator();
     }
 
-    public String getUrl() throws IOException {
+    public synchronized String getUrl() throws IOException {
         if (fromCategory)
             return url;
         return getRouteType().getUrl();

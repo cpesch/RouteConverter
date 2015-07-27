@@ -142,7 +142,9 @@ public class LocalCategory implements Category {
 
     public Route createRoute(String description, File localFile) throws IOException {
         File destination = new File(directory, encodeFileName(description));
-        copy(new FileInputStream(localFile), new FileOutputStream(destination));
+        try (InputStream inputStream = new FileInputStream(localFile); OutputStream outputStream = new FileOutputStream(destination)) {
+            copy(inputStream, outputStream);
+        }
         return new LocalRoute(destination);
     }
 
