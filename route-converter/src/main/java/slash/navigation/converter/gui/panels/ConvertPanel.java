@@ -1040,7 +1040,7 @@ public class ConvertPanel implements PanelInTab {
             int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
             int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0)
-                builder.append(String.format("\n%s, reads: %d, writes: %d", format.getName(), reads, writes));
+                builder.append(String.format("%n%s, reads: %d, writes: %d", format.getName(), reads, writes));
         }
         log.info("Format usage:" + builder.toString());
     }

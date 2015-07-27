@@ -631,6 +631,8 @@ public class MapsforgeMapView implements MapView {
                     case DELETE:
                         eventMapUpdater.handleRemove(e.getFirstRow(), e.getLastRow());
                         break;
+                    default:
+                        throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
                 }
             }
         });
@@ -691,8 +693,8 @@ public class MapsforgeMapView implements MapView {
         }
 
         // remove old map
-        for (LocalMap localMap : mapsToLayers.keySet())
-            layers.remove(mapsToLayers.get(localMap));
+        for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet())
+            layers.remove(entry.getValue());
         mapsToLayers.clear();
 
         // add map as the first to be behind all additional layers

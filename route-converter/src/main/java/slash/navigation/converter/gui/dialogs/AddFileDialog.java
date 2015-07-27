@@ -79,7 +79,8 @@ public class AddFileDialog extends SimpleDialog {
         panelRemoteCategory.setVisible(category.isRemote());
         labelLabel.setText(format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(createReadablePath(file));
-        textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
+        if (length != null)
+            textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);
 
         buttonAdd.addActionListener(new DialogAction(this) {

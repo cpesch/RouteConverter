@@ -58,6 +58,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private static final String BABEL_PATH_PREFERENCE = "babelPath";
     private static final String BABEL_INTERFACE_FORMAT_NAME = "gpx";
     private static final String[] ROUTE_WAYPOINTS_TRACKS = new String[]{"-r", "-w", "-t"};
+    private static final String USR_BIN_GPSBABEL = "/usr/bin/gpsbabel";
     private Gpx10Format gpxFormat;
 
     private Gpx10Format getGpxFormat() {
@@ -341,7 +342,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         // 3. look for "/usr/bin/gpsbabel" in path
         if (babelFile == null && !isWindows()) {
-            babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
+            babelFile = checkIfBabelExists(USR_BIN_GPSBABEL);
         }
 
         // 4. extract from classpath into temp directrory and execute there

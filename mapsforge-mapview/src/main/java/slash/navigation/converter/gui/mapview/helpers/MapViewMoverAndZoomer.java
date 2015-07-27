@@ -127,8 +127,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     public void animateCenter(final int horizontalDiff, final int verticalDiff) {
         new Thread(new Runnable() {
             public void run() {
-                double stepSizeX = horizontalDiff / STEPS_TO_MOVE_CENTER;
-                double stepSizeY = verticalDiff / STEPS_TO_MOVE_CENTER;
+                double stepSizeX = horizontalDiff / (double)STEPS_TO_MOVE_CENTER;
+                double stepSizeY = verticalDiff / (double)STEPS_TO_MOVE_CENTER;
                 for (int i = 0; i < STEPS_TO_MOVE_CENTER; i++) {
                     mapView.getModel().mapViewPosition.moveCenter(stepSizeX, stepSizeY);
                     try {

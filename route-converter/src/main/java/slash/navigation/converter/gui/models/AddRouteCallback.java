@@ -47,8 +47,10 @@ public class AddRouteCallback {
         }
     }
 
-    public synchronized void setRoute(RouteModel route) {
-        this.route = route;
-        notifyAll();
+    public void setRoute(RouteModel route) {
+        synchronized (this) {
+            this.route = route;
+            notifyAll();
+        }
     }
 }

@@ -72,6 +72,6 @@ public class ResourcesTableCellRenderer extends AlternatingColorTableCellRendere
     }
 
     private static long toNextUnit(Long size, long nextUnit) {
-        return round(size / nextUnit + 0.5);
+        return round(size / (double)nextUnit + 0.5);
     }
 }

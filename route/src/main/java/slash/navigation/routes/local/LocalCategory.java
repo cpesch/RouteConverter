@@ -70,15 +70,18 @@ public class LocalCategory implements Category {
 
     public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<>();
-        for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
-            if (isPotentialValidLink(subDirectory)) {
-                WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
-                if (shortcut.isDirectory()) {
-                    subDirectory = new File(removeExtension(shortcut.getRealFilename()));
-                } else
-                    continue;
+        File[] directories = directory.listFiles(new DirectoryFileFilter());
+        if(directories != null) {
+            for (File subDirectory : directories) {
+                if (isPotentialValidLink(subDirectory)) {
+                    WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
+                    if (shortcut.isDirectory()) {
+                        subDirectory = new File(removeExtension(shortcut.getRealFilename()));
+                    } else
+                        continue;
+                }
+                categories.add(new LocalCategory(catalog, subDirectory));
             }
-            categories.add(new LocalCategory(catalog, subDirectory));
         }
         return categories;
     }
@@ -127,15 +130,18 @@ public class LocalCategory implements Category {
 
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<>();
-        for (File file : directory.listFiles(new FileFileFilter())) {
-            if (isPotentialValidLink(file)) {
-                WindowsShortcut shortcut = new WindowsShortcut(file);
-                if (shortcut.isFile())
-                    file = new File(shortcut.getRealFilename());
-                else
-                    continue;
+        File[] files = directory.listFiles(new FileFileFilter());
+        if(files != null) {
+            for (File file : files) {
+                if (isPotentialValidLink(file)) {
+                    WindowsShortcut shortcut = new WindowsShortcut(file);
+                    if (shortcut.isFile())
+                        file = new File(shortcut.getRealFilename());
+                    else
+                        continue;
+                }
+                routes.add(new LocalRoute(file));
             }
-            routes.add(new LocalRoute(file));
         }
         return routes;
     }

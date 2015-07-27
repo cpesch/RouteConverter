@@ -134,7 +134,7 @@ public class BatchPositionAugmenter {
         return Application.getInstance().getContext().getNotificationManager();
     }
 
-    private class CancelAction extends AbstractAction {
+    private static class CancelAction extends AbstractAction {
         private boolean canceled = false;
 
         public boolean isCanceled() {

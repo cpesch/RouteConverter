@@ -266,7 +266,7 @@ class PositionReducer {
             if (visible) {
                 // if the previous position was not visible but the current position is visible:
                 // add the previous position to render transition from non-visible to visible area
-                if (!previousPositionVisible && previousPosition != null)
+                if (!previousPositionVisible)
                     result.add(previousPosition);
                 result.add(position);
             } else {

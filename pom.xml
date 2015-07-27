@@ -55,6 +55,7 @@
         <brouter.version>1.2</brouter.version>
         <graphhopper.version>0.4.1</graphhopper.version>
         <mapsforge.version>0.5.1</mapsforge.version>
+        <httpclient.version>4.5</httpclient.version>
     </properties>
 
     <build>
@@ -101,36 +102,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.1</version>
-                    <configuration>
-                        <doctitle>RouteConverter ${project.version} API</doctitle>
-                        <windowtitle>RouteConverter ${project.version} API</windowtitle>
-                        <encoding>Cp1252</encoding>
-                        <header>Conversion API</header>
-                        <bottom>Created by Christian Pesch</bottom>
-                        <detectLinks>true</detectLinks>
-                        <excludePackageNames>
-                            slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.earthtools*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.maps*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
-                        </excludePackageNames>
-                        <groups>
-                            <group>
-                                <title>Base</title>
-                                <packages>slash.navigation.base</packages>
-                            </group>
-                            <group>
-                                <title>Formats</title>
-                                <packages>
-                                    slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.fpl:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.url:slash.navigation.viamichelin:slash.navigation.wbt:slash.navigation.zip
-                                </packages>
-                            </group>
-                            <group>
-                                <title>Utilities</title>
-                                <packages>
-                                    slash.common.io:slash.common.log:slash.common.system:slash.common.type:slash.navigation.common
-                                </packages>
-                            </group>
-                        </groups>
-                    </configuration>
+                    <version>2.10.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>1.2.11</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -199,11 +176,72 @@
         </pluginManagement>
     </build>
 
+    <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doctitle>RouteConverter ${project.version} API</doctitle>
+                    <windowtitle>RouteConverter ${project.version} API</windowtitle>
+                    <encoding>Cp1252</encoding>
+                    <header>Conversion API</header>
+                    <bottom>Created by Christian Pesch</bottom>
+                    <detectLinks>true</detectLinks>
+                    <excludePackageNames>
+                        slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.maps*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
+                    </excludePackageNames>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                        <configuration>
+                            <groups>
+                                <group>
+                                    <title>Base</title>
+                                    <packages>
+                                        slash.navigation.base
+                                    </packages>
+                                </group>
+                                <group>
+                                    <title>Formats</title>
+                                    <packages>
+                                        slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.fpl:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.url:slash.navigation.viamichelin:slash.navigation.wbt:slash.navigation.zip
+                                    </packages>
+                                </group>
+                                <group>
+                                    <title>Utilities</title>
+                                    <packages>
+                                        slash.common.io:slash.common.log:slash.common.system:slash.common.type:slash.navigation.common
+                                    </packages>
+                                </group>
+                            </groups>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -245,7 +283,6 @@
         <module>datasource</module>
         <module>download</module>
         <module>download-tools</module>
-        <module>earthtools</module>
         <module>elevation-service</module>
         <module>feedback</module>
         <module>geonames</module>

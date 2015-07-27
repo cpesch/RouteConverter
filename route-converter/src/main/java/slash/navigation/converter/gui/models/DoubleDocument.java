@@ -37,8 +37,7 @@ public class DoubleDocument extends PlainDocument {
     public DoubleDocument(double aDouble) {
         try {
             // eliminate fraction if possible
-            String string = Math.round(aDouble) == new Double(aDouble).intValue() ?
-                    Integer.toString(new Double(aDouble).intValue()) : Double.toString(aDouble);
+            String string = Math.round(aDouble) == (int) aDouble ? Integer.toString((int) aDouble) : Double.toString(aDouble);
             super.insertString(0, string, null);
         } catch (BadLocationException e) {
             // intentionally left empty

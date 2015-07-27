@@ -77,6 +77,8 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
                             return;
                         handleRemove(e.getFirstRow(), e.getLastRow());
                         break;
+                    default:
+                        throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
                 }
             }
         });

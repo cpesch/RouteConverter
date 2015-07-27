@@ -384,7 +384,7 @@ public abstract class BaseMapView implements MapView {
                         if (haveToRepaintRouteImmediately ||
                                 haveToReplaceRoute ||
                                 (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
-                            log.fine("Woke up to update route: " + routeUpdateReason +
+                            log.info("Woke up to update route: " + routeUpdateReason +
                                     " haveToUpdateRoute:" + haveToUpdateRoute +
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
@@ -1076,10 +1076,9 @@ public abstract class BaseMapView implements MapView {
 
         insertWaypointsExecutor.execute(new Runnable() {
             public void run() {
-                for (Integer key : addToQueue.keySet()) {
-                    PositionPair pair = addToQueue.get(key);
-                    NavigationPosition origin = pair.getFirst();
-                    NavigationPosition destination = pair.getSecond();
+                for (Map.Entry<Integer, PositionPair> entry : addToQueue.entrySet()) {
+                    NavigationPosition origin = entry.getValue().getFirst();
+                    NavigationPosition destination = entry.getValue().getSecond();
                     executeScript(mode +
                             "({" + "origin: new google.maps.LatLng(" + origin.getLatitude() + "," + origin.getLongitude() + "), " +
                             "destination: new google.maps.LatLng(" + destination.getLatitude() + "," + destination.getLongitude() + "), " +
@@ -1087,7 +1086,7 @@ public abstract class BaseMapView implements MapView {
                             "avoidFerries: " + mapViewCallback.isAvoidFerries() + ", " +
                             "avoidHighways: " + mapViewCallback.isAvoidHighways() + ", " +
                             "avoidTolls: " + mapViewCallback.isAvoidTolls() + ", " +
-                            "region: \"" + Locale.getDefault().getCountry().toLowerCase() + "\"}, " + key + ");\n");
+                            "region: \"" + Locale.getDefault().getCountry().toLowerCase() + "\"}, " + entry.getKey() + ");\n");
                     try {
                         sleep(preferences.getInt("insertWaypointsSegmentTimeout", 1000));
                     } catch (InterruptedException e) {
