@@ -42,7 +42,6 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
@@ -1110,7 +1109,6 @@ public class RouteConverter extends SingleFrameApplication {
         getElevationServiceFacade().addElevationService(automaticElevationService);
         getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
 
-        getElevationServiceFacade().addElevationService(new EarthToolsService());
         getElevationServiceFacade().addElevationService(new GeoNamesService());
         getElevationServiceFacade().addElevationService(new GoogleMapsService());
 

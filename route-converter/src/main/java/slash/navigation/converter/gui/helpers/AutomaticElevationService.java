@@ -100,7 +100,6 @@ public class AutomaticElevationService implements ElevationService {
             PRIORITY.put("NASA SRTM 3", 4);
             PRIORITY.put("GeoNames", 5);
             PRIORITY.put("Google Maps", 6);
-            PRIORITY.put("EarthTools", 7);
         }
 
         private int getPriority(ElevationService elevationService) {

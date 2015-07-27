@@ -20,7 +20,6 @@ bin\xjc -verbose -dtd -d generated -p slash.navigation.viamichelin.binding c:\p4
 bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\p4\RouteConverter-git\geonames\src\main\doc\geonames.xsd
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\navigation-formats\src\main\doc\klicktel\klicktel.xsd
-bin\xjc -verbose -d generated -p slash.navigation.earthtools.binding c:\p4\RouteConverter\earthtools\src\main\doc\height.xsd
 bin\xjc -verbose -d generated -p slash.navigation.googlemaps.elevation c:\p4\RouteConverter\googlemaps\src\main\doc\elevation.xsd
 bin\xjc -verbose -d generated -p slash.navigation.googlemaps.geocode c:\p4\RouteConverter\googlemaps\src\main\doc\geocode.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\datasource\src\main\java -p slash.navigation.datasources.binding c:\p4\RouteConverter\datasource\src\main\doc\datasource-catalog.xsd
