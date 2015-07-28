@@ -822,7 +822,10 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public void saveFile() {
-        saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false, false);
+        if (urlModel.getShortUrl() != null)
+            saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false, false);
+        else
+            saveAsFile();
     }
 
     public void saveAsFile() {

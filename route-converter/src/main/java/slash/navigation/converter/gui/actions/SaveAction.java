@@ -39,9 +39,6 @@ public class SaveAction extends FrameAction {
     }
 
     public void run() {
-        if (convertPanel.getUrlModel().getShortUrl() != null)
-            convertPanel.saveFile();
-        else
-            convertPanel.saveAsFile();
+        convertPanel.saveFile();
     }
 }
