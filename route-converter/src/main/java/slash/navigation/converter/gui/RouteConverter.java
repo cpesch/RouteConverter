@@ -32,7 +32,6 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.mapview.BaseMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.models.*;
@@ -369,6 +368,11 @@ public class RouteConverter extends SingleFrameApplication {
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 getConvertPanel().initializeMapView(getMapView());
+                invokeLater(new Runnable() {
+                    public void run() {
+                        getMapView().resize();
+                    }
+                });
             }
         });
     }
