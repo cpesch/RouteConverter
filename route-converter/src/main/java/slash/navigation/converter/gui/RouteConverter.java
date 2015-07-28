@@ -58,7 +58,6 @@ import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
