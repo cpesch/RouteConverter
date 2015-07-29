@@ -312,6 +312,7 @@ public class RouteConverter extends SingleFrameApplication {
                 invokeLater(new Runnable() {
                     public void run() {
                         openFrame(contentPane);
+                        getMapView().resize();
                     }
                 });
             }
@@ -367,11 +368,6 @@ public class RouteConverter extends SingleFrameApplication {
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 getConvertPanel().initializeMapView(getMapView());
-                invokeLater(new Runnable() {
-                    public void run() {
-                        getMapView().resize();
-                    }
-                });
             }
         });
     }
