@@ -62,6 +62,11 @@ public class FrameMenu {
         positionMenu.add(createItem("new-position"));
         positionMenu.add(createItem("delete"));
         positionMenu.addSeparator();
+        positionMenu.add(createItem("top"));
+        positionMenu.add(createItem("up"));
+        positionMenu.add(createItem("down"));
+        positionMenu.add(createItem("bottom"));
+        positionMenu.addSeparator();
         positionMenu.add(createItem("find-place"));
         JMenu completeMenu = createMenu("complete");
         completeMenu.add(createItem("add-coordinates"));

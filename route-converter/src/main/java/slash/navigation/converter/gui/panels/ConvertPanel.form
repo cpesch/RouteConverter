@@ -272,11 +272,10 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <focusable value="false"/>
+              <focusable value="true"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/top.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-top-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="top-action-tooltip"/>
             </properties>
           </component>
           <component id="4ba64" class="javax.swing.JButton" binding="buttonMovePositionUp">
@@ -288,7 +287,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/up.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="up-action-tooltip"/>
             </properties>
           </component>
           <component id="354f7" class="javax.swing.JButton" binding="buttonNewPosition">
@@ -324,7 +323,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/down.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-down-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="down-action-tooltip"/>
             </properties>
           </component>
           <component id="82808" class="javax.swing.JButton" binding="buttonMovePositionToBottom">
@@ -336,7 +335,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/bottom.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="bottom-action-tooltip"/>
             </properties>
           </component>
         </children>

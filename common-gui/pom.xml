@@ -29,6 +29,11 @@
             <classifier>tests</classifier>
         </dependency>
         <dependency>
+            <groupId>com.bulenkov.iconloader</groupId>
+            <artifactId>iconloader</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
             <classifier>stripped</classifier>

@@ -46,9 +46,6 @@ public class TablePopupMenu extends AbstractTablePopupMenu {
         menu.add(createItem("paste"));
         menu.add(createItem("select-all"));
         menu.addSeparator();
-        menu.add(createItem("new-position"));
-        menu.add(createItem("delete"));
-        menu.addSeparator();
         menu.add(createItem("find-place"));
         JMenu completeMenu = createMenu("complete");
         completeMenu.add(createItem("add-coordinates"));

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.panels;
 
+import com.bulenkov.iconloader.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -198,53 +199,6 @@ public class ConvertPanel implements PanelInTab {
         new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
         new ElevationToJLabelAdapter(getPositionsModel(), labelOverallAscend, labelOverallDescend);
 
-        registerAction(buttonNewPositionList, "new-positionlist");
-        registerAction(buttonRenamePositionList, "rename-positionlist");
-        registerAction(buttonDeletePositionList, "delete-positionlist");
-
-        buttonMovePositionToTop.addActionListener(new FrameAction() {
-            public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    getPositionsModel().top(selectedRows);
-                    selectPositions(selectedRows);
-                }
-            }
-        });
-
-        buttonMovePositionUp.addActionListener(new FrameAction() {
-            public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    getPositionsModel().up(selectedRows, 1);
-                    selectPositions(increment(selectedRows, -1));
-                }
-            }
-        });
-
-        buttonNewPosition.addActionListener(r.getContext().getActionManager().get("new-position"));
-        buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete"));
-
-        buttonMovePositionDown.addActionListener(new FrameAction() {
-            public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    getPositionsModel().down(selectedRows, 1);
-                    selectPositions(increment(selectedRows, +1));
-                }
-            }
-        });
-
-        buttonMovePositionToBottom.addActionListener(new FrameAction() {
-            public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    getPositionsModel().bottom(selectedRows);
-                    selectPositions(selectedRows);
-                }
-            }
-        });
-
         formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
                 handleRoutesUpdate();
@@ -279,7 +233,7 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                actionManager.run("delete");
+                r.getContext().getActionManager().run("delete");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
@@ -294,6 +248,11 @@ public class ConvertPanel implements PanelInTab {
         }, getKeyStroke(VK_HOME, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
+                r.getContext().getActionManager().run("top");
+            }
+        }, getKeyStroke(VK_HOME, CTRL_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 int lastRow = tablePositions.getRowCount() - 1;
                 selectAndScrollToPosition(tablePositions, lastRow, lastRow);
             }
@@ -303,6 +262,21 @@ public class ConvertPanel implements PanelInTab {
                 selectAndScrollToPosition(tablePositions, tablePositions.getRowCount() - 1, tablePositions.getSelectedRow());
             }
         }, getKeyStroke(VK_END, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                r.getContext().getActionManager().run("bottom");
+            }
+        }, getKeyStroke(VK_END, CTRL_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                r.getContext().getActionManager().run("up");
+            }
+        }, getKeyStroke(VK_UP, CTRL_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                r.getContext().getActionManager().run("down");
+            }
+        }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(ON);
         TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());
@@ -327,12 +301,21 @@ public class ConvertPanel implements PanelInTab {
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
+
+        registerAction(buttonNewPositionList, "new-positionlist");
+        registerAction(buttonRenamePositionList, "rename-positionlist");
+        registerAction(buttonDeletePositionList, "delete-positionlist");
+
         actionManager.register("undo", new UndoAction());
         actionManager.register("redo", new RedoAction());
         actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
-        actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
         actionManager.register("new-position", new AddPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
+        actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
+        actionManager.register("top", new TopAction(this));
+        actionManager.register("up", new UpAction(this));
+        actionManager.register("down", new DownAction(this));
+        actionManager.register("bottom", new BottomAction(this));
         actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
         actionManager.register("paste", new PasteAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
@@ -356,6 +339,24 @@ public class ConvertPanel implements PanelInTab {
         registerKeyStroke(tablePositions, "copy");
         registerKeyStroke(tablePositions, "cut");
         registerKeyStroke(tablePositions, "paste");
+
+        buttonNewPosition.addActionListener(r.getContext().getActionManager().get("new-position"));
+        buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete"));
+        buttonMovePositionToTop.addActionListener(r.getContext().getActionManager().get("top"));
+        buttonMovePositionUp.addActionListener(r.getContext().getActionManager().get("up"));
+        buttonMovePositionDown.addActionListener(r.getContext().getActionManager().get("down"));
+        buttonMovePositionToBottom.addActionListener(r.getContext().getActionManager().get("bottom"));
+
+        buttonNewPosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/new-position-action.png"));
+        buttonDeletePosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/delete-action.png"));
+        buttonMovePositionToTop.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/top.png"));
+        buttonMovePositionUp.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/up.png"));
+        buttonMovePositionDown.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/down.png"));
+        buttonMovePositionToBottom.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/bottom.png"));
+
+        buttonNewPositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/new-route.png"));
+        buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
+        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/remove-route.png"));
 
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -1084,7 +1085,7 @@ public class ConvertPanel implements PanelInTab {
         return recentUrlsModel;
     }
 
-    private void selectPositions(int[] selectedPositions) {
+    public void selectPositions(int[] selectedPositions) {
         clearSelection();
         tablePositions.getSelectionModel().setValueIsAdjusting(true);
         new ContinousRange(selectedPositions, new RangeOperation() {
@@ -1272,18 +1273,17 @@ public class ConvertPanel implements PanelInTab {
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel4, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonMovePositionToTop = new JButton();
-        buttonMovePositionToTop.setFocusable(false);
+        buttonMovePositionToTop.setFocusable(true);
         buttonMovePositionToTop.setHideActionText(true);
         buttonMovePositionToTop.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/top.png")));
-        buttonMovePositionToTop.setText("");
-        buttonMovePositionToTop.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-top-tooltip"));
+        buttonMovePositionToTop.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("top-action-tooltip"));
         panel4.add(buttonMovePositionToTop, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionUp = new JButton();
         buttonMovePositionUp.setFocusable(false);
         buttonMovePositionUp.setHideActionText(true);
         buttonMovePositionUp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/up.png")));
         buttonMovePositionUp.setText("");
-        buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-up-tooltip"));
+        buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("up-action-tooltip"));
         panel4.add(buttonMovePositionUp, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonNewPosition = new JButton();
         buttonNewPosition.setFocusable(false);
@@ -1304,14 +1304,14 @@ public class ConvertPanel implements PanelInTab {
         buttonMovePositionDown.setHideActionText(true);
         buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/down.png")));
         buttonMovePositionDown.setText("");
-        buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-down-tooltip"));
+        buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("down-action-tooltip"));
         panel4.add(buttonMovePositionDown, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionToBottom = new JButton();
         buttonMovePositionToBottom.setFocusable(false);
         buttonMovePositionToBottom.setHideActionText(true);
         buttonMovePositionToBottom.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/bottom.png")));
         buttonMovePositionToBottom.setText("");
-        buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-bottom-tooltip"));
+        buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("bottom-action-tooltip"));
         panel4.add(buttonMovePositionToBottom, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
         this.$$$loadLabelText$$$(label9, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("positions"));

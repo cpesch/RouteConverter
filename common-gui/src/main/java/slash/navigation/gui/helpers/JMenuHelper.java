@@ -20,6 +20,7 @@
 
 package slash.navigation.gui.helpers;
 
+import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.gui.Application;
 
 import javax.swing.*;
@@ -29,7 +30,6 @@ import java.util.ResourceBundle;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Platform.isMac;
-import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * A helper for simplified {@link JMenu} operations.
@@ -116,8 +116,11 @@ public class JMenuHelper {
         if (keystroke != null)
             item.setAccelerator(getKeyStroke(keystroke));
         String iconUrl = getOptionalString(name + "-action-icon");
-        if (iconUrl != null)
-            item.setIcon(loadIcon(iconUrl));
+        if (iconUrl != null) {
+            Icon icon = IconLoader.getIcon(iconUrl);
+            item.setIcon(icon);
+            item.setDisabledIcon(icon);
+        }
     }
 
     public static void registerAction(AbstractButton component, String name) {
