@@ -294,16 +294,6 @@ public class Transfer {
         return builder.toString();
     }
 
-    public static String asUtf8(String string) {
-        try {
-            byte[] bytes = string.getBytes(UTF8_ENCODING);
-            return new String(bytes);
-        } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e);
-            return string;
-        }
-    }
-
     public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;

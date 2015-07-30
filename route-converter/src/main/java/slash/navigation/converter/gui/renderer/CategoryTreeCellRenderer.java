@@ -20,14 +20,13 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.routes.impl.CategoryTreeNode;
+import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
-
-import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * Renders the {@link CategoryTreeNode} names.
@@ -37,19 +36,19 @@ import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
     public CategoryTreeCellRenderer() {
-        setOpenIcon(loadIcon("slash/navigation/converter/gui/16/folder-open.png"));
-        setClosedIcon(loadIcon("slash/navigation/converter/gui/16/folder.png"));
+        setOpenIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-open.png"));
+        setClosedIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/folder.png"));
         setLeafIcon(getClosedIcon());
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-        if(value instanceof CategoryTreeNode) {
+        if (value instanceof CategoryTreeNode) {
             CategoryTreeNode categoryTreeNode = (CategoryTreeNode) value;
             String name = categoryTreeNode.getName();
             if (name == null)
                 name = RouteConverter.getBundle().getString("no-name");
-            else if(categoryTreeNode.isRemoteRoot())
+            else if (categoryTreeNode.isRemoteRoot())
                 name = RouteConverter.getBundle().getString("remote-catalog");
 
             label.setText(name);

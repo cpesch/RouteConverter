@@ -26,12 +26,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.awt.Frame.MAXIMIZED_HORIZ;
-import static java.awt.Frame.MAXIMIZED_VERT;
-import static java.awt.Frame.NORMAL;
+import static java.awt.Frame.*;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.logging.Logger.getLogger;
@@ -39,7 +38,6 @@ import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
-import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -80,7 +78,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(loadIcon(iconName).getImage());
+        frame.setIconImage(loadImage(iconName));
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
@@ -88,6 +86,11 @@ public abstract class SingleFrameApplication extends Application {
             frame.getRootPane().setJMenuBar(menuBar);
             getContext().setMenuBar(menuBar);
         }
+    }
+
+    private Image loadImage(String name) {
+        URL iconURL = getClass().getResource(name);
+        return new ImageIcon(iconURL).getImage();
     }
 
     protected void openFrame(JPanel contentPane) {

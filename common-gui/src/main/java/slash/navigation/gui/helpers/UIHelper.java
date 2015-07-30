@@ -22,7 +22,6 @@ package slash.navigation.gui.helpers;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -34,7 +33,6 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
-import static slash.common.system.Version.parseVersionFromManifest;
 
 /**
  * Helpers used throughout the UI
@@ -98,11 +96,6 @@ public class UIHelper {
 
     public static void stopWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(DEFAULT_CURSOR));
-    }
-
-    public static ImageIcon loadIcon(String name) {
-        URL iconURL = UIHelper.class.getClassLoader().getResource(name);
-        return iconURL != null ? new ImageIcon(iconURL) : null;
     }
 
     public static JFileChooser createJFileChooser() {
