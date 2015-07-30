@@ -36,7 +36,7 @@ public class InputOutput {
 
     public static void copyAndClose(InputStream input, OutputStream output) throws IOException {
         try {
-            copyLarge(input, output);
+            copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
         } finally {
             try {
                 closeQuietly(input);
@@ -48,7 +48,7 @@ public class InputOutput {
 
     public static void copyAndClose(Reader reader, Writer writer) throws IOException {
         try {
-            copyLarge(reader, writer);
+            copyLarge(reader, writer, new char[DEFAULT_BUFFER_SIZE]);
         } finally {
             try {
                 closeQuietly(reader);
