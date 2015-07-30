@@ -41,8 +41,8 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Externalization.extractFile;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
-import static slash.common.io.InputOutput.copy;
 import static slash.common.system.Platform.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 
@@ -301,7 +301,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babel-read-source", "." + getFormatName(), getTemporaryDirectory());
-            copy(source, new FileOutputStream(sourceFile));
+            copyAndClose(source, new FileOutputStream(sourceFile));
             targetFile = createTempFile("babel-read-target", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
@@ -443,7 +443,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            copyAndClose(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
@@ -462,7 +462,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            copyAndClose(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);

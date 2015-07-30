@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Long.MAX_VALUE;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.common.io.InputOutput.copy;
+import static slash.common.io.InputOutput.copyAndClose;
 
 /**
  * Provides externalization functionality.
@@ -74,7 +74,7 @@ public class Externalization {
 
         log.info("Extracting " + fileName + " to " + target);
         FileOutputStream output = new FileOutputStream(target);
-        copy(input, output);
+        copyAndClose(input, output);
         if (!target.setLastModified(lastModifiedInClassPath))
             log.warning("Cannot set last modified date for " + target);
         return target;
@@ -89,7 +89,7 @@ public class Externalization {
         log.info("Extracting " + fileName + " to " + target);
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
-        copy(reader, writer);
+        copyAndClose(reader, writer);
         return target;
     }
 }

@@ -35,7 +35,7 @@ import static java.util.logging.Logger.getLogger;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Files.setLastModified;
 import static slash.common.io.Files.writePartialFile;
-import static slash.common.io.InputOutput.copy;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -68,7 +68,7 @@ public class GetRangePerformer implements ActionPerformer {
             closeQuietly(inputStream);
         } else if (request.isOk()){
             // HTTP Range not supported
-            copy(inputStream, new FileOutputStream(getDownload().getFile().getFile()));
+            copyAndClose(inputStream, new FileOutputStream(getDownload().getFile().getFile()));
             setLastModified(getDownload().getFile().getFile(), request.getLastModified());
         }
         request.release();

@@ -25,16 +25,12 @@ import slash.navigation.rest.Get;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routes.Category;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertNotNull;
+import static org.apache.commons.io.IOUtils.copyLarge;
 import static org.junit.Assert.assertTrue;
-import static slash.common.io.InputOutput.copy;
 
 public abstract class BaseRemoteCatalogTest {
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
@@ -72,11 +68,11 @@ public abstract class BaseRemoteCatalogTest {
 
     protected File getUrlAsFile(String url) throws IOException {
         Get get = new Get(url);
-        InputStream inputStream = get.executeAsStream();
-        assertNotNull(inputStream);
         File tempFile = createTempFile("url-as-file", ".bin");
         tempFile.deleteOnExit();
-        copy(inputStream, new FileOutputStream(tempFile));
+        try (InputStream inputStream = get.executeAsStream(); OutputStream outputStream = new FileOutputStream(tempFile)) {
+            copyLarge(inputStream, outputStream);
+        }
         return tempFile;
     }
 }

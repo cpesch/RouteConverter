@@ -32,11 +32,11 @@ import static org.apache.commons.io.IOUtils.copyLarge;
  */
 
 public class InputOutput {
-    public static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
+    public static final int DEFAULT_BUFFER_SIZE = 4 * 1024;
 
-    public static void copy(InputStream input, OutputStream output) throws IOException {
+    public static void copyAndClose(InputStream input, OutputStream output) throws IOException {
         try {
-            copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
+            copyLarge(input, output);
         } finally {
             try {
                 closeQuietly(input);
@@ -46,9 +46,9 @@ public class InputOutput {
         }
     }
 
-    public static void copy(Reader reader, Writer writer) throws IOException {
+    public static void copyAndClose(Reader reader, Writer writer) throws IOException {
         try {
-            copyLarge(reader, writer, new char[DEFAULT_BUFFER_SIZE]);
+            copyLarge(reader, writer);
         } finally {
             try {
                 closeQuietly(reader);
@@ -60,7 +60,7 @@ public class InputOutput {
 
     public static byte[] readBytes(InputStream input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
+        copyAndClose(input, output);
         return output.toByteArray();
     }
 }
