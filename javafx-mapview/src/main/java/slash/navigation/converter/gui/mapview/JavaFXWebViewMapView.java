@@ -167,8 +167,15 @@ public class JavaFXWebViewMapView extends BaseMapView {
     }
 
     protected Integer getCurrentZoom() {
-        Double zoom = parseDouble(executeScriptWithResult("getZoom();"));
-        return zoom != null ? zoom.intValue() : null;
+        try {
+            Double zoom = parseDouble(executeScriptWithResult("getZoom();"));
+            if(zoom != null)
+                return zoom.intValue();
+        }
+        catch(NumberFormatException e) {
+            // intentionally left empty
+        }
+        return null;
     }
 
     protected String getCallbacks() {
