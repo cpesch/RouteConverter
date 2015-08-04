@@ -192,16 +192,6 @@ public class EclipseSWTMapView extends BaseMapView {
         return executeScriptWithResult("return getCallbacks();");
     }
 
-    // resizing
-
-    public void resize() {
-        new Thread(new Runnable() {
-            public void run() {
-                EclipseSWTMapView.super.resize();
-            }
-        }, "BrowserResizer").start();
-    }
-
     // script execution
 
     protected void executeScript(final String script) {

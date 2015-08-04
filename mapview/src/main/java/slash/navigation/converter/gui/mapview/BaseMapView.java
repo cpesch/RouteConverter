@@ -644,17 +644,21 @@ public abstract class BaseMapView implements MapView {
         if (!isInitialized() || !getComponent().isShowing())
             return;
 
-        synchronized (notificationMutex) {
-            // if map is not visible remember to update and resize it again
-            // once the map becomes visible again
-            if (!isVisible()) {
-                hasBeenResizedToInvisible = true;
-            } else if (hasBeenResizedToInvisible) {
-                hasBeenResizedToInvisible = false;
-                update(true, false);
+        new Thread(new Runnable() {
+            public void run() {
+                synchronized (notificationMutex) {
+                    // if map is not visible remember to update and resize it again
+                    // once the map becomes visible again
+                    if (!isVisible()) {
+                        hasBeenResizedToInvisible = true;
+                    } else if (hasBeenResizedToInvisible) {
+                        hasBeenResizedToInvisible = false;
+                        update(true, false);
+                    }
+                    resizeMap();
+                }
             }
-            resizeMap();
-        }
+        }, "BrowserResizer").start();
     }
 
     private int lastWidth = -1, lastHeight = -1;

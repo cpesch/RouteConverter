@@ -310,7 +310,6 @@ public class RouteConverter extends SingleFrameApplication {
                 invokeLater(new Runnable() {
                     public void run() {
                         openFrame(contentPane);
-                        getMapView().resize();
                     }
                 });
             }
