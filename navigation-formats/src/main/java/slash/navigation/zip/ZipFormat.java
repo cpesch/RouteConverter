@@ -85,6 +85,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
+                if(entry.isDirectory())
+                    continue;
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
                 buffer.mark(size);
