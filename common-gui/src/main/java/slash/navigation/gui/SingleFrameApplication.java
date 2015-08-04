@@ -89,7 +89,7 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     private Image loadImage(String name) {
-        URL iconURL = getClass().getResource(name);
+        URL iconURL = SingleFrameApplication.class.getResource(name);
         return new ImageIcon(iconURL).getImage();
     }
 

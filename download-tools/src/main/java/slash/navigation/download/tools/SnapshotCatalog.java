@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static java.lang.System.exit;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
@@ -101,7 +102,6 @@ public class SnapshotCatalog extends BaseDownloadTool {
         setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
         reset = line.hasOption(RESET_ARGUMENT);
         snapshot();
-        System.exit(0);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
@@ -123,5 +123,6 @@ public class SnapshotCatalog extends BaseDownloadTool {
 
     public static void main(String[] args) throws Exception {
         new SnapshotCatalog().run(args);
+        exit(0);
     }
 }

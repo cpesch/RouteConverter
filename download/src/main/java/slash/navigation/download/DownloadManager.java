@@ -54,7 +54,7 @@ import static slash.navigation.download.State.*;
 
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
-    static final int WAIT_TIMEOUT = 60 * 1000;
+    static final int WAIT_TIMEOUT = 2 * 60 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
 
     private final File queueFile;

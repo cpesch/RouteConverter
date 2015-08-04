@@ -39,6 +39,7 @@ import static java.lang.String.format;
 import static org.apache.commons.io.IOUtils.copyLarge;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.encodeFileName;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
@@ -157,7 +158,7 @@ public class LocalCategory implements Category {
 
     public Route createRoute(String description, String url) throws IOException {
         File destination = new File(directory, encodeFileName(description));
-        try (PrintWriter writer = new PrintWriter(destination)) {
+        try (PrintWriter writer = new PrintWriter(destination, UTF8_ENCODING)) {
             writer.println("[InternetShortcut]");
             writer.println("URL=" + url);
         }

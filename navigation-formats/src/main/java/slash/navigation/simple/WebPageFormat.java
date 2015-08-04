@@ -77,7 +77,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")));
+        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")), UTF8_ENCODING);
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();

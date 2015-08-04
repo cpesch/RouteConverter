@@ -582,7 +582,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         //bytelength
         byteBuffer.putLong(0); //filled at the end
         byteBuffer.putInt(mapName.length()); //textlänge
-        byteBuffer.put(mapName.getBytes()); //3 bytes text
+        byteBuffer.put(mapName.getBytes(UTF8_ENCODING)); //3 bytes text
 
         byteBuffer.putInt(timeStamp);
         byteBuffer.put(rawData, 0, 4);
@@ -634,7 +634,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 
         SimpleDateFormat dateFormat = new SimpleDateFormat("'R'yyyyMMdd'-'HH:mm:ss");
         String date = dateFormat.format(System.currentTimeMillis());
-        byteArrayOutputStream.write(date.getBytes());
+        byteArrayOutputStream.write(date.getBytes(UTF8_ENCODING));
 
 
         // 4 Byte Pointcount, max. 255 Points with this style

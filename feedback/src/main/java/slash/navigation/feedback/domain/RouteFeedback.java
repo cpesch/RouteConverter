@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
@@ -231,11 +232,11 @@ public class RouteFeedback {
 
     public String sendChecksums(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String filterUrl) throws IOException {
         String xml = toXml(dataSource, fileToFragments, filterUrl);
-        log.info(format("Sending checksums for %s filtered with %s:\n%s", fileToFragments, filterUrl, xml));
+        log.info(format("Sending checksums for %s filtered with %s:%n%s", fileToFragments, filterUrl, xml));
         String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
         Put request = new Put(dataSourcesUrl, credentials);
         request.setAccept(APPLICATION_JSON);
-        request.addFile("file", xml.getBytes());
+        request.addFile("file", xml.getBytes(UTF8_ENCODING));
 
         String result = request.executeAsString();
         if (request.isUnAuthorized())
@@ -243,7 +244,7 @@ public class RouteFeedback {
         if (!request.isSuccessful())
             throw new IOException("PUT on " + dataSourcesUrl + " for data source " + dataSource + " not successful: " + result);
 
-        log.info(format("Sent checksum for %s filtered with %s with result:\n%s", fileToFragments, filterUrl, result));
+        log.info(format("Sent checksum for %s filtered with %s with result:%n%s", fileToFragments, filterUrl, result));
         return result;
     }
 }

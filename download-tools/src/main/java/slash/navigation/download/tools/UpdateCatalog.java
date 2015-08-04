@@ -45,10 +45,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
+import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
@@ -320,17 +322,17 @@ public class UpdateCatalog extends BaseDownloadTool {
 
     private String updateUris(DatasourceType dataSourceType) throws IOException {
         String xml = toXml(dataSourceType);
-        log.info(format("Updating URIs:\n%s", xml));
+        log.info(format("Updating URIs:%n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
-        request.addFile("file", xml.getBytes());
+        request.addFile("file", xml.getBytes(UTF8_ENCODING));
         request.setAccept(APPLICATION_JSON);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
         try {
             result = request.executeAsString();
-            log.info(format("Updated URIs with result:\n%s", result));
+            log.info(format("Updated URIs with result:%n%s", result));
             updateCount += getDownloadableCount(dataSourceType);
         }
         catch(Exception e) {
@@ -347,7 +349,6 @@ public class UpdateCatalog extends BaseDownloadTool {
         setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
         mirror = new java.io.File(line.getOptionValue(MIRROR_ARGUMENT));
         update();
-        System.exit(0);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
@@ -375,5 +376,6 @@ public class UpdateCatalog extends BaseDownloadTool {
 
     public static void main(String[] args) throws Exception {
         new UpdateCatalog().run(args);
+        exit(0);
     }
 }

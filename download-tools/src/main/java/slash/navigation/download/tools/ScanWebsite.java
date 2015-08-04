@@ -47,9 +47,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.lang.System.exit;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
@@ -204,17 +206,17 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private String addUris(DataSource dataSource, Collection<String> uris) throws IOException {
         String xml = toXml(dataSource, uris, type);
-        log.info(format("Adding URIs:\n%s", xml));
+        log.info(format("Adding URIs:%n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
-        request.addFile("file", xml.getBytes());
+        request.addFile("file", xml.getBytes(UTF8_ENCODING));
         request.setAccept(APPLICATION_JSON);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
         try {
             result = request.executeAsString();
-            log.info(format("Added URIs with result:\n%s", result));
+            log.info(format("Added URIs with result:%n%s", result));
             addCount += uris.size();
         }
         catch(Exception e) {
@@ -225,16 +227,16 @@ public class ScanWebsite extends BaseDownloadTool {
 
     private String removeUris(DataSource dataSource, Set<String> uris) throws IOException {
         String xml = toXml(dataSource, uris, type);
-        log.info(format("Removing URIs:\n%s", xml));
+        log.info(format("Removing URIs:%n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
-        request.addFile("file", xml.getBytes());
+        request.addFile("file", xml.getBytes(UTF8_ENCODING));
         request.setAccept(APPLICATION_JSON);
 
         String result = null;
         try {
             result = request.executeAsString();
-            log.info(format("Removed URIs with result:\n%s", result));
+            log.info(format("Removed URIs with result:%n%s", result));
             removeCount += uris.size();
         }
         catch(Exception e) {
@@ -262,7 +264,6 @@ public class ScanWebsite extends BaseDownloadTool {
         setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
         setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
         scan();
-        System.exit(0);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
@@ -300,5 +301,6 @@ public class ScanWebsite extends BaseDownloadTool {
 
     public static void main(String[] args) throws Exception {
         new ScanWebsite().run(args);
+        exit(0);
     }
 }
