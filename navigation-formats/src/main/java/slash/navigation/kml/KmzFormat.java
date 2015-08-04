@@ -31,10 +31,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import static java.lang.String.format;
 
 /**
  * The base of all compressed Google Earth formats.
@@ -43,6 +46,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 public abstract class KmzFormat extends BaseKmlFormat {
+    private static final Logger log = Logger.getLogger(KmzFormat.class.getName());
     private KmlFormat delegate;
 
     protected KmzFormat(KmlFormat delegate) {
@@ -67,8 +71,17 @@ public abstract class KmzFormat extends BaseKmlFormat {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
         try (ZipInputStream zip = new ZipInputStream(source)) {
-            while ((zip.getNextEntry()) != null) {
-                delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
+                if(entry.isDirectory())
+                    continue;
+
+                try {
+                    delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
+                }
+                catch(Exception e) {
+                    log.info(format("Error reading %s with %s: %s, %s", entry, delegate, e.getClass(), e));
+                }
                 zip.closeEntry();
             }
         }

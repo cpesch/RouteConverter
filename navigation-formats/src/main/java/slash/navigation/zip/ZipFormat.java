@@ -23,12 +23,8 @@ package slash.navigation.zip;
 import slash.common.io.Files;
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -87,6 +83,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
             while ((entry = zip.getNextEntry()) != null) {
                 if(entry.isDirectory())
                     continue;
+
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
                 buffer.mark(size);
