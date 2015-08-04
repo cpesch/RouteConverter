@@ -55,7 +55,6 @@
         <brouter.version>1.2</brouter.version>
         <graphhopper.version>0.4.1</graphhopper.version>
         <mapsforge.version>0.5.1</mapsforge.version>
-        <httpclient.version>4.5</httpclient.version>
     </properties>
 
     <build>
