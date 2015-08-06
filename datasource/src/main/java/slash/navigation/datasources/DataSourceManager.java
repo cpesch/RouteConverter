@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -120,7 +119,6 @@ public class DataSourceManager {
 
         downloadDataSources(anEdition.getDataSources(), directory);
         this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
-        downloadManager.setLastSync(now());
     }
 
     public void downloadRoot(String url, java.io.File directory) {

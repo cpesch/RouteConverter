@@ -20,7 +20,6 @@
 
 package slash.navigation.download;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.download.executor.DownloadExecutorComparator;
 import slash.navigation.download.queue.QueuePersister;
@@ -28,11 +27,7 @@ import slash.navigation.download.queue.QueuePersister;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -54,7 +49,7 @@ import static slash.navigation.download.State.*;
 
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
-    static final int WAIT_TIMEOUT = 2 * 60 * 1000;
+    static final int WAIT_TIMEOUT = 60 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
 
     private final File queueFile;
@@ -62,7 +57,6 @@ public class DownloadManager {
     private final List<DownloadListener> downloadListeners = new CopyOnWriteArrayList<>();
     private final DownloadTableModel model = new DownloadTableModel();
     private final ThreadPoolExecutor pool;
-    private CompactCalendar lastSync;
 
     public DownloadManager(File queueFile) {
         this.queueFile = queueFile;
@@ -93,7 +87,6 @@ public class DownloadManager {
             List<Download> downloads = result.getDownloads();
             if (downloads != null)
                 model.setDownloads(downloads);
-            lastSync = result.getLastSync();
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
@@ -112,13 +105,9 @@ public class DownloadManager {
         }
     }
 
-    public void setLastSync(CompactCalendar lastSync) {
-        this.lastSync = lastSync;
-    }
-
     public void saveQueue() {
         try {
-            new QueuePersister().save(queueFile, new ArrayList<>(model.getDownloads()), lastSync);
+            new QueuePersister().save(queueFile, new ArrayList<>(model.getDownloads()));
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));

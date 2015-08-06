@@ -26,7 +26,6 @@
                 </xsd:unique>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="lastSync" type="xsd:dateTime" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="downloadType">

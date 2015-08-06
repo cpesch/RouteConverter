@@ -19,7 +19,6 @@
 */
 package slash.navigation.download.queue;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.download.*;
 import slash.navigation.download.queue.binding.*;
 
@@ -51,24 +50,18 @@ public class QueuePersister {
         } catch (JAXBException e) {
             throw new IOException("Cannot unmarshall " + file + ": " + e, e);
         }
-        return new Result(asDownloads(queueType), parseTime(queueType.getLastSync()));
+        return new Result(asDownloads(queueType));
     }
 
     public static class Result {
-        private final CompactCalendar lastSync;
         private final List<Download> downloads;
 
-        public Result(List<Download> downloads, CompactCalendar lastSync) {
+        public Result(List<Download> downloads) {
             this.downloads = downloads;
-            this.lastSync = lastSync;
         }
 
         public List<Download> getDownloads() {
             return downloads;
-        }
-
-        public CompactCalendar getLastSync() {
-            return lastSync;
         }
     }
 
@@ -100,9 +93,8 @@ public class QueuePersister {
         return new Checksum(parseTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
     }
 
-    public void save(File file, List<Download> downloads, CompactCalendar lastSync) throws IOException {
+    public void save(File file, List<Download> downloads) throws IOException {
         QueueType queueType = asQueueType(downloads);
-        queueType.setLastSync(formatTime(lastSync));
         try {
             marshal(queueType, new FileOutputStream(file));
         } catch (JAXBException e) {

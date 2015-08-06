@@ -3,7 +3,6 @@ package slash.navigation.download.queue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import slash.common.type.CompactCalendar;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
@@ -51,26 +50,22 @@ public class QueuePersisterIT {
 
     @Test
     public void testSaveAndLoadNow() throws IOException, JAXBException {
-        CompactCalendar now = now();
-        persister.save(queueFile, new ArrayList<Download>(), now);
+        persister.save(queueFile, new ArrayList<Download>());
 
         QueuePersister.Result result = persister.load(queueFile);
         assertEquals(new ArrayList<Download>(), result.getDownloads());
-        assertEquals(now, result.getLastSync());
     }
 
     @Test
     public void testSaveAndLoadDownloads() throws IOException {
-        CompactCalendar now = now();
         List<Download> downloads = new ArrayList<>();
         downloads.add(new Download("description", "url", Flatten, new FileAndChecksum(fileTarget, createChecksum()),
                 asList(new FileAndChecksum(fragmentTarget1, createChecksum()), new FileAndChecksum(fragmentTarget2, createChecksum())),
                 "etag", Downloading, tempFile));
-        persister.save(queueFile, downloads, now);
+        persister.save(queueFile, downloads);
 
         QueuePersister.Result result = persister.load(queueFile);
         assertEquals(downloads, result.getDownloads());
-        assertEquals(now, result.getLastSync());
     }
 
     private Checksum createChecksum() {

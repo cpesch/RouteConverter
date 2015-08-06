@@ -34,6 +34,11 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class DownloadTableModel extends AbstractTableModel {
+    public static final int DESCRIPTION_COLUMN = 0;
+    public static final int STATE_COLUMN = 1;
+    public static final int SIZE_COLUMN = 2;
+    public static final int DATE_COLUMN = 3;
+
     private List<Download> downloads = new ArrayList<>();
 
     public List<Download> getDownloads() {
@@ -50,7 +55,7 @@ public class DownloadTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 2;
+        return DATE_COLUMN + 1;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {

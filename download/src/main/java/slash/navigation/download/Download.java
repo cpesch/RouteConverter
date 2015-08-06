@@ -20,14 +20,18 @@
 
 package slash.navigation.download;
 
+import slash.common.type.CompactCalendar;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.io.File.createTempFile;
-import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.navigation.download.State.Queued;
+import static slash.navigation.download.State.*;
 
 /**
  * A file to download
@@ -115,29 +119,8 @@ public class Download {
         return tempFile;
     }
 
-    private static final int KILO_BYTE = 1024;
-    private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
-
-    private static String formatSize(long size) {
-        String unit;
-        if (size > 2 * MEGA_BYTE) {
-            size = size / MEGA_BYTE;
-            unit = "MByte";
-        } else if (size > 2 * KILO_BYTE) {
-            size = size / KILO_BYTE;
-            unit = "kByte";
-        } else {
-            unit = "bytes";
-        }
-        return format("%d %s", size, unit);
-    }
-
     public Integer getPercentage() {
         return expectedBytes != null ? (int) (processedBytes / (double) expectedBytes * 100.0) : null;
-    }
-
-    public String getProcessedBytesAsString() {
-        return formatSize(processedBytes);
     }
 
     public long getProcessedBytes() {
@@ -148,12 +131,28 @@ public class Download {
         this.processedBytes = processedBytes;
     }
 
-    public String getExpectedBytesAsString() {
-        return formatSize(expectedBytes);
+    public Long getExpectedBytes() {
+        return expectedBytes;
     }
 
     public void setExpectedBytes(Long expectedBytes) {
         this.expectedBytes = expectedBytes;
+    }
+
+    private static final Set<State> DOWNLOADED = new HashSet<>(asList(NotModified, Succeeded));
+
+    private Checksum getChecksum() {
+        return DOWNLOADED.contains(getState()) ? file.getActualChecksum() : file.getExpectedChecksum();
+    }
+
+    public Long getSize() {
+        Checksum checksum = getChecksum();
+        return checksum != null ? checksum.getContentLength() : null;
+    }
+
+    public CompactCalendar getLastModified() {
+        Checksum checksum = getChecksum();
+        return checksum != null ? checksum.getLastModified() : null;
     }
 
     public String toString() {
