@@ -176,7 +176,7 @@ public class MapsAndThemesDialog extends SimpleDialog {
                 column.setMaxWidth(width);
             }
             if (i == 2) {
-                int width = getMaxWidth("999 MB", 10);
+                int width = getMaxWidth("9999 MB", 10);
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             }

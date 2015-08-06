@@ -24,11 +24,11 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Download;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.download.DownloadTableModel.*;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -64,12 +65,20 @@ public class DownloadsDialog extends SimpleDialog {
 
         tableDownloads.setModel(r.getDataSourceManager().getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
-        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "state");
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "state", "size", "date");
         TableColumnModel columns = tableDownloads.getColumnModel();
         for (int i = 0; i < columns.getColumnCount(); i++) {
             TableColumn column = columns.getColumn(i);
             column.setHeaderRenderer(headerRenderer);
-            if (i == 1) {
+            if (i == SIZE_COLUMN) {
+                int width = getMaxWidth("9999 MByte", 10);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
+            } else if (i == DATE_COLUMN) {
+                int width = getMaxWidth("06.08.15", 10);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
+            } else if (i == STATE_COLUMN) {
                 int width = getMaxWidth("Downloading (1000 kByte)", 10);
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
@@ -136,6 +145,8 @@ public class DownloadsDialog extends SimpleDialog {
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableDownloads = new JTable();
+        tableDownloads.setShowHorizontalLines(false);
+        tableDownloads.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableDownloads);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 2, new Insets(2, 0, 1, 0), -1, -1));

@@ -450,6 +450,8 @@ public class BrowsePanel implements PanelInTab {
         final JScrollPane scrollPane1 = new JScrollPane();
         browsePanel.add(scrollPane1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableRoutes = new JTable();
+        tableRoutes.setShowHorizontalLines(false);
+        tableRoutes.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableRoutes);
         final JScrollPane scrollPane2 = new JScrollPane();
         browsePanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));

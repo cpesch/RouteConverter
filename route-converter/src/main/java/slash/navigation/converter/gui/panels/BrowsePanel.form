@@ -123,7 +123,10 @@
         <children>
           <component id="71613" class="javax.swing.JTable" binding="tableRoutes">
             <constraints/>
-            <properties/>
+            <properties>
+              <showHorizontalLines value="false"/>
+              <showVerticalLines value="false"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

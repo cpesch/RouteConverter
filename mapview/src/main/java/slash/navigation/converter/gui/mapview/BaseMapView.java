@@ -204,6 +204,7 @@ public abstract class BaseMapView implements MapView {
         checkCallback();
         setDegreeFormat();
         setShowCoordinates();
+        resize();
         end = currentTimeMillis();
         log.fine("Browser interaction is running after " + (end - start) + " ms");
     }
@@ -211,7 +212,6 @@ public abstract class BaseMapView implements MapView {
     protected abstract boolean isMapInitialized();
 
     protected void initializeAfterLoading() {
-        resize();
         update(true, false);
     }
 

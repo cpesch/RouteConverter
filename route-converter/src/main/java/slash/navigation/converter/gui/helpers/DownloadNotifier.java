@@ -28,6 +28,8 @@ import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+
 /**
  * Shows notifications via the {@link NotificationManager} upon {@link DownloadListener} events on {@link Download}s.
  *
@@ -52,8 +54,8 @@ public class DownloadNotifier implements DownloadListener {
             return;
 
         String message = MessageFormat.format(getBundle().getString("download-progressed"),
-                percentage != null ? percentage + "%" : download.getProcessedBytesAsString(),
-                percentage != null ? download.getExpectedBytesAsString() : "", download.getDescription());
+                percentage != null ? percentage + "%" : formatSize(download.getProcessedBytes()),
+                percentage != null ? formatSize(download.getExpectedBytes()) : "", download.getDescription());
         showNotification(message);
     }
 

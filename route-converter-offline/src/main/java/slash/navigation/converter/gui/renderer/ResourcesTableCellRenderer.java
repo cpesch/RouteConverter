@@ -25,7 +25,8 @@ import slash.navigation.maps.RemoteResource;
 import javax.swing.*;
 import java.awt.*;
 
-import static java.lang.Math.round;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+import static slash.navigation.maps.impl.ResourcesTableModel.*;
 
 /**
  * Renders the table cells of the resources table.
@@ -34,23 +35,21 @@ import static java.lang.Math.round;
  */
 
 public class ResourcesTableCellRenderer extends AlternatingColorTableCellRenderer {
-    private static final long ONE_KILOBYTE = 1024;
-    private static final long ONE_MEGABYTE = ONE_KILOBYTE * ONE_KILOBYTE;
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         RemoteResource resource = (RemoteResource) value;
         switch (columnIndex) {
-            case 0:
+            case DATASOURCE_COLUMN:
                 label.setText(resource.getDataSource());
                 label.setToolTipText(resource.getUrl());
                 break;
-            case 1:
+            case DESCRIPTION_COLUMN:
                 label.setText(resource.getDownloadable().getUri());
                 label.setToolTipText(resource.getUrl());
                 break;
-            case 2:
-                label.setText(asSize(getContentLength(resource)));
+            case SIZE_COLUMN:
+                label.setText(formatSize(getContentLength(resource)));
                 label.setToolTipText(resource.getUrl());
                 break;
             default:
@@ -61,17 +60,5 @@ public class ResourcesTableCellRenderer extends AlternatingColorTableCellRendere
 
     private Long getContentLength(RemoteResource resource) {
         return resource.getDownloadable().getLatestChecksum() != null ? resource.getDownloadable().getLatestChecksum().getContentLength() : null;
-    }
-
-    private static String asSize(Long size) {
-        if(size == null)
-            return "?";
-        if(size > ONE_MEGABYTE)
-            return toNextUnit(size, ONE_MEGABYTE) + " MB";
-        return toNextUnit(size, ONE_KILOBYTE) + " kB";
-    }
-
-    private static long toNextUnit(Long size, long nextUnit) {
-        return round(size / (double)nextUnit + 0.5);
     }
 }

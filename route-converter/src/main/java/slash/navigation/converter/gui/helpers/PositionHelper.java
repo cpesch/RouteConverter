@@ -56,6 +56,8 @@ public class PositionHelper {
     private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeZone = "";
+    private static final int KILO_BYTE = 1024;
+    private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
 
     public static String formatDistance(Double distance) {
         if (distance == null || distance <= 0.0)
@@ -128,6 +130,9 @@ public class PositionHelper {
     }
 
     public static String formatDate(CompactCalendar time) {
+        if(time == null)
+            return "?";
+
         DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
         String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
         dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
@@ -172,5 +177,26 @@ public class PositionHelper {
     public static CompactCalendar parseTime(String stringValue) throws ParseException {
         String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
         return parseTime(stringValue, timeZonePreference);
+    }
+
+    private static long toNextUnit(Long size, long nextUnit) {
+        return round(size / (double) nextUnit + 0.5);
+    }
+
+    public static String formatSize(Long size) {
+        if(size == null)
+            return "?";
+
+        String unit;
+        if (size > 2 * MEGA_BYTE) {
+            size = toNextUnit(size, MEGA_BYTE);
+            unit = "MByte";
+        } else if (size > 2 * KILO_BYTE) {
+            size = toNextUnit(size, KILO_BYTE);
+            unit = "kByte";
+        } else {
+            unit = "bytes";
+        }
+        return format("%d %s", size, unit);
     }
 }

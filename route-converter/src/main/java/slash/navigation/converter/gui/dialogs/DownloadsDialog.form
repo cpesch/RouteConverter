@@ -25,7 +25,10 @@
         <children>
           <component id="1f7cf" class="javax.swing.JTable" binding="tableDownloads">
             <constraints/>
-            <properties/>
+            <properties>
+              <showHorizontalLines value="false"/>
+              <showVerticalLines value="false"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

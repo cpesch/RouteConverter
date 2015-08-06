@@ -39,6 +39,10 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
  */
 
 public class ResourcesTableModel extends AbstractTableModel {
+    public static final int DATASOURCE_COLUMN = 0;
+    public static final int DESCRIPTION_COLUMN = 1;
+    public static final int SIZE_COLUMN = 2;
+
     private List<RemoteResource> resources = new ArrayList<>();
 
     public List<RemoteResource> getResources() {
@@ -55,7 +59,7 @@ public class ResourcesTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 3;
+        return SIZE_COLUMN + 1;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
