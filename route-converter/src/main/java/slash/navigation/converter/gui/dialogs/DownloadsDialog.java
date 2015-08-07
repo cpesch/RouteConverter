@@ -24,10 +24,13 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.RestartDownloadsAction;
+import slash.navigation.converter.gui.helpers.DownloadsTablePopupMenu;
 import slash.navigation.converter.gui.renderer.DownloadsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Download;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
@@ -97,6 +100,11 @@ public class DownloadsDialog extends SimpleDialog {
             }
         });
         tableDownloads.setRowSorter(sorter);
+
+        final ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDataSourceManager().getDownloadManager()));
+
+        new DownloadsTablePopupMenu(tableDownloads).createPopupMenu();
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {

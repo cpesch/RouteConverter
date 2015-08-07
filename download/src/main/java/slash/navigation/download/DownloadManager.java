@@ -105,6 +105,14 @@ public class DownloadManager {
         }
     }
 
+
+    public void restartDownloads(List<Download> downloads) {
+        for (Download download : downloads) {
+            log.info("Restarting download " + download);
+            startExecutor(download);
+        }
+    }
+
     public void saveQueue() {
         try {
             new QueuePersister().save(queueFile, new ArrayList<>(model.getDownloads()));
@@ -115,7 +123,7 @@ public class DownloadManager {
     }
 
     public void clearQueue() {
-        for(Download download : new ArrayList<>(model.getDownloads()))
+        for (Download download : new ArrayList<>(model.getDownloads()))
             model.removeDownload(download);
     }
 

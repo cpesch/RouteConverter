@@ -55,7 +55,8 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
                     text += " (" + progress + ")";
                 }
                 label.setText(text);
-                if (download.getState().equals(ChecksumError) || download.getState().equals(Failed))
+                if ((download.getState().equals(ChecksumError) || download.getState().equals(Failed)) &&
+                        download.getFile().getActualChecksum() != null && download.getFile().getExpectedChecksum() != null)
                     label.setToolTipText(download.getFile().getActualChecksum().getSHA1() + " / " + download.getFile().getExpectedChecksum().getSHA1() + "<p>" +
                             download.getFile().getActualChecksum().getContentLength() + " / " + download.getFile().getExpectedChecksum().getContentLength() + "<p>" +
                             formatDate(download.getFile().getActualChecksum().getLastModified()) + " / " + formatDate(download.getFile().getExpectedChecksum().getLastModified()));
