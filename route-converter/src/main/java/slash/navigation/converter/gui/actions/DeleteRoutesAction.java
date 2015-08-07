@@ -27,19 +27,21 @@ import slash.navigation.gui.actions.FrameAction;
 import javax.swing.*;
 import java.util.List;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModels;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
- * {@link Action} that removes {@link RouteModel}s of the {@link CatalogModel}.
+ * {@link Action} that deletes {@link RouteModel}s from the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
 
-public class RemoveRoutesAction extends FrameAction {
+public class DeleteRoutesAction extends FrameAction {
     private final JTable table;
     private final CatalogModel catalogModel;
 
-    public RemoveRoutesAction(JTable table, CatalogModel catalogModel) {
+    public DeleteRoutesAction(JTable table, CatalogModel catalogModel) {
         this.table = table;
         this.catalogModel = catalogModel;
     }
@@ -49,6 +51,18 @@ public class RemoveRoutesAction extends FrameAction {
         if(routes.size() == 0)
             return;
 
-        catalogModel.removeRoutes(routes);
-   }
+        int[] selectedRows = table.getSelectedRows();
+
+        catalogModel.deleteRoutes(routes);
+
+        final int deleteRow = selectedRows[0] < table.getRowCount() ?
+                selectedRows[0] : table.getRowCount() - 1;
+        if (table.getRowCount() > 0) {
+            invokeLater(new Runnable() {
+                public void run() {
+                    selectAndScrollToPosition(table, deleteRow, deleteRow);
+                }
+            });
+        }
+    }
 }

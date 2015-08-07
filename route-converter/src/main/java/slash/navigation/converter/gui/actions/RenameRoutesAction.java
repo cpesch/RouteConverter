@@ -20,20 +20,21 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.routes.impl.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.impl.RouteModel;
 import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.*;
+import java.util.List;
 
 import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.RouteHelper.formatName;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModel;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModels;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectRoute;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
@@ -43,11 +44,11 @@ import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
  * @author Christian Pesch
  */
 
-public class RenameRouteAction extends FrameAction {
+public class RenameRoutesAction extends FrameAction {
     private final JTable table;
     private final CatalogModel catalogModel;
 
-    public RenameRouteAction(JTable table, CatalogModel catalogModel) {
+    public RenameRoutesAction(JTable table, CatalogModel catalogModel) {
         this.table = table;
         this.catalogModel = catalogModel;
     }
@@ -55,22 +56,24 @@ public class RenameRouteAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        final RouteModel route = getSelectedRouteModel(table);
-        if(route == null)
+        List<RouteModel> routes = getSelectedRouteModels(table);
+        if (routes.size() == 0)
             return;
 
-        String name = (String) showInputDialog(r.getFrame(),
+        for (final RouteModel route : routes) {
+            String name = (String) showInputDialog(r.getFrame(),
                     format(RouteConverter.getBundle().getString("rename-route-label"), formatName(route)),
                     r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getDescription());
-        if (trim(name) == null)
-            return;
+            if (trim(name) == null)
+                return;
 
-        catalogModel.renameRoute(route, name, new Runnable() {
-            public void run() {
-                final int row = ((RoutesTableModel)table.getModel()).getIndex(route);
-                scrollToPosition(table, row);
-                selectRoute(table, route);
-            }
-        });
+            catalogModel.renameRoute(route, name, new Runnable() {
+                public void run() {
+                    final int row = ((RoutesTableModel) table.getModel()).getIndex(route);
+                    scrollToPosition(table, row);
+                    selectRoute(table, route);
+                }
+            });
+        }
     }
 }

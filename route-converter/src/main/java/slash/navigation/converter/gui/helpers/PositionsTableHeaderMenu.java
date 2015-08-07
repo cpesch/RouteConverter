@@ -48,14 +48,14 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
  * @author Christian Pesch
  */
 
-public class TableHeaderMenu {
+public class PositionsTableHeaderMenu {
     private final JPopupMenu popupMenu = new JPopupMenu();
     private final PositionsModel positionsModel;
     private final PositionsTableColumnModel columnModel;
     private final ActionManager actionManager;
 
-    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
-                           PositionsTableColumnModel columnModel, ActionManager actionManager) {
+    public PositionsTableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
+                                    PositionsTableColumnModel columnModel, ActionManager actionManager) {
         this.positionsModel = positionsModel;
         this.columnModel = columnModel;
         this.actionManager = actionManager;

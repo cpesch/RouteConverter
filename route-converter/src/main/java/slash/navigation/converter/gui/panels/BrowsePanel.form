@@ -79,12 +79,13 @@
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
-          <component id="ed7f" class="javax.swing.JButton" binding="buttonRemoveRoute">
+          <component id="ed7f" class="javax.swing.JButton" binding="buttonDeleteRoute">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-route-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-route-action-tooltip"/>
             </properties>
           </component>
           <component id="8555" class="javax.swing.JButton" binding="buttonRenameRoute">
@@ -92,7 +93,9 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename"/>
+              <hideActionText value="false"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-route-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-route-action-tooltip"/>
             </properties>
           </component>
           <component id="4b241" class="javax.swing.JButton" binding="buttonAddRouteFromUrl">

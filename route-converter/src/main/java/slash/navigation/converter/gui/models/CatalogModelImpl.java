@@ -281,10 +281,10 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void removeRoutes(final List<RouteModel> routes) {
+    public void deleteRoutes(final List<RouteModel> routes) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
-                return "RemoveRoutes";
+                return "DeleteRoutes";
             }
 
             public void run() throws IOException {
@@ -295,7 +295,7 @@ public class CatalogModelImpl implements CatalogModel {
                 invokeLater(new Runnable() {
                     public void run() {
                         for (RouteModel route : routes) {
-                            routesTableModel.removeRoute(route);
+                            routesTableModel.deleteRoute(route);
                         }
                     }
                 });

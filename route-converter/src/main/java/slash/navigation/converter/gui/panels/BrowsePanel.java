@@ -33,6 +33,7 @@ import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.RoutesTablePopupMenu;
 import slash.navigation.converter.gui.helpers.TreePathStringConversion;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
@@ -110,7 +111,7 @@ public class BrowsePanel implements PanelInTab {
     private JButton buttonAddRouteFromFile;
     private JButton buttonAddRouteFromUrl;
     private JButton buttonRenameRoute;
-    private JButton buttonRemoveRoute;
+    private JButton buttonDeleteRoute;
     private JButton buttonLogin;
 
     private CatalogModel catalogModel;
@@ -136,15 +137,15 @@ public class BrowsePanel implements PanelInTab {
         registerAction(buttonAddRouteFromFile, "add-route-from-file");
         registerAction(buttonAddRouteFromUrl, "add-route-from-url");
         registerAction(buttonRenameRoute, "rename-route");
-        registerAction(buttonRemoveRoute, "remove-route");
+        registerAction(buttonDeleteRoute, "delete-route");
 
         actionManager.register("add-category", new AddCategoryAction(treeCategories, catalogModel));
         actionManager.register("add-route-from-file", new AddFileAction());
         actionManager.register("add-route-from-url", new AddUrlAction());
         actionManager.register("rename-category", new RenameCategoryAction(treeCategories, catalogModel));
         actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories, catalogModel));
-        actionManager.register("rename-route", new RenameRouteAction(tableRoutes, catalogModel));
-        actionManager.register("remove-route", new RemoveRoutesAction(tableRoutes, catalogModel));
+        actionManager.register("rename-route", new RenameRoutesAction(tableRoutes, catalogModel));
+        actionManager.register("delete-route", new DeleteRoutesAction(tableRoutes, catalogModel));
 
         buttonLogin.addActionListener(new FrameAction() {
             public void run() {
@@ -182,7 +183,7 @@ public class BrowsePanel implements PanelInTab {
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
-                actionManager.run("remove-route");
+                actionManager.run("delete-route");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.registerKeyboardAction(new FrameAction() {
@@ -226,6 +227,8 @@ public class BrowsePanel implements PanelInTab {
             }
         }
         browsePanel.setTransferHandler(new PanelDropHandler());
+
+        new RoutesTablePopupMenu(tableRoutes).createPopupMenu();
 
         new Thread(new Runnable() {
             public void run() {
@@ -434,11 +437,14 @@ public class BrowsePanel implements PanelInTab {
         panel2.add(buttonAddRouteFromFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        buttonRemoveRoute = new JButton();
-        this.$$$loadButtonText$$$(buttonRemoveRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel2.add(buttonRemoveRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDeleteRoute = new JButton();
+        this.$$$loadButtonText$$$(buttonDeleteRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-route-action"));
+        buttonDeleteRoute.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-route-action-tooltip"));
+        panel2.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenameRoute = new JButton();
-        this.$$$loadButtonText$$$(buttonRenameRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
+        buttonRenameRoute.setHideActionText(false);
+        this.$$$loadButtonText$$$(buttonRenameRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-route-action"));
+        buttonRenameRoute.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-route-action-tooltip"));
         panel2.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonAddRouteFromUrl = new JButton();
         this.$$$loadButtonText$$$(buttonAddRouteFromUrl, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-url"));

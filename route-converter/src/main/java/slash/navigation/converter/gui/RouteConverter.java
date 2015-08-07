@@ -658,8 +658,8 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().clearSelection();
     }
 
-    public void renameRoute(String name) {
-        getConvertPanel().renameRoute(name);
+    public void renamePositionList(String name) {
+        getConvertPanel().renamePositionList(name);
     }
 
     public void setRouteCharacteristics(RouteCharacteristics characteristics) {

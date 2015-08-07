@@ -153,13 +153,13 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new MoveRoutes(this, routes, oldParents, parents));
     }
 
-    public void removeRoutes(List<RouteModel> routes) {
-        removeRoutes(routes, true);
+    public void deleteRoutes(List<RouteModel> routes) {
+        deleteRoutes(routes, true);
     }
 
-    void removeRoutes(List<RouteModel> routes, boolean trackUndo) {
-        delegate.removeRoutes(routes);
+    void deleteRoutes(List<RouteModel> routes, boolean trackUndo) {
+        delegate.deleteRoutes(routes);
         if (trackUndo)
-            undoManager.addEdit(new RemoveRoutes(this, routes));
+            undoManager.addEdit(new DeleteRoutes(this, routes));
     }
 }

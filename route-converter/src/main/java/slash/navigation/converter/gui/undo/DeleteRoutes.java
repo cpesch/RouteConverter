@@ -38,12 +38,12 @@ import static java.lang.String.format;
 import static slash.common.io.Files.toFile;
 
 /**
- * Acts as a {@link UndoableEdit} for removing {@link RouteModel}s of a {@link UndoCatalogModel}.
+ * Acts as a {@link UndoableEdit} for deleting {@link RouteModel}s of a {@link UndoCatalogModel}.
  *
  * @author Christian Pesch
  */
 
-class RemoveRoutes extends AbstractUndoableEdit {
+class DeleteRoutes extends AbstractUndoableEdit {
     private final UndoCatalogModel catalogModel;
     private final List<RouteModel> routes;
     private final List<CategoryTreeNode> categories = new ArrayList<>();
@@ -51,7 +51,7 @@ class RemoveRoutes extends AbstractUndoableEdit {
     private final List<String> files = new ArrayList<>();
     private final List<String> urls = new ArrayList<>();
 
-    public RemoveRoutes(UndoCatalogModel catalogModel, List<RouteModel> routes) {
+    public DeleteRoutes(UndoCatalogModel catalogModel, List<RouteModel> routes) {
         this.catalogModel = catalogModel;
         this.routes = routes;
         for (RouteModel route : routes) {
@@ -67,11 +67,11 @@ class RemoveRoutes extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "remove-route-undo";
+        return "delete-route-undo";
     }
 
     public String getRedoPresentationName() {
-        return "remove-route-redo";
+        return "delete-route-redo";
     }
 
     public void undo() throws CannotUndoException {
@@ -88,6 +88,6 @@ class RemoveRoutes extends AbstractUndoableEdit {
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.removeRoutes(routes, false);
+        catalogModel.deleteRoutes(routes, false);
     }
 }

@@ -65,7 +65,7 @@ class AddRoute extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.removeRoutes(singletonList(callback.getRoute()), false);
+        catalogModel.deleteRoutes(singletonList(callback.getRoute()), false);
     }
 
     public void redo() throws CannotRedoException {

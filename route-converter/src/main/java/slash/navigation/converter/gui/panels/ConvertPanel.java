@@ -153,7 +153,7 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private TableHeaderMenu tableHeaderMenu;
+    private PositionsTableHeaderMenu tableHeaderMenu;
 
     public ConvertPanel() {
         $$$setupUI$$$();
@@ -293,9 +293,9 @@ public class ConvertPanel implements PanelInTab {
         });
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        tableHeaderMenu = new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(),
+        tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(),
                 tableColumnModel, actionManager);
-        JPopupMenu menu = new TablePopupMenu(tablePositions).createPopupMenu();
+        JPopupMenu menu = new PositionsTablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
@@ -1126,7 +1126,7 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.getSelectionModel().clearSelection();
     }
 
-    public void renameRoute(String name) {
+    public void renamePositionList(String name) {
         formatAndRoutesModel.renamePositionList(name);
     }
 

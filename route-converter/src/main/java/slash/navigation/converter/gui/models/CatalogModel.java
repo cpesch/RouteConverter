@@ -53,5 +53,5 @@ public interface CatalogModel {
     void renameRoute(RouteModel route, String name, Runnable invokeLaterRunnable);
     void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable);
     void moveRoutes(List<RouteModel> routes, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);
-    void removeRoutes(List<RouteModel> routes);
+    void deleteRoutes(List<RouteModel> routes);
 }

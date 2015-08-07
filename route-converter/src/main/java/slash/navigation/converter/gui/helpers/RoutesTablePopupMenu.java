@@ -25,7 +25,6 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import javax.swing.*;
 
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
-import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
  * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
@@ -33,34 +32,16 @@ import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
  * @author Christian Pesch
  */
 
-public class TablePopupMenu extends AbstractTablePopupMenu {
+public class RoutesTablePopupMenu extends AbstractTablePopupMenu {
 
-    public TablePopupMenu(JTable table) {
+    public RoutesTablePopupMenu(JTable table) {
         super(table);
     }
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("cut"));
-        menu.add(createItem("copy"));
-        menu.add(createItem("paste"));
-        menu.add(createItem("select-all"));
-        menu.addSeparator();
-        menu.add(createItem("find-place"));
-        JMenu completeMenu = createMenu("complete");
-        completeMenu.add(createItem("add-coordinates"));
-        completeMenu.add(createItem("add-elevation"));
-        completeMenu.add(createItem("add-postal-address"));
-        completeMenu.add(createItem("add-populated-place"));
-        completeMenu.add(createItem("add-speed"));
-        completeMenu.add(createItem("add-time"));
-        completeMenu.add(createItem("add-number"));
-        menu.add(completeMenu);
-        menu.addSeparator();
-        menu.add(createItem("split-positionlist"));
-        menu.add(createMenu("merge-positionlist"));
-        menu.add(createItem("import-positionlist"));
-        menu.add(createItem("export-positionlist"));
+        menu.add(createItem("rename-route"));
+        menu.add(createItem("delete-route"));
         return menu;
     }
 }

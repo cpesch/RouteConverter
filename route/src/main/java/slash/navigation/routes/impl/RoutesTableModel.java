@@ -77,13 +77,13 @@ public class RoutesTableModel extends AbstractTableModel {
         fireTableRowsUpdated(index, index);
     }
 
-    public void removeRoute(RouteModel route) {
+    public void deleteRoute(RouteModel route) {
         int index = getIndex(route);
         if (index == -1)
             throw new IllegalArgumentException("Route " + route + " not found in " + routes);
 
         if(!routes.remove(route))
-            throw new IllegalArgumentException("Route " + route + " not removed from " + routes);
+            throw new IllegalArgumentException("Route " + route + " not deleted from " + routes);
 
         fireTableRowsDeleted(index, index);
     }
