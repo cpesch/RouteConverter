@@ -38,8 +38,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.currentTimeMillis;
-import static javafx.application.Platform.isFxApplicationThread;
-import static javafx.application.Platform.runLater;
+import static javafx.application.Platform.*;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -58,6 +57,10 @@ public class JavaFXWebViewMapView extends BaseMapView {
     private JFXPanel panel;
     private WebView webView;
 
+    static {
+        setImplicitExit(false);
+    }
+
     public Component getComponent() {
         return panel;
     }
@@ -72,8 +75,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
             panel.setScene(new Scene(group));
             panel.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent e) {
-                    Dimension size = panel.getSize();
-                    webView.setMinSize(size.getWidth(), size.getHeight());
+                    setWebViewSizeToPanelSize();
                 }
             });
             webView.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
@@ -150,6 +152,16 @@ public class JavaFXWebViewMapView extends BaseMapView {
     protected boolean isMapInitialized() {
         String result = executeScriptWithResult("isInitialized();");
         return parseBoolean(result);
+    }
+
+    public void resize() {
+        super.resize();
+        setWebViewSizeToPanelSize();
+    }
+
+    private void setWebViewSizeToPanelSize() {
+        Dimension size = panel.getSize();
+        webView.setMinSize(size.getWidth(), size.getHeight());
     }
 
     // bounds and center

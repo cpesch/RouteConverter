@@ -23,8 +23,6 @@ package slash.navigation.converter.gui.helpers;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
-import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 
@@ -60,7 +58,7 @@ public class LengthCalculator {
     private PositionsModel positionsModel;
     private Thread lengthCalculator;
     private final Object notificationMutex = new Object();
-    private boolean running = true, recalculate = false, mapViewInitialized = false;
+    private boolean running = true, recalculate = false;
 
     public LengthCalculator() {
         initialize();
@@ -82,7 +80,7 @@ public class LengthCalculator {
                                 e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS))
                     return;
-                if (LengthCalculator.this.positionsModel.isContinousRange())
+                if (getPositionsModel().isContinousRange())
                     return;
 
                 calculateDistance();
@@ -99,13 +97,8 @@ public class LengthCalculator {
         });
     }
 
-    public void initializeMapView(MapView mapView) {
-        mapViewInitialized = true;
-        mapView.addMapViewListener(new AbstractMapViewListener() {
-            public void calculatedDistance(double meters, long seconds) {
-                fireCalculatedDistance(meters, seconds);
-            }
-        });
+    private PositionsModel getPositionsModel() {
+        return positionsModel;
     }
 
     private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<>();
@@ -125,8 +118,7 @@ public class LengthCalculator {
             fireCalculatedDistance(0, 0);
             return;
         }
-
-        if (getCharacteristics().equals(Route) && mapViewInitialized)
+        if (getCharacteristics().equals(Route))
             return;
 
         synchronized (notificationMutex) {

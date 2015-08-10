@@ -21,6 +21,7 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
+import slash.navigation.converter.gui.helpers.MapViewImpl;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
@@ -38,9 +39,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.helpers.MapViewImpl.Mapsforge;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
@@ -60,6 +63,10 @@ public class RouteConverterOffline extends RouteConverter {
 
     public String getEdition() {
         return "Offline";
+    }
+
+    public List<MapViewImpl> getAvailableMapViews() {
+        return singletonList(Mapsforge);
     }
 
     protected void initializeServices() {

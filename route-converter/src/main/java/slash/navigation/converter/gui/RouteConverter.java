@@ -29,6 +29,7 @@ import slash.navigation.common.*;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
+import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallback;
 import slash.navigation.converter.gui.models.*;
@@ -99,6 +100,8 @@ import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.helpers.MapViewImpl.EclipseSWT;
+import static slash.navigation.converter.gui.helpers.MapViewImpl.JavaFX;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
@@ -138,6 +141,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
+    private static final String MAP_VIEW_PREFERENCE = "mapView";
     public static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
@@ -183,6 +187,7 @@ public class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, 300), 0, true);
 
     private LazyTabInitializer tabInitializer;
+    private CalculatedDistanceNotifier calculatedDistanceNotifier = new CalculatedDistanceNotifier();
 
     // application lifecycle callbacks
 
@@ -290,12 +295,8 @@ public class RouteConverter extends SingleFrameApplication {
 
     private MapView createMapView(String className) {
         try {
-            log.info("Before creating map view from " + className);
             Class<?> aClass = Class.forName(className);
-            log.info("After creating class " + aClass);
-            MapView mapView = (MapView) aClass.newInstance();
-            log.info("After creating map view " + mapView);
-            return mapView;
+            return (MapView) aClass.newInstance();
         } catch (Throwable t) {
             log.info("Cannot create " + className + ": " + t);
             return null;
@@ -317,56 +318,56 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        log.info("JavaFX: " + isJavaFX() + " java.vendor: " + System.getProperty("java.vendor") +
-                " is Oracle: " + System.getProperty("java.vendor").contains("Oracle") +
-                " java.version" + System.getProperty("java.version") +
-                " later than 1.7.0_40: " + (System.getProperty("java.version").compareTo("1.7.0_40") >= 0));
-        mapView = createMapView("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView");
-        log.info("map view 1 is " + mapView);
-        if (getMapView() == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        log.info("map view 2 is " + mapView);
-        if (getMapView() == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.MapsforgeMapView");
-        log.info("map view 3 is " + mapView);
-        if (getMapView() == null)
-            return;
-        log.info("Using map view " + getMapView());
+        mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
 
         invokeLater(new Runnable() {
             public void run() {
-                getMapView().initialize(getPositionsModel(),
-                        getPositionsSelectionModel(),
-                        getConvertPanel().getCharacteristicsModel(),
-                        getMapViewCallback(),
-                        preferences.getBoolean(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true),
-                        preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
-                        preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
-                        preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
-                        getUnitSystemModel());
-
-                @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-                Throwable cause = getMapView().getInitializationCause();
-                if (getMapView().getComponent() == null || cause != null) {
-                    StringWriter stackTrace = new StringWriter();
-                    cause.printStackTrace(new PrintWriter(stackTrace));
-                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                            stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
-                } else {
-                    mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
-                }
-                mapPanel.setVisible(true);
-
-                int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location < 1)
-                    location = 300;
-                mapSplitPane.setDividerLocation(location);
-                log.info("Initialized map divider to " + location);
-                mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
-
-                getConvertPanel().initializeMapView(getMapView());
+                setMapView(getMapViewPreference());
             }
         });
+    }
+
+    public synchronized void setMapView(MapViewImpl mapViewImpl) {
+        log.info("Using map view " + mapViewImpl);
+        setMapViewPreference(mapViewImpl);
+
+        if (isMapViewAvailable()) {
+            mapView.removeMapViewListener(calculatedDistanceNotifier);
+            mapPanel.removeAll();
+            mapView.dispose();
+        }
+
+        mapView = createMapView(mapViewImpl.getClassName());
+
+        getMapView().initialize(getPositionsModel(),
+                getPositionsSelectionModel(),
+                getConvertPanel().getCharacteristicsModel(),
+                getMapViewCallback(),
+                preferences.getBoolean(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true),
+                preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
+                preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
+                preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
+                getUnitSystemModel());
+
+        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+        Throwable cause = getMapView().getInitializationCause();
+        if (getMapView().getComponent() == null || cause != null) {
+            StringWriter stackTrace = new StringWriter();
+            cause.printStackTrace(new PrintWriter(stackTrace));
+            mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
+                    stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+        } else {
+            mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+        }
+        mapPanel.setVisible(true);
+
+        int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
+        if (location < 1)
+            location = 300;
+        mapSplitPane.setDividerLocation(location);
+        log.info("Initialized map divider to " + location);
+
+        mapView.addMapViewListener(calculatedDistanceNotifier);
     }
 
     protected MapView getMapView() {
@@ -769,6 +770,26 @@ public class RouteConverter extends SingleFrameApplication {
             getMapView().showMapBorder(mapBoundingBox);
     }
 
+    public List<MapViewImpl> getAvailableMapViews() {
+        return asList(JavaFX, EclipseSWT);
+    }
+
+    public MapViewImpl getMapViewPreference() {
+        MapViewImpl firstMapView = getAvailableMapViews().get(0);
+        try {
+            MapViewImpl mapView = MapViewImpl.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, firstMapView.toString()));
+            if (getAvailableMapViews().contains(mapView))
+                return mapView;
+        } catch (IllegalArgumentException e) {
+            // intentionally left empty
+        }
+        return firstMapView;
+    }
+
+    public void setMapViewPreference(MapViewImpl mapView) {
+        getPreferences().put(MAP_VIEW_PREFERENCE, mapView.name());
+    }
+
     // profile view related helpers
 
     public PositionsModel getPositionsModel() {
@@ -926,12 +947,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private class MapSplitPaneListener implements PropertyChangeListener {
-        private int location;
-
-        private MapSplitPaneListener(int location) {
-            this.location = location;
-            enableActions();
-        }
+        private int location = -1;
 
         public void propertyChange(PropertyChangeEvent e) {
             if (!isMapViewAvailable())
@@ -988,6 +1004,12 @@ public class RouteConverter extends SingleFrameApplication {
             actionManager.enable("maximize-map", location < frame.getHeight() - 10);
             actionManager.enable("maximize-positionlist", location < frame.getHeight() - 10);
             actionManager.enable("show-profile", location > frame.getHeight() - 80);
+        }
+    }
+
+    private class CalculatedDistanceNotifier extends AbstractMapViewListener {
+        public void calculatedDistance(double meters, long seconds) {
+            getConvertPanel().fireCalculatedDistance(meters, seconds);
         }
     }
 

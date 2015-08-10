@@ -34,7 +34,6 @@ import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
@@ -74,8 +73,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -102,7 +103,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.gui.events.Range.*;
+import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
+import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.JMenuHelper.*;
 import static slash.navigation.gui.helpers.JTableHelper.*;
 import static slash.navigation.gui.helpers.PreferencesHelper.count;
@@ -377,6 +379,7 @@ public class ConvertPanel implements PanelInTab {
         handleRoutesUpdate();
         handlePositionsUpdate();
 
+        //noinspection unchecked
         comboBoxChoosePositionList.setModel(formatAndRoutesModel);
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
         comboBoxChoosePositionList.addItemListener(new ItemListener() {
@@ -387,6 +390,7 @@ public class ConvertPanel implements PanelInTab {
                 }
             }
         });
+        //noinspection unchecked
         comboBoxChoosePositionListCharacteristics.setModel(getCharacteristicsModel());
         comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
@@ -400,8 +404,8 @@ public class ConvertPanel implements PanelInTab {
         });
     }
 
-    public void initializeMapView(MapView mapView) {
-        lengthCalculator.initializeMapView(mapView);
+    public void fireCalculatedDistance(double meters, long seconds) {
+        lengthCalculator.fireCalculatedDistance(meters, seconds);
     }
 
     public void dispose() {
@@ -606,6 +610,7 @@ public class ConvertPanel implements PanelInTab {
                                         try {
                                             int insertRow = row > 0 ? row : getPositionsModel().getRowCount();
                                             for (BaseRoute route : result.getAllRoutes()) {
+                                                //noinspection unchecked
                                                 getPositionsModel().add(insertRow, route);
                                             }
                                         } catch (FileNotFoundException e) {

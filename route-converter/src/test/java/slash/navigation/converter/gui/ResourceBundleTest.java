@@ -54,7 +54,7 @@ public class ResourceBundleTest {
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             // skip keys which are only present in the default bundle
-            if (key.startsWith("locale-") || key.endsWith("-icon") ||
+            if (key.startsWith("locale-") || key.startsWith("map-view-") || key.endsWith("-icon") ||
                     key.endsWith("-mnemonic") || key.endsWith("-keystroke") || key.endsWith("-keystroke-mac") ||
                     key.equals("help-set") || key.equals("translator-missing") ||
                     key.equals("FileChooser.acceptAllFileFilterText"))
