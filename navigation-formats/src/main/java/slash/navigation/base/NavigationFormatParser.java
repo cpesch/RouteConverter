@@ -104,6 +104,8 @@ public class NavigationFormatParser {
     private void internalRead(InputStream buffer, CompactCalendar startDate,
                               List<NavigationFormat> formats, ParserContext context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
+        NavigationFormat firstSuccessfulFormat = null;
+
         try {
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
@@ -111,6 +113,10 @@ public class NavigationFormatParser {
                 log.fine(format("Trying to read with %s", format));
                 try {
                     format.read(buffer, startDate, context);
+
+                    // if no route has been read, take the first that didn't throw an exception
+                    if (firstSuccessfulFormat == null)
+                        firstSuccessfulFormat = format;
                 } catch (Exception e) {
                     log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e));
                 }
@@ -130,6 +136,9 @@ public class NavigationFormatParser {
         } finally {
             buffer.close();
         }
+
+        if(context.getRoutes().size() == 0 && firstSuccessfulFormat != null)
+            context.addFormat(firstSuccessfulFormat);
     }
 
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
@@ -186,11 +195,14 @@ public class NavigationFormatParser {
     @SuppressWarnings("unchecked")
     private ParserResult createResult(ParserContext<BaseRoute> context) throws IOException {
         List<BaseRoute> source = context.getRoutes();
-        if (source != null && source.size() > 0) {
+        // if (source != null && source.size() > 0) {
+        if (source != null && context.getFormats().size() > 0) {
             NavigationFormat format = determineFormat(source, context.getFormats().get(0));
             List<BaseRoute> destination = asFormatForRoutes(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
+            if(destination.size() == 0)
+                destination.add(format.createRoute(RouteCharacteristics.Route, null, new ArrayList<>()));
             commentRoutes(destination);
             return new ParserResult(new FormatAndRoutes(format, destination));
         } else

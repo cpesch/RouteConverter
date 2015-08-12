@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import junit.framework.TestCase;
 import org.junit.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;
 
@@ -113,12 +115,19 @@ public class NavigationFormatParserIT {
         List<NavigationFormat> formats = new ArrayList<>();
         ParserResult result1 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertFalse(result1.isSuccessful());
+
         formats.add(new TomTom8RouteFormat());
         ParserResult result2 = parser.read(new File(TEST_PATH + "from.itn"), formats);
-        assertFalse(result2.isSuccessful());
+        assertTrue(result2.isSuccessful());
+        assertEquals(0, result2.getTheRoute().getPositions().size());
+        assertEquals(1, result2.getAllRoutes().size());
+        assertEquals(result2.getFormat().getClass(), TomTom8RouteFormat.class);
+
         formats.add(new TomTom5RouteFormat());
         ParserResult result3 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertTrue(result3.isSuccessful());
+        assertEquals(46, result3.getTheRoute().getPositions().size());
+        assertEquals(1, result3.getAllRoutes().size());
         assertEquals(result3.getFormat().getClass(), TomTom5RouteFormat.class);
     }
 

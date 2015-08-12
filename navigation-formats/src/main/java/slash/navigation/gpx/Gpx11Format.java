@@ -59,7 +59,7 @@ public class Gpx11Format extends GpxFormat {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    void process(GpxType gpxType,ParserContext<GpxRoute> context) {
+    void process(GpxType gpxType, ParserContext<GpxRoute> context) {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
             return;
 
@@ -206,7 +206,7 @@ public class Gpx11Format extends GpxFormat {
                     } else if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // everything is converted from m/s to Km/h except for the exceptional case
-                        if(!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
+                        if (!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
                             result = asKmh(result);
                     }
                 }

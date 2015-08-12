@@ -407,7 +407,7 @@ public class ReadIT {
                 try {
                     ParserResult result = parser.read(file);
                     assertNotNull(result);
-                    assertFalse("Can read route from " + file, result.isSuccessful());
+                    assertFalse("Can read route from " + file, result.getAllRoutes().size() == 0);
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }

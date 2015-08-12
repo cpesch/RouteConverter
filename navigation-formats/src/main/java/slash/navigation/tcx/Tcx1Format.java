@@ -57,6 +57,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.common.io.Transfer.formatTime;
 import static slash.common.io.Transfer.parseTime;
 import static slash.navigation.tcx.TcxUtil.marshal1;
+import static slash.navigation.tcx.TcxUtil.unmarshal1;
 
 /**
  * Reads Training Center Database 1 (.tcx) files.
@@ -243,7 +244,7 @@ public class Tcx1Format extends TcxFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<TcxRoute> context) throws Exception {
-        TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal1(source);
+        TrainingCenterDatabaseT trainingCenterDatabase = unmarshal1(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }
 
