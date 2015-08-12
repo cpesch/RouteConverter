@@ -161,7 +161,8 @@ public class JavaFXWebViewMapView extends BaseMapView {
 
     private void setWebViewSizeToPanelSize() {
         Dimension size = panel.getSize();
-        webView.setMinSize(size.getWidth(), size.getHeight());
+        if (webView != null)
+            webView.setMinSize(size.getWidth(), size.getHeight());
     }
 
     // bounds and center

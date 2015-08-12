@@ -338,6 +338,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         mapView = createMapView(mapViewImpl.getClassName());
+        if (mapView != null)
+            mapView.addMapViewListener(calculatedDistanceNotifier);
 
         getMapView().initialize(getPositionsModel(),
                 getPositionsSelectionModel(),
@@ -366,8 +368,6 @@ public class RouteConverter extends SingleFrameApplication {
             location = 300;
         mapSplitPane.setDividerLocation(location);
         log.info("Initialized map divider to " + location);
-
-        mapView.addMapViewListener(calculatedDistanceNotifier);
     }
 
     protected MapView getMapView() {
