@@ -38,8 +38,7 @@ import static slash.common.io.Transfer.roundMeterToMillimeterPrecision;
  *
  * Modified to return meters with millimeter precision
  *
- * @author Unidata Development Team
- * @version $Id: Bearing.java,v 1.24 2006/11/18 19:03:12 dmurray Exp $
+ * @author Unidata Development Team, modified by Christian Pesch
  */
 
 public class Bearing {

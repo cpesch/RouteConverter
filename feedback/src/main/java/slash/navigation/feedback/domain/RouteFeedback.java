@@ -24,12 +24,13 @@ import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.rest.*;
+import slash.navigation.rest.Credentials;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.Put;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +44,6 @@ import static java.util.Locale.getDefault;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
-import static slash.navigation.gpx.GpxUtil.unmarshal11;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -68,20 +68,6 @@ public class RouteFeedback {
         this.rootUrl = rootUrl;
         this.apiUrl = apiUrl;
         this.credentials = credentials;
-    }
-
-    GpxType fetchGpx(String url) throws IOException {
-        log.fine("Fetching gpx from " + url);
-        Get get = new Get(url);
-        String result = get.executeAsString();
-        if (get.isSuccessful())
-            try {
-                return unmarshal11(result);
-            } catch (JAXBException e) {
-                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
-            }
-        else
-            return null;
     }
 
     public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {

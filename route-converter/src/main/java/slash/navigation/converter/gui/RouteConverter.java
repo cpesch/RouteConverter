@@ -1052,9 +1052,11 @@ public class RouteConverter extends SingleFrameApplication {
         JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
-        setHelpIDString(frame.getRootPane(), "top");
+        setHelpIDString(frame.getRootPane(), "home");
+        /*
         setHelpIDString(convertPanel, "convert");
         setHelpIDString(browsePanel, "browse");
+*/
         setHelpIDString(mapPanel, "map");
 
         // delay JavaHelp initialization
