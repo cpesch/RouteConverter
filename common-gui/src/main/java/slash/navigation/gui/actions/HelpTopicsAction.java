@@ -23,6 +23,7 @@ package slash.navigation.gui.actions;
 import slash.navigation.gui.Application;
 
 import javax.help.CSH;
+import javax.help.DefaultHelpBroker;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import java.util.logging.Logger;
@@ -47,8 +48,11 @@ public class HelpTopicsAction extends FrameAction {
     public void run() {
         try {
             HelpBroker broker = Application.getInstance().getContext().getHelpBroker(getHelpSetUrl());
-            new CSH.DisplayHelpFromFocus(broker).actionPerformed(getEvent());
+            CSH.DisplayHelpFromFocus helpFromFocus = new CSH.DisplayHelpFromFocus(broker);
+            helpFromFocus.actionPerformed(getEvent());
+            ((DefaultHelpBroker)broker).getWindowPresentation().getHelpWindow().setIconImage(getFrame().getIconImage());
         } catch (Exception e) {
+            e.printStackTrace();
             log.severe("Could not initialize help: " + e);
             showMessageDialog(null, "Could not initialize help: " + getLocalizedMessage(e), "Error", ERROR_MESSAGE);
         }
