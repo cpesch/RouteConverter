@@ -164,7 +164,7 @@
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
                     <artifactId>launch4j-maven-plugin</artifactId>
-                    <version>1.7.5</version>
+                    <version>1.7.7</version>
                 </plugin>
                 <plugin>
                     <groupId>com.vineetmanohar</groupId>
