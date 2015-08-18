@@ -45,6 +45,7 @@ public class ApplicationContext {
     private NotificationManager notificationManager = new NotificationManager();
     private JMenuBar menuBar = null;
     private HelpBroker broker = null;
+    private String helpBrokerUrl = null;
 
     public ResourceBundle getBundle() {
         return bundle;
@@ -74,9 +75,13 @@ public class ApplicationContext {
         this.menuBar = menuBar;
     }
 
-    public HelpBroker getHelpBroker(String url) throws HelpSetException, MalformedURLException {
+    public void setHelpBrokerUrl(String helpBrokerUrl) {
+        this.helpBrokerUrl = helpBrokerUrl;
+    }
+
+    public HelpBroker getHelpBroker() throws HelpSetException, MalformedURLException {
         if (broker == null) {
-            HelpSet helpSet = new HelpSet(Application.class.getClassLoader(), new URL(url));
+            HelpSet helpSet = new HelpSet(Application.class.getClassLoader(), new URL(helpBrokerUrl));
             broker = helpSet.createHelpBroker();
         }
         return broker;

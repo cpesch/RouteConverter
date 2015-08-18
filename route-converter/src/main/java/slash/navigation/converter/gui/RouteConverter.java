@@ -290,6 +290,7 @@ public class RouteConverter extends SingleFrameApplication {
         openMapView();
         openProfileView();
 
+        initializeHelp();
         getContext().getActionManager().logUsage();
     }
 
@@ -1052,17 +1053,18 @@ public class RouteConverter extends SingleFrameApplication {
         JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
-        setHelpIDString(frame.getRootPane(), "home");
-        /*
-        setHelpIDString(convertPanel, "convert");
-        setHelpIDString(browsePanel, "browse");
-*/
-        setHelpIDString(mapPanel, "map");
+        new ProfileModeMenu(getContext().getMenuBar(), getProfileModeModel());
+        new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
+        new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
+    }
+
+    private void initializeHelp() {
+        getContext().setHelpBrokerUrl(System.getProperty("help", "http://www.routeconverter.com/javahelp.hs"));
 
         // delay JavaHelp initialization
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                actionManager.run("help-topics", event);
+                getContext().getActionManager().run("help-topics", event);
             }
         };
         frame.getRootPane().registerKeyboardAction(actionListener,
@@ -1070,9 +1072,11 @@ public class RouteConverter extends SingleFrameApplication {
         frame.getRootPane().registerKeyboardAction(actionListener,
                 getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        new ProfileModeMenu(getContext().getMenuBar(), getProfileModeModel());
-        new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
-        new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
+        setHelpIDString(frame.getRootPane(), "home");
+        setHelpIDString(browsePanel, "browse-route-catalog");
+        setHelpIDString(convertPanel, "convert-gps-data");
+        setHelpIDString(mapPanel, "map");
+        setHelpIDString(profilePanel, "profile-graph");
     }
 
     public String getApiUrl() {

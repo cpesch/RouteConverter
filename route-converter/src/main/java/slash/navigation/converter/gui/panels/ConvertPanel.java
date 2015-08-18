@@ -85,6 +85,7 @@ import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Collections.singletonList;
+import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -341,6 +342,8 @@ public class ConvertPanel implements PanelInTab {
         registerKeyStroke(tablePositions, "copy");
         registerKeyStroke(tablePositions, "cut");
         registerKeyStroke(tablePositions, "paste");
+
+        setHelpIDString(tablePositions, "position-list");
 
         buttonNewPosition.addActionListener(r.getContext().getActionManager().get("new-position"));
         buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete"));

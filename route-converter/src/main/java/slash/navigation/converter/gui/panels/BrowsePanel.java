@@ -71,6 +71,7 @@ import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
 import static java.util.Collections.singletonList;
+import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -146,6 +147,9 @@ public class BrowsePanel implements PanelInTab {
         actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories, catalogModel));
         actionManager.register("rename-route", new RenameRoutesAction(tableRoutes, catalogModel));
         actionManager.register("delete-route", new DeleteRoutesAction(tableRoutes, catalogModel));
+
+        setHelpIDString(treeCategories, "category-tree");
+        setHelpIDString(tableRoutes, "route-list");
 
         buttonLogin.addActionListener(new FrameAction() {
             public void run() {

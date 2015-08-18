@@ -41,18 +41,13 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 public class HelpTopicsAction extends FrameAction {
     private static final Logger log = Logger.getLogger(HelpTopicsAction.class.getName());
 
-    private String getHelpSetUrl() {
-        return System.getProperty("help", "http://www.routeconverter.com/javahelp.hs");
-    }
-
     public void run() {
         try {
-            HelpBroker broker = Application.getInstance().getContext().getHelpBroker(getHelpSetUrl());
+            HelpBroker broker = Application.getInstance().getContext().getHelpBroker();
             CSH.DisplayHelpFromFocus helpFromFocus = new CSH.DisplayHelpFromFocus(broker);
             helpFromFocus.actionPerformed(getEvent());
-            ((DefaultHelpBroker)broker).getWindowPresentation().getHelpWindow().setIconImage(getFrame().getIconImage());
+            ((DefaultHelpBroker) broker).getWindowPresentation().getHelpWindow().setIconImage(getFrame().getIconImage());
         } catch (Exception e) {
-            e.printStackTrace();
             log.severe("Could not initialize help: " + e);
             showMessageDialog(null, "Could not initialize help: " + getLocalizedMessage(e), "Error", ERROR_MESSAGE);
         }
