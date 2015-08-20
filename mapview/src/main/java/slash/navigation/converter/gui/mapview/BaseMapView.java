@@ -508,6 +508,7 @@ public abstract class BaseMapView implements MapView {
                                 try {
                                     processStream(socket);
                                 } catch (IOException e) {
+                                    e.printStackTrace();
                                     log.severe("Cannot process stream from callback listener socket: " + e);
                                 }
                             }
@@ -1144,25 +1145,31 @@ public abstract class BaseMapView implements MapView {
     private void processStream(Socket socket) throws IOException {
         List<String> lines = new ArrayList<>();
         boolean processingPost = false, processingBody = false;
-        try (OutputStream ignored = socket.getOutputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024)) {
-            while (true) {
-                try {
-                    String line = trim(reader.readLine());
-                    if (line == null) {
-                        if (processingPost && !processingBody) {
-                            processingBody = true;
-                            continue;
-                        } else
-                            break;
-                    }
-                    if (line.startsWith("POST"))
-                        processingPost = true;
-                    lines.add(line);
-                } catch (IOException e) {
-                    log.severe("Cannot read line from callback listener port:" + e);
-                    break;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
+        while (true) {
+            try {
+                String line = trim(reader.readLine());
+                if (line == null) {
+                    if (processingPost && !processingBody) {
+                        processingBody = true;
+                        continue;
+                    } else
+                        break;
                 }
+                if (line.startsWith("POST"))
+                    processingPost = true;
+                lines.add(line);
+            } catch (IOException e) {
+                log.severe("Cannot read line from callback listener port:" + e);
+                break;
             }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+            writer.write("HTTP/1.1 200 OK\n");
+            writer.write("Content-Type: text/plain\n");
+        } finally {
+            reader.close();
         }
 
         StringBuilder buffer = new StringBuilder();
