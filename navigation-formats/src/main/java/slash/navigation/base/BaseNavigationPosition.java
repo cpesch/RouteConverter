@@ -223,6 +223,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asIgoRoutePosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asHaicomLoggerPosition() {
         return asWgs84Position();
     }
