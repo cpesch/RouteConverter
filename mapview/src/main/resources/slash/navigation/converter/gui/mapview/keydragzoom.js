@@ -786,9 +786,9 @@
       }
       if (this.key_ == 83) {
         if (event.shiftKey)
-            callJavaWithUri("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng()+"/false");
+          callJavaWithUri("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng() + "/false");
         else
-            callJavaWithUri("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng()+"/true");
+          callJavaWithUri("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng() + "/true");
       }
 
       // Redraw box after zoom:

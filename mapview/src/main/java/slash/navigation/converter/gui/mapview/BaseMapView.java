@@ -835,13 +835,9 @@ public abstract class BaseMapView implements MapView {
     // bounds and center
 
     protected abstract NavigationPosition getNorthEastBounds();
-
     protected abstract NavigationPosition getSouthWestBounds();
-
     protected abstract NavigationPosition getCurrentMapCenter();
-
     protected abstract Integer getCurrentZoom();
-
     protected abstract String getCallbacks();
 
     private NavigationPosition getLastMapCenter() {
@@ -1246,7 +1242,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^map-type-changed/(.*)$");
     private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoom-changed/(.*)$");
-    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern OVER_QUERY_LIMIT_PATTERN = Pattern.compile("^over-query-limit$");
     private static final Pattern ZERO_RESULTS_PATTERN = Pattern.compile("^zero-results$");
@@ -1333,8 +1329,7 @@ public abstract class BaseMapView implements MapView {
             Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
             Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
             Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
-            final BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast,
-                    longitudeSouthWest, latitudeSouthWest);
+            final BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast, longitudeSouthWest, latitudeSouthWest);
             final Boolean replaceSelection = parseBoolean(selectPositionsMatcher.group(5));
             invokeLater(new Runnable() {
                 public void run() {
@@ -1360,9 +1355,15 @@ public abstract class BaseMapView implements MapView {
 
         Matcher centerChangedMatcher = CENTER_CHANGED_PATTERN.matcher(callback);
         if (centerChangedMatcher.matches()) {
-            Double latitude = parseDouble(centerChangedMatcher.group(1));
-            Double longitude = parseDouble(centerChangedMatcher.group(2));
-            centerChanged(longitude, latitude);
+            Double centerLatitude = parseDouble(centerChangedMatcher.group(1));
+            Double centerLongitude = parseDouble(centerChangedMatcher.group(2));
+            NavigationPosition center = new SimpleNavigationPosition(centerLongitude, centerLatitude);
+            Double latitudeNorthEast = parseDouble(centerChangedMatcher.group(3));
+            Double longitudeNorthEast = parseDouble(centerChangedMatcher.group(4));
+            Double latitudeSouthWest = parseDouble(centerChangedMatcher.group(5));
+            Double longitudeSouthWest = parseDouble(centerChangedMatcher.group(6));
+            BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast, longitudeSouthWest, latitudeSouthWest);
+            centerChanged(center, boundingBox);
             return true;
         }
 
@@ -1424,15 +1425,12 @@ public abstract class BaseMapView implements MapView {
         return false;
     }
 
-    private void centerChanged(Double longitude, Double latitude) {
-        preferences.putDouble(CENTER_LATITUDE_PREFERENCE, latitude);
-        preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, longitude);
+    private void centerChanged(NavigationPosition center, BoundingBox boundingBox) {
+        preferences.putDouble(CENTER_LATITUDE_PREFERENCE, center.getLatitude());
+        preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, center.getLongitude());
 
         if (positionReducer.hasFilteredVisibleArea()) {
-            NavigationPosition mapNorthEast = getNorthEastBounds();
-            NavigationPosition mapSouthWest = getSouthWestBounds();
-
-            if (!positionReducer.isWithinVisibleArea(mapNorthEast, mapSouthWest)) {
+            if (!positionReducer.isWithinVisibleArea(boundingBox)) {
                 synchronized (notificationMutex) {
                     haveToRepaintRouteImmediately = true;
                     routeUpdateReason = "repaint not visible positions";

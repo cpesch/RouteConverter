@@ -118,10 +118,8 @@ class PositionReducer {
         return visible != null;
     }
 
-    public boolean isWithinVisibleArea(NavigationPosition northEastCorner,
-                                       NavigationPosition southWestCorner) {
-        return !hasFilteredVisibleArea() ||
-                visible.contains(northEastCorner) && visible.contains(southWestCorner);
+    public boolean isWithinVisibleArea(BoundingBox boundingBox) {
+        return !hasFilteredVisibleArea() || visible.contains(boundingBox);
     }
 
     public void clear() {
@@ -228,7 +226,7 @@ class PositionReducer {
         long end = currentTimeMillis();
         if (positions.size() != result.size())
             log.info(format("Filtered significant positions to reduce %d positions to %d in %d milliseconds",
-                positions.size(), result.size(), (end - start)));
+                    positions.size(), result.size(), (end - start)));
         return result;
     }
 
@@ -286,7 +284,7 @@ class PositionReducer {
         long end = currentTimeMillis();
         if (positions.size() != result.size())
             log.info(format("Filtered visible positions with a threshold of %f to reduce %d positions to %d in %d milliseconds",
-                threshold, positions.size(), result.size(), (end - start)));
+                    threshold, positions.size(), result.size(), (end - start)));
         return result;
     }
 

@@ -753,7 +753,10 @@
                if(centerLat != lastCenterLat && centerLng != lastCenterLng) {
                    lastCenterLat = centerLat;
                    lastCenterLng = centerLng;
-                   callJavaWithUri("center-changed/" + centerLat + "/" + centerLng);
+                   var bounds = map.getBounds();
+                   var ne = bounds != undefined ? bounds.getNorthEast() : center;
+                   var sw = bounds != undefined ? bounds.getSouthWest() : center;
+                   callJavaWithUri("center-changed/" + centerLat + "/" + centerLng + "/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
                }
            });
 
