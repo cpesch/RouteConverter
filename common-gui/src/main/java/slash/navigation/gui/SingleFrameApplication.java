@@ -62,8 +62,7 @@ public abstract class SingleFrameApplication extends Application {
         return frame;
     }
 
-    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton,
-                               JMenuBar menuBar) {
+    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton, JMenuBar menuBar) {
         GraphicsConfiguration gc = null;
         String deviceId = preferences.get(DEVICE_PREFERENCE, null);
         if (deviceId != null) {
