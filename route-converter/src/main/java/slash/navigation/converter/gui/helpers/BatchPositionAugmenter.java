@@ -615,7 +615,14 @@ public class BatchPositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-data-error");
+                        String messageKey = "add-data-error";
+                        if(complementDescription)
+                            messageKey = "add-description-error";
+                        else if(complementElevation)
+                            messageKey = "add-elevation-error";
+                        else if(complementTime)
+                            messageKey = "add-time-error";
+                        return RouteConverter.getBundle().getString(messageKey);
                     }
                 }
         );
