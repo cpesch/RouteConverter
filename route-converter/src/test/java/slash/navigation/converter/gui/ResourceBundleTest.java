@@ -50,7 +50,9 @@ public class ResourceBundleTest {
 
     private void compareEnglishAgainstOtherBundles(boolean throwException) {
         ResourceBundle root = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", ROOT);
-        Enumeration<String> keys = root.getKeys();
+        ResourceBundle english = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", US);
+
+        Enumeration<String> keys = english.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             // skip keys which are only present in the default bundle
@@ -74,8 +76,16 @@ public class ResourceBundleTest {
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
 
-                String rootValue = root.getString(key);
-                if (rootValue.equals(value))
+                try {
+                    value = root.getString(key);
+                    if (throwException)
+                        assertTrue("key " + key + " exists in " + root, false);
+                } catch (MissingResourceException e) {
+                    // intentionally left empty
+                }
+
+                String englishValue = english.getString(key);
+                if (englishValue.equals(value))
                     System.out.println("key " + key + " is not translated in " + locale);
             }
         }
