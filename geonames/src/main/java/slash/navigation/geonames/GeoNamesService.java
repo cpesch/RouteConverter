@@ -69,7 +69,7 @@ public class GeoNamesService implements ElevationService {
     }
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
-        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude);
+        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude); // TODO could be up to 20 points
         if (result != null) {
             try {
                 Integer elevation = parseInteger(result);
@@ -87,22 +87,31 @@ public class GeoNamesService implements ElevationService {
             throw new ServiceUnavailableException("geonames.org", url);
     }
 
-    Integer getSrtm3ElevationFor(double longitude, double latitude) throws IOException {
+    Integer getAsterGDEMElevationFor(double longitude, double latitude) throws IOException {
+        return getElevationFor("astergdem", longitude, latitude, -9999);
+    }
+
+    Integer getSRTM3ElevationFor(double longitude, double latitude) throws IOException {
         return getElevationFor("srtm3", longitude, latitude, -32768);
     }
 
-    Integer getGtopo30ElevationFor(double longitude, double latitude) throws IOException {
+    Integer getGTOPO30ElevationFor(double longitude, double latitude) throws IOException {
         return getElevationFor("gtopo30", longitude, latitude, -9999);
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        if (latitude < 60.0 && latitude > -56.0) {
-            Integer elevation = getSrtm3ElevationFor(longitude, latitude);
-            return elevation != null ? elevation.doubleValue() : null;
-        } else {
-            Integer elevation = getGtopo30ElevationFor(longitude, latitude);
-            return elevation != null ? elevation.doubleValue() : null;
-        }
+        Integer elevation = null;
+
+        if (latitude < 83.0 && latitude > -65.0)
+            elevation = getAsterGDEMElevationFor(longitude, latitude);
+
+        if (elevation == null && latitude < 60.0 && latitude > -56.0)
+            elevation = getSRTM3ElevationFor(longitude, latitude);
+
+        if (elevation == null)
+            elevation = getGTOPO30ElevationFor(longitude, latitude);
+
+        return elevation != null ? elevation.doubleValue() : null;
     }
 
     private Geonames getGeonamesFor(String uri) throws IOException {
