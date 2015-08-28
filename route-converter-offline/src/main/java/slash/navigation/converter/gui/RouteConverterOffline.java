@@ -26,6 +26,7 @@ import slash.navigation.converter.gui.helpers.MapViewImpl;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
@@ -124,6 +125,8 @@ public class RouteConverterOffline extends RouteConverter {
         AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
         getElevationServiceFacade().addElevationService(automaticElevationService);
         getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+
+        getElevationServiceFacade().addElevationService(new GeoNamesService());
 
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
