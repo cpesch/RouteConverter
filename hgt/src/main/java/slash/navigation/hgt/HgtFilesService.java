@@ -50,7 +50,7 @@ public class HgtFilesService {
         this.dataSourceManager = dataSourceManager;
     }
 
-    public void initialize() {
+    public synchronized void initialize() {
         hgtFiles.clear();
         for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
             if (DATASOURCE_URIS.contains(dataSource.getId()))
@@ -58,11 +58,11 @@ public class HgtFilesService {
         }
     }
 
-    public List<HgtFiles> getHgtFiles() {
+    public synchronized List<HgtFiles> getHgtFiles() {
         return hgtFiles;
     }
 
-    public void dispose() {
+    public synchronized void dispose() {
         for (HgtFiles hgtFile : getHgtFiles())
             hgtFile.dispose();
     }

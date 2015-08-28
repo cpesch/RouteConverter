@@ -21,6 +21,7 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
+import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.MapViewImpl;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
@@ -28,6 +29,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
+import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteResource;
@@ -94,24 +96,39 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeRoutingServices() {
-        getRoutingServiceFacade().clear();
         BeelineService beeline = new BeelineService();
         getRoutingServiceFacade().addRoutingService(beeline);
         getRoutingServiceFacade().setPreferredRoutingService(beeline);
 
+        BRouter router = new BRouter(getDataSourceManager().getDownloadManager());
+        getRoutingServiceFacade().addRoutingService(router);
+
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
         DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
         if (brouterProfiles != null && brouterSegments != null) {
-            BRouter router = new BRouter(brouterProfiles, brouterSegments, getDataSourceManager().getDownloadManager());
-            getRoutingServiceFacade().addRoutingService(router);
+            router.setProfilesAndSegments(brouterProfiles, brouterSegments);
             getRoutingServiceFacade().setPreferredRoutingService(router);
         }
 
+        GraphHopper hopper = new GraphHopper(getDataSourceManager().getDownloadManager());
+        getRoutingServiceFacade().addRoutingService(hopper);
+
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
         if (graphhopper != null)
-            getRoutingServiceFacade().addRoutingService(new GraphHopper(graphhopper, getDataSourceManager().getDownloadManager()));
+            hopper.setDataSource(graphhopper);
 
         getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getSelectMapsAction());
+    }
+
+    protected void initializeElevationServices() {
+        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
+        getElevationServiceFacade().addElevationService(automaticElevationService);
+        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+        }
     }
 
     private NotificationManager getNotificationManager() {

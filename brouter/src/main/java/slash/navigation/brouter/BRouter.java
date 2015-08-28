@@ -63,14 +63,12 @@ public class BRouter implements RoutingService {
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
 
-    private final DataSource profiles, segments;
     private final DownloadManager downloadManager;
+    private DataSource profiles, segments;
 
     private final RoutingContext routingContext = new RoutingContext();
 
-    public BRouter(DataSource profiles, DataSource segments, DownloadManager downloadManager) {
-        this.profiles = profiles;
-        this.segments = segments;
+    public BRouter(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
 
@@ -79,7 +77,20 @@ public class BRouter implements RoutingService {
     }
 
     public synchronized boolean isInitialized() {
-        return profiles != null && segments != null && downloadManager != null;
+        return getProfiles() != null && getSegments() != null;
+    }
+
+    public synchronized DataSource getProfiles() {
+        return profiles;
+    }
+
+    public synchronized DataSource getSegments() {
+        return segments;
+    }
+
+    public synchronized void setProfilesAndSegments(DataSource profiles, DataSource segments) {
+        this.profiles = profiles;
+        this.segments = segments;
     }
 
     public boolean isDownload() {
@@ -130,11 +141,11 @@ public class BRouter implements RoutingService {
     }
 
     private String getProfilesBaseUrl() {
-        return preferences.get(PROFILES_BASE_URL_PREFERENCE, profiles.getBaseUrl());
+        return preferences.get(PROFILES_BASE_URL_PREFERENCE, getProfiles().getBaseUrl());
     }
 
     private String getSegmentsBaseUrl() {
-        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, segments.getBaseUrl());
+        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, getSegments().getBaseUrl());
     }
 
     private java.io.File getDirectory(DataSource dataSource, String directoryName) {
@@ -146,7 +157,7 @@ public class BRouter implements RoutingService {
     }
 
     private java.io.File getProfilesDirectory() {
-        return getDirectory(profiles, "profiles");
+        return getDirectory(getProfiles(), "profiles");
     }
 
     private java.io.File createProfileFile(String key) {
@@ -154,7 +165,7 @@ public class BRouter implements RoutingService {
     }
 
     private java.io.File getSegmentsDirectory() {
-        return getDirectory(segments, "segments");
+        return getDirectory(getSegments(), "segments");
     }
 
     private java.io.File createSegmentFile(String key) {
@@ -259,17 +270,21 @@ public class BRouter implements RoutingService {
         }
 
         Collection<Downloadable> downloadableSegments = new HashSet<>();
-        for (String key : uris) {
-            Downloadable downloadable = segments.getDownloadable(key);
-            if (downloadable != null)
-                downloadableSegments.add(downloadable);
+        if(isInitialized()) {
+            for (String key : uris) {
+                Downloadable downloadable = getSegments().getDownloadable(key);
+                if (downloadable != null)
+                    downloadableSegments.add(downloadable);
+            }
         }
 
         final Collection<Downloadable> notExistingProfiles = new HashSet<>();
-        for (Downloadable downloadable : profiles.getFiles()) {
-            if (createProfileFile(downloadable.getUri()).exists())
-                continue;
-            notExistingProfiles.add(downloadable);
+        if(isInitialized()) {
+            for (Downloadable downloadable : getProfiles().getFiles()) {
+                if (createProfileFile(downloadable.getUri()).exists())
+                    continue;
+                notExistingProfiles.add(downloadable);
+            }
         }
 
         final Collection<Downloadable> notExistingSegments = new HashSet<>();

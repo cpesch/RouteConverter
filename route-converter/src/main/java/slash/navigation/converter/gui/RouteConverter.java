@@ -1122,17 +1122,15 @@ public class RouteConverter extends SingleFrameApplication {
                             getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
                 }
 
-                initializeElevationServices();
-                initializeRoutingServices();
+                updateElevationServices();
+                updateRoutingServices();
 
                 scanRemoteMapsAndThemes();
             }
-        }, "DataSourceInitializer").start();
+        }, "DataSourceUpdater").start();
     }
 
     protected void initializeElevationServices() {
-        getElevationServiceFacade().clear();
-
         AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
         getElevationServiceFacade().addElevationService(automaticElevationService);
         getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
@@ -1146,11 +1144,20 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    protected void updateElevationServices() {
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+        }
+    }
+
     protected void initializeRoutingServices() {
-        getRoutingServiceFacade().clear();
         RoutingService service = new GoogleDirectionsService(getMapView());
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
+    }
+
+    protected void updateRoutingServices() {
     }
 
     protected void scanLocalMapsAndThemes() {

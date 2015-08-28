@@ -75,7 +75,8 @@ public class BRouterIT {
         when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments3/");
         when(brouterSegments.getDirectory()).thenReturn("test");
 
-        router = new BRouter(brouterProfiles, brouterSegments, new DownloadManager(createTempFile("queueFile", ".xml")));
+        router = new BRouter(new DownloadManager(createTempFile("queueFile", ".xml")));
+        router.setProfilesAndSegments(brouterProfiles, brouterSegments);
         DownloadFuture future = router.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();

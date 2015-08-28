@@ -61,10 +61,6 @@ public class RoutingServiceFacade {
         this.preferredRoutingService = preferredRoutingService;
     }
 
-    public void clear() {
-        routingServices.clear();
-    }
-
     public List<RoutingService> getRoutingServices() {
         return routingServices;
     }

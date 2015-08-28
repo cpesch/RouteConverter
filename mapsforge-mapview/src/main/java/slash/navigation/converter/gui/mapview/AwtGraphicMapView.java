@@ -21,15 +21,21 @@ package slash.navigation.converter.gui.mapview;
 
 import org.mapsforge.core.graphics.GraphicContext;
 import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.controller.FrameBufferController;
 import org.mapsforge.map.controller.LayerManagerController;
 import org.mapsforge.map.controller.MapViewController;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.TileLayer;
+import org.mapsforge.map.layer.labels.LabelStore;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.Model;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.MapScaleBar;
+import org.mapsforge.map.util.MapPositionUtil;
 import org.mapsforge.map.view.FpsCounter;
 import org.mapsforge.map.view.FrameBuffer;
 
@@ -40,7 +46,7 @@ import static org.mapsforge.map.awt.AwtGraphicFactory.INSTANCE;
 /**
  * Implementation of a {@link org.mapsforge.map.view.MapView} {@link Container}.
  *
- * @author Christian Pesch, inspired by org.mapsforge.map.swing.view
+ * @author Christian Pesch, inspired by org.mapsforge.map.swing.view.MapView
  */
 
 public class AwtGraphicMapView extends Container implements org.mapsforge.map.view.MapView {
@@ -58,6 +64,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
         this.model = new Model();
 
+        this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY, model.displayModel);
         this.frameBuffer = new FrameBuffer(model.frameBufferModel, model.displayModel, GRAPHIC_FACTORY);
         this.frameBufferController = FrameBufferController.create(frameBuffer, model);
 
@@ -67,16 +74,39 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
         MapViewController.create(this, model);
 
-        this.fpsCounter = new FpsCounter(GRAPHIC_FACTORY, model.displayModel);
         this.mapScaleBar = new DefaultMapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
     }
 
     public void destroy() {
         layerManager.interrupt();
         frameBufferController.destroy();
-        this.frameBuffer.destroy();
-        if (this.mapScaleBar != null)
-            this.mapScaleBar.destroy();
+        frameBuffer.destroy();
+        if (mapScaleBar != null)
+            mapScaleBar.destroy();
+        getModel().mapViewPosition.destroy();
+    }
+
+    public void destroyAll() {
+        for (Layer layer : layerManager.getLayers()) {
+            layerManager.getLayers().remove(layer);
+            layer.onDestroy();
+            if (layer instanceof TileLayer) {
+                ((TileLayer<?>) layer).getTileCache().destroy();
+            }
+            if (layer instanceof TileRendererLayer) {
+                LabelStore labelStore = ((TileRendererLayer) layer).getLabelStore();
+                if (labelStore != null) {
+                    labelStore.clear();
+                }
+            }
+        }
+        destroy();
+        AwtGraphicFactory.clearResourceMemoryCache();
+    }
+
+    public BoundingBox getBoundingBox() {
+        return MapPositionUtil.getBoundingBox(model.mapViewPosition.getMapPosition(), getDimension(),
+                model.displayModel.getTileSize());
     }
 
     public Dimension getDimension() {

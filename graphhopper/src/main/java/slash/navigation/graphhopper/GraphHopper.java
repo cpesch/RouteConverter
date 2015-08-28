@@ -68,14 +68,13 @@ public class GraphHopper implements RoutingService {
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
 
-    private final DataSource dataSource;
     private final DownloadManager downloadManager;
+    private DataSource dataSource;
 
     private com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile = null;
 
-    public GraphHopper(DataSource dataSource, DownloadManager downloadManager) {
-        this.dataSource = dataSource;
+    public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
 
@@ -84,7 +83,15 @@ public class GraphHopper implements RoutingService {
     }
 
     public synchronized boolean isInitialized() {
-        return dataSource != null && downloadManager != null;
+        return getDataSource() != null;
+    }
+
+    public synchronized DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public synchronized void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public boolean isDownload() {
@@ -124,14 +131,14 @@ public class GraphHopper implements RoutingService {
     }
 
     private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, dataSource.getBaseUrl());
+        return preferences.get(BASE_URL_PREFERENCE, getDataSource().getBaseUrl());
     }
 
     private java.io.File getDirectory() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
         if (!f.exists())
-            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
+            directoryName = getApplicationDirectory(getDataSource().getDirectory()).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
@@ -150,7 +157,10 @@ public class GraphHopper implements RoutingService {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
-            return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getMillis(), true);
+            return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getTime(), true);
+        } catch (Exception e) {
+            log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
+            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         } finally {
             long end = currentTimeMillis();
             log.fine(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
@@ -173,8 +183,10 @@ public class GraphHopper implements RoutingService {
         String[] args = new String[]{
                 "prepare.doPrepare=false",
                 "prepare.chShortcuts=false",
+                "prepare.prepare.chWeighting=none",
                 "graph.location=" + createPath(osmPbfFile),
                 "osmreader.acceptWay=" + getAvailableTravelModeNames(),
+                "osmreader.instructions=false",
                 "osmreader.osm=" + osmPbfFile.getAbsolutePath()
         };
         try {
@@ -182,7 +194,7 @@ public class GraphHopper implements RoutingService {
                 hopper.close();
             hopper = new com.graphhopper.GraphHopper().forDesktop();
             hopper.setEncodingManager(new EncodingManager(getAvailableTravelModeNames()));
-            hopper.init(read(args));
+            hopper.init(read(args)); // TODO this takes a long time initially, how to signal to user
             hopper.importOrLoad();
         } catch (Exception e) {
             log.warning("Cannot initialize GraphHopper: " + e);
@@ -206,12 +218,14 @@ public class GraphHopper implements RoutingService {
         Downloadable downloadableForSmallestBoundingBox = null;
         BoundingBox smallestBoundingBox = null;
 
-        for (File file : dataSource.getFiles()) {
-            BoundingBox fileBoundingBox = file.getBoundingBox();
-            if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
-                if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
-                    downloadableForSmallestBoundingBox = file;
-                    smallestBoundingBox = fileBoundingBox;
+        if(isInitialized()) {
+            for (File file : getDataSource().getFiles()) {
+                BoundingBox fileBoundingBox = file.getBoundingBox();
+                if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
+                    if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
+                        downloadableForSmallestBoundingBox = file;
+                        smallestBoundingBox = fileBoundingBox;
+                    }
                 }
             }
         }
@@ -222,14 +236,14 @@ public class GraphHopper implements RoutingService {
                 return downloadable != null && !createFile(downloadable.getUri()).exists();
             }
             public boolean isRequiresProcessing() {
-                return true;
+                return downloadable != null;
             }
             public void download() {
                 downloadAll(downloadable);
             }
             public void process() {
-                if(downloadable != null)
-                    initializeHopper(createFile(downloadable.getUri()));
+                assert downloadable != null;
+                initializeHopper(createFile(downloadable.getUri()));
             }
         };
     }

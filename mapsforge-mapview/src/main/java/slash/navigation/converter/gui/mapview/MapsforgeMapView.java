@@ -434,10 +434,12 @@ public class MapsforgeMapView implements MapView {
                     private void waitForDownload(RoutingService service) {
                         if (service.isDownload()) {
                             DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-                            if (future.isRequiresDownload() || future.isRequiresProcessing()) {
-                                if (future.isRequiresDownload())
+                            boolean requiresDownload = future.isRequiresDownload();
+                            boolean requiresProcessing = future.isRequiresProcessing();
+                            if (requiresDownload || requiresProcessing) {
+                                if (requiresDownload)
                                     future.download();
-                                if (future.isRequiresProcessing())
+                                if (requiresProcessing)
                                     future.process();
                             }
                         }
@@ -779,8 +781,7 @@ public class MapsforgeMapView implements MapView {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
 
         executor.shutdownNow();
-        mapView.getModel().mapViewPosition.destroy();
-        mapView.destroy();
+        mapView.destroyAll();
     }
 
     public Component getComponent() {

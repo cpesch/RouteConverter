@@ -55,10 +55,6 @@ public class ElevationServiceFacade {
         this.preferredElevationService = preferredElevationService;
     }
 
-    public void clear() {
-        elevationServices.clear();
-    }
-
     public List<ElevationService> getElevationServices() {
         return elevationServices;
     }
