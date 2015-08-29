@@ -181,12 +181,7 @@ public class GraphHopper implements RoutingService {
     void initializeHopper(java.io.File osmPbfFile) {
         this.osmPbfFile = osmPbfFile;
         String[] args = new String[]{
-                "prepare.doPrepare=false",
-                "prepare.chShortcuts=false",
-                "prepare.prepare.chWeighting=none",
-                "graph.location=" + createPath(osmPbfFile),
                 "osmreader.acceptWay=" + getAvailableTravelModeNames(),
-                "osmreader.instructions=false",
                 "osmreader.osm=" + osmPbfFile.getAbsolutePath()
         };
         try {
@@ -195,6 +190,7 @@ public class GraphHopper implements RoutingService {
             hopper = new com.graphhopper.GraphHopper().forDesktop();
             hopper.setEncodingManager(new EncodingManager(getAvailableTravelModeNames()));
             hopper.init(read(args)); // TODO this takes a long time initially, how to signal to user
+            hopper.setCHEnable(false).setEnableInstructions(false).setGraphHopperLocation(createPath(osmPbfFile));
             hopper.importOrLoad();
         } catch (Exception e) {
             log.warning("Cannot initialize GraphHopper: " + e);
