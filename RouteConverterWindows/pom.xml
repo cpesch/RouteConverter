@@ -145,7 +145,7 @@
                             <jar>target/RouteConverterWindows.jar</jar>
                             <errTitle>RouteConverter</errTitle>
                             <icon>src/main/app-resources/RouteConverter.ico</icon>
-                            <runtimeBits>64/32</runtimeBits>
+                            <runtimeBits>32/64</runtimeBits>
                             <!--
                             <splash>
                                 <file>RouteConverter.bmp</file>
