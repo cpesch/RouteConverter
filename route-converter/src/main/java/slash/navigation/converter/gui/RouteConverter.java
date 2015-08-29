@@ -116,7 +116,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
     public static void main(String[] args) {
-        launch(RouteConverter.class, args);
+        launch(RouteConverter.class, RouteConverter.class.getPackage().getName() + ".Untranslated", args);
     }
 
     public static RouteConverter getInstance() {

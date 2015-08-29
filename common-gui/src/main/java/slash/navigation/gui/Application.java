@@ -138,7 +138,7 @@ public abstract class Application {
         }
     }
 
-    public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
+    public static <T extends Application> void launch(final Class<T> applicationClass, final String parentBundleName, final String[] args) {
         final ClassLoader contextClassLoader = loadSWT();
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -152,7 +152,7 @@ public abstract class Application {
                 try {
                     if (contextClassLoader != null)
                         Thread.currentThread().setContextClassLoader(contextClassLoader);
-                    Application application = create(applicationClass);
+                    Application application = create(applicationClass, parentBundleName);
                     setInstance(application);
                     application.initializeSingleInstance();
                     application.startup();
@@ -178,7 +178,7 @@ public abstract class Application {
         }
     }
 
-    private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
+    private static <T extends Application> T create(Class<T> applicationClass, String parentBundleName) throws Exception {
         Constructor<T> ctor = applicationClass.getDeclaredConstructor();
         T application = ctor.newInstance();
 
@@ -186,6 +186,11 @@ public abstract class Application {
         ResourceBundle bundle = tryToLoadBundleFor(applicationClass);
         if (bundle == null)
             bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
+
+        Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
+        method.setAccessible(true);
+        method.invoke(bundle, ResourceBundle.getBundle(parentBundleName));
+
         ctx.setBundle(bundle);
         return application;
     }
