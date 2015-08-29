@@ -61,7 +61,7 @@ public class RouteConverterOffline extends RouteConverter {
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
-        launch(RouteConverterOffline.class, args);
+        launch(RouteConverterOffline.class, new String[]{ RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
     public String getEdition() {

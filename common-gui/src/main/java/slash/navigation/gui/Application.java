@@ -138,7 +138,7 @@ public abstract class Application {
         }
     }
 
-    public static <T extends Application> void launch(final Class<T> applicationClass, final String parentBundleName, final String[] args) {
+    public static <T extends Application> void launch(final Class<T> applicationClass, final String[] bundleNames, final String[] args) {
         final ClassLoader contextClassLoader = loadSWT();
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -152,7 +152,7 @@ public abstract class Application {
                 try {
                     if (contextClassLoader != null)
                         Thread.currentThread().setContextClassLoader(contextClassLoader);
-                    Application application = create(applicationClass, parentBundleName);
+                    Application application = create(applicationClass, bundleNames);
                     setInstance(application);
                     application.initializeSingleInstance();
                     application.startup();
@@ -169,28 +169,22 @@ public abstract class Application {
         runNativeInterfaceEventPump();
     }
 
-    private static ResourceBundle tryToLoadBundleFor(Class<?> clazz) {
-        try {
-            return ResourceBundle.getBundle(clazz.getName());
-        } catch (Exception e) {
-            log.log(FINE, "Cannot load bundle for class " + clazz, e);
-            return null;
-        }
-    }
-
-    private static <T extends Application> T create(Class<T> applicationClass, String parentBundleName) throws Exception {
+    private static <T extends Application> T create(Class<T> applicationClass, String[] bundleNames) throws Exception {
         Constructor<T> ctor = applicationClass.getDeclaredConstructor();
         T application = ctor.newInstance();
 
         ApplicationContext ctx = application.getContext();
-        ResourceBundle bundle = tryToLoadBundleFor(applicationClass);
-        if (bundle == null)
-            bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
 
-        Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
-        method.setAccessible(true);
-        method.invoke(bundle, ResourceBundle.getBundle(parentBundleName));
-
+        ResourceBundle bundle = null, lastBundle = null;
+        for (String bundleName : bundleNames) {
+            bundle = ResourceBundle.getBundle(bundleName);
+            if (lastBundle != null) {
+                Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
+                method.setAccessible(true);
+                method.invoke(bundle, lastBundle);
+            }
+            lastBundle = bundle;
+        }
         ctx.setBundle(bundle);
         return application;
     }
