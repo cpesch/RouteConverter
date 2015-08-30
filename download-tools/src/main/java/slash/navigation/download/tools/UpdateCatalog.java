@@ -68,7 +68,6 @@ public class UpdateCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String MIRROR_ARGUMENT = "mirror";
     private static final String DOT_MAP = ".map";
-    private static final String DOT_PBF = ".pbf";
 
     private DataSourceManager dataSourceManager;
     private java.io.File mirror;
@@ -147,7 +146,7 @@ public class UpdateCatalog extends BaseDownloadTool {
             }
             fileType.getFragment().addAll(fragmentTypes);
 
-        } else if (file.getUri().endsWith(DOT_PBF)) {
+        } else if (file.getUri().endsWith(PbfUtil.DOT_PBF)) {
             // GET with range for .pbf header
             if (!download.getFile().getFile().exists())
                 download = downloadPartial(url, checksum.getContentLength());

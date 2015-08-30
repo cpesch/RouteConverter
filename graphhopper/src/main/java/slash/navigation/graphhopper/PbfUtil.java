@@ -38,6 +38,8 @@ import static java.lang.String.format;
 public class PbfUtil {
     private static final Logger log = Logger.getLogger(PbfUtil.class.getName());
     private static final String OSM_HEADER = "OSMHeader";
+    public static final String DOT_OSM = ".osm";
+    public static final String DOT_PBF = ".pbf";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
     public static BoundingBox extractBoundingBox(File file) throws IOException {

@@ -22,7 +22,18 @@ package slash.navigation.converter.gui;
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.MapManager;
+
+import javax.swing.*;
+import java.util.ResourceBundle;
+
+import static java.text.MessageFormat.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.UIHelper.getFrame;
 
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapManager}
@@ -32,6 +43,35 @@ import slash.navigation.maps.MapManager;
 
 public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements MapViewCallbackOffline {
     public MapManager getMapManager() {
-        return ((RouteConverterOffline)RouteConverter.getInstance()).getMapManager();
+        return ((RouteConverterOffline)Application.getInstance()).getMapManager();
+    }
+
+    private NotificationManager getNotificationManager() {
+        return Application.getInstance().getContext().getNotificationManager();
+    }
+
+    private ResourceBundle getBundle() {
+        return Application.getInstance().getContext().getBundle();
+    }
+
+    public void showDownloadNotification() {
+        getNotificationManager().showNotification(getBundle().getString("downloading-routing-data"), null);
+    }
+
+    public void showProcessNotification() {
+        getNotificationManager().showNotification(getBundle().getString("processing-routing-data"), null);
+    }
+
+    public void showRoutingException(Exception e) {
+        //noinspection ConstantConditions
+        showMessageDialog(getFrame(), format(getBundle().getString("cannot-route-position-list"), e),
+                getFrame().getTitle(), ERROR_MESSAGE);
+
+    }
+
+    public void showMapException(String mapName, Exception e) {
+        //noinspection ConstantConditions
+        showMessageDialog(getFrame(), format(getBundle().getString("cannot-display-map"), mapName, e),
+                getFrame().getTitle(), ERROR_MESSAGE);
     }
 }

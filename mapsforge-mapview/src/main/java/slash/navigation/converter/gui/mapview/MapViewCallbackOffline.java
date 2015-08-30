@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.MapManager;
 
 /**
@@ -30,4 +31,10 @@ import slash.navigation.maps.MapManager;
 
 public interface MapViewCallbackOffline extends MapViewCallback {
     MapManager getMapManager();
+
+    void showDownloadNotification();
+    void showProcessNotification();
+
+    void showRoutingException(Exception e);
+    void showMapException(String mapName, Exception e);
 }

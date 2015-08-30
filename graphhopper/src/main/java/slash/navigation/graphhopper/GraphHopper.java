@@ -43,16 +43,16 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.graphhopper.util.CmdArgs.read;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Action.Copy;
+import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
+import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 
 /**
  * Encapsulates access to the GraphHopper.
@@ -146,11 +146,13 @@ public class GraphHopper implements RoutingService {
         return new java.io.File(getDirectory(), key);
     }
 
+    private java.io.File createPath(java.io.File file) {
+        String name = file.getName().replace(DOT_PBF, "").replace(DOT_OSM, "");
+        return new java.io.File(file.getParent(), name);
+    }
+
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        if(osmPbfFile == null){
-            log.warning(format("Cannot route between %s and %s since there is no OSM .pbf file", from, to));
-            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
-        }
+        initializeHopper();
 
         long start = currentTimeMillis();
         try {
@@ -159,6 +161,7 @@ public class GraphHopper implements RoutingService {
             GHResponse response = hopper.route(request);
             return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getTime(), true);
         } catch (Exception e) {
+            e.printStackTrace();
             log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
             return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         } finally {
@@ -178,27 +181,30 @@ public class GraphHopper implements RoutingService {
         return result.toString();
     }
 
-    void initializeHopper(java.io.File osmPbfFile) {
-        this.osmPbfFile = osmPbfFile;
-        String[] args = new String[]{
-                "osmreader.acceptWay=" + getAvailableTravelModeNames(),
-                "osmreader.osm=" + osmPbfFile.getAbsolutePath()
-        };
-        try {
-            if (hopper != null)
-                hopper.close();
-            hopper = new com.graphhopper.GraphHopper().forDesktop();
-            hopper.setEncodingManager(new EncodingManager(getAvailableTravelModeNames()));
-            hopper.init(read(args)); // TODO this takes a long time initially, how to signal to user
-            hopper.setCHEnable(false).setEnableInstructions(false).setGraphHopperLocation(createPath(osmPbfFile));
-            hopper.importOrLoad();
-        } catch (Exception e) {
-            log.warning("Cannot initialize GraphHopper: " + e);
-        }
+    private synchronized java.io.File getOsmPbfFile() {
+        return osmPbfFile;
     }
 
-    private String createPath(java.io.File osmPbfFile) {
-        return removeExtension(removeExtension(osmPbfFile.getAbsolutePath()));
+    synchronized void setOsmPbfFile(java.io.File osmPbfFile) {
+        this.osmPbfFile = osmPbfFile;
+    }
+
+    synchronized void initializeHopper() {
+        java.io.File file = getOsmPbfFile();
+        if(file == null)
+            return;
+
+        if (hopper != null)
+            hopper.close();
+        hopper = new com.graphhopper.GraphHopper().forDesktop().
+                setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                setCHEnable(false).
+                setEnableInstructions(false).
+                setGraphHopperLocation(createPath(file).getAbsolutePath()).
+                setOSMFile(file.getAbsolutePath()).
+                importOrLoad();
+
+        setOsmPbfFile(null);
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
@@ -227,19 +233,21 @@ public class GraphHopper implements RoutingService {
         }
 
         final Downloadable downloadable = downloadableForSmallestBoundingBox;
+        final java.io.File file = downloadable != null ? createFile(downloadable.getUri()) : null;
+        setOsmPbfFile(file);
+
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
-                return downloadable != null && !createFile(downloadable.getUri()).exists();
+                return file != null && !file.exists();
             }
             public boolean isRequiresProcessing() {
-                return downloadable != null;
+                return file != null && !createPath(file).exists();
             }
             public void download() {
                 downloadAll(downloadable);
             }
             public void process() {
-                assert downloadable != null;
-                initializeHopper(createFile(downloadable.getUri()));
+                initializeHopper();
             }
         };
     }
@@ -253,11 +261,11 @@ public class GraphHopper implements RoutingService {
     }
 
     private void downloadAll(Downloadable downloadable) {
-        Download download = download(downloadable);
+        Download download = downloadPbf(downloadable);
         downloadManager.waitForCompletion(singletonList(download));
     }
 
-    private Download download(Downloadable downloadable) {
+    private Download downloadPbf(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Copy,

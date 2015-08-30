@@ -20,7 +20,6 @@
 package slash.navigation.gui.notifications;
 
 import slash.navigation.gui.Application;
-import slash.navigation.gui.SingleFrameApplication;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -34,6 +33,7 @@ import static java.lang.System.currentTimeMillis;
 import static javax.swing.BorderFactory.createEtchedBorder;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.navigation.gui.helpers.UIHelper.getFrame;
 
 /**
  * Manages the notifications of an {@link Application}.
@@ -111,13 +111,6 @@ public class NotificationManager {
             }
         }, "NotificationUpdater");
         notificationUpdater.start();
-    }
-
-    private JFrame getFrame() {
-        Application application = Application.getInstance();
-        if (!(application instanceof SingleFrameApplication))
-            return null;
-        return ((SingleFrameApplication) application).getFrame();
     }
 
     private void show(String message) {

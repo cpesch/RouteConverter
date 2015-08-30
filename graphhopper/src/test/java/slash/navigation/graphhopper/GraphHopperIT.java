@@ -67,8 +67,10 @@ public class GraphHopperIT {
         DownloadFuture future = hopper.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if(future.isRequiresDownload())
             future.download();
-        else
-            hopper.initializeHopper(new File(getApplicationDirectory("test"), URI));
+        else {
+            hopper.setOsmPbfFile(new File(getApplicationDirectory("test"), URI));
+            hopper.initializeHopper();
+        }
     }
 
     private TravelMode getTravelMode(String lookupName) {

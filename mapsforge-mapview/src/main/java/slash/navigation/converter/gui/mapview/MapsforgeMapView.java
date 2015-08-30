@@ -58,7 +58,6 @@ import slash.navigation.converter.gui.mapview.overlays.DraggableMarker;
 import slash.navigation.converter.gui.mapview.updater.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
@@ -84,12 +83,9 @@ import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.Thread.sleep;
-import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
@@ -411,12 +407,17 @@ public class MapsforgeMapView implements MapView {
 
                 executor.execute(new Runnable() {
                     public void run() {
-                        RoutingService service = mapViewCallback.getRoutingService();
-                        waitForInitialization(service);
-                        waitForDownload(service);
+                        try {
+                            RoutingService service = mapViewCallback.getRoutingService();
+                            waitForInitialization(service);
+                            waitForDownload(service);
 
-                        drawRoute(pairWithLayers);
-                        fireDistanceAndTime();
+                            drawRoute(pairWithLayers);
+                            fireDistanceAndTime();
+                        }
+                        catch(Exception e) {
+                            mapViewCallback.showRoutingException(e);
+                        }
                     }
 
                     private void waitForInitialization(RoutingService service) {
@@ -434,13 +435,13 @@ public class MapsforgeMapView implements MapView {
                     private void waitForDownload(RoutingService service) {
                         if (service.isDownload()) {
                             DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-                            boolean requiresDownload = future.isRequiresDownload();
-                            boolean requiresProcessing = future.isRequiresProcessing();
-                            if (requiresDownload || requiresProcessing) {
-                                if (requiresDownload)
-                                    future.download();
-                                if (requiresProcessing)
-                                    future.process();
+                            if (future.isRequiresDownload()) {
+                                mapViewCallback.showDownloadNotification();
+                                future.download();
+                            }
+                            if (future.isRequiresProcessing()) {
+                                mapViewCallback.showProcessNotification();
+                                future.process();
                             }
                         }
                     }
@@ -689,8 +690,7 @@ public class MapsforgeMapView implements MapView {
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
-            showMessageDialog(getComponent(), format(Application.getInstance().getContext().getBundle().getString("cannot-display-map"),
-                    map.getDescription(), e), ((SingleFrameApplication)Application.getInstance()).getFrame().getTitle(), ERROR_MESSAGE);
+            mapViewCallback.showMapException(map.getDescription(), e);
             return;
         }
 
