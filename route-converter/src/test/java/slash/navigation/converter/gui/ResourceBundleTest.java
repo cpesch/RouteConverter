@@ -71,17 +71,17 @@ public class ResourceBundleTest {
                 try {
                     value = bundle.getString(key);
                 } catch (MissingResourceException e) {
-                    System.out.println("key " + key + " does not exist in " + locale);
+                    System.out.println("key " + key + " does not exist in locale " + locale);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
 
                 try {
                     value = root.getString(key);
-                    if (throwException)
-                        assertTrue("key " + key + " exists in " + root, false);
                 } catch (MissingResourceException e) {
-                    // intentionally left empty
+                    System.out.println("key " + key + " does not exist in root " + root);
+                    if (throwException)
+                        assertTrue("key " + key + " does not exist in root " + root, false);
                 }
 
                 String englishValue = english.getString(key);
@@ -93,12 +93,8 @@ public class ResourceBundleTest {
 
     @Test
     public void mnemonicsAreUnique() {
-        for (Locale locale : LOCALES) {
-            if (locale.equals(US))
-                continue;
+        for (Locale locale : LOCALES)
             checkMnemonicsAreUnique(locale);
-        }
-        checkMnemonicsAreUnique(ROOT);
     }
 
     private void checkMnemonicsAreUnique(Locale locale) {
