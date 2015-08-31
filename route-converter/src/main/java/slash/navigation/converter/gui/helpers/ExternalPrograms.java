@@ -63,6 +63,10 @@ public class ExternalPrograms {
         startBrowser(window, "http://www.routeconverter.com/routecatalog-terms/" + getDefault().getLanguage());
     }
 
+    public static void startBrowserForTranslation(Window window) {
+        startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
+    }
+
     public static void startBrowserForForum(Window window) {
         startBrowser(window, isGerman() ? "http://forum.routeconverter.de/" : "http://forum.routeconverter.com/");
     }
