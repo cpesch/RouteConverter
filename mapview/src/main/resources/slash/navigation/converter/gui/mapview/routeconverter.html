@@ -560,7 +560,7 @@
 
       addDebug("1. initialize()");
        try {
-           var MAPNIK_MAPTYPE_ID = "OSM Mapnik", CYCLE_MAPTYPE_ID = "OSM Cycle", TOPO_MAPTYPE_ID = "OSM Topo",
+           var MAPNIK_MAPTYPE_ID = "OSM Street", CYCLE_MAPTYPE_ID = "OSM Cycle", TOPO_MAPTYPE_ID = "OSM Topo",
                    HIKE_MAPTYPE_ID = "OSM Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols";
            var MAPTYPE_IDS = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
@@ -589,7 +589,7 @@
                },
                tileSize: DEFAULT_TILE_SIZE,
                maxZoom: 19,
-               alt: "Mapnik rendering of OpenStreetMap data",
+               alt: "OpenStreetMap rendering of OpenStreetMap data",
                name: MAPNIK_MAPTYPE_ID
            }));
            map.mapTypes.set(CYCLE_MAPTYPE_ID, new google.maps.ImageMapType({
@@ -635,7 +635,7 @@
                },
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
-               name: "Hillshading"
+               name: "Hillshading rendering of OpenStreetMap data"
            });
            var hikingSymbolsMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
