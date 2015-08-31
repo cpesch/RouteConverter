@@ -99,6 +99,7 @@ import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.MapViewImpl.EclipseSWT;
 import static slash.navigation.converter.gui.helpers.MapViewImpl.JavaFX;
@@ -161,7 +162,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
-    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator";
+    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.16";
 
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
@@ -254,7 +255,7 @@ public class RouteConverter extends SingleFrameApplication {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), language));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
-                    startMail(frame);
+                    startBrowserForTranslation(frame);
                 }
             });
             showMessageDialog(frame, labelTranslatorMissing, frame.getTitle(), QUESTION_MESSAGE);
