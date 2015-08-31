@@ -40,7 +40,7 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
 public class ElevationServiceFacade {
     private static final Logger log = Logger.getLogger(ElevationServiceFacade.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(ElevationServiceFacade.class);
-    private static final String ELEVATION_SERVICE = "elevationService";
+    private static final String ELEVATION_SERVICE = "elevationService-2.16";
 
     private final List<ElevationService> elevationServices = new ArrayList<>();
     private ElevationService preferredElevationService;

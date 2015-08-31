@@ -141,8 +141,8 @@ public class MapManager {
 
     private void initializeDefaults() {
         mapsModel.clear();
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap.org", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap.org", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
+        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
         themesModel.clear();
         themesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
