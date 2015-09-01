@@ -47,8 +47,13 @@ public class ElevationServiceFacade {
     private boolean loggedFailedWarning = false;
 
     public void addElevationService(ElevationService elevationService) {
-        elevationServices.add(elevationService);
-        log.info(format("Added elevation service '%s'", elevationService.getName()));
+        ElevationService previous = findElevationService(elevationService.getName());
+        if(previous != null) {
+            elevationServices.set(elevationServices.indexOf(previous), elevationService);
+        } else {
+            elevationServices.add(elevationService);
+            log.info(format("Added elevation service '%s'", elevationService.getName()));
+        }
     }
 
     public void setPreferredElevationService(ElevationService preferredElevationService) {

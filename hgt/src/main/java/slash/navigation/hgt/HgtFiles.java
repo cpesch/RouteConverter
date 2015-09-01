@@ -21,6 +21,7 @@ package slash.navigation.hgt;
 
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 import slash.navigation.datasources.Fragment;
 import slash.navigation.download.Download;
@@ -132,15 +133,15 @@ public class HgtFiles implements ElevationService {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Set<Fragment> fragments = new HashSet<>();
+        Set<Fragment<Downloadable>> fragments = new HashSet<>();
         for (String key : keys) {
-            Fragment fragment = dataSource.getFragment(key);
+            Fragment<Downloadable> fragment = dataSource.getFragment(key);
             if (fragment != null)
                 fragments.add(fragment);
         }
 
         Collection<Download> downloads = new HashSet<>();
-        for (Fragment<File> fragment : fragments) {
+        for (Fragment<Downloadable> fragment : fragments) {
             if (createFile(fragment.getKey()).exists())
                 continue;
             downloads.add(download(fragment));
@@ -150,8 +151,8 @@ public class HgtFiles implements ElevationService {
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(Fragment<File> fragment) {
-        File downloadable = fragment.getDownloadable();
+    private Download download(Fragment<Downloadable> fragment) {
+        File downloadable = File.class.cast(fragment.getDownloadable());
 
         List<FileAndChecksum> fragments = new ArrayList<>();
         for (Fragment otherFragments : downloadable.getFragments())

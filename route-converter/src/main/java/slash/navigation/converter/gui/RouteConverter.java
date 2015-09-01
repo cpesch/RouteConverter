@@ -1146,6 +1146,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void updateElevationServices() {
+        getHgtFilesService().dispose();
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
