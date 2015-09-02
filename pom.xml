@@ -246,7 +246,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.9.5</version>
+            <version>2.0.31-beta</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -257,12 +257,6 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
-                <classifier>stripped</classifier>
-            </dependency>
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.2</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
