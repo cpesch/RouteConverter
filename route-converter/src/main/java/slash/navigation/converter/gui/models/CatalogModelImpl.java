@@ -288,17 +288,16 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                for (RouteModel route : routes) {
+                for (final RouteModel route : routes) {
                     route.getRoute().delete();
-                }
 
-                invokeLater(new Runnable() {
-                    public void run() {
-                        for (RouteModel route : routes) {
+                    invokeLater(new Runnable() {
+                        public void run() {
                             routesTableModel.deleteRoute(route);
                         }
-                    }
-                });
+                    });
+                }
+
             }
         });
     }

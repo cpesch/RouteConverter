@@ -115,7 +115,6 @@ public class RemoteRoute implements Route {
 
     public void delete() throws IOException {
         getCatalog().deleteRoute(getHref());
-        invalidate();
     }
 
     public boolean equals(Object o) {
