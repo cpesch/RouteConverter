@@ -38,6 +38,7 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -49,6 +50,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
@@ -196,13 +198,30 @@ public class GraphHopper implements RoutingService {
 
         if (hopper != null)
             hopper.close();
-        hopper = new com.graphhopper.GraphHopper().forDesktop().
-                setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                setCHEnable(false).
-                setEnableInstructions(false).
-                setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                setOSMFile(file.getAbsolutePath()).
-                importOrLoad();
+
+        try {
+            hopper = new com.graphhopper.GraphHopper().forDesktop().
+                    setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                    setCHEnable(false).
+                    setEnableInstructions(false).
+                    setGraphHopperLocation(createPath(file).getAbsolutePath()).
+                    setOSMFile(file.getAbsolutePath()).
+                    importOrLoad();
+        }
+        catch(IllegalStateException e) {
+            log.warning("Could not initialize GraphHopper: " + e);
+
+            if (e.getMessage().contains("Version of shortcuts unsupported")) {
+                log.info("Deleting old GraphHopper indexes");
+                try {
+                    recursiveDelete(createPath(file));
+                } catch (IOException e2) {
+                    log.warning("Could not delete GraphHopper indexes: " + e2);
+                }
+            }
+
+            throw e;
+        }
 
         setOsmPbfFile(null);
     }
