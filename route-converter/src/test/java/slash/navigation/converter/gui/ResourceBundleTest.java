@@ -58,7 +58,7 @@ public class ResourceBundleTest {
             // skip keys which are only present in the default bundle
             if (key.startsWith("locale-") || key.startsWith("map-view-") || key.endsWith("-icon") ||
                     key.endsWith("-mnemonic") || key.endsWith("-keystroke") || key.endsWith("-keystroke-mac") ||
-                    key.equals("help-set") || key.equals("translator-missing") ||
+                    key.equals("help-set") || key.equals("translator-missing") || key.startsWith("waypoint-type-") ||
                     key.equals("FileChooser.acceptAllFileFilterText"))
                 continue;
 
