@@ -23,7 +23,7 @@
                         <configuration>
                             <encoding>UTF8</encoding>
                             <includes>
-                                <include>**/RouteConverter*.properties</include>
+                                <include>**/*.properties</include>
                             </includes>
                         </configuration>
                     </execution>
