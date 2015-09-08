@@ -19,8 +19,11 @@
 */
 package slash.navigation.maps.impl;
 
+import slash.navigation.datasources.DataSource;
+import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
+import slash.navigation.maps.RemoteMap;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -30,53 +33,59 @@ import java.util.List;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
- * Acts as a {@link TableModel} for the {@link LocalTheme}s of the {@link MapManager}.
+ * Acts as a {@link TableModel} for the available {@link RemoteMap}s of the {@link MapManager}.
  *
  * @author Christian Pesch
  */
 
-public class ThemesTableModel extends AbstractTableModel {
-    private List<LocalTheme> themes = new ArrayList<>();
+public class RemoteMapsTableModel extends AbstractTableModel {
+    public static final int DATASOURCE_COLUMN = 0;
+    public static final int DESCRIPTION_COLUMN = 1;
+    public static final int SIZE_COLUMN = 2;
 
-    public List<LocalTheme> getThemes() {
-        return themes;
+    private List<RemoteMap> maps = new ArrayList<>();
+
+    public List<RemoteMap> getMaps() {
+        return maps;
+    }
+
+    public void setMaps(List<RemoteMap> maps) {
+        this.maps = maps;
+        fireTableDataChanged();
     }
 
     public int getRowCount() {
-        return themes.size();
+        return maps.size();
     }
 
     public int getColumnCount() {
-        return 1;
+        return SIZE_COLUMN + 1;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return getTheme(rowIndex);
+        return getMap(rowIndex);
     }
 
-    public LocalTheme getTheme(int rowIndex) {
-        return themes.get(rowIndex);
+    public RemoteMap getMap(int rowIndex) {
+        return maps.get(rowIndex);
     }
 
-    public LocalTheme getTheme(String url) {
-        for (LocalTheme theme : new ArrayList<>(themes)) {
-            if (theme.getUrl().equals(url))
-                return theme;
+    public RemoteMap findMap(DataSource datasource, String uri) {
+        String url = datasource.getBaseUrl() + uri;
+        for(RemoteMap map : maps) {
+            if(url.equals(map.getUrl()))
+                return map;
         }
         return null;
     }
 
-    public int getIndex(LocalTheme theme) {
-        return themes.indexOf(theme);
-    }
+    private void addMap(RemoteMap map) {
+        if (!maps.add(map))
+            throw new IllegalArgumentException("Map " + map + " not added to " + maps);
 
-    private void addTheme(LocalTheme theme) {
-        if (!themes.add(theme))
-            throw new IllegalArgumentException("Theme " + theme + " not added to " + themes);
-
-        final int index = getIndex(theme);
+        final int index = maps.indexOf(map);
         if (index == -1)
-            throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
+            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
@@ -85,10 +94,10 @@ public class ThemesTableModel extends AbstractTableModel {
         });
     }
 
-    void updateTheme(LocalTheme theme) {
-        final int index = getIndex(theme);
+    void updateMap(RemoteMap map) {
+        final int index = maps.indexOf(map);
         if (index == -1)
-            throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
+            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
@@ -97,35 +106,25 @@ public class ThemesTableModel extends AbstractTableModel {
         });
     }
 
-    public void addOrUpdateTheme(LocalTheme theme) {
-        int index = getIndex(theme);
+    public void addOrUpdateMap(RemoteMap map) {
+        int index = maps.indexOf(map);
         if (index == -1)
-            addTheme(theme);
+            addMap(map);
         else
-            updateTheme(theme);
+            updateMap(map);
     }
 
-    private void removeTheme(LocalTheme theme) {
-        final int index = getIndex(theme);
+    private void removeMap(RemoteMap map) {
+        final int index = maps.indexOf(map);
         if (index == -1)
-            throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
+            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
 
-        if (!themes.remove(theme))
-            throw new IllegalArgumentException("Theme " + theme + " not removed from " + themes);
+        if (!maps.remove(map))
+            throw new IllegalArgumentException("Map " + map + " not removed from " + maps);
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 fireTableRowsDeleted(index, index);
-            }
-        });
-    }
-
-    public void clear() {
-        this.themes = new ArrayList<>();
-
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                fireTableDataChanged();
             }
         });
     }

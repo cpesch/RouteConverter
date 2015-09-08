@@ -19,18 +19,18 @@
 */
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.MapsAndThemesDialog;
+import slash.navigation.converter.gui.dialogs.MapsDialog;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Show maps and themes of the program.
+ * Show maps of the program.
  *
  * @author Christian Pesch
  */
 
-public class ShowMapsAndThemesAction extends SingletonDialogAction {
+public class ShowMapsAction extends SingletonDialogAction {
     protected SimpleDialog createDialog() {
-        return new MapsAndThemesDialog();
+        return new MapsDialog();
     }
 }

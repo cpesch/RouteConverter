@@ -20,37 +20,37 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.maps.RemoteMap;
 import slash.navigation.maps.RemoteResource;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
-import static slash.navigation.maps.impl.ResourcesTableModel.*;
+import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
 
 /**
- * Renders the table cells of the resources table.
+ * Renders the table cells of the downloadable maps table.
  *
  * @author Christian Pesch
  */
 
-public class ResourcesTableCellRenderer extends AlternatingColorTableCellRenderer {
-
+public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        RemoteResource resource = (RemoteResource) value;
+        RemoteMap map = (RemoteMap) value;
         switch (columnIndex) {
             case DATASOURCE_COLUMN:
-                label.setText(resource.getDataSource());
-                label.setToolTipText(resource.getUrl());
+                label.setText(map.getDataSource());
+                label.setToolTipText(map.getUrl());
                 break;
             case DESCRIPTION_COLUMN:
-                label.setText(resource.getDownloadable().getUri());
-                label.setToolTipText(resource.getUrl());
+                label.setText(map.getDownloadable().getUri());
+                label.setToolTipText(map.getUrl());
                 break;
             case SIZE_COLUMN:
-                label.setText(formatSize(getContentLength(resource)));
-                label.setToolTipText(resource.getUrl());
+                label.setText(formatSize(getContentLength(map)));
+                label.setToolTipText(map.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
@@ -58,7 +58,7 @@ public class ResourcesTableCellRenderer extends AlternatingColorTableCellRendere
         return label;
     }
 
-    private Long getContentLength(RemoteResource resource) {
+    static Long getContentLength(RemoteResource resource) {
         return resource.getDownloadable().getLatestChecksum() != null ? resource.getDownloadable().getLatestChecksum().getContentLength() : null;
     }
 }

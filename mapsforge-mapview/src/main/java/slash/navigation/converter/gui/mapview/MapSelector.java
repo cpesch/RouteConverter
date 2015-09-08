@@ -66,10 +66,10 @@ public class MapSelector {
         mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(
-                        new TableModelToComboBoxModelAdapter<>(mapManager.getMapsModel(), mapManager.getDisplayedMapModel()),
+                        new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
-        comboBoxMap.setPrototypeDisplayValue(mapManager.getMapsModel().getMap(1));
+        comboBoxMap.setPrototypeDisplayValue(mapManager.getAvailableMapsModel().getMap(1));
         comboBoxMap.setRenderer(new MapListCellRenderer());
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -81,10 +81,10 @@ public class MapSelector {
         });
 
         comboBoxTheme.setModel(new JoinedListComboBoxModel<>(
-                        new TableModelToComboBoxModelAdapter<>(mapManager.getThemesModel(), mapManager.getAppliedThemeModel()),
+                        new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableThemesModel(), mapManager.getAppliedThemeModel()),
                         asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
-        comboBoxTheme.setPrototypeDisplayValue(mapManager.getThemesModel().getTheme(0));
+        comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getTheme(0));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
         comboBoxTheme.setEnabled(((LocalMap) comboBoxMap.getSelectedItem()).isVector());
     }
@@ -105,7 +105,7 @@ public class MapSelector {
         comboBoxMap = new JComboBox<LocalMap>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_MAP.equals(anObject)) {
-                    Application.getInstance().getContext().getActionManager().run("show-maps-and-themes");
+                    Application.getInstance().getContext().getActionManager().run("show-maps");
                     return;
                 }
                 super.setSelectedItem(anObject);
@@ -114,7 +114,7 @@ public class MapSelector {
         comboBoxTheme = new JComboBox<LocalTheme>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_THEME.equals(anObject)) {
-                    Application.getInstance().getContext().getActionManager().run("show-maps-and-themes");
+                    Application.getInstance().getContext().getActionManager().run("show-themes");
                     return;
                 }
                 super.setSelectedItem(anObject);

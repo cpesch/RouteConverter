@@ -21,9 +21,12 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.maps.LocalTheme;
+import slash.navigation.maps.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static slash.navigation.maps.impl.LocalThemesTableModel.DESCRIPTION_COLUMN;
 
 /**
  * Renders the table cells of the available themes table.
@@ -31,12 +34,12 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class ThemesTableCellRenderer extends AlternatingColorTableCellRenderer {
+public class LocalThemesTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         LocalTheme theme = (LocalTheme) value;
         switch (columnIndex) {
-            case 0:
+            case DESCRIPTION_COLUMN:
                 label.setText(theme.getDescription());
                 label.setToolTipText(theme.getUrl());
                 break;

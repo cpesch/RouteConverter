@@ -20,34 +20,41 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.gui.Application;
-import slash.navigation.maps.LocalMap;
+import slash.navigation.maps.RemoteTheme;
 
 import javax.swing.*;
 import java.awt.*;
 
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+import static slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer.getContentLength;
+import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
+
 /**
- * Renders the table cells of the available maps table.
+ * Renders the table cells of the downloadable themes table.
  *
  * @author Christian Pesch
  */
 
-public class MapsTableCellRenderer extends AlternatingColorTableCellRenderer {
+public class RemoteThemeTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        LocalMap map = (LocalMap) value;
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        RemoteTheme theme = (RemoteTheme) value;
         switch (columnIndex) {
-            case 0:
-                JLabel label = (JLabel) component;
-                String text = map.getDescription();
-                if(!map.isVector())
-                    text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
-                label.setText(text);
-                label.setToolTipText(map.getUrl());
+            case DATASOURCE_COLUMN:
+                label.setText(theme.getDataSource());
+                label.setToolTipText(theme.getUrl());
+                break;
+            case DESCRIPTION_COLUMN:
+                label.setText(theme.getDownloadable().getUri());
+                label.setToolTipText(theme.getUrl());
+                break;
+            case SIZE_COLUMN:
+                label.setText(formatSize(getContentLength(theme)));
+                label.setToolTipText(theme.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
-        return component;
+        return label;
     }
 }

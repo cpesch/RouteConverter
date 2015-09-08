@@ -56,12 +56,17 @@ public class MapFiles {
         return dataSource.getDirectory();
     }
 
-    public List<RemoteResource> getMapsAndThemes() {
-        List<RemoteResource> result = new ArrayList<>();
+    public List<RemoteMap> getMaps() {
+        List<RemoteMap> result = new ArrayList<>();
         for(slash.navigation.datasources.Map map : dataSource.getMaps()) {
             result.add(new RemoteMapImpl(getName(), getBaseUrl(), getSubDirectory(), map));
         }
-        for(Theme theme : dataSource.getThemes()) {
+        return result;
+    }
+
+    public List<RemoteTheme> getThemes() {
+        List<RemoteTheme> result = new ArrayList<>();
+        for (Theme theme : dataSource.getThemes()) {
             result.add(new RemoteThemeImpl(getName(), getBaseUrl(), getSubDirectory(), theme));
         }
         return result;

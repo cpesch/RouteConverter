@@ -71,13 +71,14 @@ public class MapManager {
     private static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
     private final DataSourceManager dataSourceManager;
-    private MapsTableModel mapsModel = new MapsTableModel();
-    private ThemesTableModel themesModel = new ThemesTableModel();
-    private ResourcesTableModel resourcesModel = new ResourcesTableModel();
+    private LocalMapsTableModel availableMapsModel = new LocalMapsTableModel();
+    private LocalThemesTableModel availableThemesModel = new LocalThemesTableModel();
+    private RemoteMapsTableModel downloadableMapsModel = new RemoteMapsTableModel();
+    private RemoteThemesTableModel downloadableThemesModel = new RemoteThemesTableModel();
 
     private ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
         protected LocalMap stringToItem(String url) {
-            return getMapsModel().getMap(url);
+            return getAvailableMapsModel().getMap(url);
         }
 
         protected String itemToString(LocalMap map) {
@@ -87,7 +88,7 @@ public class MapManager {
 
     private ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
         protected LocalTheme stringToItem(String url) {
-            return getThemesModel().getTheme(url);
+            return getAvailableThemesModel().getTheme(url);
         }
 
         protected String itemToString(LocalTheme theme) {
@@ -97,27 +98,30 @@ public class MapManager {
 
     public MapManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
-        initializeDefaults();
     }
 
-    public MapsTableModel getMapsModel() {
-        return mapsModel;
+    public LocalMapsTableModel getAvailableMapsModel() {
+        return availableMapsModel;
+    }
+
+    public RemoteMapsTableModel getDownloadableMapsModel() {
+        return downloadableMapsModel;
     }
 
     public ItemModel<LocalMap> getDisplayedMapModel() {
         return displayedMapModel;
     }
 
-    public ThemesTableModel getThemesModel() {
-        return themesModel;
+    public LocalThemesTableModel getAvailableThemesModel() {
+        return availableThemesModel;
+    }
+
+    public RemoteThemesTableModel getDownloadableThemesModel() {
+        return downloadableThemesModel;
     }
 
     public ItemModel<LocalTheme> getAppliedThemeModel() {
         return appliedThemeModel;
-    }
-
-    public ResourcesTableModel getResourcesModel() {
-        return resourcesModel;
     }
 
     private String getMapsDirectory() {
@@ -130,46 +134,38 @@ public class MapManager {
 
     public LocalMap getMap(String uri) {
         String url = new File(getMapsDirectory(), uri).toURI().toString();
-        return getMapsModel().getMap(url);
+        return getAvailableMapsModel().getMap(url);
     }
 
-    public synchronized void scanDirectories() throws IOException {
-        initializeDefaults();
-        scanMaps();
-        scanThemes();
-    }
+    public synchronized void scanMaps() throws IOException {
+        availableMapsModel.clear();
+        availableMapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
+        availableMapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
 
-    private void initializeDefaults() {
-        mapsModel.clear();
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
-        mapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
-
-        themesModel.clear();
-        themesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
-    }
-
-    private void scanMaps() {
         long start = currentTimeMillis();
 
         File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         for (File file : mapFilesArray)
-            mapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+            availableMapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
 
         long end = currentTimeMillis();
         log.info(format("Collected %d map files %s from %s in %d milliseconds",
                 mapFilesArray.length, printArrayToDialogString(mapFilesArray), mapsDirectory, (end - start)));
     }
 
-    private void scanThemes() throws FileNotFoundException {
+    public synchronized void scanThemes() throws IOException {
+        availableThemesModel.clear();
+        availableThemesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
+
         long start = currentTimeMillis();
 
         File themesDirectory = ensureDirectory(getThemesDirectory());
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
         for (File file : themeFilesArray)
-            themesModel.addOrUpdateTheme(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
+            availableThemesModel.addOrUpdateTheme(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
 
         long end = currentTimeMillis();
         log.info(format("Collected %d theme files %s from %s in %d milliseconds",
@@ -192,18 +188,28 @@ public class MapManager {
         MapFilesService mapFilesService = new MapFilesService(dataSourceManager);
         mapFilesService.initialize();
 
-        List<RemoteResource> resources = mapFilesService.getMapsAndThemes();
-        RemoteResource[] remoteResources = resources.toArray(new RemoteResource[resources.size()]);
-        sort(remoteResources, new Comparator<RemoteResource>() {
+        List<RemoteMap> maps = mapFilesService.getMaps();
+        RemoteMap[] remoteMaps = maps.toArray(new RemoteMap[maps.size()]);
+        sort(remoteMaps, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
                 return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
             }
         });
-        for (RemoteResource resource : remoteResources)
-            resourcesModel.addOrUpdateResource(resource);
+        for (RemoteMap remoteMap : remoteMaps)
+            downloadableMapsModel.addOrUpdateMap(remoteMap);
+
+        List<RemoteTheme> themes = mapFilesService.getThemes();
+        RemoteTheme[] remoteThemes = themes.toArray(new RemoteTheme[themes.size()]);
+        sort(remoteThemes, new Comparator<RemoteResource>() {
+            public int compare(RemoteResource r1, RemoteResource r2) {
+                return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
+            }
+        });
+        for (RemoteTheme remoteTheme : remoteThemes)
+            downloadableThemesModel.addOrUpdateTheme(remoteTheme);
     }
 
-    public void queueForDownload(List<RemoteResource> resources) {
+    public void queueForDownload(List<? extends RemoteResource> resources) {
         DownloadManager downloadManager = dataSourceManager.getDownloadManager();
         List<Download> downloads = new ArrayList<>();
         for (RemoteResource resource : resources) {

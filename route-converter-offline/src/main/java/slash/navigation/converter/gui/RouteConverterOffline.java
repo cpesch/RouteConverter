@@ -20,7 +20,8 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
-import slash.navigation.converter.gui.actions.ShowMapsAndThemesAction;
+import slash.navigation.converter.gui.actions.ShowMapsAction;
+import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.MapViewImpl;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
@@ -79,11 +80,13 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeActions() {
         super.initializeActions();
-        getContext().getActionManager().register("show-maps-and-themes", new ShowMapsAndThemesAction());
+        getContext().getActionManager().register("show-maps", new ShowMapsAction());
+        getContext().getActionManager().register("show-themes", new ShowThemesAction());
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
         if (viewMenu != null) {
-            viewMenu.add(createItem("show-maps-and-themes"), 0);
-            viewMenu.add(new JPopupMenu.Separator(), 1);
+            viewMenu.add(createItem("show-maps"), 0);
+            viewMenu.add(createItem("show-themes"), 1);
+            viewMenu.add(new JPopupMenu.Separator(), 2);
         }
     }
 
@@ -143,7 +146,8 @@ public class RouteConverterOffline extends RouteConverter {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    getMapManager().scanDirectories();
+                    getMapManager().scanMaps();
+                    getMapManager().scanThemes();
 
                     getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getSelectMapsAction());
                 } catch (final IOException e) {
@@ -166,14 +170,14 @@ public class RouteConverterOffline extends RouteConverter {
 
         DataSource routeconverterMaps = getDataSourceManager().getDataSourceService().getDataSourceById("routeconverter-maps");
         if (routeconverterMaps != null)
-            downloadResource(routeconverterMaps, "oceans.map", "world.map");
+            downloadMaps(routeconverterMaps, "oceans.map", "world.map");
     }
 
-    private void downloadResource(DataSource dataSource, String... uris) {
+    private void downloadMaps(DataSource dataSource, String... uris) {
         List<RemoteResource> resources = new ArrayList<>();
         boolean updateMap = false;
         for (String uri : uris) {
-            RemoteResource resource = getMapManager().getResourcesModel().findResource(dataSource, uri);
+            RemoteResource resource = getMapManager().getDownloadableMapsModel().findMap(dataSource, uri);
             if (resource != null) {
                 resources.add(resource);
 

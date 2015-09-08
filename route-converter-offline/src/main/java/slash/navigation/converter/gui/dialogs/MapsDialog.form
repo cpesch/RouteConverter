@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.dialogs.MapsAndThemesDialog">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.dialogs.MapsDialog">
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
@@ -41,7 +41,7 @@
           </grid>
         </children>
       </grid>
-      <grid id="e3588" layout-manager="GridLayoutManager" row-count="10" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="e3588" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -59,10 +59,10 @@
           </component>
           <component id="8491e" class="javax.swing.JLabel">
             <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="resources"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="downloadable-maps"/>
             </properties>
           </component>
           <grid id="ef332" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -98,15 +98,6 @@
               </grid>
             </children>
           </grid>
-          <grid id="e1f67" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="10" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children/>
-          </grid>
           <grid id="5d69d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints>
@@ -115,37 +106,6 @@
             <properties/>
             <border type="none"/>
             <children/>
-          </grid>
-          <component id="22c6e" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="my-themes"/>
-            </properties>
-          </component>
-          <grid id="2baf6" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="9da14" class="javax.swing.JButton" binding="buttonApply" default-binding="true">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="apply"/>
-                </properties>
-              </component>
-              <hspacer id="8eda7">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </hspacer>
-            </children>
           </grid>
           <scrollpane id="e40e3">
             <constraints>
@@ -157,37 +117,22 @@
               <component id="cc982" class="javax.swing.JTable" binding="tableAvailableMaps">
                 <constraints/>
                 <properties>
-                  <preferredScrollableViewportSize width="450" height="100"/>
-                </properties>
-              </component>
-            </children>
-          </scrollpane>
-          <scrollpane id="5eebd">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="1ae9f" class="javax.swing.JTable" binding="tableAvailableThemes">
-                <constraints/>
-                <properties>
-                  <preferredScrollableViewportSize width="450" height="100"/>
+                  <preferredScrollableViewportSize width="450" height="250"/>
                 </properties>
               </component>
             </children>
           </scrollpane>
           <scrollpane id="f2ffe">
             <constraints>
-              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <component id="dfd4f" class="javax.swing.JTable" binding="tableResources">
+              <component id="dfd4f" class="javax.swing.JTable" binding="tableDownloadableMaps">
                 <constraints/>
                 <properties>
-                  <preferredScrollableViewportSize width="450" height="100"/>
+                  <preferredScrollableViewportSize width="450" height="250"/>
                 </properties>
               </component>
             </children>

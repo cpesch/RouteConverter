@@ -52,10 +52,18 @@ public class MapFilesService {
         return mapFiles;
     }
 
-    public List<RemoteResource> getMapsAndThemes() {
-        List<RemoteResource> result = new ArrayList<>();
+    public List<RemoteMap> getMaps() {
+        List<RemoteMap> result = new ArrayList<>();
         for (MapFiles files : getMapFiles()) {
-            result.addAll(files.getMapsAndThemes());
+            result.addAll(files.getMaps());
+        }
+        return result;
+    }
+
+    public List<RemoteTheme> getThemes() {
+        List<RemoteTheme> result = new ArrayList<>();
+        for (MapFiles files : getMapFiles()) {
+            result.addAll(files.getThemes());
         }
         return result;
     }
