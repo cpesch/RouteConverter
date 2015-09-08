@@ -44,7 +44,7 @@ import static slash.common.io.InputOutput.copyAndClose;
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
 
-    private static File getTempFile(String fileName) {
+    public static File getTempFile(String fileName) {
         int index = fileName.lastIndexOf('/');
         if (index != -1)
             fileName = fileName.substring(index);

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.common.io.Externalization;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
@@ -67,6 +68,7 @@ import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
@@ -132,6 +134,7 @@ public abstract class BaseMapView implements MapView {
                            boolean showCoordinates, boolean showWaypointDescription,
                            UnitSystemModel unitSystemModel) {
         this.mapViewCallback = mapViewCallback;
+        initializeCallbackListener();
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
@@ -166,7 +169,7 @@ public abstract class BaseMapView implements MapView {
         extractFile("slash/navigation/converter/gui/mapview/label.js");
         extractFile("slash/navigation/converter/gui/mapview/latlngcontrol.js");
 
-        return html.toURI().toURL().toExternalForm();
+        return "http://127.0.0.1:" + getCallbackPort() + "/map/" + html.getName();
     }
 
     protected void tryToInitialize(int count, long start) {
@@ -199,7 +202,6 @@ public abstract class BaseMapView implements MapView {
         log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
         initializeAfterLoading();
         initializeBrowserInteraction();
-        initializeCallbackListener();
         checkLocalhostResolution();
         checkCallback();
         setDegreeFormat();
@@ -835,9 +837,13 @@ public abstract class BaseMapView implements MapView {
     // bounds and center
 
     protected abstract NavigationPosition getNorthEastBounds();
+
     protected abstract NavigationPosition getSouthWestBounds();
+
     protected abstract NavigationPosition getCurrentMapCenter();
+
     protected abstract Integer getCurrentZoom();
+
     protected abstract String getCallbacks();
 
     private NavigationPosition getLastMapCenter() {
@@ -1161,29 +1167,47 @@ public abstract class BaseMapView implements MapView {
             }
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
-            writer.write("HTTP/1.1 200 OK\n");
-            writer.write("Content-Type: text/plain\n");
-        } finally {
-            reader.close();
-        }
-
-        StringBuilder buffer = new StringBuilder();
-        for (String line : lines) {
-            buffer.append("  ").append(line).append("\n");
-        }
-        log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer.toString());
-
         if (!isAuthenticated(lines))
             return;
 
-        processLines(lines, socket.getPort());
+        String uri = parseMapRequest(lines);
+        if (uri != null) {
+            File file = Externalization.getTempFile(uri);
+
+            Writer writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writer.write("HTTP/1.1 200 OK\n");
+            writer.write("Content-Length: " + file.length() + "\n");
+            writer.write("Content-Type: text/html\n\n");
+            copyAndClose(new FileReader(file), writer);
+            reader.close();
+
+        } else {
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+                writer.write("HTTP/1.1 200 OK\n");
+                writer.write("Content-Type: text/plain\n");
+            } finally {
+                reader.close();
+            }
+
+            processLines(lines, socket.getPort());
+        }
     }
 
     private boolean isAuthenticated(List<String> lines) {
         Map<String, String> map = asMap(lines);
         String host = trim(map.get("Host"));
         return host != null && host.equals("127.0.0.1:" + getCallbackPort());
+    }
+
+    private static final Pattern MAP_REQUEST_PATTERN = Pattern.compile("^GET /map/(.+) HTTP.+$");
+
+    private String parseMapRequest(List<String> lines) {
+        for (String line : lines) {
+            Matcher matcher = MAP_REQUEST_PATTERN.matcher(line);
+            if (matcher.matches())
+                return matcher.group(1);
+        }
+        return null;
     }
 
     int getCallbackPort() {

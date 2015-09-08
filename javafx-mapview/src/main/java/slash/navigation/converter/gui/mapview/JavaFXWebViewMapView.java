@@ -123,7 +123,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
 
     private boolean loadWebPage() {
         try {
-            final String url = prepareWebPage();
+            String url = prepareWebPage();
             webView.getEngine().load(url);
             return true;
         } catch (Throwable t) {
