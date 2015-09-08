@@ -23,6 +23,8 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.mapview.BaseMapView;
+import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -37,14 +39,19 @@ import java.util.List;
  */
 
 public class InsertPositionFacade {
+    private BaseMapView getBaseMapView() {
+        MapView mapView = RouteConverter.getInstance().getMapView();
+        return mapView instanceof BaseMapView ? BaseMapView.class.cast(mapView) : null;
+    }
+
     public void insertAllWaypoints() {
         RouteConverter r = RouteConverter.getInstance();
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         r.clearSelection();
 
         RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirectionsService && r.isMapViewInitialized()) {
-            ((GoogleDirectionsService) routingService).insertAllWaypoints(selectedRows);
+        if (routingService instanceof GoogleDirectionsService) {
+            getBaseMapView().insertAllWaypoints(selectedRows);
         } else
             insertWithRoutingService(routingService, selectedRows);
     }
@@ -55,8 +62,8 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirectionsService && r.isMapViewInitialized()) {
-            ((GoogleDirectionsService) service).insertOnlyTurnpoints(selectedRows);
+        if (service instanceof GoogleDirectionsService) {
+            getBaseMapView().insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }
@@ -70,7 +77,7 @@ public class InsertPositionFacade {
         if (routingService.isDownload()) {
             List<LongitudeAndLatitude> lal = new ArrayList<>();
             for (NavigationPosition position : selectedPositions) {
-                lal.add(asLongitudeAndLatitude(position));
+                lal.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
             }
             routingService.downloadRoutingDataFor(lal);
         }
@@ -96,9 +103,5 @@ public class InsertPositionFacade {
                 }
             }
         }
-    }
-
-    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
-        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
     }
 }

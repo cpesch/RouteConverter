@@ -981,14 +981,6 @@ public class MapsforgeMapView implements MapView {
         // TODO implement me
     }
 
-    public void insertAllWaypoints(int[] startPositions) {
-        // TODO implement me
-    }
-
-    public void insertOnlyTurnpoints(int[] startPositions) {
-        // TODO implement me
-    }
-
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         if (selectionUpdater == null)
             return;

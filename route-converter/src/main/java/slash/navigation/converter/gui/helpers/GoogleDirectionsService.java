@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -41,12 +40,6 @@ import static java.util.Arrays.asList;
 public class GoogleDirectionsService implements RoutingService {
     private static final TravelMode DRIVING = new TravelMode("Driving");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
-
-    private final MapView mapView;
-
-    public GoogleDirectionsService(MapView mapView) {
-        this.mapView = mapView;
-    }
 
     public String getName() {
         return "Google Directions";
@@ -106,13 +99,5 @@ public class GoogleDirectionsService implements RoutingService {
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
-    }
-
-    public void insertAllWaypoints(int[] selectedRows) {
-        mapView.insertAllWaypoints(selectedRows);
-    }
-
-    public void insertOnlyTurnpoints(int[] selectedRows) {
-        mapView.insertOnlyTurnpoints(selectedRows);
     }
 }
