@@ -44,7 +44,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -224,7 +223,7 @@ public class MapsDialog extends SimpleDialog {
             return;
         LocalMap map = getMapManager().getAvailableMapsModel().getMap(selectedRow);
         getMapManager().getDisplayedMapModel().setItem(map);
-        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
     }
 
     private void download() {
@@ -238,7 +237,7 @@ public class MapsDialog extends SimpleDialog {
             selectedMaps.add(map);
             selectedMapsNames.add(map.getUrl());
         }
-        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray())), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray())), getAction());
 
         executor.execute(new Runnable() {
             public void run() {

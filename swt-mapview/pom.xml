@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>swt-mapview</artifactId>
     <packaging>jar</packaging>
-    <name>MapView based on the Eclipse SWT library</name>
+    <name>MapView based on the Eclipse SWT JWebBrowser</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

@@ -42,7 +42,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -196,7 +195,7 @@ public class ThemesDialog extends SimpleDialog {
             return;
         LocalTheme theme = getMapManager().getAvailableThemesModel().getTheme(selectedRow);
         getMapManager().getAppliedThemeModel().setItem(theme);
-        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
     }
 
     private void download() {
@@ -210,7 +209,7 @@ public class ThemesDialog extends SimpleDialog {
             selectedThemes.add(theme);
             selectedThemesNames.add(theme.getUrl());
         }
-        getNotificationManager().showNotification(MessageFormat.format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray())), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray())), getAction());
 
         executor.execute(new Runnable() {
             public void run() {
@@ -231,7 +230,6 @@ public class ThemesDialog extends SimpleDialog {
     }
 
     private void close() {
-        RouteConverter.getInstance().showMapBorder(null);
         dispose();
     }
 
