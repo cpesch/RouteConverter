@@ -26,7 +26,6 @@ import slash.navigation.rest.SimpleCredentials;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static slash.common.io.Directories.ensureDirectory;
