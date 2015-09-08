@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 
@@ -85,10 +86,25 @@ public class AutomaticElevationService implements ElevationService {
         return result;
     }
 
+    public String getPreferredDownloadName() {
+        return JONATHAN_DE_FERRANTI_DEM_3;
+    }
+
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
-        ElevationService service = elevationServiceFacade.findElevationService(JONATHAN_DE_FERRANTI_DEM_3);
+        ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
         if (service != null)
             service.downloadElevationDataFor(longitudeAndLatitudes, false);
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
+        return service != null ? service.calculateRemainingDownloadSize(boundingBoxes) : 0L;
+    }
+
+    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
+        ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
+        if (service != null)
+            service.downloadElevationData(boundingBoxes);
     }
 
     private static class ElevationServicePriorityComparator implements Comparator<ElevationService> {

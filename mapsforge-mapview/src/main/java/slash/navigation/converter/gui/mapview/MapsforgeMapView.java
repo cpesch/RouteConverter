@@ -830,14 +830,15 @@ public class MapsforgeMapView implements MapView {
             routeBorder = null;
         }
 
-        if (mapBoundingBox != null)
+        if (mapBoundingBox != null) {
             mapBorder = drawBorder(mapBoundingBox);
 
-        BoundingBox routeBoundingBox = getRouteBoundingBox();
-        if (routeBoundingBox != null)
-            routeBorder = drawBorder(routeBoundingBox);
+            BoundingBox routeBoundingBox = getRouteBoundingBox();
+            if (routeBoundingBox != null)
+                routeBorder = drawBorder(routeBoundingBox);
 
-        centerAndZoom(mapBoundingBox, routeBoundingBox, true);
+            centerAndZoom(mapBoundingBox, routeBoundingBox, true);
+        }
     }
 
     private Polyline drawBorder(BoundingBox boundingBox) {

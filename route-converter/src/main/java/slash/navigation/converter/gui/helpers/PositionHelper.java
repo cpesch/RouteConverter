@@ -195,7 +195,7 @@ public class PositionHelper {
             size = toNextUnit(size, KILO_BYTE);
             unit = "kByte";
         } else {
-            unit = "bytes";
+            unit = "Bytes";
         }
         return format("%d %s", size, unit);
     }

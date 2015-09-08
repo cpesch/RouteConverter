@@ -20,6 +20,7 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
@@ -45,5 +46,8 @@ public interface RoutingService {
     void setPath(String path);
 
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
+
     DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
+    void downloadRoutingData(List<BoundingBox> boundingBoxes);
 }

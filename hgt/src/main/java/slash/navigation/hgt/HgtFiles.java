@@ -19,10 +19,10 @@
 */
 package slash.navigation.hgt;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
-import slash.navigation.datasources.File;
 import slash.navigation.datasources.Fragment;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -133,27 +133,23 @@ public class HgtFiles implements ElevationService {
             keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Set<Fragment<Downloadable>> fragments = new HashSet<>();
+        Collection<Downloadable> downloadables = new HashSet<>();
         for (String key : keys) {
             Fragment<Downloadable> fragment = dataSource.getFragment(key);
-            if (fragment != null)
-                fragments.add(fragment);
+            if (fragment != null && !createFile(fragment.getKey()).exists())
+                downloadables.add(fragment.getDownloadable());
         }
 
         Collection<Download> downloads = new HashSet<>();
-        for (Fragment<Downloadable> fragment : fragments) {
-            if (createFile(fragment.getKey()).exists())
-                continue;
-            downloads.add(download(fragment));
+        for (Downloadable downloadable : downloadables) {
+            downloads.add(download(downloadable));
         }
 
         if (!downloads.isEmpty() && waitForDownload)
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download download(Fragment<Downloadable> fragment) {
-        File downloadable = File.class.cast(fragment.getDownloadable());
-
+    private Download download(Downloadable downloadable) {
         List<FileAndChecksum> fragments = new ArrayList<>();
         for (Fragment otherFragments : downloadable.getFragments())
             fragments.add(new FileAndChecksum(createFile(otherFragments.getKey()), otherFragments.getLatestChecksum()));
@@ -162,5 +158,67 @@ public class HgtFiles implements ElevationService {
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Elevation Tile: " + uri, url, Flatten,
                 null, new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
+    }
+
+    private Collection<Fragment<Downloadable>> getDownloadablesFor(BoundingBox boundingBox) {
+        Collection<Fragment<Downloadable>> result = new HashSet<>();
+
+        double longitude = boundingBox.getSouthWest().getLongitude();
+        while (longitude < boundingBox.getNorthEast().getLongitude()) {
+
+            double latitude = boundingBox.getSouthWest().getLatitude();
+            while (latitude < boundingBox.getNorthEast().getLatitude()) {
+                String key = createFileKey(longitude, latitude);
+                Fragment<Downloadable> fragment = dataSource.getFragment(key);
+                if (fragment != null)
+                    result.add(fragment);
+                latitude += 1.0;
+            }
+
+            longitude += 1.0;
+        }
+        return result;
+    }
+
+    private Collection<Fragment<Downloadable>> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
+        Collection<Fragment<Downloadable>> result = new HashSet<>();
+        for (BoundingBox boundingBox : boundingBoxes)
+            result.addAll(getDownloadablesFor(boundingBox));
+        return result;
+    }
+
+    private Collection<Downloadable> asDownloadableSet(Collection<Fragment<Downloadable>> fragments) {
+        Collection<Downloadable> result = new ArrayList<>();
+        for (Fragment<Downloadable> fragment : fragments)
+            result.add(fragment.getDownloadable());
+        return result;
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(boundingBoxes);
+
+        Collection<Downloadable> downloadables = new HashSet<>();
+        for (Fragment<Downloadable> fragment : fragments) {
+            java.io.File file = createFile(fragment.getKey());
+            if (!file.exists())
+                downloadables.add(fragment.getDownloadable());
+        }
+
+        long notExists = 0L;
+        for (Downloadable downloadable : downloadables) {
+            Long contentLength = downloadable.getLatestChecksum().getContentLength();
+            if (contentLength == null)
+                continue;
+
+            notExists += contentLength;
+        }
+        return notExists;
+    }
+
+    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
+        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(boundingBoxes);
+        for (Downloadable downloadable : asDownloadableSet(fragments)) {
+            download(downloadable);
+        }
     }
 }

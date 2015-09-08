@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.mapview.MapView;
@@ -96,6 +97,14 @@ public class GoogleDirectionsService implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
     }
 

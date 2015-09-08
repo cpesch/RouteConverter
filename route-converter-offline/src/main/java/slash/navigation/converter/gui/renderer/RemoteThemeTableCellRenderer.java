@@ -43,14 +43,17 @@ public class RemoteThemeTableCellRenderer extends AlternatingColorTableCellRende
             case DATASOURCE_COLUMN:
                 label.setText(theme.getDataSource());
                 label.setToolTipText(theme.getUrl());
+                label.setHorizontalAlignment(LEFT);
                 break;
             case DESCRIPTION_COLUMN:
                 label.setText(theme.getDownloadable().getUri());
                 label.setToolTipText(theme.getUrl());
+                label.setHorizontalAlignment(LEFT);
                 break;
             case SIZE_COLUMN:
                 label.setText(formatSize(getContentLength(theme)));
                 label.setToolTipText(theme.getUrl());
+                label.setHorizontalAlignment(RIGHT);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

@@ -20,6 +20,7 @@
 
 package slash.navigation.googlemaps;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -196,6 +197,14 @@ public class GoogleMapsService implements ElevationService {
     }
 
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
     }
 }

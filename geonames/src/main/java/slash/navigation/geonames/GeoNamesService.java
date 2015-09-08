@@ -20,6 +20,7 @@
 
 package slash.navigation.geonames;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geonames.binding.Geonames;
@@ -217,6 +218,14 @@ public class GeoNamesService implements ElevationService {
     }
 
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
     }
 }

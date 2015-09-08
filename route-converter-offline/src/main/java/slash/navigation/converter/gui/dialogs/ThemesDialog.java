@@ -270,7 +270,9 @@ public class ThemesDialog extends SimpleDialog {
         final JScrollPane scrollPane1 = new JScrollPane();
         panel3.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableAvailableThemes = new JTable();
-        tableAvailableThemes.setPreferredScrollableViewportSize(new Dimension(450, 250));
+        tableAvailableThemes.setPreferredScrollableViewportSize(new Dimension(400, 120));
+        tableAvailableThemes.setShowHorizontalLines(false);
+        tableAvailableThemes.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableAvailableThemes);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(10, 0, 0, 0), -1, -1));
@@ -289,7 +291,9 @@ public class ThemesDialog extends SimpleDialog {
         final JScrollPane scrollPane2 = new JScrollPane();
         contentPane.add(scrollPane2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableDownloadableThemes = new JTable();
-        tableDownloadableThemes.setPreferredScrollableViewportSize(new Dimension(450, 250));
+        tableDownloadableThemes.setPreferredScrollableViewportSize(new Dimension(400, 200));
+        tableDownloadableThemes.setShowHorizontalLines(false);
+        tableDownloadableThemes.setShowVerticalLines(false);
         scrollPane2.setViewportView(tableDownloadableThemes);
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));

@@ -67,7 +67,9 @@
               <component id="81565" class="javax.swing.JTable" binding="tableAvailableThemes">
                 <constraints/>
                 <properties>
-                  <preferredScrollableViewportSize width="450" height="250"/>
+                  <preferredScrollableViewportSize width="400" height="120"/>
+                  <showHorizontalLines value="false"/>
+                  <showVerticalLines value="false"/>
                 </properties>
               </component>
             </children>
@@ -124,7 +126,9 @@
           <component id="d074c" class="javax.swing.JTable" binding="tableDownloadableThemes">
             <constraints/>
             <properties>
-              <preferredScrollableViewportSize width="450" height="250"/>
+              <preferredScrollableViewportSize width="400" height="200"/>
+              <showHorizontalLines value="false"/>
+              <showVerticalLines value="false"/>
             </properties>
           </component>
         </children>

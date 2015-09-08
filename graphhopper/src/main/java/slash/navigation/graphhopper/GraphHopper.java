@@ -23,10 +23,7 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
@@ -39,8 +36,7 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -234,24 +230,32 @@ public class GraphHopper implements RoutingService {
         return result;
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
-        Downloadable downloadableForSmallestBoundingBox = null;
+    private Downloadable getSmallestBoundingBoxFor(BoundingBox routeBoundingBox) {
         BoundingBox smallestBoundingBox = null;
+        Downloadable result = null;
 
-        if(isInitialized()) {
-            for (File file : getDataSource().getFiles()) {
-                BoundingBox fileBoundingBox = file.getBoundingBox();
-                if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
-                    if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
-                        downloadableForSmallestBoundingBox = file;
-                        smallestBoundingBox = fileBoundingBox;
-                    }
+        for (File file : getDataSource().getFiles()) {
+            BoundingBox fileBoundingBox = file.getBoundingBox();
+            if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
+                if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
+                    result = file;
+                    smallestBoundingBox = fileBoundingBox;
                 }
             }
         }
+        return result;
+    }
 
-        final Downloadable downloadable = downloadableForSmallestBoundingBox;
+    private Collection<Downloadable> getSmallestBoundingBoxesFor(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> result = new HashSet<>();
+        for (BoundingBox boundingBox : boundingBoxes)
+            result.add(getSmallestBoundingBoxFor(boundingBox));
+        return result;
+    }
+
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
+        final Downloadable downloadable = getSmallestBoundingBoxFor(routeBoundingBox);
         final java.io.File file = downloadable != null ? createFile(downloadable.getUri()) : null;
         setOsmPbfFile(file);
 
@@ -263,7 +267,7 @@ public class GraphHopper implements RoutingService {
                 return file != null && !createPath(file).exists();
             }
             public void download() {
-                downloadAll(downloadable);
+                downloadAndWait(downloadable);
             }
             public void process() {
                 initializeHopper();
@@ -279,15 +283,37 @@ public class GraphHopper implements RoutingService {
         return new BoundingBox(positions);
     }
 
-    private void downloadAll(Downloadable downloadable) {
-        Download download = downloadPbf(downloadable);
+    private void downloadAndWait(Downloadable downloadable) {
+        Download download = download(downloadable);
         downloadManager.waitForCompletion(singletonList(download));
     }
 
-    private Download downloadPbf(Downloadable downloadable) {
+    private Download download(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Copy,
                 null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> downloadables = getSmallestBoundingBoxesFor(boundingBoxes);
+        long notExists = 0L;
+        for(Downloadable downloadable : downloadables) {
+            Long contentLength = downloadable.getLatestChecksum().getContentLength();
+            if(contentLength == null)
+                continue;
+
+            java.io.File file = createFile(downloadable.getUri());
+            if(!file.exists())
+                notExists += contentLength;
+        }
+        return notExists;
+    }
+
+    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> downloadables = getSmallestBoundingBoxesFor(boundingBoxes);
+        for (Downloadable downloadable : downloadables) {
+            download(downloadable);
+        }
     }
 }

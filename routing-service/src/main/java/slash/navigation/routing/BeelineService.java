@@ -20,6 +20,7 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
@@ -87,6 +88,14 @@ public class BeelineService implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
     }
 }

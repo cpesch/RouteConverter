@@ -43,14 +43,17 @@ public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRender
             case DATASOURCE_COLUMN:
                 label.setText(map.getDataSource());
                 label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(LEFT);
                 break;
             case DESCRIPTION_COLUMN:
                 label.setText(map.getDownloadable().getUri());
                 label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(LEFT);
                 break;
             case SIZE_COLUMN:
                 label.setText(formatSize(getContentLength(map)));
                 label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(RIGHT);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
