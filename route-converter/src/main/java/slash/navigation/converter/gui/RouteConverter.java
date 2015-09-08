@@ -372,7 +372,7 @@ public class RouteConverter extends SingleFrameApplication {
         log.info("Initialized map divider to " + location);
     }
 
-    protected MapView getMapView() {
+    public MapView getMapView() {
         return mapView;
     }
 
@@ -1154,7 +1154,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
-        RoutingService service = new GoogleDirectionsService(getMapView());
+        RoutingService service = new GoogleDirectionsService();
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
     }

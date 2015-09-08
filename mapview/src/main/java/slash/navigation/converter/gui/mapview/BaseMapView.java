@@ -1516,7 +1516,6 @@ public abstract class BaseMapView implements MapView {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<NavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
-        int positionInsertionCount = coordinates.size() / 5;
         for (int i = coordinates.size() - 1; i > 0; i -= 5) {
             String instructions = trim(coordinates.get(i));
             Double seconds = parseSeconds(coordinates.get(i - 1));
@@ -1528,8 +1527,7 @@ public abstract class BaseMapView implements MapView {
                 calendar.add(SECOND, -seconds.intValue());
                 time = fromCalendar(calendar);
             }
-            int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            String description = instructions != null ? instructions : mapViewCallback.createDescription(positionNumber, null);
+            String description = instructions != null ? instructions : null;
             BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, description);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
