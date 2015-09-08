@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.routing.DownloadFuture;
