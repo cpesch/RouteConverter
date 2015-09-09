@@ -27,14 +27,16 @@ import slash.navigation.converter.gui.RouteConverterOffline;
 import slash.navigation.converter.gui.renderer.LocalThemesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteThemeTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
+import slash.navigation.download.Checksum;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteResource;
+import slash.navigation.maps.RemoteMap;
 import slash.navigation.maps.RemoteTheme;
+import slash.navigation.maps.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -59,6 +61,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
+import static slash.navigation.maps.impl.RemoteThemesTableModel.*;
 
 /**
  * Dialog to show available and downloadable themes of the program.
@@ -92,7 +95,7 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
-        sorterAvailableThemes.setComparator(0, new Comparator<LocalTheme>() {
+        sorterAvailableThemes.setComparator(LocalThemesTableModel.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
             public int compare(LocalTheme t1, LocalTheme t2) {
                 return t1.getDescription().compareToIgnoreCase(t2.getDescription());
             }
@@ -116,11 +119,11 @@ public class ThemesDialog extends SimpleDialog {
 
         tableDownloadableThemes.setModel(getMapManager().getDownloadableThemesModel());
         tableDownloadableThemes.setDefaultRenderer(Object.class, new RemoteThemeTableCellRenderer());
-        TableCellRenderer resourcesHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
-        TableColumnModel resourcesColumns = tableDownloadableThemes.getColumnModel();
-        for (int i = 0; i < resourcesColumns.getColumnCount(); i++) {
-            TableColumn column = resourcesColumns.getColumn(i);
-            column.setHeaderRenderer(resourcesHeaderRenderer);
+        TableCellRenderer downloadableThemesHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
+        TableColumnModel downloadableThemesColumns = tableDownloadableThemes.getColumnModel();
+        for (int i = 0; i < downloadableThemesColumns.getColumnCount(); i++) {
+            TableColumn column = downloadableThemesColumns.getColumn(i);
+            column.setHeaderRenderer(downloadableThemesHeaderRenderer);
             if (i == 0) {
                 int width = getMaxWidth("Openandromaps Themes", 13);
                 column.setPreferredWidth(width);
@@ -134,19 +137,24 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterResources = new TableRowSorter<>(tableDownloadableThemes.getModel());
         sorterResources.setSortsOnUpdates(true);
-        sorterResources.setComparator(0, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return r1.getDataSource().compareToIgnoreCase(r2.getDataSource());
+        sorterResources.setComparator(DATASOURCE_COLUMN, new Comparator<RemoteTheme>() {
+            public int compare(RemoteTheme t1, RemoteTheme t2) {
+                return t1.getDataSource().compareToIgnoreCase(t2.getDataSource());
             }
         });
-        sorterResources.setComparator(1, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return r1.getUrl().compareToIgnoreCase(r2.getUrl());
+        sorterResources.setComparator(DESCRIPTION_COLUMN, new Comparator<RemoteTheme>() {
+            public int compare(RemoteTheme t1, RemoteTheme t2) {
+                return t1.getDownloadable().getUri().compareToIgnoreCase(t2.getDownloadable().getUri());
             }
         });
-        sorterResources.setComparator(2, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return (int) (r1.getDownloadable().getLatestChecksum().getContentLength() - r2.getDownloadable().getLatestChecksum().getContentLength());
+        sorterResources.setComparator(SIZE_COLUMN, new Comparator<RemoteTheme>() {
+            private long getSize(RemoteTheme theme) {
+                Checksum checksum = theme.getDownloadable().getLatestChecksum();
+                return checksum != null && checksum.getContentLength() != null ? checksum.getContentLength() : 0L;
+            }
+
+            public int compare(RemoteTheme t1, RemoteTheme t2) {
+                return (int) (getSize(t1) - getSize(t2));
             }
         });
         tableDownloadableThemes.setRowSorter(sorterResources);

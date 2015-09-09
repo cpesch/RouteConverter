@@ -29,6 +29,7 @@ import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.renderer.LocalMapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
+import slash.navigation.download.Checksum;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
@@ -37,7 +38,7 @@ import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteMap;
-import slash.navigation.maps.RemoteResource;
+import slash.navigation.maps.impl.LocalMapsTableModel;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -66,6 +67,7 @@ import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
+import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
 
 /**
  * Dialog to show available and downloadable maps of the program.
@@ -103,7 +105,7 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(0, new Comparator<LocalMap>() {
+        sorterAvailableMaps.setComparator(LocalMapsTableModel.DESCRIPTION_COLUMN, new Comparator<LocalMap>() {
             public int compare(LocalMap m1, LocalMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
@@ -139,11 +141,11 @@ public class MapsDialog extends SimpleDialog {
 
         tableDownloadableMaps.setModel(getMapManager().getDownloadableMapsModel());
         tableDownloadableMaps.setDefaultRenderer(Object.class, new RemoteMapsTableCellRenderer());
-        TableCellRenderer resourcesHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
-        TableColumnModel resourcesColumns = tableDownloadableMaps.getColumnModel();
-        for (int i = 0; i < resourcesColumns.getColumnCount(); i++) {
-            TableColumn column = resourcesColumns.getColumn(i);
-            column.setHeaderRenderer(resourcesHeaderRenderer);
+        TableCellRenderer downloadableMapsHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
+        TableColumnModel downloadableMapsColumns = tableDownloadableMaps.getColumnModel();
+        for (int i = 0; i < downloadableMapsColumns.getColumnCount(); i++) {
+            TableColumn column = downloadableMapsColumns.getColumn(i);
+            column.setHeaderRenderer(downloadableMapsHeaderRenderer);
             if (i == 0) {
                 int width = getMaxWidth("RouteConverter Maps", 13);
                 column.setPreferredWidth(width);
@@ -155,24 +157,29 @@ public class MapsDialog extends SimpleDialog {
                 column.setMaxWidth(width);
             }
         }
-        TableRowSorter<TableModel> sorterResources = new TableRowSorter<>(tableDownloadableMaps.getModel());
-        sorterResources.setSortsOnUpdates(true);
-        sorterResources.setComparator(0, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return r1.getDataSource().compareToIgnoreCase(r2.getDataSource());
+        TableRowSorter<TableModel> sorterDownloadableMaps = new TableRowSorter<>(tableDownloadableMaps.getModel());
+        sorterDownloadableMaps.setSortsOnUpdates(true);
+        sorterDownloadableMaps.setComparator(DATASOURCE_COLUMN, new Comparator<RemoteMap>() {
+            public int compare(RemoteMap m1, RemoteMap m2) {
+                return m1.getDataSource().compareToIgnoreCase(m2.getDataSource());
             }
         });
-        sorterResources.setComparator(1, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return r1.getUrl().compareToIgnoreCase(r2.getUrl());
+        sorterDownloadableMaps.setComparator(DESCRIPTION_COLUMN, new Comparator<RemoteMap>() {
+            public int compare(RemoteMap m1, RemoteMap m2) {
+                return m1.getDownloadable().getUri().compareToIgnoreCase(m2.getDownloadable().getUri());
             }
         });
-        sorterResources.setComparator(2, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return (int) (r1.getDownloadable().getLatestChecksum().getContentLength() - r2.getDownloadable().getLatestChecksum().getContentLength());
+        sorterDownloadableMaps.setComparator(SIZE_COLUMN, new Comparator<RemoteMap>() {
+            private long getSize(RemoteMap map) {
+                Checksum checksum = map.getDownloadable().getLatestChecksum();
+                return checksum != null && checksum.getContentLength() != null ? checksum.getContentLength() : 0L;
+            }
+
+            public int compare(RemoteMap m1, RemoteMap m2) {
+                return (int) (getSize(m1) - getSize(m2));
             }
         });
-        tableDownloadableMaps.setRowSorter(sorterResources);
+        tableDownloadableMaps.setRowSorter(sorterDownloadableMaps);
         tableDownloadableMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
