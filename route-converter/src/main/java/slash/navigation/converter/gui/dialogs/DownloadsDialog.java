@@ -89,14 +89,32 @@ public class DownloadsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableDownloads.getModel());
         sorter.setSortsOnUpdates(true);
-        sorter.setComparator(0, new Comparator<Download>() {
+        sorter.setComparator(DESCRIPTION_COLUMN, new Comparator<Download>() {
             public int compare(Download d1, Download d2) {
-                return d1.getDescription().compareTo(d2.getDescription());
+                return d1.getDescription().compareToIgnoreCase(d2.getDescription());
             }
         });
-        sorter.setComparator(1, new Comparator<Download>() {
+        sorter.setComparator(STATE_COLUMN, new Comparator<Download>() {
             public int compare(Download d1, Download d2) {
                 return d1.getState().compareTo(d2.getState());
+            }
+        });
+        sorter.setComparator(SIZE_COLUMN, new Comparator<Download>() {
+            private long getSize(Download download) {
+                return download.getSize() != null ? download.getSize() : 0L;
+            }
+
+            public int compare(Download d1, Download d2) {
+                return (int) (getSize(d1) - getSize(d2));
+            }
+        });
+        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {
+            private long getLastModified(Download download) {
+                return download.getLastModified() != null ? download.getLastModified().getTimeInMillis() : 0L;
+            }
+
+            public int compare(Download d1, Download d2) {
+                return (int) (getLastModified(d1) - getLastModified(d2));
             }
         });
         tableDownloads.setRowSorter(sorter);
