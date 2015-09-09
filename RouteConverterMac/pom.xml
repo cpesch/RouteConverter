@@ -36,7 +36,7 @@
                                 <artifactItem>
                                     <groupId>eclipse.swt</groupId>
                                     <artifactId>cocoa.macosx.x86_64</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.5</version>
                                     <classifier>stripped</classifier>
                                     <overWrite>false</overWrite>
                                     <destFileName>swt-mac-64.jar</destFileName>

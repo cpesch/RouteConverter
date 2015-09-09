@@ -28,7 +28,7 @@
                                 <artifactItem>
                                     <groupId>eclipse.swt</groupId>
                                     <artifactId>gtk.linux.x86</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.5</version>
                                     <classifier>stripped</classifier>
                                     <overWrite>false</overWrite>
                                     <destFileName>swt-linux-32.jar</destFileName>
@@ -36,7 +36,7 @@
                                 <artifactItem>
                                     <groupId>eclipse.swt</groupId>
                                     <artifactId>gtk.linux.x86_64</artifactId>
-                                    <version>4.4</version>
+                                    <version>4.5</version>
                                     <classifier>stripped</classifier>
                                     <overWrite>false</overWrite>
                                     <destFileName>swt-linux-64.jar</destFileName>
