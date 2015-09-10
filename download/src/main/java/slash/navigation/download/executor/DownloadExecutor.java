@@ -66,7 +66,7 @@ public class DownloadExecutor implements Runnable {
         updateState(Running);
 
         try {
-            ActionPerformer performer = null;
+            ActionPerformer performer;
 
             switch (download.getAction()) {
                 case Copy:
@@ -90,6 +90,13 @@ public class DownloadExecutor implements Runnable {
             log.severe(format("Could not download content from %s: %s", download.getUrl(), e));
             downloadFailed();
         }
+
+        downloadManager.finishedExecutor(this);
+    }
+
+
+    public void stopped() {
+        download.setState(Stopped);
     }
 
     public void updateState(State state) {
@@ -115,5 +122,4 @@ public class DownloadExecutor implements Runnable {
         updateState(Succeeded);
         downloadManager.fireDownloadSucceeded(download);
     }
-
 }

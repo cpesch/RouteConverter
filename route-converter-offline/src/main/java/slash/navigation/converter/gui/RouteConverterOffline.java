@@ -24,6 +24,7 @@ import slash.navigation.converter.gui.actions.ShowMapsAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.MapViewImpl;
+import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
 import slash.navigation.converter.gui.mapview.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
@@ -159,8 +160,8 @@ public class RouteConverterOffline extends RouteConverter {
                 }
 
                 LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
-                if (mapAfterStart != mapAfterScan && getMapView() instanceof MapsforgeMapView)
-                    ((MapsforgeMapView) getMapView()).updateMapAndThemesAfterDirectoryScanning();
+                if (mapAfterStart != mapAfterScan)
+                    updateMapAndThemesAfterDirectoryScanning();
             }
         }, "DirectoryScanner").start();
     }
@@ -191,7 +192,13 @@ public class RouteConverterOffline extends RouteConverter {
 
         if (updateMap) {
             scanLocalMapsAndThemes();
-            ((MapsforgeMapView) getMapView()).updateMapAndThemesAfterDirectoryScanning();
+            updateMapAndThemesAfterDirectoryScanning();
         }
+    }
+
+    private void updateMapAndThemesAfterDirectoryScanning() {
+        MapView mapView = getMapView();
+        if (mapView instanceof MapsforgeMapView)
+            ((MapsforgeMapView) mapView).updateMapAndThemesAfterDirectoryScanning();
     }
 }

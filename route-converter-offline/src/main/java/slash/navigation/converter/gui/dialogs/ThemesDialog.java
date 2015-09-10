@@ -34,7 +34,6 @@ import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteMap;
 import slash.navigation.maps.RemoteTheme;
 import slash.navigation.maps.impl.LocalThemesTableModel;
 

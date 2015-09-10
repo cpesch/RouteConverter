@@ -36,6 +36,7 @@ public enum State {
 
     NotModified,
     Succeeded,
+    Stopped,
     NoFileError,
     ChecksumError,
     Failed

@@ -739,10 +739,6 @@ public class RouteConverter extends SingleFrameApplication {
         return getMapView() != null;
     }
 
-    public boolean isMapViewInitialized() {
-        return isMapViewAvailable() && getMapView().isInitialized();
-    }
-
     public NavigationPosition getMapCenter() {
         return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
@@ -1127,6 +1123,7 @@ public class RouteConverter extends SingleFrameApplication {
                 updateRoutingServices();
 
                 scanRemoteMapsAndThemes();
+                scanForFilesMissingInQueue();
             }
         }, "DataSourceUpdater").start();
     }
@@ -1166,6 +1163,19 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void scanRemoteMapsAndThemes() {
+    }
+
+    private void scanForFilesMissingInQueue() {
+        // scan for files that are not in the queue but in the file system and put them in the queue if they're in a datasource
+        try {
+            getDataSourceManager().scanForFilesMissingInQueue();
+        } catch (IOException e) {
+            log.warning("Could not scan for files missing in queue: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
+        }
+
+        // TODO scan over queue to search for downloads that need to be updated and mark them as outdated
     }
 
     private class PrintMapAction extends FrameAction {

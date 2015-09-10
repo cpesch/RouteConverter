@@ -21,6 +21,7 @@
 package slash.navigation.datasources;
 
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.download.Action.Copy;
 
 /**
@@ -183,5 +185,40 @@ public class DataSourceManager {
             }
         }
         return result;
+    }
+
+    private void scanForFilesMissingInQueue(File directory) throws IOException {
+        java.io.File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    Downloadable downloadable = dataSourceService.getDownloadable(file);
+                    if(downloadable != null) {
+                        DataSource dataSource = downloadable.getDataSource();
+                        downloadManager.queueForDownload("Found " + downloadable.getUri() + " from " + dataSource.getName(),
+                                dataSource.getBaseUrl() + downloadable.getUri(), Action.Copy /*TODO take from data source*/,
+                                null, new FileAndChecksum(file, downloadable.getLatestChecksum()),
+                                asFragments(dataSource, downloadable.getFragments()));
+                    } else
+                        log.fine("Cannot find downloadable for " + file);
+                } else if (file.isDirectory())
+                    scanForFilesMissingInQueue(file);
+            }
+        }
+    }
+
+    private List<FileAndChecksum> asFragments(DataSource dataSource, List<Fragment<Downloadable>> fragments) {
+        if(fragments == null)
+            return null;
+
+        List<FileAndChecksum> result = new ArrayList<>();
+        for(Fragment<Downloadable> fragment : fragments) {
+            result.add(new FileAndChecksum(new File(getApplicationDirectory(dataSource.getDirectory()), fragment.getKey()), fragment.getLatestChecksum()));
+        }
+        return result;
+    }
+
+    public void scanForFilesMissingInQueue() throws IOException {
+        scanForFilesMissingInQueue(getApplicationDirectory());
     }
 }

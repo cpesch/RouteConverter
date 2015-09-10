@@ -28,10 +28,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -56,6 +53,8 @@ public class DownloadManager {
 
     private final List<DownloadListener> downloadListeners = new CopyOnWriteArrayList<>();
     private final DownloadTableModel model = new DownloadTableModel();
+    private final Map<Download,Future> downloadToFutures = new HashMap<>();
+    private final Map<Download,DownloadExecutor> downloadToExecutors = new HashMap<>();
     private final ThreadPoolExecutor pool;
 
     public DownloadManager(File queueFile) {
@@ -64,6 +63,10 @@ public class DownloadManager {
         pool = new ThreadPoolExecutor(PARALLEL_DOWNLOAD_COUNT, PARALLEL_DOWNLOAD_COUNT * 2, 60, SECONDS, queue);
         pool.allowCoreThreadTimeOut(true);
         addDownloadListener(new DownloadListener() {
+            public void initialized(Download download) {
+                saveQueue();
+            }
+
             public void progressed(Download download) {
             }
 
@@ -108,9 +111,30 @@ public class DownloadManager {
 
     public void restartDownloads(List<Download> downloads) {
         for (Download download : downloads) {
+            if(!COMPLETED.contains(download.getState()))
+                continue;
+
             log.info("Restarting download " + download);
             startExecutor(download);
         }
+    }
+
+    public void stopDownloads(List<Download> downloads) {
+        for (Download download : downloads) {
+            if(COMPLETED.contains(download.getState()))
+                continue;
+
+            log.info("Stopping download " + download);
+            Future future = downloadToFutures.get(download);
+            if(future != null)
+                future.cancel(true);
+
+            DownloadExecutor executor = downloadToExecutors.get(download);
+            if(executor != null)
+                executor.stopped();
+        }
+
+        pool.purge();
     }
 
     public void saveQueue() {
@@ -143,6 +167,12 @@ public class DownloadManager {
         model.updateDownload(download);
     }
 
+    public void fireDownloadInitialized(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.initialized(download);
+        }
+    }
+
     public void fireDownloadProgressed(Download download) {
         for (DownloadListener listener : downloadListeners) {
             listener.progressed(download);
@@ -164,10 +194,20 @@ public class DownloadManager {
     private void startExecutor(Download download) {
         DownloadExecutor executor = new DownloadExecutor(download, this);
         model.addOrUpdateDownload(download);
-        pool.execute(executor);
+        Future<?> future = pool.submit(executor);
+        downloadToFutures.put(download, future);
+        downloadToExecutors.put(download, executor);
+        fireDownloadInitialized(download);
     }
 
-    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Succeeded, NoFileError, ChecksumError, Failed));
+
+    public void finishedExecutor(DownloadExecutor executor) {
+        Download download = executor.getDownload();
+        downloadToFutures.remove(download);
+        downloadToExecutors.remove(download);
+    }
+
+    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Succeeded, Stopped, NoFileError, ChecksumError, Failed));
 
     private Download queueForDownload(Download download) {
         if (download.getFile().getFile() == null)
@@ -201,7 +241,6 @@ public class DownloadManager {
 
         log.info("Starting new download " + download);
         startExecutor(download);
-        fireDownloadProgressed(download);
         return download;
     }
 

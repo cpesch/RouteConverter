@@ -39,18 +39,11 @@ import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
  */
 
 public class RouteModelHelper {
-    public static RouteModel getSelectedRouteModel(JTable table) {
-        int row = table.getSelectedRow();
-        if (row == -1)
-            return null;
-        Object value = table.getModel().getValueAt(row, 1);
-        return value instanceof RouteModel ? (RouteModel) value : null;
-    }
-
     public static List<RouteModel> getSelectedRouteModels(JTable table) {
-        int[] rows = table.getSelectedRows();
+        int[] selectedRows = table.getSelectedRows();
         List<RouteModel> routeModels = new ArrayList<>();
-        for (int row : rows) {
+        for (int selectedRow : selectedRows) {
+            int row = table.convertRowIndexToView(selectedRow);
             Object value = table.getModel().getValueAt(row, 1);
             if (value instanceof RouteModel)
                 routeModels.add((RouteModel) value);

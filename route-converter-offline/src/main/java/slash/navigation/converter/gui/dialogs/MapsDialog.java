@@ -226,7 +226,8 @@ public class MapsDialog extends SimpleDialog {
         List<BoundingBox> result = new ArrayList<>();
         int[] selectedRows = tableDownloadableMaps.getSelectedRows();
         for (int selectedRow : selectedRows) {
-            RemoteMap map = getMapManager().getDownloadableMapsModel().getMap(tableDownloadableMaps.convertRowIndexToModel(selectedRow));
+            int row = tableDownloadableMaps.convertRowIndexToModel(selectedRow);
+            RemoteMap map = getMapManager().getDownloadableMapsModel().getMap(row);
             BoundingBox boundingBox = map.getBoundingBox();
             if (boundingBox != null)
                 result.add(boundingBox);

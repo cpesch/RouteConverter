@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.download.Download;
+import slash.navigation.download.DownloadTableModel;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -34,12 +35,11 @@ import java.util.List;
 
 public class DownloadHelper {
     public static List<Download> getSelectedDownloads(JTable table) {
-        int[] rows = table.getSelectedRows();
+        int[] selectedRows = table.getSelectedRows();
         List<Download> downloads = new ArrayList<>();
-        for (int row : rows) {
-            Object value = table.getModel().getValueAt(row, 1);
-            if (value instanceof Download)
-                downloads.add((Download) value);
+        for (int selectedRow : selectedRows) {
+            int row = table.convertRowIndexToView(selectedRow);
+            downloads.add(((DownloadTableModel) table.getModel()).getDownload(row));
         }
         return downloads;
     }

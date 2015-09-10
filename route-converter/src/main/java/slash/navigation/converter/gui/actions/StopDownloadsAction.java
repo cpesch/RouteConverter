@@ -32,16 +32,16 @@ import static slash.navigation.converter.gui.helpers.DownloadHelper.getSelectedD
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
- * {@link Action} that restarts {@link Download}s from the {@link DownloadManager}.
+ * {@link Action} that stops {@link Download}s from the {@link DownloadManager}.
  *
  * @author Christian Pesch
  */
 
-public class RestartDownloadsAction extends FrameAction {
+public class StopDownloadsAction extends FrameAction {
     private final JTable table;
     private final DownloadManager downloadManager;
 
-    public RestartDownloadsAction(JTable table, DownloadManager downloadManager) {
+    public StopDownloadsAction(JTable table, DownloadManager downloadManager) {
         this.table = table;
         this.downloadManager = downloadManager;
     }
@@ -53,7 +53,7 @@ public class RestartDownloadsAction extends FrameAction {
 
         int[] selectedRows = table.getSelectedRows();
 
-        downloadManager.restartDownloads(downloads);
+        downloadManager.stopDownloads(downloads);
 
         final int row = selectedRows[0] < table.getRowCount() ?
                 selectedRows[0] : table.getRowCount() - 1;

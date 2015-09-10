@@ -111,14 +111,19 @@ public class Validator {
     }
 
     public boolean existTargets() {
-        if (!download.getFile().getFile().exists())
+        if (!download.getFile().getFile().exists()) {
+            log.warning(format("Download target %s does not exist", download.getFile().getFile()));
             return false;
+        }
         List<FileAndChecksum> fragments = download.getFragments();
-        if (fragments != null)
+        if (fragments != null) {
             for (FileAndChecksum fragment : fragments) {
-                if (!fragment.getFile().exists())
+                if (!fragment.getFile().exists()) {
+                    log.warning(format("Fragment target %s does not exist", fragment.getFile()));
                     return false;
+                }
             }
+        }
         return true;
     }
 

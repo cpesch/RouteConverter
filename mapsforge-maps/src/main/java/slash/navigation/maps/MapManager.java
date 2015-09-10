@@ -32,7 +32,6 @@ import slash.navigation.download.FileAndChecksum;
 import slash.navigation.maps.impl.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -98,6 +97,9 @@ public class MapManager {
 
     public MapManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
+
+        initializeOnlineMaps();
+        initializeBuiltinThemes();
     }
 
     public LocalMapsTableModel getAvailableMapsModel() {
@@ -137,10 +139,19 @@ public class MapManager {
         return getAvailableMapsModel().getMap(url);
     }
 
-    public synchronized void scanMaps() throws IOException {
+    private void initializeOnlineMaps() {
         availableMapsModel.clear();
         availableMapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
         availableMapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
+    }
+
+    private void initializeBuiltinThemes() {
+        availableThemesModel.clear();
+        availableThemesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
+    }
+
+    public synchronized void scanMaps() throws IOException {
+        initializeOnlineMaps();
 
         long start = currentTimeMillis();
 
@@ -156,8 +167,7 @@ public class MapManager {
     }
 
     public synchronized void scanThemes() throws IOException {
-        availableThemesModel.clear();
-        availableThemesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
+        initializeBuiltinThemes();
 
         long start = currentTimeMillis();
 

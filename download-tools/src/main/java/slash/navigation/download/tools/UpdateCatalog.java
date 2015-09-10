@@ -56,6 +56,7 @@ import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
+import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -146,7 +147,7 @@ public class UpdateCatalog extends BaseDownloadTool {
             }
             fileType.getFragment().addAll(fragmentTypes);
 
-        } else if (file.getUri().endsWith(PbfUtil.DOT_PBF)) {
+        } else if (file.getUri().endsWith(DOT_PBF)) {
             // GET with range for .pbf header
             if (!download.getFile().getFile().exists())
                 download = downloadPartial(url, checksum.getContentLength());

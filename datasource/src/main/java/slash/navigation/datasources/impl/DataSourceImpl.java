@@ -24,6 +24,7 @@ import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.download.Checksum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,6 +114,26 @@ public class DataSourceImpl implements DataSource {
     public Fragment<Downloadable> getFragment(String key) {
         initialize();
         return fragmentMap.get(key);
+    }
+
+    public Downloadable getDownloadableBySHA1(String sha1) {
+        initialize();
+        for(Downloadable downloadable : downloadableMap.values()) {
+            Checksum checksum = downloadable.getLatestChecksum();
+            if(checksum != null && sha1.equals(checksum.getSHA1()))
+                return downloadable;
+        }
+        return null;
+    }
+
+    public Fragment<Downloadable> getFragmentBySHA1(String sha1) {
+        initialize();
+        for(Fragment<Downloadable> fragment : fragmentMap.values()) {
+            Checksum checksum = fragment.getLatestChecksum();
+            if(checksum != null && sha1.equals(checksum.getSHA1()))
+                return fragment;
+        }
+        return null;
     }
 
     public boolean equals(Object o) {

@@ -21,7 +21,9 @@
 package slash.navigation.datasources.helpers;
 
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Edition;
+import slash.navigation.datasources.Fragment;
 import slash.navigation.datasources.binding.CatalogType;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.EditionType;
@@ -29,9 +31,14 @@ import slash.navigation.datasources.impl.DataSourceImpl;
 import slash.navigation.datasources.impl.EditionImpl;
 
 import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.generateChecksum;
 
 /**
  * Encapsulates access to a DataSources XML.
@@ -75,6 +82,38 @@ public class DataSourceService {
         for (DataSource dataSource : getDataSources()) {
             if (id.equals(dataSource.getId()))
                 return dataSource;
+        }
+        return null;
+    }
+
+    public Downloadable getDownloadable(File file) throws IOException {
+        String filePath = file.getCanonicalPath();
+
+        for (DataSource dataSource : dataSources) {
+            File directory = getApplicationDirectory(dataSource.getDirectory());
+            String directoryPath = directory.getCanonicalPath();
+
+            if (filePath.startsWith(directoryPath)) {
+                String fileName = filePath.substring(directoryPath.length() + 1);
+
+                Downloadable downloadable = dataSource.getDownloadable(fileName);
+                if (downloadable != null)
+                    return downloadable;
+
+                Fragment<Downloadable> fragment = dataSource.getFragment(fileName);
+                if (fragment != null)
+                    return fragment.getDownloadable();
+
+                String sha1 = generateChecksum(file);
+
+                downloadable = dataSource.getDownloadableBySHA1(sha1);
+                if (downloadable != null)
+                    return downloadable;
+
+                fragment = dataSource.getFragmentBySHA1(sha1);
+                if (fragment != null)
+                    return fragment.getDownloadable();
+            }
         }
         return null;
     }

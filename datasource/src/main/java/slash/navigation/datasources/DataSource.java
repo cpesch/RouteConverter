@@ -41,4 +41,7 @@ public interface DataSource {
 
     Downloadable getDownloadable(String uri);
     Fragment<Downloadable> getFragment(String key);
+
+    Downloadable getDownloadableBySHA1(String sha1);
+    Fragment<Downloadable> getFragmentBySHA1(String sha1);
 }

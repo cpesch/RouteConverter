@@ -48,6 +48,8 @@ public class DownloadNotifier implements DownloadListener {
         Application.getInstance().getContext().getNotificationManager().showNotification(message, getAction());
     }
 
+    public void initialized(Download download) {}
+
     public void progressed(Download download) {
         Integer percentage = download.getPercentage();
         if(percentage != null && percentage == 0 || download.getProcessedBytes() == 0)
