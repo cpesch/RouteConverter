@@ -34,6 +34,7 @@ public interface DataSource {
     String getHref();
     String getBaseUrl();
     String getDirectory();
+    String getAction();
 
     List<File> getFiles();
     List<Map> getMaps();

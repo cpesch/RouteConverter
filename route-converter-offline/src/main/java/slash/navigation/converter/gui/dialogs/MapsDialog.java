@@ -161,7 +161,7 @@ public class MapsDialog extends SimpleDialog {
         sorterDownloadableMaps.setSortsOnUpdates(true);
         sorterDownloadableMaps.setComparator(DATASOURCE_COLUMN, new Comparator<RemoteMap>() {
             public int compare(RemoteMap m1, RemoteMap m2) {
-                return m1.getDataSource().compareToIgnoreCase(m2.getDataSource());
+                return m1.getDataSource().getName().compareToIgnoreCase(m2.getDataSource().getName());
             }
         });
         sorterDownloadableMaps.setComparator(DESCRIPTION_COLUMN, new Comparator<RemoteMap>() {

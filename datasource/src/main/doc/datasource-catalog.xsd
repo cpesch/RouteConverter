@@ -79,6 +79,7 @@
         <xsd:attribute name="href" type="xsd:string"/>
         <xsd:attribute name="baseUrl" type="xsd:string"/>
         <xsd:attribute name="directory" type="xsd:string"/>
+        <xsd:attribute name="action" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="fragmentType">

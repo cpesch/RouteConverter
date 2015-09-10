@@ -26,7 +26,6 @@ import slash.navigation.maps.impl.RemoteThemeImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * Encapsulates access to mapsforge .map and theme files.
@@ -35,31 +34,16 @@ import java.util.prefs.Preferences;
  */
 
 public class MapFiles {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapFiles.class);
-    private static final String BASE_URL_PREFERENCE = "baseUrl";
-
     private final DataSource dataSource;
 
     public MapFiles(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public String getName() {
-        return dataSource.getName();
-    }
-
-    String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE + getName(), dataSource.getBaseUrl());
-    }
-
-    private String getSubDirectory() {
-        return dataSource.getDirectory();
-    }
-
     public List<RemoteMap> getMaps() {
         List<RemoteMap> result = new ArrayList<>();
-        for(slash.navigation.datasources.Map map : dataSource.getMaps()) {
-            result.add(new RemoteMapImpl(getName(), getBaseUrl(), getSubDirectory(), map));
+        for (slash.navigation.datasources.Map map : dataSource.getMaps()) {
+            result.add(new RemoteMapImpl(dataSource, map));
         }
         return result;
     }
@@ -67,7 +51,7 @@ public class MapFiles {
     public List<RemoteTheme> getThemes() {
         List<RemoteTheme> result = new ArrayList<>();
         for (Theme theme : dataSource.getThemes()) {
-            result.add(new RemoteThemeImpl(getName(), getBaseUrl(), getSubDirectory(), theme));
+            result.add(new RemoteThemeImpl(dataSource, theme));
         }
         return result;
     }

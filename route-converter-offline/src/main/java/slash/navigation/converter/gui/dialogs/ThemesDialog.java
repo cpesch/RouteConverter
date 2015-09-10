@@ -138,7 +138,7 @@ public class ThemesDialog extends SimpleDialog {
         sorterResources.setSortsOnUpdates(true);
         sorterResources.setComparator(DATASOURCE_COLUMN, new Comparator<RemoteTheme>() {
             public int compare(RemoteTheme t1, RemoteTheme t2) {
-                return t1.getDataSource().compareToIgnoreCase(t2.getDataSource());
+                return t1.getDataSource().getName().compareToIgnoreCase(t2.getDataSource().getName());
             }
         });
         sorterResources.setComparator(DESCRIPTION_COLUMN, new Comparator<RemoteTheme>() {

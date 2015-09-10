@@ -41,7 +41,7 @@ public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRender
         RemoteMap map = (RemoteMap) value;
         switch (columnIndex) {
             case DATASOURCE_COLUMN:
-                label.setText(map.getDataSource());
+                label.setText(map.getDataSource().getName());
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(LEFT);
                 break;

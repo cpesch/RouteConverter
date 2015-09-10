@@ -20,6 +20,7 @@
 package slash.navigation.maps.impl;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Map;
 import slash.navigation.maps.RemoteMap;
 
@@ -29,8 +30,8 @@ import slash.navigation.maps.RemoteMap;
  * @author Christian Pesch
  */
 public class RemoteMapImpl extends RemoteResourceImpl implements RemoteMap {
-    public RemoteMapImpl(String datasource, String baseUrl, String subDirectory, Map map) {
-        super(datasource, baseUrl, subDirectory, map);
+    public RemoteMapImpl(DataSource datasource, Map map) {
+        super(datasource, map);
     }
 
     public BoundingBox getBoundingBox() {

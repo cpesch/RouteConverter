@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps.impl;
 
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Theme;
 import slash.navigation.maps.RemoteTheme;
 
@@ -28,8 +29,8 @@ import slash.navigation.maps.RemoteTheme;
  * @author Christian Pesch
  */
 public class RemoteThemeImpl extends RemoteResourceImpl implements RemoteTheme {
-    public RemoteThemeImpl(String datasource, String baseUrl, String subDirectory, Theme theme) {
-        super(datasource, baseUrl, subDirectory, theme);
+    public RemoteThemeImpl(DataSource datasource, Theme theme) {
+        super(datasource, theme);
     }
 
     public String getImageUrl() {

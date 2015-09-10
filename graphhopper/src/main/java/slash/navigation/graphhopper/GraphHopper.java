@@ -23,10 +23,14 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
-import slash.navigation.common.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
@@ -36,7 +40,10 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -48,7 +55,6 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.common.Bearing.calculateBearing;
-import static slash.navigation.download.Action.Copy;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 
@@ -291,7 +297,7 @@ public class GraphHopper implements RoutingService {
     private Download download(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(dataSource.getAction()),
                 null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 

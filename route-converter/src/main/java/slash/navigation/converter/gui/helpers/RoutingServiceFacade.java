@@ -65,6 +65,15 @@ public class RoutingServiceFacade {
         return routingServices;
     }
 
+    public <T> T getRoutingService(Class<T> clazz) {
+        for(RoutingService service : getRoutingServices()) {
+            if(service.getClass().equals(clazz))
+                //noinspection unchecked
+                return (T)service;
+        }
+        return null;
+    }
+
     public RoutingService getRoutingService() {
         String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, preferredRoutingService.getName());
 

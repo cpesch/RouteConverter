@@ -26,6 +26,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
@@ -36,7 +37,10 @@ import slash.navigation.routing.TravelMode;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -48,7 +52,6 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
-import static slash.navigation.download.Action.Copy;
 
 /**
  * Encapsulates access to the BRouter.
@@ -317,14 +320,14 @@ public class BRouter implements RoutingService {
     private Download downloadProfile(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getProfilesBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
                 null, new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     private Download downloadSegment(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getSegmentsBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Copy,
+        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(getSegments().getAction()),
                 null, new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 

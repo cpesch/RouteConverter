@@ -85,6 +85,10 @@ public class DataSourceImpl implements DataSource {
         return datasourceType.getDirectory();
     }
 
+    public String getAction() {
+        return datasourceType.getAction();
+    }
+
     public List<File> getFiles() {
         List<File> result = new ArrayList<>();
         for (FileType fileType : datasourceType.getFile())

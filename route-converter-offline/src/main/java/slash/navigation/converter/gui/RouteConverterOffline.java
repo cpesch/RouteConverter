@@ -107,21 +107,31 @@ public class RouteConverterOffline extends RouteConverter {
         BRouter router = new BRouter(getDataSourceManager().getDownloadManager());
         getRoutingServiceFacade().addRoutingService(router);
 
-        DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
-        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
-        if (brouterProfiles != null && brouterSegments != null) {
-            router.setProfilesAndSegments(brouterProfiles, brouterSegments);
-            getRoutingServiceFacade().setPreferredRoutingService(router);
-        }
-
         GraphHopper hopper = new GraphHopper(getDataSourceManager().getDownloadManager());
         getRoutingServiceFacade().addRoutingService(hopper);
 
-        DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
-        if (graphhopper != null)
-            hopper.setDataSource(graphhopper);
+        configureRoutingServices();
 
         getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getSelectMapsAction());
+    }
+
+    protected void updateRoutingServices() {
+        configureRoutingServices();
+    }
+
+    private void configureRoutingServices() {
+        DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
+        if (brouterProfiles != null && brouterSegments != null) {
+            BRouter router = getRoutingServiceFacade().getRoutingService(BRouter.class);
+            router.setProfilesAndSegments(brouterProfiles, brouterSegments);
+        }
+
+        DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
+        if (graphhopper != null) {
+            GraphHopper hopper = getRoutingServiceFacade().getRoutingService(GraphHopper.class);
+            hopper.setDataSource(graphhopper);
+        }
     }
 
     protected void initializeElevationServices() {

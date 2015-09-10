@@ -41,7 +41,7 @@ public class RemoteThemeTableCellRenderer extends AlternatingColorTableCellRende
         RemoteTheme theme = (RemoteTheme) value;
         switch (columnIndex) {
             case DATASOURCE_COLUMN:
-                label.setText(theme.getDataSource());
+                label.setText(theme.getDataSource().getName());
                 label.setToolTipText(theme.getUrl());
                 label.setHorizontalAlignment(LEFT);
                 break;

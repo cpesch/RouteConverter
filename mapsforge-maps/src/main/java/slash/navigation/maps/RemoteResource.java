@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps;
 
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 
 /**
@@ -28,10 +29,7 @@ import slash.navigation.datasources.Downloadable;
  */
 
 public interface RemoteResource {
-    String getDataSource();
-    String getBaseUrl();
-    String getSubDirectory();
+    DataSource getDataSource();
     Downloadable getDownloadable();
-
     String getUrl();
 }

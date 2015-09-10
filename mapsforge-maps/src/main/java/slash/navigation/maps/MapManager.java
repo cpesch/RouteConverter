@@ -48,8 +48,6 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
-import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
@@ -225,7 +223,7 @@ public class MapManager {
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();
 
-            Action action = resource.getDownloadable().getUri().endsWith(DOT_ZIP) ? Extract : Copy;
+            Action action = Action.valueOf(resource.getDataSource().getAction());
             File resourceFile = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
 
             List<FileAndChecksum> fragments = new ArrayList<>();
@@ -234,7 +232,7 @@ public class MapManager {
                 fragments.add(new FileAndChecksum(fragmentFile, fragment.getLatestChecksum()));
             }
 
-            Download download = downloadManager.queueForDownload(resource.getDataSource() + ": " + downloadable.getUri(),
+            Download download = downloadManager.queueForDownload(resource.getDataSource().getName() + ": " + downloadable.getUri(),
                     resource.getUrl(), action, null, new FileAndChecksum(resourceFile, downloadable.getLatestChecksum()), fragments);
             downloads.add(download);
         }
@@ -242,11 +240,11 @@ public class MapManager {
     }
 
     public File getFile(RemoteResource resource) {
-        return new File(getApplicationDirectory(resource.getSubDirectory().toLowerCase()), resource.getDownloadable().getUri().toLowerCase());
+        return new File(getApplicationDirectory(resource.getDataSource().getDirectory().toLowerCase()), resource.getDownloadable().getUri().toLowerCase());
     }
 
     private File getDirectory(RemoteResource resource) {
-        String subDirectory = resource.getSubDirectory();
+        String subDirectory = resource.getDataSource().getDirectory();
         if (resource instanceof RemoteMap)
             return getDirectory(getMapsDirectory(), subDirectory.substring(5), resource.getDownloadable().getUri());
         else if (resource instanceof RemoteTheme)
