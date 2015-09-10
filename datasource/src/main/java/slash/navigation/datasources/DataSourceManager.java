@@ -196,7 +196,7 @@ public class DataSourceManager {
                     if(downloadable != null) {
                         DataSource dataSource = downloadable.getDataSource();
                         downloadManager.queueForDownload("Found " + downloadable.getUri() + " from " + dataSource.getName(),
-                                dataSource.getBaseUrl() + downloadable.getUri(), Action.Copy /*TODO take from data source*/,
+                                dataSource.getBaseUrl() + downloadable.getUri(), Action.valueOf(dataSource.getAction()),
                                 null, new FileAndChecksum(file, downloadable.getLatestChecksum()),
                                 asFragments(dataSource, downloadable.getFragments()));
                     } else
