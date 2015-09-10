@@ -138,8 +138,9 @@ public class HgtFiles implements ElevationService {
         for (String key : keys) {
             Fragment<Downloadable> fragment = dataSource.getFragment(key);
             // fallback as long as .hgt is not part of the keys
-            fragment = dataSource.getFragment(removeExtension(key));
-            if (fragment != null && !createFile(fragment.getKey()).exists())
+            if (fragment == null)
+                fragment = dataSource.getFragment(removeExtension(key));
+            if (fragment != null && !createFile(fragment.getKey()).exists() && !createFile(fragment.getKey() + ".hgt").exists())
                 downloadables.add(fragment.getDownloadable());
         }
 
