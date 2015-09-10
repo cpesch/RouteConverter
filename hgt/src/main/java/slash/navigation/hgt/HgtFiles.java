@@ -24,6 +24,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Fragment;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
@@ -37,7 +38,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.download.Action.Flatten;
+import static slash.common.io.Files.removeExtension;
 
 /**
  * Encapsulates access to HGT files.
@@ -94,14 +95,14 @@ public class HgtFiles implements ElevationService {
     String createFileKey(double longitude, double latitude) {
         int longitudeAsInteger = (int) longitude;
         int latitudeAsInteger = (int) latitude;
-        return format("%s%02d%s%03d", (latitude < 0) ? "S" : "N",
+        return format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
                 (latitude < 0) ? ((latitudeAsInteger - 1) * -1) : latitudeAsInteger,
                 (longitude < 0) ? "W" : "E",
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
     }
 
     private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), key + ".hgt");
+        return new java.io.File(getDirectory(), key);
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
@@ -136,6 +137,8 @@ public class HgtFiles implements ElevationService {
         Collection<Downloadable> downloadables = new HashSet<>();
         for (String key : keys) {
             Fragment<Downloadable> fragment = dataSource.getFragment(key);
+            // fallback as long as .hgt is not part of the keys
+            fragment = dataSource.getFragment(removeExtension(key));
             if (fragment != null && !createFile(fragment.getKey()).exists())
                 downloadables.add(fragment.getDownloadable());
         }
@@ -156,7 +159,7 @@ public class HgtFiles implements ElevationService {
 
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Elevation Tile: " + uri, url, Flatten,
+        return downloadManager.queueForDownload(getName() + " Elevation Tile: " + uri, url, Action.valueOf(dataSource.getAction()),
                 null, new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
     }
 

@@ -39,15 +39,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Transfer.UTF8_ENCODING;
@@ -68,6 +65,7 @@ import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 public class UpdateCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String MIRROR_ARGUMENT = "mirror";
+    private static final String DOT_HGT = ".hgt";
     private static final String DOT_MAP = ".map";
 
     private DataSourceManager dataSourceManager;
@@ -127,19 +125,24 @@ public class UpdateCatalog extends BaseDownloadTool {
         datasourceType.getFile().add(fileType);
 
         if (file.getUri().endsWith(DOT_ZIP)) {
-            List<FragmentType> fragmentTypes = new ArrayList<>();
+            // GET with range for .pbf header
+            if (!download.getFile().getFile().exists())
+                download = downloadPartial(url, checksum.getContentLength());
 
+            List<FragmentType> fragmentTypes = new ArrayList<>();
             try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
                 ZipEntry entry = zipInputStream.getNextEntry();
                 while (entry != null) {
-                    if (!entry.isDirectory()) {
-                        String key = extractKey(entry.getName());
-                        if (key != null) {
-                            log.info(format("Key %s maps to URI %s", key, file.getUri()));
-                            fragmentTypes.add(createFragmentType(key, entry, zipInputStream));
+                    String entryName = extractFileName(entry.getName());
+                    if (!entry.isDirectory() && entryName.endsWith(DOT_HGT)) {
+                        log.info(format("Found elevation data %s in URI %s", entryName, file.getUri()));
+                        fragmentTypes.add(createFragmentType(entry.getName(), entry, zipInputStream));
 
-                            // do not close zip input stream
+                        // do not close zip input stream and cope with partially copied zips
+                        try {
                             zipInputStream.closeEntry();
+                        } catch (EOFException e) {
+                            // intentionally left empty
                         }
                     }
                     entry = zipInputStream.getNextEntry();
@@ -160,7 +163,8 @@ public class UpdateCatalog extends BaseDownloadTool {
                 if (boundingBox != null)
                     fileType.setBoundingBox(asBoundingBoxType(boundingBox));
             }
-        }
+        } else
+            log.warning(format("Ignoring %s as a file", file.getUri()));
 
         updatePartially(datasourceType);
     }
@@ -264,7 +268,8 @@ public class UpdateCatalog extends BaseDownloadTool {
                 }
             }
             themeType.getFragment().addAll(fragmentTypes);
-        }
+        } else
+            log.warning(format("Ignoring %s as a theme", theme.getUri()));
     }
 
     private Download head(String url) {
@@ -295,15 +300,9 @@ public class UpdateCatalog extends BaseDownloadTool {
         return new java.io.File(ensureDirectory(directory), fileName);
     }
 
-    private static final Pattern KEY_PATTERN = Pattern.compile(".*([N|S]\\d{2}[E|W]\\d{3}).*", CASE_INSENSITIVE);
-
-    private String extractKey(String string) {
-        Matcher matcher = KEY_PATTERN.matcher(string);
-        if (!matcher.matches()) {
-            log.warning(string + " does not match key pattern");
-            return null;
-        }
-        return matcher.group(1).toUpperCase();
+    private String extractFileName(String entryName) {
+        int index = entryName.lastIndexOf('/');
+        return index != -1 ? entryName.substring(index + 1) : entryName;
     }
 
     private void updatePartially(DatasourceType datasourceType) throws IOException {

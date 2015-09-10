@@ -249,7 +249,6 @@ public class Files {
         return new File(path, name).getAbsolutePath();
     }
 
-
     public static File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength) {
         File[] files = new File[fileCount];
         if (fileCount == 1) {

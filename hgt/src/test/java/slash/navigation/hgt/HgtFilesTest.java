@@ -10,15 +10,15 @@ public class HgtFilesTest {
 
     @Test
     public void createFileKey() {
-        assertEquals("N41E000", files.createFileKey(0.1, 41.9));
-        assertEquals("N42E000", files.createFileKey(0.1, 42.0));
-        assertEquals("N42E000", files.createFileKey(0.1, 42.1));
+        assertEquals("N41E000.hgt", files.createFileKey(0.1, 41.9));
+        assertEquals("N42E000.hgt", files.createFileKey(0.1, 42.0));
+        assertEquals("N42E000.hgt", files.createFileKey(0.1, 42.1));
 
-        assertEquals("N42W001", files.createFileKey(-0.1, 42.0));
-        assertEquals("N42E000", files.createFileKey(0.0, 42.0));
-        assertEquals("N42E000", files.createFileKey(0.1, 42.0));
+        assertEquals("N42W001.hgt", files.createFileKey(-0.1, 42.0));
+        assertEquals("N42E000.hgt", files.createFileKey(0.0, 42.0));
+        assertEquals("N42E000.hgt", files.createFileKey(0.1, 42.0));
 
-        assertEquals("N42E000", files.createFileKey(0.15052, 42.42091));
-        assertEquals("N42W001", files.createFileKey(-0.55289, 42.55803));
+        assertEquals("N42E000.hgt", files.createFileKey(0.15052, 42.42091));
+        assertEquals("N42W001.hgt", files.createFileKey(-0.55289, 42.55803));
     }
 }
