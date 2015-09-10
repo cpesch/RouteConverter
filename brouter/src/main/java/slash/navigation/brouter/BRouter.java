@@ -327,7 +327,7 @@ public class BRouter implements RoutingService {
     private Download downloadSegment(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getSegmentsBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(getSegments().getAction()),
+        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
                 null, new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 

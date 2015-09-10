@@ -155,7 +155,7 @@ public class DataSourceManager {
         for (DataSource dataSource : dataSources) {
             String datasourceUrl = dataSource.getHref() + FORMAT_XML;
             java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
-            Download download = downloadManager.queueForDownload("RouteConverter DataSource: " + dataSource.getId(),
+            Download download = downloadManager.queueForDownload("Datasource: " + dataSource.getId(),
                     datasourceUrl, Copy, null, new FileAndChecksum(file, null), null);
             downloads.add(download);
         }
@@ -195,7 +195,7 @@ public class DataSourceManager {
                     Downloadable downloadable = dataSourceService.getDownloadable(file);
                     if(downloadable != null) {
                         DataSource dataSource = downloadable.getDataSource();
-                        downloadManager.queueForDownload("Found " + downloadable.getUri() + " from " + dataSource.getName(),
+                        downloadManager.queueForDownload(dataSource.getName() + " Data: " + downloadable.getUri(),
                                 dataSource.getBaseUrl() + downloadable.getUri(), Action.valueOf(dataSource.getAction()),
                                 null, new FileAndChecksum(file, downloadable.getLatestChecksum()),
                                 asFragments(dataSource, downloadable.getFragments()));
