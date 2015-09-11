@@ -24,13 +24,16 @@ import slash.common.type.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.*;
 
 /**
@@ -140,9 +143,11 @@ public class Download {
     }
 
     private static final Set<State> DOWNLOADED = new HashSet<>(asList(NotModified, Succeeded));
+    private static final Set<Action> COPY = new HashSet<>(singletonList(Copy));
 
     private Checksum getChecksum() {
-        return DOWNLOADED.contains(getState()) ? file.getActualChecksum() : file.getExpectedChecksum();
+        return DOWNLOADED.contains(getState()) && COPY.contains(getAction()) ?
+                file.getActualChecksum() : file.getExpectedChecksum();
     }
 
     public Long getSize() {

@@ -302,14 +302,14 @@ public class MapsDialog extends SimpleDialog {
 
         executor.execute(new Runnable() {
             public void run() {
-                getMapManager().queueForDownload(selectedMaps);
-
-                if (checkBoxDownloadRoutingData.isSelected())
-                    r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(selectedBoundingBoxes);
-                if (checkBoxDownloadElevationData.isSelected())
-                    r.getElevationServiceFacade().getElevationService().downloadElevationData(selectedBoundingBoxes);
-
                 try {
+                    getMapManager().queueForDownload(selectedMaps);
+
+                    if (checkBoxDownloadRoutingData.isSelected())
+                        r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(selectedBoundingBoxes);
+                    if (checkBoxDownloadElevationData.isSelected())
+                        r.getElevationServiceFacade().getElevationService().downloadElevationData(selectedBoundingBoxes);
+
                     getMapManager().scanMaps();
                 } catch (final IOException e) {
                     invokeLater(new Runnable() {

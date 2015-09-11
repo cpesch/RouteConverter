@@ -23,7 +23,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 
 /**
- * Represents a mapsforge resource.
+ * Represents a remote resource.
  *
  * @author Christian Pesch
  */

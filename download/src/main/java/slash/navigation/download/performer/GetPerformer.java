@@ -115,6 +115,11 @@ public class GetPerformer implements ActionPerformer {
     }
 
     public void run() throws IOException {
+        if(nothingToDo()) {
+            downloadExecutor.notModified();
+            return;
+        }
+
         Result result = new Result(false);
         if (canResume())
             result = resume();
@@ -214,6 +219,12 @@ public class GetPerformer implements ActionPerformer {
 
         validator.expectedIsActual();
         return true;
+    }
+
+    private boolean nothingToDo() throws IOException {
+        Validator validator = new Validator(getDownload());
+        validator.validate();
+        return validator.existTargets() && validator.isChecksumValid();
     }
 
     private static class Result {

@@ -220,9 +220,9 @@ public class ThemesDialog extends SimpleDialog {
 
         executor.execute(new Runnable() {
             public void run() {
-                getMapManager().queueForDownload(selectedThemes);
-
                 try {
+                    getMapManager().queueForDownload(selectedThemes);
+
                     getMapManager().scanThemes();
                 } catch (final IOException e) {
                     invokeLater(new Runnable() {

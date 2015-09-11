@@ -31,8 +31,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
-import static slash.common.io.Files.generateChecksum;
-import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.download.Checksum.createChecksum;
 
 /**
  * Validates a {@link Download}
@@ -48,21 +47,15 @@ public class Validator {
         this.download = download;
     }
 
-    private Checksum createChecksum(File file) throws IOException {
-        return new Checksum(fromMillis(file.lastModified()), file.length(), generateChecksum(file));
-    }
-
     public void validate() throws IOException {
         if (!existTargets())
             return;
 
         download.getFile().setActualChecksum(createChecksum(getFileTarget()));
         List<FileAndChecksum> fragments = download.getFragments();
-        if (fragments != null) {
-            for (FileAndChecksum fragment : fragments) {
+        if (fragments != null)
+            for (FileAndChecksum fragment : fragments)
                 fragment.setActualChecksum(createChecksum(fragment.getFile()));
-            }
-        }
     }
 
     private File getFileTarget() {
@@ -71,18 +64,24 @@ public class Validator {
     }
 
     private boolean isChecksumValid(FileAndChecksum file) throws IOException {
+        if (file.getFile().isDirectory())
+            return true;
+
         Checksum expected = file.getExpectedChecksum();
         if (expected == null)
             return true;
 
         Checksum actual = file.getActualChecksum();
+        if (actual == null)
+            return false;
+
         boolean lastModifiedEquals = expected.getLastModified() == null ||
                 expected.getLastModified().equals(actual.getLastModified());
         if (!lastModifiedEquals)
             log.warning(format("%s has last modified %s but expected %s", file.getFile(), actual.getLastModified(), expected.getLastModified()));
-        boolean hasBeenUpdated = file.getActualChecksum().laterThan(file.getExpectedChecksum());
-        if (!hasBeenUpdated)
-            log.info(format("%s has been updated on server", file.getFile()));
+        boolean hasBeenUpdatedByMe = file.getActualChecksum().laterThan(file.getExpectedChecksum());
+        if (hasBeenUpdatedByMe)
+            log.info(format("%s has been updated by me on server", file.getFile()));
         boolean contentLengthEquals = expected.getContentLength() == null ||
                 expected.getContentLength().equals(actual.getContentLength());
         if (!contentLengthEquals)
@@ -91,7 +90,7 @@ public class Validator {
                 expected.getSHA1().equals(actual.getSHA1());
         if (!sha1Equals)
             log.warning(format("%s has SHA-1 %s but expected %s", file.getFile(), actual.getSHA1(), expected.getSHA1()));
-        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || hasBeenUpdated;
+        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || hasBeenUpdatedByMe;
         if (valid)
             log.info(format("%s has valid checksum", file.getFile()));
         return valid;
@@ -103,27 +102,29 @@ public class Validator {
 
         List<FileAndChecksum> fragments = download.getFragments();
         if (fragments != null)
-            for (FileAndChecksum fragment : fragments) {
+            for (FileAndChecksum fragment : fragments)
                 if (!isChecksumValid(fragment))
                     return false;
-            }
         return true;
     }
 
     public boolean existTargets() {
         if (!download.getFile().getFile().exists()) {
-            log.warning(format("Download target %s does not exist", download.getFile().getFile()));
+            log.warning(format("%s does not exist", download.getFile().getFile()));
             return false;
         }
+
         List<FileAndChecksum> fragments = download.getFragments();
         if (fragments != null) {
             for (FileAndChecksum fragment : fragments) {
                 if (!fragment.getFile().exists()) {
-                    log.warning(format("Fragment target %s does not exist", fragment.getFile()));
+                    log.warning(format("%s does not exist", fragment.getFile()));
                     return false;
                 }
             }
         }
+
+        log.info(format("%s exist", download.getFile()));
         return true;
     }
 
