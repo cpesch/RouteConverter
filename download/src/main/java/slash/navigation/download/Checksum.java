@@ -22,7 +22,12 @@ package slash.navigation.download;
 
 import slash.common.type.CompactCalendar;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import static slash.common.io.Files.generateChecksum;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
  * A last modified timestamp, content length and SHA-1 checksum.
@@ -65,6 +70,11 @@ public class Checksum {
                 latest = checksum;
         }
         return latest;
+    }
+
+    public static Checksum createChecksum(File file) throws IOException {
+        return file != null && file.exists() ?
+                new Checksum(fromMillis(file.lastModified()), file.length(), generateChecksum(file)) : null;
     }
 
     public boolean equals(Object o) {

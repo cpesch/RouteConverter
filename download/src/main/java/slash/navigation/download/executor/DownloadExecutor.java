@@ -88,6 +88,7 @@ public class DownloadExecutor implements Runnable {
             performer.run();
         } catch (Exception e) {
             log.severe(format("Could not download content from %s: %s", download.getUrl(), e));
+            e.printStackTrace();
             downloadFailed();
         }
 

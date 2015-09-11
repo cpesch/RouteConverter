@@ -38,6 +38,7 @@ import slash.navigation.maps.RemoteResource;
 import slash.navigation.routing.BeelineService;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.converter.gui.helpers.MapViewImpl.Mapsforge;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
@@ -192,13 +195,18 @@ public class RouteConverterOffline extends RouteConverter {
             if (resource != null) {
                 resources.add(resource);
 
-                if (!getMapManager().getFile(resource).exists())
+                File file = new File(getApplicationDirectory(dataSource.getDirectory()), resource.getDownloadable().getUri().toLowerCase());
+                if (!file.exists())
                     updateMap = true;
             }
         }
 
         if (resources.size() > 0)
-            getMapManager().queueForDownload(resources);
+            try {
+                getMapManager().queueForDownload(resources);
+            } catch (IOException e) {
+                log.warning("Cannot queue " + resources + " for download: " + getLocalizedMessage(e));
+            }
 
         if (updateMap) {
             scanLocalMapsAndThemes();

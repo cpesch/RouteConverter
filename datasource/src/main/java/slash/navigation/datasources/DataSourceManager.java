@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.download.Action.Copy;
+import static slash.navigation.download.Action.*;
 
 /**
  * Encapsulates access to the download of the DataSource XMLs.
@@ -195,10 +195,8 @@ public class DataSourceManager {
                     Downloadable downloadable = dataSourceService.getDownloadable(file);
                     if(downloadable != null) {
                         DataSource dataSource = downloadable.getDataSource();
-                        downloadManager.queueForDownload(dataSource.getName() + " Data: " + downloadable.getUri(),
-                                dataSource.getBaseUrl() + downloadable.getUri(), Action.valueOf(dataSource.getAction()),
-                                null, new FileAndChecksum(file, downloadable.getLatestChecksum()),
-                                asFragments(dataSource, downloadable.getFragments()));
+
+                        queueForDownload(dataSource, downloadable);
                     } else
                         log.fine("Cannot find downloadable for " + file);
                 } else if (file.isDirectory())
@@ -207,16 +205,34 @@ public class DataSourceManager {
         }
     }
 
-    private List<FileAndChecksum> asFragments(DataSource dataSource, List<Fragment<Downloadable>> fragments) {
+    public Download queueForDownload(DataSource dataSource, Downloadable downloadable) throws IOException {
+        Action action = Action.valueOf(dataSource.getAction());
+        File directory = getApplicationDirectory(dataSource.getDirectory());
+        File target = new File(directory, downloadable.getUri().toLowerCase());
+        if (action.equals(Extract) || action.equals(Flatten))
+            target = target.getParentFile();
+
+        return downloadManager.queueForDownload(dataSource.getName() + ": " + downloadable.getUri(),
+                dataSource.getBaseUrl() + downloadable.getUri(), action,
+                null, new FileAndChecksum(target, downloadable.getLatestChecksum()),
+                asFragments(directory, downloadable.getFragments(), dataSource.getId().contains("srtm") || dataSource.getId().contains("ferranti")));
+    }
+
+    private List<FileAndChecksum> asFragments(File directory, List<Fragment<Downloadable>> fragments, boolean addDotHgt) throws IOException {
         if(fragments == null)
             return null;
 
         List<FileAndChecksum> result = new ArrayList<>();
-        for(Fragment<Downloadable> fragment : fragments) {
-            result.add(new FileAndChecksum(new File(getApplicationDirectory(dataSource.getDirectory()), fragment.getKey()), fragment.getLatestChecksum()));
+        for (Fragment<Downloadable> fragment : fragments) {
+            String key = fragment.getKey();
+            if (addDotHgt)
+                key += ".hgt";
+            File target = new File(directory, key);
+            result.add(new FileAndChecksum(target, fragment.getLatestChecksum()));
         }
         return result;
     }
+
 
     public void scanForFilesMissingInQueue() throws IOException {
         scanForFilesMissingInQueue(getApplicationDirectory());

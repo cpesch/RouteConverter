@@ -690,7 +690,7 @@ public class MapsforgeMapView implements MapView {
         try {
             layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
-            mapViewCallback.showMapException(map.getDescription(), e);
+            mapViewCallback.showMapException(map != null ? map.getDescription() : "<no map>", e);
             return;
         }
 

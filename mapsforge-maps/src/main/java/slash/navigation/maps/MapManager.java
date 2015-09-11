@@ -22,13 +22,10 @@ package slash.navigation.maps;
 import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
-import slash.navigation.datasources.Fragment;
-import slash.navigation.download.Action;
 import slash.navigation.download.Download;
-import slash.navigation.download.DownloadManager;
-import slash.navigation.download.FileAndChecksum;
 import slash.navigation.maps.impl.*;
 
 import java.io.File;
@@ -48,7 +45,6 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.navigation.download.Action.Extract;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
 
 /**
@@ -217,43 +213,14 @@ public class MapManager {
             downloadableThemesModel.addOrUpdateTheme(remoteTheme);
     }
 
-    public void queueForDownload(List<? extends RemoteResource> resources) {
-        DownloadManager downloadManager = dataSourceManager.getDownloadManager();
+    public void queueForDownload(List<? extends RemoteResource> resources) throws IOException {
         List<Download> downloads = new ArrayList<>();
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();
+            DataSource dataSource = resource.getDataSource();
 
-            Action action = Action.valueOf(resource.getDataSource().getAction());
-            File resourceFile = action.equals(Extract) ? getDirectory(resource) : getFile(resource);
-
-            List<FileAndChecksum> fragments = new ArrayList<>();
-            for (Fragment fragment : downloadable.getFragments()) {
-                File fragmentFile = new File(resourceFile, fragment.getKey());
-                fragments.add(new FileAndChecksum(fragmentFile, fragment.getLatestChecksum()));
-            }
-
-            Download download = downloadManager.queueForDownload(resource.getDataSource().getName() + ": " + downloadable.getUri(),
-                    resource.getUrl(), action, null, new FileAndChecksum(resourceFile, downloadable.getLatestChecksum()), fragments);
-            downloads.add(download);
+            downloads.add(dataSourceManager.queueForDownload(dataSource, downloadable));
         }
-        downloadManager.waitForCompletion(downloads);
-    }
-
-    public File getFile(RemoteResource resource) {
-        return new File(getApplicationDirectory(resource.getDataSource().getDirectory().toLowerCase()), resource.getDownloadable().getUri().toLowerCase());
-    }
-
-    private File getDirectory(RemoteResource resource) {
-        String subDirectory = resource.getDataSource().getDirectory();
-        if (resource instanceof RemoteMap)
-            return getDirectory(getMapsDirectory(), subDirectory.substring(5), resource.getDownloadable().getUri());
-        else if (resource instanceof RemoteTheme)
-            return getDirectory(getThemesDirectory(), subDirectory.substring(7), resource.getDownloadable().getUri());
-        return getApplicationDirectory(subDirectory);
-    }
-
-    private File getDirectory(String part1, String part2, String part3) {
-        File directory = new File(part1, part2);
-        return ensureDirectory(new File(directory, part3).getParentFile());
+        dataSourceManager.getDownloadManager().waitForCompletion(downloads);
     }
 }
