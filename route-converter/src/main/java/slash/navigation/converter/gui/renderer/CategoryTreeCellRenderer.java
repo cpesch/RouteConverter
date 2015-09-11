@@ -35,9 +35,13 @@ import java.awt.*;
  */
 
 public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
+    private static final Icon OPEN_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-open.png");
+    private static final Icon OPEN_REMOTE_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-remote.png");
+    private static final Icon CLOSED_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder.png");
+
     public CategoryTreeCellRenderer() {
-        setOpenIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-open.png"));
-        setClosedIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/folder.png"));
+        setOpenIcon(OPEN_ICON);
+        setClosedIcon(CLOSED_ICON);
         setLeafIcon(getClosedIcon());
     }
 
@@ -52,6 +56,13 @@ public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
                 name = RouteConverter.getBundle().getString("remote-catalog");
 
             label.setText(name);
+
+            if (categoryTreeNode.isLocal())
+                setClosedIcon(OPEN_ICON);
+            else
+                setClosedIcon(OPEN_REMOTE_ICON);
+            setLeafIcon(getClosedIcon());
+
         } else
             label.setText(RouteConverter.getBundle().getString("loading"));
         return label;
