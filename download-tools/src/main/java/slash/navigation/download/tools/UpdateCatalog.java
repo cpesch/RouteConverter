@@ -47,6 +47,7 @@ import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Files.extractFileName;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
@@ -136,7 +137,7 @@ public class UpdateCatalog extends BaseDownloadTool {
                     String entryName = extractFileName(entry.getName());
                     if (!entry.isDirectory() && entryName.endsWith(DOT_HGT)) {
                         log.info(format("Found elevation data %s in URI %s", entryName, file.getUri()));
-                        fragmentTypes.add(createFragmentType(entry.getName(), entry, zipInputStream));
+                        fragmentTypes.add(createFragmentType(entryName, entry, zipInputStream));
 
                         // do not close zip input stream and cope with partially copied zips
                         try {
@@ -274,21 +275,21 @@ public class UpdateCatalog extends BaseDownloadTool {
 
     private Download head(String url) {
         Download download = dataSourceManager.getDownloadManager().queueForDownload("HEAD for " + url, url, Head,
-                null, new FileAndChecksum(createMirrorFile(url), null), null);
+                new FileAndChecksum(createMirrorFile(url), null), null);
         dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
         return download;
     }
 
     private Download download(String url) {
         Download download = dataSourceManager.getDownloadManager().queueForDownload("GET for " + url, url, Copy,
-                null, new FileAndChecksum(createMirrorFile(url), null), null);
+                new FileAndChecksum(createMirrorFile(url), null), null);
         dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
         return download;
     }
 
     private Download downloadPartial(String url, long fileSize) throws IOException {
         Download download = dataSourceManager.getDownloadManager().queueForDownload("GET 16k for " + url, url, GetRange,
-                null, new FileAndChecksum(createMirrorFile(url), new Checksum(null, fileSize, null)), null);
+                new FileAndChecksum(createMirrorFile(url), new Checksum(null, fileSize, null)), null);
         dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
         return download;
     }
@@ -298,11 +299,6 @@ public class UpdateCatalog extends BaseDownloadTool {
         String fileName = url.substring(url.lastIndexOf('/') + 1);
         java.io.File directory = new java.io.File(mirror, filePath);
         return new java.io.File(ensureDirectory(directory), fileName);
-    }
-
-    private String extractFileName(String entryName) {
-        int index = entryName.lastIndexOf('/');
-        return index != -1 ? entryName.substring(index + 1) : entryName;
     }
 
     private void updatePartially(DatasourceType datasourceType) throws IOException {

@@ -126,7 +126,7 @@ public class DataSourceManager {
     public void downloadRoot(String url, java.io.File directory) {
         String editionsUrl = url + EDITIONS_URI + FORMAT_XML;
         java.io.File file = new java.io.File(directory, EDITIONS + DOT_XML);
-        Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy, null,
+        Download download = downloadManager.queueForDownload("RouteConverter Editions", editionsUrl, Copy,
                 new FileAndChecksum(file, null), null);
         downloadManager.waitForCompletion(singletonList(download));
     }
@@ -134,7 +134,7 @@ public class DataSourceManager {
     private void downloadEdition(String edition, String url, java.io.File file) {
         String editionUrl = url + EDITIONS_URI + edition + "/" + FORMAT_XML;
         Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition, editionUrl, Copy,
-                null, new FileAndChecksum(file, null), null);
+                new FileAndChecksum(file, null), null);
         downloadManager.waitForCompletion(singletonList(download));
     }
 
@@ -144,7 +144,7 @@ public class DataSourceManager {
             String editionUrl = edition.getHref() + FORMAT_XML;
             java.io.File file = new java.io.File(directory, edition.getId() + DOT_XML);
             Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition.getId(),
-                    editionUrl, Copy, null, new FileAndChecksum(file, null), null);
+                    editionUrl, Copy, new FileAndChecksum(file, null), null);
             downloads.add(download);
         }
         downloadManager.waitForCompletion(downloads);
@@ -156,7 +156,7 @@ public class DataSourceManager {
             String datasourceUrl = dataSource.getHref() + FORMAT_XML;
             java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
             Download download = downloadManager.queueForDownload("Datasource: " + dataSource.getId(),
-                    datasourceUrl, Copy, null, new FileAndChecksum(file, null), null);
+                    datasourceUrl, Copy, new FileAndChecksum(file, null), null);
             downloads.add(download);
         }
         downloadManager.waitForCompletion(downloads);
@@ -196,13 +196,31 @@ public class DataSourceManager {
                     if(downloadable != null) {
                         DataSource dataSource = downloadable.getDataSource();
 
-                        queueForDownload(dataSource, downloadable);
+                        addToQueue(dataSource, downloadable);
                     } else
                         log.fine("Cannot find downloadable for " + file);
                 } else if (file.isDirectory())
                     scanForFilesMissingInQueue(file);
             }
         }
+    }
+
+    private boolean isAddDotHgt(DataSource dataSource) {
+        // fallback as long as .hgt is not part of the keys
+        return dataSource.getId().contains("srtm") || dataSource.getId().contains("ferranti");
+    }
+
+    private void addToQueue(DataSource dataSource, Downloadable downloadable) throws IOException {
+        Action action = Action.valueOf(dataSource.getAction());
+        File directory = getApplicationDirectory(dataSource.getDirectory());
+        File target = new File(directory, downloadable.getUri().toLowerCase());
+        if (action.equals(Extract) || action.equals(Flatten))
+            target = target.getParentFile();
+
+        downloadManager.addToQueue(dataSource.getName() + ": " + downloadable.getUri(),
+                dataSource.getBaseUrl() + downloadable.getUri(), action,
+                new FileAndChecksum(target, downloadable.getLatestChecksum()),
+                asFragments(directory, downloadable.getFragments(), isAddDotHgt(dataSource)));
     }
 
     public Download queueForDownload(DataSource dataSource, Downloadable downloadable) throws IOException {
@@ -214,8 +232,8 @@ public class DataSourceManager {
 
         return downloadManager.queueForDownload(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
-                null, new FileAndChecksum(target, downloadable.getLatestChecksum()),
-                asFragments(directory, downloadable.getFragments(), dataSource.getId().contains("srtm") || dataSource.getId().contains("ferranti")));
+                new FileAndChecksum(target, downloadable.getLatestChecksum()),
+                asFragments(directory, downloadable.getFragments(), isAddDotHgt(dataSource)));
     }
 
     private List<FileAndChecksum> asFragments(File directory, List<Fragment<Downloadable>> fragments, boolean addDotHgt) throws IOException {
@@ -225,6 +243,7 @@ public class DataSourceManager {
         List<FileAndChecksum> result = new ArrayList<>();
         for (Fragment<Downloadable> fragment : fragments) {
             String key = fragment.getKey();
+            // fallback as long as .hgt is not part of the keys
             if (addDotHgt)
                 key += ".hgt";
             File target = new File(directory, key);

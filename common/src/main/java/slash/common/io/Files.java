@@ -100,6 +100,13 @@ public class Files {
         return name;
     }
 
+    public static String extractFileName(String path) {
+        int index = path.lastIndexOf('/');
+        if (index != -1)
+            path = path.substring(index + 1);
+        return path;
+    }
+
     public static File absolutize(File file) {
         if (!file.isAbsolute())
             file = new File(file.getAbsolutePath());

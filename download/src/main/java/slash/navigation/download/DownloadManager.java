@@ -20,6 +20,7 @@
 
 package slash.navigation.download;
 
+import slash.navigation.download.actions.Validator;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.download.executor.DownloadExecutorComparator;
 import slash.navigation.download.queue.QueuePersister;
@@ -27,6 +28,7 @@ import slash.navigation.download.queue.QueuePersister;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -209,7 +211,7 @@ public class DownloadManager {
 
     private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Succeeded, Stopped, NoFileError, ChecksumError, Failed));
 
-    private Download queueForDownload(Download download) {
+    Download addToQueue(Download download, boolean startExecutor) {
         if (download.getFile().getFile() == null)
             throw new IllegalArgumentException("No file given for " + download);
         if (download.getAction().equals(Extract) || download.getAction().equals(Flatten)) {
@@ -231,7 +233,7 @@ public class DownloadManager {
             if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
                 model.removeDownload(queued);
             else {
-                if (COMPLETED.contains(queued.getState())) {
+                if (COMPLETED.contains(queued.getState()) && startExecutor) {
                     log.info("Starting failed download " + download);
                     startExecutor(queued);
                 }
@@ -239,14 +241,31 @@ public class DownloadManager {
             }
         }
 
-        log.info("Starting new download " + download);
-        startExecutor(download);
+        if(startExecutor) {
+            log.info("Starting new download " + download);
+            startExecutor(download);
+        } else {
+            log.info("Adding to queue " + download);
+            model.addOrUpdateDownload(download);
+        }
         return download;
     }
 
-    public Download queueForDownload(String description, String url, Action action, String eTag, FileAndChecksum file,
+    public Download queueForDownload(String description, String url, Action action, FileAndChecksum file,
                                      List<FileAndChecksum> fragments) {
-        return queueForDownload(new Download(description, url, action, eTag, file, fragments));
+        return addToQueue(new Download(description, url, action, file, fragments), true);
+    }
+
+    public Download addToQueue(String description, String url, Action action, FileAndChecksum file,
+                               List<FileAndChecksum> fragments) throws IOException {
+        Download download = new Download(description, url, action, file, fragments);
+        download.setState(Succeeded);
+
+        // make sure the actual checksum is computed and available
+        Validator validator = new Validator(download);
+        validator.validate();
+
+        return addToQueue(download, false);
     }
 
     private boolean isCompleted(Collection<Download> downloads) {

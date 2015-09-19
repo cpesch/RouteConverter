@@ -298,7 +298,7 @@ public class GraphHopper implements RoutingService {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(dataSource.getAction()),
-                null, new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+                new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {

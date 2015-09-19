@@ -161,7 +161,7 @@ public class HgtFiles implements ElevationService {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Elevation Tile: " + uri, url, Action.valueOf(dataSource.getAction()),
-                null, new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
+                new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
     }
 
     private Collection<Fragment<Downloadable>> getDownloadablesFor(BoundingBox boundingBox) {
