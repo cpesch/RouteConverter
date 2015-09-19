@@ -42,13 +42,59 @@ import static slash.navigation.download.Checksum.createChecksum;
 public class Validator {
     private static final Logger log = getLogger(Validator.class.getName());
     private final Download download;
+    private boolean calculatedChecksums = false;
+    private Boolean existsTargets, checksumsValid;
 
     public Validator(Download download) {
         this.download = download;
     }
 
-    public void validate() throws IOException {
-        if (!existTargets())
+    public boolean isExistsTargets() {
+        determineExistTargets();
+        return existsTargets;
+    }
+
+    public boolean isChecksumsValid() throws IOException {
+        determineChecksumsValid();
+        return checksumsValid;
+    }
+
+
+    private File getFileTarget() {
+        File file = download.getFile().getFile();
+        return file.isFile() ? file : download.getTempFile();
+    }
+
+    private void determineExistTargets() {
+        if (existsTargets != null)
+            return;
+
+        if (!download.getFile().getFile().exists()) {
+            log.warning(format("%s does not exist", download.getFile()));
+            existsTargets = false;
+            return;
+        }
+
+        List<FileAndChecksum> fragments = download.getFragments();
+        if (fragments != null) {
+            for (FileAndChecksum fragment : fragments) {
+                if (!fragment.getFile().exists()) {
+                    log.warning(format("%s does not exist", fragment));
+                    existsTargets = false;
+                    return;
+                }
+            }
+        }
+
+        log.info(format("%s exists", download.getFile().getFile()));
+        if (fragments != null)
+            for (FileAndChecksum fragment : fragments)
+                log.info(format("%s exists", fragment.getFile()));
+        existsTargets = true;
+    }
+
+    public void calculateChecksums() throws IOException {
+        if (calculatedChecksums)
             return;
 
         download.getFile().setActualChecksum(createChecksum(getFileTarget()));
@@ -56,11 +102,8 @@ public class Validator {
         if (fragments != null)
             for (FileAndChecksum fragment : fragments)
                 fragment.setActualChecksum(createChecksum(fragment.getFile()));
-    }
 
-    private File getFileTarget() {
-        File file = download.getFile().getFile();
-        return file.isFile() ? file : download.getTempFile();
+        calculatedChecksums = true;
     }
 
     private boolean isChecksumValid(FileAndChecksum file) throws IOException {
@@ -96,39 +139,30 @@ public class Validator {
         return valid;
     }
 
-    public boolean isChecksumValid() throws IOException {
-        if (!isChecksumValid(download.getFile()))
-            return false;
+    private void determineChecksumsValid() throws IOException {
+        if (checksumsValid != null)
+            return;
+
+        calculateChecksums();
+
+        if (!isChecksumValid(download.getFile())) {
+            checksumsValid = false;
+            return;
+        }
 
         List<FileAndChecksum> fragments = download.getFragments();
         if (fragments != null)
             for (FileAndChecksum fragment : fragments)
-                if (!isChecksumValid(fragment))
-                    return false;
-        return true;
-    }
-
-    public boolean existTargets() {
-        if (!download.getFile().getFile().exists()) {
-            log.warning(format("%s does not exist", download.getFile().getFile()));
-            return false;
-        }
-
-        List<FileAndChecksum> fragments = download.getFragments();
-        if (fragments != null) {
-            for (FileAndChecksum fragment : fragments) {
-                if (!fragment.getFile().exists()) {
-                    log.warning(format("%s does not exist", fragment.getFile()));
-                    return false;
+                if (!isChecksumValid(fragment)) {
+                    checksumsValid = false;
+                    return;
                 }
-            }
-        }
-
-        log.info(format("%s exist", download.getFile()));
-        return true;
+        checksumsValid = true;
     }
 
-    public void expectedIsActual() {
+    public void expectedChecksumIsCurrentChecksum() throws IOException {
+        calculateChecksums();
+
         download.getFile().setExpectedChecksum(download.getFile().getActualChecksum());
     }
 }

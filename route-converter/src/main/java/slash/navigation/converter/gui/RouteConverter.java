@@ -1124,6 +1124,7 @@ public class RouteConverter extends SingleFrameApplication {
 
                 scanRemoteMapsAndThemes();
                 scanForFilesMissingInQueue();
+                scanForOutdatedFilesInQueue();
             }
         }, "DataSourceUpdater").start();
     }
@@ -1174,9 +1175,19 @@ public class RouteConverter extends SingleFrameApplication {
             getContext().getNotificationManager().showNotification(MessageFormat.format(
                     getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
         }
-
-        // TODO scan over queue to search for downloads that need to be updated and mark them as outdated
     }
+
+    private void scanForOutdatedFilesInQueue() {
+        // scan over queue to search for downloads that need to be updated and mark them as outdated
+        try {
+            getDownloadManager().scanForOutdatedFilesInQueue();
+        } catch (IOException e) {
+            log.warning("Could not scan for outdates files in queue: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
+        }
+    }
+
 
     private class PrintMapAction extends FrameAction {
         private boolean withRoute;

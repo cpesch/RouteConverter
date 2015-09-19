@@ -209,9 +209,9 @@ public class DownloadManager {
         downloadToExecutors.remove(download);
     }
 
-    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Succeeded, Stopped, NoFileError, ChecksumError, Failed));
+    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Outdated, Succeeded, Stopped, NoFileError, ChecksumError, Failed));
 
-    Download addToQueue(Download download, boolean startExecutor) {
+    Download queue(Download download, boolean startExecutor) {
         if (download.getFile().getFile() == null)
             throw new IllegalArgumentException("No file given for " + download);
         if (download.getAction().equals(Extract) || download.getAction().equals(Flatten)) {
@@ -234,7 +234,7 @@ public class DownloadManager {
                 model.removeDownload(queued);
             else {
                 if (COMPLETED.contains(queued.getState()) && startExecutor) {
-                    log.info("Starting failed download " + download);
+                    log.info("Restarting completed download " + download);
                     startExecutor(queued);
                 }
                 return queued;
@@ -253,19 +253,29 @@ public class DownloadManager {
 
     public Download queueForDownload(String description, String url, Action action, FileAndChecksum file,
                                      List<FileAndChecksum> fragments) {
-        return addToQueue(new Download(description, url, action, file, fragments), true);
+        return queue(new Download(description, url, action, file, fragments), true);
     }
 
     public Download addToQueue(String description, String url, Action action, FileAndChecksum file,
                                List<FileAndChecksum> fragments) throws IOException {
         Download download = new Download(description, url, action, file, fragments);
         download.setState(Succeeded);
+        return queue(download, false);
+    }
 
-        // make sure the actual checksum is computed and available
-        Validator validator = new Validator(download);
-        validator.validate();
+    public void scanForOutdatedFilesInQueue() throws IOException {
+        for(Download download : new ArrayList<>(getModel().getDownloads())) {
+            if (COMPLETED.contains(download.getState())) {
 
-        return addToQueue(download, false);
+                Validator validator = new Validator(download);
+                if (!validator.isChecksumsValid()) {
+                    log.info("Found outdated download " + download);
+
+                    download.setState(Outdated);
+                    getModel().updateDownload(download);
+                }
+            }
+        }
     }
 
     private boolean isCompleted(Collection<Download> downloads) {
