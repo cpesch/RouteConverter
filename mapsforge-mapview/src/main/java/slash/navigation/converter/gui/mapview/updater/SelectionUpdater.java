@@ -52,6 +52,16 @@ public class SelectionUpdater {
         }
     }
 
+    public void updatedPositions(List<NavigationPosition> positions) {
+        List<PositionWithLayer> updated = new ArrayList<>();
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+            NavigationPosition position = positionWithLayer.getPosition();
+            if (positions.contains(position))
+                updated.add(positionWithLayer);
+        }
+        applyDelta(updated, updated);
+    }
+
     public void removedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> removed = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
