@@ -392,6 +392,7 @@ public class MapsforgeMapView implements MapView {
             public void update(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
                 internalAdd(pairWithLayers);
+                updateSelectionAfterUpdate(pairWithLayers);
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -537,6 +538,7 @@ public class MapsforgeMapView implements MapView {
             public void update(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
                 internalAdd(pairWithLayers);
+                updateSelectionAfterUpdate(pairWithLayers);
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -576,10 +578,13 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void update(List<PositionWithLayer> positionWithLayers) {
+                List<NavigationPosition> updated = new ArrayList<>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
                     internalRemove(positionWithLayer);
                     internalAdd(positionWithLayer);
+                    updated.add(positionWithLayer.getPosition());
                 }
+                selectionUpdater.updatedPositions(new ArrayList<>(updated));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
@@ -662,6 +667,15 @@ public class MapsforgeMapView implements MapView {
         });
     }
 
+    private void updateSelectionAfterUpdate(List<PairWithLayer> pairWithLayers) {
+        Set<NavigationPosition> updated = new HashSet<>();
+        for (PairWithLayer pair : pairWithLayers) {
+            updated.add(pair.getFirst());
+            updated.add(pair.getSecond());
+        }
+        selectionUpdater.updatedPositions(new ArrayList<>(updated));
+    }
+
     private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {
         Set<NavigationPosition> removed = new HashSet<>();
         for (PairWithLayer pair : pairWithLayers) {
@@ -741,7 +755,9 @@ public class MapsforgeMapView implements MapView {
 
     private void replaceRoute() {
         // throw away running routing executions      // TODO use signals later
-        executor.shutdownNow();
+        List<Runnable> runnables = executor.shutdownNow();
+        if (runnables.size() > 0)
+            log.info("Replacing route stopped runnables: " + runnables);
         executor = newSingleThreadExecutor();
 
         // remove all from previous event map updater
