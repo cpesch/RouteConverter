@@ -992,9 +992,16 @@ public class MapsforgeMapView implements MapView {
         zoomToBounds(asBoundingBox(boundingBox));
     }
 
+    public boolean isSupportsPrinting() {
+        return false;
+    }
+
+    public boolean isSupportsPrintingWithDirections() {
+        return false;
+    }
 
     public void print(String title, boolean withDirections) {
-        // TODO implement me
+        throw new UnsupportedOperationException("Printing not supported");
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
