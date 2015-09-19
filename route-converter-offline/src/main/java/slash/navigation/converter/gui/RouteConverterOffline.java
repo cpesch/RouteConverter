@@ -189,26 +189,22 @@ public class RouteConverterOffline extends RouteConverter {
 
     private void downloadMaps(DataSource dataSource, String... uris) {
         List<RemoteResource> resources = new ArrayList<>();
-        boolean updateMap = false;
         for (String uri : uris) {
             RemoteResource resource = getMapManager().getDownloadableMapsModel().findMap(dataSource, uri);
             if (resource != null) {
-                resources.add(resource);
-
                 File file = new File(getApplicationDirectory(dataSource.getDirectory()), resource.getDownloadable().getUri().toLowerCase());
                 if (!file.exists())
-                    updateMap = true;
+                    resources.add(resource);
             }
         }
 
-        if (resources.size() > 0)
+        if (resources.size() > 0) {
             try {
                 getMapManager().queueForDownload(resources);
             } catch (IOException e) {
                 log.warning("Cannot queue " + resources + " for download: " + getLocalizedMessage(e));
             }
 
-        if (updateMap) {
             scanLocalMapsAndThemes();
             updateMapAndThemesAfterDirectoryScanning();
         }

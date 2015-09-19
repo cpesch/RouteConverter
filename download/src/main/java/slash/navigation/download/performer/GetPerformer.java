@@ -97,7 +97,7 @@ public class GetPerformer implements ActionPerformer {
 
         Get get = new Get(getDownload().getUrl());
         get.setSocketTimeout(SOCKET_TIMEOUT);
-        if (new Validator(getDownload()).existTargets() && getDownload().getETag() != null)
+        if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
             get.setIfNoneMatch(getDownload().getETag());
 
         InputStream inputStream = get.executeAsStream();
@@ -122,7 +122,6 @@ public class GetPerformer implements ActionPerformer {
             result = download();
 
         if (result.notModified) {
-            ensureChecksum();
             downloadExecutor.notModified();
 
         } else if (result.success) {
@@ -136,14 +135,6 @@ public class GetPerformer implements ActionPerformer {
 
         } else
             downloadExecutor.downloadFailed();
-    }
-
-    private void ensureChecksum() throws IOException {
-        if(getDownload().getFile().getActualChecksum() != null)
-            return;
-
-        Validator validator = new Validator(getDownload());
-        validator.validate();
     }
 
     private boolean postProcess(Long lastModified) throws IOException {
@@ -202,17 +193,16 @@ public class GetPerformer implements ActionPerformer {
         downloadExecutor.updateState(Validating);
 
         Validator validator = new Validator(getDownload());
-        validator.validate();
-
-        if (!validator.existTargets()) {
+        if (!validator.isExistsTargets()) {
             downloadExecutor.updateState(NoFileError);
             return false;
-        } else if (!validator.isChecksumValid()) {
+        } else if (!validator.isChecksumsValid()) {
             downloadExecutor.updateState(ChecksumError);
             return false;
         }
 
-        validator.expectedIsActual();
+        // set expected to actual checksum for sending the expected checksum to the server later
+        validator.expectedChecksumIsCurrentChecksum();
         return true;
     }
 

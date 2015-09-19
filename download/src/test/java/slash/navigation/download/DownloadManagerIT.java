@@ -339,7 +339,7 @@ public class DownloadManagerIT {
     public void testNotModifiedDownload() throws IOException {
         Download download = new Download("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
         download.setETag(ETAG);
-        Download queued = manager.addToQueue(download, true);
+        Download queued = manager.queue(download, true);
         waitFor(queued, NotModified);
     }
 
@@ -347,7 +347,7 @@ public class DownloadManagerIT {
     public void testJustQueued() throws IOException {
         Download download = new Download("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
         download.setState(Succeeded);
-        Download queued = manager.addToQueue(download, false);
+        Download queued = manager.queue(download, false);
 
         assertEquals(download, queued);
         assertTrue(manager.getModel().getDownloads().contains(download));

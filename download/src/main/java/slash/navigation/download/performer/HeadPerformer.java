@@ -73,7 +73,7 @@ public class HeadPerformer implements ActionPerformer {
     private void ensureChecksum(Head request) throws IOException {
         if (getDownload().getFile().getFile().exists()) {
             Validator validator = new Validator(getDownload());
-            validator.validate();
+            validator.calculateChecksums();
 
         } else
             getDownload().getFile().setActualChecksum(extractChecksum(request));
