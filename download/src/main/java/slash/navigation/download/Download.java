@@ -24,7 +24,6 @@ import slash.common.type.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,9 +65,9 @@ public class Download {
         this.tempFile = tempFile;
     }
 
-    public Download(String description, String url, Action action, String eTag, FileAndChecksum file,
+    public Download(String description, String url, Action action, FileAndChecksum file,
                     List<FileAndChecksum> fragments) {
-        this(description, url, action, file, fragments, eTag, Queued, newTempFile());
+        this(description, url, action, file, fragments, null, Queued, newTempFile());
     }
 
     private static File newTempFile() {

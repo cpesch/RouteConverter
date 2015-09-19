@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Long.MAX_VALUE;
 import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.common.io.Files.extractFileName;
 import static slash.common.io.InputOutput.copyAndClose;
 
 /**
@@ -45,10 +46,7 @@ public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
 
     private static File getTempFile(String fileName) {
-        int index = fileName.lastIndexOf('/');
-        if (index != -1)
-            fileName = fileName.substring(index);
-        return new File(getTemporaryDirectory(), fileName);
+        return new File(getTemporaryDirectory(), extractFileName(fileName));
     }
 
     private static long getLastModified(String fileName) throws IOException {

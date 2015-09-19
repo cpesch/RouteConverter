@@ -321,14 +321,14 @@ public class BRouter implements RoutingService {
         String uri = downloadable.getUri();
         String url = getProfilesBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
-                null, new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+                new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     private Download downloadSegment(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getSegmentsBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
-                null, new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+                new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
