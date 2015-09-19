@@ -192,6 +192,18 @@ public class EclipseSWTMapView extends BaseMapView {
         return executeScriptWithResult("return getCallbacks();");
     }
 
+    public boolean isSupportsPrinting() {
+        return true;
+    }
+
+    public boolean isSupportsPrintingWithDirections() {
+        return true;
+    }
+
+    public void print(String title, boolean withDirections) {
+        executeScript("printMap(\"" + title + "\", " + withDirections + ");");
+    }
+
     // script execution
 
     protected void executeScript(final String script) {
