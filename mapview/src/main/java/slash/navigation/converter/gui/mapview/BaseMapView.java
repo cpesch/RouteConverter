@@ -1108,10 +1108,6 @@ public abstract class BaseMapView implements MapView {
         insertWaypoints("insertOnlyTurnpoints", startPositions);
     }
 
-    public void print(String title, boolean withDirections) {
-        executeScript("printMap(\"" + title + "\", " + withDirections + ");");
-    }
-
     // script execution
 
     private String escape(String string) {

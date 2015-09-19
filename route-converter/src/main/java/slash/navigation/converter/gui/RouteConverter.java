@@ -739,10 +739,6 @@ public class RouteConverter extends SingleFrameApplication {
         return getMapView() != null;
     }
 
-    public boolean isMapViewInitialized() {
-        return isMapViewAvailable() && getMapView().isInitialized();
-    }
-
     public NavigationPosition getMapCenter() {
         return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
