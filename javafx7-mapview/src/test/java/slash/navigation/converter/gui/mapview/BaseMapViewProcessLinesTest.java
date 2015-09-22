@@ -29,7 +29,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class BaseMapViewProcessLinesTest {
-    private JavaFXWebViewMapView view = new JavaFXWebViewMapView();
+    private JavaFX7WebViewMapView view = new JavaFX7WebViewMapView();
     private final Object notificationMutex = new Object();
 
     private void processLines(final List<String> lines) throws InterruptedException {

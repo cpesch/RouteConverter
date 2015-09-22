@@ -23,11 +23,8 @@ package slash.navigation.converter.gui.mapview;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
-import javafx.print.PageLayout;
-import javafx.print.PrinterJob;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.transform.Scale;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -40,7 +37,6 @@ import java.awt.event.ComponentEvent;
 import java.util.logging.Logger;
 
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static javafx.application.Platform.*;
 import static javafx.concurrent.Worker.State;
@@ -55,8 +51,8 @@ import static slash.common.io.Transfer.parseDouble;
  * @author Christian Pesch
  */
 
-public class JavaFXWebViewMapView extends BaseMapView {
-    private static final Logger log = Logger.getLogger(JavaFXWebViewMapView.class.getName());
+public class JavaFX7WebViewMapView extends BaseMapView {
+    private static final Logger log = Logger.getLogger(JavaFX7WebViewMapView.class.getName());
 
     private JFXPanel panel;
     private WebView webView;
@@ -67,6 +63,14 @@ public class JavaFXWebViewMapView extends BaseMapView {
 
     public Component getComponent() {
         return panel;
+    }
+
+    protected JFXPanel getPanel() {
+        return panel;
+    }
+
+    protected WebView getWebView() {
+        return webView;
     }
 
     // initialization
@@ -199,8 +203,10 @@ public class JavaFXWebViewMapView extends BaseMapView {
         return executeScriptWithResult("getCallbacks();");
     }
 
+    // print
+
     public boolean isSupportsPrinting() {
-        return true;
+        return false;
     }
 
     public boolean isSupportsPrintingWithDirections() {
@@ -208,36 +214,7 @@ public class JavaFXWebViewMapView extends BaseMapView {
     }
 
     public void print(final String title, boolean withDirections) {
-        if(withDirections)
-            throw new UnsupportedOperationException("Printing with directions not supported");
-
-        runLater(new Runnable() {
-            public void run() {
-                PrinterJob job = PrinterJob.createPrinterJob();
-                if (job != null && job.showPrintDialog(null)) {
-                    PageLayout pageLayout = job.getPrinter().getDefaultPageLayout();
-                    double scaleX = pageLayout.getPrintableWidth() / webView.getBoundsInParent().getWidth();
-                    double scaleY = pageLayout.getPrintableHeight() / webView.getBoundsInParent().getHeight();
-                    double minimumScale = min(scaleX, scaleY);
-                    Scale scale = new Scale(minimumScale, minimumScale);
-
-                    try {
-                        webView.getTransforms().add(scale);
-
-                        boolean success = job.printPage(webView);
-                        if (success)
-                            job.endJob();
-
-                    } finally {
-                        webView.getTransforms().remove(scale);
-
-                        Group group = new Group();
-                        group.getChildren().add(webView);
-                        panel.setScene(new Scene(group));
-                    }
-                }
-            }
-        });
+        throw new UnsupportedOperationException("Printing not supported");
     }
 
     // script execution

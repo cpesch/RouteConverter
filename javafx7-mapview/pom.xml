@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>javafx-mapview</artifactId>
+    <artifactId>javafx7-mapview</artifactId>
     <packaging>jar</packaging>
     <name>MapView based on the JavaFX WebView</name>
     <parent>
@@ -27,18 +27,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <!--suppress MavenModelInspection -->
-            <groupId>com.oracle</groupId>
-            <!--suppress MavenModelInspection -->
+            <groupId>com.sun</groupId>
             <artifactId>javafx</artifactId>
-            <!--suppress MavenModelInspection -->
-            <version>2.2.41</version>
-            <!--suppress MavenModelInspection -->
-            <!-- JavaFX path on Windows -->
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-            <!-- JavaFX path on Mac OS X -->
-            <!-- <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath> -->
-            <scope>system</scope>
+            <version>jdk7</version>
+            <scope>provided</scope>
+            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>

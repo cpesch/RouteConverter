@@ -101,8 +101,7 @@ import static slash.navigation.common.NumberPattern.Number_Space_Then_Descriptio
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.MapViewImpl.EclipseSWT;
-import static slash.navigation.converter.gui.helpers.MapViewImpl.JavaFX;
+import static slash.navigation.converter.gui.helpers.MapViewImpl.*;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
@@ -769,7 +768,13 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public List<MapViewImpl> getAvailableMapViews() {
-        return asList(JavaFX, EclipseSWT);
+        List<MapViewImpl> result = new ArrayList<>();
+        if (isJavaFX8())
+            result.add(JavaFX8);
+        else if (isJavaFX7())
+            result.add(JavaFX7);
+        result.add(EclipseSWT);
+        return result;
     }
 
     public MapViewImpl getMapViewPreference() {

@@ -159,7 +159,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>javafx-mapview</artifactId>
+            <artifactId>javafx7-mapview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx8-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
