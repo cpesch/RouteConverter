@@ -45,9 +45,14 @@ public class Platform {
                 System.getProperty("os.arch");
     }
 
-    public static boolean isJavaFX() {
+    public static boolean isJavaFX7() {
         return System.getProperty("java.vendor").contains("Oracle") &&
                 System.getProperty("java.version").compareTo("1.7.0_40") >= 0;
+    }
+
+    public static boolean isJavaFX8() {
+        return System.getProperty("java.vendor").contains("Oracle") &&
+                System.getProperty("java.version").compareTo("1.8.0") >= 0;
     }
 
     public static String getJava() {

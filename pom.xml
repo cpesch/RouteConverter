@@ -283,7 +283,8 @@
         <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
-        <module>javafx-mapview</module>
+        <module>javafx7-mapview</module>
+        <module>javafx8-mapview</module>
         <module>jnlp</module>
         <module>kml</module>
         <module>mapsforge-maps</module>
