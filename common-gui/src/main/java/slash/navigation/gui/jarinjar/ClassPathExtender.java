@@ -20,6 +20,7 @@
 
 package slash.navigation.gui.jarinjar;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -29,18 +30,30 @@ import java.net.URLClassLoader;
 import static slash.navigation.gui.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_PROTOCOL;
 
 /**
- * Return a {@link ClassLoader} which contains a JAR in the classpath.
+ * Creates a {@link ClassLoader} that allows to include JARs in the classpath and in the file systems.
  *
  * @author Christian Pesch, inspired from https://github.com/mchr3k/swtjar/blob/master/src/org/swtjar/SWTLoader.java
+ *         and http://stackoverflow.com/questions/1010919/adding-files-to-java-classpath-at-runtime
  */
-public class JarInJarLoader {
-    public static ClassLoader loadJar(String fileName) throws NoSuchMethodException, MalformedURLException, InvocationTargetException, IllegalAccessException {
-        URLClassLoader classLoader = URLClassLoader.class.cast(JarInJarLoader.class.getClassLoader());
-        URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));
-        Method addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        URL fileUrl = new URL(JAR_IN_JAR_PROTOCOL + fileName);
-        addUrlMethod.setAccessible(true);
-        addUrlMethod.invoke(classLoader, fileUrl);
+public class ClassPathExtender {
+    private final URLClassLoader classLoader = URLClassLoader.class.cast(ClassPathExtender.class.getClassLoader());
+
+    public ClassLoader getClassLoader() {
         return classLoader;
+    }
+
+    private void addURL(URL url) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        addUrlMethod.setAccessible(true);
+        addUrlMethod.invoke(classLoader, url);
+    }
+
+    public void addJarInJar(String fileName) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));
+        addURL(new URL(JAR_IN_JAR_PROTOCOL + fileName));
+    }
+
+    public void addExternalFile(File file) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        addURL(file.toURI().toURL());
     }
 }

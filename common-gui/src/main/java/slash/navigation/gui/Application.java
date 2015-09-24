@@ -20,9 +20,11 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.gui.jarinjar.ClassPathExtender;
 import slash.navigation.jnlp.SingleInstance;
 import slash.navigation.jnlp.SingleInstanceCallback;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -31,7 +33,8 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -39,7 +42,6 @@ import static slash.common.system.Platform.getBits;
 import static slash.common.system.Platform.getOperationSystem;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
-import static slash.navigation.gui.jarinjar.JarInJarLoader.loadJar;
 
 /**
  * The base of all graphical user interfaces.
@@ -96,14 +98,26 @@ public abstract class Application {
         Locale.setDefault(new Locale(language, country));
     }
 
-    private static ClassLoader loadSWT() {
-        String jarFileName = "swt-" + getOperationSystem() + "-" + getBits() + ".jar";
+    private static ClassLoader extendClassPath() {
+        ClassPathExtender extender = new ClassPathExtender();
+
+        String swtJar = "swt-" + getOperationSystem() + "-" + getBits() + ".jar";
         try {
-            return loadJar(jarFileName);
+            extender.addJarInJar(swtJar);
         } catch (Exception e) {
-            log.info("Cannot load SWT from " + jarFileName + ": " + e);
-            return null;
+            log.info("Cannot extend classpath with SWT from " + swtJar + ": " + e);
         }
+
+        File javaFxJar = new File(System.getProperty("java.home"), "lib/jfxrt.jar");
+        if (javaFxJar.exists()) {
+            try {
+                extender.addExternalFile(javaFxJar);
+            } catch (Exception e) {
+                log.info("Cannot extend classpath with JavaFX from " + javaFxJar + ": " + e);
+            }
+        }
+
+        return extender.getClassLoader();
     }
 
     private static void invokeNativeInterfaceMethod(String name) {
@@ -139,7 +153,7 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] bundleNames, final String[] args) {
-        final ClassLoader contextClassLoader = loadSWT();
+        final ClassLoader contextClassLoader = extendClassPath();
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         setLookAndFeel();
@@ -157,8 +171,7 @@ public abstract class Application {
                     application.initializeSingleInstance();
                     application.startup();
                     application.parseInitialArgs(args);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     String msg = format("Application %s failed to launch", applicationClass);
                     log.log(SEVERE, msg, e);
                     throw new Error(msg, e);
@@ -207,23 +220,21 @@ public abstract class Application {
             for (ExitListener listener : exitListeners) {
                 try {
                     listener.willExit(event);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log.log(WARNING, "ExitListener.willExit() failed", e);
                 }
             }
             shutdown();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.log(WARNING, "Unexpected error in Application.shutdown()", e);
-        }
-        finally {
+        } finally {
             end();
         }
     }
 
     public interface ExitListener extends EventListener {
         boolean canExit(EventObject event);
+
         void willExit(EventObject event);
     }
 
@@ -236,7 +247,7 @@ public abstract class Application {
     }
 
     void end() {
-        if(singleInstance != null)
+        if (singleInstance != null)
             singleInstance.dispose();
         Runtime.getRuntime().exit(0);
     }

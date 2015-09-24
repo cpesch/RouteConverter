@@ -29,7 +29,8 @@ package slash.navigation.converter.gui.helpers;
  */
 
 public enum MapViewImpl {
-    JavaFX("slash.navigation.converter.gui.mapview.JavaFXWebViewMapView", false),
+    JavaFX7("slash.navigation.converter.gui.mapview.JavaFX7WebViewMapView", false),
+    JavaFX8("slash.navigation.converter.gui.mapview.JavaFX8WebViewMapView", false),
     EclipseSWT("slash.navigation.converter.gui.mapview.EclipseSWTMapView", false),
     Mapsforge("slash.navigation.converter.gui.mapview.MapsforgeMapView", true);
 
