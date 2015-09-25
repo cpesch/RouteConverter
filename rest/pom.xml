@@ -42,6 +42,7 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
