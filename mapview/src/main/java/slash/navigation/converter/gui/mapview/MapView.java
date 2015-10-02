@@ -44,6 +44,7 @@ public interface MapView extends PositionsSelectionModel {
                     boolean showCoordinates, boolean showWaypointDescription,
                     UnitSystemModel unitSystemModel);
     boolean isInitialized();
+    boolean isDownload();
     boolean isSupportsPrinting();
     boolean isSupportsPrintingWithDirections();
 

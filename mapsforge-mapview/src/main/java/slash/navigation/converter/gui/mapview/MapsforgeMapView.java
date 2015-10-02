@@ -785,6 +785,10 @@ public class MapsforgeMapView implements MapView {
         return true;
     }
 
+    public boolean isDownload() {
+        return true;
+    }
+
     public Throwable getInitializationCause() {
         return null;
     }
