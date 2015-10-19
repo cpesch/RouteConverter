@@ -289,9 +289,6 @@ public class DownloadManager {
     private static final Object notificationMutex = new Object();
 
     public void waitForCompletion(final Collection<Download> downloads) {
-        if (isCompleted(downloads))
-            return;
-
         final boolean[] found = new boolean[1];
         found[0] = false;
         final long[] lastEvent = new long[1];
@@ -313,10 +310,11 @@ public class DownloadManager {
 
         model.addTableModelListener(l);
         try {
-            while (true) {
+            while (!isCompleted(downloads)) {
                 synchronized (notificationMutex) {
-                    if (found[0] || currentTimeMillis() - lastEvent[0] > WAIT_TIMEOUT)
+                    if (found[0] || currentTimeMillis() - lastEvent[0] > WAIT_TIMEOUT) {
                         break;
+                    }
                     try {
                         notificationMutex.wait(1000);
                     } catch (InterruptedException e) {

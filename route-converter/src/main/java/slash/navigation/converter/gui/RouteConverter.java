@@ -695,7 +695,7 @@ public class RouteConverter extends SingleFrameApplication {
         return dataSourceManager;
     }
 
-    private DownloadManager getDownloadManager() {
+    public DownloadManager getDownloadManager() {
         return getDataSourceManager().getDownloadManager();
     }
 

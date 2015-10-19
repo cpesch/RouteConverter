@@ -33,7 +33,6 @@ import slash.navigation.converter.gui.models.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
-import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
@@ -42,7 +41,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -812,7 +810,7 @@ public abstract class BaseMapView implements MapView {
 
     @SuppressWarnings("unchecked")
     public void showAllPositions() {
-        setCenterOfMap(new ArrayList<NavigationPosition>(positionsModel.getRoute().getPositions()), true);
+        setCenterOfMap(new ArrayList<>(positionsModel.getRoute().getPositions()), true);
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
