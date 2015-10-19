@@ -107,10 +107,10 @@ public class RouteConverterOffline extends RouteConverter {
         getRoutingServiceFacade().addRoutingService(beeline);
         getRoutingServiceFacade().setPreferredRoutingService(beeline);
 
-        BRouter router = new BRouter(getDataSourceManager().getDownloadManager());
+        BRouter router = new BRouter(getDownloadManager());
         getRoutingServiceFacade().addRoutingService(router);
 
-        GraphHopper hopper = new GraphHopper(getDataSourceManager().getDownloadManager());
+        GraphHopper hopper = new GraphHopper(getDownloadManager());
         getRoutingServiceFacade().addRoutingService(hopper);
 
         configureRoutingServices();

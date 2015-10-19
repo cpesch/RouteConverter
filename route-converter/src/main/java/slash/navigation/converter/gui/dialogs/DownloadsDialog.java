@@ -70,7 +70,7 @@ public class DownloadsDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        tableDownloads.setModel(r.getDataSourceManager().getDownloadManager().getModel());
+        tableDownloads.setModel(r.getDownloadManager().getModel());
         tableDownloads.setDefaultRenderer(Object.class, new DownloadsTableCellRenderer());
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "state", "size", "date");
         TableColumnModel columns = tableDownloads.getColumnModel();
@@ -124,8 +124,8 @@ public class DownloadsDialog extends SimpleDialog {
         tableDownloads.setRowSorter(sorter);
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDataSourceManager().getDownloadManager()));
-        actionManager.register("stop-download", new StopDownloadsAction(tableDownloads, r.getDataSourceManager().getDownloadManager()));
+        actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDownloadManager()));
+        actionManager.register("stop-download", new StopDownloadsAction(tableDownloads, r.getDownloadManager()));
 
         new DownloadsTablePopupMenu(tableDownloads).createPopupMenu();
         registerAction(buttonRestart, "restart-download");
