@@ -283,14 +283,20 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void selectTreePath(TreePath treePath, boolean selectCategoryTreePath) {
-        Object selectedObject = treePath.getLastPathComponent();
-        if (!(selectedObject instanceof CategoryTreeNode))
-            return;
-        if (selectCategoryTreePath)
-            selectCategoryTreePath(treeCategories, treePath);
-        CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
-        catalogModel.setCurrentCategory(selectedCategoryTreeNode);
-        RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+        RouteConverter r = RouteConverter.getInstance();
+        startWaitCursor(r.getFrame().getRootPane());
+        try {
+            Object selectedObject = treePath.getLastPathComponent();
+            if (!(selectedObject instanceof CategoryTreeNode))
+                return;
+            if (selectCategoryTreePath)
+                selectCategoryTreePath(treeCategories, treePath);
+            CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
+            catalogModel.setCurrentCategory(selectedCategoryTreeNode);
+            RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+        } finally {
+            stopWaitCursor(r.getFrame().getRootPane());
+        }
     }
 
     private void handlePositionListUpdate() {
