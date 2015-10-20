@@ -111,7 +111,7 @@ public class GetPerformer implements ActionPerformer {
             getDownload().setETag(get.getETag());
             return new Result(true, get.getLastModified());
         }
-        return new Result(true, get.isNotModified());
+        return new Result(get.isSuccessful(), get.isNotModified());
     }
 
     public void run() throws IOException {

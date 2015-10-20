@@ -126,7 +126,7 @@ public class BrowsePanel implements PanelInTab {
 
         Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
         CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
-        Catalog remoteCatalog = new RemoteCatalog(r.getDownloadManager(), r.getApiUrl(), r.getCredentials());
+        Catalog remoteCatalog = new RemoteCatalog(r.getApiUrl(), r.getCredentials());
         final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
         final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
         catalogModel = new UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
