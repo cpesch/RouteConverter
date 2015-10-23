@@ -56,6 +56,7 @@ public class SendChecksumsIT extends RouteFeedbackServiceBase {
         datasourceType.setName("name" + id);
         datasourceType.setBaseUrl("baseUrl" + id);
         datasourceType.setDirectory("directory" + id);
+        datasourceType.setAction("Copy");
         return datasourceType;
     }
 
