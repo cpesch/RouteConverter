@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javafx7-mapview</artifactId>
     <packaging>jar</packaging>
-    <name>MapView based on the JavaFX WebView</name>
+    <name>MapView based on the JavaFX WebView for Java 7</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
