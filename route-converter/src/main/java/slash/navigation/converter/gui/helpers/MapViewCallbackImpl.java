@@ -28,6 +28,8 @@ import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
 
+import java.io.File;
+
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
@@ -73,6 +75,10 @@ public class MapViewCallbackImpl implements MapViewCallback {
 
     public boolean isAvoidTolls() {
         return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidTolls();
+    }
+
+    public File getTileServersDirectory() {
+        return RouteConverter.getInstance().getTileServersDirectory();
     }
 
     public void addChangeListener(ChangeListener l) {

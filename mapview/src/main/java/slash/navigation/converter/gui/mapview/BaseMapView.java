@@ -31,8 +31,11 @@ import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.tileserver.TileServerService;
+import slash.navigation.tileserver.binding.TileServerType;
 
 import javax.swing.event.*;
+import javax.xml.bind.JAXBException;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
@@ -202,6 +205,7 @@ public abstract class BaseMapView implements MapView {
         initializeCallbackListener();
         checkLocalhostResolution();
         checkCallback();
+        registerTileServers();
         setDegreeFormat();
         setShowCoordinates();
         end = currentTimeMillis();
@@ -639,6 +643,45 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         });
+    }
+
+    private static final String DOT_XML = ".xml";
+
+    private TileServerService loadAllTileServers(java.io.File directory) {
+        TileServerService result = new TileServerService();
+        java.io.File[] files = directory.listFiles(new FilenameFilter() {
+            public boolean accept(java.io.File dir, String name) {
+                return name.endsWith(DOT_XML);
+            }
+        });
+
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    try (InputStream inputStream = new FileInputStream(file)) {
+                        result.load(inputStream);
+                    }
+                } catch (IOException | JAXBException e) {
+                    log.severe("Could not parse tile server definitions from " + file + ": " + e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
+    private void registerTileServers() {
+        File tileServersDirectory = mapViewCallback.getTileServersDirectory();
+        TileServerService service = loadAllTileServers(tileServersDirectory);
+        for (TileServerType tileServer : service.getTileServers()) {
+            if (tileServer.isActive() != null && !tileServer.isActive())
+                continue;
+
+            executeScript("registerTileServer(\"" + tileServer.getId() + "\",\"" + tileServer.getName() + "\"," +
+                    tileServer.getMinZoom() + "," + tileServer.getMaxZoom() + ",\"" + tileServer.getCopyright() + "\"," +
+                    "function(coordinates, zoom) {" +
+                    "return " + trimLineFeeds(tileServer.getValue()) + ";" +
+                    "});");
+        }
     }
 
     // resizing

@@ -1085,6 +1085,10 @@ public class RouteConverter extends SingleFrameApplication {
         return System.getProperty("api", "http://api.routeconverter.com/");
     }
 
+    public File getTileServersDirectory() {
+        return getApplicationDirectory("tileservers");
+    }
+
     private File getDataSourcesDirectory() {
         return getApplicationDirectory("datasources");
     }

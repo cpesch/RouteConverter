@@ -17,33 +17,32 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.tileserver;
 
-package slash.navigation.converter.gui.mapview;
+import slash.navigation.tileserver.binding.CatalogType;
+import slash.navigation.tileserver.binding.TileServerType;
 
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
-
-import javax.swing.event.ChangeListener;
-import java.io.File;
+import javax.xml.bind.JAXBException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
+ * Encapsulates access to a TileServer XML.
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallback {
-    String createDescription(int index, String description);
-    String createCoordinates(Double longitude, Double latitude);
-    void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo);
-    void startBrowser(String url);
+public class TileServerService {
+    private final List<TileServerType> tileServers = new ArrayList<>(1);
 
-    RoutingService getRoutingService();
-    TravelMode getTravelMode();
-    boolean isAvoidFerries();
-    boolean isAvoidHighways();
-    boolean isAvoidTolls();
-    File getTileServersDirectory();
+    public synchronized void load(InputStream inputStream) throws JAXBException {
+        CatalogType catalogType = TileServerUtil.unmarshal(inputStream);
+        for (TileServerType tileServerType : catalogType.getTileServer())
+            tileServers.add(tileServerType);
+    }
 
-    void addChangeListener(ChangeListener l);
+    public List<TileServerType> getTileServers() {
+        return tileServers;
+    }
 }
