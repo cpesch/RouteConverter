@@ -974,8 +974,8 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
         tableHeaderMenu.enable(existsMoreThanOnePosition);
-        actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
-        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
+        actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition && r.getMapView().isSupportsPrinting());
+        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
         actionManager.enable("print-profile", existsAPosition);
 
         r.selectPositions(selectedRows);
