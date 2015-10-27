@@ -27,6 +27,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.trimLineFeeds;
 
 /**
  * The base of all navigation formats.
@@ -48,12 +49,6 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
             strings.add(tokenizer.nextToken().trim());
         }
         return strings;
-    }
-
-    private String trimLineFeeds(String string) {
-        string = string.replace('\n', ' ');
-        string = string.replace('\r', ' ');
-        return string;
     }
 
     protected String asDescription(String name, String description) {

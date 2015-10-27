@@ -99,6 +99,12 @@ public class Transfer {
         return string.substring(0, min(string.length(), length));
     }
 
+    public static String trimLineFeeds(String string) {
+        string = string.replace('\n', ' ');
+        string = string.replace('\r', ' ');
+        return string;
+    }
+
     public static String toMixedCase(String string) {
         if (string != null && string.toUpperCase().equals(string)) {
             StringBuilder buffer = new StringBuilder();

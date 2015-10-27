@@ -28,7 +28,7 @@
     <xsd:complexType name="categoryType">
         <xsd:annotation>
             <xsd:documentation>
-                a category has a name, subcategories and routes
+                a category has a name, a parent, subcategories and routes
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
