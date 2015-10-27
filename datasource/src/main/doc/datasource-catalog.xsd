@@ -20,7 +20,7 @@
         </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="edition" type="editionType" minOccurs="0" maxOccurs="unbounded">
-                <xsd:unique name="unique-edtion-id">
+                <xsd:unique name="unique-edition-id">
                     <xsd:selector xpath="edition"/>
                     <xsd:field xpath="@id"/>
                 </xsd:unique>
@@ -37,7 +37,7 @@
     <xsd:complexType name="editionType">
         <xsd:annotation>
             <xsd:documentation>
-                an edition contains a name, a href and datasources
+                an edition contains an id, a name, a href and datasources
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -51,7 +51,7 @@
     <xsd:complexType name="datasourceType">
         <xsd:annotation>
             <xsd:documentation>
-                a datasource contains a name, and optionally a href, a base url, a directory, files, themes and maps
+                a datasource contains an id, a name, and optionally a href, a base url, a directory, files, themes and maps
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
