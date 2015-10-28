@@ -1151,10 +1151,12 @@ public abstract class BaseMapView implements MapView {
 
     // call Google Maps API functions
 
+    @SuppressWarnings("unused")
     public void insertAllWaypoints(int[] startPositions) {
         insertWaypoints("insertAllWaypoints", startPositions);
     }
 
+    @SuppressWarnings("unused")
     public void insertOnlyTurnpoints(int[] startPositions) {
         insertWaypoints("insertOnlyTurnpoints", startPositions);
     }
@@ -1593,7 +1595,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void complementPositions(int row, BaseRoute route) {
-        int[] rows = asRange(row, row + route.getPositions().size());
+        int[] rows = asRange(row, row + route.getPositions().size() - 1);
         // do not complement description since this is limited to 2500 calls/day
         mapViewCallback.complementData(rows, false, true, true, false, false);
     }
