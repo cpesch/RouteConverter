@@ -29,7 +29,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
-public class BaseMapViewProcessLinesTest {
+public class BrowserMapViewProcessLinesTest {
     private JavaFX7WebViewMapView view = new JavaFX7WebViewMapView();
     private final Object notificationMutex = new Object();
 

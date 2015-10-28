@@ -25,7 +25,7 @@ import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
 
 import static org.junit.Assert.assertEquals;
 
-public class BaseMapViewProcessCallbackTest {
+public class BrowserMapViewProcessCallbackTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
     private final Object notificationMutex = new Object();
 

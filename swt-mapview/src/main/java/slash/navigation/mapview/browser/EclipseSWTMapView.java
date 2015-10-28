@@ -45,7 +45,7 @@ import static slash.common.system.Platform.isLinux;
  * @author Christian Pesch
  */
 
-public class EclipseSWTMapView extends BaseMapView {
+public class EclipseSWTMapView extends BrowserMapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
 
     private JWebBrowser webBrowser;

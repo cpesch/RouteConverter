@@ -1,7 +1,7 @@
 UndoPositionsModel#remove()
     for each continous range calls fireTableRowsDeleted(first row, last row)
 
-BaseMapView
+BrowserMapView
     PositionsModel: complex logic to minimize repaints #FAIL
 
 ConvertPanel

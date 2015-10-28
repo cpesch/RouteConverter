@@ -84,12 +84,12 @@ import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
- * Base implementation for a component that displays the positions of a position list on a map.
+ * Base implementation for a browser-based map view.
  *
  * @author Christian Pesch
  */
 
-public abstract class BaseMapView implements MapView {
+public abstract class BrowserMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
@@ -300,15 +300,15 @@ public abstract class BaseMapView implements MapView {
 
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
             public int getZoom() {
-                return BaseMapView.this.getZoom();
+                return BrowserMapView.this.getZoom();
             }
 
             public NavigationPosition getNorthEastBounds() {
-                return BaseMapView.this.getNorthEastBounds();
+                return BrowserMapView.this.getNorthEastBounds();
             }
 
             public NavigationPosition getSouthWestBounds() {
-                return BaseMapView.this.getSouthWestBounds();
+                return BrowserMapView.this.getSouthWestBounds();
             }
         });
     }

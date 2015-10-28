@@ -31,7 +31,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.io.Transfer.ceiling;
 
-public class BaseMapViewTest {
+public class BrowserMapViewTest {
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 4;
 
     private List<Integer> createIntervals(int size) {

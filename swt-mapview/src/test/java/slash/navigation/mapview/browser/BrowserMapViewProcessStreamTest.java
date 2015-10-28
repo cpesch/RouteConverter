@@ -31,7 +31,7 @@ import java.net.Socket;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class BaseMapViewProcessStreamTest {
+public class BrowserMapViewProcessStreamTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
     private final Object notificationMutex = new Object();
 

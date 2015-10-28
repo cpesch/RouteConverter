@@ -51,7 +51,7 @@ import static slash.common.io.Transfer.parseDouble;
  * @author Christian Pesch
  */
 
-public class JavaFX7WebViewMapView extends BaseMapView {
+public class JavaFX7WebViewMapView extends BrowserMapView {
     private static final Logger log = Logger.getLogger(JavaFX7WebViewMapView.class.getName());
 
     private JFXPanel panel;

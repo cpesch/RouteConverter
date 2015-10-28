@@ -1043,7 +1043,7 @@ public class MapsforgeMapView implements MapView {
         return metersPerPixel * pixel;
     }
 
-    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) { // TODO same as in BaseMapView
+    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker())
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
@@ -1070,7 +1070,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private class AddPositionAction extends FrameAction {
-        private int getAddRow() { // TODO same as in BaseMapView
+        private int getAddRow() {
             List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
             NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
             // quite crude logic to be as robust as possible on failures
