@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.MapView;
-import slash.navigation.converter.gui.mapview.MapViewCallback;
+import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.mapsforge.MapViewCallback;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 

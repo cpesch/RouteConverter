@@ -21,17 +21,12 @@
 package slash.navigation.viamichelin;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
-import slash.navigation.viamichelin.binding.Description;
-import slash.navigation.viamichelin.binding.Itinerary;
-import slash.navigation.viamichelin.binding.ObjectFactory;
-import slash.navigation.viamichelin.binding.Poi;
-import slash.navigation.viamichelin.binding.PoiList;
-import slash.navigation.viamichelin.binding.Step;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

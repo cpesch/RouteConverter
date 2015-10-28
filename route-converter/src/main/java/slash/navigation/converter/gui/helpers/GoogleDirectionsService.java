@@ -22,14 +22,20 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.mapview.mapsforge.MapView;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
  * Encapsulates access to Google Directions service.
@@ -38,6 +44,7 @@ import static java.util.Arrays.asList;
  */
 
 public class GoogleDirectionsService implements RoutingService {
+    private static final Logger log = Logger.getLogger(GoogleDirectionsService.class.getName());
     private static final TravelMode DRIVING = new TravelMode("Driving");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
 
@@ -99,5 +106,35 @@ public class GoogleDirectionsService implements RoutingService {
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
+    }
+
+    private Method findMethod(Class<?> clazz, String name) {
+        try {
+            return clazz.getDeclaredMethod(name, int[].class);
+        } catch (NoSuchMethodException e) {
+            Class<?> superclass = clazz.getSuperclass();
+            if(superclass != null)
+                return findMethod(superclass, name);
+        }
+        return null;
+    }
+
+    private void insertWaypoints(String mode, int[] selectedRows) {
+        MapView mapView = RouteConverter.getInstance().getMapView();
+        try {
+            Method method = findMethod(mapView.getClass(), mode);
+            if (method != null)
+                method.invoke(mapView, new Object[]{selectedRows});
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            log.severe("Failed to " + mode + ": " + getLocalizedMessage(e));
+        }
+    }
+
+    public void insertAllWaypoints(int[] selectedRows) {
+        insertWaypoints("insertAllWaypoints", selectedRows);
+    }
+
+    public void insertOnlyTurnpoints(int[] selectedRows) {
+        insertWaypoints("insertOnlyTurnpoints", selectedRows);
     }
 }

@@ -31,9 +31,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.regex.Matcher;
 
-import static slash.common.io.Transfer.formatDouble;
-import static slash.common.io.Transfer.formatInt;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;

@@ -25,6 +25,6 @@ bin\xjc -verbose -d generated -p slash.navigation.googlemaps.geocode c:\p4\Route
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\datasource\src\main\java -p slash.navigation.datasources.binding c:\p4\RouteConverter\datasource\src\main\doc\datasource-catalog.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\download\src\main\java -p slash.navigation.download.queue.binding  c:\p4\RouteConverter\download\src\main\doc\queue.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\route\src\main\java -p slash.navigation.routes.remote.binding c:\p4\RouteConverter\route\src\main\doc\route-catalog.xsd
-bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\mapview\src\main\java -p slash.navigation.tileserver.binding c:\p4\RouteConverter\mapview\src\main\doc\tileserver-catalog.xsd
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\p4\RouteConverter\browser-mapview\src\main\java -p slash.navigation.mapview.tileserver.binding c:\p4\RouteConverter\browser-mapview\src\main\doc\tileserver-catalog.xsd
 
 

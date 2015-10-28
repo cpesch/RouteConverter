@@ -24,19 +24,15 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.base.XmlNavigationFormat.HEADER_LINE;
 import static slash.common.helpers.JAXBHelper.JAXB_IMPL_HEADER;
 import static slash.common.helpers.JAXBHelper.newContext;
+import static slash.navigation.base.XmlNavigationFormat.HEADER_LINE;
 
 class KlickTelUtil {
     private static final String KLICKTEL_NAMESPACE_URI = "";

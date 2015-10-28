@@ -25,9 +25,7 @@ package slash.navigation.common;
 import org.junit.Test;
 
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.common.UnitSystem.Metric;
-import static slash.navigation.common.UnitSystem.Nautic;
-import static slash.navigation.common.UnitSystem.Statute;
+import static slash.navigation.common.UnitSystem.*;
 
 public class UnitSystemTest {
     @Test

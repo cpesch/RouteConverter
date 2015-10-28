@@ -41,8 +41,8 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Externalization.extractFile;
-import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.system.Platform.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 

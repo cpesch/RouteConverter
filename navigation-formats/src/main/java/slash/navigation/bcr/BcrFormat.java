@@ -22,9 +22,9 @@ package slash.navigation.bcr;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.IniFileFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;

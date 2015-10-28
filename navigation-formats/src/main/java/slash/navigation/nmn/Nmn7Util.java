@@ -24,19 +24,15 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
-import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.common.helpers.JAXBHelper.newContext;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 class Nmn7Util {
     private static final String NMN7_NAMESPACE_URI = "";

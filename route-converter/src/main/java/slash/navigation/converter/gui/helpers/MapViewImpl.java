@@ -29,10 +29,10 @@ package slash.navigation.converter.gui.helpers;
  */
 
 public enum MapViewImpl {
-    JavaFX7("slash.navigation.converter.gui.mapview.JavaFX7WebViewMapView", false),
-    JavaFX8("slash.navigation.converter.gui.mapview.JavaFX8WebViewMapView", false),
-    EclipseSWT("slash.navigation.converter.gui.mapview.EclipseSWTMapView", false),
-    Mapsforge("slash.navigation.converter.gui.mapview.MapsforgeMapView", true);
+    JavaFX7("slash.navigation.mapview.browser.JavaFX7WebViewMapView", false),
+    JavaFX8("slash.navigation.mapview.browser.JavaFX8WebViewMapView", false),
+    EclipseSWT("slash.navigation.mapview.browser.EclipseSWTMapView", false),
+    Mapsforge("slash.navigation.mapview.mapsforge.MapsforgeMapView", true);
 
     private String className;
     private boolean download;

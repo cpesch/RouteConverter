@@ -23,18 +23,12 @@ package slash.common.type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.DAY_OF_YEAR;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 

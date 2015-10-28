@@ -28,20 +28,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.assertDoubleArrayEquals;
-import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.TestCase.assertIntArrayEquals;
-import static slash.common.TestCase.assertNotNull;
-import static slash.common.TestCase.assertNull;
+import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.base.RouteComments.commentPositions;
-import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.base.RouteComments.getRouteName;
-import static slash.navigation.common.NumberPattern.Description_Only;
-import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
-import static slash.navigation.common.NumberPattern.Number_Only;
-import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
+import static slash.navigation.base.RouteComments.*;
+import static slash.navigation.common.NumberPattern.*;
 
 public class BcrRouteTest {
     BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<BcrPosition>());

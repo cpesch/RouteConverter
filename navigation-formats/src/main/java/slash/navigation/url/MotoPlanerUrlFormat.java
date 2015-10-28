@@ -20,7 +20,10 @@
 
 package slash.navigation.url;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseUrlParsingFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,9 +36,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 

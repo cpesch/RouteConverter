@@ -24,7 +24,7 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.MapViewImpl;
-import slash.navigation.converter.gui.mapview.MapView;
+import slash.navigation.mapview.mapsforge.MapView;
 import slash.navigation.gui.Application;
 
 import javax.swing.*;

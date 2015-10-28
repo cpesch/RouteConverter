@@ -270,6 +270,7 @@
 
     <modules>
         <module>brouter</module>
+        <module>browser-mapview</module>
         <module>common</module>
         <module>common-gui</module>
         <module>common-navigation</module>

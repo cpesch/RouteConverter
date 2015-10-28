@@ -27,9 +27,7 @@ import java.util.prefs.Preferences;
 
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
-import static slash.navigation.gui.SingleFrameApplication.X_PREFERENCE;
-import static slash.navigation.gui.SingleFrameApplication.Y_PREFERENCE;
-import static slash.navigation.gui.SingleFrameApplication.crop;
+import static slash.navigation.gui.SingleFrameApplication.*;
 
 /**
  * The base of all simple {@link JDialog}s.

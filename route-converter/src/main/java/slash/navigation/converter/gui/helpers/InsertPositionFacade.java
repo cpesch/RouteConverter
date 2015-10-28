@@ -23,8 +23,6 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.BaseMapView;
-import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -39,21 +37,16 @@ import java.util.List;
  */
 
 public class InsertPositionFacade {
-    private BaseMapView getBaseMapView() {
-        MapView mapView = RouteConverter.getInstance().getMapView();
-        return mapView instanceof BaseMapView ? BaseMapView.class.cast(mapView) : null;
-    }
-
     public void insertAllWaypoints() {
         RouteConverter r = RouteConverter.getInstance();
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         r.clearSelection();
 
-        RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-        if (routingService instanceof GoogleDirectionsService) {
-            getBaseMapView().insertAllWaypoints(selectedRows);
+        RoutingService service = r.getRoutingServiceFacade().getRoutingService();
+        if (service instanceof GoogleDirectionsService) {
+            ((GoogleDirectionsService)service).insertAllWaypoints(selectedRows);
         } else
-            insertWithRoutingService(routingService, selectedRows);
+            insertWithRoutingService(service, selectedRows);
     }
 
     public void insertOnlyTurnpoints() {
@@ -63,7 +56,7 @@ public class InsertPositionFacade {
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
         if (service instanceof GoogleDirectionsService) {
-            getBaseMapView().insertOnlyTurnpoints(selectedRows);
+            ((GoogleDirectionsService)service).insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }

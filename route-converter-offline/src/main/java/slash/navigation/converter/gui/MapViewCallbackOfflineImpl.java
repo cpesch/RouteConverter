@@ -20,14 +20,12 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
-import slash.navigation.converter.gui.mapview.MapView;
-import slash.navigation.converter.gui.mapview.MapViewCallbackOffline;
+import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.MapManager;
 
-import javax.swing.*;
 import java.util.ResourceBundle;
 
 import static java.text.MessageFormat.format;

@@ -1,0 +1,298 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.mapview.browser;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.web.PopupFeatures;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.util.Callback;
+import slash.navigation.common.NavigationPosition;
+
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.logging.Logger;
+
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.System.currentTimeMillis;
+import static javafx.application.Platform.*;
+import static javafx.concurrent.Worker.State;
+import static javafx.concurrent.Worker.State.SUCCEEDED;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.io.Transfer.parseDouble;
+
+/**
+ * Implementation for a component that displays the positions of a position list on a map
+ * using the JavaFX WebView.
+ *
+ * @author Christian Pesch
+ */
+
+public class JavaFX7WebViewMapView extends BaseMapView {
+    private static final Logger log = Logger.getLogger(JavaFX7WebViewMapView.class.getName());
+
+    private JFXPanel panel;
+    private WebView webView;
+
+    static {
+        setImplicitExit(false);
+    }
+
+    public Component getComponent() {
+        return panel;
+    }
+
+    protected JFXPanel getPanel() {
+        return panel;
+    }
+
+    protected WebView getWebView() {
+        return webView;
+    }
+
+    // initialization
+
+    private WebView createWebView() {
+        try {
+            final WebView webView = new WebView();
+            Group group = new Group();
+            group.getChildren().add(webView);
+            panel.setScene(new Scene(group));
+            panel.addComponentListener(new ComponentAdapter() {
+                public void componentResized(ComponentEvent e) {
+                    setWebViewSizeToPanelSize();
+                }
+            });
+            webView.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
+                public WebEngine call(PopupFeatures config) {
+                    // grab the last hyperlink that has :hover pseudoclass
+                    String url = executeScriptWithResult(
+                            "var list = document.querySelectorAll( ':hover' );" +
+                                    "for (i=list.length-1; i>-1; i--) {" +
+                                    "  if (list.item(i).getAttribute('href')) {" +
+                                    "    list.item(i).getAttribute('href'); break; " +
+                                    "}}");
+
+                    if (url != null) {
+                        mapViewCallback.startBrowser(url);
+                    } else {
+                        log.warning("No result from popup uri detector");
+                    }
+
+                    // prevent from opening in WebView
+                    return null;
+                }
+            });
+            webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+                private int startCount = 0;
+
+                public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
+                    log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
+                    if (newState == SUCCEEDED) {
+                        // get out of the listener callback
+                        invokeLater(new Runnable() {
+                            public void run() {
+                                tryToInitialize(startCount++, currentTimeMillis());
+                            }
+                        });
+                    }
+                }
+            });
+            return webView;
+        } catch (Throwable t) {
+            log.severe("Cannot create WebView: " + t);
+            setInitializationCause(t);
+            return null;
+        }
+    }
+
+    /*
+    protected void runBrowserInteractionCallbacksAndTests(long start) {
+        executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+        super.runBrowserInteractionCallbacksAndTests(start);
+    }
+    */
+
+    private boolean loadWebPage() {
+        try {
+            final String url = prepareWebPage();
+            webView.getEngine().load(url);
+            return true;
+        } catch (Throwable t) {
+            log.severe("Cannot load web page: " + t);
+            setInitializationCause(t);
+            return false;
+        }
+    }
+
+    protected void initializeBrowser() {
+        panel = new JFXPanel();
+
+        runLater(new Runnable() {
+            public void run() {
+                webView = createWebView();
+                if (webView == null)
+                    return;
+
+                log.info("Using JavaFX WebView to create map view");
+                if (!loadWebPage())
+                    dispose();
+            }
+        });
+    }
+
+    protected boolean isMapInitialized() {
+        String result = executeScriptWithResult("isInitialized();");
+        return parseBoolean(result);
+    }
+
+    public void resize() {
+        super.resize();
+        setWebViewSizeToPanelSize();
+    }
+
+    private void setWebViewSizeToPanelSize() {
+        Dimension size = panel.getSize();
+        if (webView != null)
+            webView.setMinSize(size.getWidth(), size.getHeight());
+    }
+
+    // bounds and center
+
+    protected NavigationPosition getNorthEastBounds() {
+        return extractLatLng("getNorthEastBounds();");
+    }
+
+    protected NavigationPosition getSouthWestBounds() {
+        return extractLatLng("getSouthWestBounds();");
+    }
+
+    protected NavigationPosition getCurrentMapCenter() {
+        return extractLatLng("getCenter();");
+    }
+
+    protected Integer getCurrentZoom() {
+        try {
+            Double zoom = parseDouble(executeScriptWithResult("getZoom();"));
+            if(zoom != null)
+                return zoom.intValue();
+        }
+        catch(NumberFormatException e) {
+            // intentionally left empty
+        }
+        return null;
+    }
+
+    protected String getCallbacks() {
+        return executeScriptWithResult("getCallbacks();");
+    }
+
+    // print
+
+    public boolean isSupportsPrinting() {
+        return false;
+    }
+
+    public boolean isSupportsPrintingWithDirections() {
+        return false;
+    }
+
+    public void print(final String title, boolean withDirections) {
+        throw new UnsupportedOperationException("Printing not supported");
+    }
+
+    // script execution
+
+    protected void executeScript(final String script) {
+        if (webView == null || script.length() == 0)
+            return;
+
+        boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
+        if (debug)
+            log.info("Before executeScript " + script);
+        if (!isFxApplicationThread()) {
+            runLater(new Runnable() {
+                public void run() {
+                    webView.getEngine().executeScript(script);
+                    logJavaScript(script, null);
+                }
+            });
+        } else {
+            webView.getEngine().executeScript(script);
+            logJavaScript(script, null);
+        }
+    }
+
+    private static final Object LOCK = new Object();
+
+    protected synchronized String executeScriptWithResult(final String script) {
+        if (script.length() == 0)
+            return null;
+
+        final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
+        final boolean pollingCallback = !script.contains("getCallbacks");
+        final Object[] result = new Object[1];
+
+        if (!isFxApplicationThread()) {
+            final boolean[] haveResult = new boolean[]{false};
+
+            runLater(new Runnable() {
+                public void run() {
+                    Object r = webView.getEngine().executeScript(script);
+                    if (debug && pollingCallback) {
+                        log.info("After runLater, executeScript with result " + r);
+                    }
+
+                    synchronized (LOCK) {
+                        result[0] = r;
+                        haveResult[0] = true;
+                        LOCK.notifyAll();
+                    }
+                }
+            });
+
+            synchronized (LOCK) {
+                while (!haveResult[0]) {
+                    try {
+                        LOCK.wait();
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
+                    }
+                }
+            }
+        } else {
+            result[0] = webView.getEngine().executeScript(script);
+            if (debug && pollingCallback) {
+                log.info("After executeScript with result " + result[0]);
+            }
+        }
+
+        if (pollingCallback) {
+            logJavaScript(script, result[0]);
+        }
+        return result[0] != null ? result[0].toString() : null;
+    }
+}

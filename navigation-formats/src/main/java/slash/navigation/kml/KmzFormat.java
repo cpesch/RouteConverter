@@ -22,9 +22,9 @@ package slash.navigation.kml;
 
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
