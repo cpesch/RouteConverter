@@ -28,6 +28,14 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:simpleType name="copyrightType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Google"/>
+            <xsd:enumeration value="OpenStreetMap"/>
+            <xsd:enumeration value="OutdoorActive"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:complexType name="tileServerType">
         <xsd:annotation>
             <xsd:documentation>
@@ -40,7 +48,7 @@
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
                 <xsd:attribute name="minZoom" type="xsd:integer" use="required"/>
                 <xsd:attribute name="maxZoom" type="xsd:integer" use="required"/>
-                <xsd:attribute name="copyright" type="xsd:string" use="required"/>
+                <xsd:attribute name="copyright" type="copyrightType" use="required"/>
                 <xsd:attribute name="active" type="xsd:boolean"/>
             </xsd:extension>
         </xsd:simpleContent>

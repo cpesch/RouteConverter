@@ -48,6 +48,14 @@
         <xsd:attribute name="href" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:simpleType name="actionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Copy"/>
+            <xsd:enumeration value="Flatten"/>
+            <xsd:enumeration value="Extract"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:complexType name="datasourceType">
         <xsd:annotation>
             <xsd:documentation>
@@ -79,7 +87,7 @@
         <xsd:attribute name="href" type="xsd:string"/>
         <xsd:attribute name="baseUrl" type="xsd:string"/>
         <xsd:attribute name="directory" type="xsd:string"/>
-        <xsd:attribute name="action" type="xsd:string"/>
+        <xsd:attribute name="action" type="actionType"/>
     </xsd:complexType>
 
     <xsd:complexType name="fragmentType">

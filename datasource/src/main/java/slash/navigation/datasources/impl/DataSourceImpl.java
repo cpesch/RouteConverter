@@ -86,7 +86,7 @@ public class DataSourceImpl implements DataSource {
     }
 
     public String getAction() {
-        return datasourceType.getAction();
+        return datasourceType.getAction().value();
     }
 
     public List<File> getFiles() {

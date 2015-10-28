@@ -92,6 +92,7 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 public abstract class BrowserMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
+    private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
     private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "mapServer";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
@@ -152,7 +153,7 @@ public abstract class BrowserMapView implements MapView {
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
         final String country = Locale.getDefault().getCountry().toLowerCase();
-        File html = extractFile("slash/navigation/mapview/mapsforge/routeconverter.html", country, new TokenResolver() {
+        File html = extractFile(RESOURCES_PACKAGE + "routeconverter.html", country, new TokenResolver() {
             public String resolveToken(String tokenName) {
                 if (tokenName.equals("language"))
                     return language;
@@ -168,10 +169,10 @@ public abstract class BrowserMapView implements MapView {
         if (html == null)
             throw new IllegalArgumentException("Cannot extract routeconverter.html");
 
-        extractFile("slash/navigation/mapview/mapsforge/contextmenu.js");
-        extractFile("slash/navigation/mapview/mapsforge/keydragzoom.js");
-        extractFile("slash/navigation/mapview/mapsforge/label.js");
-        extractFile("slash/navigation/mapview/mapsforge/latlngcontrol.js");
+        extractFile(RESOURCES_PACKAGE + "contextmenu.js");
+        extractFile(RESOURCES_PACKAGE + "keydragzoom.js");
+        extractFile(RESOURCES_PACKAGE + "label.js");
+        extractFile(RESOURCES_PACKAGE + "latlngcontrol.js");
 
         return html.toURI().toURL().toExternalForm();
     }

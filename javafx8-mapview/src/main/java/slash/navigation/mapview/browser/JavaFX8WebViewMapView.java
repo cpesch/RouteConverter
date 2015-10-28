@@ -37,6 +37,7 @@ import static javafx.application.Platform.runLater;
  * @author Christian Pesch
  */
 
+@SuppressWarnings("unused")
 public class JavaFX8WebViewMapView extends JavaFX7WebViewMapView {
 
     // print
