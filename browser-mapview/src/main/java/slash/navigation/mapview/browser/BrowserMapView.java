@@ -163,6 +163,10 @@ public abstract class BrowserMapView implements MapView {
                     return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
                 if (tokenName.equals("maptype"))
                     return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
+                if (tokenName.equals("tileservers1"))
+                    return registerTileServers(true);
+                if (tokenName.equals("tileservers2"))
+                    return registerTileServers(false);
                 return tokenName;
             }
         });
@@ -210,7 +214,6 @@ public abstract class BrowserMapView implements MapView {
         initializeCallbackListener();
         checkLocalhostResolution();
         checkCallback();
-        registerTileServers();
         setDegreeFormat();
         setShowCoordinates();
         end = currentTimeMillis();
@@ -674,19 +677,39 @@ public abstract class BrowserMapView implements MapView {
         return result;
     }
 
-    private void registerTileServers() {
+    private String registerTileServers(boolean register) {
+        StringBuilder buffer = new StringBuilder();
+
+        if (register) {
+            for (String tileServerId : new String[]{"ROADMAP", "SATELLITE", "HYBRID", "TERRAIN"})
+                buffer.append("mapTypeIds.push(google.maps.MapTypeId.").append(tileServerId).append("); ").
+                        append("mapCopyrights[google.maps.MapTypeId.").append(tileServerId).append("] = \"Google\";\n");
+        }
+
         File tileServersDirectory = mapViewCallback.getTileServersDirectory();
         TileServerService service = loadAllTileServers(tileServersDirectory);
         for (TileServerType tileServer : service.getTileServers()) {
             if (tileServer.isActive() != null && !tileServer.isActive())
                 continue;
 
-            executeScript("registerTileServer(\"" + tileServer.getId() + "\",\"" + tileServer.getName() + "\"," +
-                    tileServer.getMinZoom() + "," + tileServer.getMaxZoom() + ",\"" + tileServer.getCopyright() + "\"," +
-                    "function(coordinates, zoom) {" +
-                    "return " + trimLineFeeds(tileServer.getValue()) + ";" +
-                    "});");
+            if (register)
+                buffer.append("mapTypeIds.push(\"").append(tileServer.getId()).append("\"); ").
+                        append("mapCopyrights[\"").append(tileServer.getId()).append("\"] = \"").
+                        append(tileServer.getCopyright().value()).append("\";\n");
+            else
+                buffer.append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
+                        append("  getTileUrl: function(coordinates, zoom) {\n").
+                        append("    return ").append(trim(trimLineFeeds(tileServer.getValue()))).append(";\n").
+                        append("  },\n").
+                        append("  tileSize: DEFAULT_TILE_SIZE,\n").
+                        append("  minZoom: ").append(tileServer.getMinZoom()).append(",\n").
+                        append("  maxZoom: ").append(tileServer.getMaxZoom()).append(",\n").
+                        append("  alt: \"").append(tileServer.getName()).append("\",\n").
+                        append("  name: \"").append(tileServer.getId()).append("\"\n").
+                        append("}));\n");
         }
+
+        return buffer.toString();
     }
 
     // resizing

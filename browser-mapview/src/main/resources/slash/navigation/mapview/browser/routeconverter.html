@@ -225,8 +225,8 @@
        });
    }
 
-   var oldSelectedPositions = new Array();
-   var newSelectedPositions = new Array();
+   var oldSelectedPositions = [];
+   var newSelectedPositions = [];
 
    function selectPosition(latitude, longitude, description, index) {
        var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
@@ -242,7 +242,7 @@
            oldSelectedPositions.pop().setMap(null);
        }
        oldSelectedPositions = newSelectedPositions;
-       newSelectedPositions = new Array();
+       newSelectedPositions = [];
    }
 
    function addPolyline(latlngs, color, weight) {
@@ -414,10 +414,10 @@
        });
    }
 
-   var oldRenderer = new Array();
-   var newRenderer = new Array();
-   var oldPanels = new Array();
-   var newPanels = new Array();
+   var oldRenderer = [];
+   var newRenderer = [];
+   var oldPanels = [];
+   var newPanels = [];
 
    function addDirections(renderer, panel) {
        if (renderer != undefined)
@@ -434,7 +434,7 @@
            oldRenderer.pop().setMap(null);
        }
        oldRenderer = newRenderer;
-       newRenderer = new Array();
+       newRenderer = [];
 
        var div = document.getElementById("directions");
        for (i = 0; i < newPanels.length; i++) {
@@ -444,11 +444,11 @@
            div.removeChild(oldPanels.pop());
        }
        oldPanels = newPanels;
-       newPanels = new Array();
+       newPanels = [];
    }
 
-   var oldOverlays = new Array();
-   var newOverlays = new Array();
+   var oldOverlays = [];
+   var newOverlays = [];
 
    function addOverlay(overlay) {
        newOverlays.push(overlay);
@@ -462,7 +462,7 @@
            oldOverlays.pop().setMap(null);
        }
        oldOverlays = newOverlays;
-       newOverlays = new Array();
+       newOverlays = [];
    }
 
    function getNorthEastBounds() {
@@ -536,34 +536,7 @@
        return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
-   var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
-
-   function registerTileServer(id, name, minZoom, maxZoom, copyright, url) {
-       try {
-           mapTypeIds.push(id);
-           mapCopyrights[id] = copyright;
-
-           map.mapTypes.set(id, new google.maps.ImageMapType({
-               getTileUrl: eval(url),
-               tileSize: DEFAULT_TILE_SIZE,
-               minZoom: minZoom,
-               maxZoom: maxZoom,
-               alt: name,
-               name: id
-           }));
-           map.setOptions(mapOptions);
-
-           var mapType = '${maptype}';
-           if (mapTypeIds.indexOf(mapType) != -1) {
-               map.setMapTypeId(mapType);
-           }
-       } catch (e) {
-           setError(e);
-       }
-   }
-
-   var initialized, map, mapOptions, mapTypeIds, latLngControl, directionsService, xmlhttp;
-   var mapCopyrights = {};
+   var initialized, map, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;
@@ -587,17 +560,12 @@
 
       addDebug("1. initialize()");
        try {
-           var STREET_MAPTYPE_ID = "OSM Street", CYCLE_MAPTYPE_ID = "OSM Cycle", TOPO_MAPTYPE_ID = "OSM Topo",
-                   HIKE_MAPTYPE_ID = "OSM Hike", HIKE_SYMBOL_MAPTYPE_ID = "Hike Symbols";
-           mapTypeIds = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
-               google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
-               STREET_MAPTYPE_ID, CYCLE_MAPTYPE_ID, TOPO_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_SYMBOL_MAPTYPE_ID];
-           mapCopyrights[google.maps.MapTypeId.ROADMAP] = "google";
-           mapCopyrights[google.maps.MapTypeId.SATELLITE] = "google";
-           mapCopyrights[google.maps.MapTypeId.HYBRID] = "google";
-           mapCopyrights[google.maps.MapTypeId.TERRAIN] = "google";
+           var mapTypeIds = [];
+           var mapCopyrights = {};
 
-           mapOptions = {
+${tileservers1}
+
+           var mapOptions = {
                mapTypeId: google.maps.MapTypeId.ROADMAP,
                mapTypeControlOptions: {
                    mapTypeIds: mapTypeIds,
@@ -614,51 +582,9 @@
                draggingCursor: 'pointer'
            };
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
-           map.mapTypes.set(STREET_MAPTYPE_ID, new google.maps.ImageMapType({
-               getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tile.openstreetmap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 19,
-               alt: "OpenStreetMap rendering of OpenStreetMap data",
-               name: STREET_MAPTYPE_ID
-           }));
-           map.mapTypes.set(CYCLE_MAPTYPE_ID, new google.maps.ImageMapType({
-               getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tile.opencyclemap.org/cycle/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 18,
-               alt: "OpenCycleMap rendering of OpenStreetMap data",
-               name: CYCLE_MAPTYPE_ID
-           }));
-           map.mapTypes.set(TOPO_MAPTYPE_ID, new google.maps.ImageMapType({
-               getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tile.opentopomap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 18,
-               alt: "OpenTopoMap rendering of OpenStreetMap data",
-               name: TOPO_MAPTYPE_ID
-           }));
-           map.mapTypes.set(HIKE_MAPTYPE_ID, new google.maps.ImageMapType({
-               getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 18,
-               alt: "HikeBikeMap rendering of OpenStreetMap data",
-               name: HIKE_MAPTYPE_ID
-           }));
-           map.mapTypes.set(HIKE_SYMBOL_MAPTYPE_ID, new google.maps.ImageMapType({
-               getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               maxZoom: 18,
-               alt: "HikeBikeMap with Symbols rendering of OpenStreetMap data",
-               name: HIKE_SYMBOL_MAPTYPE_ID
-           }));
+           var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
+
+${tileservers2}
 
            var hillshadingMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
@@ -698,17 +624,21 @@
            }
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                var mapTypeId = map.getMapTypeId();
-               if (mapCopyrights[mapTypeId] == 'osm') {
+               var mapCopyright = mapCopyrights[mapTypeId];
+
+               if (mapCopyright == 'OpenStreetMap') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
-               } else if (mapCopyrights[mapTypeId] == 'outdooractive') {
+               } else if (mapCopyright == 'OutdoorActive') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a>';
-               } else {
+               } else if (mapCopyright == 'Google') {
                    copyrightControl.innerHTML = '';
+               } else {
+                   copyrightControl.innerHTML = 'Missing copyright';
                }
 
-               if (mapTypeId == HIKE_MAPTYPE_ID){
+               if (mapTypeId == "OSM Hike"){
                    map.overlayMapTypes.setAt(0, hillshadingMapType);
-               } else if (mapTypeId == HIKE_SYMBOL_MAPTYPE_ID){
+               } else if (mapTypeId == "Hike Symbols"){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
             	   map.overlayMapTypes.setAt(1, hillshadingMapType);
                } else {

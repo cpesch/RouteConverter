@@ -34,6 +34,8 @@ import slash.navigation.common.NavigationPosition;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
 import static java.lang.Boolean.parseBoolean;
@@ -121,6 +123,15 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                     }
                 }
             });
+
+            // allow to compile code with Java 7; with Java 8 this would simply be
+            // webView.getEngine().setUserAgent("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)");
+            try {
+                Method method = WebEngine.class.getDeclaredMethod("setUserAgent", String.class);
+                method.invoke(webView.getEngine(), "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)");
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                // intentionally do nothing
+            }
             return webView;
         } catch (Throwable t) {
             log.severe("Cannot create WebView: " + t);

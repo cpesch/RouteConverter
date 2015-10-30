@@ -43,9 +43,9 @@ public class ClassPathExtender {
     }
 
     private void addURL(URL url) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        addUrlMethod.setAccessible(true);
-        addUrlMethod.invoke(classLoader, url);
+        Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        method.setAccessible(true);
+        method.invoke(classLoader, url);
     }
 
     public void addJarInJar(String fileName) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
