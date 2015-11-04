@@ -42,7 +42,7 @@ public class DownloadTableModel extends AbstractTableModel {
     private List<Download> downloads = new ArrayList<>();
 
     public List<Download> getDownloads() {
-        return downloads;
+        return new ArrayList<Download>(downloads);
     }
 
     public void setDownloads(List<Download> downloads) {

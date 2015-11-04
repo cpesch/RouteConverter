@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;
@@ -102,7 +103,7 @@ public class DownloadManager {
 
     private void restartDownloadsWithState(State... states) {
         List<State> restartStates = asList(states);
-        for (Download download : new ArrayList<>(model.getDownloads())) {
+        for (Download download : model.getDownloads()) {
             if (restartStates.contains(download.getState())) {
                 log.info("Restarting download " + download + " from state " + download.getState());
                 startExecutor(download);
@@ -141,7 +142,7 @@ public class DownloadManager {
 
     public void saveQueue() {
         try {
-            new QueuePersister().save(queueFile, new ArrayList<>(model.getDownloads()));
+            new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
@@ -149,7 +150,7 @@ public class DownloadManager {
     }
 
     public void clearQueue() {
-        for (Download download : new ArrayList<>(model.getDownloads()))
+        for (Download download : model.getDownloads())
             model.removeDownload(download);
     }
 
@@ -264,7 +265,7 @@ public class DownloadManager {
     }
 
     public void scanForOutdatedFilesInQueue() throws IOException {
-        for(Download download : new ArrayList<>(getModel().getDownloads())) {
+        for(Download download : model.getDownloads()) {
             if (COMPLETED.contains(download.getState())) {
 
                 Validator validator = new Validator(download);
@@ -328,5 +329,18 @@ public class DownloadManager {
 
         if (!isCompleted(downloads))
             throw new IllegalStateException(format("Waited %d seconds without all downloads to finish", WAIT_TIMEOUT / 1000));
+    }
+
+    private static final Set<State> SUCCESSFUL = new HashSet<>(asList(NotModified, Succeeded));
+
+    public void executeDownload(String description, String url, Action action, File file, Runnable invokeAfterSuccessfulDownloadRunnable) {
+        Download download = queueForDownload(description, url, action, new FileAndChecksum(file, null), null);
+        if(!file.exists()) {
+            waitForCompletion(singletonList(download));
+
+            if (!SUCCESSFUL.contains(download.getState()))
+                return;
+        }
+        invokeAfterSuccessfulDownloadRunnable.run();
     }
 }

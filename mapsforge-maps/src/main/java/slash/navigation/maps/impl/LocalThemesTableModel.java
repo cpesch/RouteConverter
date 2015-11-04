@@ -107,21 +107,6 @@ public class LocalThemesTableModel extends AbstractTableModel {
             updateTheme(theme);
     }
 
-    private void removeTheme(LocalTheme theme) {
-        final int index = getIndex(theme);
-        if (index == -1)
-            throw new IllegalArgumentException("Theme " + theme + " not found in " + themes);
-
-        if (!themes.remove(theme))
-            throw new IllegalArgumentException("Theme " + theme + " not removed from " + themes);
-
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                fireTableRowsDeleted(index, index);
-            }
-        });
-    }
-
     public void clear() {
         this.themes = new ArrayList<>();
 

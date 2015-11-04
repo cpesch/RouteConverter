@@ -29,9 +29,6 @@ import slash.navigation.common.*;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
-import slash.navigation.mapview.mapsforge.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallback;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -54,6 +51,9 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
+import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
+import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.mapsforge.MapViewCallback;
 import slash.navigation.rest.Credentials;
 import slash.navigation.routing.RoutingService;
 
@@ -102,6 +102,9 @@ import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.MapViewImpl.*;
+import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
+import static slash.navigation.datasources.DataSourceManager.V1;
+import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
@@ -321,9 +324,14 @@ public class RouteConverter extends SingleFrameApplication {
     private void openMapView() {
         mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
 
-        invokeLater(new Runnable() {
+        File file = new File(getApplicationDirectory("tileservers"), "default.xml");
+        getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
             public void run() {
-                setMapView(getMapViewPreference());
+                invokeLater(new Runnable() {
+                    public void run() {
+                        setMapView(getMapViewPreference());
+                    }
+                });
             }
         });
     }

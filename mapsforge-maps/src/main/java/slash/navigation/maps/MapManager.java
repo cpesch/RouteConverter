@@ -128,11 +128,6 @@ public class MapManager {
         return preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath());
     }
 
-    public LocalMap getMap(String uri) {
-        String url = new File(getMapsDirectory(), uri).toURI().toString();
-        return getAvailableMapsModel().getMap(url);
-    }
-
     private void initializeOnlineMaps() {
         availableMapsModel.clear();
         availableMapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
@@ -152,8 +147,12 @@ public class MapManager {
         File mapsDirectory = ensureDirectory(getMapsDirectory());
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
-        for (File file : mapFilesArray)
+        for (File file : mapFilesArray) {
+            if(file.getParent().endsWith("routeconverter"))
+                continue;
+
             availableMapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+        }
 
         long end = currentTimeMillis();
         log.info(format("Collected %d map files %s from %s in %d milliseconds",

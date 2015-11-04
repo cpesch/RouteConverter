@@ -47,9 +47,10 @@ import static slash.navigation.download.Action.*;
 public class DataSourceManager {
     private static final Logger log = Logger.getLogger(DataSourceManager.class.getName());
     private static final String EDITIONS = "editions";
-    private static final String EDITIONS_URI = "v1/" + EDITIONS + "/";
-    public static final String DATASOURCES_URI = "v1/datasources/";
-    private static final String FORMAT_XML = "?format=xml";
+    public static final String V1 = "v1/";
+    private static final String EDITIONS_URI = V1 + EDITIONS + "/";
+    public static final String DATASOURCES_URI = V1 + "datasources/";
+    public static final String FORMAT_XML = "?format=xml";
     private static final String DOT_XML = ".xml";
     public static final String DOT_ZIP = ".zip";
 
