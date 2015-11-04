@@ -19,7 +19,6 @@
 */
 package slash.navigation.maps.impl;
 
-import slash.navigation.datasources.DataSource;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteTheme;
 
@@ -66,15 +65,6 @@ public class RemoteThemesTableModel extends AbstractTableModel {
 
     public RemoteTheme getTheme(int rowIndex) {
         return themes.get(rowIndex);
-    }
-
-    public RemoteTheme findTheme(DataSource datasource, String uri) {
-        String url = datasource.getBaseUrl() + uri;
-        for(RemoteTheme theme : themes) {
-            if(url.equals(theme.getUrl()))
-                return theme;
-        }
-        return null;
     }
 
     private void addTheme(RemoteTheme theme) {

@@ -43,6 +43,7 @@ import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
+import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
@@ -57,7 +58,6 @@ public class RouteFeedback {
 
     private static final String ERROR_REPORT_URI = "error-report/";
     private static final String UPDATE_CHECK_URI = "update-check/";
-    private static final String V1 = "v1/";
     static final String USER_URI = V1 + "users/";
 
     private final String rootUrl;

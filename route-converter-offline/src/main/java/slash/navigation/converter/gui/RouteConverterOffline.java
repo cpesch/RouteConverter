@@ -24,9 +24,6 @@ import slash.navigation.converter.gui.actions.ShowMapsAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.MapViewImpl;
-import slash.navigation.mapview.mapsforge.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
-import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
@@ -34,23 +31,24 @@ import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteResource;
+import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
+import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.routing.BeelineService;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.converter.gui.helpers.MapViewImpl.Mapsforge;
+import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
@@ -173,8 +171,11 @@ public class RouteConverterOffline extends RouteConverter {
                 }
 
                 LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
-                if (mapAfterStart != mapAfterScan)
-                    updateMapAndThemesAfterDirectoryScanning();
+                if (mapAfterStart != mapAfterScan) {
+                    MapView mapView = getMapView();
+                    if (mapView instanceof MapsforgeMapView)
+                        ((MapsforgeMapView) mapView).updateMapAndThemesAfterDirectoryScanning();
+                }
             }
         }, "DirectoryScanner").start();
     }
@@ -182,37 +183,17 @@ public class RouteConverterOffline extends RouteConverter {
     protected void scanRemoteMapsAndThemes() {
         getMapManager().scanDatasources();
 
-        DataSource routeconverterMaps = getDataSourceManager().getDataSourceService().getDataSourceById("routeconverter-maps");
-        if (routeconverterMaps != null)
-            downloadMaps(routeconverterMaps, "oceans.map", "world.map");
-    }
-
-    private void downloadMaps(DataSource dataSource, String... uris) {
-        List<RemoteResource> resources = new ArrayList<>();
-        for (String uri : uris) {
-            RemoteResource resource = getMapManager().getDownloadableMapsModel().findMap(dataSource, uri);
-            if (resource != null) {
-                File file = new File(getApplicationDirectory(dataSource.getDirectory()), resource.getDownloadable().getUri().toLowerCase());
-                if (!file.exists())
-                    resources.add(resource);
+        final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
+        getDownloadManager().executeDownload("RouteConverter Background Map", "http://static.routeconverter.com/maps/world.map", Copy, file, new Runnable() {
+            public void run() {
+                invokeLater(new Runnable() {
+                    public void run() {
+                        MapView mapView = getMapView();
+                        if (mapView instanceof MapsforgeMapView)
+                            ((MapsforgeMapView) mapView).initializeBackground(file);
+                    }
+                });
             }
-        }
-
-        if (resources.size() > 0) {
-            try {
-                getMapManager().queueForDownload(resources);
-            } catch (IOException e) {
-                log.warning("Cannot queue " + resources + " for download: " + getLocalizedMessage(e));
-            }
-
-            scanLocalMapsAndThemes();
-            updateMapAndThemesAfterDirectoryScanning();
-        }
-    }
-
-    private void updateMapAndThemesAfterDirectoryScanning() {
-        MapView mapView = getMapView();
-        if (mapView instanceof MapsforgeMapView)
-            ((MapsforgeMapView) mapView).updateMapAndThemesAfterDirectoryScanning();
+        });
     }
 }

@@ -19,9 +19,6 @@
 */
 package slash.navigation.maps.impl;
 
-import slash.navigation.datasources.DataSource;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteMap;
 
@@ -70,15 +67,6 @@ public class RemoteMapsTableModel extends AbstractTableModel {
         return maps.get(rowIndex);
     }
 
-    public RemoteMap findMap(DataSource datasource, String uri) {
-        String url = datasource.getBaseUrl() + uri;
-        for(RemoteMap map : maps) {
-            if(url.equals(map.getUrl()))
-                return map;
-        }
-        return null;
-    }
-
     private void addMap(RemoteMap map) {
         if (!maps.add(map))
             throw new IllegalArgumentException("Map " + map + " not added to " + maps);
@@ -112,20 +100,5 @@ public class RemoteMapsTableModel extends AbstractTableModel {
             addMap(map);
         else
             updateMap(map);
-    }
-
-    private void removeMap(RemoteMap map) {
-        final int index = maps.indexOf(map);
-        if (index == -1)
-            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
-
-        if (!maps.remove(map))
-            throw new IllegalArgumentException("Map " + map + " not removed from " + maps);
-
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                fireTableRowsDeleted(index, index);
-            }
-        });
     }
 }

@@ -107,21 +107,6 @@ public class LocalMapsTableModel extends AbstractTableModel {
             updateMap(map);
     }
 
-    private void removeMap(LocalMap map) {
-        final int index = getIndex(map);
-        if (index == -1)
-            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
-
-        if (!maps.remove(map))
-            throw new IllegalArgumentException("Map " + map + " not removed from " + maps);
-
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                fireTableRowsDeleted(index, index);
-            }
-        });
-    }
-
     public void clear() {
         this.maps = new ArrayList<>();
 

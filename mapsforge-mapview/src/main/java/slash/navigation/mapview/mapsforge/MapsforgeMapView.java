@@ -47,6 +47,12 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
+import slash.navigation.converter.gui.models.*;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.maps.LocalMap;
+import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
@@ -55,13 +61,6 @@ import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.IntermediateRoute;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
-import slash.navigation.converter.gui.models.*;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.ActionManager;
-import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.mapsforge.updater.*;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -70,6 +69,7 @@ import slash.navigation.routing.RoutingService;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -95,11 +95,11 @@ import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.helpers.MapTransfer.*;
+import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -266,20 +266,16 @@ public class MapsforgeMapView implements MapView {
                 handleMapAndThemeUpdate(false, false);
             }
         });
-
-        initializeBackground();
     }
 
-    private void initializeBackground() {
-        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
-        LocalMap worldMap = getMapManager().getMap("routeconverter/world.map");
-        if(worldMap != null)
-            backgroundLayer = createTileRendererLayer(worldMap, theme);
-        else {
-            LocalMap oceansMap = getMapManager().getMap("routeconverter/oceans.map");
-            if (oceansMap != null)
-                backgroundLayer = createTileRendererLayer(oceansMap, theme);
-        }
+    public void initializeBackground(File map) {
+        backgroundLayer = createTileRendererLayer(map);
+        updateMapAndThemesAfterDirectoryScanning();
+    }
+
+    public void updateMapAndThemesAfterDirectoryScanning() {
+        if (mapView != null)
+            handleMapAndThemeUpdate(false, false);
     }
 
     private AwtGraphicMapView createMapView() {
@@ -319,9 +315,9 @@ public class MapsforgeMapView implements MapView {
         return menu;
     }
 
-    private TileRendererLayer createTileRendererLayer(LocalMap map, LocalTheme theme) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map.getFile()), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
-        tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
+    private TileRendererLayer createTileRendererLayer(File map) {
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
+        tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
         return tileRendererLayer;
     }
 
@@ -684,13 +680,6 @@ public class MapsforgeMapView implements MapView {
         selectionUpdater.removedPositions(new ArrayList<>(removed));
     }
 
-    public void updateMapAndThemesAfterDirectoryScanning() {
-        if (mapView != null) {
-            initializeBackground();
-            handleMapAndThemeUpdate(false, false);
-        }
-    }
-
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
     public void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
@@ -698,18 +687,20 @@ public class MapsforgeMapView implements MapView {
 
         // add new map with a theme
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
         Layer layer;
         try {
-            layer = map.isVector() ? createTileRendererLayer(map, theme) : createTileDownloadLayer(map.getTileSource());
+            layer = map.isVector() ? createTileRendererLayer(map.getFile()) : createTileDownloadLayer(map.getTileSource());
         } catch (Exception e) {
             mapViewCallback.showMapException(map != null ? map.getDescription() : "<no map>", e);
             return;
         }
 
         // remove old map
-        for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet())
-            layers.remove(entry.getValue());
+        for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet()) {
+            Layer remove = entry.getValue();
+            layers.remove(layer);
+            remove.onDestroy();
+        }
         mapsToLayers.clear();
 
         // add map as the first to be behind all additional layers
@@ -735,7 +726,7 @@ public class MapsforgeMapView implements MapView {
             centerAndZoom(mapBoundingBox, routeBoundingBox, alwaysRecenter);
         }
         limitZoomLevel();
-        log.info("Using map " + mapsToLayers.keySet() + " and theme " + theme + " with zoom " + getZoom());
+        log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
     }
 
     private BaseRoute lastRoute = null;
