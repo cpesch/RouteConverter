@@ -50,6 +50,7 @@ public class HgtFiles implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
+    private static final String DOT_HGT = ".hgt";
 
     private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<>();
     private final DataSource dataSource;
@@ -95,7 +96,7 @@ public class HgtFiles implements ElevationService {
     String createFileKey(double longitude, double latitude) {
         int longitudeAsInteger = (int) longitude;
         int latitudeAsInteger = (int) latitude;
-        return format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
+        return format("%s%02d%s%03d" + DOT_HGT, (latitude < 0) ? "S" : "N",
                 (latitude < 0) ? ((latitudeAsInteger - 1) * -1) : latitudeAsInteger,
                 (longitude < 0) ? "W" : "E",
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
@@ -140,7 +141,7 @@ public class HgtFiles implements ElevationService {
             // fallback as long as .hgt is not part of the keys
             if (fragment == null)
                 fragment = dataSource.getFragment(removeExtension(key));
-            if (fragment != null && !createFile(fragment.getKey()).exists() && !createFile(fragment.getKey() + ".hgt").exists())
+            if (fragment != null && !createFile(fragment.getKey()).exists() && !createFile(fragment.getKey() + DOT_HGT).exists())
                 downloadables.add(fragment.getDownloadable());
         }
 
@@ -155,8 +156,12 @@ public class HgtFiles implements ElevationService {
 
     private Download download(Downloadable downloadable) {
         List<FileAndChecksum> fragments = new ArrayList<>();
-        for (Fragment otherFragments : downloadable.getFragments())
-            fragments.add(new FileAndChecksum(createFile(otherFragments.getKey()), otherFragments.getLatestChecksum()));
+        for (Fragment otherFragments : downloadable.getFragments()) {
+            String key = otherFragments.getKey();
+            if(!key.endsWith(DOT_HGT))
+                key += DOT_HGT;
+            fragments.add(new FileAndChecksum(createFile(key), otherFragments.getLatestChecksum()));
+        }
 
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
