@@ -52,6 +52,7 @@ public class UIHelper {
     public static final Locale ARABIA = new Locale("ar", "SA");
     public static final Locale CZECH = new Locale("cs", "CZ");
     public static final Locale CROATIA = new Locale("hr", "HR");
+    public static final Locale DENMARK = new Locale("da", "DK");
     public static final Locale NEDERLANDS = new Locale("nl", "NL");
     public static final Locale POLAND = new Locale("pl", "PL");
     public static final Locale PORTUGAL = new Locale("pt", "PT");

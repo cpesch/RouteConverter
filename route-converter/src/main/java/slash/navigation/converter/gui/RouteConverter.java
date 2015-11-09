@@ -241,8 +241,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
-                POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
+        List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY,
+                NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());
@@ -347,8 +347,9 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         mapView = createMapView(mapViewImpl.getClassName());
-        if (mapView != null)
+        if (mapView != null) {
             mapView.addMapViewListener(calculatedDistanceNotifier);
+        }
 
         getMapView().initialize(getPositionsModel(),
                 getPositionsSelectionModel(),
@@ -373,8 +374,9 @@ public class RouteConverter extends SingleFrameApplication {
         mapPanel.setVisible(true);
 
         int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
-        if (location < 1)
+        if (location < 1) {
             location = 300;
+        }
         mapSplitPane.setDividerLocation(location);
         log.info("Initialized map divider to " + location);
     }
@@ -396,8 +398,9 @@ public class RouteConverter extends SingleFrameApplication {
                 profilePanel.setVisible(true);
 
                 int location = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location < 2)
+                if (location < 2) {
                     location = 888;
+                }
                 profileSplitPane.setDividerLocation(location);
                 log.info("Initialized profile divider to " + location);
                 profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
@@ -406,8 +409,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void shutdown() {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().dispose();
+        }
         getConvertPanel().dispose();
         getHgtFilesService().dispose();
         getBatchPositionAugmenter().dispose();
@@ -634,8 +638,9 @@ public class RouteConverter extends SingleFrameApplication {
     public void sendChecksums(final Download download) {
         final DataSource dataSource = RouteConverter.getInstance().getDataSourceManager().
                 getDataSourceService().getDataSourceByUrlPrefix(download.getUrl());
-        if (dataSource == null)
+        if (dataSource == null) {
             return;
+        }
 
         final Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments = new HashMap<>();
         fileToFragments.put(download.getFile(), download.getFragments());
@@ -677,10 +682,12 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void selectPositions(int[] selectedPositions) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().setSelectedPositions(selectedPositions, true);
-        if (profileView != null)
+        }
+        if (profileView != null) {
             profileView.setSelectedPositions(selectedPositions, true);
+        }
     }
 
     public ElevationServiceFacade getElevationServiceFacade() {
@@ -751,36 +758,42 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().setShowAllPositionsAfterLoading(showAllPositionsAfterLoading);
+        }
     }
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().setRecenterAfterZooming(recenterAfterZooming);
+        }
     }
 
     public void setShowCoordinates(boolean showCoordinates) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().setShowCoordinates(showCoordinates);
+        }
     }
 
     public void setShowWaypointDescription(boolean showWaypointDescription) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().setShowWaypointDescription(showWaypointDescription);
+        }
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().showMapBorder(mapBoundingBox);
+        }
     }
 
     public List<MapViewImpl> getAvailableMapViews() {
         List<MapViewImpl> result = new ArrayList<>();
-        if (isJavaFX8())
+        if (isJavaFX8()) {
             result.add(JavaFX8);
-        else if (isJavaFX7())
+        } else if (isJavaFX7()) {
             result.add(JavaFX7);
+        }
         result.add(EclipseSWT);
         return result;
     }
@@ -789,8 +802,9 @@ public class RouteConverter extends SingleFrameApplication {
         MapViewImpl firstMapView = getAvailableMapViews().get(0);
         try {
             MapViewImpl mapView = MapViewImpl.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, firstMapView.toString()));
-            if (getAvailableMapViews().contains(mapView))
+            if (getAvailableMapViews().contains(mapView)) {
                 return mapView;
+            }
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
@@ -961,8 +975,9 @@ public class RouteConverter extends SingleFrameApplication {
         private int location = -1;
 
         public void propertyChange(PropertyChangeEvent e) {
-            if (!isMapViewAvailable())
+            if (!isMapViewAvailable()) {
                 return;
+            }
 
             if (e.getPropertyName().equals(DIVIDER_LOCATION_PROPERTY)) {
                 if (mapSplitPane.getDividerLocation() != location) {
@@ -997,10 +1012,11 @@ public class RouteConverter extends SingleFrameApplication {
                     location = profileSplitPane.getDividerLocation();
                     if (isMapViewAvailable()) {
                         // make sure the one touch expandable to minimize the map works fine
-                        if (location == 1)
+                        if (location == 1) {
                             getMapView().getComponent().setVisible(false);
-                        else if ((Integer) e.getOldValue() == 1)
+                        } else if ((Integer) e.getOldValue() == 1) {
                             getMapView().getComponent().setVisible(true);
+                        }
                         getMapView().resize();
                     }
                     preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
@@ -1229,16 +1245,18 @@ public class RouteConverter extends SingleFrameApplication {
     private class ShowProfileAction extends FrameAction {
         public void run() {
             int location = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
-            if (location > frame.getHeight() - 200)
+            if (location > frame.getHeight() - 200) {
                 location = frame.getHeight() - 200;
+            }
             profileSplitPane.setDividerLocation(location);
         }
     }
 
     private class ShowAllPositionsOnMapAction extends FrameAction {
         public void run() {
-            if (isMapViewAvailable())
+            if (isMapViewAvailable()) {
                 getMapView().showAllPositions();
+            }
         }
     }
 

@@ -112,7 +112,7 @@ public class OptionsDialog extends SimpleDialog {
         final RouteConverter r = RouteConverter.getInstance();
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
-                ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA,
+                ARABIA, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
                 ITALY, NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, ROOT
         });
         localeModel.setSelectedItem(Application.getInstance().getLocale());
@@ -120,8 +120,9 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 Locale locale = (Locale) e.getItem();
                 Application.getInstance().setLocale(locale);
             }
@@ -134,8 +135,9 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxMapView.setRenderer(new MapViewListCellRenderer());
         comboBoxMapView.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 MapViewImpl mapView = MapViewImpl.class.cast(e.getItem());
                 r.setMapView(mapView);
             }
@@ -193,15 +195,17 @@ public class OptionsDialog extends SimpleDialog {
         checkBoxShowWaypointDescription.setEnabled(!r.getMapView().isDownload());
 
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
-        for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices())
+        for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices()) {
             routingServiceModel.addElement(service);
+        }
         routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
         comboBoxRoutingService.setModel(routingServiceModel);
         comboBoxRoutingService.setRenderer(new RoutingServiceListCellRenderer());
         comboBoxRoutingService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 RoutingService service = RoutingService.class.cast(e.getItem());
                 r.getRoutingServiceFacade().setRoutingService(service);
                 handleRoutingServiceUpdate();
@@ -231,8 +235,9 @@ public class OptionsDialog extends SimpleDialog {
         comboboxTravelMode.setRenderer(new TravelModeListCellRenderer());
         comboboxTravelMode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 TravelMode travelMode = (TravelMode) e.getItem();
                 r.getRoutingServiceFacade().setTravelMode(travelMode);
             }
@@ -261,8 +266,9 @@ public class OptionsDialog extends SimpleDialog {
         comboboxNumberPattern.setRenderer(new NumberPatternListCellRenderer());
         comboboxNumberPattern.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 NumberPattern numberPattern = NumberPattern.class.cast(e.getItem());
                 r.setNumberPatternPreference(numberPattern);
             }
@@ -276,23 +282,26 @@ public class OptionsDialog extends SimpleDialog {
         comboboxNumberingStrategy.setRenderer(new NumberingStrategyListCellRenderer());
         comboboxNumberingStrategy.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 NumberingStrategy numberingStrategy = NumberingStrategy.class.cast(e.getItem());
                 r.setNumberingStrategyPreference(numberingStrategy);
             }
         });
 
         DefaultComboBoxModel<ElevationService> elevationServiceModel = new DefaultComboBoxModel<>();
-        for (ElevationService service : r.getElevationServiceFacade().getElevationServices())
+        for (ElevationService service : r.getElevationServiceFacade().getElevationServices()) {
             elevationServiceModel.addElement(service);
+        }
         elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
         comboBoxElevationService.setModel(elevationServiceModel);
         comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
         comboBoxElevationService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 ElevationService service = ElevationService.class.cast(e.getItem());
                 r.getElevationServiceFacade().setElevationService(service);
                 handleElevationServiceUpdate();
@@ -302,8 +311,9 @@ public class OptionsDialog extends SimpleDialog {
         textFieldElevationServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 ElevationService service = r.getElevationServiceFacade().getElevationService();
-                if (service.isSupportsPath())
+                if (service.isSupportsPath()) {
                     service.setPath(textFieldElevationServicePath.getText());
+                }
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -329,8 +339,9 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxUnitSystem.setRenderer(new UnitSystemListCellRenderer());
         comboBoxUnitSystem.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 UnitSystem unitSystem = UnitSystem.class.cast(e.getItem());
                 r.getUnitSystemModel().setUnitSystem(unitSystem);
             }
@@ -344,8 +355,9 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxDegreeFormat.setRenderer(new DegreeFormatListCellRenderer());
         comboBoxDegreeFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 DegreeFormat degreeFormat = DegreeFormat.class.cast(e.getItem());
                 r.getUnitSystemModel().setDegreeFormat(degreeFormat);
             }
@@ -356,8 +368,9 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
+                if (e.getStateChange() != SELECTED) {
                     return;
+                }
                 String timeZoneId = String.valueOf(e.getItem());
                 r.setTimeZonePreference(timeZoneId);
             }
@@ -402,8 +415,9 @@ public class OptionsDialog extends SimpleDialog {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
-        for (TravelMode travelMode : service.getAvailableTravelModes())
+        for (TravelMode travelMode : service.getAvailableTravelModes()) {
             travelModeModel.addElement(travelMode);
+        }
         travelModeModel.setSelectedItem(serviceFacade.getTravelMode());
         comboboxTravelMode.setModel(travelModeModel);
     }
@@ -422,12 +436,14 @@ public class OptionsDialog extends SimpleDialog {
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != APPROVE_OPTION)
+        if (open != APPROVE_OPTION) {
             return;
+        }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().length() == 0) {
             return;
+        }
 
         textFieldBabelPath.setText(selected.getAbsolutePath());
     }
@@ -440,12 +456,14 @@ public class OptionsDialog extends SimpleDialog {
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION)
+        if (open != APPROVE_OPTION) {
             return;
+        }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().length() == 0) {
             return;
+        }
 
         textFieldRoutingServicePath.setText(selected.getAbsolutePath());
     }
@@ -458,12 +476,14 @@ public class OptionsDialog extends SimpleDialog {
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION)
+        if (open != APPROVE_OPTION) {
             return;
+        }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().length() == 0) {
             return;
+        }
 
         textFieldElevationServicePath.setText(selected.getAbsolutePath());
     }
@@ -739,7 +759,9 @@ public class OptionsDialog extends SimpleDialog {
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 i++;
-                if (i == text.length()) break;
+                if (i == text.length()) {
+                    break;
+                }
                 if (!haveMnemonic && text.charAt(i) != '&') {
                     haveMnemonic = true;
                     mnemonic = text.charAt(i);
@@ -766,7 +788,9 @@ public class OptionsDialog extends SimpleDialog {
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 i++;
-                if (i == text.length()) break;
+                if (i == text.length()) {
+                    break;
+                }
                 if (!haveMnemonic && text.charAt(i) != '&') {
                     haveMnemonic = true;
                     mnemonic = text.charAt(i);

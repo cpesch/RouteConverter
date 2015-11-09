@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui;
 
 import org.junit.Test;
+import slash.navigation.gui.helpers.UIHelper;
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
+    private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY, NEDERLANDS,
             POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
