@@ -24,6 +24,7 @@
                             <encoding>UTF8</encoding>
                             <includes>
                                 <include>**/RouteConverter*.properties</include>
+                                <include>**/Untranslated.properties</include>
                             </includes>
                         </configuration>
                     </execution>
