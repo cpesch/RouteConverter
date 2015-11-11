@@ -1138,10 +1138,11 @@ public class RouteConverter extends SingleFrameApplication {
         initializeElevationServices();
         initializeRoutingServices();
 
+        // make sure the queue is loaded before any components uses it
+        getDownloadManager().loadQueue();
+
         new Thread(new Runnable() {
             public void run() {
-                getDownloadManager().loadQueue();
-
                 scanLocalMapsAndThemes();
 
                 try {
