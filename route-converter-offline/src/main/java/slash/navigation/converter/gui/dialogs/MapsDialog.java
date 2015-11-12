@@ -25,16 +25,19 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.RouteConverterOffline;
+import slash.navigation.converter.gui.actions.DisplayMapAction;
+import slash.navigation.converter.gui.actions.DownloadMapsAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
+import slash.navigation.converter.gui.helpers.AvailableMapsTablePopupMenu;
+import slash.navigation.converter.gui.helpers.DownloadableMapsTablePopupMenu;
 import slash.navigation.converter.gui.renderer.LocalMapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Checksum;
 import slash.navigation.elevation.ElevationService;
-import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteMap;
@@ -48,23 +51,17 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
@@ -84,8 +81,6 @@ public class MapsDialog extends SimpleDialog {
     private JButton buttonClose;
     private JCheckBox checkBoxDownloadElevationData;
     private JCheckBox checkBoxDownloadRoutingData;
-
-    private ExecutorService executor = newCachedThreadPool();
 
     public MapsDialog() {
         super(RouteConverter.getInstance().getFrame(), "maps");
@@ -130,12 +125,6 @@ public class MapsDialog extends SimpleDialog {
                 int row = tableAvailableMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapManager().getAvailableMapsModel().getMap(row);
                 r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
-            }
-        });
-
-        buttonDisplay.addActionListener(new DialogAction(this) {
-            public void run() {
-                display();
             }
         });
 
@@ -194,13 +183,17 @@ public class MapsDialog extends SimpleDialog {
             }
         });
 
-        buttonDownload.addActionListener(new DialogAction(this) {
-            public void run() {
-                download();
-            }
-        });
-
         updateLabel();
+
+        final ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.register("display-map", new DisplayMapAction(tableAvailableMaps, getMapManager()));
+        actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapManager(),
+                checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
+
+        new AvailableMapsTablePopupMenu(tableAvailableMaps).createPopupMenu();
+        new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
+        registerAction(buttonDisplay, "display-map");
+        registerAction(buttonDownload, "download-maps");
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
@@ -263,66 +256,6 @@ public class MapsDialog extends SimpleDialog {
         return ((RouteConverterOffline) RouteConverter.getInstance()).getMapManager();
     }
 
-    private NotificationManager getNotificationManager() {
-        return Application.getInstance().getContext().getNotificationManager();
-    }
-
-    private Action getAction() {
-        return Application.getInstance().getContext().getActionManager().get("show-downloads");
-    }
-
-    private void display() {
-        int selectedRow = tableAvailableMaps.convertRowIndexToView(tableAvailableMaps.getSelectedRow());
-        if (selectedRow == -1)
-            return;
-        LocalMap map = getMapManager().getAvailableMapsModel().getMap(selectedRow);
-        getMapManager().getDisplayedMapModel().setItem(map);
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
-    }
-
-    private void download() {
-        final RouteConverter r = RouteConverter.getInstance();
-
-        int[] selectedRows = tableDownloadableMaps.getSelectedRows();
-        if (selectedRows.length == 0)
-            return;
-        final List<RemoteMap> selectedMaps = new ArrayList<>();
-        List<String> selectedMapsNames = new ArrayList<>();
-        final List<BoundingBox> selectedBoundingBoxes = new ArrayList<>();
-        for (int selectedRow : selectedRows) {
-            RemoteMap map = getMapManager().getDownloadableMapsModel().getMap(tableDownloadableMaps.convertRowIndexToModel(selectedRow));
-            selectedMaps.add(map);
-            selectedMapsNames.add(map.getUrl());
-            BoundingBox boundingBox = map.getBoundingBox();
-            if (boundingBox != null)
-                selectedBoundingBoxes.add(boundingBox);
-
-        }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray())), getAction());
-
-        executor.execute(new Runnable() {
-            public void run() {
-                try {
-                    getMapManager().queueForDownload(selectedMaps);
-
-                    if (checkBoxDownloadRoutingData.isSelected())
-                        r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(selectedBoundingBoxes);
-                    if (checkBoxDownloadElevationData.isSelected())
-                        r.getElevationServiceFacade().getElevationService().downloadElevationData(selectedBoundingBoxes);
-
-                    getMapManager().scanMaps();
-                } catch (final IOException e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            JFrame frame = r.getFrame();
-                            showMessageDialog(frame, format(RouteConverter.getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     private void close() {
         RouteConverter.getInstance().showMapBorder(null);
         dispose();
@@ -352,7 +285,8 @@ public class MapsDialog extends SimpleDialog {
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDownload = new JButton();
-        this.$$$loadButtonText$$$(buttonDownload, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download"));
+        this.$$$loadButtonText$$$(buttonDownload, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download-maps-action"));
+        buttonDownload.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download-maps-action-tooltip"));
         panel2.add(buttonDownload, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -386,7 +320,8 @@ public class MapsDialog extends SimpleDialog {
         panel6.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel5.add(panel6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDisplay = new JButton();
-        this.$$$loadButtonText$$$(buttonDisplay, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display"));
+        this.$$$loadButtonText$$$(buttonDisplay, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action"));
+        buttonDisplay.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action-tooltip"));
         panel6.add(buttonDisplay, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel6.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

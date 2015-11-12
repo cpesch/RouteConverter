@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="460" height="544"/>
+      <xy x="48" y="54" width="473" height="544"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -29,7 +29,8 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="download"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="download-maps-action"/>
+                  <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="download-maps-action-tooltip"/>
                 </properties>
               </component>
               <hspacer id="98af6">
@@ -125,7 +126,8 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action"/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action-tooltip"/>
                     </properties>
                   </component>
                   <hspacer id="988c7">

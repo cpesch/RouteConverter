@@ -194,9 +194,11 @@ public class DownloadsDialog extends SimpleDialog {
         contentPane.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonRestart = new JButton();
         this.$$$loadButtonText$$$(buttonRestart, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("restart-download-action"));
+        buttonRestart.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("restart-download-action-tooltip"));
         panel2.add(buttonRestart, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonStop = new JButton();
         this.$$$loadButtonText$$$(buttonStop, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("stop-download-action"));
+        buttonStop.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("stop-download-action-tooltip"));
         panel2.add(buttonStop, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

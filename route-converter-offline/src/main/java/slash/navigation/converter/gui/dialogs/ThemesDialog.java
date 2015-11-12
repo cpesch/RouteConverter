@@ -24,14 +24,17 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.RouteConverterOffline;
+import slash.navigation.converter.gui.actions.ApplyThemeAction;
+import slash.navigation.converter.gui.actions.DownloadThemesAction;
+import slash.navigation.converter.gui.helpers.AvailableThemesTablePopupMenu;
+import slash.navigation.converter.gui.helpers.DownloadableThemesTablePopupMenu;
 import slash.navigation.converter.gui.renderer.LocalThemesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteThemeTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Checksum;
-import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteTheme;
@@ -42,22 +45,13 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.text.MessageFormat.format;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.impl.RemoteThemesTableModel.*;
@@ -76,13 +70,13 @@ public class ThemesDialog extends SimpleDialog {
     private JButton buttonDownload;
     private JButton buttonClose;
 
-    private ExecutorService executor = newCachedThreadPool();
-
     public ThemesDialog() {
         super(RouteConverter.getInstance().getFrame(), "themes");
         setTitle(RouteConverter.getBundle().getString("themes-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
+
+        final RouteConverter r = RouteConverter.getInstance();
 
         tableAvailableThemes.setModel(getMapManager().getAvailableThemesModel());
         tableAvailableThemes.setDefaultRenderer(Object.class, new LocalThemesTableCellRenderer());
@@ -109,12 +103,6 @@ public class ThemesDialog extends SimpleDialog {
                 scrollToPosition(tableAvailableThemes, selectedRow);
             }
         }
-
-        buttonApply.addActionListener(new DialogAction(this) {
-            public void run() {
-                apply();
-            }
-        });
 
         tableDownloadableThemes.setModel(getMapManager().getDownloadableThemesModel());
         tableDownloadableThemes.setDefaultRenderer(Object.class, new RemoteThemeTableCellRenderer());
@@ -158,11 +146,14 @@ public class ThemesDialog extends SimpleDialog {
         });
         tableDownloadableThemes.setRowSorter(sorterResources);
 
-        buttonDownload.addActionListener(new DialogAction(this) {
-            public void run() {
-                download();
-            }
-        });
+        final ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.register("apply-theme", new ApplyThemeAction(tableAvailableThemes, getMapManager()));
+        actionManager.register("download-themes", new DownloadThemesAction(tableDownloadableThemes, getMapManager()));
+
+        new AvailableThemesTablePopupMenu(tableAvailableThemes).createPopupMenu();
+        new DownloadableThemesTablePopupMenu(tableDownloadableThemes).createPopupMenu();
+        registerAction(buttonApply, "apply-theme");
+        registerAction(buttonDownload, "download-themes");
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
@@ -186,54 +177,6 @@ public class ThemesDialog extends SimpleDialog {
 
     private MapManager getMapManager() {
         return ((RouteConverterOffline) RouteConverter.getInstance()).getMapManager();
-    }
-
-    private NotificationManager getNotificationManager() {
-        return Application.getInstance().getContext().getNotificationManager();
-    }
-
-    private Action getAction() {
-        return Application.getInstance().getContext().getActionManager().get("show-downloads");
-    }
-
-    private void apply() {
-        int selectedRow = tableAvailableThemes.convertRowIndexToModel(tableAvailableThemes.getSelectedRow());
-        if (selectedRow == -1)
-            return;
-        LocalTheme theme = getMapManager().getAvailableThemesModel().getTheme(selectedRow);
-        getMapManager().getAppliedThemeModel().setItem(theme);
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
-    }
-
-    private void download() {
-        int[] selectedRows = tableDownloadableThemes.getSelectedRows();
-        if (selectedRows.length == 0)
-            return;
-        final List<RemoteTheme> selectedThemes = new ArrayList<>();
-        List<String> selectedThemesNames = new ArrayList<>();
-        for (int selectedRow : selectedRows) {
-            RemoteTheme theme = getMapManager().getDownloadableThemesModel().getTheme(tableDownloadableThemes.convertRowIndexToModel(selectedRow));
-            selectedThemes.add(theme);
-            selectedThemesNames.add(theme.getUrl());
-        }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray())), getAction());
-
-        executor.execute(new Runnable() {
-            public void run() {
-                try {
-                    getMapManager().queueForDownload(selectedThemes);
-
-                    getMapManager().scanThemes();
-                } catch (final IOException e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            JFrame frame = RouteConverter.getInstance().getFrame();
-                            showMessageDialog(frame, format(RouteConverter.getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void close() {
@@ -288,7 +231,8 @@ public class ThemesDialog extends SimpleDialog {
         panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonApply = new JButton();
-        this.$$$loadButtonText$$$(buttonApply, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("apply"));
+        this.$$$loadButtonText$$$(buttonApply, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("apply-theme-action"));
+        buttonApply.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("apply-theme-action-tooltip"));
         panel5.add(buttonApply, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel5.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -306,7 +250,8 @@ public class ThemesDialog extends SimpleDialog {
         panel6.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDownload = new JButton();
-        this.$$$loadButtonText$$$(buttonDownload, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download"));
+        this.$$$loadButtonText$$$(buttonDownload, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download-maps-action"));
+        buttonDownload.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("download-themes-action-tooltip"));
         panel6.add(buttonDownload, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel6.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
