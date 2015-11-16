@@ -65,10 +65,10 @@ public class RoutingServiceFacade {
         return routingServices;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getRoutingService(Class<T> clazz) {
         for(RoutingService service : getRoutingServices()) {
             if(service.getClass().equals(clazz))
-                //noinspection unchecked
                 return (T)service;
         }
         return null;

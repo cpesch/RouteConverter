@@ -21,9 +21,9 @@
 package slash.navigation.converter.gui;
 
 import org.junit.Test;
-import slash.navigation.gui.helpers.UIHelper;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 public class ResourceBundleTest {
+    private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY, NEDERLANDS,
             POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
@@ -72,7 +73,7 @@ public class ResourceBundleTest {
                 try {
                     value = bundle.getString(key);
                 } catch (MissingResourceException e) {
-                    System.out.println("key " + key + " does not exist in locale " + locale);
+                    log.warning("key " + key + " does not exist in locale " + locale);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
@@ -80,14 +81,14 @@ public class ResourceBundleTest {
                 try {
                     value = root.getString(key);
                 } catch (MissingResourceException e) {
-                    System.out.println("key " + key + " does not exist in root " + root);
+                    log.warning("key " + key + " does not exist in root " + root);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in root " + root, false);
                 }
 
                 String englishValue = english.getString(key);
                 if (englishValue.equals(value))
-                    System.out.println("key " + key + " is not translated in " + locale);
+                    log.warning("key " + key + " is not translated in " + locale);
             }
         }
     }
@@ -119,7 +120,7 @@ public class ResourceBundleTest {
         for (String mnemonic : mnemonics.keySet()) {
             Set<String> duplicates = mnemonics.get(mnemonic);
             if (duplicates.size() > 1)
-                System.out.println("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
+                log.warning("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
         }
     }
 }

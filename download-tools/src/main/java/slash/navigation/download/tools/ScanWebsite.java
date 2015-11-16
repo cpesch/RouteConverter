@@ -268,7 +268,7 @@ public class ScanWebsite extends BaseDownloadTool {
 
     @SuppressWarnings("AccessStaticViaInstance")
     private CommandLine parseCommandLine(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();
+        CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
                 withDescription("ID of the data source").create());

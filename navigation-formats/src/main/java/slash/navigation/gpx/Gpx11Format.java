@@ -222,6 +222,10 @@ public class Gpx11Format extends GpxFormat {
     }
 
     @SuppressWarnings("unchecked")
+    private JAXBElement<String> asJABElement(Object any) {
+        return (JAXBElement<String>) any;
+    }
+
     private void setSpeed(WptType wptType, Double speed) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -248,7 +252,7 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement<String> element = (JAXBElement<String>) any;
+                JAXBElement<String> element = asJABElement(any);
                 if ("speed".equals(element.getName().getLocalPart())) {
                     if (foundSpeed || speed == null)
                         iterator.remove();
@@ -292,7 +296,6 @@ public class Gpx11Format extends GpxFormat {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private void setHeading(WptType wptType, Double heading) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -319,7 +322,7 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement<String> element = (JAXBElement<String>) any;
+                JAXBElement<String> element = asJABElement(any);
                 if ("course".equals(element.getName().getLocalPart())) {
                     if (foundHeading || heading == null)
                         iterator.remove();
@@ -351,7 +354,7 @@ public class Gpx11Format extends GpxFormat {
             Object any = iterator.next();
 
             if (any instanceof JAXBElement) {
-                JAXBElement<String> element = (JAXBElement<String>) any;
+                JAXBElement<String> element = asJABElement(any);
                 if (extensionNameToRemove.equals(element.getName().getLocalPart())) {
                     iterator.remove();
                 } else if (extensionNameToAdd.equals(element.getName().getLocalPart())) {

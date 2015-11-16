@@ -104,7 +104,6 @@ import static javax.swing.text.StyleConstants.*;
 public class BrowserDisplayer extends JButton implements ActionListener, ViewAwareComponent {
     private final static Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
-    private View myView;
     private SimpleAttributeSet textAttribs;
     private HTMLDocument doc;
     private Cursor origCursor;
@@ -130,8 +129,7 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
     }
 
     public void setViewData(View v) {
-        myView = v;
-        doc = (HTMLDocument) myView.getDocument();
+        doc = (HTMLDocument) v.getDocument();
 
         Font font = getFont();
         textAttribs = new SimpleAttributeSet();
@@ -170,7 +168,8 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
 
     private float getPreferredAlignmentY() {
         Font font = getFont();
-        FontMetrics fm = getToolkit().getFontMetrics(font);
+        // deprecated: FontMetrics fm = getToolkit().getFontMetrics(font);
+        FontMetrics fm = new Canvas().getFontMetrics(font);
         float h = fm.getHeight();
         float d = fm.getDescent();
         return (h - d) / h;

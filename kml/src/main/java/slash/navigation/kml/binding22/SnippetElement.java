@@ -18,7 +18,7 @@ public class SnippetElement
     protected final static QName NAME = new QName("http://www.opengis.net/kml/2.2", "snippet");
 
     public SnippetElement(String value) {
-        super(NAME, ((Class) String.class), null, value);
+        super(NAME, String.class, null, value);
     }
 
 }
