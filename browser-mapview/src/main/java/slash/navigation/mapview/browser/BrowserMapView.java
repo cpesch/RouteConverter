@@ -173,6 +173,7 @@ public abstract class BrowserMapView implements MapView {
         if (html == null)
             throw new IllegalArgumentException("Cannot extract routeconverter.html");
 
+        extractFile(RESOURCES_PACKAGE + "jquery.min.js");
         extractFile(RESOURCES_PACKAGE + "contextmenu.js");
         extractFile(RESOURCES_PACKAGE + "keydragzoom.js");
         extractFile(RESOURCES_PACKAGE + "label.js");
