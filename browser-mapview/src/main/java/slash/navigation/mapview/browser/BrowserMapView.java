@@ -1009,17 +1009,17 @@ public abstract class BrowserMapView implements MapView {
             NavigationPosition destination = positions.get(end);
             StringBuilder buffer = new StringBuilder();
             buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).
-                    append(",").append(origin.getLongitude()).append("), ");
+                    append(",").append(origin.getLongitude()).append("),");
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
-                    append(",").append(destination.getLongitude()).append("), ");
-            buffer.append("waypoints: [").append(waypoints).append("], ").
-                    append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(", ");
-            buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(", ");
-            buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(", ");
-            buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(", ");
-            buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
+                    append(",").append(destination.getLongitude()).append("),");
+            buffer.append("waypoints: [").append(waypoints).append("],").
+                    append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(",");
+            buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(",");
+            buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(",");
+            buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(",");
+            buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"},");
             int startIndex = positionsModel.getIndex(origin);
-            buffer.append(startIndex).append(", ");
+            buffer.append(startIndex).append(",");
             boolean lastSegment = (j == directionsCount - 1);
             buffer.append(lastSegment).append(",\"#").append(color).append("\",").append(width).append(");\n");
             try {
@@ -1157,13 +1157,13 @@ public abstract class BrowserMapView implements MapView {
                     NavigationPosition origin = entry.getValue().getFirst();
                     NavigationPosition destination = entry.getValue().getSecond();
                     executeScript(mode +
-                            "({" + "origin: new google.maps.LatLng(" + origin.getLatitude() + "," + origin.getLongitude() + "), " +
-                            "destination: new google.maps.LatLng(" + destination.getLatitude() + "," + destination.getLongitude() + "), " +
-                            "travelMode: google.maps.DirectionsTravelMode." + mapViewCallback.getTravelMode().getName().toUpperCase() + ", " +
-                            "avoidFerries: " + mapViewCallback.isAvoidFerries() + ", " +
-                            "avoidHighways: " + mapViewCallback.isAvoidHighways() + ", " +
-                            "avoidTolls: " + mapViewCallback.isAvoidTolls() + ", " +
-                            "region: \"" + Locale.getDefault().getCountry().toLowerCase() + "\"}, " + entry.getKey() + ");\n");
+                            "({" + "origin: new google.maps.LatLng(" + origin.getLatitude() + "," + origin.getLongitude() + ")," +
+                            "destination: new google.maps.LatLng(" + destination.getLatitude() + "," + destination.getLongitude() + ")," +
+                            "travelMode: google.maps.DirectionsTravelMode." + mapViewCallback.getTravelMode().getName().toUpperCase() + "," +
+                            "avoidFerries: " + mapViewCallback.isAvoidFerries() + "," +
+                            "avoidHighways: " + mapViewCallback.isAvoidHighways() + "," +
+                            "avoidTolls: " + mapViewCallback.isAvoidTolls() + "," +
+                            "region: \"" + Locale.getDefault().getCountry().toLowerCase() + "\"}," + entry.getKey() + ");\n");
                     try {
                         sleep(preferences.getInt("insertWaypointsSegmentTimeout", 1000));
                     } catch (InterruptedException e) {
