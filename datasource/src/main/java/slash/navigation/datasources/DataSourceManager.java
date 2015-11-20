@@ -214,8 +214,11 @@ public class DataSourceManager {
     private void addToQueue(DataSource dataSource, Downloadable downloadable) throws IOException {
         Action action = Action.valueOf(dataSource.getAction());
         File directory = getApplicationDirectory(dataSource.getDirectory());
-        File target = new File(directory, downloadable.getUri().toLowerCase());
-        if (action.equals(Extract) || action.equals(Flatten))
+
+        File target = directory; // Flatten
+        if (action.equals(Copy))
+            target = new File(directory, downloadable.getUri().toLowerCase());
+        else if (action.equals(Extract))
             target = target.getParentFile();
 
         downloadManager.addToQueue(dataSource.getName() + ": " + downloadable.getUri(),
