@@ -45,6 +45,7 @@ import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.rest.HttpRequest.MSIE_USER_AGENT;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -128,7 +129,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
             // webView.getEngine().setUserAgent("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)");
             try {
                 Method method = WebEngine.class.getDeclaredMethod("setUserAgent", String.class);
-                method.invoke(webView.getEngine(), "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)");
+                method.invoke(webView.getEngine(), MSIE_USER_AGENT);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 // intentionally do nothing
             }
@@ -169,6 +170,15 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                     return;
 
                 log.info("Using JavaFX WebView to create map view");
+                initializeWebPage();
+            }
+        });
+    }
+
+    protected void initializeWebPage() {
+        log.info("Loading Google Maps API from " + getGoogleMapsServerUrl());
+        runLater(new Runnable() {
+            public void run() {
                 if (!loadWebPage())
                     dispose();
             }

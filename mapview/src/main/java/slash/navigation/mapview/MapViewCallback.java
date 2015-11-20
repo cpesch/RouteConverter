@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview;
 
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;

@@ -106,7 +106,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
 
     @SuppressWarnings("AccessStaticViaInstance")
     private CommandLine parseCommandLine(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();
+        CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
                 withDescription("Data sources server").create());

@@ -65,12 +65,12 @@ public class DownloadableImpl implements Downloadable {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Fragment<Downloadable>> getFragments() {
         List<Fragment<Downloadable>> result = new ArrayList<>();
         if (downloadableType != null) {
             for (FragmentType fragmentType : downloadableType.getFragment()) {
-                //noinspection unchecked
-                result.add(new FragmentImpl(fragmentType, this));
+                result.add(new FragmentImpl<Downloadable>(fragmentType, this));
             }
         }
         return result;

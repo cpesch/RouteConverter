@@ -31,6 +31,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
@@ -45,6 +46,7 @@ import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
 import static slash.navigation.download.State.*;
 
 public class DownloadManagerIT {
+    private static final Logger log = Logger.getLogger(DownloadManagerIT.class.getName());
     private static final String DOWNLOAD = System.getProperty("download", "http://static.routeconverter.com/test/");
     private static final String LOREM_IPSUM_DOLOR_SIT_AMET = "Lorem ipsum dolor sit amet";
     private static final String EXPECTED = LOREM_IPSUM_DOLOR_SIT_AMET + ", consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
@@ -110,7 +112,7 @@ public class DownloadManagerIT {
 
         TableModelListener l = new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                System.out.println("Expected state: " + expectedState + ", download state: " + download.getState());
+                log.warning("Expected state: " + expectedState + ", download state: " + download.getState());
                 if (expectedState.equals(download.getState())) {
                     synchronized (notificationMutex) {
                         found[0] = true;
@@ -188,7 +190,7 @@ public class DownloadManagerIT {
             assertNotNull(head200.getETag());
             assertNotNull(head200.getLastModified());
             assertNotNull(head200.getContentLength());
-            System.out.println(url + ":\nHEAD 200: " + head200.getHeaders());
+            log.info(url + ":\nHEAD 200: " + head200.getHeaders());
 
             Head head304IfModifiedSince = new Head(url);
             head304IfModifiedSince.setIfModifiedSince(head200.getLastModified());
@@ -198,7 +200,7 @@ public class DownloadManagerIT {
             assertNotNull(head304IfModifiedSince.getETag());
             assertNull(head304IfModifiedSince.getLastModified());
             assertNull(head304IfModifiedSince.getContentLength());
-            System.out.println(head304IfModifiedSince.getHeaders());
+            log.info("Headers: " + head304IfModifiedSince.getHeaders());
 
             Head head304Etag = new Head(url);
             head304Etag.setIfNoneMatch(head200.getETag());
@@ -208,7 +210,7 @@ public class DownloadManagerIT {
             assertNotNull(head304Etag.getETag());
             assertNull(head304Etag.getLastModified());
             assertNull(head304Etag.getContentLength());
-            System.out.println(head304Etag.getHeaders());
+            log.info("Headers: " + head304Etag.getHeaders());
 
             Get get200 = new Get(url);
             get200.executeAsString();
@@ -217,7 +219,7 @@ public class DownloadManagerIT {
             assertNotNull(get200.getETag());
             assertNotNull(get200.getLastModified());
             assertNotNull(get200.getContentLength());
-            System.out.println("GET 200: " + get200.getHeaders());
+            log.info("GET 200: " + get200.getHeaders());
 
             Get get304IfModifiedSince = new Get(url);
             get304IfModifiedSince.setIfModifiedSince(head200.getLastModified());
@@ -227,7 +229,7 @@ public class DownloadManagerIT {
             assertNotNull(get304IfModifiedSince.getETag());
             assertNull(get304IfModifiedSince.getLastModified());
             assertNull(get304IfModifiedSince.getContentLength());
-            System.out.println(get304IfModifiedSince.getHeaders());
+            log.info("Headers: " + get304IfModifiedSince.getHeaders());
 
             Get get304Etag = new Get(url);
             get304Etag.setIfNoneMatch(head200.getETag());
@@ -237,7 +239,7 @@ public class DownloadManagerIT {
             assertNotNull(get304Etag.getETag());
             assertNull(get304Etag.getLastModified());
             assertNull(get304Etag.getContentLength());
-            System.out.println(get304Etag.getHeaders() + "\n");
+            log.info(get304Etag.getHeaders() + "\n");
         }
     }
 

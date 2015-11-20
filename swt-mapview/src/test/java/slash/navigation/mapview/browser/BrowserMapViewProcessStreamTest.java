@@ -21,7 +21,7 @@
 package slash.navigation.mapview.browser;
 
 import org.junit.Test;
-import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
+import slash.navigation.mapview.AbstractMapViewListener;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

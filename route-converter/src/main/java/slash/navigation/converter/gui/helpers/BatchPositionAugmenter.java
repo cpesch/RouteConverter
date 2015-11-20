@@ -82,8 +82,8 @@ public class BatchPositionAugmenter {
 
     private final ExecutorService executor = newSingleThreadExecutor();
     private final ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
-    private final GoogleMapsService googleMapsService = new GoogleMapsService();
     private final GeoNamesService geonamesService = new GeoNamesService();
+    private final GoogleMapsService googleMapsService = new GoogleMapsService();
     private static final Object notificationMutex = new Object();
     private boolean running = true;
 
@@ -229,8 +229,6 @@ public class BatchPositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GoogleMapsService googleMapsService = new GoogleMapsService();
-
                     public String getName() {
                         return "CoordinatesPositionAugmenter";
                     }
@@ -358,8 +356,6 @@ public class BatchPositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GoogleMapsService googleMapsService = new GoogleMapsService();
-
                     public String getName() {
                         return "PostalAddressPositionAugmenter";
                     }

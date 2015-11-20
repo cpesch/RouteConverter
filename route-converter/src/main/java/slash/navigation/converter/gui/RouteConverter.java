@@ -42,6 +42,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -51,9 +52,9 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
-import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
-import slash.navigation.mapview.mapsforge.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallback;
+import slash.navigation.mapview.AbstractMapViewListener;
+import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
 import slash.navigation.routing.RoutingService;
 
@@ -92,6 +93,7 @@ import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
@@ -101,7 +103,7 @@ import static slash.navigation.common.NumberPattern.Number_Space_Then_Descriptio
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.MapViewImpl.*;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.*;
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;
@@ -174,6 +176,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
+    private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
 
     protected JPanel contentPane;
@@ -336,9 +339,9 @@ public class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public synchronized void setMapView(MapViewImpl mapViewImpl) {
-        log.info("Using map view " + mapViewImpl);
-        setMapViewPreference(mapViewImpl);
+    public synchronized void setMapView(MapViewImplementation mapViewImplementation) {
+        log.info("Using map view " + mapViewImplementation);
+        setMapViewPreference(mapViewImplementation);
 
         if (isMapViewAvailable()) {
             mapView.removeMapViewListener(calculatedDistanceNotifier);
@@ -346,7 +349,7 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.dispose();
         }
 
-        mapView = createMapView(mapViewImpl.getClassName());
+        mapView = createMapView(mapViewImplementation.getClassName());
         if (mapView != null) {
             mapView.addMapViewListener(calculatedDistanceNotifier);
         }
@@ -359,7 +362,8 @@ public class RouteConverter extends SingleFrameApplication {
                 preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                 preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
                 preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
-                getUnitSystemModel());
+                getUnitSystemModel(),
+                getGoogleMapsServerModel());
 
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
         Throwable cause = getMapView().getInitializationCause();
@@ -530,6 +534,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public UnitSystemModel getUnitSystemModel() {
         return unitSystemModel;
+    }
+
+    public GoogleMapsServerModel getGoogleMapsServerModel() {
+        return googleMapsServerModel;
     }
 
     public ProfileModeModel getProfileModeModel() {
@@ -787,8 +795,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    public List<MapViewImpl> getAvailableMapViews() {
-        List<MapViewImpl> result = new ArrayList<>();
+    public List<MapViewImplementation> getAvailableMapViews() {
+        List<MapViewImplementation> result = new ArrayList<>();
         if (isJavaFX8()) {
             result.add(JavaFX8);
         } else if (isJavaFX7()) {
@@ -798,10 +806,10 @@ public class RouteConverter extends SingleFrameApplication {
         return result;
     }
 
-    public MapViewImpl getMapViewPreference() {
-        MapViewImpl firstMapView = getAvailableMapViews().get(0);
+    public MapViewImplementation getMapViewPreference() {
+        MapViewImplementation firstMapView = getAvailableMapViews().get(0);
         try {
-            MapViewImpl mapView = MapViewImpl.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, firstMapView.toString()));
+            MapViewImplementation mapView = MapViewImplementation.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, firstMapView.toString()));
             if (getAvailableMapViews().contains(mapView)) {
                 return mapView;
             }
@@ -811,7 +819,7 @@ public class RouteConverter extends SingleFrameApplication {
         return firstMapView;
     }
 
-    public void setMapViewPreference(MapViewImpl mapView) {
+    public void setMapViewPreference(MapViewImplementation mapView) {
         getPreferences().put(MAP_VIEW_PREFERENCE, mapView.name());
     }
 

@@ -18,14 +18,12 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 
 import java.awt.*;
 
@@ -42,7 +40,8 @@ public interface MapView extends PositionsSelectionModel {
                     MapViewCallback mapViewCallback,
                     boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
                     boolean showCoordinates, boolean showWaypointDescription,
-                    UnitSystemModel unitSystemModel);
+                    UnitSystemModel unitSystemModel,
+                    GoogleMapsServerModel googleMapsServerModel);
     boolean isInitialized();
     boolean isDownload();
     boolean isSupportsPrinting();

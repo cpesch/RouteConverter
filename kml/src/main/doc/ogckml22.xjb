@@ -1,4 +1,5 @@
 <jaxb:bindings
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         version="2.0">
     <jaxb:bindings schemaLocation="ogckml22.xsd" node="/xsd:schema">

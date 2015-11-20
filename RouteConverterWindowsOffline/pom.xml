@@ -99,8 +99,8 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-                    <artifactId>launch4j-plugin</artifactId>
+                    <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                    <artifactId>launch4j-maven-plugin</artifactId>
                     <executions>
                         <execution>
                             <phase>package</phase>

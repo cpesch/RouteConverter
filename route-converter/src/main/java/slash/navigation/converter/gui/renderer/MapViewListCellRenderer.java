@@ -23,8 +23,8 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helpers.MapViewImpl;
-import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.mapview.MapView;
 import slash.navigation.gui.Application;
 
 import javax.swing.*;
@@ -39,7 +39,7 @@ import java.awt.*;
 public class MapViewListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        MapViewImpl mapView = MapViewImpl.class.cast(value);
+        MapViewImplementation mapView = MapViewImplementation.class.cast(value);
         String text = RouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase());
         if(!mapView.isDownload())
             text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";

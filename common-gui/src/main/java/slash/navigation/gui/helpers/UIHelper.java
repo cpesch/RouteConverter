@@ -25,7 +25,6 @@ import slash.navigation.gui.SingleFrameApplication;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -47,19 +46,6 @@ public class UIHelper {
     private static final Preferences preferences = userNodeForPackage(UIHelper.class);
     private static final Logger log = getLogger(UIHelper.class.getName());
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
-
-    // for language support which is not defined by a constant in Locale
-    public static final Locale ARABIA = new Locale("ar", "SA");
-    public static final Locale CZECH = new Locale("cs", "CZ");
-    public static final Locale CROATIA = new Locale("hr", "HR");
-    public static final Locale DENMARK = new Locale("da", "DK");
-    public static final Locale NEDERLANDS = new Locale("nl", "NL");
-    public static final Locale POLAND = new Locale("pl", "PL");
-    public static final Locale PORTUGAL = new Locale("pt", "PT");
-    public static final Locale RUSSIA = new Locale("ru", "RU");
-    public static final Locale SERBIA = new Locale("sr", "SR");
-    public static final Locale SLOVAKIA = new Locale("sk", "SK");
-    public static final Locale SPAIN = new Locale("es", "ES");
 
     public static void setLookAndFeel() {
         try {

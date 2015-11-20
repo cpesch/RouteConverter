@@ -29,11 +29,12 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.mapview.mapsforge.AbstractMapViewListener;
-import slash.navigation.mapview.mapsforge.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallback;
-import slash.navigation.mapview.mapsforge.MapViewListener;
 import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.mapview.AbstractMapViewListener;
+import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.tileserver.TileServerService;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
@@ -77,11 +78,11 @@ import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
-import static slash.navigation.mapview.mapsforge.MapViewConstants.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.mapview.MapViewConstants.*;
 
 /**
  * Base implementation for a browser-based map view.
@@ -94,7 +95,6 @@ public abstract class BrowserMapView implements MapView {
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
-    private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "mapServer";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     protected static final String DEBUG_PREFERENCE = "debug";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
@@ -124,6 +124,7 @@ public abstract class BrowserMapView implements MapView {
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
     private UnitSystemModel unitSystemModel;
+    private GoogleMapsServerModel googleMapsServerModel;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     protected MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
@@ -138,10 +139,11 @@ public abstract class BrowserMapView implements MapView {
                            MapViewCallback mapViewCallback,
                            boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
-                           UnitSystemModel unitSystemModel) {
+                           UnitSystemModel unitSystemModel,
+                           GoogleMapsServerModel googleMapsServerModel) {
         this.mapViewCallback = mapViewCallback;
         initializeBrowser();
-        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
+        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel, googleMapsServerModel);
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
@@ -149,6 +151,12 @@ public abstract class BrowserMapView implements MapView {
     }
 
     protected abstract void initializeBrowser();
+    protected abstract void initializeWebPage();
+
+    protected String getGoogleMapsServerUrl() {
+        return googleMapsServerModel.getGoogleMapsServer().getUrl();
+    }
+
 
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
@@ -160,7 +168,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("country"))
                     return country;
                 if (tokenName.equals("mapserver"))
-                    return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
+                    return getGoogleMapsServerUrl();
                 if (tokenName.equals("maptype"))
                     return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
                 if (tokenName.equals("tileservers1"))
@@ -231,10 +239,11 @@ public abstract class BrowserMapView implements MapView {
     protected void setModel(final PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
                             CharacteristicsModel characteristicsModel,
-                            final UnitSystemModel unitSystemModel) {
+                            final UnitSystemModel unitSystemModel, GoogleMapsServerModel googleMapsServerModel) {
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.unitSystemModel = unitSystemModel;
+        this.googleMapsServerModel = googleMapsServerModel;
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -293,6 +302,12 @@ public abstract class BrowserMapView implements MapView {
         unitSystemModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setDegreeFormat();
+            }
+        });
+
+        googleMapsServerModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                initializeWebPage();
             }
         });
 
@@ -882,7 +897,7 @@ public abstract class BrowserMapView implements MapView {
 
     @SuppressWarnings("unchecked")
     public void showAllPositions() {
-        setCenterOfMap(new ArrayList<NavigationPosition>(positionsModel.getRoute().getPositions()), true);
+        setCenterOfMap(new ArrayList<>(positionsModel.getRoute().getPositions()), true);
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {

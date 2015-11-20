@@ -18,15 +18,25 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.googlemaps.GoogleMapsServer;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Interface for events from a {@link MapView}
+ * Renders the {@link GoogleMapsServer} labels of the language combo box.
  *
  * @author Christian Pesch
  */
 
-public interface MapViewListener {
-    void calculatedDistance(double meters, long seconds);
-    void receivedCallback(int port);
+public class GoogleMapsServerListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
+        GoogleMapsServer googleMapsServer = GoogleMapsServer.class.cast(value);
+
+        label.setText(googleMapsServer.name() + " (" + googleMapsServer.getUrl() + ")");
+        return label;
+    }
 }

@@ -20,7 +20,7 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
-import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
