@@ -77,7 +77,7 @@ public class EclipseSWTMapView extends BrowserMapView {
             browser.setBarsVisible(false);
             browser.setJavascriptEnabled(true);
 
-            webBrowser.addWebBrowserListener(new WebBrowserListener() {
+            browser.addWebBrowserListener(new WebBrowserListener() {
                 public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
                     log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
                 }
