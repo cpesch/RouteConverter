@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview;
 
 /**
  * A {@link MapViewListener} that does nothing.

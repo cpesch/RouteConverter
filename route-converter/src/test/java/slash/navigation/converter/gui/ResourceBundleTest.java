@@ -29,7 +29,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.gui.helpers.UIHelper.*;
+import static slash.common.helpers.LocaleHelper.*;
 
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());

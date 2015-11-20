@@ -48,11 +48,16 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
+import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.MapViewConstants;
+import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
@@ -144,7 +149,8 @@ public class MapsforgeMapView implements MapView {
                            MapViewCallback mapViewCallback,
                            boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
                            boolean showCoordinates, boolean showWaypointDescription,
-                           UnitSystemModel unitSystemModel) {
+                           UnitSystemModel unitSystemModel,
+                           GoogleMapsServerModel googleMapsServerModel) {
         this.mapViewCallback = (MapViewCallbackOffline)mapViewCallback;
         setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         initializeActions();

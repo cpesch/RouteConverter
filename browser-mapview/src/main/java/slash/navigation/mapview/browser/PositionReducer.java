@@ -23,7 +23,7 @@ package slash.navigation.mapview.browser;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.MapView;
 
 import java.util.ArrayList;
 import java.util.HashMap;

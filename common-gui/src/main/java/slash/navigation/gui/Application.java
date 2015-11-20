@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.util.Locale.ROOT;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
@@ -83,7 +84,7 @@ public abstract class Application {
     }
 
     public void setLocale(Locale locale) {
-        if (!Locale.ROOT.equals(locale)) {
+        if (!ROOT.equals(locale)) {
             preferences.put(PREFERRED_LANGUAGE_PREFERENCE, locale.getLanguage());
             preferences.put(PREFERRED_COUNTRY_PREFERENCE, locale.getCountry());
         } else {

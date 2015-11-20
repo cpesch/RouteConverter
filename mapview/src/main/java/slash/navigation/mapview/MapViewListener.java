@@ -18,24 +18,15 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview.mapsforge;
-
-import slash.navigation.maps.MapManager;
-import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.MapViewCallback;
+package slash.navigation.mapview;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services including offline.
+ * Interface for events from a {@link MapView}
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallbackOffline extends MapViewCallback {
-    MapManager getMapManager();
-
-    void showDownloadNotification();
-    void showProcessNotification();
-
-    void showRoutingException(Exception e);
-    void showMapException(String mapName, Exception e);
+public interface MapViewListener {
+    void calculatedDistance(double meters, long seconds);
+    void receivedCallback(int port);
 }

@@ -23,7 +23,7 @@ import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.MapViewImpl;
+import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
@@ -31,7 +31,7 @@ import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
-import slash.navigation.mapview.mapsforge.MapView;
+import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.routing.BeelineService;
@@ -47,7 +47,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.converter.gui.helpers.MapViewImpl.Mapsforge;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.Mapsforge;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
@@ -70,7 +70,7 @@ public class RouteConverterOffline extends RouteConverter {
         return "Offline";
     }
 
-    public List<MapViewImpl> getAvailableMapViews() {
+    public List<MapViewImplementation> getAvailableMapViews() {
         return singletonList(Mapsforge);
     }
 

@@ -76,6 +76,60 @@ public class EclipseSWTMapView extends BrowserMapView {
             }
             browser.setBarsVisible(false);
             browser.setJavascriptEnabled(true);
+
+            webBrowser.addWebBrowserListener(new WebBrowserListener() {
+                public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
+                    log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
+                }
+
+                public void windowOpening(WebBrowserWindowOpeningEvent e) {
+                    log.fine("WebBrowser windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
+                }
+
+                public void windowClosing(WebBrowserEvent e) {
+                    log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
+                }
+
+                public void locationChanging(WebBrowserNavigationEvent e) {
+                    log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                }
+
+                public void locationChanged(WebBrowserNavigationEvent e) {
+                    log.fine("WebBrowser locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                }
+
+                public void locationChangeCanceled(WebBrowserNavigationEvent e) {
+                    log.fine("WebBrowser locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                }
+
+                private int startCount = 0;
+
+                public void loadingProgressChanged(WebBrowserEvent e) {
+                    log.fine("WebBrowser loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
+
+                    if (e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
+                        // get out of the listener callback
+                        new Thread(new Runnable() {
+                            public void run() {
+                                tryToInitialize(startCount++, currentTimeMillis());
+                            }
+                        }, "MapViewInitializer").start();
+                    }
+                }
+
+                public void titleChanged(WebBrowserEvent e) {
+                    log.fine("WebBrowser titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
+                }
+
+                public void statusChanged(WebBrowserEvent e) {
+                    log.fine("WebBrowser statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
+                }
+
+                public void commandReceived(WebBrowserCommandEvent e) {
+                    // log.fine("WebBrowser commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
+                }
+            });
+
             return browser;
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t);
@@ -106,60 +160,11 @@ public class EclipseSWTMapView extends BrowserMapView {
             return;
 
         log.info("Using Eclipse SWT Browser to create map view");
+        initializeWebPage();
+    }
 
-        webBrowser.addWebBrowserListener(new WebBrowserListener() {
-            public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
-                log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
-            }
-
-            public void windowOpening(WebBrowserWindowOpeningEvent e) {
-                log.fine("WebBrowser windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
-            }
-
-            public void windowClosing(WebBrowserEvent e) {
-                log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
-            }
-
-            public void locationChanging(WebBrowserNavigationEvent e) {
-                log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
-            }
-
-            public void locationChanged(WebBrowserNavigationEvent e) {
-                log.fine("WebBrowser locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
-            }
-
-            public void locationChangeCanceled(WebBrowserNavigationEvent e) {
-                log.fine("WebBrowser locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
-            }
-
-            private int startCount = 0;
-
-            public void loadingProgressChanged(WebBrowserEvent e) {
-                log.fine("WebBrowser loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
-
-                if (e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
-                    // get out of the listener callback
-                    new Thread(new Runnable() {
-                        public void run() {
-                            tryToInitialize(startCount++, currentTimeMillis());
-                        }
-                    }, "MapViewInitializer").start();
-                }
-            }
-
-            public void titleChanged(WebBrowserEvent e) {
-                log.fine("WebBrowser titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
-            }
-
-            public void statusChanged(WebBrowserEvent e) {
-                log.fine("WebBrowser statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
-            }
-
-            public void commandReceived(WebBrowserCommandEvent e) {
-                // log.fine("WebBrowser commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
-            }
-        });
-
+    protected void initializeWebPage() {
+        log.info("Loading Google Maps API from " + getGoogleMapsServerUrl());
         if (!loadWebPage())
             dispose();
     }

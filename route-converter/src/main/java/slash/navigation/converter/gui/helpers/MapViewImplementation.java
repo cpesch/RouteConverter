@@ -28,16 +28,16 @@ package slash.navigation.converter.gui.helpers;
  * @author Christian Pesch
  */
 
-public enum MapViewImpl {
+public enum MapViewImplementation {
     JavaFX7("slash.navigation.mapview.browser.JavaFX7WebViewMapView", false),
     JavaFX8("slash.navigation.mapview.browser.JavaFX8WebViewMapView", false),
     EclipseSWT("slash.navigation.mapview.browser.EclipseSWTMapView", false),
     Mapsforge("slash.navigation.mapview.mapsforge.MapsforgeMapView", true);
 
-    private String className;
-    private boolean download;
+    private final String className;
+    private final boolean download;
 
-    MapViewImpl(String className, boolean download) {
+    MapViewImplementation(String className, boolean download) {
         this.className = className;
         this.download = download;
     }
