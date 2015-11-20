@@ -27,8 +27,6 @@ import slash.navigation.googlemaps.GoogleMapsServer;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
-import static slash.navigation.googlemaps.GoogleMapsServer.International;
-
 /**
  * A model for {@link GoogleMapsServer}.
  *
@@ -39,11 +37,7 @@ public class GoogleMapsServerModel {
     private EventListenerList listenerList = new EventListenerList();
 
     public GoogleMapsServer getGoogleMapsServer() {
-        try {
-            return GoogleMapsServer.getGoogleMapsServer();
-        } catch (IllegalArgumentException e) {
-            return International;
-        }
+        return GoogleMapsServer.getGoogleMapsServer();
     }
 
     public void setGoogleMapsServer(GoogleMapsServer googleMapsServer) {

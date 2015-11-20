@@ -30,7 +30,6 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -142,8 +141,9 @@ public abstract class BrowserMapView implements MapView {
                            UnitSystemModel unitSystemModel,
                            GoogleMapsServerModel googleMapsServerModel) {
         this.mapViewCallback = mapViewCallback;
+        this.googleMapsServerModel = googleMapsServerModel;
         initializeBrowser();
-        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel, googleMapsServerModel);
+        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
@@ -170,7 +170,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("mapserver"))
                     return getGoogleMapsServerUrl();
                 if (tokenName.equals("maptype"))
-                    return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
+                    return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(true);
                 if (tokenName.equals("tileservers2"))
@@ -239,11 +239,10 @@ public abstract class BrowserMapView implements MapView {
     protected void setModel(final PositionsModel positionsModel,
                             PositionsSelectionModel positionsSelectionModel,
                             CharacteristicsModel characteristicsModel,
-                            final UnitSystemModel unitSystemModel, GoogleMapsServerModel googleMapsServerModel) {
+                            final UnitSystemModel unitSystemModel) {
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.unitSystemModel = unitSystemModel;
-        this.googleMapsServerModel = googleMapsServerModel;
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
