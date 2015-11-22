@@ -60,7 +60,8 @@ public class TokenReplacingReader extends Reader {
         }
 
         int data = pushbackReader.read();
-        if (data != '$') return data;
+        if (data != '$')
+            return data;
 
         data = pushbackReader.read();
         if (data != '{') {
@@ -76,14 +77,14 @@ public class TokenReplacingReader extends Reader {
         }
 
         tokenValue = tokenResolver.resolveToken(tokenNameBuffer.toString());
-        if (tokenValue == null) {
+        if (tokenValue == null)
             tokenValue = "${" + tokenNameBuffer.toString() + "}";
-        }
-        return tokenValue.charAt(tokenValueIndex++);
-    }
 
-    public int read(char cbuf[]) throws IOException {
-        return read(cbuf, 0, cbuf.length);
+        // token replaces to empty string
+        else if (tokenValueIndex >= tokenValue.length())
+            tokenValue = " ";
+
+        return tokenValue.charAt(tokenValueIndex++);
     }
 
     public int read(char cbuf[], int off, int len) throws IOException {
