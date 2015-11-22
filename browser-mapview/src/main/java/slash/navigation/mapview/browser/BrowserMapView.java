@@ -893,9 +893,9 @@ public abstract class BrowserMapView implements MapView {
         executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "Convert2Diamond"})
     public void showAllPositions() {
-        setCenterOfMap(new ArrayList<>(positionsModel.getRoute().getPositions()), true);
+        setCenterOfMap(new ArrayList<NavigationPosition>(positionsModel.getRoute().getPositions()), true);
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
