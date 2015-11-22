@@ -150,7 +150,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
     private boolean loadWebPage() {
         try {
-            final String url = prepareWebPage();
+            String url = prepareWebPage();
             webView.getEngine().load(url);
             return true;
         } catch (Throwable t) {
