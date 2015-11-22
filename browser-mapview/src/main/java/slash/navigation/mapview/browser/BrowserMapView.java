@@ -161,6 +161,7 @@ public abstract class BrowserMapView implements MapView {
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
         final String country = Locale.getDefault().getCountry().toLowerCase();
+        final TileServerService tileServerService = loadAllTileServers(mapViewCallback.getTileServersDirectory());
         File html = extractFile(RESOURCES_PACKAGE + "routeconverter.html", country, new TokenResolver() {
             public String resolveToken(String tokenName) {
                 if (tokenName.equals("language"))
@@ -172,9 +173,9 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("maptype"))
                     return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
                 if (tokenName.equals("tileservers1"))
-                    return registerTileServers(true);
+                    return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
-                    return registerTileServers(false);
+                    return registerTileServers(tileServerService, false);
                 return tokenName;
             }
         });
@@ -692,7 +693,7 @@ public abstract class BrowserMapView implements MapView {
         return result;
     }
 
-    private String registerTileServers(boolean register) {
+    private String registerTileServers(TileServerService tileServerService, boolean register) {
         StringBuilder buffer = new StringBuilder();
 
         if (register) {
@@ -701,9 +702,7 @@ public abstract class BrowserMapView implements MapView {
                         append("mapCopyrights[google.maps.MapTypeId.").append(tileServerId).append("] = \"Google\";\n");
         }
 
-        File tileServersDirectory = mapViewCallback.getTileServersDirectory();
-        TileServerService service = loadAllTileServers(tileServersDirectory);
-        for (TileServerType tileServer : service.getTileServers()) {
+        for (TileServerType tileServer : tileServerService.getTileServers()) {
             if (tileServer.isActive() != null && !tileServer.isActive())
                 continue;
 

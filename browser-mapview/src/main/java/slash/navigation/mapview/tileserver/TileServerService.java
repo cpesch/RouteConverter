@@ -25,7 +25,9 @@ import slash.navigation.mapview.tileserver.binding.TileServerType;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Encapsulates access to a TileServer XML.
@@ -34,15 +36,15 @@ import java.util.List;
  */
 
 public class TileServerService {
-    private final List<TileServerType> tileServers = new ArrayList<>(1);
+    private final Map<String, TileServerType> tileServers = new LinkedHashMap<>();
 
     public synchronized void load(InputStream inputStream) throws JAXBException {
         CatalogType catalogType = TileServerUtil.unmarshal(inputStream);
         for (TileServerType tileServerType : catalogType.getTileServer())
-            tileServers.add(tileServerType);
+            tileServers.put(tileServerType.getId(), tileServerType);
     }
 
     public List<TileServerType> getTileServers() {
-        return tileServers;
+        return new ArrayList<>(tileServers.values());
     }
 }
