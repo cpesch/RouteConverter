@@ -518,6 +518,15 @@
        }
    }
 
+   var openStreetMapServerIndex = 0;
+
+   function getOpenStreetMapServerIndex() {
+       openStreetMapServerIndex++;
+       if (openStreetMapServerIndex > 2)
+           openStreetMapServerIndex = 0;
+       return String.fromCharCode(openStreetMapServerIndex + 65);
+   }
+
    var outdoorActiveServerIndex = 0;
 
    function getOutdoorActiveServerIndex() {
@@ -527,13 +536,13 @@
        return outdoorActiveServerIndex;
    }
 
-   var openStreetMapServerIndex = 0;
+   var wanderReitServerIndex = 1;
 
-   function getOpenStreetMapServerIndex() {
-       openStreetMapServerIndex++;
-       if (openStreetMapServerIndex > 2)
-           openStreetMapServerIndex = 0;
-       return String.fromCharCode(openStreetMapServerIndex + 65);
+   function getWanderReitServerIndex() {
+       wanderReitServerIndex++;
+       if (wanderReitServerIndex > 7)
+           wanderReitServerIndex = 2;
+       return wanderReitServerIndex;
    }
 
    var initialized, map, latLngControl, directionsService, xmlhttp;
