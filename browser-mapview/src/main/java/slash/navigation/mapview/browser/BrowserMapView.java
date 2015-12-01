@@ -828,7 +828,7 @@ public abstract class BrowserMapView implements MapView {
     }
 
     protected void setShowCoordinates() {
-        executeScript("setShowCoordinates(" + showCoordinates + ");");
+        executeScript("setShowCoordinates(" + showCoordinates.getBoolean() + ");");
     }
 
     protected void setDegreeFormat() {
