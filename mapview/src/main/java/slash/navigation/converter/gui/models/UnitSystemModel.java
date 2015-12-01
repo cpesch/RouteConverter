@@ -83,4 +83,8 @@ public class UnitSystemModel {
     public void addChangeListener(ChangeListener l) {
         listenerList.add(ChangeListener.class, l);
     }
+
+    public void removeChangeListener(ChangeListener l) {
+        listenerList.remove(ChangeListener.class, l);
+    }
 }

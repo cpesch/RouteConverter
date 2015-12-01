@@ -46,4 +46,5 @@ public interface MapViewCallback {
     File getTileServersDirectory();
 
     void addChangeListener(ChangeListener l);
+    void removeChangeListener(ChangeListener l);
 }

@@ -22,26 +22,35 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.googlemaps.GoogleMapsServer;
-
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import java.util.prefs.Preferences;
 
 /**
- * A model for {@link GoogleMapsServer}.
+ * A model for {@link Boolean}.
  *
  * @author Christian Pesch
  */
 
-public class GoogleMapsServerModel {
+public class BooleanModel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(BooleanModel.class);
+
+    private final String preferencesName;
+    private final boolean defaultValue;
+
     private EventListenerList listenerList = new EventListenerList();
 
-    public GoogleMapsServer getGoogleMapsServer() {
-        return GoogleMapsServer.getGoogleMapsServer();
+    public BooleanModel(String preferencesName, boolean defaultValue) {
+        this.preferencesName = preferencesName;
+        this.defaultValue = defaultValue;
     }
 
-    public void setGoogleMapsServer(GoogleMapsServer googleMapsServer) {
-        GoogleMapsServer.setGoogleMapsServer(googleMapsServer);
+    public boolean getBoolean() {
+        return preferences.getBoolean(preferencesName, defaultValue);
+    }
+
+    public void setBoolean(boolean booleanValue) {
+        preferences.putBoolean(preferencesName, booleanValue);
         fireChanged();
     }
 

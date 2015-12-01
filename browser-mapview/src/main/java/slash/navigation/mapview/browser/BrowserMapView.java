@@ -82,6 +82,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.*;
+import static slash.navigation.mapview.browser.TransformUtil.delta;
 
 /**
  * Base implementation for a browser-based map view.
@@ -108,6 +109,7 @@ public abstract class BrowserMapView implements MapView {
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
+    private CharacteristicsModel characteristicsModel;
     private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
     private int lastZoom = -1;
@@ -117,13 +119,28 @@ public abstract class BrowserMapView implements MapView {
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean showAllPositionsAfterLoading, recenterAfterZooming, showCoordinates, showWaypointDescription,
-            running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
+    private boolean running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
+
+    private BooleanModel showAllPositionsAfterLoading;
+    private BooleanModel recenterAfterZooming;
+    private BooleanModel showCoordinates;
+    private BooleanModel showWaypointDescription;
+    private BooleanModel fixMapForChina;
     private UnitSystemModel unitSystemModel;
     private GoogleMapsServerModel googleMapsServerModel;
+
+    private PositionsModelListener positionsModelListener = new PositionsModelListener();
+    private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
+    private MapViewCallbackListener mapViewCallbackListener = new MapViewCallbackListener();
+    private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
+    private ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
+    private FixMapForChinaListener fixMapForChinaListener = new FixMapForChinaListener();
+    private UnitSystemListener unitSystemListener = new UnitSystemListener();
+    private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
+
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     protected MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
@@ -136,18 +153,50 @@ public abstract class BrowserMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
-                           boolean showCoordinates, boolean showWaypointDescription,
+                           BooleanModel showAllPositionsAfterLoading,
+                           BooleanModel recenterAfterZooming,
+                           BooleanModel showCoordinates,
+                           BooleanModel showWaypointDescription,
+                           BooleanModel fixMapForChina,
                            UnitSystemModel unitSystemModel,
                            GoogleMapsServerModel googleMapsServerModel) {
+        this.positionsModel = positionsModel;
+        this.positionsSelectionModel = positionsSelectionModel;
+        this.characteristicsModel = characteristicsModel;
         this.mapViewCallback = mapViewCallback;
-        this.googleMapsServerModel = googleMapsServerModel;
-        initializeBrowser();
-        setModel(positionsModel, positionsSelectionModel, characteristicsModel, unitSystemModel);
+        this.mapViewCallback = mapViewCallback;
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
+        this.fixMapForChina = fixMapForChina;
+        this.unitSystemModel = unitSystemModel;
+        this.googleMapsServerModel = googleMapsServerModel;
+
+        initializeBrowser();
+
+        positionsModel.addTableModelListener(positionsModelListener);
+        characteristicsModel.addListDataListener(characteristicsModelListener);
+        mapViewCallback.addChangeListener(mapViewCallbackListener);
+        showCoordinates.addChangeListener(showCoordinatesListener);
+        showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
+        fixMapForChina.addChangeListener(fixMapForChinaListener);
+        unitSystemModel.addChangeListener(unitSystemListener);
+        googleMapsServerModel.addChangeListener(googleMapsServerListener);
+
+        positionReducer = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() {
+                return BrowserMapView.this.getZoom();
+            }
+
+            public NavigationPosition getNorthEastBounds() {
+                return BrowserMapView.this.getNorthEastBounds();
+            }
+
+            public NavigationPosition getSouthWestBounds() {
+                return BrowserMapView.this.getSouthWestBounds();
+            }
+        });
     }
 
     protected abstract void initializeBrowser();
@@ -156,7 +205,6 @@ public abstract class BrowserMapView implements MapView {
     protected String getGoogleMapsServerUrl() {
         return googleMapsServerModel.getGoogleMapsServer().getUrl();
     }
-
 
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
@@ -235,102 +283,6 @@ public abstract class BrowserMapView implements MapView {
     protected void initializeAfterLoading() {
         resize();
         update(true, false);
-    }
-
-    protected void setModel(final PositionsModel positionsModel,
-                            PositionsSelectionModel positionsSelectionModel,
-                            CharacteristicsModel characteristicsModel,
-                            final UnitSystemModel unitSystemModel) {
-        this.positionsModel = positionsModel;
-        this.positionsSelectionModel = positionsSelectionModel;
-        this.unitSystemModel = unitSystemModel;
-
-        positionsModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
-                boolean allRowsChanged = isFirstToLastRow(e);
-                // used to be limited to single rows which did work reliably but with usability problems
-                // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
-                if (!allRowsChanged && insertOrDelete)
-                    updateRouteButDontRecenter();
-                else {
-                    // ignored updates on columns not displayed
-                    if (e.getType() == UPDATE &&
-                            !(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
-                                    e.getColumn() == LONGITUDE_COLUMN_INDEX ||
-                                    e.getColumn() == LATITUDE_COLUMN_INDEX ||
-                                    e.getColumn() == ALL_COLUMNS))
-                        return;
-
-                    if (showAllPositionsAfterLoading)
-                        update(allRowsChanged, true);
-                    else
-                        updateRouteButDontRecenter();
-                }
-
-                // update position marker on updates of longitude and latitude
-                if (e.getType() == UPDATE &&
-                        (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
-                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
-                                e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
-                                e.getColumn() == ALL_COLUMNS)) {
-                    for (int selectedPositionIndex : selectedPositionIndices) {
-                        if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
-                            updateSelection();
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-
-        characteristicsModel.addListDataListener(new ListDataListener() {
-            public void intervalAdded(ListDataEvent e) {
-            }
-
-            public void intervalRemoved(ListDataEvent e) {
-            }
-
-            public void contentsChanged(ListDataEvent e) {
-                // ignore events following setRoute()
-                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
-                    return;
-                updateRouteButDontRecenter();
-            }
-        });
-
-        unitSystemModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                setDegreeFormat();
-            }
-        });
-
-        googleMapsServerModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                initializeWebPage();
-            }
-        });
-
-        mapViewCallback.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                    update(false, false);
-            }
-        });
-
-        positionReducer = new PositionReducer(new PositionReducer.Callback() {
-            public int getZoom() {
-                return BrowserMapView.this.getZoom();
-            }
-
-            public NavigationPosition getNorthEastBounds() {
-                return BrowserMapView.this.getNorthEastBounds();
-            }
-
-            public NavigationPosition getSouthWestBounds() {
-                return BrowserMapView.this.getSouthWestBounds();
-            }
-        });
     }
 
     private Throwable initializationCause = null;
@@ -431,7 +383,7 @@ public abstract class BrowserMapView implements MapView {
 
                     setCenterOfMap(copiedPositions, recenter);
                     RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
-                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, showWaypointDescription);
+                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, showWaypointDescription.getBoolean());
                     switch (characteristics) {
                         case Route:
                             addDirectionsToMap(render);
@@ -768,6 +720,15 @@ public abstract class BrowserMapView implements MapView {
     // disposal
 
     public void dispose() {
+        positionsModel.removeTableModelListener(positionsModelListener);
+        characteristicsModel.removeListDataListener(characteristicsModelListener);
+        mapViewCallback.removeChangeListener(mapViewCallbackListener);
+        showCoordinates.removeChangeListener(showCoordinatesListener);
+        showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
+        fixMapForChina.removeChangeListener(fixMapForChinaListener);
+        unitSystemModel.removeChangeListener(unitSystemListener);
+        googleMapsServerModel.removeChangeListener(googleMapsServerListener);
+
         long start = currentTimeMillis();
         synchronized (notificationMutex) {
             running = false;
@@ -866,25 +827,6 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
-        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
-    }
-
-    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
-        this.recenterAfterZooming = recenterAfterZooming;
-    }
-
-    public void setShowCoordinates(boolean showCoordinates) {
-        this.showCoordinates = showCoordinates;
-        setShowCoordinates();
-    }
-
-    public void setShowWaypointDescription(boolean showWaypointDescription) {
-        this.showWaypointDescription = showWaypointDescription;
-        if (positionsModel.getRoute().getCharacteristics().equals(Waypoints))
-            update(false, false);
-    }
-
     protected void setShowCoordinates() {
         executeScript("setShowCoordinates(" + showCoordinates + ");");
     }
@@ -935,8 +877,8 @@ public abstract class BrowserMapView implements MapView {
         return new SimpleNavigationPosition(longitude, latitude);
     }
 
-    protected NavigationPosition extractLatLng(String script) {
-        String result = executeScriptWithResult(script);
+    protected NavigationPosition parsePosition(String latLngString) {
+        String result = executeScriptWithResult(latLngString);
         if (result == null)
             return null;
 
@@ -946,7 +888,31 @@ public abstract class BrowserMapView implements MapView {
 
         String latitude = tokenizer.nextToken();
         String longitude = tokenizer.nextToken();
-        return new SimpleNavigationPosition(parseDouble(longitude), parseDouble(latitude));
+        return parsePosition(latitude, longitude);
+    }
+
+    // WGS/GCJ conversion
+
+    private NavigationPosition parsePosition(String latitudeString, String longitudeString) {
+        Double latitude = parseDouble(latitudeString);
+        Double longitude = parseDouble(longitudeString);
+        if (latitude != null && longitude != null && fixMapForChina.getBoolean()) {
+            double[] delta = delta(latitude, longitude);
+            latitude -= delta[0];
+            longitude -= delta[1];
+        }
+        return new SimpleNavigationPosition(longitude, latitude);
+    }
+
+    private String asCoordinates(NavigationPosition position) {
+        double latitude = position.getLatitude();
+        double longitude = position.getLongitude();
+        if (fixMapForChina.getBoolean()) {
+            double[] delta = delta(latitude, longitude);
+            latitude += delta[0];
+            longitude += delta[1];
+        }
+        return latitude + "," + longitude;
     }
 
     // draw on map
@@ -1013,18 +979,15 @@ public abstract class BrowserMapView implements MapView {
             int end = min(positions.size(), (j + 1) * maximumRouteSegmentLength) - 1;
             for (int i = start + 1; i < end; i++) {
                 NavigationPosition position = positions.get(i);
-                waypoints.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append(")}");
+                waypoints.append("{location: new google.maps.LatLng(").append(asCoordinates(position)).append(")}");
                 if (i < end - 1)
                     waypoints.append(",");
             }
             NavigationPosition origin = positions.get(start);
             NavigationPosition destination = positions.get(end);
             StringBuilder buffer = new StringBuilder();
-            buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).
-                    append(",").append(origin.getLongitude()).append("),");
-            buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
-                    append(",").append(destination.getLongitude()).append("),");
+            buffer.append("renderDirections({origin: new google.maps.LatLng(").append(asCoordinates(origin)).append("),");
+            buffer.append("destination: new google.maps.LatLng(").append(asCoordinates(destination)).append("),");
             buffer.append("waypoints: [").append(waypoints).append("],").
                     append("travelMode: google.maps.DirectionsTravelMode.").append(mapViewCallback.getTravelMode().getName().toUpperCase()).append(",");
             buffer.append("avoidFerries: ").append(mapViewCallback.isAvoidFerries()).append(",");
@@ -1061,8 +1024,7 @@ public abstract class BrowserMapView implements MapView {
             int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength);
             for (int i = minimum; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
-                latlngs.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append(")");
+                latlngs.append("new google.maps.LatLng(").append(asCoordinates(position)).append(")");
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
@@ -1079,10 +1041,9 @@ public abstract class BrowserMapView implements MapView {
             int maximum = min(positions.size(), (j + 1) * maximumMarkerSegmentLength);
             for (int i = j * maximumMarkerSegmentLength; i < maximum; i++) {
                 NavigationPosition position = positions.get(i);
-                buffer.append("addMarker(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append(",").
+                buffer.append("addMarker(new google.maps.LatLng(").append(asCoordinates(position)).append("),").
                         append("\"").append(escape(position.getDescription())).append("\",").
-                        append(showWaypointDescription).append(");\n");
+                        append(showWaypointDescription.getBoolean()).append(");\n");
             }
             executeScript(buffer.toString());
         }
@@ -1095,10 +1056,8 @@ public abstract class BrowserMapView implements MapView {
         boolean fitBoundsToPositions = positions.size() > 0 && recenter;
         if (fitBoundsToPositions) {
             BoundingBox boundingBox = new BoundingBox(positions);
-            buffer.append("fitBounds(").append(boundingBox.getSouthWest().getLatitude()).append(",").
-                    append(boundingBox.getSouthWest().getLongitude()).append(",").
-                    append(boundingBox.getNorthEast().getLatitude()).append(",").
-                    append(boundingBox.getNorthEast().getLongitude()).append(");\n");
+            buffer.append("fitBounds(new google.maps.LatLng(").append(asCoordinates(boundingBox.getSouthWest())).append("),").
+                    append("new google.maps.LatLng(").append(asCoordinates(boundingBox.getNorthEast())).append("));\n");
             ignoreNextZoomCallback = true;
         }
 
@@ -1112,7 +1071,7 @@ public abstract class BrowserMapView implements MapView {
                 buffer.append("setZoom(").append(zoom).append(");\n");
                 center = getLastMapCenter();
             }
-            buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
+            buffer.append("setCenter(new google.maps.LatLng(").append(asCoordinates(center)).append("));\n");
         }
         executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
@@ -1131,14 +1090,13 @@ public abstract class BrowserMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
             NavigationPosition selectedPosition = selectedPositions.get(i);
-            buffer.append("selectPosition(").append(selectedPosition.getLatitude()).append(",").
-                    append(selectedPosition.getLongitude()).append(",").
+            buffer.append("selectPosition(new google.maps.LatLng(").append(asCoordinates(selectedPosition)).append("),").
                     append("\"").append(escape(selectedPosition.getDescription())).append("\",").
                     append(i).append(");\n");
         }
 
         if (center != null && center.hasCoordinates())
-            buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
+            buffer.append("panTo(new google.maps.LatLng(").append(asCoordinates(center)).append("));\n");
         buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
     }
@@ -1170,8 +1128,8 @@ public abstract class BrowserMapView implements MapView {
                     NavigationPosition origin = entry.getValue().getFirst();
                     NavigationPosition destination = entry.getValue().getSecond();
                     executeScript(mode +
-                            "({" + "origin: new google.maps.LatLng(" + origin.getLatitude() + "," + origin.getLongitude() + ")," +
-                            "destination: new google.maps.LatLng(" + destination.getLatitude() + "," + destination.getLongitude() + ")," +
+                            "({" + "origin: new google.maps.LatLng(" + asCoordinates(origin) + ")," +
+                            "destination: new google.maps.LatLng(" + asCoordinates(destination) + ")," +
                             "travelMode: google.maps.DirectionsTravelMode." + mapViewCallback.getTravelMode().getName().toUpperCase() + "," +
                             "avoidFerries: " + mapViewCallback.isAvoidFerries() + "," +
                             "avoidHighways: " + mapViewCallback.isAvoidHighways() + "," +
@@ -1347,11 +1305,10 @@ public abstract class BrowserMapView implements MapView {
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
         if (insertPositionMatcher.matches()) {
             final int row = parseInt(insertPositionMatcher.group(1)) + 1;
-            final Double latitude = parseDouble(insertPositionMatcher.group(2));
-            final Double longitude = parseDouble(insertPositionMatcher.group(3));
+            final NavigationPosition position = parsePosition(insertPositionMatcher.group(2), insertPositionMatcher.group(3));
             invokeLater(new Runnable() {
                 public void run() {
-                    insertPosition(row, longitude, latitude);
+                    insertPosition(row, position.getLongitude(), position.getLatitude());
                 }
             });
             return true;
@@ -1360,11 +1317,10 @@ public abstract class BrowserMapView implements MapView {
         Matcher addPositionMatcher = ADD_POSITION_PATTERN.matcher(callback);
         if (addPositionMatcher.matches()) {
             final int row = getAddRow();
-            final Double latitude = parseDouble(addPositionMatcher.group(1));
-            final Double longitude = parseDouble(addPositionMatcher.group(2));
+            final NavigationPosition position = parsePosition(addPositionMatcher.group(1), addPositionMatcher.group(2));
             invokeLater(new Runnable() {
                 public void run() {
-                    insertPosition(row, longitude, latitude);
+                    insertPosition(row, position.getLongitude(), position.getLatitude());
                 }
             });
             return true;
@@ -1373,11 +1329,10 @@ public abstract class BrowserMapView implements MapView {
         Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(callback);
         if (movePositionMatcher.matches()) {
             final int row = getMoveRow(parseInt(movePositionMatcher.group(1)));
-            final Double latitude = parseDouble(movePositionMatcher.group(2));
-            final Double longitude = parseDouble(movePositionMatcher.group(3));
+            final NavigationPosition position = parsePosition(movePositionMatcher.group(2), movePositionMatcher.group(3));
             invokeLater(new Runnable() {
                 public void run() {
-                    movePosition(row, longitude, latitude);
+                    movePosition(row, position.getLongitude(), position.getLatitude());
                 }
             });
             return true;
@@ -1385,12 +1340,11 @@ public abstract class BrowserMapView implements MapView {
 
         Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
         if (removePositionMatcher.matches()) {
-            final Double latitude = parseDouble(removePositionMatcher.group(1));
-            final Double longitude = parseDouble(removePositionMatcher.group(2));
+            final NavigationPosition position = parsePosition(removePositionMatcher.group(1), removePositionMatcher.group(2));
             final Double threshold = parseDouble(removePositionMatcher.group(3));
             invokeLater(new Runnable() {
                 public void run() {
-                    removePosition(longitude, latitude, threshold);
+                    removePosition(position.getLongitude(), position.getLatitude(), threshold);
                 }
             });
             return true;
@@ -1398,13 +1352,12 @@ public abstract class BrowserMapView implements MapView {
 
         Matcher selectPositionMatcher = SELECT_POSITION_PATTERN.matcher(callback);
         if (selectPositionMatcher.matches()) {
-            final Double latitude = parseDouble(selectPositionMatcher.group(1));
-            final Double longitude = parseDouble(selectPositionMatcher.group(2));
+            final NavigationPosition position = parsePosition(selectPositionMatcher.group(1), selectPositionMatcher.group(2));
             final Double threshold = parseDouble(selectPositionMatcher.group(3));
             final Boolean replaceSelection = parseBoolean(selectPositionMatcher.group(4));
             invokeLater(new Runnable() {
                 public void run() {
-                    selectPosition(longitude, latitude, threshold, replaceSelection);
+                    selectPosition(position.getLongitude(), position.getLatitude(), threshold, replaceSelection);
                 }
             });
             return true;
@@ -1412,11 +1365,9 @@ public abstract class BrowserMapView implements MapView {
 
         Matcher selectPositionsMatcher = SELECT_POSITIONS_PATTERN.matcher(callback);
         if (selectPositionsMatcher.matches()) {
-            Double latitudeNorthEast = parseDouble(selectPositionsMatcher.group(1));
-            Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
-            Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
-            Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
-            final BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast, longitudeSouthWest, latitudeSouthWest);
+            NavigationPosition northEast = parsePosition(selectPositionsMatcher.group(1), selectPositionsMatcher.group(2));
+            NavigationPosition southWest = parsePosition(selectPositionsMatcher.group(3), selectPositionsMatcher.group(4));
+            final BoundingBox boundingBox = new BoundingBox(northEast, southWest);
             final Boolean replaceSelection = parseBoolean(selectPositionsMatcher.group(5));
             invokeLater(new Runnable() {
                 public void run() {
@@ -1442,14 +1393,10 @@ public abstract class BrowserMapView implements MapView {
 
         Matcher centerChangedMatcher = CENTER_CHANGED_PATTERN.matcher(callback);
         if (centerChangedMatcher.matches()) {
-            Double centerLatitude = parseDouble(centerChangedMatcher.group(1));
-            Double centerLongitude = parseDouble(centerChangedMatcher.group(2));
-            NavigationPosition center = new SimpleNavigationPosition(centerLongitude, centerLatitude);
-            Double latitudeNorthEast = parseDouble(centerChangedMatcher.group(3));
-            Double longitudeNorthEast = parseDouble(centerChangedMatcher.group(4));
-            Double latitudeSouthWest = parseDouble(centerChangedMatcher.group(5));
-            Double longitudeSouthWest = parseDouble(centerChangedMatcher.group(6));
-            BoundingBox boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast, longitudeSouthWest, latitudeSouthWest);
+            NavigationPosition center = parsePosition(centerChangedMatcher.group(1), centerChangedMatcher.group(2));
+            NavigationPosition northEast = parsePosition(centerChangedMatcher.group(3), centerChangedMatcher.group(4));
+            NavigationPosition southWest = parsePosition(centerChangedMatcher.group(5), centerChangedMatcher.group(6));
+            BoundingBox boundingBox = new BoundingBox(northEast, southWest);
             centerChanged(center, boundingBox);
             return true;
         }
@@ -1478,19 +1425,19 @@ public abstract class BrowserMapView implements MapView {
         Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
             Integer key = parseInteger(insertWaypointsMatcher.group(2));
-            List<String> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
+            List<String> parameters = parseParameters(insertWaypointsMatcher.group(3));
 
             PositionPair pair;
             synchronized (insertWaypointsQueue) {
                 pair = insertWaypointsQueue.remove(key);
             }
 
-            if (coordinates.size() < 5 || pair == null)
+            if (parameters.size() < 5 || pair == null)
                 return true;
 
             final NavigationPosition before = pair.getFirst();
             NavigationPosition after = pair.getSecond();
-            final BaseRoute route = parseRoute(coordinates, before, after);
+            final BaseRoute route = parseRoute(parameters, before, after);
             @SuppressWarnings("unchecked")
             final List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
             synchronized (notificationMutex) {
@@ -1534,13 +1481,13 @@ public abstract class BrowserMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-            else if (recenterAfterZooming ||
+            else if (recenterAfterZooming.getBoolean() ||
                     // directions are automatically scaled by the Google Maps API when zooming
                     !positionsModel.getRoute().getCharacteristics().equals(Route) ||
                     positionReducer.hasFilteredVisibleArea()) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
-                if (recenterAfterZooming)
+                if (recenterAfterZooming.getBoolean())
                     haveToRecenterMap = true;
                 haveToRepaintSelectionImmediately = true;
                 selectionUpdateReason = "zoomed from " + lastZoom + " to " + zoom;
@@ -1567,9 +1514,9 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private List<String> parseCoordinates(String coordinates) {
+    private List<String> parseParameters(String parameters) {
         List<String> result = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
+        StringTokenizer tokenizer = new StringTokenizer(parameters, "/");
         while (tokenizer.hasMoreTokens()) {
             String latitude = trim(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
@@ -1599,23 +1546,23 @@ public abstract class BrowserMapView implements MapView {
     }
 
     @SuppressWarnings("unchecked")
-    private BaseRoute parseRoute(List<String> coordinates, NavigationPosition before, NavigationPosition after) {
+    private BaseRoute parseRoute(List<String> parameters, NavigationPosition before, NavigationPosition after) {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<NavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
-        for (int i = coordinates.size() - 1; i > 0; i -= 5) {
-            String instructions = trim(coordinates.get(i));
-            Double seconds = parseSeconds(coordinates.get(i - 1));
-            // Double meters = parseDouble(coordinates.get(i - 2));
-            Double longitude = parseDouble(coordinates.get(i - 3));
-            Double latitude = parseDouble(coordinates.get(i - 4));
+        for (int i = parameters.size() - 1; i > 0; i -= 5) {
+            String instructions = trim(parameters.get(i));
+            Double seconds = parseSeconds(parameters.get(i - 1));
+            // Double meters = parseDouble(parameters.get(i - 2));
+            NavigationPosition coordinates = parsePosition(parameters.get(i - 4), parameters.get(i - 3));
             if (seconds != null && time != null) {
                 Calendar calendar = time.getCalendar();
                 calendar.add(SECOND, -seconds.intValue());
                 time = fromCalendar(calendar);
             }
             String description = instructions != null ? instructions : null;
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, description);
+
+            BaseNavigationPosition position = route.createPosition(coordinates.getLongitude(), coordinates.getLatitude(), null, null, seconds != null ? time : null, description);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1767,6 +1714,98 @@ public abstract class BrowserMapView implements MapView {
     private void fireReceivedCallback(int port) {
         for (MapViewListener listener : mapViewListeners) {
             listener.receivedCallback(port);
+        }
+    }
+
+    private class PositionsModelListener implements TableModelListener {
+        public void tableChanged(TableModelEvent e) {
+            boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
+            boolean allRowsChanged = isFirstToLastRow(e);
+            // used to be limited to single rows which did work reliably but with usability problems
+            // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
+            if (!allRowsChanged && insertOrDelete)
+                updateRouteButDontRecenter();
+            else {
+                // ignored updates on columns not displayed
+                if (e.getType() == UPDATE &&
+                        !(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
+                                e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == ALL_COLUMNS))
+                    return;
+
+                if (showAllPositionsAfterLoading.getBoolean())
+                    update(allRowsChanged, true);
+                else
+                    updateRouteButDontRecenter();
+            }
+
+            // update position marker on updates of longitude and latitude
+            if (e.getType() == UPDATE &&
+                    (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                            e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                            e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
+                            e.getColumn() == ALL_COLUMNS)) {
+                for (int selectedPositionIndex : selectedPositionIndices) {
+                    if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
+                        updateSelection();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private class CharacteristicsModelListener implements ListDataListener {
+        public void intervalAdded(ListDataEvent e) {
+        }
+
+        public void intervalRemoved(ListDataEvent e) {
+        }
+
+        public void contentsChanged(ListDataEvent e) {
+            // ignore events following setRoute()
+            if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
+                return;
+            updateRouteButDontRecenter();
+        }
+    }
+
+    private class MapViewCallbackListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                update(false, false);
+        }
+    }
+
+    private class ShowCoordinatesListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            setShowCoordinates();
+        }
+    }
+
+    private class ShowWaypointDescriptionListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            if (positionsModel.getRoute().getCharacteristics().equals(Waypoints))
+                update(false, false);
+        }
+    }
+
+    private class FixMapForChinaListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            update(true, false);
+        }
+    }
+
+    private class GoogleMapsServerListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            update(true, false);
+        }
+    }
+
+    private class UnitSystemListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            setDegreeFormat();
         }
     }
 }

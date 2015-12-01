@@ -64,6 +64,7 @@ public class HelpTopicsAction extends FrameAction {
                 }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.severe("Could not initialize help: " + e);
             showMessageDialog(null, "Could not initialize help: " + getLocalizedMessage(e), "Error", ERROR_MESSAGE);
         }
