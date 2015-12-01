@@ -147,10 +147,11 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.16";
     private static final String MAP_VIEW_PREFERENCE = "mapView";
-    public static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
-    public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
-    public static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
-    public static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
+    private static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
+    private static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
+    private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
+    private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
+    private static final String FIX_MAP_FOR_CHINA_PREFERENCE = "fixMapForChina";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
@@ -175,6 +176,11 @@ public class RouteConverter extends SingleFrameApplication {
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
+    private BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
+    private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
+    private BooleanModel showCoordinates = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
+    private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
+    private BooleanModel fixMapForChina = new BooleanModel(FIX_MAP_FOR_CHINA_PREFERENCE, false);
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -358,10 +364,11 @@ public class RouteConverter extends SingleFrameApplication {
                 getPositionsSelectionModel(),
                 getConvertPanel().getCharacteristicsModel(),
                 getMapViewCallback(),
-                preferences.getBoolean(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true),
-                preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
-                preferences.getBoolean(SHOW_COORDINATES_PREFERENCE, false),
-                preferences.getBoolean(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false),
+                getShowAllPositionsAfterLoading(),
+                getRecenterAfterZooming(),
+                getShowCoordinates(),
+                getShowWaypointDescription(),
+                getFixMapForChina(),
                 getUnitSystemModel(),
                 getGoogleMapsServerModel());
 
@@ -765,28 +772,24 @@ public class RouteConverter extends SingleFrameApplication {
         return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
-    public void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading) {
-        if (isMapViewAvailable()) {
-            getMapView().setShowAllPositionsAfterLoading(showAllPositionsAfterLoading);
-        }
+    public BooleanModel getShowAllPositionsAfterLoading() {
+        return showAllPositionsAfterLoading;
     }
 
-    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
-        if (isMapViewAvailable()) {
-            getMapView().setRecenterAfterZooming(recenterAfterZooming);
-        }
+    public BooleanModel getRecenterAfterZooming() {
+        return recenterAfterZooming;
     }
 
-    public void setShowCoordinates(boolean showCoordinates) {
-        if (isMapViewAvailable()) {
-            getMapView().setShowCoordinates(showCoordinates);
-        }
+    public BooleanModel getShowCoordinates() {
+        return showCoordinates;
     }
 
-    public void setShowWaypointDescription(boolean showWaypointDescription) {
-        if (isMapViewAvailable()) {
-            getMapView().setShowWaypointDescription(showWaypointDescription);
-        }
+    public BooleanModel getShowWaypointDescription() {
+        return showWaypointDescription;
+    }
+
+    public BooleanModel getFixMapForChina() {
+        return fixMapForChina;
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {

@@ -148,23 +148,21 @@
        div.style.height = height + "px";
    }
 
-   function panTo(latitude, longitude) {
-       var latLng = new google.maps.LatLng(latitude, longitude);
+   function panTo(latLng) {
        if (!map.getBounds().contains(latLng))
            map.panTo(latLng);
    }
 
-   function setCenter(latitude, longitude) {
-       map.setCenter(new google.maps.LatLng(latitude, longitude));
+   function setCenter(latLng) {
+       map.setCenter(latLng);
    }
 
    function setZoom(zoom) {
        map.setZoom(zoom);
    }
 
-   function fitBounds(southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude) {
-       map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(southWestLatitude, southWestLongitude),
-               new google.maps.LatLng(northEastLatitude, northEastLongitude)));
+   function fitBounds(southWestLatLng, northEastLatLng) {
+       map.fitBounds(new google.maps.LatLngBounds(southWestLatLng, northEastLatLng));
    }
 
    var _showCoordinates = false;
@@ -228,9 +226,8 @@
    var oldSelectedPositions = [];
    var newSelectedPositions = [];
 
-   function selectPosition(latitude, longitude, description, index) {
-       var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
-           title:description, draggable:true, zIndex:1000});
+   function selectPosition(latLng, description, index) {
+       var marker = new google.maps.Marker({position:latLng, title:description, draggable:true, zIndex:1000});
        marker.index_ = index;
        addListener(marker);
        newSelectedPositions.push(marker);
@@ -245,19 +242,17 @@
        newSelectedPositions = [];
    }
 
-   function addPolyline(latlngs, color, weight) {
-       addOverlay(new google.maps.Polyline({path:latlngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false, geodesic:true}));
+   function addPolyline(latLngs, color, weight) {
+       addOverlay(new google.maps.Polyline({path:latLngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false, geodesic:true}));
    }
 
    var markerIcon;
 
-   function addMarker(latitude, longitude, description, showWaypointDescription) {
+   function addMarker(latLng, description, showWaypointDescription) {
        if (showWaypointDescription)
-           addOverlay(new MarkerWithLabel({position: new google.maps.LatLng(latitude, longitude),
-               title: description, clickable: false, icon: markerIcon}));
+           addOverlay(new MarkerWithLabel({position:latLng, title:description, clickable:false, icon:markerIcon}));
        else
-           addOverlay(new google.maps.Marker({position: new google.maps.LatLng(latitude, longitude),
-               title: description, clickable: false, icon:markerIcon}));
+           addOverlay(new google.maps.Marker({position:latLng, title:description, clickable:false, icon:markerIcon}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {
@@ -622,8 +617,7 @@ ${tileservers2}
            });
 
            directionsService = new google.maps.DirectionsService();
-           markerIcon = new google.maps.MarkerImage(
-                   "http://${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png",
+           markerIcon = new google.maps.MarkerImage("${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png",
                    new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
            addDebug("2. created map: " + map);
 

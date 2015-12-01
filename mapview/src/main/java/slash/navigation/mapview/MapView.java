@@ -38,8 +38,11 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     MapViewCallback mapViewCallback,
-                    boolean showAllPositionsAfterLoading, boolean recenterAfterZooming,
-                    boolean showCoordinates, boolean showWaypointDescription,
+                    BooleanModel showAllPositionsAfterLoading,
+                    BooleanModel recenterAfterZooming,
+                    BooleanModel showCoordinates,
+                    BooleanModel showWaypointDescription,
+                    BooleanModel fixMapForChina,
                     UnitSystemModel unitSystemModel,
                     GoogleMapsServerModel googleMapsServerModel);
     boolean isInitialized();
@@ -53,10 +56,6 @@ public interface MapView extends PositionsSelectionModel {
     Component getComponent();
 
     void resize();
-    void setShowAllPositionsAfterLoading(boolean showAllPositionsAfterLoading);
-    void setRecenterAfterZooming(boolean recenterAfterZooming);
-    void setShowCoordinates(boolean showCoordinates);
-    void setShowWaypointDescription(boolean showWaypointDescription);
     void showAllPositions();
     void showMapBorder(BoundingBox mapBoundingBox);
 

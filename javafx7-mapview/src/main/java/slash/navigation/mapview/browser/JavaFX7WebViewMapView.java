@@ -204,15 +204,15 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
     // bounds and center
 
     protected NavigationPosition getNorthEastBounds() {
-        return extractLatLng("getNorthEastBounds();");
+        return parsePosition("getNorthEastBounds();");
     }
 
     protected NavigationPosition getSouthWestBounds() {
-        return extractLatLng("getSouthWestBounds();");
+        return parsePosition("getSouthWestBounds();");
     }
 
     protected NavigationPosition getCurrentMapCenter() {
-        return extractLatLng("getCenter();");
+        return parsePosition("getCenter();");
     }
 
     protected Integer getCurrentZoom() {

@@ -177,15 +177,15 @@ public class EclipseSWTMapView extends BrowserMapView {
     // bounds and center
 
     protected NavigationPosition getNorthEastBounds() {
-        return extractLatLng("return getNorthEastBounds();");
+        return parsePosition("return getNorthEastBounds();");
     }
 
     protected NavigationPosition getSouthWestBounds() {
-        return extractLatLng("return getSouthWestBounds();");
+        return parsePosition("return getSouthWestBounds();");
     }
 
     protected NavigationPosition getCurrentMapCenter() {
-        return extractLatLng("return getCenter();");
+        return parsePosition("return getCenter();");
     }
 
     protected Integer getCurrentZoom() {
