@@ -722,14 +722,16 @@ public abstract class BrowserMapView implements MapView {
     // disposal
 
     public void dispose() {
-        positionsModel.removeTableModelListener(positionsModelListener);
-        characteristicsModel.removeListDataListener(characteristicsModelListener);
-        mapViewCallback.removeChangeListener(mapViewCallbackListener);
-        showCoordinates.removeChangeListener(showCoordinatesListener);
-        showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
-        fixMapForChina.removeChangeListener(fixMapForChinaListener);
-        unitSystemModel.removeChangeListener(unitSystemListener);
-        googleMapsServerModel.removeChangeListener(googleMapsServerListener);
+        if(positionsModel != null) {
+            positionsModel.removeTableModelListener(positionsModelListener);
+            characteristicsModel.removeListDataListener(characteristicsModelListener);
+            mapViewCallback.removeChangeListener(mapViewCallbackListener);
+            showCoordinates.removeChangeListener(showCoordinatesListener);
+            showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
+            fixMapForChina.removeChangeListener(fixMapForChinaListener);
+            unitSystemModel.removeChangeListener(unitSystemListener);
+            googleMapsServerModel.removeChangeListener(googleMapsServerListener);
+        }
 
         long start = currentTimeMillis();
         synchronized (notificationMutex) {
