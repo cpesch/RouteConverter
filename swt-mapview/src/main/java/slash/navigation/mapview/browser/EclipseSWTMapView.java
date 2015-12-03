@@ -164,7 +164,7 @@ public class EclipseSWTMapView extends BrowserMapView {
     }
 
     protected void initializeWebPage() {
-        log.info("Loading Google Maps API from " + getGoogleMapsServerUrl());
+        log.info("Loading Google Maps API from " + getGoogleMapsServerApiUrl());
         if (!loadWebPage())
             dispose();
     }

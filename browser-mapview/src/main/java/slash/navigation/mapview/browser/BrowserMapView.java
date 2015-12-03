@@ -202,8 +202,8 @@ public abstract class BrowserMapView implements MapView {
     protected abstract void initializeBrowser();
     protected abstract void initializeWebPage();
 
-    protected String getGoogleMapsServerUrl() {
-        return googleMapsServerModel.getGoogleMapsServer().getUrl();
+    protected String getGoogleMapsServerApiUrl() {
+        return googleMapsServerModel.getGoogleMapsServer().getApiUrl();
     }
 
     protected String prepareWebPage() throws IOException {
@@ -216,8 +216,10 @@ public abstract class BrowserMapView implements MapView {
                     return language;
                 if (tokenName.equals("country"))
                     return country;
-                if (tokenName.equals("mapserver"))
-                    return getGoogleMapsServerUrl();
+                if (tokenName.equals("mapserverapiurl"))
+                    return getGoogleMapsServerApiUrl();
+                if (tokenName.equals("mapserverfileurl"))
+                    return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
                     return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
                 if (tokenName.equals("tileservers1"))
@@ -1799,7 +1801,7 @@ public abstract class BrowserMapView implements MapView {
 
     private class GoogleMapsServerListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
-            update(true, false);
+            initializeWebPage();
         }
     }
 

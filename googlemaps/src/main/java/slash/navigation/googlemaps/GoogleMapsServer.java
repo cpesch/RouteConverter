@@ -35,21 +35,27 @@ import static slash.common.helpers.LocaleHelper.UZBEKISTAN;
  */
 
 public enum GoogleMapsServer {
-    China("http://maps.google.cn", CHINA),
-    Ditu("http://ditu.google.cn", null),
-    International("https://maps.googleapis.com", null),
-    Uzbekistan("http://maps.google.ru", UZBEKISTAN);
+    China("http://maps.google.cn", "http://maps.google.cn", CHINA),
+    Ditu("http://ditu.google.cn", "http://ditu.google.cn", null),
+    International("https://maps.googleapis.com", "http://maps.google.com", null),
+    Uzbekistan("http://maps.google.ru", "http://maps.google.ru", UZBEKISTAN);
 
-    private final String url;
+    private final String apiUrl;
+    private final String fileUrl;
     private final Locale preset;
 
-    GoogleMapsServer(String url, Locale preset) {
-        this.url = url;
+    GoogleMapsServer(String apiUrl, String fileUrl, Locale preset) {
+        this.apiUrl = apiUrl;
+        this.fileUrl = fileUrl;
         this.preset = preset;
     }
 
-    public String getUrl() {
-        return url;
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
     }
 
     public Locale getPreset() {
@@ -78,6 +84,6 @@ public enum GoogleMapsServer {
     }
 
     public static void setGoogleMapsServer(GoogleMapsServer googleMapsServer) {
-        preferences.put(GOOGLE_MAPS_SERVER_PREFERENCE, googleMapsServer.toString());
+        preferences.put(GOOGLE_MAPS_SERVER_PREFERENCE, googleMapsServer.name());
     }
 }

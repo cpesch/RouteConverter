@@ -36,7 +36,7 @@ public class GoogleMapsServerListCellRenderer extends DefaultListCellRenderer {
         JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
         GoogleMapsServer googleMapsServer = GoogleMapsServer.class.cast(value);
 
-        label.setText(googleMapsServer.name() + " (" + googleMapsServer.getUrl() + ")");
+        label.setText(googleMapsServer.name() + " (" + googleMapsServer.getApiUrl() + ")");
         return label;
     }
 }

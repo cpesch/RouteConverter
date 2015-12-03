@@ -61,7 +61,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 public abstract class HttpRequest {
     public static final String APPLICATION_XML = "application/xml";
     public static final String APPLICATION_JSON = "application/json";
-    public static final String MSIE_USER_AGENT = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36";
 
     private final Logger log;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();

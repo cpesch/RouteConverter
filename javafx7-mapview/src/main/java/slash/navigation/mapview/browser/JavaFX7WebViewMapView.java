@@ -45,7 +45,7 @@ import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.rest.HttpRequest.MSIE_USER_AGENT;
+import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -126,10 +126,10 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
             });
 
             // allow to compile code with Java 7; with Java 8 this would simply be
-            // webView.getEngine().setUserAgent("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)");
+            // webView.getEngine().setUserAgent(USER_AGENT);
             try {
                 Method method = WebEngine.class.getDeclaredMethod("setUserAgent", String.class);
-                method.invoke(webView.getEngine(), MSIE_USER_AGENT);
+                method.invoke(webView.getEngine(), USER_AGENT);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 // intentionally do nothing
             }
@@ -176,7 +176,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
     }
 
     protected void initializeWebPage() {
-        log.info("Loading Google Maps API from " + getGoogleMapsServerUrl());
+        log.info("Loading Google Maps API from " + getGoogleMapsServerApiUrl());
         runLater(new Runnable() {
             public void run() {
                 if (!loadWebPage())
@@ -218,10 +218,9 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
     protected Integer getCurrentZoom() {
         try {
             Double zoom = parseDouble(executeScriptWithResult("getZoom();"));
-            if(zoom != null)
+            if (zoom != null)
                 return zoom.intValue();
-        }
-        catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // intentionally left empty
         }
         return null;
