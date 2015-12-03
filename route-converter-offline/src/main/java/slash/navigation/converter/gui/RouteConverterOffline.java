@@ -122,7 +122,7 @@ public class RouteConverterOffline extends RouteConverter {
 
     private void configureRoutingServices() {
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
-        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments-4");
         if (brouterProfiles != null && brouterSegments != null) {
             BRouter router = getRoutingServiceFacade().getRoutingService(BRouter.class);
             router.setProfilesAndSegments(brouterProfiles, brouterSegments);

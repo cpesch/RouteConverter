@@ -70,7 +70,7 @@ public class BRouterIT {
         when(segment.getUri()).thenReturn(SEGMENT_URI);
         DataSource brouterSegments = mock(DataSource.class);
         when(brouterSegments.getDownloadable(SEGMENT_URI)).thenReturn(segment);
-        when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments3/");
+        when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments4/");
         when(brouterSegments.getDirectory()).thenReturn("test");
 
         router = new BRouter(new DownloadManager(createTempFile("queueFile", ".xml")));
