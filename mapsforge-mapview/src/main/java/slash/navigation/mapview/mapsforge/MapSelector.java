@@ -42,6 +42,8 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
+import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
+import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME;
 
 /**
  * The map and theme chooser panel of the mapsforge map view.
@@ -80,7 +82,7 @@ public class MapSelector {
 
         comboBoxTheme.setModel(new JoinedListComboBoxModel<>(
                         new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableThemesModel(), mapManager.getAppliedThemeModel()),
-                        asList(ThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME, ThemeListCellRenderer.DOWNLOAD_THEME))
+                        asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getTheme(0));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
@@ -111,7 +113,7 @@ public class MapSelector {
         };
         comboBoxTheme = new JComboBox<LocalTheme>() {
             public void setSelectedItem(Object anObject) {
-                if (ThemeListCellRenderer.DOWNLOAD_THEME.equals(anObject)) {
+                if (DOWNLOAD_THEME.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-themes");
                     return;
                 }
