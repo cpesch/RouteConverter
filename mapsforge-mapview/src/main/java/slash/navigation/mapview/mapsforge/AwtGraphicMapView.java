@@ -23,7 +23,8 @@ import org.mapsforge.core.graphics.GraphicContext;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Dimension;
-import org.mapsforge.map.awt.AwtGraphicFactory;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
 import org.mapsforge.map.controller.FrameBufferController;
 import org.mapsforge.map.controller.LayerManagerController;
 import org.mapsforge.map.controller.MapViewController;
@@ -41,7 +42,8 @@ import org.mapsforge.map.view.FrameBuffer;
 
 import java.awt.*;
 
-import static org.mapsforge.map.awt.AwtGraphicFactory.INSTANCE;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.clearResourceMemoryCache;
 
 /**
  * Implementation of a {@link org.mapsforge.map.view.MapView} {@link Container}.
@@ -77,6 +79,10 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         this.mapScaleBar = new DefaultMapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
     }
 
+    public void addLayer(Layer layer) {
+        this.layerManager.getLayers().add(layer);
+    }
+
     public void destroy() {
         layerManager.interrupt();
         frameBufferController.destroy();
@@ -101,7 +107,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
             }
         }
         destroy();
-        AwtGraphicFactory.clearResourceMemoryCache();
+        clearResourceMemoryCache();
     }
 
     public BoundingBox getBoundingBox() {
@@ -129,11 +135,6 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         return mapScaleBar;
     }
 
-    public void setMapScaleBar(MapScaleBar mapScaleBar) {
-        this.mapScaleBar.destroy();
-        this.mapScaleBar = mapScaleBar;
-    }
-
     public Model getModel() {
         return model;
     }
@@ -145,5 +146,18 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         frameBuffer.draw(graphicContext);
         fpsCounter.draw(graphicContext);
         mapScaleBar.draw(graphicContext);
+    }
+
+    public void setCenter(LatLong center) {
+        this.model.mapViewPosition.setCenter(center);
+    }
+
+    public void setMapScaleBar(MapScaleBar mapScaleBar) {
+        this.mapScaleBar.destroy();
+        this.mapScaleBar = mapScaleBar;
+    }
+
+    public void setZoomLevel(byte zoomLevel) {
+        this.model.mapViewPosition.setZoomLevel(zoomLevel);
     }
 }

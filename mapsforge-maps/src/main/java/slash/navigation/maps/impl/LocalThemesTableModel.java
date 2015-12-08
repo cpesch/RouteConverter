@@ -60,9 +60,17 @@ public class LocalThemesTableModel extends AbstractTableModel {
         return themes.get(rowIndex);
     }
 
-    public LocalTheme getTheme(String url) {
+    public LocalTheme getThemeByUrl(String url) {
         for (LocalTheme theme : new ArrayList<>(themes)) {
             if (theme.getUrl().equals(url))
+                return theme;
+        }
+        return null;
+    }
+
+    public LocalTheme getThemeByDescription(String description) {
+        for (LocalTheme theme : new ArrayList<>(themes)) {
+            if (theme.getDescription().equals(description))
                 return theme;
         }
         return null;

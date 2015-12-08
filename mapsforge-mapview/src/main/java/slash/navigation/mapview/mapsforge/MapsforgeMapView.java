@@ -184,11 +184,11 @@ public class MapsforgeMapView implements MapView {
                                     Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
                             // ensure this marker is on top of the moved waypoint marker
                             getLayerManager().getLayers().remove(this);
-                            getLayerManager().getLayers().add(this);
+                            mapView.addLayer(this);
                         }
                     };
                     positionWithLayer.setLayer(marker);
-                    getLayerManager().getLayers().add(marker);
+                    mapView.addLayer(marker);
                     center = position;
                 }
                 if (center != null)
@@ -282,7 +282,7 @@ public class MapsforgeMapView implements MapView {
 
                     Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
                     pairWithLayer.setLayer(line);
-                    getLayerManager().getLayers().add(line);
+                    mapView.addLayer(line);
 
                     pairWithLayer.setDistance(pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond()));
                     pairWithLayer.setTime(pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond()));
@@ -303,7 +303,7 @@ public class MapsforgeMapView implements MapView {
                     Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
                     removeLayer(pairWithLayer);
-                    getLayerManager().getLayers().add(polyline);
+                    mapView.addLayer(polyline);
                     pairWithLayer.setLayer(polyline);
                 }
             }
@@ -379,7 +379,7 @@ public class MapsforgeMapView implements MapView {
                 for (PairWithLayer pair : pairWithLayers) {
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
-                    getLayerManager().getLayers().add(line);
+                    mapView.addLayer(line);
                 }
             }
 
@@ -424,7 +424,7 @@ public class MapsforgeMapView implements MapView {
             private void internalAdd(PositionWithLayer positionWithLayer) {
                 Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
                 positionWithLayer.setLayer(marker);
-                getLayerManager().getLayers().add(marker);
+                mapView.addLayer(marker);
             }
 
             private void internalRemove(PositionWithLayer positionWithLayer) {
@@ -802,7 +802,7 @@ public class MapsforgeMapView implements MapView {
         paint.setStrokeWidth(3);
         paint.setDashPathEffect(new float[]{3, 12});
         Polyline polyline = new Polyline(asLatLong(boundingBox), paint, mapView.getModel().displayModel.getTileSize());
-        getLayerManager().getLayers().add(polyline);
+        mapView.addLayer(polyline);
         return polyline;
     }
 
@@ -916,7 +916,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void setZoom(int zoom) {
-        mapView.getModel().mapViewPosition.setZoomLevel((byte) zoom);
+        mapView.setZoomLevel((byte) zoom);
     }
 
     private void zoomToBounds(org.mapsforge.core.model.BoundingBox boundingBox) {

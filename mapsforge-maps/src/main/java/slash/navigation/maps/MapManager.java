@@ -26,6 +26,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
+import slash.navigation.maps.helpers.ThemeForMapMediator;
 import slash.navigation.maps.impl.*;
 
 import java.io.File;
@@ -36,7 +37,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.io.File.separator;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.sort;
@@ -46,6 +46,7 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.maps.helpers.MapUtil.extractBoundingBox;
+import static slash.navigation.maps.helpers.MapUtil.removePrefix;
 
 /**
  * Manages {@link LocalMap}s and {@link LocalTheme}s
@@ -81,7 +82,7 @@ public class MapManager {
 
     private ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
         protected LocalTheme stringToItem(String url) {
-            return getAvailableThemesModel().getTheme(url);
+            return getAvailableThemesModel().getThemeByUrl(url);
         }
 
         protected String itemToString(LocalTheme theme) {
@@ -92,6 +93,7 @@ public class MapManager {
     public MapManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
 
+        new ThemeForMapMediator(this);
         initializeOnlineMaps();
         initializeBuiltinThemes();
     }
@@ -120,12 +122,12 @@ public class MapManager {
         return appliedThemeModel;
     }
 
-    private String getMapsDirectory() {
-        return preferences.get(MAP_DIRECTORY_PREFERENCE, getApplicationDirectory("maps").getAbsolutePath());
+    public File getMapsDirectory() {
+        return new File(preferences.get(MAP_DIRECTORY_PREFERENCE, getApplicationDirectory("maps").getAbsolutePath()));
     }
 
-    private String getThemesDirectory() {
-        return preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath());
+    public File getThemesDirectory() {
+        return new File(preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath()));
     }
 
     private void initializeOnlineMaps() {
@@ -173,18 +175,6 @@ public class MapManager {
         long end = currentTimeMillis();
         log.info(format("Collected %d theme files %s from %s in %d milliseconds",
                 themeFilesArray.length, printArrayToDialogString(themeFilesArray), themesDirectory, (end - start)));
-    }
-
-    private static String removePrefix(File root, File file) {
-        String rootPath = root.getAbsolutePath();
-        String filePath = file.getAbsolutePath();
-        if (filePath.startsWith(rootPath))
-            filePath = filePath.substring(rootPath.length());
-        else
-            filePath = file.getName();
-        if (filePath.startsWith(separator))
-            filePath = filePath.substring(1);
-        return filePath;
     }
 
     public void scanDatasources() {

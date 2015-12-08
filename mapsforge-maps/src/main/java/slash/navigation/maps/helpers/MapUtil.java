@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
+import static java.io.File.separator;
 import static java.lang.String.format;
 import static slash.common.io.Files.writePartialFile;
 import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
@@ -65,5 +66,18 @@ public class MapUtil {
             log.warning(format("Could not extract mapsforge bounding box: %s", e));
         }
         return null;
+    }
+
+    public static String removePrefix(File root, File file) {
+        String rootPath = root.getAbsolutePath();
+        String filePath = file.getAbsolutePath();
+        if (filePath.startsWith(rootPath))
+            filePath = filePath.substring(rootPath.length());
+        else
+            filePath = file.getName();
+        if (filePath.startsWith(separator))
+            filePath = filePath.substring(1);
+        filePath = filePath.replace(separator, "/");
+        return filePath;
     }
 }

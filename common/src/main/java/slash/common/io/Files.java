@@ -396,7 +396,7 @@ public class Files {
                 if (file.isDirectory())
                     recursiveDelete(file);
                 if (!file.delete())
-                    throw new IOException("Could not delete " + file);
+                    throw new IOException(format("Cannot delete %s", file));
             }
         }
     }
