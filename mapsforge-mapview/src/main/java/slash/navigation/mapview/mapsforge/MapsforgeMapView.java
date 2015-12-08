@@ -48,7 +48,6 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -56,7 +55,6 @@ import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.MapViewConstants;
 import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
@@ -104,6 +102,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.helpers.MapTransfer.*;
+import static slash.navigation.mapview.MapViewConstants.*;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 
 /**
@@ -291,8 +290,8 @@ public class MapsforgeMapView implements MapView {
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 Paint routePaint = GRAPHIC_FACTORY.createPaint();
-                routePaint.setColor(preferences.getInt(MapViewConstants.ROUTE_LINE_COLOR_PREFERENCE, 0x993379FF));
-                routePaint.setStrokeWidth(preferences.getInt(MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE, 5));
+                routePaint.setColor(preferences.getInt(ROUTE_LINE_COLOR_PREFERENCE, 0x993379FF));
+                routePaint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = MapsforgeMapView.this.mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
@@ -373,8 +372,8 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(preferences.getInt(MapViewConstants.TRACK_LINE_COLOR_PREFERENCE, 0xFF0000FF));
-                paint.setStrokeWidth(preferences.getInt(MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE, 2));
+                paint.setColor(preferences.getInt(TRACK_LINE_COLOR_PREFERENCE, 0xFF0000FF));
+                paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
@@ -651,7 +650,7 @@ public class MapsforgeMapView implements MapView {
         // remove old map
         for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet()) {
             Layer remove = entry.getValue();
-            layers.remove(layer);
+            layers.remove(remove);
             remove.onDestroy();
         }
         mapsToLayers.clear();
