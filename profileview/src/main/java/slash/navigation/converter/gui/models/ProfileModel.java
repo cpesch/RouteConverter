@@ -24,9 +24,12 @@ import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.profileview.ProfileMode;
+import slash.navigation.converter.gui.profileview.XAxisMode;
+import slash.navigation.converter.gui.profileview.YAxisMode;
 
 import static java.lang.String.format;
+import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
+import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
 
 /**
  * Provides a {@link XYSeries} model by extracting profile information from a {@link PositionsModel}.
@@ -36,12 +39,14 @@ import static java.lang.String.format;
 
 public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     private UnitSystem unitSystem;
-    private ProfileMode profileMode;
+    private XAxisMode xAxisMode;
+    private YAxisMode yAxisMode;
 
-    public ProfileModel(PositionsModel positions, PatchedXYSeries series, UnitSystem unitSystem, ProfileMode profileMode) {
+    public ProfileModel(PositionsModel positions, PatchedXYSeries series, UnitSystem unitSystem, XAxisMode xAxisMode, YAxisMode yAxisMode) {
         super(positions, series);
         this.unitSystem = unitSystem;
-        this.profileMode = profileMode;
+        this.xAxisMode = xAxisMode;
+        this.yAxisMode = yAxisMode;
     }
 
     protected void handleAdd(int firstRow, int lastRow) {
@@ -59,7 +64,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     protected void handleIntervalYUpdate(int firstRow, int lastRow) {
         getSeries().setFireSeriesChanged(false);
         for (int i = firstRow; i < lastRow + 1; i++) {
-            getSeries().updateByIndex(i, formatValue(getPositions().getPosition(i)));
+            getSeries().updateByIndex(i, formatYValue(getPositions().getPosition(i)));
         }
         getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
@@ -82,9 +87,16 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
 
         int lastRow = getPositions().getRowCount() - 1;
         if (firstRow <= lastRow && lastRow >= 0) {
-            double[] distances = route.getDistancesFromStart(firstRow, lastRow);
-            for (int i = firstRow; i < lastRow + 1; i++) {
-                getSeries().add(formatDistance(distances[i - firstRow]), formatValue(getPositions().getPosition(i)), false);
+            if(getXAxisMode().equals(Distance)) {
+                double[] distances = route.getDistancesFromStart(firstRow, lastRow);
+                for (int i = firstRow; i < lastRow + 1; i++) {
+                    getSeries().add(formatDistance(distances[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                }
+            } else {
+                long[] times = route.getTimesFromStart(firstRow, lastRow);
+                for (int i = firstRow; i < lastRow + 1; i++) {
+                    getSeries().add(formatTime(times[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                }
             }
         }
 
@@ -92,19 +104,23 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    private Double formatValue(NavigationPosition position) {
-        switch(profileMode) {
+    private Double formatYValue(NavigationPosition position) {
+        switch(yAxisMode) {
             case Elevation:
                 return formatElevation(position.getElevation());
             case Speed:
                 return formatSpeed(position.getSpeed());
             default:
-                throw new IllegalArgumentException(format("Profile mode %s is not supported", profileMode));
+                throw new IllegalArgumentException(format("X-Axis mode %s is not supported", yAxisMode));
         }
     }
 
     public double formatDistance(double distance) {
-        return unitSystem.distanceToUnit(distance / 1000.0);
+        return unitSystem.distanceToUnit(distance / METERS_OF_A_KILOMETER);
+    }
+
+    public long formatTime(long time) {
+        return time / 1000;
     }
 
     private Double formatElevation(Double elevation) {
@@ -124,12 +140,17 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         handleFullUpdate();
     }
 
-    public ProfileMode getProfileMode() {
-        return profileMode;
+    public XAxisMode getXAxisMode() {
+        return xAxisMode;
     }
 
-    public void setProfileMode(ProfileMode profileMode) {
-        this.profileMode = profileMode;
+    public YAxisMode getYAxisMode() {
+        return yAxisMode;
+    }
+
+    public void setProfileMode(XAxisMode xAxisMode, YAxisMode yAxisMode) {
+        this.xAxisMode = xAxisMode;
+        this.yAxisMode = yAxisMode;
         handleFullUpdate();
     }
 }

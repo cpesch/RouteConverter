@@ -21,9 +21,9 @@
 package slash.navigation.converter.gui.profileview;
 
 /**
- * Enumeration of the display modes for the profile view.
+ * Enumeration of the X-Axis modes for the profile view.
  */
 
-public enum ProfileMode {
-    Elevation, Speed
+public enum XAxisMode {
+    Distance, Time
 }

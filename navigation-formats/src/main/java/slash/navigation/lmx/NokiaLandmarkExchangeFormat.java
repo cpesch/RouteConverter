@@ -77,7 +77,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
                 coordinates != null ? coordinates.getLatitude() : null,
                 altitude,
                 null,
-                coordinates != null ? parseTime(coordinates.getTimeStamp()) : null,
+                coordinates != null ? parseXMLTime(coordinates.getTimeStamp()) : null,
                 landmark.getName(),
                 landmark);
     }
@@ -135,7 +135,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
             coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
             coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
-            coordinatesType.setTimeStamp(formatTime(position.getTime()));
+            coordinatesType.setTimeStamp(formatXMLTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 
             landmarkTypeList.add(landmarkType);

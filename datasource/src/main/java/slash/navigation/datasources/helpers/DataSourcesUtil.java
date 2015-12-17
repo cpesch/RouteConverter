@@ -46,8 +46,8 @@ import java.util.zip.ZipEntry;
 
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Files.generateChecksum;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.formatXMLTime;
+import static slash.common.io.Transfer.parseXMLTime;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class DataSourcesUtil {
@@ -92,7 +92,7 @@ public class DataSourcesUtil {
     }
 
     public static Checksum asChecksum(ChecksumType checksumType) {
-        return new Checksum(parseTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
+        return new Checksum(parseXMLTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
     }
 
     public static List<Checksum> asChecksums(Set<FileAndChecksum> fileAndChecksums) {
@@ -211,14 +211,14 @@ public class DataSourcesUtil {
     public static ChecksumType createChecksumType(CompactCalendar lastModified, Long contentLength, String sha1) {
         ChecksumType checksumType = new ObjectFactory().createChecksumType();
         checksumType.setContentLength(contentLength);
-        checksumType.setLastModified(formatTime(lastModified, true));
+        checksumType.setLastModified(formatXMLTime(lastModified, true));
         checksumType.setSha1(sha1);
         return checksumType;
     }
 
     private static ChecksumType createChecksumType(Long lastModified, Long contentLength, InputStream inputStream) throws IOException {
         ChecksumType result = new ChecksumType();
-        result.setLastModified(lastModified != null ? formatTime(fromMillis(lastModified), true) : null);
+        result.setLastModified(lastModified != null ? formatXMLTime(fromMillis(lastModified), true) : null);
         result.setContentLength(contentLength);
         if (inputStream != null)
             result.setSha1(generateChecksum(inputStream));

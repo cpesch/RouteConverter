@@ -104,7 +104,8 @@ public class FrameMenu {
         viewMenu.add(createItem("show-all-positions-on-map"));
         viewMenu.addSeparator();
         viewMenu.add(createMenu("show-column"));
-        viewMenu.add(createMenu("show-profile"));
+        viewMenu.add(createMenu("show-profile-x-axis"));
+        viewMenu.add(createMenu("show-profile-y-axis"));
 
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));

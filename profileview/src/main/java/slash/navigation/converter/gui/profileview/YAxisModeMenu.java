@@ -30,38 +30,38 @@ import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
- * Creates a {@link JMenu} for {@link ProfileMode}.
+ * Creates a {@link JMenu} for {@link YAxisMode}.
  *
  * @author Christian Pesch
  */
 
-public class ProfileModeMenu {
+public class YAxisModeMenu {
     private final ProfileModeModel profileModeModel;
 
-    public ProfileModeMenu(JMenuBar menuBar, ProfileModeModel profileModeModel) {
-        this(findMenu(menuBar, "view", "show-profile"), profileModeModel);
+    public YAxisModeMenu(JMenuBar menuBar, ProfileModeModel profileModeModel) {
+        this(findMenu(menuBar, "view", "show-profile-y-axis"), profileModeModel);
     }
 
-    public ProfileModeMenu(JMenu menu, ProfileModeModel profileModeModel) {
+    public YAxisModeMenu(JMenu menu, ProfileModeModel profileModeModel) {
         this.profileModeModel = profileModeModel;
         initializeMenu(menu);
     }
 
-    private void initializeMenu(JMenu showProfileMenu) {
+    private void initializeMenu(JMenu menu) {
         ButtonGroup buttonGroup = new ButtonGroup();
-        for (ProfileMode mode : ProfileMode.values()) {
+        for (YAxisMode mode : YAxisMode.values()) {
             JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
-            profileModeModel.addChangeListener(new ProfileModeListener(menuItem, mode));
+            profileModeModel.addChangeListener(new YAxisModeListener(menuItem, mode));
             buttonGroup.add(menuItem);
-            showProfileMenu.add(menuItem);
+            menu.add(menuItem);
         }
     }
 
-    private class ProfileModeListener implements ChangeListener {
+    private class YAxisModeListener implements ChangeListener {
         private JRadioButtonMenuItem menuItem;
-        private ProfileMode mode;
+        private YAxisMode mode;
 
-        public ProfileModeListener(JRadioButtonMenuItem menuItem, ProfileMode mode) {
+        public YAxisModeListener(JRadioButtonMenuItem menuItem, YAxisMode mode) {
             this.menuItem = menuItem;
             this.mode = mode;
             updateSelected();
@@ -72,7 +72,7 @@ public class ProfileModeMenu {
         }
 
         private void updateSelected() {
-            if (mode.equals(profileModeModel.getProfileMode()))
+            if (mode.equals(profileModeModel.getYAxisMode()))
                 menuItem.setSelected(true);
         }
     }

@@ -368,6 +368,54 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public long[] getTimesFromStart(int startIndex, int endIndex) {
+        long[] result = new long[endIndex - startIndex + 1];
+        List<P> positions = getPositions();
+        int index = 0;
+        long time = 0L;
+        NavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+        while (index <= endIndex) {
+            NavigationPosition next = positions.get(index);
+            if (previous != null) {
+                Long delta = previous.calculateTime(next);
+                if (delta != null)
+                    time += delta;
+                if (index >= startIndex)
+                    result[index - startIndex] = time;
+            }
+            index++;
+            previous = next;
+        }
+        return result;
+    }
+
+    public long[] getTimesFromStart(int[] indices) {
+        long[] result = new long[indices.length];
+        if (indices.length > 0 && getPositionCount() > 0) {
+            Arrays.sort(indices);
+            int endIndex = min(indices[indices.length - 1], getPositionCount() - 1);
+
+            int index = 0;
+            long time = 0L;
+            List<P> positions = getPositions();
+            NavigationPosition previous = positions.get(0);
+            while (index <= endIndex) {
+                NavigationPosition next = positions.get(index);
+                if (previous != null) {
+                    Long delta = previous.calculateTime(next);
+                    if (delta != null)
+                        time += delta;
+                    int indexInIndices = binarySearch(indices, index);
+                    if (indexInIndices >= 0)
+                        result[indexInIndices] = time;
+                }
+                index++;
+                previous = next;
+            }
+        }
+        return result;
+    }
+
     public double getElevationAscend(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();

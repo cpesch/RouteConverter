@@ -22,8 +22,8 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.DegreeFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 
@@ -36,9 +36,8 @@ import java.util.prefs.Preferences;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.String.format;
-import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static slash.common.io.Transfer.roundFraction;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromDate;
 
 /**
@@ -53,9 +52,6 @@ public class PositionHelper {
     private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
     private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
 
-    private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-    private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
-    private static String currentTimeZone = "";
     private static final int KILO_BYTE = 1024;
     private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
 
@@ -113,40 +109,17 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
-    private synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
-        if (!currentTimeZone.equals(timeZonePreference)) {
-            dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
-        }
-        return dateTimeFormat;
-    }
-
-    private synchronized static DateFormat getTimeFormat(String timeZonePreference) {
-        if (!currentTimeZone.equals(timeZonePreference)) {
-            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
-        }
-        return timeFormat;
-    }
-
     public static String formatDate(CompactCalendar time) {
         if(time == null)
             return "?";
 
         DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+        dateFormat.setTimeZone(TimeZone.getTimeZone(getTimeZonePreference()));
         return dateFormat.format(time.getTime());
     }
 
     private static String formatDateTime(CompactCalendar time) {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        return getDateTimeFormat(timeZonePreference).format(time.getTime());
-    }
-
-    private static String formatTime(CompactCalendar time) {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        return getTimeFormat(timeZonePreference).format(time.getTime());
+        return getDateTimeFormat(getTimeZonePreference()).format(time.getTime());
     }
 
     public static String extractDateTime(NavigationPosition position) {
@@ -170,13 +143,11 @@ public class PositionHelper {
     }
 
     public static CompactCalendar parseDateTime(String stringValue) throws ParseException {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        return parseDateTime(stringValue, timeZonePreference);
+        return parseDateTime(stringValue, getTimeZonePreference());
     }
 
     public static CompactCalendar parseTime(String stringValue) throws ParseException {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        return parseTime(stringValue, timeZonePreference);
+        return parseTime(stringValue, getTimeZonePreference());
     }
 
     private static long toNextUnit(Long size, long nextUnit) {

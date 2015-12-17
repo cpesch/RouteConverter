@@ -123,7 +123,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
             }
         }
         return positions;
@@ -133,7 +133,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
 
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
@@ -157,7 +157,7 @@ public class Gpx11Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<WptType> wptTypes, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<>();
         for (WptType wptType : wptTypes) {
-            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
         }
         return positions;
     }
@@ -167,7 +167,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
                 }
             }
         }
@@ -399,7 +399,7 @@ public class Gpx11Format extends GpxFormat {
         wptType.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
         setSpeed(wptType, isWriteSpeed() ? position.getSpeed() : null);
         setHeading(wptType, isWriteHeading() ? position.getHeading() : null);
-        wptType.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
+        wptType.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getDescription()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getDescription(), wptType.getDesc()) : null);
         wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);

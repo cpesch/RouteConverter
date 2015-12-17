@@ -20,6 +20,7 @@
 
 package slash.navigation.tcx;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.tcx.TcxUtil.marshal1;
 import static slash.navigation.tcx.TcxUtil.unmarshal1;
@@ -67,7 +68,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
-                    parseTime(trackpointT.getTime()),
+                    parseXMLTime(trackpointT.getTime()),
                     null,
                     trackpointT));
         }
@@ -81,7 +82,7 @@ public class Tcx1Format extends TcxFormat {
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
                     null,
-                    parseTime(coursePointT.getTime()),
+                    parseXMLTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, name, positions) : null;
@@ -278,7 +279,7 @@ public class Tcx1Format extends TcxFormat {
             trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(formatTime(position.getTime()));
+            trackpointT.setTime(Transfer.formatXMLTime(position.getTime()));
 
             if (previous != null) {
                 distance += previous.calculateDistance(position);

@@ -27,8 +27,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.formatXMLTime;
+import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.download.queue.QueueUtil.marshal;
 import static slash.navigation.download.queue.QueueUtil.unmarshal;
 
@@ -90,7 +90,7 @@ public class QueuePersister {
         if(checksumType == null)
             return null;
 
-        return new Checksum(parseTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
+        return new Checksum(parseXMLTime(checksumType.getLastModified()), checksumType.getContentLength(), checksumType.getSha1());
     }
 
     public void save(File file, List<Download> downloads) throws IOException {
@@ -138,7 +138,7 @@ public class QueuePersister {
 
         ChecksumType checksumType = new ObjectFactory().createChecksumType();
         checksumType.setContentLength(checksum.getContentLength());
-        checksumType.setLastModified(formatTime(checksum.getLastModified(), true));
+        checksumType.setLastModified(formatXMLTime(checksum.getLastModified(), true));
         checksumType.setSha1(checksum.getSHA1());
         return checksumType;
     }

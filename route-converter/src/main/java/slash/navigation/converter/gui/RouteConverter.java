@@ -33,8 +33,9 @@ import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
-import slash.navigation.converter.gui.profileview.ProfileModeMenu;
+import slash.navigation.converter.gui.profileview.YAxisModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
+import slash.navigation.converter.gui.profileview.XAxisModeMenu;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
@@ -154,7 +155,6 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String FIX_MAP_FOR_CHINA_PREFERENCE = "fixMapForChina";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
-    public static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
@@ -523,14 +523,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setNumberingStrategyPreference(NumberingStrategy numberingStrategy) {
         preferences.put(NUMBERING_STRATEGY_PREFERENCE, numberingStrategy.toString());
-    }
-
-    public String getTimeZonePreference() {
-        return preferences.get(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
-    }
-
-    public void setTimeZonePreference(String timeZoneId) {
-        preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
     }
 
     // helpers for external components
@@ -1090,7 +1082,8 @@ public class RouteConverter extends SingleFrameApplication {
         JMenu mergeMenu = findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist", JMenu.class);
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
-        new ProfileModeMenu(getContext().getMenuBar(), getProfileModeModel());
+        new XAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
+        new YAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel(), getRecentUrlsModel());
     }

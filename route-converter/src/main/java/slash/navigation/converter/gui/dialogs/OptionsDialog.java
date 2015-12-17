@@ -64,6 +64,8 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.*;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.helpers.LocaleHelper.*;
+import static slash.common.io.Transfer.getTimeZonePreference;
+import static slash.common.io.Transfer.setTimeZonePreference;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.common.DegreeFormat.*;
 import static slash.navigation.common.NumberPattern.*;
@@ -397,7 +399,7 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
-        timeZoneModel.setSelectedItem(r.getTimeZonePreference());
+        timeZoneModel.setSelectedItem(getTimeZonePreference());
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -405,7 +407,7 @@ public class OptionsDialog extends SimpleDialog {
                     return;
                 }
                 String timeZoneId = String.valueOf(e.getItem());
-                r.setTimeZonePreference(timeZoneId);
+                setTimeZonePreference(timeZoneId);
             }
         });
 

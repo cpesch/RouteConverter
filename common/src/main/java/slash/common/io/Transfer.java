@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -39,6 +40,8 @@ import java.util.prefs.Preferences;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Integer.toHexString;
 import static java.lang.Math.*;
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -54,6 +57,9 @@ public class Transfer {
 
     private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
+    private static final String REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE = "reduceTimeToSecondPrecision";
+    private static final String TIME_ZONE_PREFERENCE = "timeZone";
+
     public static final String ISO_LATIN1_ENCODING = "ISO-8859-1";
     public static final String UTF8_ENCODING = "UTF-8";
     public static final String UTF16_ENCODING = "UTF-16";
@@ -300,7 +306,40 @@ public class Transfer {
         return builder.toString();
     }
 
-    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
+
+    public static String getTimeZonePreference() {
+        return preferences.get(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
+    }
+
+    public static void setTimeZonePreference(String timeZoneId) {
+        preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
+    }
+
+    private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
+    private static String currentTimeZone = "";
+
+    public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
+        if (!currentTimeZone.equals(timeZonePreference)) {
+            dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+            currentTimeZone = timeZonePreference;
+        }
+        return dateTimeFormat;
+    }
+
+    public synchronized static DateFormat getTimeFormat(String timeZonePreference) {
+        if (!currentTimeZone.equals(timeZonePreference)) {
+            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+            currentTimeZone = timeZonePreference;
+        }
+        return timeFormat;
+    }
+
+    public static String formatTime(CompactCalendar time) {
+        return getTimeFormat(getTimeZonePreference()).format(time.getTime());
+    }
+
+    public static CompactCalendar parseXMLTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;
         GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
@@ -316,11 +355,11 @@ public class Transfer {
         return datatypeFactory;
     }
 
-    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
-       return formatTime(time, preferences.getBoolean("reduceTimeToSecondPrecision", false));
+    public static XMLGregorianCalendar formatXMLTime(CompactCalendar time) {
+       return formatXMLTime(time, preferences.getBoolean(REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE, false));
     }
 
-    public static XMLGregorianCalendar formatTime(CompactCalendar time, boolean reduceTimeToSecondPrecision) {
+    public static XMLGregorianCalendar formatXMLTime(CompactCalendar time, boolean reduceTimeToSecondPrecision) {
         if (time == null)
             return null;
         try {

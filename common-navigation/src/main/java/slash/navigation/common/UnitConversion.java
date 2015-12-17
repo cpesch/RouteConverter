@@ -46,15 +46,16 @@ public class UnitConversion {
     private static final double METER_OF_A_FEET = 0.3048;
     private static final double KILOMETER_OF_A_NAUTIC_MILE = 1.8520043;
     private static final double KILOMETER_OF_A_STATUTE_MILE = 1.609344;
-    private static final double METERS_OF_A_KILOMETER = 1000.0;
-    private static final double SECONDS_OF_AN_HOUR = 3600.0;
+    public static final double METERS_OF_A_KILOMETER = 1000.0;
+    private static final int SECONDS_OF_A_MINUTE = 60;
+    public static final int SECONDS_OF_AN_HOUR = 60 * SECONDS_OF_A_MINUTE;
 
     public static Double nmea2degrees(ValueAndOrientation nmea) {
         if(nmea == null)
             return null;
         double decimal = nmea.getValue() / 100.0;
         int asInt = (int) decimal;
-        double behindDot = ((decimal - asInt) * 100.0) / 60.0;
+        double behindDot = ((decimal - asInt) * 100.0) / SECONDS_OF_A_MINUTE;
         double degrees = asInt + behindDot;
         degrees = roundFraction(degrees, 10);
         Orientation orientation = nmea.getOrientation();
@@ -67,7 +68,7 @@ public class UnitConversion {
             return null;
         int asInt = (int) degrees.doubleValue();
         double behindDot = degrees - asInt;
-        double behindDdMm = behindDot * 60.0;
+        double behindDdMm = behindDot * SECONDS_OF_A_MINUTE;
         double ddmm = asInt * 100.0 + behindDdMm;
         double longitude = abs(ddmm);
         longitude = roundFraction(longitude, 10);
@@ -87,7 +88,7 @@ public class UnitConversion {
     private static String coordinate2ddmm(double coordinate, Orientation positive, Orientation negative) {
         double absolute = abs(coordinate);
         double dd = floor(absolute);
-        double mm = (absolute - dd) * 60.0;
+        double mm = (absolute - dd) * SECONDS_OF_A_MINUTE;
         return format(ENGLISH, "%s %.0f\u00B0 %.3f'", coordinate >= 0.0 ? positive.value() : negative.value(), dd, mm);
     }
 
@@ -111,10 +112,12 @@ public class UnitConversion {
                 Orientation orientation = Orientation.fromValue(matcher.group(1));
                 Double degree = parseDouble(matcher.group(2));
                 Double minutes = parseDouble(matcher.group(3));
-                double coordinate = degree + (minutes / 60.0);
-                if (orientation != null && orientation.equals(negative))
-                    coordinate = -coordinate;
-                return formatDouble(coordinate, 7);
+                if(degree != null && minutes != null) {
+                    double coordinate = degree + (minutes / SECONDS_OF_A_MINUTE);
+                    if (orientation != null && orientation.equals(negative))
+                        coordinate = -coordinate;
+                    return formatDouble(coordinate, 7);
+                }
             }
         }
         return null;
@@ -131,14 +134,14 @@ public class UnitConversion {
     private static String coordinate2ddmmss(double coordinate, Orientation positive, Orientation negative) {
         double absolute = abs(coordinate);
         double dd = floor(absolute);
-        double minutes = (absolute - dd) * 60.0;
+        double minutes = (absolute - dd) * SECONDS_OF_A_MINUTE;
         double mm = floor(minutes);
-        double sss = (minutes - mm) * 60.0;
-        if (rint(sss) == 60.0) {
+        double sss = (minutes - mm) * SECONDS_OF_A_MINUTE;
+        if (rint(sss) == SECONDS_OF_A_MINUTE) {
             mm++;
             sss = 0;
         }
-        if (rint(mm) == 60.0) {
+        if (rint(mm) == SECONDS_OF_A_MINUTE) {
             dd++;
             mm = 0;
         }
@@ -167,10 +170,12 @@ public class UnitConversion {
                 Double degree = parseDouble(matcher.group(2));
                 Double minutes = parseDouble(matcher.group(3));
                 Double seconds = parseDouble(matcher.group(4));
-                double coordinate = degree + (minutes / 60.0) + (seconds / 3600.0);
-                if (orientation != null && orientation.equals(negative))
-                    coordinate = -coordinate;
-                return formatDouble(coordinate, 7);
+                if(degree != null && minutes != null && seconds != null) {
+                    double coordinate = degree + (minutes / SECONDS_OF_A_MINUTE) + (seconds / SECONDS_OF_AN_HOUR);
+                    if (orientation != null && orientation.equals(negative))
+                        coordinate = -coordinate;
+                    return formatDouble(coordinate, 7);
+                }
             }
         }
         return null;
