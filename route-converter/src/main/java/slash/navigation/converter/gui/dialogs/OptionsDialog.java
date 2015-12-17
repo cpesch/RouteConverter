@@ -66,7 +66,6 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Transfer.getTimeZonePreference;
 import static slash.common.io.Transfer.setTimeZonePreference;
-import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.common.DegreeFormat.*;
 import static slash.navigation.common.NumberPattern.*;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
@@ -227,7 +226,7 @@ public class OptionsDialog extends SimpleDialog {
                 r.getFixMapForChina().setBoolean(checkBoxFixMapForChina.isSelected());
             }
         });
-        checkBoxFixMapForChina.setEnabled(!r.getMapView().isDownload() && hasFeature("fix-map-for-china"));
+        checkBoxFixMapForChina.setEnabled(!r.getMapView().isDownload());
 
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices()) {
