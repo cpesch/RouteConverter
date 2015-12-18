@@ -199,7 +199,7 @@ public final class NavigationFormats {
         addFormat(GarminPoiDbFormat.class);
     }
 
-    public static void addFormat(Class<? extends NavigationFormat> format) {
+    private static void addFormat(Class<? extends NavigationFormat> format) {
         SUPPORTED_FORMATS.add(format);
     }
 

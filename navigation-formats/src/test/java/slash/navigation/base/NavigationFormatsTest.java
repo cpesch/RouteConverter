@@ -17,33 +17,34 @@ import slash.navigation.simple.Route66Format;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 
 public class NavigationFormatsTest {
 
     @Test
     public void testGetReadFormatsSortedByExtension() {
-        List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".ov2");
+        List<NavigationFormat> formats = getReadFormatsPreferredByExtension(".ov2");
         assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
         assertEquals(NmeaFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
-        List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".OV2");
+        List<NavigationFormat> formats = getReadFormatsPreferredByExtension(".OV2");
         assertEquals(NmeaFormat.class, formats.get(0).getClass());
         assertEquals(MTP0809Format.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtension2() {
-        List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".gdb");
+        List<NavigationFormat> formats = getReadFormatsPreferredByExtension(".gdb");
         assertEquals(GarminMapSource6Format.class, formats.get(0).getClass());
         assertEquals(NmeaFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionMultipleResults() {
-        List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".csv");
+        List<NavigationFormat> formats = getReadFormatsPreferredByExtension(".csv");
         assertEquals(HaicomLoggerFormat.class, formats.get(0).getClass());
         assertEquals(Route66Format.class, formats.get(1).getClass());
         assertEquals(ColumbusV900ProfessionalFormat.class, formats.get(2).getClass());

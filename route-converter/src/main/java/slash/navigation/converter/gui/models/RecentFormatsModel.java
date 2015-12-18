@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
+import static slash.navigation.base.NavigationFormats.getWriteFormats;
 
 /**
  * Collects the last saved formats.
@@ -91,7 +92,7 @@ public class RecentFormatsModel {
         for (char c : recentFormats.toCharArray()) {
             String formatString = preferences.get(RECENT_FORMAT_PREFERENCE + c, null);
             if (formatString != null) {
-                List<NavigationFormat> writeFormats = NavigationFormats.getWriteFormats();
+                List<NavigationFormat> writeFormats = getWriteFormats();
                 for (NavigationFormat format : writeFormats) {
                     if (format.getClass().getName().equals(formatString)) {
                         result.add(0, format);

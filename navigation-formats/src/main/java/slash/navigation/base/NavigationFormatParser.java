@@ -296,6 +296,10 @@ public class NavigationFormatParser {
         return read(url.openStream(), readBufferSize, getStartDate(url), formats);
     }
 
+    public ParserResult read(URL url) throws IOException {
+        return read(url, getReadFormats());
+    }
+
 
     public static int getNumberOfFilesToWriteFor(BaseRoute route, NavigationFormat format, boolean duplicateFirstPosition) {
         return ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);

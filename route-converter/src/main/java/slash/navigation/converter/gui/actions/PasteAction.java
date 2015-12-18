@@ -78,9 +78,7 @@ public class PasteAction extends FrameAction {
                     paste((String) string);
                 }
             }
-        } catch (UnsupportedFlavorException e) {
-            // intentionally left empty
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty
         }
     }

@@ -592,7 +592,7 @@ public class ConvertPanel implements PanelInTab {
                         String path = createReadablePath(url);
 
                         NavigationFormatParser parser = new NavigationFormatParser();
-                        final ParserResult result = parser.read(url, getReadFormats());
+                        final ParserResult result = parser.read(url);
                         if (result.isSuccessful()) {
                             log.info("Appended: " + path);
                             countRead(result.getFormat());
