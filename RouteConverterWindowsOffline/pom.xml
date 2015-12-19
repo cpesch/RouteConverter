@@ -113,6 +113,10 @@
                                 <jar>target/RouteConverterWindowsOffline.jar</jar>
                                 <errTitle>RouteConverter</errTitle>
                                 <icon>src/main/app-resources/RouteConverter.ico</icon>
+                                <splash>
+                                    <file>src/main/app-resources/RouteConverter.bmp</file>
+                                    <timeout>10</timeout>
+                                </splash>
                                 <classPath>
                                     <mainClass>slash.navigation.converter.gui.RouteConverterOffline</mainClass>
                                 </classPath>

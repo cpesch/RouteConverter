@@ -146,12 +146,10 @@
                             <errTitle>RouteConverter</errTitle>
                             <icon>src/main/app-resources/RouteConverter.ico</icon>
                             <runtimeBits>32/64</runtimeBits>
-                            <!--
                             <splash>
-                                <file>RouteConverter.bmp</file>
+                                <file>src/main/app-resources/RouteConverter.bmp</file>
                                 <timeout>10</timeout>
                             </splash>
-                            -->
                             <classPath>
                                 <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
                             </classPath>

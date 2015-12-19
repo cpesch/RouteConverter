@@ -67,7 +67,7 @@
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverterColumbus</Main-Class>
-                                        <SplashScreen-Image>slash/navigation/converter/gui/RouteConverterColumbus.png</SplashScreen-Image>
+                                        <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
                                         <Application-Name>RouteConverter</Application-Name>
@@ -144,10 +144,10 @@
                                 <outfile>target/RouteConverterWindowsColumbus.exe</outfile>
                                 <jar>target/RouteConverterWindowsColumbus.jar</jar>
                                 <errTitle>RouteConverter</errTitle>
-                                <icon>src/main/app-resources/RouteConverterColumbus.ico</icon>
+                                <icon>src/main/app-resources/RouteConverter.ico</icon>
                                 <runtimeBits>32/64</runtimeBits>
                                 <splash>
-                                    <file>src/main/app-resources/RouteConverterColumbus.bmp</file>
+                                    <file>src/main/app-resources/RouteConverter.bmp</file>
                                     <timeout>10</timeout>
                                 </splash>
                                 <classPath>
