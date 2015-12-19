@@ -99,7 +99,6 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Files.*;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
-import static slash.navigation.base.NavigationFormats.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
@@ -131,7 +130,7 @@ public class ConvertPanel implements PanelInTab {
 
     private UrlDocument urlModel = new UrlDocument();
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
-    private RecentFormatsModel recentFormatsModel = new RecentFormatsModel();
+    private RecentFormatsModel recentFormatsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
     private LengthCalculator lengthCalculator;
@@ -167,6 +166,7 @@ public class ConvertPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
+        recentFormatsModel = new RecentFormatsModel(getNavigationFormatRegistry());
         formatAndRoutesModel = new UndoFormatAndRoutesModel(r.getContext().getUndoManager());
         positionsSelectionModel = new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
@@ -485,8 +485,8 @@ public class ConvertPanel implements PanelInTab {
 
         List<URL> urls = toUrls(selected);
         List<NavigationFormat> formats = selectedFormat != null ?
-                getReadFormatsWithPreferredFormat(selectedFormat) :
-                getReadFormatsPreferredByExtension(getExtension(urls));
+                getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(selectedFormat) :
+                getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls));
         openPositionList(urls, formats);
     }
 
@@ -495,7 +495,7 @@ public class ConvertPanel implements PanelInTab {
             return;
 
         prepareForNewPositionList();
-        openPositionList(urls, getReadFormatsPreferredByExtension(getExtension(urls)));
+        openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
     @SuppressWarnings("unchecked")
@@ -509,7 +509,7 @@ public class ConvertPanel implements PanelInTab {
         startWaitCursor(r.getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
-                NavigationFormatParser parser = new NavigationFormatParser();
+                NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
                 NavigationFormatParserListener listener = new NavigationFormatParserListener() {
                     public void reading(final NavigationFormat<BaseRoute> format) {
                         invokeLater(new Runnable() {
@@ -591,7 +591,7 @@ public class ConvertPanel implements PanelInTab {
                     for (URL url : urls) {
                         String path = createReadablePath(url);
 
-                        NavigationFormatParser parser = new NavigationFormatParser();
+                        NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
                         final ParserResult result = parser.read(url);
                         if (result.isSuccessful()) {
                             log.info("Appended: " + path);
@@ -757,7 +757,7 @@ public class ConvertPanel implements PanelInTab {
                 return;
             if (format.isSupportsMultipleRoutes()) {
                 List<BaseRoute> routes = exportSelectedRoute ? singletonList(route) : formatAndRoutesModel.getRoutes();
-                new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, files[0]);
+                new NavigationFormatParser(getNavigationFormatRegistry()).write(routes, (MultipleRoutesFormat) format, files[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
                 ParserCallback parserCallback = new ParserCallback() {
@@ -768,7 +768,7 @@ public class ConvertPanel implements PanelInTab {
                         }
                     }
                 };
-                new NavigationFormatParser().write(route, format, duplicateFirstPosition, true, parserCallback, files);
+                new NavigationFormatParser(getNavigationFormatRegistry()).write(route, format, duplicateFirstPosition, true, parserCallback, files);
             }
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);
@@ -777,7 +777,7 @@ public class ConvertPanel implements PanelInTab {
 
             if (!exportSelectedRoute && format.isSupportsReading()) {
                 if (openAfterSave) {
-                    openPositionList(toUrls(files), getReadFormatsWithPreferredFormat(format));
+                    openPositionList(toUrls(files), getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(format));
                     log.info(String.format("Open after save: %s", files[0]));
                 }
                 if (confirmOverwrite) {
@@ -1025,8 +1025,12 @@ public class ConvertPanel implements PanelInTab {
         chooser.setFileFilter(fileFilter);
     }
 
+    private NavigationFormatRegistry getNavigationFormatRegistry() {
+        return RouteConverter.getInstance().getNavigationFormatRegistry();
+    }
+
     private void setReadFormatFileFilters(JFileChooser chooser) {
-        setFormatFileFilters(chooser, getReadFormatsSortedByName(),
+        setFormatFileFilters(chooser, getNavigationFormatRegistry().getReadFormatsSortedByName(),
                 preferences.get(READ_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
     }
 
@@ -1036,7 +1040,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void setWriteFormatFileFilters(JFileChooser chooser) {
-        setFormatFileFilters(chooser, getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
+        setFormatFileFilters(chooser, getNavigationFormatRegistry().getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
                 preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
     }
 
@@ -1047,7 +1051,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void logFormatUsage() {
         StringBuilder builder = new StringBuilder();
-        for (NavigationFormat format : getFormatsSortedByName()) {
+        for (NavigationFormat format : getNavigationFormatRegistry().getFormatsSortedByName()) {
             int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
             int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0)

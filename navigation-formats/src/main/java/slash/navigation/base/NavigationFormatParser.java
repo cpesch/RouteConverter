@@ -49,7 +49,7 @@ import static java.lang.String.format;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.NavigationFormats.*;
+import static slash.navigation.base.NavigationFormatConverter.*;
 import static slash.navigation.base.RouteComments.*;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
@@ -64,8 +64,16 @@ import static slash.navigation.url.MotoPlanerUrlFormat.isMotoPlanerUrl;
 public class NavigationFormatParser {
     private static final Logger log = Logger.getLogger(NavigationFormatParser.class.getName());
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
-
+    private final NavigationFormatRegistry navigationFormatRegistry;
     private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<>();
+
+    public NavigationFormatParser(NavigationFormatRegistry navigationFormatRegistry) {
+        this.navigationFormatRegistry = navigationFormatRegistry;
+    }
+
+    public NavigationFormatRegistry getNavigationFormatRegistry() {
+        return navigationFormatRegistry;
+    }
 
     public void addNavigationFileParserListener(NavigationFormatParserListener listener) {
         listeners.add(listener);
@@ -142,7 +150,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(File source) throws IOException {
-        return read(source, getReadFormats());
+        return read(source, getNavigationFormatRegistry().getReadFormats());
     }
 
     private NavigationFormat determineFormat(List<BaseRoute> routes, NavigationFormat preferredFormat) {
@@ -186,7 +194,7 @@ public class NavigationFormatParser {
         // if (source != null && source.size() > 0) {
         if (source != null && context.getFormats().size() > 0) {
             NavigationFormat format = determineFormat(source, context.getFormats().get(0));
-            List<BaseRoute> destination = asFormatForRoutes(source, format);
+            List<BaseRoute> destination = convertRoute(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
             if(destination.size() == 0)
@@ -198,8 +206,8 @@ public class NavigationFormatParser {
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
-        public void parse(InputStream inputStream, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
-            internalRead(inputStream, startDate, formats, this);
+        public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
+            internalRead(inputStream, startDate, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -211,7 +219,7 @@ public class NavigationFormatParser {
             NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream()));
             buffer.mark(readBufferSize + 1);
             try {
-                internalRead(buffer, getStartDate(url), getReadFormats(), this);
+                internalRead(buffer, getStartDate(url), getNavigationFormatRegistry().getReadFormats(), this);
             } finally {
                 buffer.closeUnderlyingInputStream();
             }
@@ -237,7 +245,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, getReadFormats());
+        return read(source, READ_BUFFER_SIZE, null, getNavigationFormatRegistry().getReadFormats());
     }
 
     public ParserResult read(InputStream source, List<NavigationFormat> formats) throws IOException {
@@ -297,7 +305,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url) throws IOException {
-        return read(url, getReadFormats());
+        return read(url, getNavigationFormatRegistry().getReadFormats());
     }
 
 

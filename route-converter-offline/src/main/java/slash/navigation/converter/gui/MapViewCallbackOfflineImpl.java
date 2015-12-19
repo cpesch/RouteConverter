@@ -35,6 +35,7 @@ import static slash.navigation.gui.helpers.UIHelper.getFrame;
 
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapManager}
+ * for the RouteConverter Offline Edition.
  *
  * @author Christian Pesch
  */

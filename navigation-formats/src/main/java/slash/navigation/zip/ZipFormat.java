@@ -35,8 +35,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
-
 /**
  * Reads routes from ZIP Archive (.zip) files.
  *
@@ -87,8 +85,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
                 buffer.mark(size);
-                List<NavigationFormat> formats = getReadFormatsPreferredByExtension(Files.getExtension(entry.getName()));
-                parserContext.parse(buffer, startDate, formats);
+                parserContext.parse(buffer, startDate, Files.getExtension(entry.getName()));
                 zip.closeEntry();
             }
         } catch (IOException e) {

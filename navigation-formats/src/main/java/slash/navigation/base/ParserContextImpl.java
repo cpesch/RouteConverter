@@ -65,7 +65,7 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
         return formats;
     }
 
-    public void parse(InputStream inputStream, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+    public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
         throw new UnsupportedOperationException();
     }
 

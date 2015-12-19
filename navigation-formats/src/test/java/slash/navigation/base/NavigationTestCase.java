@@ -831,7 +831,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String escapeNmn6(String str) {
-        return str != null ? str.replaceAll("[\\[|\\||\\]]", ";") : null;
+        return str != null ? str.replaceAll("[\\[|\\]]", ";") : null;
     }
 
     private static String escapeNmn6Favorites(String str) {
@@ -919,7 +919,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     public static void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertNotNull(result.getFormat());
@@ -967,7 +967,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     public static List<KmlRoute> readKmlFile(BaseKmlFormat format, String fileName) throws Exception {
         File source = new File(fileName);
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source, singletonList((NavigationFormat) format));
         List<KmlRoute> routes = new ArrayList<>();
         for (BaseRoute route : result.getAllRoutes()) {

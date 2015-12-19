@@ -19,6 +19,12 @@
 */
 package slash.navigation.converter.gui;
 
+import slash.navigation.base.ColumbusNavigationFormatRegistry;
+import slash.navigation.base.NavigationFormatRegistry;
+
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 /**
  * A small graphical user interface for the Columbus route conversion.
  *
@@ -26,11 +32,31 @@ package slash.navigation.converter.gui;
  */
 
 public class RouteConverterColumbus extends RouteConverter {
+    private NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
+
     public static void main(String[] args) {
         launch(RouteConverterColumbus.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
     public String getEdition() {
         return "Columbus";
+    }
+
+    public NavigationFormatRegistry getNavigationFormatRegistry() {
+        return navigationFormatRegistry;
+    }
+
+    static {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(3 * 60 * 1000);
+                } catch (InterruptedException e) {
+                }
+                showMessageDialog(null, "Thank you for testing.", "RouteConverter for Columbus", ERROR_MESSAGE);
+                System.exit(5);
+            }
+        });
+        thread.start();
     }
 }

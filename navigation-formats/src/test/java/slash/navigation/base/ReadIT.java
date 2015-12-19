@@ -47,7 +47,7 @@ import static slash.navigation.base.NavigationTestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.assertTrue;
 
 public class ReadIT {
-    private NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     private static Set<String> comments = new HashSet<>();
 
     protected interface TestFileCallback {

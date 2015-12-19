@@ -50,7 +50,7 @@ import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.NavigationFormats.asFormatForPositions;
+import static slash.navigation.base.NavigationFormatConverter.convertPositions;
 import static slash.navigation.common.UnitConversion.ddmm2latitude;
 import static slash.navigation.common.UnitConversion.ddmm2longitude;
 import static slash.navigation.common.UnitConversion.ddmmss2latitude;
@@ -336,7 +336,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     @SuppressWarnings("unchecked")
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        return asFormatForPositions((List) route.getPositions(), targetFormat);
+        return convertPositions((List) route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {

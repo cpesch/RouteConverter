@@ -35,7 +35,7 @@ public class GoogleMapsUrlFormatIT {
 
     private void checkBookmark(String name) throws IOException {
         File source = new File(SAMPLE_PATH + name);
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());

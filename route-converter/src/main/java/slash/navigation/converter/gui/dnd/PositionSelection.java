@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.navigation.base.NavigationFormats.asFormatForPositions;
+import static slash.navigation.base.NavigationFormatConverter.convertPositions;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -64,7 +64,7 @@ public class PositionSelection implements Transferable {
         GlopusFormat targetFormat = new GlopusFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<>();
         try {
-            targetPositions = asFormatForPositions(sourcePositions, targetFormat);
+            targetPositions = convertPositions(sourcePositions, targetFormat);
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e);
         }

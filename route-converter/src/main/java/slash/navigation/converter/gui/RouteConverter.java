@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
+import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.*;
 import slash.navigation.converter.gui.actions.*;
@@ -169,6 +170,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.16";
 
+    private NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
@@ -526,6 +528,11 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     // helpers for external components
+
+
+    public NavigationFormatRegistry getNavigationFormatRegistry() {
+        return navigationFormatRegistry;
+    }
 
     public RouteServiceOperator getRouteServiceOperator() {
         return routeServiceOperator;

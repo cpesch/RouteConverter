@@ -35,7 +35,6 @@ import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
-import static slash.navigation.base.NavigationFormats.*;
 
 /**
  * A simple command line user interface for the route conversion
@@ -46,6 +45,7 @@ import static slash.navigation.base.NavigationFormats.*;
 
 public class RouteConverterCmdLine {
     private static final Logger log = Logger.getLogger(RouteConverterCmdLine.class.getName());
+    private NavigationFormatRegistry registry = new NavigationFormatRegistry();
 
     private void initializeLogging() {
         try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {
@@ -55,14 +55,16 @@ public class RouteConverterCmdLine {
         }
     }
 
-    private void logFormatNames(List<NavigationFormat> formats) {
+    private void logFormatNames(boolean read) {
+        List<NavigationFormat> formats = read ? registry.getReadFormatsSortedByName() : registry.getWriteFormatsSortedByName();
+
         log.info("Supported formats:");
         for (NavigationFormat format : formats)
             log.info(format.getClass().getSimpleName() + " for " + format.getName());
     }
 
     private BaseNavigationFormat findFormat(String formatName) {
-        List<NavigationFormat> formats = getWriteFormats();
+        List<NavigationFormat> formats = registry.getWriteFormats();
         for (NavigationFormat format : formats)
             if (formatName.equals(format.getClass().getSimpleName()))
                 return (BaseNavigationFormat) format;
@@ -75,7 +77,7 @@ public class RouteConverterCmdLine {
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
-            logFormatNames(getWriteFormatsSortedByName());
+            logFormatNames(false);
             return 5;
         }
 
@@ -88,7 +90,7 @@ public class RouteConverterCmdLine {
         BaseNavigationFormat format = findFormat(args[1]);
         if (format == null) {
             log.severe("Format '" + args[1] + "' does not exist; stopping.");
-            logFormatNames(getWriteFormatsSortedByName());
+            logFormatNames(false);
             return 15;
         }
 
@@ -110,11 +112,11 @@ public class RouteConverterCmdLine {
     }
 
     private void convert(File source, NavigationFormat format, File target) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source);
         if (!result.isSuccessful()) {
             log.severe("Could not read source '" + source.getAbsolutePath() + "'");
-            logFormatNames(getReadFormatsSortedByName());
+            logFormatNames(true);
             exit(20);
         }
 

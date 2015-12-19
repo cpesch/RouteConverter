@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
@@ -38,7 +37,7 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 public class NavigationFormatParserIT {
-    private NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
 
     ParserResult read(String testFileName) throws IOException {
         File source = new File(testFileName);

@@ -17,32 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.base;
 
-import slash.common.type.CompactCalendar;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.simple.ColumbusV900Format;
 
 /**
- * The context used during the parsing of the {@link NavigationFormatParser}.
+ * Managed the navigation formats for the RouteConverter Columbus Edition.
  *
  * @author Christian Pesch
  */
-
-public interface ParserContext<R extends BaseRoute> {
-    void prependRoute(R route);
-    void appendRoute(R route);
-    void appendRoutes(List<R> routes);
-    void removeRoutes();
-
-    List<R> getRoutes();
-
-    void addFormat(NavigationFormat<R> format);
-    List<NavigationFormat<R>> getFormats();
-
-    void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException;
-    void parse(String url) throws IOException;
+public class ColumbusNavigationFormatRegistry extends NavigationFormatRegistry {
+    protected boolean includeReadFormat(NavigationFormat format) {
+        return format instanceof GpxFormat || format instanceof ColumbusV900Format;
+    }
 }
