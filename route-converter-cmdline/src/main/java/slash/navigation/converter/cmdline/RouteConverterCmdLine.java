@@ -37,15 +37,14 @@ import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 
 /**
- * A simple command line user interface for the route conversion
- * running under Java 5.
+ * A simple command line user interface for the route conversion.
  *
  * @author Christian Pesch
  */
 
 public class RouteConverterCmdLine {
     private static final Logger log = Logger.getLogger(RouteConverterCmdLine.class.getName());
-    private NavigationFormatRegistry registry = new NavigationFormatRegistry();
+    private NavigationFormatRegistry registry = new CmdLineNavigationFormatRegistry();
 
     private void initializeLogging() {
         try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {
