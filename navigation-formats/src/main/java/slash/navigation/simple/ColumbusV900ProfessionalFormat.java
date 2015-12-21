@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,7 @@ import static slash.navigation.common.NavigationConversion.formatAccuracyAsStrin
  */
 
 public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusV900ProfessionalFormat.class);
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
     private static final Pattern HEADER_PATTERN = Pattern.
             compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX");
@@ -52,11 +54,11 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
 
-                    SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
 
                     SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
@@ -70,6 +72,18 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
 
     protected Pattern getLinePattern() {
         return LINE_PATTERN;
+    }
+
+    private boolean hasValidFix(String line, String field, String valueThatIndicatesFix) {
+        if (field != null && !field.equals(valueThatIndicatesFix)) {
+            log.severe("Fix for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + valueThatIndicatesFix + "'");
+            return preferences.getBoolean("ignoreInvalidFix", false);
+        }
+        return true;
+    }
+
+    protected boolean hasValidFix(String line, Matcher matcher) {
+        return hasValidFix(line, trim(matcher.group(12)), "3D") && hasValidFix(line, trim(matcher.group(13)), "SPS");
     }
 
     protected String getHeader() {
@@ -97,11 +111,11 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
         String heading = lineMatcher.group(11);
-        String pdop = lineMatcher.group(12);
-        String hdop = lineMatcher.group(13);
-        String vdop = lineMatcher.group(14);
+        String pdop = lineMatcher.group(14);
+        String hdop = lineMatcher.group(15);
+        String vdop = lineMatcher.group(16);
 
-        String description = removeZeros(lineMatcher.group(15));
+        String description = removeZeros(lineMatcher.group(17));
         int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
         if (descriptionSeparatorIndex != -1)
             description = description.substring(descriptionSeparatorIndex + 1);

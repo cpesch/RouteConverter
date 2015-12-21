@@ -26,7 +26,6 @@ import slash.navigation.common.NavigationPosition;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +41,6 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  */
 
 public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusV900Format.class);
     protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
 
     protected static final char SEPARATOR = ',';
@@ -76,8 +74,10 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
 
     protected boolean isPosition(String line) {
         Matcher matcher = getLinePattern().matcher(line);
-        return matcher.matches() && hasValidFix(line, trim(matcher.group(2)), "G");
+        return matcher.matches() && hasValidFix(line, matcher);
     }
+
+    protected abstract boolean hasValidFix(String line, Matcher matcher);
 
     protected abstract Pattern getHeaderPattern();
 
@@ -88,18 +88,10 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
 
     protected abstract String getHeader();
 
-    private boolean hasValidFix(String line, String field, String valueThatIndicatesNoFix) {
-        if (field != null && field.equals(valueThatIndicatesNoFix)) {
-            log.severe("Fix for '" + line + "' is invalid. Contains '" + valueThatIndicatesNoFix + "'");
-            return preferences.getBoolean("ignoreInvalidFix", false);
-        }
-        return true;
-    }
-
     protected CompactCalendar parseDateAndTime(String date, String time) {
         date = trim(date);
         time = trim(time);
-        if(date == null || time == null)
+        if (date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);

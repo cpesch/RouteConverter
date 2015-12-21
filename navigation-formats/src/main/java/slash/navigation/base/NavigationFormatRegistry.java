@@ -172,7 +172,7 @@ public class NavigationFormatRegistry {
         addFormat(UrlFormat.class);
 
         // second try for broken files
-        addFormat(BrokenColumbusV900StandardFormat.class);
+        addFormat(BrokenColumbusV900ProfessionalFormat.class);
         addFormat(BrokenNmeaFormat.class);
         addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);

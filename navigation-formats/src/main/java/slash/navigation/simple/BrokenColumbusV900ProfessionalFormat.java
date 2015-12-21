@@ -21,14 +21,14 @@
 package slash.navigation.simple;
 
 /**
- * Reads broken Columbus V900 Standard (.csv) files.
+ * Reads broken Columbus V900 Professional (.csv) files.
  *
  * @author Christian Pesch
  */
 
-public class BrokenColumbusV900StandardFormat extends ColumbusV900StandardFormat {
+public class BrokenColumbusV900ProfessionalFormat extends ColumbusV900ProfessionalFormat {
     public String getName() {
-        return "Columbus V900 Standard Garble (*" + getExtension() + ")";
+        return "Columbus V900 Professional Garble (*" + getExtension() + ")";
     }
 
     protected int getGarbleCount() {

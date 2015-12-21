@@ -50,7 +50,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
@@ -61,6 +61,10 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
 
     protected Pattern getLinePattern() {
         return LINE_PATTERN;
+    }
+
+    protected boolean hasValidFix(String line, Matcher matcher) {
+        return true;
     }
 
     protected String getHeader() {
