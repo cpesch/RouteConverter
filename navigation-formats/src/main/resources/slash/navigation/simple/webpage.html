@@ -212,9 +212,11 @@
                 copyrightControl.index = 1;
                 map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
 
-                markerIcon = new google.maps.MarkerImage(
-                        "http:///maps.google.com/mapfiles/kml/shapes/placemark_circle_maps.png",
-                        new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
+                markerIcon = {
+                    url: "http:///maps.google.com/mapfiles/kml/shapes/placemark_circle_maps.png",
+                    size: new google.maps.Size(32, 32),
+                    anchor: new google.maps.Point(15, 16)
+                };
 
                 // options: google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
                 //          MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID, OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID
