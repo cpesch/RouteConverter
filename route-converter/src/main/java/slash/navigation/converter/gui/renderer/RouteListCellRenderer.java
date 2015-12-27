@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the route labels of the route combo box.
@@ -38,7 +39,13 @@ public class RouteListCellRenderer extends DefaultListCellRenderer {
         BaseRoute route = (BaseRoute) value;
         String text = "?";
         if (route != null) {
-            String characteristics = RouteConverter.getBundle().getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
+            String characteristics;
+            try {
+                characteristics = RouteConverter.getBundle().getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
+            }
+            catch (MissingResourceException e) {
+                characteristics = route.getCharacteristics().name();
+            }
             String name = route.getName() != null ? route.getName() : "?";
             text = name + " (" + characteristics + ")";
         }

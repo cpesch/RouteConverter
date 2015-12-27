@@ -78,11 +78,14 @@ import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
+import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.*;
 import static slash.navigation.mapview.browser.TransformUtil.delta;
+import static slash.navigation.mapview.browser.TransformUtil.isPositionInChina;
 
 /**
  * Base implementation for a browser-based map view.
@@ -128,7 +131,7 @@ public abstract class BrowserMapView implements MapView {
     private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
     private BooleanModel showWaypointDescription;
-    private BooleanModel fixMapForChina;
+    private FixMapModeModel fixMapModeModel;
     private UnitSystemModel unitSystemModel;
     private GoogleMapsServerModel googleMapsServerModel;
 
@@ -157,7 +160,7 @@ public abstract class BrowserMapView implements MapView {
                            BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
-                           BooleanModel fixMapForChina,
+                           FixMapModeModel fixMapModeModel,
                            UnitSystemModel unitSystemModel,
                            GoogleMapsServerModel googleMapsServerModel) {
         this.positionsModel = positionsModel;
@@ -169,7 +172,7 @@ public abstract class BrowserMapView implements MapView {
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
-        this.fixMapForChina = fixMapForChina;
+        this.fixMapModeModel = fixMapModeModel;
         this.unitSystemModel = unitSystemModel;
         this.googleMapsServerModel = googleMapsServerModel;
 
@@ -180,7 +183,7 @@ public abstract class BrowserMapView implements MapView {
         mapViewCallback.addChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
-        fixMapForChina.addChangeListener(fixMapForChinaListener);
+        fixMapModeModel.addChangeListener(fixMapForChinaListener);
         unitSystemModel.addChangeListener(unitSystemListener);
         googleMapsServerModel.addChangeListener(googleMapsServerListener);
 
@@ -221,7 +224,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("mapserverfileurl"))
                     return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
-                    return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
+                    return getMapType();
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
@@ -623,6 +626,19 @@ public abstract class BrowserMapView implements MapView {
         });
     }
 
+    // tile servers
+
+    private static final List<String> GOOGLE_MAP_TYPES = asList("ROADMAP", "SATELLITE", "HYBRID", "TERRAIN");
+
+    private String getMapType() {
+        return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
+    }
+
+    private boolean isGoogleMap() {
+        String mapType = getMapType();
+        return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
+    }
+
     private static final String DOT_XML = ".xml";
 
     private TileServerService loadAllTileServers(java.io.File directory) {
@@ -651,7 +667,7 @@ public abstract class BrowserMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
 
         if (register) {
-            for (String tileServerId : new String[]{"ROADMAP", "SATELLITE", "HYBRID", "TERRAIN"})
+            for (String tileServerId : GOOGLE_MAP_TYPES)
                 buffer.append("mapTypeIds.push(google.maps.MapTypeId.").append(tileServerId).append("); ").
                         append("mapCopyrights[google.maps.MapTypeId.").append(tileServerId).append("] = \"Google\";\n");
         }
@@ -728,7 +744,7 @@ public abstract class BrowserMapView implements MapView {
             mapViewCallback.removeChangeListener(mapViewCallbackListener);
             showCoordinates.removeChangeListener(showCoordinatesListener);
             showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
-            fixMapForChina.removeChangeListener(fixMapForChinaListener);
+            fixMapModeModel.removeChangeListener(fixMapForChinaListener);
             unitSystemModel.removeChangeListener(unitSystemListener);
             googleMapsServerModel.removeChangeListener(googleMapsServerListener);
         }
@@ -897,24 +913,29 @@ public abstract class BrowserMapView implements MapView {
 
     // WGS/GCJ conversion
 
+    private boolean isFixMap(Double longitude, Double latitude) {
+        FixMapMode fixMapMode = fixMapModeModel.getFixMapMode();
+        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
+    }
+
     private NavigationPosition parsePosition(String latitudeString, String longitudeString) {
-        Double latitude = parseDouble(latitudeString);
         Double longitude = parseDouble(longitudeString);
-        if (latitude != null && longitude != null && fixMapForChina.getBoolean()) {
+        Double latitude = parseDouble(latitudeString);
+        if (longitude != null && latitude != null && isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
-            latitude -= delta[0];
             longitude -= delta[1];
+            latitude -= delta[0];
         }
         return new SimpleNavigationPosition(longitude, latitude);
     }
 
     private String asCoordinates(NavigationPosition position) {
-        double latitude = position.getLatitude();
-        double longitude = position.getLongitude();
-        if (fixMapForChina.getBoolean()) {
+        Double longitude = position.getLongitude();
+        Double latitude = position.getLatitude();
+        if (longitude != null && latitude != null && isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
-            latitude += delta[0];
             longitude += delta[1];
+            latitude += delta[0];
         }
         return latitude + "," + longitude;
     }

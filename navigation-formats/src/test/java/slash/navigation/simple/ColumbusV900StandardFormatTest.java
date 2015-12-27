@@ -41,8 +41,8 @@ public class ColumbusV900StandardFormatTest {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
         assertTrue(format.isValidLine("4     ,T,090421,061054,47.797283N,013.049748E,519  ,5   ,206,         "));
         assertTrue(format.isValidLine("7\u0000\u0000\u0000\u0000\u0000,V,090421,061109,47.797191N,013.049593E,500\u0000\u0000,0\u0000\u0000\u0000,206,VOX00014 "));
+        assertTrue(format.isValidLine("297   ,G,130630,032828,23.644383N,113.650126E,14   ,0   ,0  ,"));
 
-        assertFalse(format.isValidLine("297   ,G,130630,032828,23.644383N,113.650126E,14   ,0   ,0  ,"));
         assertFalse(format.isValidLine("4     ,T,090421,061054,-47.797283N,013.049748E,519  ,5   ,206,         "));
         assertFalse(format.isValidLine("4     ,T,090421,061054,47.797283N,-013.049748E,519  ,5   ,206,         "));
     }
@@ -51,15 +51,15 @@ public class ColumbusV900StandardFormatTest {
     public void testIsPosition() {
         assertTrue(format.isPosition("5     ,T,090421,061057,47.797281N,013.049743E,504  ,0   ,206,         "));
         assertTrue(format.isPosition("3434  ,T,121126,083100,09.941796N,076.267059E,0    ,14  ,0  ,         "));
+        assertTrue(format.isPosition("3434  ,G,121126,083100,09.941796N,076.267059E,0    ,14  ,0  ,         "));
 
-        assertFalse(format.isPosition("3434  ,G,121126,083100,09.941796N,076.267059E,0    ,14  ,0  ,         "));
         assertFalse(format.isPosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971"));
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
     }
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,0 8 ,206,VOX00006 ", null);
+        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,8 ,206,VOX00006 ", null);
         assertDoubleEquals(13.049739, position.getLongitude());
         assertDoubleEquals(47.797278, position.getLatitude());
         assertDoubleEquals(502.0, position.getElevation());

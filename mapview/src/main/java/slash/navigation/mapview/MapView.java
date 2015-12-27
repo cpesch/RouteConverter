@@ -42,7 +42,7 @@ public interface MapView extends PositionsSelectionModel {
                     BooleanModel recenterAfterZooming,
                     BooleanModel showCoordinates,
                     BooleanModel showWaypointDescription,
-                    BooleanModel fixMapForChina,
+                    FixMapModeModel fixMapModeModel,
                     UnitSystemModel unitSystemModel,
                     GoogleMapsServerModel googleMapsServerModel);
     boolean isInitialized();

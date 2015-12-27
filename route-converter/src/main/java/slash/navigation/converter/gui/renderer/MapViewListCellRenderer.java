@@ -29,6 +29,7 @@ import slash.navigation.gui.Application;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link MapView} labels of the map view combo box.
@@ -40,8 +41,13 @@ public class MapViewListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         MapViewImplementation mapView = MapViewImplementation.class.cast(value);
-        String text = RouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase());
-        if(!mapView.isDownload())
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = mapView.name();
+        }
+        if (!mapView.isDownload())
             text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
         label.setText(text);
         return label;

@@ -37,7 +37,7 @@ import static java.util.Arrays.sort;
 
 public class AutomaticElevationService implements ElevationService {
     private static final Logger log = Logger.getLogger(AutomaticElevationService.class.getName());
-    private static final String AUTOMATIC_ELEVATION_SERVICE_NAME = "<Automatic>";
+    private static final String AUTOMATIC_ELEVATION_SERVICE_NAME = "Automatic";
     private static final String JONATHAN_DE_FERRANTI_DEM_3 = "Jonathan de Ferranti DEM 3";
 
     private final ElevationServiceFacade elevationServiceFacade;

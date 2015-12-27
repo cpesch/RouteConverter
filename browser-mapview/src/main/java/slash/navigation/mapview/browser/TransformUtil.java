@@ -29,6 +29,21 @@ package slash.navigation.mapview.browser;
  */
 
 public class TransformUtil {
+    public static boolean isPositionInChina(double longitude, double latitude) {
+        return !outOfChina(latitude, longitude);
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    public static boolean outOfChina(double lat, double lng) {
+        if ((lng < 72.004) || (lng > 137.8347)) {
+            return true;
+        }
+        if ((lat < 0.8293) || (lat > 55.8271)) {
+            return true;
+        }
+        return false;
+    }
+
     private static double transformLat(double x, double y) {
         double ret =
                 -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));

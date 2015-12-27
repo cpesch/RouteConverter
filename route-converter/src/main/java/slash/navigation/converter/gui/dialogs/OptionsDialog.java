@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
+import slash.navigation.converter.gui.models.FixMapMode;
 import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.googlemaps.GoogleMapsServer;
@@ -73,6 +74,9 @@ import static slash.navigation.common.NumberingStrategy.Relative_Position_In_Cur
 import static slash.navigation.common.UnitSystem.*;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
+import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
+import static slash.navigation.converter.gui.models.FixMapMode.No;
+import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
@@ -87,6 +91,7 @@ public class OptionsDialog extends SimpleDialog {
     private JTabbedPane tabbedPane1;
     private JComboBox<Locale> comboBoxLocale;
     private JComboBox<GoogleMapsServer> comboBoxGoogleMapsServer;
+    private JComboBox<FixMapMode> comboBoxFixMapMode;
     private JComboBox<MapViewImplementation> comboBoxMapView;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseBabelPath;
@@ -98,7 +103,6 @@ public class OptionsDialog extends SimpleDialog {
     private JCheckBox checkBoxRecenterAfterZooming;
     private JCheckBox checkBoxShowCoordinates;
     private JCheckBox checkBoxShowWaypointDescription;
-    private JCheckBox checkBoxFixMapForChina;
     private JComboBox<RoutingService> comboBoxRoutingService;
     private JTextField textFieldRoutingServicePath;
     private JButton buttonChooseRoutingServicePath;
@@ -169,6 +173,22 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
+        ComboBoxModel<FixMapMode> fixMapModeModel = new DefaultComboBoxModel<>(new FixMapMode[]{
+                Automatic, Yes, No
+        });
+        fixMapModeModel.setSelectedItem(r.getFixMapModeModel().getFixMapMode());
+        comboBoxFixMapMode.setModel(fixMapModeModel);
+        comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer());
+        comboBoxFixMapMode.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED) {
+                    return;
+                }
+                FixMapMode fixMapMode = FixMapMode.class.cast(e.getItem());
+                r.getFixMapModeModel().setFixMapMode(fixMapMode);
+            }
+        });
+
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 BabelFormat.setBabelPathPreference(textFieldBabelPath.getText());
@@ -219,14 +239,6 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
         checkBoxShowWaypointDescription.setEnabled(!r.getMapView().isDownload());
-
-        checkBoxFixMapForChina.setSelected(r.getFixMapForChina().getBoolean());
-        checkBoxFixMapForChina.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                r.getFixMapForChina().setBoolean(checkBoxFixMapForChina.isSelected());
-            }
-        });
-        checkBoxFixMapForChina.setEnabled(!r.getMapView().isDownload());
 
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices()) {
@@ -730,11 +742,11 @@ public class OptionsDialog extends SimpleDialog {
         final JLabel label24 = new JLabel();
         this.$$$loadLabelText$$$(label24, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("google-maps-server"));
         panel14.add(label24, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxFixMapMode = new JComboBox();
+        panel14.add(comboBoxFixMapMode, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label25 = new JLabel();
-        this.$$$loadLabelText$$$(label25, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("fix-map-for-china"));
+        this.$$$loadLabelText$$$(label25, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("fix-map-mode"));
         panel14.add(label25, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxFixMapForChina = new JCheckBox();
-        panel14.add(checkBoxFixMapForChina, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel16 = new JPanel();
         panel16.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
         panel13.add(panel16, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

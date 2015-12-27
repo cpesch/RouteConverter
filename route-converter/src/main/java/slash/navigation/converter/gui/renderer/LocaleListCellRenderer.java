@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import static java.util.Locale.ROOT;
 
@@ -42,8 +43,13 @@ public class LocaleListCellRenderer extends DefaultListCellRenderer {
         String text;
         if (ROOT.equals(locale))
             text = RouteConverter.getBundle().getString("locale-default");
-        else
-            text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage());
+        else {
+            try {
+                text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage());
+            } catch (MissingResourceException e) {
+                text = locale.getDisplayName();
+            }
+        }
         label.setText(text);
         return label;
     }

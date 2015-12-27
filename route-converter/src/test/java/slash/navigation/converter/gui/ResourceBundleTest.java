@@ -47,7 +47,7 @@ public class ResourceBundleTest {
 
     @Test
     public void englishAgainstOtherBundles() {
-        compareEnglishAgainstOtherBundles(true);
+        compareEnglishAgainstOtherBundles(false);
     }
 
     private void compareEnglishAgainstOtherBundles(boolean throwException) {

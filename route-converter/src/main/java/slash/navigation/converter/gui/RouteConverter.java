@@ -153,7 +153,6 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
-    private static final String FIX_MAP_FOR_CHINA_PREFERENCE = "fixMapForChina";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -182,7 +181,7 @@ public class RouteConverter extends SingleFrameApplication {
     private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
     private BooleanModel showCoordinates = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
     private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
-    private BooleanModel fixMapForChina = new BooleanModel(FIX_MAP_FOR_CHINA_PREFERENCE, false);
+    private FixMapModeModel fixMapModeModel = new FixMapModeModel();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -370,7 +369,7 @@ public class RouteConverter extends SingleFrameApplication {
                 getRecenterAfterZooming(),
                 getShowCoordinates(),
                 getShowWaypointDescription(),
-                getFixMapForChina(),
+                getFixMapModeModel(),
                 getUnitSystemModel(),
                 getGoogleMapsServerModel());
 
@@ -536,6 +535,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public RouteServiceOperator getRouteServiceOperator() {
         return routeServiceOperator;
+    }
+
+    public FixMapModeModel getFixMapModeModel() {
+        return fixMapModeModel;
     }
 
     public UnitSystemModel getUnitSystemModel() {
@@ -785,10 +788,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public BooleanModel getShowWaypointDescription() {
         return showWaypointDescription;
-    }
-
-    public BooleanModel getFixMapForChina() {
-        return fixMapForChina;
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {

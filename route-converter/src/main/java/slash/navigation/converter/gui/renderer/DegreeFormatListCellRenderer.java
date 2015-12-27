@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link DegreeFormat} labels of the degree format combo box.
@@ -38,7 +39,12 @@ public class DegreeFormatListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         DegreeFormat degreeFormat = DegreeFormat.class.cast(value);
-        String text = RouteConverter.getBundle().getString("degreeformat-" + degreeFormat.name().toLowerCase());
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("degreeformat-" + degreeFormat.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = degreeFormat.name();
+        }
         label.setText(text);
         return label;
     }

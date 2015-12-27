@@ -159,7 +159,7 @@ public class MapsforgeMapView implements MapView {
                            BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
-                           BooleanModel fixMapForChina,                /* ignored */
+                           FixMapModeModel fixMapModeModel,            /* ignored */
                            UnitSystemModel unitSystemModel,            /* ignored */
                            GoogleMapsServerModel googleMapsServerModel /* ignored */) {
         this.mapViewCallback = (MapViewCallbackOffline) mapViewCallback;

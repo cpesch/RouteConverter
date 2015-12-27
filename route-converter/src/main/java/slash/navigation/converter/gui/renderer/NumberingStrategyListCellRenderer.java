@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link NumberingStrategy} labels of the options dialog combo box.
@@ -37,7 +38,12 @@ public class NumberingStrategyListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         NumberingStrategy numberingStrategy = NumberingStrategy.class.cast(value);
-        String text = RouteConverter.getBundle().getString("numbering-strategy-" + numberingStrategy.name().toLowerCase());
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("numbering-strategy-" + numberingStrategy.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = numberingStrategy.name();
+        }
         label.setText(text);
         return label;
     }

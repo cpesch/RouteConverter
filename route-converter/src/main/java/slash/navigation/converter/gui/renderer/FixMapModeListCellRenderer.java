@@ -20,23 +20,30 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.googlemaps.GoogleMapsServer;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.FixMapMode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
- * Renders the {@link GoogleMapsServer} labels of the map server combo box.
+ * Renders the {@link FixMapMode} labels of the fix map combo box.
  *
  * @author Christian Pesch
  */
 
-public class GoogleMapsServerListCellRenderer extends DefaultListCellRenderer {
+public class FixMapModeListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
-        GoogleMapsServer googleMapsServer = GoogleMapsServer.class.cast(value);
-
-        label.setText(googleMapsServer.name() + " (" + googleMapsServer.getApiUrl() + ")");
+        FixMapMode fixMapMode = FixMapMode.class.cast(value);
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("fix-map-mode-" + fixMapMode.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = fixMapMode.name();
+        }
+        label.setText(text);
         return label;
     }
 }

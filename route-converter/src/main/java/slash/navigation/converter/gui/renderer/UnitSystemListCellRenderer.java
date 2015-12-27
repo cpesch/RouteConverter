@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link UnitSystem} labels of the unit system combo box.
@@ -38,7 +39,12 @@ public class UnitSystemListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         UnitSystem unitSystem = UnitSystem.class.cast(value);
-        String text = RouteConverter.getBundle().getString("unitsystem-" + unitSystem.name().toLowerCase());
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("unitsystem-" + unitSystem.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = unitSystem.name();
+        }
         label.setText(text);
         return label;
     }

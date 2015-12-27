@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link NumberPattern} labels of the options dialog combo box.
@@ -37,7 +38,12 @@ public class NumberPatternListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         NumberPattern numberPattern = NumberPattern.class.cast(value);
-        String text = RouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase());
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = numberPattern.name();
+        }
         label.setText(text);
         return label;
     }
