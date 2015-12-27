@@ -24,10 +24,13 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
@@ -74,16 +77,21 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         return LINE_PATTERN;
     }
 
-    private boolean hasValidFix(String line, String field, String valueThatIndicatesFix) {
-        if (field != null && !field.equals(valueThatIndicatesFix)) {
-            log.severe("Fix for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + valueThatIndicatesFix + "'");
+
+    private boolean hasValidField(String line, String field, Set<String> validValues) {
+        if (field != null && !validValues.contains(field)) {
+            log.severe("Field for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + validValues + "'");
             return preferences.getBoolean("ignoreInvalidFix", false);
         }
         return true;
     }
 
+    private static final Set<String> VALID_FIX_MODES = new HashSet<>(asList("2D", "3D"));
+    private static final Set<String> VALID_VALID = new HashSet<>(asList("SPS", "DGPS"));
+
     protected boolean hasValidFix(String line, Matcher matcher) {
-        return hasValidFix(line, trim(matcher.group(12)), "3D") && hasValidFix(line, trim(matcher.group(13)), "SPS");
+        return hasValidField(line, trim(matcher.group(12)), VALID_FIX_MODES) &&
+                hasValidField(line, trim(matcher.group(13)), VALID_VALID);
     }
 
     protected String getHeader() {
