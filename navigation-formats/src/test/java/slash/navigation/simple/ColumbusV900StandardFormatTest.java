@@ -81,12 +81,12 @@ public class ColumbusV900StandardFormatTest {
         assertDoubleEquals(-13.049739, position.getLongitude());
         assertDoubleEquals(-47.797278, position.getLatitude());
         assertDoubleEquals(-102.0, position.getElevation());
-        assertNull(position.getDescription());
+        assertEquals("Voice 6", position.getDescription());
     }
 
     @Test
     public void testParsePOIPosition() {
-        Wgs84Position position = format.parsePosition("6     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
-        assertEquals("POI 6", position.getDescription());
+        Wgs84Position position = format.parsePosition("7     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
+        assertEquals("PointOfInterest 7", position.getDescription());
     }
 }
