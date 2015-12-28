@@ -20,6 +20,7 @@
 
 package slash.navigation.fpl;
 
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
 import java.math.BigDecimal;
@@ -35,7 +36,6 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class GarminFlightPlanPosition extends Wgs84Position {
-    private WaypointType waypointType;
     private String identifier;
     private CountryCode countryCode;
 
@@ -57,14 +57,6 @@ public class GarminFlightPlanPosition extends Wgs84Position {
         String description = trim(super.getDescription());
         return description != null ? description :
                 getIdentifier() + ", " + getWaypointType() + (getCountryCode() != null ? ", " + getCountryCode() : "");
-    }
-
-    public WaypointType getWaypointType() {
-        return waypointType;
-    }
-
-    public void setWaypointType(WaypointType waypointType) {
-        this.waypointType = waypointType;
     }
 
     public String getIdentifier() {

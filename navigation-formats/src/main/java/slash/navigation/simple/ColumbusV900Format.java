@@ -33,6 +33,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.WaypointType.*;
 
 /**
  * The base of all Columbus V900 formats.
@@ -45,10 +46,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
 
     protected static final char SEPARATOR = ',';
     protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
-    protected static final String WAYPOINT_POSITION = "T";
-    protected static final String VOICE_POSITION = "V";
-    protected static final String POI_POSITION = "C";
-
+    protected static final String VALID_TAG_VALUES = "CGTV";
     private static final String DATE_AND_TIME_FORMAT = "yyMMdd HHmmss";
     private static final String DATE_FORMAT = "yyMMdd";
     private static final String TIME_FORMAT = "HHmmss";
@@ -97,6 +95,11 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
+    protected WaypointType parseTag(String string) {
+        WaypointType type = WaypointType.fromValue(string);
+        return type != null ? type : Waypoint;
+    }
+
     protected String removeZeros(String string) {
         return string != null ? string.replace('\u0000', ' ') : "";
     }
@@ -125,14 +128,19 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    protected String formatLineType(String description) {
+    protected WaypointType formatTag(Wgs84Position position) {
+        WaypointType waypointType = position.getWaypointType();
+        if(waypointType != null)
+            return waypointType;
+
+        String description = position.getDescription();
         if (description != null) {
             if (description.startsWith("VOX"))
-                return VOICE_POSITION;
+                return Voice;
             if (description.startsWith("POI")) {
-                return POI_POSITION;
+                return PointOfInterest;
             }
         }
-        return WAYPOINT_POSITION;
+        return Waypoint;
     }
 }

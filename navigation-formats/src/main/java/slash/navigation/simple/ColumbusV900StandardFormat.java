@@ -21,6 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
@@ -44,7 +45,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([CGTV])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([" + VALID_TAG_VALUES + "])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
@@ -79,6 +80,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
+        WaypointType waypointType = parseTag(trim(lineMatcher.group(2)));
         String date = lineMatcher.group(3);
         String time = lineMatcher.group(4);
         Double latitude = parseDouble(lineMatcher.group(5));
@@ -90,7 +92,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
         String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
+        String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
 
         String description = removeZeros(lineMatcher.group(12));
@@ -98,15 +100,12 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         if (descriptionSeparatorIndex != -1)
             description = description.substring(descriptionSeparatorIndex + 1);
         description = trim(description);
-
-        String lineType = trim(lineMatcher.group(2));
-        if (description == null && POI_POSITION.equals(lineType)) {
-            String lineNumber = lineMatcher.group(1);
-            description = "POI " + trim(removeZeros(lineNumber));
-        }
+        if (description == null)
+            description = waypointType + " " + trim(removeZeros(lineMatcher.group(1)));
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), description);
+        position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         return position;
     }
@@ -124,7 +123,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         String description = fillWithZeros(escape(position.getDescription(), SEPARATOR, ';'), 8);
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatLineType(position.getDescription()) + SEPARATOR +
+                formatTag(position) + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + northOrSouth + SEPARATOR +
                 longitude + westOrEast + SEPARATOR +

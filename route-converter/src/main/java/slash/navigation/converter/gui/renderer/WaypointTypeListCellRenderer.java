@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.fpl.WaypointType;
+import slash.navigation.base.WaypointType;
 
 import javax.swing.*;
 import java.awt.*;

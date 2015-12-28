@@ -37,6 +37,7 @@ public class Wgs84Position extends BaseNavigationPosition {
     protected Double longitude, latitude, heading, hdop, vdop, pdop;
     protected String description;
     protected Integer satellites;
+    protected WaypointType waypointType;
     private Double elevation;
     private Double speed;
     private CompactCalendar time;
@@ -108,6 +109,14 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.time = time;
     }
 
+
+    public WaypointType getWaypointType() {
+        return waypointType;
+    }
+
+    public void setWaypointType(WaypointType waypointType) {
+        this.waypointType = waypointType;
+    }
 
     public Double getHeading() {
         return heading;
@@ -189,7 +198,6 @@ public class Wgs84Position extends BaseNavigationPosition {
     public Wgs84Position asWgs84Position() {
         return this;
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

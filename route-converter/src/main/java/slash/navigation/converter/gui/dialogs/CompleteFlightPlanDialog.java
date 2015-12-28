@@ -24,24 +24,19 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.renderer.CountryCodeListCellRenderer;
 import slash.navigation.converter.gui.renderer.WaypointTypeListCellRenderer;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.fpl.WaypointType;
+import slash.navigation.base.WaypointType;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ResourceBundle;
 
 import static java.awt.Color.RED;
@@ -53,7 +48,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.fpl.CountryCode.None;
-import static slash.navigation.fpl.WaypointType.UserWaypoint;
+import static slash.navigation.base.WaypointType.*;
 
 /**
  * Dialog for completing information for a Garmin Flight Plan.
@@ -128,7 +123,9 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             }
         });
         comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer());
-        comboBoxWaypointType.setModel(new DefaultComboBoxModel<>(WaypointType.values()));
+        comboBoxWaypointType.setModel(new DefaultComboBoxModel<>(new WaypointType[]{
+                Airport, Intersection, NonDirectionalBeacon, UserWaypoint, VHFOmnidirectionalRadioRange
+        }));
         comboBoxWaypointType.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)

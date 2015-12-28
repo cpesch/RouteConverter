@@ -18,20 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.fpl;
+package slash.navigation.base;
 
 /**
- * Enumeration of supported waypoint types for Garmin Flight Plan (.fpl) routes.
+ * Enumeration of supported waypoint types.
  *
  * @author Christian Pesch
  */
 
 public enum WaypointType {
+    // Garmin Flight Plan (.fpl)
     Airport("AIRPORT"),
     Intersection("INT"),
     NonDirectionalBeacon("NDB"),
+    UserWaypoint("USER WAYPOINT"),
     VHFOmnidirectionalRadioRange("VOR"),
-    UserWaypoint("USER WAYPOINT");
+
+    // Columbus V900 (.csv)
+    End("END"),
+    Parking("G"),
+    Photo("P"),
+    PointOfInterest("C"),
+    Start("START"),
+    Voice("V"),
+    Waypoint("T");
 
     private String value;
 

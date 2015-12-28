@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.fpl.WaypointType;
+import slash.navigation.base.WaypointType;
 import slash.navigation.gpx.binding11.WptType;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
-import static slash.navigation.fpl.WaypointType.UserWaypoint;
+import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 
 /**
