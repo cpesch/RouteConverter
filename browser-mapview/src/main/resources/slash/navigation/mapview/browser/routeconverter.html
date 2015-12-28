@@ -246,13 +246,20 @@
        addOverlay(new google.maps.Polyline({path:latLngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false, geodesic:true}));
    }
 
-   var markerIcon;
+   var waypointIcons = {};
+
+   function addWaypointIcon(latLng, waypointType) {
+       var icon = waypointIcons[waypointType];
+       if (icon)
+           addOverlay(new google.maps.Marker({position:latLng, clickable:false, icon:icon}));
+   }
 
    function addMarker(latLng, description, showWaypointDescription) {
+       var icon = waypointIcons["Marker"];
        if (showWaypointDescription)
-           addOverlay(new MarkerWithLabel({position:latLng, title:description, clickable:false, icon:markerIcon}));
+           addOverlay(new MarkerWithLabel({position:latLng, title:description, clickable:false, icon:icon}));
        else
-           addOverlay(new google.maps.Marker({position:latLng, title:description, clickable:false, icon:markerIcon}));
+           addOverlay(new google.maps.Marker({position:latLng, title:description, clickable:false, icon:icon}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {
@@ -617,8 +624,20 @@ ${tileservers2}
            });
 
            directionsService = new google.maps.DirectionsService();
-           markerIcon = new google.maps.MarkerImage("${mapserverfileurl}/mapfiles/kml/shapes/placemark_circle_maps.png",
-                   new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
+           waypointIcons["Marker"] = {url:"${mapserverfileurl}/mapfiles/kml/shapes/placemark_circle_maps.png",
+               size:new google.maps.Size(32,32), anchor:new google.maps.Point(15,16)};
+           waypointIcons["End"] = {url:"http://www.routeconverter.com/images/end.png",
+               size:new google.maps.Size(19,32), anchor:new google.maps.Point(9,32)};
+           waypointIcons["Parking"] = {url:"http://www.routeconverter.com/images/parking.png",
+               size:new google.maps.Size(19,32), anchor:new google.maps.Point(9,32)};
+           waypointIcons["PointOfInterest"] = {url:"http://www.routeconverter.com/images/poi.png",
+               size:new google.maps.Size(27,32), anchor:new google.maps.Point(9,26)};
+           waypointIcons["Start"] = {url:"http://www.routeconverter.com/images/start.png",
+                   size:new google.maps.Size(19,32), anchor:new google.maps.Point(9,32)};
+           waypointIcons["Voice"] = {url:"http://www.routeconverter.com/images/voice.png",
+               size:new google.maps.Size(19,32), anchor:new google.maps.Point(9,32)};
+           waypointIcons["Waypoint"] = {url:"http://www.routeconverter.com/images/waypoint.png",
+               scaledSize:new google.maps.Size(12,12), anchor:new google.maps.Point(6,6)};
            addDebug("2. created map: " + map);
 
            var mapType = '${maptype}';

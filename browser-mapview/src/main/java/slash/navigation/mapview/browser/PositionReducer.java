@@ -159,14 +159,18 @@ class PositionReducer {
         }
     }
 
+    List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions, int zoom) {
+        double visiblePositionAreaFactor = preferences.getDouble("visiblePositionAreaFactor", 3.0);
+        double factor = max(visiblePositionAreaFactor * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * visiblePositionAreaFactor;
+        return filterVisiblePositions(positions, factor, false);
+    }
+
     private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, RouteCharacteristics characteristics, boolean showWaypointDescription) {
         int maximumPositionCount = getMaximumPositionCount(characteristics, showWaypointDescription);
 
         // reduce the number of result to those that are visible for tracks and waypoint lists
         if (positions.size() > maximumPositionCount && !characteristics.equals(Route)) {
-            double visiblePositionAreaFactor = preferences.getDouble("visiblePositionAreaFactor", 3.0);
-            double factor = max(visiblePositionAreaFactor * (zoom - MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION), 1) * visiblePositionAreaFactor;
-            positions = filterVisiblePositions(positions, factor, false);
+            positions = filterVisiblePositions(positions, zoom);
             visible = new BoundingBox(positions);
         } else {
             visible = null;

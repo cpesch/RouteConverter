@@ -22,9 +22,7 @@ package slash.navigation.mapview.browser;
 
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.*;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
@@ -37,6 +35,7 @@ import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.tileserver.TileServerService;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.simple.ColumbusV900Format;
 
 import javax.swing.event.*;
 import javax.xml.bind.JAXBException;
@@ -77,6 +76,8 @@ import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.base.WaypointType.End;
+import static slash.navigation.base.WaypointType.Start;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
@@ -394,7 +395,7 @@ public abstract class BrowserMapView implements MapView {
                             addDirectionsToMap(render);
                             break;
                         case Track:
-                            addPolylinesToMap(render);
+                            addPolylinesToMap(render, copiedPositions);
                             break;
                         case Waypoints:
                             addMarkersToMap(render);
@@ -694,6 +695,10 @@ public abstract class BrowserMapView implements MapView {
         }
 
         return buffer.toString();
+    }
+
+    private boolean isColumbusTrack() {
+        return positionsModel.getRoute().getFormat() instanceof ColumbusV900Format;
     }
 
     // resizing
@@ -1032,30 +1037,56 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private void addPolylinesToMap(final List<NavigationPosition> positions) {
+    private void addPolylinesToMap(final List<NavigationPosition> reducedPositions, List<NavigationPosition> allPositions) {
         // display markers if there is no polyline to show
-        if (positions.size() < 2) {
-            addMarkersToMap(positions);
+        if (reducedPositions.size() < 2) {
+            addMarkersToMap(reducedPositions);
             return;
         }
 
         String color = preferences.get(TRACK_LINE_COLOR_PREFERENCE, "0033FF");
         int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
-        int polylinesCount = ceiling(positions.size(), maximumPolylineSegmentLength, true);
+        int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder latlngs = new StringBuilder();
             int minimum = max(0, j * maximumPolylineSegmentLength - 1);
-            int maximum = min(positions.size(), (j + 1) * maximumPolylineSegmentLength);
+            int maximum = min(reducedPositions.size(), (j + 1) * maximumPolylineSegmentLength);
             for (int i = minimum; i < maximum; i++) {
-                NavigationPosition position = positions.get(i);
+                NavigationPosition position = reducedPositions.get(i);
                 latlngs.append("new google.maps.LatLng(").append(asCoordinates(position)).append(")");
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
             executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + width + ");");
         }
+
+        addWaypointIconsToMap(allPositions);
+
         removeDirections();
+    }
+
+    private void addWaypointIconsToMap(List<NavigationPosition> positions) {
+        if (!isColumbusTrack())
+            return;
+
+        List<NavigationPosition> reducedPositions = positionReducer.filterVisiblePositions(positions, getZoom());
+
+        StringBuilder icons = new StringBuilder();
+        for (int i = 0, c = reducedPositions.size(); i < c; i++) {
+            NavigationPosition position = reducedPositions.get(i);
+            Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
+            WaypointType waypointType = wgs84Position.getWaypointType();
+            if (i == 0)
+                waypointType = Start;
+            if (i == c - 1)
+                waypointType = End;
+
+            if (waypointType != null)
+                icons.append("addWaypointIcon(new google.maps.LatLng(").append(asCoordinates(position)).append("),\"").
+                        append(waypointType).append("\");\n");
+        }
+        executeScript(icons.toString());
     }
 
     private void addMarkersToMap(List<NavigationPosition> positions) {
