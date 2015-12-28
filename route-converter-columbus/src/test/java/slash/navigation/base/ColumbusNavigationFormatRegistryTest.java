@@ -21,7 +21,7 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.simple.BrokenColumbusV900ProfessionalFormat;
+import slash.navigation.simple.GarbleColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 
@@ -49,6 +49,6 @@ public class ColumbusNavigationFormatRegistryTest {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".csv");
         assertEquals(ColumbusV900ProfessionalFormat.class, formats.get(0).getClass());
         assertEquals(ColumbusV900StandardFormat.class, formats.get(1).getClass());
-        assertEquals(BrokenColumbusV900ProfessionalFormat.class, formats.get(2).getClass());
+        assertEquals(GarbleColumbusV900ProfessionalFormat.class, formats.get(2).getClass());
     }
 }

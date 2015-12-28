@@ -59,7 +59,7 @@ public class NavigationFormatRegistryTest {
         assertEquals(Route66Format.class, formats.get(1).getClass());
         assertEquals(QstarzQ1000Format.class, formats.get(2).getClass());
         assertEquals(Iblue747Format.class, formats.get(3).getClass());
-        assertEquals(BrokenHaicomLoggerFormat.class, formats.get(4).getClass());
+        assertEquals(GarbleHaicomLoggerFormat.class, formats.get(4).getClass());
         assertEquals(NmeaFormat.class, formats.get(5).getClass());
     }
 }

@@ -22,10 +22,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,12 +36,12 @@ import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
- * Reads broken Navilink (.sbp) files.
+ * Reads garbled Navilink (.sbp) files.
  *
  * @author Malte Neumann
  */
 
-public class BrokenNavilinkFormat extends NavilinkFormat {
+public class GarbleNavilinkFormat extends NavilinkFormat implements GarbleNavigationFormat {
     private static final long MINIMUM_TIME_MILLISECONDS = 949427965809l; // 01.01.2000
 
     public String getName() {

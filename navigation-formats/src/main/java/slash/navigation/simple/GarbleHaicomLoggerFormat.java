@@ -20,15 +20,17 @@
 
 package slash.navigation.simple;
 
+import slash.navigation.base.GarbleNavigationFormat;
+
 /**
- * Reads broken Columbus V900 Professional (.csv) files.
+ * Reads garbled Haicom Logger (.csv) files.
  *
  * @author Christian Pesch
  */
 
-public class BrokenColumbusV900ProfessionalFormat extends ColumbusV900ProfessionalFormat {
+public class GarbleHaicomLoggerFormat extends HaicomLoggerFormat implements GarbleNavigationFormat {
     public String getName() {
-        return "Columbus V900 Professional Garble (*" + getExtension() + ")";
+        return "Haicom Logger Garble (*" + getExtension() + ")";
     }
 
     protected int getGarbleCount() {

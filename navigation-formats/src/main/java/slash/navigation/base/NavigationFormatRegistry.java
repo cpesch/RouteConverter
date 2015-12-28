@@ -40,7 +40,7 @@ import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.BrokenNmeaFormat;
+import slash.navigation.nmea.GarbleNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
@@ -172,18 +172,18 @@ public class NavigationFormatRegistry {
         addFormat(UrlFormat.class);
 
         // second try for broken files
-        addFormat(BrokenColumbusV900ProfessionalFormat.class);
-        addFormat(BrokenNmeaFormat.class);
-        addFormat(BrokenHaicomLoggerFormat.class);
-        addFormat(BrokenGpx10Format.class);
-        addFormat(BrokenGpx11Format.class);
-        addFormat(BrokenKml21Format.class);
-        addFormat(BrokenKml21LittleEndianFormat.class);
-        addFormat(BrokenKmz21Format.class);
-        addFormat(BrokenKmz21LittleEndianFormat.class);
-        addFormat(BrokenKml22BetaFormat.class);
-        addFormat(BrokenKml22Format.class);
-        addFormat(BrokenNavilinkFormat.class);
+        addFormat(GarbleColumbusV900ProfessionalFormat.class);
+        addFormat(GarbleNmeaFormat.class);
+        addFormat(GarbleHaicomLoggerFormat.class);
+        addFormat(GarbleGpx10Format.class);
+        addFormat(GarbleGpx11Format.class);
+        addFormat(GarbleKml21Format.class);
+        addFormat(GarbleKml21LittleEndianFormat.class);
+        addFormat(GarbleKmz21Format.class);
+        addFormat(GarbleKmz21LittleEndianFormat.class);
+        addFormat(GarbleKml22BetaFormat.class);
+        addFormat(GarbleKml22Format.class);
+        addFormat(GarbleNavilinkFormat.class);
 
         // greedy BabelFormats
         addFormat(GarminPoiFormat.class);
@@ -236,12 +236,21 @@ public class NavigationFormatRegistry {
         return sortByName(getFormatInstances(true, true));
     }
 
+    private List<NavigationFormat> filterByGarble(List<NavigationFormat> formats) {
+        List<NavigationFormat> result = new ArrayList<>();
+        for(NavigationFormat format : formats) {
+            if(!(format instanceof GarbleNavigationFormat))
+                result.add(format);
+        }
+        return result;
+    }
+
     public List<NavigationFormat> getReadFormatsSortedByName() {
-        return sortByName(getReadFormats());
+        return sortByName(filterByGarble(getReadFormats()));
     }
 
     public List<NavigationFormat> getWriteFormatsSortedByName() {
-        return sortByName(getWriteFormats());
+        return sortByName(filterByGarble(getWriteFormats()));
     }
 
     public List<NavigationFormat> getWriteFormatsWithPreferredFormats(List<NavigationFormat> preferredFormats) {

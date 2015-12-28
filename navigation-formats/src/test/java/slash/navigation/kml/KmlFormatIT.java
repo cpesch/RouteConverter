@@ -138,7 +138,7 @@ public class KmlFormatIT {
 
     @Test
     public void testItnConvKml() throws Exception {
-        List<KmlRoute> routes = readKmlFile(new BrokenKml21Format(), SAMPLE_PATH + "bcr_with_itnconv.kml");
+        List<KmlRoute> routes = readKmlFile(new GarbleKml21Format(), SAMPLE_PATH + "bcr_with_itnconv.kml");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         for (KmlRoute route : routes) {
