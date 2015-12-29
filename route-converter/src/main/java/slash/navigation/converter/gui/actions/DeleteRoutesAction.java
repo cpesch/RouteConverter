@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.routes.impl.RouteModel;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.*;
 import java.util.List;

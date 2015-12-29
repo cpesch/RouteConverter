@@ -21,14 +21,14 @@ package slash.navigation.mapview.mapsforge;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
-import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
-import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
-import slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.LocalTheme;
 import slash.navigation.maps.MapManager;
+import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
+import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
+import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
+import slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;

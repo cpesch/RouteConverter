@@ -27,14 +27,8 @@ import javax.swing.event.TableModelListener;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static javax.swing.event.TableModelEvent.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Synchronizes changes at a {@link PositionsModel} with a {@link XYSeries}.

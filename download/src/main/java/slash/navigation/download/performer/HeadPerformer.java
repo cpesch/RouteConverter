@@ -22,8 +22,8 @@ package slash.navigation.download.performer;
 import slash.navigation.download.Action;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
-import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.download.actions.Validator;
+import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.rest.Head;
 
 import java.io.IOException;

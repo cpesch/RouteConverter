@@ -23,7 +23,6 @@ package slash.navigation.mapview;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 
 import java.awt.*;
 

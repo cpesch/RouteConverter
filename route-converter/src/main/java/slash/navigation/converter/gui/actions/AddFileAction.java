@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.routes.Category;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Category;
 
 import javax.swing.*;
 import java.io.File;

@@ -26,13 +26,8 @@ import slash.navigation.base.Wgs84Position;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MILLISECOND;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.SECOND;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static java.util.Calendar.*;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.type.CompactCalendar.UTC;
 

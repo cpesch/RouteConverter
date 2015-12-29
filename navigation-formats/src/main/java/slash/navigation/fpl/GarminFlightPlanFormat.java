@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
-import static slash.navigation.base.WaypointType.UserWaypoint;
 
 /**
  * Reads and writes Garmin Flight Plan (.fpl) files.

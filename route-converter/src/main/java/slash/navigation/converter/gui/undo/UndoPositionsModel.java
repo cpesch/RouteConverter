@@ -41,7 +41,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.trim;
 

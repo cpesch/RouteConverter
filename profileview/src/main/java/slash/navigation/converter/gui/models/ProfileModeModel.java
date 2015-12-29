@@ -19,15 +19,15 @@
 */
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.converter.gui.profileview.YAxisMode;
 import slash.navigation.converter.gui.profileview.XAxisMode;
+import slash.navigation.converter.gui.profileview.YAxisMode;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
+import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 
 /**
  * A model for {@link XAxisMode} and {@link YAxisMode}.

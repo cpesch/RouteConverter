@@ -24,7 +24,8 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 

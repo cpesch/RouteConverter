@@ -19,9 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.helpers;
 
-import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 
 import javax.swing.*;
 import java.awt.*;

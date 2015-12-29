@@ -21,10 +21,10 @@
 package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
-import slash.navigation.base.WaypointType;
 import slash.navigation.gpx.binding11.WptType;
 
 import java.math.BigDecimal;

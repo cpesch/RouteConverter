@@ -25,12 +25,10 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.maps.LocalMap;
 import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteMap;
 
 import javax.swing.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

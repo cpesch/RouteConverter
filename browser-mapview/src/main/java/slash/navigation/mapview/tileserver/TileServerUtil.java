@@ -28,8 +28,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
-import static slash.common.helpers.JAXBHelper.newContext;
-
 public class TileServerUtil {
     private static Unmarshaller newUnmarshaller() {
         return JAXBHelper.newUnmarshaller(JAXBHelper.newContext(ObjectFactory.class));

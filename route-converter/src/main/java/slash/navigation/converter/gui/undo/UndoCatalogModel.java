@@ -20,24 +20,22 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.routes.Catalog;
-import slash.navigation.routes.impl.CategoryTreeModel;
-import slash.navigation.routes.impl.CategoryTreeNode;
-import slash.navigation.routes.impl.RouteModel;
-import slash.navigation.routes.impl.RoutesTableModel;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
 import slash.navigation.gui.undo.UndoManager;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asNames;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParentsFromRoutes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.

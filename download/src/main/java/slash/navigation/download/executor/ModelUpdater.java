@@ -23,8 +23,6 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.CopierListener;
 
-import javax.swing.table.TableModel;
-
 import static slash.navigation.download.State.Downloading;
 
 /**

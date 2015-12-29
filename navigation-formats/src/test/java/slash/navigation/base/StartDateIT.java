@@ -35,19 +35,12 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.JANUARY;
-import static java.util.Calendar.JULY;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.readSampleGopalTrackFile;
-import static slash.navigation.base.NavigationTestCase.readSampleNmeaFile;
-import static slash.navigation.base.NavigationTestCase.readSampleTomTomRouteFile;
+import static slash.navigation.base.NavigationTestCase.*;
 
 public class StartDateIT {
 

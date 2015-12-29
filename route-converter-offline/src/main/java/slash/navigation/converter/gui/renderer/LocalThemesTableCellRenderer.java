@@ -21,7 +21,6 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 import java.awt.*;

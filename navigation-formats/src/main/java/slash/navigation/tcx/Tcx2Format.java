@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.common.io.Transfer.formatTime;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.tcx.TcxUtil.marshal2;

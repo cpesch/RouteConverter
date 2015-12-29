@@ -19,7 +19,9 @@
 */
 package slash.navigation.datasources.impl;
 
-import slash.navigation.datasources.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.Fragment;
 import slash.navigation.datasources.binding.ChecksumType;
 import slash.navigation.datasources.binding.DownloadableType;
 import slash.navigation.datasources.binding.FragmentType;

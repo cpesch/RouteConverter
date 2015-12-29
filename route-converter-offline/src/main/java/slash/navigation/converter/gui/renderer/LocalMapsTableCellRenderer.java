@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.impl.LocalMapsTableModel;
 
 import javax.swing.*;
 import java.awt.*;

@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.undo;
 
+import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.routes.impl.CategoryTreeNode;
 import slash.navigation.routes.impl.RouteModel;
-import slash.navigation.converter.gui.models.AddRouteCallback;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

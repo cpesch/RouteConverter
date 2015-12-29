@@ -50,8 +50,8 @@ import static java.text.NumberFormat.getIntegerInstance;
 import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.ui.Layer.FOREGROUND;
-import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
+import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 
 /**
  * Displays the elevations of a {@link PositionsModel}.

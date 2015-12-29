@@ -74,9 +74,7 @@ import static slash.navigation.common.NumberingStrategy.Relative_Position_In_Cur
 import static slash.navigation.common.UnitSystem.*;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
-import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
-import static slash.navigation.converter.gui.models.FixMapMode.No;
-import static slash.navigation.converter.gui.models.FixMapMode.Yes;
+import static slash.navigation.converter.gui.models.FixMapMode.*;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 

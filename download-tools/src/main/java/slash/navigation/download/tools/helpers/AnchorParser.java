@@ -29,8 +29,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.swing.text.html.HTML.Attribute.HREF;
-
 /**
  * Provides anchor parsing from strings.
  *

@@ -22,10 +22,10 @@ package slash.navigation.mapview.mapsforge.helpers;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.util.MapViewProjection;
 import org.mapsforge.map.view.MapView;
-import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
-import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

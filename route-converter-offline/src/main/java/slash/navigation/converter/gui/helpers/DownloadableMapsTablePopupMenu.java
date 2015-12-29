@@ -19,7 +19,6 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.impl.LocalMapsTableModel;
 import slash.navigation.maps.impl.RemoteMapsTableModel;
 
 import javax.swing.*;

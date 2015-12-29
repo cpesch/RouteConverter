@@ -21,7 +21,6 @@ package slash.navigation.mapview.mapsforge.models;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
-import javax.swing.table.TableModel;
 import java.util.List;
 
 /**

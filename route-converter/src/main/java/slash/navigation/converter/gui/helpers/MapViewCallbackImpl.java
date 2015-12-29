@@ -27,7 +27,6 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
-
 import java.io.File;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
