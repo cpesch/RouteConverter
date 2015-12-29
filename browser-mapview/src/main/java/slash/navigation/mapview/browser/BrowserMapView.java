@@ -1435,7 +1435,7 @@ public abstract class BrowserMapView implements MapView {
         Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(callback);
         if (mapTypeChangedMatcher.matches()) {
             String mapType = decodeUri(mapTypeChangedMatcher.group(1));
-            preferences.put(MAP_TYPE_PREFERENCE, mapType);
+            mapTypeChanged(mapType);
             return true;
         }
 
@@ -1549,6 +1549,17 @@ public abstract class BrowserMapView implements MapView {
                 lastZoom = zoom;
                 notificationMutex.notifyAll();
             }
+        }
+    }
+
+    private void mapTypeChanged(String mapType) {
+        preferences.put(MAP_TYPE_PREFERENCE, mapType);
+        if(fixMapModeModel.getFixMapMode().equals(Automatic)) {
+            invokeLater(new Runnable() {
+                public void run() {
+                    update(true, false);
+                }
+            });
         }
     }
 
