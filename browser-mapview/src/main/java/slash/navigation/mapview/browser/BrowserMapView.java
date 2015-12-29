@@ -76,8 +76,7 @@ import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
-import static slash.navigation.base.WaypointType.End;
-import static slash.navigation.base.WaypointType.Start;
+import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
@@ -1082,7 +1081,7 @@ public abstract class BrowserMapView implements MapView {
             if (i == c - 1)
                 waypointType = End;
 
-            if (waypointType != null)
+            if (waypointType != null && waypointType != Waypoint)
                 icons.append("addWaypointIcon(new google.maps.LatLng(").append(asCoordinates(position)).append("),\"").
                         append(waypointType).append("\");\n");
         }
