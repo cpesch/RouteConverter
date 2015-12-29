@@ -389,16 +389,21 @@ public class Files {
         return path != null && path.exists() ? path : null;
     }
 
+    private static void delete(File file) throws IOException {
+        if (file.exists() && !file.delete())
+            throw new IOException(format("Cannot delete %s", file));
+    }
+
     public static void recursiveDelete(File path) throws IOException {
         File[] files = path.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory())
                     recursiveDelete(file);
-                if (!file.delete())
-                    throw new IOException(format("Cannot delete %s", file));
+                delete(file);
             }
         }
+        delete(path);
     }
 
     public static String printArrayToDialogString(Object[] array) {
