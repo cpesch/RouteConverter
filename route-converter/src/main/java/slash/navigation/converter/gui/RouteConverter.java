@@ -34,9 +34,9 @@ import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
-import slash.navigation.converter.gui.profileview.YAxisModeMenu;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.converter.gui.profileview.XAxisModeMenu;
+import slash.navigation.converter.gui.profileview.YAxisModeMenu;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
@@ -44,7 +44,6 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -807,17 +806,21 @@ public class RouteConverter extends SingleFrameApplication {
         return result;
     }
 
+    protected MapViewImplementation getPreferredMapView() {
+        return getAvailableMapViews().get(0);
+    }
+
     public MapViewImplementation getMapViewPreference() {
-        MapViewImplementation firstMapView = getAvailableMapViews().get(0);
+        MapViewImplementation preferred = getPreferredMapView();
         try {
-            MapViewImplementation mapView = MapViewImplementation.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, firstMapView.toString()));
+            MapViewImplementation mapView = MapViewImplementation.valueOf(getPreferences().get(MAP_VIEW_PREFERENCE, preferred.toString()));
             if (getAvailableMapViews().contains(mapView)) {
                 return mapView;
             }
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
-        return firstMapView;
+        return preferred;
     }
 
     public void setMapViewPreference(MapViewImplementation mapView) {

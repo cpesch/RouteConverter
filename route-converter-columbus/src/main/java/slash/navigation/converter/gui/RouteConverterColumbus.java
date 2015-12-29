@@ -21,9 +21,11 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.base.ColumbusNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.converter.gui.helpers.MapViewImplementation;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 
 /**
  * A small graphical user interface for the Columbus route conversion.
@@ -44,6 +46,10 @@ public class RouteConverterColumbus extends RouteConverter {
 
     public NavigationFormatRegistry getNavigationFormatRegistry() {
         return navigationFormatRegistry;
+    }
+
+    protected MapViewImplementation getPreferredMapView() {
+        return EclipseSWT;
     }
 
     static {
