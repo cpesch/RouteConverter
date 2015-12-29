@@ -20,7 +20,6 @@
 
 package slash.navigation.columbus;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
@@ -32,8 +31,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteComments.isPositionDescription;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
@@ -145,18 +146,18 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(Transfer.formatTime(position.getTime()), 6);
-        String latitude = formatDoubleAsString(Math.abs(position.getLatitude()), 6);
+        String time = fillWithZeros(formatTime(position.getTime()), 6);
+        String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "0.0", 5);
-        String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "0.0", 5);
-        String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "0.0", 5);
-        String description = fillWithZeros(escape(position.getDescription(), SEPARATOR, ';'), 8);
+        String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "", 5);
+        String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "", 5);
+        String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "", 5);
+        String description = !isPositionDescription(position.getDescription()) ? position.getDescription() : "";
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
                 formatTag(position) + SEPARATOR +
@@ -171,6 +172,6 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
                 pdop + SEPARATOR +
                 hdop + SEPARATOR +
                 vdop + SEPARATOR +
-                description);
+                fillWithZeros(escape(description, SEPARATOR, ';'), 8));
     }
 }

@@ -1,8 +1,8 @@
 package slash.navigation.url;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
 import slash.navigation.gpx.Gpx11Format;
 
@@ -14,7 +14,7 @@ import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class UrlFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
     public void readRouteCatalogUrl() throws IOException {

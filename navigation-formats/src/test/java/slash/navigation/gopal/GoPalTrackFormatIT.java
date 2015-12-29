@@ -21,8 +21,8 @@
 package slash.navigation.gopal;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
 
 import java.io.File;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoPalTrackFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {

@@ -128,7 +128,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
         return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    protected WaypointType formatTag(Wgs84Position position) {
+    private WaypointType extractWaypointType(Wgs84Position position) {
         WaypointType waypointType = position.getWaypointType();
         if(waypointType != null)
             return waypointType;
@@ -143,4 +143,8 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
         }
         return Waypoint;
     }
-}
+
+    protected String formatTag(Wgs84Position position) {
+        return extractWaypointType(position).value();
+    }
+ }

@@ -56,8 +56,8 @@ public class NavigationFormatConverter {
         // shortcut to prevent lots of as... methods
         if (format instanceof BabelFormat)
             formatName = "Gpx10Format";
-        if (formatName.startsWith("Broken"))
-            formatName = formatName.substring(6);
+        if (format instanceof GarbleNavigationFormat)
+            formatName = formatName.substring("Garble".length());
         formatName = formatName.replaceAll("LittleEndian", "");
         return formatName;
     }

@@ -1,8 +1,8 @@
 package slash.navigation.zip;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.kml.Kml22Format;
@@ -15,7 +15,7 @@ import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class ZipFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
     public void readGPX11Archive() throws IOException {

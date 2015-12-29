@@ -132,48 +132,48 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public GpxPosition asBrokenGpxPosition() {
-        return asGpxPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlLittleEndianPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlBetaPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmzPosition() {
-        return asKmzPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmzLittleEndianPosition() {
-        return asKmzPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asColumbusVStandardPosition() {
+    public Wgs84Position asColumbusGpsStandardPosition() {
         return asWgs84Position();
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asColumbusVProfessionalPosition() {
+    public Wgs84Position asColumbusGpsProfessionalPosition() {
         return asWgs84Position();
     }
 
     @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public GpxPosition asGarbleGpxPosition() {
+        return asGpxPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlLittleEndianPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmzPosition() {
+        return asKmzPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmzLittleEndianPosition() {
+        return asKmzPosition();
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {

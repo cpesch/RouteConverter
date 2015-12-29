@@ -43,7 +43,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
     private static Set<String> comments = new HashSet<>();
 
     protected interface TestFileCallback {

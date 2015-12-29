@@ -43,7 +43,7 @@ public class SplitIT {
     }
 
     private void splitReadWriteRoundtrip(String testFileName, boolean duplicateFirstPosition) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File source = new File(testFileName);
         ParserResult result = parser.read(source);
@@ -175,7 +175,7 @@ public class SplitIT {
 
 
     void convertSplitRoundtrip(String testFileName, BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File source = new File(testFileName);
         ParserResult result = parser.read(source);

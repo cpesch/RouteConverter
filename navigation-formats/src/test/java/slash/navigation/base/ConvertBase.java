@@ -44,7 +44,7 @@ public abstract class ConvertBase {
     public static void convertRoundtrip(String testFileName,
                                         BaseNavigationFormat sourceFormat,
                                         BaseNavigationFormat targetFormat) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         assertTrue(sourceFormat.isSupportsReading());
         assertTrue(targetFormat.isSupportsWriting());
@@ -73,7 +73,7 @@ public abstract class ConvertBase {
 
     @SuppressWarnings("unchecked")
     private static void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File target = createTempFile("singletarget", targetFormat.getExtension());
         target.deleteOnExit();
@@ -110,7 +110,7 @@ public abstract class ConvertBase {
 
     @SuppressWarnings("unchecked")
     private static void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File target = createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();

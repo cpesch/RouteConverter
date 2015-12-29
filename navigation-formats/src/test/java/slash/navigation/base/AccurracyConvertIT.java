@@ -93,6 +93,7 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertGpsTunerToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsStandardFormat());
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsProfessionalFormat());
     }
 
@@ -146,6 +147,7 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertNmeaToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsStandardFormat());
         convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsProfessionalFormat());
     }
 

@@ -399,10 +399,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof NmeaFormat || targetFormat instanceof QstarzQ1000Format)) {
             assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
         } else if (targetFormat instanceof GoPalTrackFormat ||
-                (sourceFormat instanceof CoPilotFormat && targetFormat instanceof ColumbusGpsProfessionalFormat) ||
-                (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format) ||
-                (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsProfessionalFormat) ||
-                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof ColumbusGpsFormat)) {
+                (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format)) {
             assertNotNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
         } else
             assertNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
@@ -433,7 +430,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (targetFormat instanceof ColumbusGpsProfessionalFormat || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsFormat) {
+        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsProfessionalFormat) {
             assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
         } else
             assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
@@ -464,7 +461,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (targetFormat instanceof ColumbusGpsProfessionalFormat || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsFormat) {
+        } else if (sourceFormat instanceof GoPalTrackFormat) {
             assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
         } else
             assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
@@ -509,6 +506,13 @@ public abstract class NavigationTestCase extends TestCase {
         if (index != -1)
             description = description.substring(0, index);
         return trim(description, 8);
+    }
+
+    private static String getColumbusGpsDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
+            return null;
+        return description.replace("Waypoint", "Position").replaceAll(",", ";");
     }
 
     private static String spaceUmlauts(String str) {
@@ -637,9 +641,12 @@ public abstract class NavigationTestCase extends TestCase {
                 if (colonIndex != -1)
                     targetDescription = targetDescription.substring(colonIndex + 3);
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll("\\|", ";"), targetDescription);
-            } else if (targetFormat instanceof ColumbusGpsFormat || targetFormat instanceof MagellanExploristFormat ||
-                    targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
+            } else if (targetFormat instanceof ColumbusGpsFormat) {
+                String sourceName = getColumbusGpsDescription(sourcePosition);
+                String targetName = getColumbusGpsDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
+            } else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
+            assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
                 assertEquals("Description " + index + " does not match", escapeNmn4and5(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn6Format)
@@ -921,7 +928,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     public static void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertNotNull(result.getFormat());
@@ -969,7 +976,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     public static List<KmlRoute> readKmlFile(BaseKmlFormat format, String fileName) throws Exception {
         File source = new File(fileName);
-        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         ParserResult result = parser.read(source, singletonList((NavigationFormat) format));
         List<KmlRoute> routes = new ArrayList<>();
         for (BaseRoute route : result.getAllRoutes()) {

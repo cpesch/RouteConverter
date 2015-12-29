@@ -132,11 +132,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
             String time = matcher.group(2);
             Double latitude = parseDouble(matcher.group(3));
             String northOrSouth = trim(matcher.group(4));
-            if("S".equals(northOrSouth))
+            if("S".equals(northOrSouth) && latitude != null)
                 latitude = -latitude;
             Double longitude = parseDouble(matcher.group(5));
             String westOrEast = trim(matcher.group(6));
-            if("W".equals(westOrEast))
+            if("W".equals(westOrEast) && longitude != null)
                 longitude = -longitude;
             String altitude = matcher.group(7);
             String speed = matcher.group(9);

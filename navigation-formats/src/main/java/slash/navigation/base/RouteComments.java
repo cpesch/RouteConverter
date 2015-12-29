@@ -105,7 +105,7 @@ public abstract class RouteComments {
     private static final String POSITION = "Position";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
 
-    private static String getPositionComment(int index) {
+    private static String getPositionDescription(int index) {
         return POSITION + " " + (index + 1);
     }
 
@@ -113,24 +113,29 @@ public abstract class RouteComments {
         for (int i = 0; i < positions.size(); i++) {
             NavigationPosition position = positions.get(i);
             String original = position.getDescription();
-            String modified = getPositionComment(position, i);
+            String modified = getPositionDescription(position, i);
             if (original == null || !original.equals(modified))
                 position.setDescription(modified);
         }
     }
 
-    private static String getPositionComment(NavigationPosition position, int index) {
+    private static String getPositionDescription(NavigationPosition position, int index) {
         if (position.getDescription() == null || "(null)".equals(position.getDescription())) {
-            return getPositionComment(index);
+            return getPositionDescription(index);
         } else {
             Matcher matcher = POSITION_PATTERN.matcher(position.getDescription());
             if (matcher.matches()) {
                 String prefix = trim(matcher.group(1));
                 String postfix = trim(matcher.group(3));
-                return (prefix != null ? prefix : "") + getPositionComment(index) + (postfix != null ? postfix : "");
+                return (prefix != null ? prefix : "") + getPositionDescription(index) + (postfix != null ? postfix : "");
             }
         }
         return position.getDescription();
+    }
+
+    public static boolean isPositionDescription(String description) {
+        Matcher matcher = POSITION_PATTERN.matcher(description);
+        return matcher.matches();
     }
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\s*(\\d*)(.*)");
@@ -138,7 +143,7 @@ public abstract class RouteComments {
     public static String getNumberedPosition(NavigationPosition position, int index,
                                              int digitCount, NumberPattern numberPattern) {
         String number = formatIntAsString((index + 1), digitCount);
-        String comment = getPositionComment(position, index);
+        String comment = getPositionDescription(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
         String description = matcher.matches() ? matcher.group(2) : comment;
         return formatNumberedPosition(numberPattern, number, trim(description));
