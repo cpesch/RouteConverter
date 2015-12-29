@@ -41,7 +41,7 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
-    public void testColumbusV900ReadWriteRoundtrip() throws IOException {
+    public void testColumbusGpsReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv");
         readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv");
     }

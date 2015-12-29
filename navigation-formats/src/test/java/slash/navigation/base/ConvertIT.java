@@ -101,11 +101,11 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertColumbusV900ToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900StandardFormat(), new CoPilot6Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot8Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot9Format());
+    public void testConvertColumbusGpsToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusGpsStandardFormat(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot7Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
     }
 
     @Test
@@ -125,9 +125,9 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertQstarzQ1000ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertQstarzQ1000ToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -141,9 +141,9 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertiBlue747ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertiBlue747ToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -180,15 +180,15 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertCoPilotToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertCoPilotToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test

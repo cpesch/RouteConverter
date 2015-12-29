@@ -31,7 +31,10 @@ import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.gpx.*;
+import slash.navigation.gpx.GarbleGpx10Format;
+import slash.navigation.gpx.GarbleGpx11Format;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
@@ -108,8 +111,8 @@ public class NavigationFormatRegistry {
         addFormat(Route66Format.class);
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
-        addFormat(ColumbusV900ProfessionalFormat.class);
-        addFormat(ColumbusV900StandardFormat.class);
+        addFormat(ColumbusGpsProfessionalFormat.class);
+        addFormat(ColumbusGpsStandardFormat.class);
         addFormat(QstarzQ1000Format.class);
         addFormat(Iblue747Format.class);
         addFormat(SygicAsciiFormat.class);
@@ -172,7 +175,7 @@ public class NavigationFormatRegistry {
         addFormat(UrlFormat.class);
 
         // second try for broken files
-        addFormat(GarbleColumbusV900ProfessionalFormat.class);
+        addFormat(GarbleColumbusGpsProfessionalFormat.class);
         addFormat(GarbleNmeaFormat.class);
         addFormat(GarbleHaicomLoggerFormat.class);
         addFormat(GarbleGpx10Format.class);
@@ -196,7 +199,7 @@ public class NavigationFormatRegistry {
     }
 
     protected boolean includeReadFormat(NavigationFormat format) {
-        return !(format instanceof ColumbusV900Format);
+        return !(format instanceof ColumbusGpsFormat);
     }
 
     private List<NavigationFormat> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {

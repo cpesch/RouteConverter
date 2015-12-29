@@ -34,7 +34,7 @@ public enum WaypointType {
     UserWaypoint("USER WAYPOINT"),
     VHFOmnidirectionalRadioRange("VOR"),
 
-    // Columbus V900 (.csv)
+    // Columbus GPS (.csv)
     End("END"),
     Parking("G"),
     Photo("P"),

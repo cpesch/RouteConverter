@@ -134,7 +134,7 @@ public abstract class NavigationTestCase extends TestCase {
                         (second instanceof GarminPcx5Format)) ||
                 ((first instanceof KmlFormat) &&
                         (second instanceof BcrFormat)) ||
-                ((first instanceof ColumbusV900Format) &&
+                ((first instanceof ColumbusGpsFormat) &&
                         (second instanceof CoPilotFormat)) ||
                 ((first instanceof MagicMapsIktFormat) &&
                         (second instanceof CoPilotFormat));
@@ -279,7 +279,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof OziExplorerFormat || targetFormat instanceof NmeaFormat ||
                     targetFormat instanceof CompeGPSDataFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
-            } else if (targetFormat instanceof ColumbusV900Format) {
+            } else if (targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals(sourcePosition.getElevation().intValue(), targetPosition.getElevation().intValue());
             } else
                 assertNearBy(roundFraction(sourcePosition.getElevation(), 1), roundFraction(targetPosition.getElevation(), 1), 0.1);
@@ -330,8 +330,8 @@ public abstract class NavigationTestCase extends TestCase {
             targetHeading = nmeaPosition.getHeading();
         }
 
-        if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof GpsTunerFormat) {
-            if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
+        if (targetFormat instanceof ColumbusGpsFormat || targetFormat instanceof GpsTunerFormat) {
+            if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusGpsFormat ||
                     sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track) ||
                     sourceFormat instanceof Gpx11Format || sourceFormat instanceof NmeaFormat ||
                     sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof TomTomRouteFormat ||
@@ -350,7 +350,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat))) {
             assertEquals("Heading " + index + " does not match", roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0));
         } else if ((sourceHeading != null && targetHeading != null) &&
-                (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
+                (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusGpsFormat || sourceFormat instanceof GpsTunerFormat ||
                         sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track) ||
                         sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
                 (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat || targetFormat instanceof TomTomRouteFormat ||
@@ -389,18 +389,18 @@ public abstract class NavigationTestCase extends TestCase {
             targetHdop = nmeaPosition.getHdop();
         }
 
-        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GoPalTrackFormat ||
+        if ((sourceFormat instanceof ColumbusGpsProfessionalFormat || sourceFormat instanceof GoPalTrackFormat ||
                 sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat ||
                 sourceFormat instanceof QstarzQ1000Format) &&
-                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GoPalTrackFormat ||
+                (targetFormat instanceof ColumbusGpsProfessionalFormat || targetFormat instanceof GoPalTrackFormat ||
                         targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
                         targetFormat instanceof NmeaFormat || targetFormat instanceof QstarzQ1000Format)) {
             assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
         } else if (targetFormat instanceof GoPalTrackFormat ||
-                (sourceFormat instanceof CoPilotFormat && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
+                (sourceFormat instanceof CoPilotFormat && targetFormat instanceof ColumbusGpsProfessionalFormat) ||
                 (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format) ||
-                (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
-                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof ColumbusV900Format)) {
+                (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsProfessionalFormat) ||
+                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof ColumbusGpsFormat)) {
             assertNotNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
         } else
             assertNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
@@ -427,11 +427,11 @@ public abstract class NavigationTestCase extends TestCase {
             targetPdop = nmeaPosition.getPdop();
         }
 
-        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof Gpx10Format ||
+        if ((sourceFormat instanceof ColumbusGpsProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+                (targetFormat instanceof ColumbusGpsProfessionalFormat || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format) {
+        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsFormat) {
             assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
         } else
             assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
@@ -458,11 +458,11 @@ public abstract class NavigationTestCase extends TestCase {
             targetVdop = nmeaPosition.getVdop();
         }
 
-        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof Gpx10Format ||
+        if ((sourceFormat instanceof ColumbusGpsProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+                (targetFormat instanceof ColumbusGpsProfessionalFormat || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format) {
+        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsFormat) {
             assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
         } else
             assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
@@ -635,7 +635,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (colonIndex != -1)
                     targetDescription = targetDescription.substring(colonIndex + 3);
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll("\\|", ";"), targetDescription);
-            } else if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof MagellanExploristFormat ||
+            } else if (targetFormat instanceof ColumbusGpsFormat || targetFormat instanceof MagellanExploristFormat ||
                     targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
@@ -701,11 +701,11 @@ public abstract class NavigationTestCase extends TestCase {
             if ((sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
                     (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.05);
-            } else if ((sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GoPalTrackFormat ||
+            } else if ((sourceFormat instanceof ColumbusGpsFormat || sourceFormat instanceof GoPalTrackFormat ||
                     sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-                    targetFormat instanceof ColumbusV900Format) {
+                    targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
-            } else if (sourceFormat instanceof ColumbusV900Format && targetFormat instanceof NmeaFormat) {
+            } else if (sourceFormat instanceof ColumbusGpsFormat && targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.1);
             } else if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
                     (sourceFormat instanceof Gpx10Format && targetFormat instanceof AlanTrackLogFormat) ||
@@ -714,9 +714,9 @@ public abstract class NavigationTestCase extends TestCase {
                     (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) {
+            } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
-            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format) {
+            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
@@ -771,7 +771,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
                 sourceFormat instanceof OziExplorerFormat ||
                 sourceFormat instanceof GpxFormat && targetFormat instanceof GoRiderGpsFormat ||
-                sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat ||
+                sourceFormat instanceof ColumbusGpsFormat && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof Iblue747Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof CoPilotFormat) {
             assertNotNull(sourcePosition.getTime());

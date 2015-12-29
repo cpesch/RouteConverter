@@ -23,14 +23,14 @@ package slash.navigation.simple;
 import slash.navigation.base.GarbleNavigationFormat;
 
 /**
- * Reads garbled Columbus V900 Professional (.csv) files.
+ * Reads garbled Columbus GPS Professional (.csv) files.
  *
  * @author Christian Pesch
  */
 
-public class GarbleColumbusV900ProfessionalFormat extends ColumbusV900ProfessionalFormat implements GarbleNavigationFormat {
+public class GarbleColumbusGpsProfessionalFormat extends ColumbusGpsProfessionalFormat implements GarbleNavigationFormat {
     public String getName() {
-        return "Columbus V900 Professional Garble (*" + getExtension() + ")";
+        return "Columbus GPS Professional Garble (*" + getExtension() + ")";
     }
 
     protected int getGarbleCount() {

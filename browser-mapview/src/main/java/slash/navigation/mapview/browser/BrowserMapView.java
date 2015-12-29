@@ -35,7 +35,7 @@ import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.tileserver.TileServerService;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
-import slash.navigation.simple.ColumbusV900Format;
+import slash.navigation.simple.ColumbusGpsFormat;
 
 import javax.swing.event.*;
 import javax.xml.bind.JAXBException;
@@ -697,7 +697,7 @@ public abstract class BrowserMapView implements MapView {
     }
 
     private boolean isColumbusTrack() {
-        return positionsModel.getRoute().getFormat() instanceof ColumbusV900Format;
+        return positionsModel.getRoute().getFormat() instanceof ColumbusGpsFormat;
     }
 
     // resizing

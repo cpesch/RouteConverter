@@ -21,9 +21,9 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.simple.GarbleColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.ColumbusGpsProfessionalFormat;
+import slash.navigation.simple.ColumbusGpsStandardFormat;
+import slash.navigation.simple.GarbleColumbusGpsProfessionalFormat;
 
 import java.util.List;
 
@@ -47,8 +47,8 @@ public class ColumbusNavigationFormatRegistryTest {
     @Test
     public void testGetReadFormatsSortedByExtensionCsv() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".csv");
-        assertEquals(ColumbusV900ProfessionalFormat.class, formats.get(0).getClass());
-        assertEquals(ColumbusV900StandardFormat.class, formats.get(1).getClass());
-        assertEquals(GarbleColumbusV900ProfessionalFormat.class, formats.get(2).getClass());
+        assertEquals(ColumbusGpsProfessionalFormat.class, formats.get(0).getClass());
+        assertEquals(ColumbusGpsStandardFormat.class, formats.get(1).getClass());
+        assertEquals(GarbleColumbusGpsProfessionalFormat.class, formats.get(2).getClass());
     }
 }

@@ -520,17 +520,17 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public SimpleRoute asColumbusV900StandardFormat() {
-        if (getFormat() instanceof ColumbusV900StandardFormat)
+    public SimpleRoute asColumbusGpsStandardFormat() {
+        if (getFormat() instanceof ColumbusGpsStandardFormat)
             return (SimpleRoute) this;
-        return asSimpleFormat(new ColumbusV900StandardFormat());
+        return asSimpleFormat(new ColumbusGpsStandardFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public SimpleRoute asColumbusV900ProfessionalFormat() {
-        if (getFormat() instanceof ColumbusV900ProfessionalFormat)
+    public SimpleRoute asColumbusGpsProfessionalFormat() {
+        if (getFormat() instanceof ColumbusGpsProfessionalFormat)
             return (SimpleRoute) this;
-        return asSimpleFormat(new ColumbusV900ProfessionalFormat());
+        return asSimpleFormat(new ColumbusGpsProfessionalFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")
