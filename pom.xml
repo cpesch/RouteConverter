@@ -307,6 +307,7 @@
         <module>route-converter-build</module>
         <module>route-converter-license</module>
         <module>route-converter-offline</module>
+        <module>route-converter-tools</module>
         <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
