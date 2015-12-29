@@ -18,8 +18,9 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.simple;
+package slash.navigation.columbus;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
@@ -112,7 +113,7 @@ public class ColumbusGpsStandardFormat extends ColumbusGpsFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(formatTime(position.getTime()), 6);
+        String time = fillWithZeros(Transfer.formatTime(position.getTime()), 6);
         String latitude = formatDoubleAsString(Math.abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
         String longitude = formatDoubleAsString(Math.abs(position.getLongitude()), 6);

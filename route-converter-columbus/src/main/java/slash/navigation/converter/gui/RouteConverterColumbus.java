@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui;
 
-import slash.navigation.base.ColumbusNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.columbus.ColumbusNavigationFormatRegistry;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;

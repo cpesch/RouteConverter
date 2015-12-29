@@ -23,6 +23,7 @@ package slash.navigation.mapview.browser;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
+import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
@@ -35,7 +36,6 @@ import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.tileserver.TileServerService;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
-import slash.navigation.simple.ColumbusGpsFormat;
 
 import javax.swing.event.*;
 import javax.xml.bind.JAXBException;

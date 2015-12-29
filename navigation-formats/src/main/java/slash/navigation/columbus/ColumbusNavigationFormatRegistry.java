@@ -17,27 +17,19 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.columbus;
 
-package slash.navigation.simple;
-
-import slash.navigation.base.GarbleNavigationFormat;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.gpx.GpxFormat;
 
 /**
- * Reads garbled Columbus GPS Professional (.csv) files.
+ * Managed the navigation formats for the RouteConverter Columbus Edition.
  *
  * @author Christian Pesch
  */
-
-public class GarbleColumbusGpsProfessionalFormat extends ColumbusGpsProfessionalFormat implements GarbleNavigationFormat {
-    public String getName() {
-        return "Columbus GPS Professional Garble (*" + getExtension() + ")";
-    }
-
-    protected int getGarbleCount() {
-        return 1000;
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
+public class ColumbusNavigationFormatRegistry extends NavigationFormatRegistry {
+    protected boolean includeReadFormat(NavigationFormat format) {
+        return format instanceof GpxFormat || format instanceof ColumbusGpsFormat;
     }
 }

@@ -21,14 +21,14 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
+import slash.navigation.columbus.ColumbusGpsStandardFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.simple.ColumbusGpsProfessionalFormat;
-import slash.navigation.simple.ColumbusGpsStandardFormat;
 import slash.navigation.simple.GpsTunerFormat;
 
 import java.io.IOException;

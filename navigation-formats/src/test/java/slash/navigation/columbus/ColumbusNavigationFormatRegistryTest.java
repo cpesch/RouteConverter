@@ -17,13 +17,12 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.base;
+package slash.navigation.columbus;
 
 import org.junit.Test;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.simple.ColumbusGpsProfessionalFormat;
-import slash.navigation.simple.ColumbusGpsStandardFormat;
-import slash.navigation.simple.GarbleColumbusGpsProfessionalFormat;
 
 import java.util.List;
 

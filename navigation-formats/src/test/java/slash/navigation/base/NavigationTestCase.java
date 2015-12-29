@@ -28,6 +28,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.columbus.ColumbusGpsFormat;
+import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
