@@ -81,6 +81,7 @@
                         <keystore>${keystorePath}</keystore>
                         <alias>${keystoreAlias}</alias>
                         <storepass>${keystorePassword}</storepass>
+                        <keypass>${keyPassword}</keypass>
                         <removeExistingSignatures>true</removeExistingSignatures>
                     </configuration>
                 </plugin>

@@ -38,6 +38,7 @@
                             <keystore>${keystorePath}</keystore>
                             <alias>${keystoreAlias}</alias>
                             <storepass>${keystorePassword}</storepass>
+                            <keypass>${keyPassword}</keypass>
                             <keystoreConfig>
                                 <delete>false</delete>
                                 <gen>false</gen>
