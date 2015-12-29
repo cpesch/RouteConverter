@@ -36,6 +36,7 @@ public enum WaypointType {
 
     // Columbus GPS (.csv)
     End("END"),
+    Overspeed("O"),
     Parking("G"),
     Photo("P"),
     PointOfInterest("C"),
