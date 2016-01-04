@@ -3,7 +3,7 @@
   <grid id="bffe2" binding="browsePanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="3" left="3" bottom="3" right="3"/>
     <constraints>
-      <xy x="0" y="0" width="470" height="427"/>
+      <xy x="0" y="0" width="629" height="427"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -21,7 +21,8 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-category-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-category-action-tooltip"/>
             </properties>
           </component>
           <component id="d75fa" class="javax.swing.JButton" binding="buttonRemoveCategory">
@@ -29,7 +30,8 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-category-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-category-action-tooltip"/>
             </properties>
           </component>
           <component id="a9d75" class="javax.swing.JButton" binding="buttonRenameCategory">
@@ -37,7 +39,8 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-category-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-category-action-tooltip"/>
             </properties>
           </component>
         </children>
@@ -71,7 +74,8 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-file"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-file-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-file-action-tooltip"/>
             </properties>
           </component>
           <vspacer id="c7154">
@@ -103,7 +107,8 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-url"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-url-action"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-route-by-url-action-tooltip"/>
             </properties>
           </component>
           <component id="6e5fa" class="javax.swing.JButton" binding="buttonLogin">

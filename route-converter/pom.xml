@@ -21,11 +21,28 @@
                             <goal>native2ascii</goal>
                         </goals>
                         <configuration>
-                            <encoding>UTF8</encoding>
+                            <encoding>UTF-8</encoding>
                             <includes>
                                 <include>**/RouteConverter*.properties</include>
                                 <include>**/Untranslated.properties</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.outputDirectory}/slash/navigation/converter/gui/RouteConverter_en.properties</sourceFile>
+                            <destinationFile>${project.build.outputDirectory}/slash/navigation/converter/gui/RouteConverter.properties</destinationFile>
                         </configuration>
                     </execution>
                 </executions>

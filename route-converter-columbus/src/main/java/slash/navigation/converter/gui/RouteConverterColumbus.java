@@ -52,6 +52,10 @@ public class RouteConverterColumbus extends RouteConverter {
         return EclipseSWT;
     }
 
+    protected boolean isEnrichmentEnabled() {
+        return true;
+    }
+
     static {
         Thread thread = new Thread(new Runnable() {
             public void run() {
