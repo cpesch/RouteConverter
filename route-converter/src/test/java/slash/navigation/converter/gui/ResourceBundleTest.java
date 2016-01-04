@@ -73,7 +73,7 @@ public class ResourceBundleTest {
                 try {
                     value = bundle.getString(key);
                 } catch (MissingResourceException e) {
-                    log.warning("key " + key + " does not exist in locale " + locale);
+                    log.fine("key " + key + " does not exist in locale " + locale);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
@@ -81,14 +81,14 @@ public class ResourceBundleTest {
                 try {
                     value = root.getString(key);
                 } catch (MissingResourceException e) {
-                    log.warning("key " + key + " does not exist in root " + root);
+                    log.fine("key " + key + " does not exist in root " + root);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in root " + root, false);
                 }
 
                 String englishValue = english.getString(key);
                 if (englishValue.equals(value))
-                    log.warning("key " + key + " is not translated in " + locale);
+                    log.fine("key " + key + " is not translated in " + locale);
             }
         }
     }
@@ -120,7 +120,7 @@ public class ResourceBundleTest {
         for (String mnemonic : mnemonics.keySet()) {
             Set<String> duplicates = mnemonics.get(mnemonic);
             if (duplicates.size() > 1)
-                log.warning("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
+                log.fine("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
         }
     }
 }

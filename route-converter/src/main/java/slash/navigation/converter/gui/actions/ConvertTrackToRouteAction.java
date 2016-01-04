@@ -35,7 +35,7 @@ public class ConvertTrackToRouteAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
         r.selectInsignificantPositions(100);
-        r.getContext().getActionManager().run("delete");
+        r.getContext().getActionManager().run("delete-position");
         r.setRouteCharacteristics(Route);
     }
 }

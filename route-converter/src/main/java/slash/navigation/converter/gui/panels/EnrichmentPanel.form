@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.EnrichmentPanel">
+  <grid id="27dc6" binding="enrichmentPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="3" left="3" bottom="3" right="3"/>
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="335c3" class="javax.swing.JButton" binding="buttonAddVoice">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-voice-action"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-voice-action-tooltip"/>
+        </properties>
+      </component>
+      <component id="4bcfb" class="javax.swing.JButton" binding="buttonRemoveEnrichment">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-enrichment-action"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-enrichment-action-tooltip"/>
+        </properties>
+      </component>
+      <scrollpane id="23cb9">
+        <constraints>
+          <grid row="0" column="0" row-span="4" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="d3a38" class="javax.swing.JTable" binding="tableEnrichments">
+            <constraints/>
+            <properties>
+              <autoCreateColumnsFromModel value="false"/>
+              <showHorizontalLines value="false"/>
+              <showVerticalLines value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <vspacer id="9afa5">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="848a7" class="javax.swing.JButton" binding="buttonAddPhoto">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-photo-action"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-photo-action-tooltip"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

@@ -19,14 +19,12 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.EnrichmentTableColumnModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
-
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
@@ -34,12 +32,10 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  * @author Christian Pesch
  */
 
-public class PositionsTableHeaderMenu extends AbstractTableHeaderMenu {
-    public PositionsTableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
-                                    PositionsTableColumnModel columnModel, ActionManager actionManager) {
+public class EnrichmentTableHeaderMenu extends AbstractTableHeaderMenu {
+    public EnrichmentTableHeaderMenu(JTableHeader tableHeader, EnrichmentTableColumnModel columnModel, ActionManager actionManager) {
         super(columnModel, actionManager);
-        initializeShowColumn(findMenu(menuBar, "view", "show-column"));
-        initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"), positionsModel);
+        initializeShowColumn(null);
         initializePopup(tableHeader);
     }
 }

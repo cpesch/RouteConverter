@@ -26,6 +26,8 @@ import slash.navigation.jnlp.SingleInstanceCallback;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -99,6 +101,28 @@ public abstract class Application {
         Locale.setDefault(new Locale(language, country));
     }
 
+    private static ResourceBundle initializeBundles(String[] bundleNames) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        ResourceBundle lastBundle = null;
+        for (String bundleName : bundleNames) {
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
+            if (lastBundle != null)
+                setParentBundle(bundle, lastBundle);
+            lastBundle = bundle;
+        }
+
+        return lastBundle;
+    }
+
+    private static void setParentBundle(ResourceBundle bundle, ResourceBundle parentBundle) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Field field = ResourceBundle.class.getDeclaredField("parent");
+        field.setAccessible(true);
+        ResourceBundle bundlesParentOrNull = ResourceBundle.class.cast(field.get(bundle));
+
+        Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
+        method.setAccessible(true);
+        method.invoke(bundlesParentOrNull != null ? bundlesParentOrNull : bundle, parentBundle);
+    }
+
     private static ClassLoader extendClassPath() {
         ClassPathExtender extender = new ClassPathExtender();
 
@@ -157,18 +181,22 @@ public abstract class Application {
         final ClassLoader contextClassLoader = extendClassPath();
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
-        setLookAndFeel();
-        setUseSystemProxies();
-        openNativeInterface();
-        initializeLocale(userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
                 try {
                     if (contextClassLoader != null)
                         Thread.currentThread().setContextClassLoader(contextClassLoader);
-                    Application application = create(applicationClass, bundleNames);
+
+                    setLookAndFeel();
+                    setUseSystemProxies();
+                    openNativeInterface();
+                    initializeLocale(userNodeForPackage(applicationClass));
+                    ResourceBundle bundle = initializeBundles(bundleNames);
+
+                    Application application = create(applicationClass);
                     setInstance(application);
+                    application.getContext().setBundle(bundle);
                     application.initializeSingleInstance();
                     application.startup();
                     application.parseInitialArgs(args);
@@ -183,24 +211,9 @@ public abstract class Application {
         runNativeInterfaceEventPump();
     }
 
-    private static <T extends Application> T create(Class<T> applicationClass, String[] bundleNames) throws Exception {
+    private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
         Constructor<T> ctor = applicationClass.getDeclaredConstructor();
-        T application = ctor.newInstance();
-
-        ApplicationContext ctx = application.getContext();
-
-        ResourceBundle bundle = null, lastBundle = null;
-        for (String bundleName : bundleNames) {
-            bundle = ResourceBundle.getBundle(bundleName);
-            if (lastBundle != null) {
-                Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
-                method.setAccessible(true);
-                method.invoke(bundle, lastBundle);
-            }
-            lastBundle = bundle;
-        }
-        ctx.setBundle(bundle);
-        return application;
+        return ctor.newInstance();
     }
 
     protected abstract void startup();

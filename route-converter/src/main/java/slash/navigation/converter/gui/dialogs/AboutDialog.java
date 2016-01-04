@@ -150,7 +150,6 @@ public class AboutDialog extends SimpleDialog {
         labelCp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/cp.png")));
         labelCp.setInheritsPopupMenu(true);
         labelCp.setOpaque(false);
-        labelCp.setText("");
         panel1.add(labelCp, new GridConstraints(0, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelCredit = new JLabel();
         this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-credit"));

@@ -33,6 +33,7 @@ import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.panels.EnrichmentPanel;
 import slash.navigation.converter.gui.panels.PanelInTab;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.converter.gui.profileview.XAxisModeMenu;
@@ -188,7 +189,7 @@ public class RouteConverter extends SingleFrameApplication {
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, browsePanel, mapPanel, profilePanel;
+    private JPanel convertPanel, enrichmentPanel, browsePanel, mapPanel, profilePanel;
     private MapView mapView;
     private ProfileView profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
@@ -843,20 +844,32 @@ public class RouteConverter extends SingleFrameApplication {
 
     // tab related helpers
 
-    public boolean isBrowsePanelSelected() {
-        return tabbedPane.getSelectedComponent().equals(browsePanel);
-    }
-
     public boolean isConvertPanelSelected() {
         return tabbedPane.getSelectedComponent().equals(convertPanel);
     }
 
-    private BrowsePanel getBrowsePanel() {
-        return tabInitializer.getBrowsePanel();
+    protected boolean isEnrichmentEnabled() {
+        return false;
+    }
+
+    public boolean isEnrichmentSelected() {
+        return tabbedPane.getSelectedComponent().equals(enrichmentPanel);
+    }
+
+    public boolean isBrowsePanelSelected() {
+        return tabbedPane.getSelectedComponent().equals(browsePanel);
     }
 
     private ConvertPanel getConvertPanel() {
         return tabInitializer.getConvertPanel();
+    }
+
+    private EnrichmentPanel getEnrichmentPanel() {
+        return tabInitializer.getEnrichmentPanel();
+    }
+
+    private BrowsePanel getBrowsePanel() {
+        return tabInitializer.getBrowsePanel();
     }
 
     {
@@ -905,6 +918,9 @@ public class RouteConverter extends SingleFrameApplication {
         convertPanel = new JPanel();
         convertPanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("convert-tab"), convertPanel);
+        enrichmentPanel = new JPanel();
+        enrichmentPanel.setLayout(new BorderLayout(0, 0));
+        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("enrichment-tab"), enrichmentPanel);
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
@@ -935,6 +951,22 @@ public class RouteConverter extends SingleFrameApplication {
                     initialized.put(convertPanel, panel);
                 }
             });
+            if (isEnrichmentEnabled())
+                lazyInitializers.put(enrichmentPanel, new Runnable() {
+                    public void run() {
+                        PanelInTab panel = new EnrichmentPanel();
+                        enrichmentPanel.add(panel.getRootComponent());
+                        initialized.put(enrichmentPanel, panel);
+                    }
+                });
+            else {
+                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                    if (tabbedPane.getComponentAt(i) == enrichmentPanel) {
+                        tabbedPane.removeTabAt(i);
+                        break;
+                    }
+                }
+            }
             lazyInitializers.put(browsePanel, new Runnable() {
                 public void run() {
                     PanelInTab panel = new BrowsePanel();
@@ -944,14 +976,19 @@ public class RouteConverter extends SingleFrameApplication {
             });
         }
 
-        private synchronized BrowsePanel getBrowsePanel() {
-            initialize(browsePanel);
-            return (BrowsePanel) initialized.get(browsePanel);
-        }
-
         private synchronized ConvertPanel getConvertPanel() {
             initialize(convertPanel);
             return (ConvertPanel) initialized.get(convertPanel);
+        }
+
+        private synchronized EnrichmentPanel getEnrichmentPanel() {
+            initialize(enrichmentPanel);
+            return (EnrichmentPanel) initialized.get(enrichmentPanel);
+        }
+
+        private synchronized BrowsePanel getBrowsePanel() {
+            initialize(browsePanel);
+            return (BrowsePanel) initialized.get(browsePanel);
         }
 
         private void initialize(Component selected) {

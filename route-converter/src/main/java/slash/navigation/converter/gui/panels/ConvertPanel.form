@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.ConvertPanel">
   <grid id="4972b" binding="convertPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="3" left="3" bottom="0" right="3"/>
+    <margin top="3" left="3" bottom="3" right="3"/>
     <constraints>
       <xy x="0" y="0" width="567" height="675"/>
     </constraints>
@@ -204,7 +204,6 @@
             <properties>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/16/new-route.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-positionlist-action-tooltip"/>
             </properties>
           </component>
@@ -215,7 +214,6 @@
             <properties>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/16/rename-route.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-positionlist-action-tooltip"/>
             </properties>
           </component>
@@ -226,7 +224,6 @@
             <properties>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/16/remove-route.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positionlist-action-tooltip"/>
             </properties>
           </component>
@@ -286,7 +283,6 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/up.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="up-action-tooltip"/>
             </properties>
           </component>
@@ -298,7 +294,6 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/new-position-action.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-position-action-tooltip"/>
             </properties>
           </component>
@@ -310,7 +305,6 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/delete-action.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-action-tooltip"/>
             </properties>
           </component>
@@ -322,7 +316,6 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/down.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="down-action-tooltip"/>
             </properties>
           </component>
@@ -334,7 +327,6 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/bottom.png"/>
-              <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="bottom-action-tooltip"/>
             </properties>
           </component>

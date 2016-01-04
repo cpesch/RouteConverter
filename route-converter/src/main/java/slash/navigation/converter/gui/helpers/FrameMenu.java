@@ -60,7 +60,7 @@ public class FrameMenu {
 
         JMenu positionMenu = createMenu("position");
         positionMenu.add(createItem("new-position"));
-        positionMenu.add(createItem("delete"));
+        positionMenu.add(createItem("delete-position"));
         positionMenu.addSeparator();
         positionMenu.add(createItem("top"));
         positionMenu.add(createItem("up"));

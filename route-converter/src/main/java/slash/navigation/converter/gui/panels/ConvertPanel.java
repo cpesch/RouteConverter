@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.panels;
 
 import com.bulenkov.iconloader.IconLoader;
@@ -230,13 +229,12 @@ public class ConvertPanel implements PanelInTab {
             }
         });
 
-        final ActionManager actionManager = r.getContext().getActionManager();
         tablePositions.setModel(getPositionsModel());
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                r.getContext().getActionManager().run("delete");
+                r.getContext().getActionManager().run("delete-position");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
@@ -295,9 +293,9 @@ public class ConvertPanel implements PanelInTab {
             }
         });
 
+        final ActionManager actionManager = r.getContext().getActionManager();
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(),
-                tableColumnModel, actionManager);
+        tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(), tableColumnModel, actionManager);
         JPopupMenu menu = new PositionsTablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
@@ -305,16 +303,12 @@ public class ConvertPanel implements PanelInTab {
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
 
-        registerAction(buttonNewPositionList, "new-positionlist");
-        registerAction(buttonRenamePositionList, "rename-positionlist");
-        registerAction(buttonDeletePositionList, "delete-positionlist");
-
         actionManager.register("undo", new UndoAction());
         actionManager.register("redo", new RedoAction());
         actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("new-position", new AddPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
-        actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
+        actionManager.register("delete-position", new DeleteAction(getPositionsView(), getPositionsModel()));
         actionManager.register("top", new TopAction(this));
         actionManager.register("up", new UpAction(this));
         actionManager.register("down", new DownAction(this));
@@ -343,14 +337,15 @@ public class ConvertPanel implements PanelInTab {
         registerKeyStroke(tablePositions, "cut");
         registerKeyStroke(tablePositions, "paste");
 
-        setHelpIDString(tablePositions, "position-list");
-
-        buttonNewPosition.addActionListener(r.getContext().getActionManager().get("new-position"));
-        buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete"));
-        buttonMovePositionToTop.addActionListener(r.getContext().getActionManager().get("top"));
-        buttonMovePositionUp.addActionListener(r.getContext().getActionManager().get("up"));
-        buttonMovePositionDown.addActionListener(r.getContext().getActionManager().get("down"));
-        buttonMovePositionToBottom.addActionListener(r.getContext().getActionManager().get("bottom"));
+        registerAction(buttonNewPositionList, "new-positionlist");
+        registerAction(buttonRenamePositionList, "rename-positionlist");
+        registerAction(buttonDeletePositionList, "delete-positionlist");
+        registerAction(buttonNewPosition, "new-position");
+        registerAction(buttonDeletePosition, "delete-position");
+        registerAction(buttonMovePositionToTop, "top");
+        registerAction(buttonMovePositionUp, "up");
+        registerAction(buttonMovePositionDown, "down");
+        registerAction(buttonMovePositionToBottom, "bottom");
 
         buttonNewPosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/new-position-action.png"));
         buttonDeletePosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/delete-action.png"));
@@ -358,10 +353,11 @@ public class ConvertPanel implements PanelInTab {
         buttonMovePositionUp.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/up.png"));
         buttonMovePositionDown.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/down.png"));
         buttonMovePositionToBottom.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/bottom.png"));
-
         buttonNewPositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/new-route.png"));
         buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
         buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/remove-route.png"));
+
+        setHelpIDString(tablePositions, "position-list");
 
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -709,7 +705,7 @@ public class ConvertPanel implements PanelInTab {
                           boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
         if (file.getParent() != null)
-            preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getName(), file.getParent());
+            preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), file.getParent());
 
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format) || format instanceof CoPilotFormat;
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
@@ -800,12 +796,12 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private static boolean checkReadFormat(NavigationFormat format) {
-        return !((format instanceof HaicomLoggerFormat && !checkForFeature("csv-haicom", "Read Haicom Logger")));
+        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("csv-haicom", "Read Haicom Logger")));
     }
 
     private static boolean checkWriteFormat(NavigationFormat format) {
-        return !((format instanceof GarminFlightPlanFormat && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
-                (format instanceof GoRiderGpsFormat && !checkForFeature("rt-gorider", "Write GoRider GPS")));
+        return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
+                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("rt-gorider", "Write GoRider GPS")));
     }
 
     private static boolean checkForFeature(String featureName, String featureDescription) {
@@ -927,7 +923,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
-        tableHeaderMenu.enable(existsMoreThanOnePosition);
+        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition && r.getMapView().isSupportsPrinting());
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
@@ -959,7 +955,7 @@ public class ConvertPanel implements PanelInTab {
         ActionManager actionManager = r.getContext().getActionManager();
         actionManager.enable("cut", existsASelectedPosition);
         actionManager.enable("copy", existsASelectedPosition);
-        actionManager.enable("delete", existsASelectedPosition);
+        actionManager.enable("delete-position", existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
         findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
@@ -973,7 +969,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
-        tableHeaderMenu.enable(existsMoreThanOnePosition);
+        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition && r.getMapView().isSupportsPrinting());
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
         actionManager.enable("print-profile", existsAPosition);
@@ -1001,7 +997,7 @@ public class ConvertPanel implements PanelInTab {
         File target = new File(urlModel.getString());
         target = findExistingPath(target);
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getClass().getName(), ""));
+        File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), ""));
         path = findExistingPath(path);
         if (path == null)
             path = new File("");
@@ -1162,7 +1158,7 @@ public class ConvertPanel implements PanelInTab {
     private void $$$setupUI$$$() {
         createUIComponents();
         convertPanel = new JPanel();
-        convertPanel.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 0, 3), -1, -1));
+        convertPanel.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 3, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
         convertPanel.setPreferredSize(new Dimension(560, 560));
         final JScrollPane scrollPane1 = new JScrollPane();
@@ -1255,19 +1251,16 @@ public class ConvertPanel implements PanelInTab {
         buttonNewPositionList = new JButton();
         buttonNewPositionList.setHideActionText(true);
         buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/new-route.png")));
-        buttonNewPositionList.setText("");
         buttonNewPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-positionlist-action-tooltip"));
         panel3.add(buttonNewPositionList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenamePositionList = new JButton();
         buttonRenamePositionList.setHideActionText(true);
         buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/rename-route.png")));
-        buttonRenamePositionList.setText("");
         buttonRenamePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-positionlist-action-tooltip"));
         panel3.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePositionList = new JButton();
         buttonDeletePositionList.setHideActionText(true);
         buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/remove-route.png")));
-        buttonDeletePositionList.setText("");
         buttonDeletePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positionlist-action-tooltip"));
         panel3.add(buttonDeletePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
@@ -1293,35 +1286,30 @@ public class ConvertPanel implements PanelInTab {
         buttonMovePositionUp.setFocusable(false);
         buttonMovePositionUp.setHideActionText(true);
         buttonMovePositionUp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/up.png")));
-        buttonMovePositionUp.setText("");
         buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("up-action-tooltip"));
         panel4.add(buttonMovePositionUp, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonNewPosition = new JButton();
         buttonNewPosition.setFocusable(false);
         buttonNewPosition.setHideActionText(true);
         buttonNewPosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/new-position-action.png")));
-        buttonNewPosition.setText("");
         buttonNewPosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-position-action-tooltip"));
         panel4.add(buttonNewPosition, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePosition = new JButton();
         buttonDeletePosition.setFocusable(false);
         buttonDeletePosition.setHideActionText(true);
         buttonDeletePosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/delete-action.png")));
-        buttonDeletePosition.setText("");
         buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-action-tooltip"));
         panel4.add(buttonDeletePosition, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionDown = new JButton();
         buttonMovePositionDown.setFocusable(false);
         buttonMovePositionDown.setHideActionText(true);
         buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/down.png")));
-        buttonMovePositionDown.setText("");
         buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("down-action-tooltip"));
         panel4.add(buttonMovePositionDown, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionToBottom = new JButton();
         buttonMovePositionToBottom.setFocusable(false);
         buttonMovePositionToBottom.setHideActionText(true);
         buttonMovePositionToBottom.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/bottom.png")));
-        buttonMovePositionToBottom.setText("");
         buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("bottom-action-tooltip"));
         panel4.add(buttonMovePositionToBottom, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
