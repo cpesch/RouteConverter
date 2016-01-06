@@ -305,7 +305,7 @@
               <focusable value="false"/>
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/24/delete-action.png"/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-action-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-position-action-tooltip"/>
             </properties>
           </component>
           <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">

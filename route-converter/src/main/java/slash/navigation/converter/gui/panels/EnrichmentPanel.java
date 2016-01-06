@@ -27,16 +27,19 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DeleteAction;
+import slash.navigation.converter.gui.actions.PlayVoiceAction;
 import slash.navigation.converter.gui.helpers.EnrichmentTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.EnrichmentTablePopupMenu;
 import slash.navigation.converter.gui.models.EnrichmentTableColumnModel;
 import slash.navigation.converter.gui.models.FilteringPositionsModel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -49,6 +52,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * The voice and photo panel of the route converter user interface.
@@ -62,8 +66,9 @@ public class EnrichmentPanel implements PanelInTab {
     private JButton buttonAddVoice;
     private JButton buttonRemoveEnrichment;
     private JButton buttonAddPhoto;
+    private JButton buttonPlayVoice;
 
-    private PositionsModel positionsModel;
+    private FilteringPositionsModel positionsModel;
 
     public EnrichmentPanel() {
         $$$setupUI$$$();
@@ -81,7 +86,27 @@ public class EnrichmentPanel implements PanelInTab {
                         ENRICHED_WAYPOINT_TYPES.contains(((Wgs84Position) position).getWaypointType());
             }
         });
-        tableEnrichments.setModel(positionsModel);
+
+        tableEnrichments.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
+        getPositionsModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                if (!isFirstToLastRow(e))
+                    return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
+
+        tableEnrichments.setModel(getPositionsModel());
         EnrichmentTableColumnModel tableColumnModel = new EnrichmentTableColumnModel();
         tableEnrichments.setColumnModel(tableColumnModel);
         tableEnrichments.setDropMode(ON);
@@ -93,15 +118,18 @@ public class EnrichmentPanel implements PanelInTab {
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         ActionManager actionManager = r.getContext().getActionManager();
-        JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        EnrichmentTableHeaderMenu tableHeaderMenu = new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
+        new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
         new EnrichmentTablePopupMenu(tableEnrichments).createPopupMenu();
 
         registerAction(buttonRemoveEnrichment, "delete-enrichment");
+        registerAction(buttonPlayVoice, "play-voice");
 
         actionManager.register("delete-enrichment", new DeleteAction(tableEnrichments, getPositionsModel()));
+        actionManager.register("play-voice", new PlayVoiceAction(tableEnrichments, getPositionsModel(), r.getUrlModel()));
 
         setHelpIDString(tableEnrichments, "enrichment-list");
+
+        handlePositionsUpdate();
     }
 
     public Component getRootComponent() {
@@ -116,8 +144,21 @@ public class EnrichmentPanel implements PanelInTab {
         return buttonAddVoice;
     }
 
-    private PositionsModel getPositionsModel() {
+    private FilteringPositionsModel getPositionsModel() {
         return positionsModel;
+    }
+
+    private void handlePositionsUpdate() {
+        int[] selectedRows = tableEnrichments.getSelectedRows();
+        boolean existsASelectedPosition = selectedRows.length > 0;
+
+        RouteConverter r = RouteConverter.getInstance();
+        ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.enable("delete-enrichment", existsASelectedPosition);
+        actionManager.enable("play-voice", existsASelectedPosition);
+
+        if (r.isEnrichmentSelected())
+            r.selectPositions(getPositionsModel().mapRows(selectedRows));
     }
 
     /**
@@ -129,7 +170,7 @@ public class EnrichmentPanel implements PanelInTab {
      */
     private void $$$setupUI$$$() {
         enrichmentPanel = new JPanel();
-        enrichmentPanel.setLayout(new GridLayoutManager(4, 2, new Insets(3, 3, 3, 3), -1, -1));
+        enrichmentPanel.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
         buttonAddVoice = new JButton();
         this.$$$loadButtonText$$$(buttonAddVoice, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-voice-action"));
         buttonAddVoice.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-voice-action-tooltip"));
@@ -137,20 +178,24 @@ public class EnrichmentPanel implements PanelInTab {
         buttonRemoveEnrichment = new JButton();
         this.$$$loadButtonText$$$(buttonRemoveEnrichment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action"));
         buttonRemoveEnrichment.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action-tooltip"));
-        enrichmentPanel.add(buttonRemoveEnrichment, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enrichmentPanel.add(buttonRemoveEnrichment, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        enrichmentPanel.add(scrollPane1, new GridConstraints(0, 0, 4, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        enrichmentPanel.add(scrollPane1, new GridConstraints(0, 0, 5, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableEnrichments = new JTable();
         tableEnrichments.setAutoCreateColumnsFromModel(false);
         tableEnrichments.setShowHorizontalLines(false);
         tableEnrichments.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableEnrichments);
         final Spacer spacer1 = new Spacer();
-        enrichmentPanel.add(spacer1, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        enrichmentPanel.add(spacer1, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonAddPhoto = new JButton();
         this.$$$loadButtonText$$$(buttonAddPhoto, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action"));
         buttonAddPhoto.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action-tooltip"));
         enrichmentPanel.add(buttonAddPhoto, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPlayVoice = new JButton();
+        this.$$$loadButtonText$$$(buttonPlayVoice, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action"));
+        buttonPlayVoice.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action-tooltip"));
+        enrichmentPanel.add(buttonPlayVoice, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

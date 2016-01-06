@@ -685,6 +685,10 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().openPositionList(urls);
     }
 
+    public UrlDocument getUrlModel() {
+        return getConvertPanel().getUrlModel();
+    }
+
     public void revertPositions() {
         getPositionsModel().revert();
         getConvertPanel().clearSelection();
