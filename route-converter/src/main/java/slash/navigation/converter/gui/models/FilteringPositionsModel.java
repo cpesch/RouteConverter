@@ -43,7 +43,7 @@ import static slash.common.io.Transfer.toArray;
 public class FilteringPositionsModel extends AbstractTableModel implements PositionsModel {
     private final PositionsModel delegate;
     private final FilterPredicate predicate;
-    private Map<Integer, Integer> filteredIndices;
+    private Map<Integer, Integer> mapping;
 
     public FilteringPositionsModel(PositionsModel delegate, FilterPredicate predicate) {
         this.delegate = delegate;
@@ -58,20 +58,22 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     private void initializeMapping() {
-        filteredIndices = new HashMap<>();
+        mapping = new HashMap<>();
         for (int i = 0, c = delegate.getRowCount(); i < c; i++) {
             NavigationPosition position = delegate.getPosition(i);
-            if (predicate.shouldInclude(position))
-                filteredIndices.put(filteredIndices.size(), i);
+            if (predicate.shouldInclude(position)) {
+                int mappedRow = mapping.size();
+                mapping.put(mappedRow, i);
+            }
         }
     }
 
     private int mapRow(int rowIndex) {
-        Integer integer = filteredIndices.get(rowIndex);
+        Integer integer = mapping.get(rowIndex);
         return integer != null ? integer : -1;
     }
 
-    private int[] mapRows(int[] rowIndices) {
+    public int[] mapRows(int[] rowIndices) {
         List<Integer> result = new ArrayList<>();
         for(int rowIndex : rowIndices) {
             int mappedRow = mapRow(rowIndex);
@@ -90,7 +92,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     public int getRowCount() {
-        return filteredIndices.size();
+        return mapping.size();
     }
 
     public int getColumnCount() {
@@ -190,7 +192,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     public boolean isContinousRange() {
-        throw new UnsupportedOperationException();
+        return delegate.isContinousRange();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

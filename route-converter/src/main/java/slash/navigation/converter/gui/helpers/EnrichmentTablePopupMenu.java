@@ -40,6 +40,7 @@ public class EnrichmentTablePopupMenu extends AbstractTablePopupMenu {
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
+        menu.add(createItem("play-voice"));
         menu.add(createItem("delete-enrichment"));
         return menu;
     }

@@ -228,6 +228,15 @@ public class ConvertPanel implements PanelInTab {
                 handlePositionsUpdate();
             }
         });
+        getPositionsModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                if (!isFirstToLastRow(e))
+                    return;
+                if (getPositionsModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
 
         tablePositions.setModel(getPositionsModel());
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
@@ -282,16 +291,6 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.setDropMode(ON);
         TableDragAndDropHandler dropHandler = new TableDragAndDropHandler(new PanelDropHandler());
         tablePositions.setTransferHandler(dropHandler);
-
-        getPositionsModel().addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                if (!isFirstToLastRow(e))
-                    return;
-                if (getPositionsModel().isContinousRange())
-                    return;
-                handlePositionsUpdate();
-            }
-        });
 
         final ActionManager actionManager = r.getContext().getActionManager();
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
@@ -974,7 +973,8 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
         actionManager.enable("print-profile", existsAPosition);
 
-        r.selectPositions(selectedRows);
+        if (r.isConvertPanelSelected())
+            r.selectPositions(selectedRows);
     }
 
     // helpers
@@ -1298,7 +1298,7 @@ public class ConvertPanel implements PanelInTab {
         buttonDeletePosition.setFocusable(false);
         buttonDeletePosition.setHideActionText(true);
         buttonDeletePosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/delete-action.png")));
-        buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-action-tooltip"));
+        buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-position-action-tooltip"));
         panel4.add(buttonDeletePosition, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionDown = new JButton();
         buttonMovePositionDown.setFocusable(false);
