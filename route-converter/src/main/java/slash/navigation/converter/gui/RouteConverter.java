@@ -1013,7 +1013,7 @@ public class RouteConverter extends SingleFrameApplication {
             Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
             initialize(selected);
 
-            final PanelInTab panel = isBrowsePanelSelected() ? getBrowsePanel() : getConvertPanel();
+            final PanelInTab panel = initialized.get(selected);
             frame.getRootPane().setDefaultButton(panel.getDefaultButton());
             invokeLater(new Runnable() {
                 public void run() {
