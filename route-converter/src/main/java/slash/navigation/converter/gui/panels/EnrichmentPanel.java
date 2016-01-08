@@ -63,9 +63,8 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 public class EnrichmentPanel implements PanelInTab {
     private JPanel enrichmentPanel;
     private JTable tableEnrichments;
-    private JButton buttonAddVoice;
-    private JButton buttonRemoveEnrichment;
     private JButton buttonAddPhoto;
+    private JButton buttonDeleteEnrichment;
     private JButton buttonPlayVoice;
 
     private FilteringPositionsModel positionsModel;
@@ -121,7 +120,7 @@ public class EnrichmentPanel implements PanelInTab {
         new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
         new EnrichmentTablePopupMenu(tableEnrichments).createPopupMenu();
 
-        registerAction(buttonRemoveEnrichment, "delete-enrichment");
+        registerAction(buttonDeleteEnrichment, "delete-enrichment");
         registerAction(buttonPlayVoice, "play-voice");
 
         actionManager.register("delete-enrichment", new DeleteAction(tableEnrichments, getPositionsModel()));
@@ -141,7 +140,7 @@ public class EnrichmentPanel implements PanelInTab {
     }
 
     public JButton getDefaultButton() {
-        return buttonAddVoice;
+        return buttonAddPhoto;
     }
 
     private FilteringPositionsModel getPositionsModel() {
@@ -170,32 +169,28 @@ public class EnrichmentPanel implements PanelInTab {
      */
     private void $$$setupUI$$$() {
         enrichmentPanel = new JPanel();
-        enrichmentPanel.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
-        buttonAddVoice = new JButton();
-        this.$$$loadButtonText$$$(buttonAddVoice, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-voice-action"));
-        buttonAddVoice.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-voice-action-tooltip"));
-        enrichmentPanel.add(buttonAddVoice, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRemoveEnrichment = new JButton();
-        this.$$$loadButtonText$$$(buttonRemoveEnrichment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action"));
-        buttonRemoveEnrichment.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action-tooltip"));
-        enrichmentPanel.add(buttonRemoveEnrichment, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enrichmentPanel.setLayout(new GridLayoutManager(4, 2, new Insets(3, 3, 3, 3), -1, -1));
+        buttonDeleteEnrichment = new JButton();
+        this.$$$loadButtonText$$$(buttonDeleteEnrichment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action"));
+        buttonDeleteEnrichment.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-enrichment-action-tooltip"));
+        enrichmentPanel.add(buttonDeleteEnrichment, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        enrichmentPanel.add(scrollPane1, new GridConstraints(0, 0, 5, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        enrichmentPanel.add(scrollPane1, new GridConstraints(0, 0, 4, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableEnrichments = new JTable();
         tableEnrichments.setAutoCreateColumnsFromModel(false);
         tableEnrichments.setShowHorizontalLines(false);
         tableEnrichments.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableEnrichments);
         final Spacer spacer1 = new Spacer();
-        enrichmentPanel.add(spacer1, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        buttonAddPhoto = new JButton();
-        this.$$$loadButtonText$$$(buttonAddPhoto, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action"));
-        buttonAddPhoto.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action-tooltip"));
-        enrichmentPanel.add(buttonAddPhoto, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enrichmentPanel.add(spacer1, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonPlayVoice = new JButton();
         this.$$$loadButtonText$$$(buttonPlayVoice, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action"));
         buttonPlayVoice.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action-tooltip"));
-        enrichmentPanel.add(buttonPlayVoice, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enrichmentPanel.add(buttonPlayVoice, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonAddPhoto = new JButton();
+        this.$$$loadButtonText$$$(buttonAddPhoto, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action"));
+        buttonAddPhoto.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photo-action-tooltip"));
+        enrichmentPanel.add(buttonAddPhoto, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

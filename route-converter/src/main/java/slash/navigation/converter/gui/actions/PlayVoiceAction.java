@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
@@ -32,7 +33,7 @@ import java.io.File;
 import static slash.navigation.base.WaypointType.Voice;
 
 /**
- * {@link Action} that plays the voice of a {@link slash.navigation.base.WaypointType#Voice} waypoint.
+ * {@link Action} that plays the voice of a {@link WaypointType#Voice} waypoint.
  *
  * @author Christian Pesch
  */
