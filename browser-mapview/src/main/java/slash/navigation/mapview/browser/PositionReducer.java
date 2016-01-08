@@ -46,7 +46,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 class PositionReducer {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(PositionReducer.class);
     private static final Logger log = Logger.getLogger(MapView.class.getName());
 
     private static final double[] THRESHOLD_PER_ZOOM = {

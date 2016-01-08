@@ -94,7 +94,7 @@ import static slash.navigation.mapview.browser.TransformUtil.isPositionInChina;
  */
 
 public abstract class BrowserMapView implements MapView {
-    protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
+    protected static final Preferences preferences = Preferences.userNodeForPackage(BrowserMapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
