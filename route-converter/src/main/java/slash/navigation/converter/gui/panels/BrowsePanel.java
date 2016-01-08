@@ -314,7 +314,7 @@ public class BrowsePanel implements PanelInTab {
             getOperator().handleServiceError(t);
             return;
         }
-        RouteConverter.getInstance().openPositionList(singletonList(url));
+        RouteConverter.getInstance().openPositionList(singletonList(url), false);
     }
 
     private RoutesTableModel getRoutesListModel() {

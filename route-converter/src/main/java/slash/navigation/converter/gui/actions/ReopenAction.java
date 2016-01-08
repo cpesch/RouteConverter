@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -35,15 +35,13 @@ import static java.util.Collections.singletonList;
  */
 
 public class ReopenAction extends FrameAction {
-    private ConvertPanel convertPanel;
     private URL url;
 
-    public ReopenAction(ConvertPanel convertPanel, URL url) {
-        this.convertPanel = convertPanel;
+    public ReopenAction(URL url) {
         this.url = url;
     }
 
     public void run() {
-        convertPanel.openPositionList(singletonList(url));
+        RouteConverter.getInstance().openPositionList(singletonList(url), true);
     }
 }

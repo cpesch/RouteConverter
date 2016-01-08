@@ -684,7 +684,9 @@ public class RouteConverter extends SingleFrameApplication {
         getBrowsePanel().addUrlToCatalog(string);
     }
 
-    public void openPositionList(List<URL> urls) {
+    public void openPositionList(List<URL> urls, boolean selectConvertPanel) {
+        if (selectConvertPanel)
+            tabbedPane.setSelectedComponent(convertPanel);
         getConvertPanel().openPositionList(urls);
     }
 

@@ -62,7 +62,7 @@ public class PanelDropHandler extends TransferHandler {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
             List<File> onlyFiles = toFilesOnly(files);
-            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])));
+            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])), true);
         } else if (r.isBrowsePanelSelected())
             r.addFilesToCatalog(files);
     }
@@ -71,7 +71,7 @@ public class PanelDropHandler extends TransferHandler {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
             String url = extractUrl(string);
-            r.openPositionList(toUrls(url));
+            r.openPositionList(toUrls(url), true);
         } else if (r.isBrowsePanelSelected()) {
             r.addUrlToCatalog(string);
         }

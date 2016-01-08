@@ -73,7 +73,7 @@ public class ReopenMenuSynchronizer {
         for (URL url : urls) {
             File file = toFile(url);
             JMenuItem menuItem = new JMenuItem();
-            menuItem.setAction(new ReopenAction(convertPanel, url));
+            menuItem.setAction(new ReopenAction(url));
             String text = file != null ? file.getAbsolutePath() : url.toExternalForm();
             menuItem.setText(shortenPath(text, preferences.getInt(MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE, 80)));
             menuItem.setToolTipText(text);
