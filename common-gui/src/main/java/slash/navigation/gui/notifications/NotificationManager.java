@@ -129,6 +129,7 @@ public class NotificationManager {
 
     private void hide() {
         window.setVisible(false);
+        label.setText("");
     }
 
     public void showNotification(String message, Action action) {

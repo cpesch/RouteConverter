@@ -44,11 +44,11 @@ public class AddFileAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
+        chooser.setDialogTitle(getBundle().getString("add-file"));
         chooser.setSelectedFile(r.getUploadRoutePreference());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(r.getFrame());
+        int open = chooser.showOpenDialog(getFrame());
         if (open != APPROVE_OPTION)
             return;
 

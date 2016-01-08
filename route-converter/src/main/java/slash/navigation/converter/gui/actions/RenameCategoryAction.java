@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.impl.CategoryTreeNode;
@@ -48,22 +47,20 @@ public class RenameCategoryAction extends FrameAction {
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
         if(category == null)
             return;
 
         if(category.isLocalRoot() || category.isRemoteRoot()) {
             showMessageDialog(getFrame(),
-                    RouteConverter.getBundle().getString("rename-category-cannot-rename-root"), getFrame().getTitle(),
+                    getBundle().getString("rename-category-cannot-rename-root"), getFrame().getTitle(),
                     ERROR_MESSAGE);
             return;
         }
 
-        String name = (String) showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("rename-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
+        String name = (String) showInputDialog(getFrame(),
+                format(getBundle().getString("rename-category-label"), category.getName()),
+                getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
         if (trim(name) == null)
             return;
 

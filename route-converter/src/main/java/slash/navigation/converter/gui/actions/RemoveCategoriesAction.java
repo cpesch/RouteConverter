@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.impl.CategoryTreeNode;
@@ -48,8 +47,6 @@ public class RemoveCategoriesAction extends FrameAction {
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
         if (categories.size() == 0)
             return;
@@ -60,7 +57,7 @@ public class RemoveCategoriesAction extends FrameAction {
 
             if(category.isLocalRoot() || category.isRemoteRoot()) {
                 showMessageDialog(getFrame(),
-                        RouteConverter.getBundle().getString("remove-category-cannot-delete-root"), getFrame().getTitle(),
+                        getBundle().getString("remove-category-cannot-delete-root"), getFrame().getTitle(),
                         ERROR_MESSAGE);
                 return;
             }
@@ -72,9 +69,9 @@ public class RemoveCategoriesAction extends FrameAction {
 
         final List<CategoryTreeNode> parents = asParents(categories);
 
-        int confirm = showConfirmDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("confirm-remove-category"), categoryNames),
-                r.getFrame().getTitle(), YES_NO_OPTION);
+        int confirm = showConfirmDialog(getFrame(),
+                format(getBundle().getString("confirm-remove-category"), categoryNames),
+                getFrame().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
 

@@ -26,6 +26,7 @@ import slash.navigation.gui.SingleFrameApplication;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -61,4 +62,8 @@ public abstract class FrameAction extends AbstractAction implements ActionListen
     }
 
     public abstract void run();
+
+    protected static ResourceBundle getBundle() {
+        return Application.getInstance().getContext().getBundle();
+    }
 }

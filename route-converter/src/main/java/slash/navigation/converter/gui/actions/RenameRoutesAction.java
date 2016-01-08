@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.impl.RouteModel;
@@ -54,16 +53,14 @@ public class RenameRoutesAction extends FrameAction {
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         List<RouteModel> routes = getSelectedRouteModels(table);
         if (routes.size() == 0)
             return;
 
         for (final RouteModel route : routes) {
-            String name = (String) showInputDialog(r.getFrame(),
-                    format(RouteConverter.getBundle().getString("rename-route-label"), formatName(route)),
-                    r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getDescription());
+            String name = (String) showInputDialog(getFrame(),
+                    format(getBundle().getString("rename-route-label"), formatName(route)),
+                    getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getDescription());
             if (trim(name) == null)
                 return;
 

@@ -426,7 +426,10 @@ public class RouteConverter extends SingleFrameApplication {
         }
         getConvertPanel().dispose();
         getHgtFilesService().dispose();
-        getBatchPositionAugmenter().dispose();
+        if (batchPositionAugmenter != null)
+            batchPositionAugmenter.dispose();
+        if (audioPlayer != null)
+            audioPlayer.dispose();
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();
@@ -739,9 +742,18 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
         if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(getPositionsView(), getPositionsModel(), frame);
+            batchPositionAugmenter = new BatchPositionAugmenter(getPositionsView(), getPositionsModel(), getFrame());
         }
         return batchPositionAugmenter;
+    }
+
+    private AudioPlayer audioPlayer = null;
+
+    public synchronized AudioPlayer getAudioPlayer() {
+        if (audioPlayer == null) {
+            audioPlayer = new AudioPlayer(getFrame());
+        }
+        return audioPlayer;
     }
 
     protected MapViewCallback getMapViewCallback() {

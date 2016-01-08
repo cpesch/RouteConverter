@@ -24,7 +24,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
@@ -50,7 +49,7 @@ public class AddPositionListAction extends FrameAction {
     public void run() {
         NavigationFormat format = formatAndRoutesModel.getFormat();
         BaseRoute route = format.createRoute((RouteCharacteristics) formatAndRoutesModel.getCharacteristicsModel().getSelectedItem(),
-                MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
+                MessageFormat.format(getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
                 new ArrayList<NavigationPosition>());
         formatAndRoutesModel.addPositionList(formatAndRoutesModel.getSize(), route);
         formatAndRoutesModel.setSelectedItem(route);

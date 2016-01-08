@@ -26,18 +26,9 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.gui.actions.FrameAction;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.logging.Logger;
 
-import static java.lang.String.format;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.base.WaypointType.Voice;
 
 /**
@@ -47,7 +38,6 @@ import static slash.navigation.base.WaypointType.Voice;
  */
 
 public class PlayVoiceAction extends FrameAction {
-    private static final Logger log = Logger.getLogger(PlayVoiceAction.class.getName());
     private final JTable table;
     private final PositionsModel positionsModel;
     private final UrlDocument urlModel;
@@ -72,17 +62,7 @@ public class PlayVoiceAction extends FrameAction {
                 continue;
 
             File voice = new File(file.getParentFile(), wgs84Position.getDescription() + ".wav");
-            try {
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(voice);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioIn);
-                clip.start();
-            } catch (Exception e) {
-                log.severe(format("Cannot play voice %s: %s", voice, getLocalizedMessage(e)));
-                showMessageDialog(getFrame(),
-                        MessageFormat.format(RouteConverter.getBundle().getString("cannot-play-voice"), voice, e), getFrame().getTitle(),
-                        ERROR_MESSAGE);
-            }
+            RouteConverter.getInstance().getAudioPlayer().play(voice);
         }
     }
 }

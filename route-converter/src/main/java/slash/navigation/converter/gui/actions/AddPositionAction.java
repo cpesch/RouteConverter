@@ -24,6 +24,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
@@ -68,21 +69,22 @@ public class AddPositionAction extends FrameAction {
         return new BoundingBox(asList(second, position)).getCenter();
     }
 
+    private BatchPositionAugmenter getBatchPositionAugmenter() {
+        return RouteConverter.getInstance().getBatchPositionAugmenter();
+    }
+
     private NavigationPosition insertRow(int row, NavigationPosition position) {
-        String description = RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(positionsModel.getRowCount() + 1, null);
+        String description = getBatchPositionAugmenter().createDescription(positionsModel.getRowCount() + 1, null);
         positionsModel.add(row, position.getLongitude(), position.getLatitude(), position.getElevation(),
                 position.getSpeed(), position.getTime(), description);
         return positionsModel.getPosition(row);
     }
 
     private void complementRow(int row) {
-        RouteConverter r = RouteConverter.getInstance();
-        r.getBatchPositionAugmenter().addData(new int[]{row}, true, true, true, true, false);
+        getBatchPositionAugmenter().addData(new int[]{row}, true, true, true, true, false);
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         boolean hasInsertedRowInMapCenter = false;
         List<NavigationPosition> insertedPositions = new ArrayList<>();
         int[] rowIndices = revert(table.getSelectedRows());
@@ -99,7 +101,7 @@ public class AddPositionAction extends FrameAction {
                 // only insert row in map center once
                 if (hasInsertedRowInMapCenter)
                     continue;
-                center = r.getMapCenter();
+                center = RouteConverter.getInstance().getMapCenter();
                 hasInsertedRowInMapCenter = true;
             }
 

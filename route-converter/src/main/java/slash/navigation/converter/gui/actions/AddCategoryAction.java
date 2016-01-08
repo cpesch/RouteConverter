@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.Category;
@@ -52,15 +51,13 @@ public class AddCategoryAction extends FrameAction {
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
         if (category == null)
             return;
 
-        final String name = showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE);
+        final String name = showInputDialog(getFrame(),
+                format(getBundle().getString("add-category-label"), category.getName()),
+                getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 
