@@ -36,6 +36,7 @@ import slash.navigation.gopal.GoPal7RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.image.ImageFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
@@ -826,6 +827,11 @@ public class ConvertIT {
     public void testConvertGpx11ToGarminPcx5() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminPcx5Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminPcx5Format());
+    }
+
+    @Test
+    public void testConvertImageToNokiaLandmarkExchange() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.jpg", new ImageFormat(), new NokiaLandmarkExchangeFormat());
     }
 
     @Test

@@ -26,6 +26,7 @@ import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.AddPhotoAction;
 import slash.navigation.converter.gui.actions.DeleteAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
 import slash.navigation.converter.gui.helpers.EnrichmentTableHeaderMenu;
@@ -41,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -120,9 +122,11 @@ public class EnrichmentPanel implements PanelInTab {
         new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
         new EnrichmentTablePopupMenu(tableEnrichments).createPopupMenu();
 
+        registerAction(buttonAddPhoto, "add-photo");
         registerAction(buttonDeleteEnrichment, "delete-enrichment");
         registerAction(buttonPlayVoice, "play-voice");
 
+        actionManager.register("add-photo", new AddPhotoAction());
         actionManager.register("delete-enrichment", new DeleteAction(tableEnrichments, getPositionsModel()));
         actionManager.register("play-voice", new PlayVoiceAction(tableEnrichments, getPositionsModel(), r.getUrlModel()));
 
@@ -141,6 +145,10 @@ public class EnrichmentPanel implements PanelInTab {
 
     public JButton getDefaultButton() {
         return buttonAddPhoto;
+    }
+
+    public void addPhotosToPositionList(List<File> files) {
+        throw  new UnsupportedOperationException(); // TODO
     }
 
     private FilteringPositionsModel getPositionsModel() {

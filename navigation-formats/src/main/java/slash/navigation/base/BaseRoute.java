@@ -41,6 +41,8 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.image.ImageFormat;
+import slash.navigation.image.ImageRoute;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRoute;
@@ -502,6 +504,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract GpxRoute asGpxFormat(GpxFormat format);
 
+    protected abstract ImageRoute asImageFormat(ImageFormat format);
+
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
 
     protected abstract NmeaRoute asNmeaFormat(BaseNmeaFormat format);
@@ -671,6 +675,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof Igo8RouteFormat)
             return (KmlRoute) this;
         return asKmlFormat(new Igo8RouteFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public ImageRoute asImageFormat() {
+        if (getFormat() instanceof ImageFormat)
+            return (ImageRoute) this;
+        return asImageFormat(new ImageFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")
