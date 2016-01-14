@@ -28,7 +28,8 @@ import java.util.logging.Logger;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_YEAR;
+import static java.util.Calendar.YEAR;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 
@@ -90,12 +91,6 @@ public class CompactCalendar {
 
     public static CompactCalendar now() {
         return fromDate(new Date());
-    }
-
-    public static CompactCalendar oneWeekAgo() {
-        Calendar calendar = Calendar.getInstance(UTC);
-        calendar.add(DATE, -7);
-        return fromCalendar(calendar);
     }
 
     public static CompactCalendar getInstance(String timeZoneId) {

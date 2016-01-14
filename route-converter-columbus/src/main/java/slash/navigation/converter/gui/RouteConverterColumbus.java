@@ -60,7 +60,7 @@ public class RouteConverterColumbus extends RouteConverter {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(3 * 60 * 1000);
+                    Thread.sleep(10 * 60 * 1000);
                 } catch (InterruptedException e) {
                 }
                 showMessageDialog(null, "Thank you for testing.", "RouteConverter for Columbus", ERROR_MESSAGE);

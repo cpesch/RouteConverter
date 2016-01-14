@@ -28,6 +28,8 @@ import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.image.ImageFormat;
+import slash.navigation.image.ImageRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -123,6 +125,14 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
+    protected ImageRoute asImageFormat(ImageFormat format) {
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (GoPalPosition position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new ImageRoute(format, getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {

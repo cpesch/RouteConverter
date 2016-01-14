@@ -166,6 +166,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
+    private static final String ADD_PHOTO_PREFERENCE = "addPhoto";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.16";
 
@@ -497,6 +498,15 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.put(UPLOAD_ROUTE_PREFERENCE, path.getPath());
     }
 
+    public File getAddPhotoPreference() {
+        File path = new File(preferences.get(ADD_PHOTO_PREFERENCE, ""));
+        return findExistingPath(path);
+    }
+
+    public void setAddPhotoPreference(File path) {
+        preferences.put(ADD_PHOTO_PREFERENCE, path.getPath());
+    }
+
     public String getCategoryPreference() {
         return preferences.get(CATEGORY_PREFERENCE, "");
     }
@@ -682,6 +692,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void addUrlToCatalog(String string) {
         getBrowsePanel().addUrlToCatalog(string);
+    }
+
+    public void addPhotosToPositionList(List<File> files) {
+        getEnrichmentPanel().addPhotosToPositionList(files);
     }
 
     public void openPositionList(List<URL> urls, boolean selectConvertPanel) {

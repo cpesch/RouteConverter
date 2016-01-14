@@ -1076,10 +1076,10 @@ public abstract class BrowserMapView implements MapView {
             NavigationPosition position = reducedPositions.get(i);
             Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
             WaypointType waypointType = wgs84Position.getWaypointType();
-            if (i == 0)
-                waypointType = Start;
             if (i == c - 1)
                 waypointType = End;
+            if (i == 0)
+                waypointType = Start;
 
             if (waypointType != null && waypointType != Waypoint)
                 icons.append("addWaypointIcon(new google.maps.LatLng(").append(asCoordinates(position)).append("),\"").
