@@ -39,25 +39,62 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
 import static java.util.Collections.singletonList;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.*;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.*;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.*;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.*;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_DIGITIZED;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_USER_COMMENT;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE_REF;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_DATE_STAMP;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_DOP;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_IMG_DIRECTION;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LATITUDE;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LONGITUDE;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LONGITUDE_REF;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE_VALUE_3_DIMENSIONAL_MEASUREMENT;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SATELLITES;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_KMPH;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_KNOTS;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_MPH;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_TIME_STAMP;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_VERSION_ID;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_EXIF;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_GPS;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_ROOT;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_DATE_TIME;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MAKE;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MODEL;
 import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.ISO8601.formatDate;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 import static slash.navigation.common.UnitConversion.statuteMilesToKiloMeter;
 
@@ -72,6 +109,7 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
     private static final String DATE_TIME_FORMAT = "yyyy:MM:dd HH:mm:ss";
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
+    private static final int READ_BUFFER_SIZE = 32 * 1024;
 
     public String getName() {
         return "Image (" + getExtension() + ")";
@@ -89,10 +127,6 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
         return false;
     }
 
-    public boolean isSupportsWriting() {
-        return false;
-    }
-
     public boolean isWritingRouteCharacteristics() {
         return false;
     }
@@ -103,7 +137,9 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<ImageRoute> context) throws Exception {
-        ImageMetadata metadata = Imaging.getMetadata(source, null);
+        BufferedInputStream bufferedSource = new BufferedInputStream(source, READ_BUFFER_SIZE);
+        bufferedSource.mark(READ_BUFFER_SIZE);
+        ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
 
         TiffImageMetadata tiffImageMetadata;
         if (metadata instanceof JpegImageMetadata)
@@ -121,7 +157,10 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
         String userComment = parseExifUsercomment(tiffImageMetadata);
         CompactCalendar time = parseExifTime(tiffImageMetadata, startDate);
         Wgs84Position position = parsePosition(tiffImageMetadata, userComment, time);
-        context.appendRoute(createRoute(Waypoints, null, singletonList(position)));
+
+        bufferedSource.reset();
+        BufferedImage image = Imaging.getBufferedImage(bufferedSource);
+        context.appendRoute(new ImageRoute(this, null, singletonList(position), image));
     }
 
     private String parseExifUsercomment(TiffImageMetadata metadata) throws ImageReadException {

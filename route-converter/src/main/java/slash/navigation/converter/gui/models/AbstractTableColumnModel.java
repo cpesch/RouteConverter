@@ -22,6 +22,8 @@ package slash.navigation.converter.gui.models;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
@@ -36,6 +38,7 @@ import static java.text.DateFormat.*;
 import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
 import static java.util.Locale.US;
+import static slash.navigation.converter.gui.models.PositionTableColumn.VISIBLE_PROPERTY_NAME;
 
 /**
  * Helps to make table columns useable.
@@ -183,12 +186,35 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
         else
             removeColumn(column);
         preferences.putBoolean(createVisibleKey(column.getName()), column.isVisible());
+
+        fireVisibilityChanged(column);
     }
 
     private class VisibleListener implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("visible"))
+            if (evt.getPropertyName().equals(VISIBLE_PROPERTY_NAME))
                 visibilityChanged((PositionTableColumn) evt.getSource());
         }
+    }
+
+    protected void fireVisibilityChanged(PositionTableColumn column) {
+        ChangeEvent changeEvent = null;
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                if (changeEvent == null) {
+                    changeEvent = new ChangeEvent(column);
+                }
+                ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
+            }
+        }
+    }
+
+    public void addChangeListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        listenerList.remove(ChangeListener.class, l);
     }
 }

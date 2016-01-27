@@ -37,6 +37,7 @@ import java.util.Comparator;
  */
 
 public class PositionTableColumn extends TableColumn {
+    public static final String VISIBLE_PROPERTY_NAME = "visible";
     private boolean visible;
     private final String name;
     private final Comparator<NavigationPosition> comparator;
@@ -62,7 +63,7 @@ public class PositionTableColumn extends TableColumn {
         boolean oldVisibile = this.visible;
         this.visible = newVisible;
 
-        PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, "visible", oldVisibile, newVisible);
+        PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, VISIBLE_PROPERTY_NAME, oldVisibile, newVisible);
         for(PropertyChangeListener changeListener : getPropertyChangeListeners()) {
             changeListener.propertyChange(changeEvent);
         }
