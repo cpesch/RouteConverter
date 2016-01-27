@@ -62,10 +62,14 @@ public class LocalRoute implements Route {
     }
 
     public String getDescription() throws IOException {
-        return getName();
+        if(!file.exists())
+            return "broken link: " + file.getName();
+        return file.getName();
     }
 
     public String getCreator() throws IOException {
+        if(!file.exists())
+            return System.getProperty("user.name");
         Path path = Paths.get(file.getAbsolutePath());
         FileOwnerAttributeView ownerAttributeView = Files.getFileAttributeView(path, FileOwnerAttributeView.class);
         UserPrincipal owner = ownerAttributeView.getOwner();
