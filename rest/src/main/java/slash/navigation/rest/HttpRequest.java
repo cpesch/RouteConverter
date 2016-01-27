@@ -47,7 +47,15 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_NOT_MODIFIED;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_PARTIAL_CONTENT;
+import static org.apache.http.HttpStatus.SC_PRECONDITION_FAILED;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
@@ -142,9 +150,6 @@ public abstract class HttpRequest {
     public String executeAsString() throws IOException {
         try {
             this.response = execute();
-            // no response body then
-            if (isUnAuthorized())
-                return null;
             HttpEntity entity = response.getEntity();
             // HEAD requests don't have a body
             String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
@@ -159,8 +164,6 @@ public abstract class HttpRequest {
     public InputStream executeAsStream() throws IOException {
         this.response = execute();
         // no response body then
-        if (isUnAuthorized())
-            return null;
         HttpEntity entity = response.getEntity();
         InputStream body = entity != null ? entity.getContent() : null;
         if (!isSuccessful() && !isNotModified())
