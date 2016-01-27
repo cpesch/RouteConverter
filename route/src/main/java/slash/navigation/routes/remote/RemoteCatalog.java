@@ -24,6 +24,7 @@ import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.ServiceUnavailableException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 import slash.navigation.routes.*;
 import slash.navigation.routes.remote.binding.CatalogType;
 import slash.navigation.routes.remote.binding.CategoryType;
@@ -111,8 +112,10 @@ public class RemoteCatalog implements Catalog {
         request.addString("parent", categoryUrl);
         request.addString("name", name);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to add category " + name, categoryUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to add category " + name, categoryUrl);
+            throw new ForbiddenException("Forbidden to add category " + name, categoryUrl);
         if (request.isBadRequest())
             throw new NotFoundException("Category not found", categoryUrl);
         if (request.isPreconditionFailed())
@@ -129,8 +132,10 @@ public class RemoteCatalog implements Catalog {
         request.addString("parent", parentUrl);
         request.addString("name", name);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to update category " + name, categoryUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to update category", categoryUrl);
+            throw new ForbiddenException("Forbidden to update category " + name, categoryUrl);
         if (request.isNotFound())
             throw new NotFoundException("Category not found", categoryUrl);
         if (request.isBadRequest())
@@ -146,8 +151,10 @@ public class RemoteCatalog implements Catalog {
         Delete request = new Delete(categoryUrl, credentials);
         request.setAccept(APPLICATION_JSON);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to delete category", categoryUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to delete category", categoryUrl);
+            throw new ForbiddenException("Forbidden to delete category", categoryUrl);
         if (request.isNotFound())
             throw new NotFoundException("Category not found", categoryUrl);
         if (request.isBadRequest())
@@ -167,8 +174,10 @@ public class RemoteCatalog implements Catalog {
         if (remoteUrl != null)
             request.addString("remoteUrl", remoteUrl);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to add route " + description, categoryUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to add route " + description, categoryUrl);
+            throw new ForbiddenException("Forbidden to add route " + description, categoryUrl);
         if (request.isBadRequest())
             throw new NotFoundException("Category not found", categoryUrl);
         if (request.isPreconditionFailed())
@@ -189,8 +198,10 @@ public class RemoteCatalog implements Catalog {
         if (remoteUrl != null)
             request.addString("remoteUrl", remoteUrl);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to update route", routeUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to update route", routeUrl);
+            throw new ForbiddenException("Forbidden to update route", routeUrl);
         if (request.isNotFound())
             throw new NotFoundException("Route not found", routeUrl);
         if (request.isBadRequest())
@@ -206,8 +217,10 @@ public class RemoteCatalog implements Catalog {
         Delete request = new Delete(routeUrl, credentials);
         request.setAccept(APPLICATION_JSON);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to delete route", routeUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to delete route", routeUrl);
+            throw new ForbiddenException("Forbidden to delete route", routeUrl);
         if (request.isNotFound())
             throw new NotFoundException("Route not found", routeUrl);
         if (request.isBadRequest())
@@ -224,8 +237,10 @@ public class RemoteCatalog implements Catalog {
         request.addString("name", file.getName());
         request.addFile("file", file);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to add file " + file, fileUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to add file " + file, fileUrl);
+            throw new ForbiddenException("Forbidden to add file " + file, fileUrl);
         if (request.isPreconditionFailed())
             throw new ServiceUnavailableException("File " + file + " is too large", fileUrl);
         if (!request.isSuccessful())
@@ -237,8 +252,10 @@ public class RemoteCatalog implements Catalog {
         log.info(format("Adding file %s", fileUrl));
         Delete request = new Delete(fileUrl, credentials);
         String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Not authorized to delete file", fileUrl);
         if (request.isForbidden())
-            throw new ForbiddenException("Not authorized to delete file", fileUrl);
+            throw new ForbiddenException("Forbidden to delete file", fileUrl);
         if (request.isNotFound())
             throw new NotFoundException("File not found", fileUrl);
         if (request.isBadRequest())
