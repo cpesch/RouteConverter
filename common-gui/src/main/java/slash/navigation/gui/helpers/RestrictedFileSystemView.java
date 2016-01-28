@@ -136,9 +136,9 @@ class RestrictedFileSystemView extends FileSystemView {
     public File getDefaultDirectory() {
         if (defaultDirectory == null) {
             try {
-                File tempFile = createTempFile("filesystemview", "restricted", getTemporaryDirectory());
-                tempFile.deleteOnExit();
-                defaultDirectory = tempFile.getParentFile();
+                File temp = createTempFile("filesystemview", "restricted", getTemporaryDirectory());
+                temp.deleteOnExit();
+                defaultDirectory = temp.getParentFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }

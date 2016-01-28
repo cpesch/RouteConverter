@@ -72,10 +72,10 @@ public class Download {
 
     private static File newTempFile() {
         try {
-            File file = createTempFile("download", ".tmp", getTemporaryDirectory());
-            if (!file.delete())
+            File temp = createTempFile("download", ".tmp", getTemporaryDirectory());
+            if (!temp.delete())
                 throw new IllegalArgumentException("Cannot delete temp file");
-            return file;
+            return temp;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot create temp file", e);
         }

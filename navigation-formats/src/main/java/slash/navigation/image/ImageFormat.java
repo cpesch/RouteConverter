@@ -39,9 +39,8 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 
-import java.awt.image.BufferedImage;
+import java.awt.*;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +51,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.io.File.createTempFile;
 import static java.lang.Math.abs;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR;
@@ -90,6 +90,8 @@ import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryCon
 import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_DATE_TIME;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MAKE;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MODEL;
+import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.io.Transfer.parseInteger;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -139,28 +141,46 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
     public void read(InputStream source, CompactCalendar startDate, ParserContext<ImageRoute> context) throws Exception {
         BufferedInputStream bufferedSource = new BufferedInputStream(source, READ_BUFFER_SIZE);
         bufferedSource.mark(READ_BUFFER_SIZE);
-        ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
 
-        TiffImageMetadata tiffImageMetadata;
-        if (metadata instanceof JpegImageMetadata)
-            tiffImageMetadata = ((JpegImageMetadata) metadata).getExif();
-        else if (metadata instanceof TiffImageMetadata)
-            tiffImageMetadata = (TiffImageMetadata) metadata;
-        else
+        Dimension size = Imaging.getImageSize(bufferedSource, null);
+        if(size == null)
             return;
 
-        @SuppressWarnings("unchecked")
-        List<Directory> directories = (List<Directory>) tiffImageMetadata.getDirectories();
-        for (Directory directory : directories)
-            log.info("Reading EXIF directory " + directory);
-
-        String userComment = parseExifUsercomment(tiffImageMetadata);
-        CompactCalendar time = parseExifTime(tiffImageMetadata, startDate);
-        Wgs84Position position = parsePosition(tiffImageMetadata, userComment, time);
+        Wgs84Position position = new Wgs84Position(null, null, null, null, startDate, "No EXIF data");
 
         bufferedSource.reset();
-        BufferedImage image = Imaging.getBufferedImage(bufferedSource);
+        ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
+        TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
+        if (tiffImageMetadata != null) {
+            @SuppressWarnings("unchecked")
+            List<Directory> directories = (List<Directory>) tiffImageMetadata.getDirectories();
+            for (Directory directory : directories)
+                log.info("Reading EXIF directory " + directory);
+
+            String userComment = parseExifUsercomment(tiffImageMetadata);
+            CompactCalendar time = parseExifTime(tiffImageMetadata, startDate);
+            position = parsePosition(tiffImageMetadata, userComment, time);
+        }
+
+        bufferedSource.reset();
+        File image = extractToTempFile(bufferedSource);
         context.appendRoute(new ImageRoute(this, null, singletonList(position), image));
+    }
+
+    private TiffImageMetadata extractTiffImageMetadata(ImageMetadata metadata) {
+        TiffImageMetadata result = null;
+        if (metadata instanceof JpegImageMetadata)
+            result = ((JpegImageMetadata) metadata).getExif();
+        else if (metadata instanceof TiffImageMetadata)
+            result = (TiffImageMetadata) metadata;
+        return result;
+    }
+
+    private File extractToTempFile(InputStream inputStream) throws IOException {
+        File temp = createTempFile("image", ".jpg", getTemporaryDirectory());
+        temp.deleteOnExit();
+        copyAndClose(inputStream, new FileOutputStream(temp));
+        return temp;
     }
 
     private String parseExifUsercomment(TiffImageMetadata metadata) throws ImageReadException {
@@ -271,7 +291,7 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
         TiffImageMetadata.GPSInfo gpsInfo = metadata.getGPS();
         if (gpsInfo != null) {
             longitude = gpsInfo.getLongitudeAsDegreesEast();
-            latitude = gpsInfo.getLongitudeAsDegreesEast();
+            latitude = gpsInfo.getLatitudeAsDegreesNorth();
         }
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, altitude, speed, time, description);
@@ -289,92 +309,92 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
     }
 
     public void write(ImageRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        throw new UnsupportedOperationException();
-    }
+        try {
+            File source = route.getImage();
+            if(source == null)
+                throw new IOException("Need an image file as source");
 
-    public void write(ImageRoute route, File source, File target) throws IOException, ImageReadException, ImageWriteException {
-        ImageMetadata metadata = Imaging.getMetadata(source);
-        if (!(metadata instanceof JpegImageMetadata))
-            return;
+            ImageMetadata metadata = Imaging.getMetadata(source);
+            TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
 
-        JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
-        TiffImageMetadata exif = jpegMetadata.getExif();
-        TiffOutputSet outputSet = null;
-        if (exif != null)
-            outputSet = exif.getOutputSet();
-        if (outputSet == null)
-            outputSet = new TiffOutputSet();
+            TiffOutputSet outputSet = null;
+            if (tiffImageMetadata != null)
+                outputSet = tiffImageMetadata.getOutputSet();
+            if (outputSet == null)
+                outputSet = new TiffOutputSet();
 
-        TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
-        exifDirectory.removeField(EXIF_TAG_USER_COMMENT);
+            TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
+            exifDirectory.removeField(EXIF_TAG_USER_COMMENT);
 
-        TiffOutputDirectory gpsDirectory = outputSet.getOrCreateGPSDirectory();
-        gpsDirectory.removeField(GPS_TAG_GPS_VERSION_ID);
-        gpsDirectory.add(GPS_TAG_GPS_VERSION_ID, (byte) 2, (byte) 3, (byte) 0, (byte) 0);
+            TiffOutputDirectory gpsDirectory = outputSet.getOrCreateGPSDirectory();
+            gpsDirectory.removeField(GPS_TAG_GPS_VERSION_ID);
+            gpsDirectory.add(GPS_TAG_GPS_VERSION_ID, (byte) 2, (byte) 3, (byte) 0, (byte) 0);
 
-        gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE);
-        gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE_REF);
-        gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE);
-        gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE_REF);
-        gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE);
-        gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE_REF);
-        gpsDirectory.removeField(GPS_TAG_GPS_SPEED);
-        gpsDirectory.removeField(GPS_TAG_GPS_SPEED_REF);
-        gpsDirectory.removeField(GPS_TAG_GPS_DATE_STAMP);
-        gpsDirectory.removeField(GPS_TAG_GPS_TIME_STAMP);
-        gpsDirectory.removeField(GPS_TAG_GPS_IMG_DIRECTION);
-        gpsDirectory.removeField(GPS_TAG_GPS_SATELLITES);
-        gpsDirectory.removeField(GPS_TAG_GPS_MEASURE_MODE);
-        gpsDirectory.removeField(GPS_TAG_GPS_DOP);
+            gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE);
+            gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE_REF);
+            gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE);
+            gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE_REF);
+            gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE);
+            gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE_REF);
+            gpsDirectory.removeField(GPS_TAG_GPS_SPEED);
+            gpsDirectory.removeField(GPS_TAG_GPS_SPEED_REF);
+            gpsDirectory.removeField(GPS_TAG_GPS_DATE_STAMP);
+            gpsDirectory.removeField(GPS_TAG_GPS_TIME_STAMP);
+            gpsDirectory.removeField(GPS_TAG_GPS_IMG_DIRECTION);
+            gpsDirectory.removeField(GPS_TAG_GPS_SATELLITES);
+            gpsDirectory.removeField(GPS_TAG_GPS_MEASURE_MODE);
+            gpsDirectory.removeField(GPS_TAG_GPS_DOP);
 
-        if (route.getPositionCount() > 0) {
-            Wgs84Position position = route.getPosition(0);
+            if (route.getPositionCount() > 0) {
+                Wgs84Position position = route.getPosition(0);
 
-            exifDirectory.add(EXIF_TAG_USER_COMMENT, position.getDescription());
+                exifDirectory.add(EXIF_TAG_USER_COMMENT, position.getDescription());
 
-            if (position.getLongitude() != null && position.getLatitude() != null)
-                outputSet.setGPSInDegrees(position.getLongitude(), position.getLatitude());
+                if (position.getLongitude() != null && position.getLatitude() != null)
+                    outputSet.setGPSInDegrees(position.getLongitude(), position.getLatitude());
 
-            if (position.getElevation() != null) {
-                gpsDirectory.add(GPS_TAG_GPS_ALTITUDE, RationalNumber.valueOf(abs(position.getElevation())));
-                gpsDirectory.add(GPS_TAG_GPS_ALTITUDE_REF, (byte) (position.getElevation() > 0 ? 0 : 1));
+                if (position.getElevation() != null) {
+                    gpsDirectory.add(GPS_TAG_GPS_ALTITUDE, RationalNumber.valueOf(abs(position.getElevation())));
+                    gpsDirectory.add(GPS_TAG_GPS_ALTITUDE_REF, (byte) (position.getElevation() > 0 ? 0 : 1));
+                }
+
+                if (position.getSpeed() != null) {
+                    gpsDirectory.add(GPS_TAG_GPS_SPEED, RationalNumber.valueOf(position.getSpeed()));
+                    gpsDirectory.add(GPS_TAG_GPS_SPEED_REF, GPS_TAG_GPS_SPEED_REF_VALUE_KMPH);
+                }
+
+                if (position.getTime() != null) {
+                    Calendar calendar = position.getTime().getCalendar();
+
+                    gpsDirectory.add(GPS_TAG_GPS_TIME_STAMP,
+                            RationalNumber.valueOf(calendar.get(HOUR_OF_DAY)),
+                            RationalNumber.valueOf(calendar.get(MINUTE)),
+                            RationalNumber.valueOf(calendar.get(SECOND)));
+                    String dateStamp = XXXX_FORMAT.format(calendar.get(YEAR)) + ":" +
+                            XX_FORMAT.format(calendar.get(MONTH) + 1) + ":" +
+                            XX_FORMAT.format(calendar.get(DAY_OF_MONTH));
+                    gpsDirectory.add(GPS_TAG_GPS_DATE_STAMP, dateStamp);
+                }
+
+                if (position.getHeading() != null)
+                    gpsDirectory.add(GPS_TAG_GPS_IMG_DIRECTION, RationalNumber.valueOf(position.getHeading()));
+
+                if (position.getSatellites() != null)
+                    gpsDirectory.add(GPS_TAG_GPS_SATELLITES, position.getSatellites().toString());
+
+                if (position.getPdop() != null) {
+                    gpsDirectory.add(GPS_TAG_GPS_MEASURE_MODE, Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_3_DIMENSIONAL_MEASUREMENT));
+                    gpsDirectory.add(GPS_TAG_GPS_DOP, RationalNumber.valueOf(position.getPdop()));
+                } else if (position.getHdop() != null) {
+                    gpsDirectory.add(GPS_TAG_GPS_MEASURE_MODE, Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT));
+                    gpsDirectory.add(GPS_TAG_GPS_DOP, RationalNumber.valueOf(position.getHdop()));
+                }
             }
 
-            if (position.getSpeed() != null) {
-                gpsDirectory.add(GPS_TAG_GPS_SPEED, RationalNumber.valueOf(position.getSpeed()));
-                gpsDirectory.add(GPS_TAG_GPS_SPEED_REF, GPS_TAG_GPS_SPEED_REF_VALUE_KMPH);
-            }
-
-            if (position.getTime() != null) {
-                Calendar calendar = position.getTime().getCalendar();
-
-                gpsDirectory.add(GPS_TAG_GPS_TIME_STAMP,
-                        RationalNumber.valueOf(calendar.get(HOUR_OF_DAY)),
-                        RationalNumber.valueOf(calendar.get(MINUTE)),
-                        RationalNumber.valueOf(calendar.get(SECOND)));
-                String dateStamp = XXXX_FORMAT.format(calendar.get(YEAR)) + ":" +
-                        XX_FORMAT.format(calendar.get(MONTH) + 1) + ":" +
-                        XX_FORMAT.format(calendar.get(DAY_OF_MONTH));
-                gpsDirectory.add(GPS_TAG_GPS_DATE_STAMP, dateStamp);
-            }
-
-            if (position.getHeading() != null)
-                gpsDirectory.add(GPS_TAG_GPS_IMG_DIRECTION, RationalNumber.valueOf(position.getHeading()));
-
-            if (position.getSatellites() != null)
-                gpsDirectory.add(GPS_TAG_GPS_SATELLITES, position.getSatellites().toString());
-
-            if (position.getPdop() != null) {
-                gpsDirectory.add(GPS_TAG_GPS_MEASURE_MODE, Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_3_DIMENSIONAL_MEASUREMENT));
-                gpsDirectory.add(GPS_TAG_GPS_DOP, RationalNumber.valueOf(position.getPdop()));
-            } else if (position.getHdop() != null) {
-                gpsDirectory.add(GPS_TAG_GPS_MEASURE_MODE, Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT));
-                gpsDirectory.add(GPS_TAG_GPS_DOP, RationalNumber.valueOf(position.getHdop()));
-            }
+            new ExifRewriter().updateExifMetadataLossless(source, target, outputSet);
         }
-
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(target))) {
-            new ExifRewriter().updateExifMetadataLossless(source, outputStream, outputSet);
+        catch (ImageReadException | ImageWriteException e) {
+            throw new IOException(e);
         }
     }
 }

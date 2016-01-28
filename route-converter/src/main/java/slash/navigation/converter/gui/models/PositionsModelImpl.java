@@ -87,6 +87,7 @@ import static slash.navigation.gui.helpers.ImageHelper.resize;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
+    private static final int IMAGE_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private BaseRoute route;
 
     public BaseRoute getRoute() {
@@ -136,7 +137,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 ImageIcon image = imageCache.get(rowIndex);
                 if (image == null && getRoute() instanceof ImageRoute) {
                     ImageRoute route = (ImageRoute) getRoute();
-                    BufferedImage resize = resize(route.getImage(), 200);
+                    BufferedImage resize = resize(route.getImage(), IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
                     image = new ImageIcon(resize);
                     imageCache.put(rowIndex, image);
                 }
