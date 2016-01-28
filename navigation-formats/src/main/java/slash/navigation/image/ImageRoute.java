@@ -50,7 +50,7 @@ import slash.navigation.nmn.NmnRoute;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
-import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,9 +65,9 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 public class ImageRoute extends BaseRoute<Wgs84Position, ImageFormat> {
     private String name;
     private List<Wgs84Position> positions;
-    private BufferedImage image;
+    private File image;
 
-    public ImageRoute(ImageFormat format, String name, List<Wgs84Position> positions, BufferedImage image) {
+    public ImageRoute(ImageFormat format, String name, List<Wgs84Position> positions, File image) {
         super(format, Waypoints);
         this.name = name;
         this.positions = positions;
@@ -98,7 +98,7 @@ public class ImageRoute extends BaseRoute<Wgs84Position, ImageFormat> {
         return positions.size();
     }
 
-    public BufferedImage getImage() {
+    public File getImage() {
         return image;
     }
 

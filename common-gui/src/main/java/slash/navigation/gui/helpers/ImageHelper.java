@@ -19,8 +19,11 @@
 */
 package slash.navigation.gui.helpers;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 import static java.awt.RenderingHints.KEY_RENDERING;
 import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
@@ -41,8 +44,13 @@ public class ImageHelper {
         return bufferedImage;
     }
 
-    public static BufferedImage resize(BufferedImage image, int height) {
-        double factor = (double)height / image.getHeight();
-        return resize(image, (int) (image.getWidth() * factor), height);
+    public static BufferedImage resize(File file, int height) {
+        try {
+            BufferedImage image = ImageIO.read(file);
+            double factor = (double)height / image.getHeight();
+            return resize(image, (int) (image.getWidth() * factor), height);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
