@@ -37,6 +37,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.converter.gui.models.PositionTableColumn.VISIBLE_PROPERTY_NAME;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -160,7 +161,7 @@ public abstract class AbstractTableHeaderMenu {
 
     private class VisibleListener implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("visible"))
+            if (evt.getPropertyName().equals(VISIBLE_PROPERTY_NAME))
                 visibilityChanged();
         }
     }

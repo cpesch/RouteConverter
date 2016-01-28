@@ -27,16 +27,19 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddPhotoAction;
-import slash.navigation.converter.gui.actions.DeleteAction;
+import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
 import slash.navigation.converter.gui.helpers.EnrichmentTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.EnrichmentTablePopupMenu;
 import slash.navigation.converter.gui.models.EnrichmentTableColumnModel;
 import slash.navigation.converter.gui.models.FilteringPositionsModel;
+import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -52,7 +55,10 @@ import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.base.WaypointType.Photo;
+import static slash.navigation.base.WaypointType.PointOfInterest;
+import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -70,6 +76,9 @@ public class EnrichmentPanel implements PanelInTab {
     private JButton buttonPlayVoice;
 
     private FilteringPositionsModel positionsModel;
+
+    private static final int ROW_HEIGHT_FOR_IMAGE_COLUMN = 200;
+    private int defaultTableRowHeight;
 
     public EnrichmentPanel() {
         $$$setupUI$$$();
@@ -110,13 +119,20 @@ public class EnrichmentPanel implements PanelInTab {
         tableEnrichments.setModel(getPositionsModel());
         EnrichmentTableColumnModel tableColumnModel = new EnrichmentTableColumnModel();
         tableEnrichments.setColumnModel(tableColumnModel);
-        tableEnrichments.setDropMode(ON);
+
+        defaultTableRowHeight = tableEnrichments.getRowHeight();
+        tableColumnModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleColumnVisibilityUpdate((PositionTableColumn) e.getSource());
+            }
+        });
 
         tableEnrichments.registerKeyboardAction(new FrameAction() {
             public void run() {
                 r.getContext().getActionManager().run("delete-enrichment");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tableEnrichments.setDropMode(ON);
 
         ActionManager actionManager = r.getContext().getActionManager();
         new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
@@ -127,12 +143,14 @@ public class EnrichmentPanel implements PanelInTab {
         registerAction(buttonPlayVoice, "play-voice");
 
         actionManager.register("add-photo", new AddPhotoAction());
-        actionManager.register("delete-enrichment", new DeleteAction(tableEnrichments, getPositionsModel()));
+        actionManager.register("delete-enrichment", new DeletePositionAction(tableEnrichments, getPositionsModel()));
         actionManager.register("play-voice", new PlayVoiceAction(tableEnrichments, getPositionsModel(), r.getUrlModel()));
 
         setHelpIDString(tableEnrichments, "enrichment-list");
 
         handlePositionsUpdate();
+        for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
+            handleColumnVisibilityUpdate(column);
     }
 
     public Component getRootComponent() {
@@ -148,7 +166,7 @@ public class EnrichmentPanel implements PanelInTab {
     }
 
     public void addPhotosToPositionList(List<File> files) {
-        throw  new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException(); // TODO
     }
 
     private FilteringPositionsModel getPositionsModel() {
@@ -166,6 +184,11 @@ public class EnrichmentPanel implements PanelInTab {
 
         if (r.isEnrichmentSelected())
             r.selectPositions(getPositionsModel().mapRows(selectedRows));
+    }
+
+    private void handleColumnVisibilityUpdate(PositionTableColumn column) {
+        if (column.getModelIndex() == IMAGE_COLUMN_INDEX)
+            tableEnrichments.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_IMAGE_COLUMN : defaultTableRowHeight);
     }
 
     /**

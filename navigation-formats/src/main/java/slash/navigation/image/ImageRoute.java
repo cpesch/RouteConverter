@@ -21,7 +21,11 @@
 package slash.navigation.image;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
@@ -46,6 +50,7 @@ import slash.navigation.nmn.NmnRoute;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +65,17 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 public class ImageRoute extends BaseRoute<Wgs84Position, ImageFormat> {
     private String name;
     private List<Wgs84Position> positions;
+    private BufferedImage image;
 
-    public ImageRoute(ImageFormat format, String name, List<Wgs84Position> positions) {
+    public ImageRoute(ImageFormat format, String name, List<Wgs84Position> positions, BufferedImage image) {
         super(format, Waypoints);
         this.name = name;
         this.positions = positions;
+        this.image = image;
+    }
+
+    public ImageRoute(ImageFormat format, String name, List<Wgs84Position> positions) {
+        this(format, name, positions, null);
     }
 
     public String getName() {
@@ -85,6 +96,10 @@ public class ImageRoute extends BaseRoute<Wgs84Position, ImageFormat> {
 
     public int getPositionCount() {
         return positions.size();
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 
     public void add(int index, Wgs84Position position) {
@@ -121,7 +136,7 @@ public class ImageRoute extends BaseRoute<Wgs84Position, ImageFormat> {
 
     protected ImageRoute asImageFormat(ImageFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>(getPositions());
-        return new ImageRoute(format, getName(), wgs84Positions);
+        return new ImageRoute(format, getName(), wgs84Positions, getImage());
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {

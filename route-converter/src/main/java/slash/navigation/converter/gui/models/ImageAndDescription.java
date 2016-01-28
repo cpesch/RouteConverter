@@ -17,31 +17,31 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.converter.gui.models;
 
-package slash.navigation.converter.gui.actions;
-
-import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.models.FormatAndRoutesModel;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
 /**
- * {@link Action} that removes a position list of the {@link FormatAndRoutesModel}.
+ * Combines the image and description of a {@link NavigationPosition}
  *
  * @author Christian Pesch
  */
+public class ImageAndDescription {
+    private final ImageIcon image;
+    private final String description;
 
-public class RemovePositionListAction extends FrameAction {
-    private FormatAndRoutesModel formatAndRoutesModel;
-
-    public RemovePositionListAction(FormatAndRoutesModel formatAndRoutesModel) {
-        this.formatAndRoutesModel = formatAndRoutesModel;
+    public ImageAndDescription(ImageIcon image, String description) {
+        this.image = image;
+        this.description = description;
     }
 
-    public void run() {
-        BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
-        if (selectedRoute != null)
-            formatAndRoutesModel.removePositionList(selectedRoute);
+    public ImageIcon getImage() {
+        return image;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
