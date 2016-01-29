@@ -46,6 +46,7 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 public class EnrichmentTableColumnModel extends AbstractTableColumnModel {
     public EnrichmentTableColumnModel() {
+        super("enrichment");
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(IMAGE_COLUMN_INDEX, "image", null, true, new ImageColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer);

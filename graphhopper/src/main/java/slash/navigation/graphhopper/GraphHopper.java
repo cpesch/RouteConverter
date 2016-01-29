@@ -170,7 +170,7 @@ public class GraphHopper implements RoutingService {
             return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
         } finally {
             long end = currentTimeMillis();
-            log.fine(getClass().getSimpleName() + ": routing took " + (end - start) + " milliseconds");
+            log.info("GraphHopper: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
     }
 

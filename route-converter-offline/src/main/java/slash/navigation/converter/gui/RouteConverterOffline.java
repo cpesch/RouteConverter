@@ -113,7 +113,8 @@ public class RouteConverterOffline extends RouteConverter {
 
         configureRoutingServices();
 
-        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"), getSelectMapsAction());
+        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"),
+                Application.getInstance().getContext().getActionManager().get("show-downloads"));
     }
 
     protected void updateRoutingServices() {
@@ -150,10 +151,6 @@ public class RouteConverterOffline extends RouteConverter {
         return Application.getInstance().getContext().getNotificationManager();
     }
 
-    private Action getSelectMapsAction() {
-        return Application.getInstance().getContext().getActionManager().get("show-maps-and-themes");
-    }
-
     protected void scanLocalMapsAndThemes() {
         new Thread(new Runnable() {
             public void run() {
@@ -161,7 +158,8 @@ public class RouteConverterOffline extends RouteConverter {
                     getMapManager().scanMaps();
                     getMapManager().scanThemes();
 
-                    getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"), getSelectMapsAction());
+                    getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
+                            Application.getInstance().getContext().getActionManager().get("show-maps"));
                 } catch (final IOException e) {
                     invokeLater(new Runnable() {
                         public void run() {
