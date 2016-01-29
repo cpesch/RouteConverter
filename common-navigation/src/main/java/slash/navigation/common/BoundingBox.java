@@ -140,6 +140,6 @@ public class BoundingBox {
     }
 
     public String toString() {
-        return  getClass().getSimpleName() + "[northEast=" + northEast + ", southWest=" + southWest + "]";
+        return getClass().getSimpleName() + "[northEast=" + northEast + ", southWest=" + southWest + "]";
     }
 }

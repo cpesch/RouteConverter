@@ -144,6 +144,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
     private static Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
+    private File backgroundMap;
     private TileRendererLayer backgroundLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
@@ -549,8 +550,8 @@ public class MapsforgeMapView implements MapView {
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
     }
 
-    public void initializeBackground(File map) {
-        backgroundLayer = createTileRendererLayer(map);
+    public void setBackgroundMap(File backgroundMap) {
+        this.backgroundMap = backgroundMap;
         updateMapAndThemesAfterDirectoryScanning();
     }
 
@@ -659,6 +660,11 @@ public class MapsforgeMapView implements MapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
+        // initialize tile renderer layer for background map
+        if (backgroundMap != null) {
+            backgroundLayer = createTileRendererLayer(backgroundMap);
+            backgroundMap = null;
+        }
         if(backgroundLayer != null) {
             layers.remove(backgroundLayer);
             if (map.isVector())
