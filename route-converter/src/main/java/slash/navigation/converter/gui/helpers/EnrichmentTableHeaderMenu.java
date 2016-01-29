@@ -34,7 +34,7 @@ import javax.swing.table.JTableHeader;
 
 public class EnrichmentTableHeaderMenu extends AbstractTableHeaderMenu {
     public EnrichmentTableHeaderMenu(JTableHeader tableHeader, EnrichmentTableColumnModel columnModel, ActionManager actionManager) {
-        super(columnModel, actionManager);
+        super(columnModel, actionManager, "enrichment");
         initializeShowColumn(null);
         initializePopup(tableHeader);
     }

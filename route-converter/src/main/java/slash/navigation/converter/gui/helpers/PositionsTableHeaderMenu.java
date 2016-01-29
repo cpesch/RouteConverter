@@ -37,7 +37,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 public class PositionsTableHeaderMenu extends AbstractTableHeaderMenu {
     public PositionsTableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
                                     PositionsTableColumnModel columnModel, ActionManager actionManager) {
-        super(columnModel, actionManager);
+        super(columnModel, actionManager, "positions");
         initializeShowColumn(findMenu(menuBar, "view", "show-column"));
         initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"), positionsModel);
         initializePopup(tableHeader);

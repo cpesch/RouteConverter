@@ -38,6 +38,7 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 public class PositionsTableColumnModel extends AbstractTableColumnModel {
     public PositionsTableColumnModel() {
+        super("positions");
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
         predefineColumn(IMAGE_COLUMN_INDEX, "image", null, false, new ImageColumnTableCellRenderer(), headerRenderer);

@@ -47,30 +47,33 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
  */
 
 public abstract class AbstractTableHeaderMenu {
-    private static final String SHOW_COLUMN_PREFIX = "show-column-";
-    private static final String SORT_COLUMN_PREFIX = "sort-column-";
+    private static final String SHOW_INFIX = "-show-";
+    private static final String SORT_INFIX = "-sort-";
     private static final String MNEMONIC_SUFFIX = "-mnemonic";
 
     private final AbstractTableColumnModel columnModel;
     private final ActionManager actionManager;
+    private final String preferencesPrefix;
     private final JPopupMenu popupMenu = new JPopupMenu();
 
-    public AbstractTableHeaderMenu(AbstractTableColumnModel columnModel, ActionManager actionManager) {
+    public AbstractTableHeaderMenu(AbstractTableColumnModel columnModel, ActionManager actionManager,
+                                   String preferencesPrefix) {
         this.columnModel = columnModel;
         this.actionManager = actionManager;
+        this.preferencesPrefix = preferencesPrefix;
     }
 
     private String createShowKey(String columnName) {
-        return SHOW_COLUMN_PREFIX + getClass().getSimpleName() + columnName;
+        return preferencesPrefix + SHOW_INFIX + columnName;
     }
 
     private String createSortKey(String columnName) {
-        return SORT_COLUMN_PREFIX + getClass().getSimpleName() + columnName;
+        return preferencesPrefix + SORT_INFIX + columnName;
     }
 
     protected void initializeSortPositions(JMenu sortPositionListMenu, PositionsModel positionsModel) {
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
-            if(column.getComparator() == null)
+            if (column.getComparator() == null)
                 continue;
 
             String menuItemText = RouteConverter.getBundle().getString(column.getName());
@@ -97,7 +100,7 @@ public abstract class AbstractTableHeaderMenu {
             popupItem.setModel(new PositionTableColumnButtonModel(column, action));
             popupMenu.add(popupItem);
 
-            if(showColumnMenu != null) {
+            if (showColumnMenu != null) {
                 JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuItemText);
                 menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
                 setMnemonic(menuBarItem, column.getName() + MNEMONIC_SUFFIX);
@@ -106,7 +109,7 @@ public abstract class AbstractTableHeaderMenu {
         }
     }
 
-   protected void initializePopup(JTableHeader tableHeader) {
+    protected void initializePopup(JTableHeader tableHeader) {
         tableHeader.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 showPopup(e);

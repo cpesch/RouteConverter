@@ -48,10 +48,15 @@ import static slash.navigation.converter.gui.models.PositionTableColumn.VISIBLE_
 
 public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(AbstractTableColumnModel.class);
-    private static final String VISIBLE_PREFERENCE = "visible";
-    private static final String ORDER_PREFERENCE = "order";
+    private static final String VISIBLE_INFIX = "-visible-";
+    private static final String ORDER_INFIX = "-order-";
 
+    private final String preferencesPrefix;
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<>();
+
+    public AbstractTableColumnModel(String preferencesPrefix) {
+        this.preferencesPrefix = preferencesPrefix;
+    }
 
     public List<PositionTableColumn> getPreparedColumns() {
         return predefinedColumns;
@@ -87,11 +92,11 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
     }
 
     private String createVisibleKey(String columnName) {
-        return VISIBLE_PREFERENCE + getClass().getSimpleName() + columnName;
+        return preferencesPrefix + VISIBLE_INFIX + columnName;
     }
 
     private String createOrderKey(String columnName) {
-        return ORDER_PREFERENCE + getClass().getSimpleName() + columnName;
+        return preferencesPrefix + ORDER_INFIX + columnName;
     }
 
     protected static Calendar createExampleCalendar() {
