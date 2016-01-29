@@ -188,7 +188,7 @@ public class RouteConverterOffline extends RouteConverter {
                     public void run() {
                         MapView mapView = getMapView();
                         if (mapView instanceof MapsforgeMapView)
-                            ((MapsforgeMapView) mapView).initializeBackground(file);
+                            ((MapsforgeMapView) mapView).setBackgroundMap(file);
                     }
                 });
             }
