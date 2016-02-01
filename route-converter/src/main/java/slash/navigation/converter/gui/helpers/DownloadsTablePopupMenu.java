@@ -24,6 +24,7 @@ import slash.navigation.download.DownloadTableModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.DOWNLOADS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -35,7 +36,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 public class DownloadsTablePopupMenu extends AbstractTablePopupMenu {
 
     public DownloadsTablePopupMenu(JTable table) {
-        super(table);
+        super(table, DOWNLOADS);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

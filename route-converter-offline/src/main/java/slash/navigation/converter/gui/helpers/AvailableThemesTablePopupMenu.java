@@ -23,6 +23,7 @@ import slash.navigation.maps.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.THEMES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -33,7 +34,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 public class AvailableThemesTablePopupMenu extends AbstractTablePopupMenu {
     public AvailableThemesTablePopupMenu(JTable table) {
-        super(table);
+        super(table, THEMES);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

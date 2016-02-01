@@ -18,31 +18,19 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helpers;
+package slash.navigation.mapview.mapsforge.models;
 
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
-
 /**
- * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
+ * Contains constants for the map related {@link ActionManager#registerLocal(String, String, Action) local names}
+ * of the {@link ActionManager}.
  *
  * @author Christian Pesch
  */
 
-public class EnrichmentTablePopupMenu extends AbstractTablePopupMenu {
-
-    public EnrichmentTablePopupMenu(JTable table) {
-        super(table, ENRICHMENTS);
-    }
-
-    protected JPopupMenu doCreatePopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-enrichment"));
-        return menu;
-    }
+public interface LocalNames {
+    String MAP = "map";
 }

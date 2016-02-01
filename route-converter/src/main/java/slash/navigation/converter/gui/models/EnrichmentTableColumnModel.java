@@ -30,6 +30,7 @@ import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.table.TableColumnModel;
 
+import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
@@ -46,7 +47,7 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 public class EnrichmentTableColumnModel extends AbstractTableColumnModel {
     public EnrichmentTableColumnModel() {
-        super("enrichment");
+        super(ENRICHMENTS);
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(IMAGE_COLUMN_INDEX, "image", null, true, new ImageColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer);

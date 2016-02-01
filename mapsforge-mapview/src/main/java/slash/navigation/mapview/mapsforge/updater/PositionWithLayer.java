@@ -40,6 +40,10 @@ public class PositionWithLayer {
         return position;
     }
 
+    public boolean hasCoordinates() {
+        return getPosition().hasCoordinates();
+    }
+
     public Layer getLayer() {
         return layer;
     }

@@ -32,16 +32,16 @@ import static javax.swing.JOptionPane.*;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 
 /**
- * {@link Action} that renames {@link CategoryTreeNode}s of the {@link CatalogModel}.
+ * {@link Action} that deletes {@link CategoryTreeNode}s of the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
 
-public class RemoveCategoriesAction extends FrameAction {
+public class DeleteCategoriesAction extends FrameAction {
     private final JTree tree;
     private final CatalogModel catalogModel;
 
-    public RemoveCategoriesAction(JTree tree, CatalogModel catalogModel) {
+    public DeleteCategoriesAction(JTree tree, CatalogModel catalogModel) {
         this.tree = tree;
         this.catalogModel = catalogModel;
     }
@@ -57,7 +57,7 @@ public class RemoveCategoriesAction extends FrameAction {
 
             if(category.isLocalRoot() || category.isRemoteRoot()) {
                 showMessageDialog(getFrame(),
-                        getBundle().getString("remove-category-cannot-delete-root"), getFrame().getTitle(),
+                        getBundle().getString("delete-category-cannot-delete-root"), getFrame().getTitle(),
                         ERROR_MESSAGE);
                 return;
             }
@@ -70,12 +70,12 @@ public class RemoveCategoriesAction extends FrameAction {
         final List<CategoryTreeNode> parents = asParents(categories);
 
         int confirm = showConfirmDialog(getFrame(),
-                format(getBundle().getString("confirm-remove-category"), categoryNames),
+                format(getBundle().getString("confirm-delete-category"), categoryNames),
                 getFrame().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
 
-        catalogModel.removeCategories(categories, new Runnable() {
+        catalogModel.deleteCategories(categories, new Runnable() {
             public void run() {
                 for (CategoryTreeNode parent : parents) {
                     selectCategory(tree, parent);

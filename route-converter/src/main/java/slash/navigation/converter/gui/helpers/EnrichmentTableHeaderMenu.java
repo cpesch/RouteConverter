@@ -26,6 +26,8 @@ import slash.navigation.gui.actions.ActionManager;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
+import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
+
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
  *
@@ -34,7 +36,7 @@ import javax.swing.table.JTableHeader;
 
 public class EnrichmentTableHeaderMenu extends AbstractTableHeaderMenu {
     public EnrichmentTableHeaderMenu(JTableHeader tableHeader, EnrichmentTableColumnModel columnModel, ActionManager actionManager) {
-        super(columnModel, actionManager, "enrichment");
+        super(columnModel, actionManager, ENRICHMENTS);
         initializeShowColumn(null);
         initializePopup(tableHeader);
     }

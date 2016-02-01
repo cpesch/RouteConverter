@@ -47,7 +47,14 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.converter.gui.models.PositionColumnValues;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -64,25 +71,49 @@ import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.IntermediateRoute;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
-import slash.navigation.mapview.mapsforge.updater.*;
+import slash.navigation.mapview.mapsforge.updater.EventMapUpdater;
+import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
+import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
+import slash.navigation.mapview.mapsforge.updater.SelectionOperation;
+import slash.navigation.mapview.mapsforge.updater.SelectionUpdater;
+import slash.navigation.mapview.mapsforge.updater.TrackOperation;
+import slash.navigation.mapview.mapsforge.updater.TrackUpdater;
+import slash.navigation.mapview.mapsforge.updater.WaypointOperation;
+import slash.navigation.mapview.mapsforge.updater.WaypointUpdater;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
-import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_MINUS;
+import static java.awt.event.KeyEvent.VK_PLUS;
+import static java.awt.event.KeyEvent.VK_RIGHT;
+import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.Thread.sleep;
@@ -90,7 +121,10 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
@@ -98,12 +132,21 @@ import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.helpers.MapTransfer.*;
-import static slash.navigation.mapview.MapViewConstants.*;
+import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
+import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
+import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
+import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_COLOR_PREFERENCE;
+import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
+import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_COLOR_PREFERENCE;
+import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map
@@ -176,8 +219,11 @@ public class MapsforgeMapView implements MapView {
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
                 for (final PositionWithLayer positionWithLayer : positionWithLayers) {
-                    LatLong position = asLatLong(positionWithLayer.getPosition());
-                    Marker marker = new DraggableMarker(position, markerIcon, 8, -16) {
+                    if(!positionWithLayer.hasCoordinates())
+                        continue;
+
+                    LatLong latLong = asLatLong(positionWithLayer.getPosition());
+                    Marker marker = new DraggableMarker(latLong, markerIcon, 8, -16) {
                         public void onDrop(LatLong latLong) {
                             int index = MapsforgeMapView.this.positionsModel.getIndex(positionWithLayer.getPosition());
                             MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
@@ -189,7 +235,7 @@ public class MapsforgeMapView implements MapView {
                     };
                     positionWithLayer.setLayer(marker);
                     mapView.addLayer(marker);
-                    center = position;
+                    center = latLong;
                 }
                 if (center != null)
                     setCenter(center, false);
@@ -377,6 +423,9 @@ public class MapsforgeMapView implements MapView {
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
+                    if(!pair.hasCoordinates())
+                        continue;
+
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
                     mapView.addLayer(line);
@@ -422,6 +471,9 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(PositionWithLayer positionWithLayer) {
+                if(!positionWithLayer.hasCoordinates())
+                    return;
+
                 Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
                 positionWithLayer.setLayer(marker);
                 mapView.addLayer(marker);
@@ -454,7 +506,8 @@ public class MapsforgeMapView implements MapView {
         actionManager.register("select-position", new SelectPositionAction());
         actionManager.register("extend-selection", new ExtendSelectionAction());
         actionManager.register("add-position", new AddPositionAction());
-        actionManager.register("delete-position", new DeletePositionAction());
+        actionManager.register("delete-position-from-map", new DeletePositionAction());
+        actionManager.registerLocal("delete", MAP, "delete-position-from-map");
         actionManager.register("center-here", new CenterAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
@@ -589,7 +642,7 @@ public class MapsforgeMapView implements MapView {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("select-position"));
         menu.add(createItem("add-position"));    // TODO should be "new-position"
-        menu.add(createItem("delete-position")); // TODO should be "delete"
+        menu.add(createItem("delete-position-from-map"));
         menu.addSeparator();
         menu.add(createItem("center-here"));
         menu.add(createItem("zoom-in"));

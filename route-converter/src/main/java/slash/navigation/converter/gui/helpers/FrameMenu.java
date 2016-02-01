@@ -56,6 +56,8 @@ public class FrameMenu {
         editMenu.add(createItem("cut"));
         editMenu.add(createItem("copy"));
         editMenu.add(createItem("paste"));
+        editMenu.add(createItem("delete"));
+        editMenu.addSeparator();
         editMenu.add(createItem("select-all"));
 
         JMenu positionMenu = createMenu("position");

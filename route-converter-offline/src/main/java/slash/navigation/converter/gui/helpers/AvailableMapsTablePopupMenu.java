@@ -23,6 +23,7 @@ import slash.navigation.maps.impl.LocalMapsTableModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.MAPS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -33,7 +34,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 public class AvailableMapsTablePopupMenu extends AbstractTablePopupMenu {
     public AvailableMapsTablePopupMenu(JTable table) {
-        super(table);
+        super(table, MAPS);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

@@ -59,13 +59,15 @@ public class MapTransfer {
     }
 
     public static LatLong asLatLong(NavigationPosition position) {
-        return new LatLong(position.getLatitude(), position.getLongitude());
+        return position != null ? new LatLong(position.getLatitude(), position.getLongitude()) : null;
     }
 
     public static List<LatLong> asLatLong(List<NavigationPosition> positions) {
         List<LatLong> result = new ArrayList<>();
         for (NavigationPosition position : positions) {
-            result.add(asLatLong(position));
+            LatLong latLong = asLatLong(position);
+            if (latLong != null)
+                result.add(latLong);
         }
         return result;
     }

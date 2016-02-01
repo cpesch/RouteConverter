@@ -58,6 +58,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.PointOfInterest;
 import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
 import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -138,13 +139,14 @@ public class EnrichmentPanel implements PanelInTab {
         new EnrichmentTableHeaderMenu(tableEnrichments.getTableHeader(), tableColumnModel, actionManager);
         new EnrichmentTablePopupMenu(tableEnrichments).createPopupMenu();
 
+        actionManager.register("add-photo", new AddPhotoAction());
+        actionManager.register("delete-enrichment", new DeletePositionAction(tableEnrichments, getPositionsModel()));
+        actionManager.registerLocal("delete", ENRICHMENTS, "delete-enrichment");
+        actionManager.register("play-voice", new PlayVoiceAction(tableEnrichments, getPositionsModel(), r.getUrlModel()));
+
         registerAction(buttonAddPhoto, "add-photo");
         registerAction(buttonDeleteEnrichment, "delete-enrichment");
         registerAction(buttonPlayVoice, "play-voice");
-
-        actionManager.register("add-photo", new AddPhotoAction());
-        actionManager.register("delete-enrichment", new DeletePositionAction(tableEnrichments, getPositionsModel()));
-        actionManager.register("play-voice", new PlayVoiceAction(tableEnrichments, getPositionsModel(), r.getUrlModel()));
 
         setHelpIDString(tableEnrichments, "enrichment-list");
 
@@ -155,6 +157,10 @@ public class EnrichmentPanel implements PanelInTab {
 
     public Component getRootComponent() {
         return enrichmentPanel;
+    }
+
+    public String getLocalName() {
+        return ENRICHMENTS;
     }
 
     public JComponent getFocusComponent() {
@@ -179,11 +185,11 @@ public class EnrichmentPanel implements PanelInTab {
 
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.enable("delete-enrichment", existsASelectedPosition);
+        actionManager.enableLocal("delete", ENRICHMENTS, existsASelectedPosition);
         actionManager.enable("play-voice", existsASelectedPosition);
 
         if (r.isEnrichmentSelected())
-            r.selectPositions(getPositionsModel().mapRows(selectedRows));
+            r.selectPositionsInMap(getPositionsModel().mapRows(selectedRows));
     }
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {

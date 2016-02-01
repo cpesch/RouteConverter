@@ -29,28 +29,28 @@ import javax.swing.undo.UndoableEdit;
 import java.util.List;
 
 /**
- * Acts as a {@link UndoableEdit} for removing {@link CategoryTreeNode}s of a {@link UndoCatalogModel}.
+ * Acts as a {@link UndoableEdit} for deleting {@link CategoryTreeNode}s of a {@link UndoCatalogModel}.
  *
  * @author Christian Pesch
  */
 
-class RemoveCategories extends AbstractUndoableEdit {
+class DeleteCategories extends AbstractUndoableEdit {
     private final UndoCatalogModel catalogModel;
     private final List<CategoryTreeNode> categories;
     private final List<String> names;
 
-    public RemoveCategories(UndoCatalogModel catalogModel, List<CategoryTreeNode> categories, List<String> names) {
+    public DeleteCategories(UndoCatalogModel catalogModel, List<CategoryTreeNode> categories, List<String> names) {
         this.catalogModel = catalogModel;
         this.categories = categories;
         this.names = names;
     }
 
     public String getUndoPresentationName() {
-        return "remove-category-undo";
+        return "delete-category-undo";
     }
 
     public String getRedoPresentationName() {
-        return "remove-category-redo";
+        return "delete-category-redo";
     }
 
     public void undo() throws CannotUndoException {
@@ -60,6 +60,6 @@ class RemoveCategories extends AbstractUndoableEdit {
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.removeCategories(categories, names, null, false);
+        catalogModel.deleteCategories(categories, names, null, false);
     }
 }

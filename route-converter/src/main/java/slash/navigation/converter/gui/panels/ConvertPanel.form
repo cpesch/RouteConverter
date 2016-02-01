@@ -304,7 +304,7 @@
             <properties>
               <focusable value="false"/>
               <hideActionText value="true"/>
-              <icon value="slash/navigation/converter/gui/24/delete-action.png"/>
+              <icon value="slash/navigation/converter/gui/24/delete-position-action.png"/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-position-action-tooltip"/>
             </properties>
           </component>
