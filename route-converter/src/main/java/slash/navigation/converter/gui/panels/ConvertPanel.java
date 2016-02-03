@@ -182,7 +182,7 @@ import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
+import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
 import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
@@ -458,7 +458,7 @@ public class ConvertPanel implements PanelInTab {
         buttonMovePositionToBottom.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/bottom.png"));
         buttonNewPositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/new-route.png"));
         buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
-        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/remove-route.png"));
+        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/delete-action.png"));
 
         setHelpIDString(tablePositions, "position-list");
 
@@ -535,6 +535,10 @@ public class ConvertPanel implements PanelInTab {
 
     public JButton getDefaultButton() {
         return buttonNewPositionList;
+    }
+
+    public void initializeSelection() {
+        handlePositionsUpdate();
     }
 
     // action methods
@@ -1376,7 +1380,7 @@ public class ConvertPanel implements PanelInTab {
         panel3.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePositionList = new JButton();
         buttonDeletePositionList.setHideActionText(true);
-        buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/remove-route.png")));
+        buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/delete-action.png")));
         buttonDeletePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positionlist-action-tooltip"));
         panel3.add(buttonDeletePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
@@ -1475,7 +1479,7 @@ public class ConvertPanel implements PanelInTab {
         }
 
         public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(positionFlavor) || delegate.canImport(support);
+            return support.isDataFlavorSupported(POSITION_FLAVOR) || delegate.canImport(support);
         }
 
         private int[] toRows(List<NavigationPosition> positions) {
@@ -1507,8 +1511,8 @@ public class ConvertPanel implements PanelInTab {
         public boolean importData(TransferSupport support) {
             Transferable transferable = support.getTransferable();
             try {
-                if (support.isDataFlavorSupported(positionFlavor)) {
-                    Object selection = transferable.getTransferData(positionFlavor);
+                if (support.isDataFlavorSupported(POSITION_FLAVOR)) {
+                    Object selection = transferable.getTransferData(POSITION_FLAVOR);
                     if (selection != null) {
                         PositionSelection positionsSelection = (PositionSelection) selection;
                         int[] rows = toRows(positionsSelection.getPositions());

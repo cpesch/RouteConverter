@@ -168,6 +168,10 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getClosestPosition(longitude, latitude, threshold);
     }
 
+    public int getClosestPosition(CompactCalendar time, long threshold) {
+        return delegate.getClosestPosition(time, threshold);
+    }
+
     // Undoable operations
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

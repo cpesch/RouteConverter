@@ -47,8 +47,8 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class PositionSelection implements Transferable {
     private static final Logger log = Logger.getLogger(PositionSelection.class.getName());
-    public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
-    public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
+    public static final DataFlavor POSITION_FLAVOR = new DataFlavor(PositionSelection.class, "List of Positions");
+    public static final DataFlavor STRING_FLAVOR = DataFlavor.stringFlavor;
 
     private final List<NavigationPosition> positions;
     private final BaseNavigationFormat format;
@@ -84,7 +84,7 @@ public class PositionSelection implements Transferable {
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{positionFlavor, stringFlavor};
+        return new DataFlavor[]{POSITION_FLAVOR, STRING_FLAVOR};
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
@@ -97,9 +97,9 @@ public class PositionSelection implements Transferable {
     }
 
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        if (positionFlavor.equals(flavor))
+        if (POSITION_FLAVOR.equals(flavor))
             return this;
-        if (stringFlavor.equals(flavor))
+        if (STRING_FLAVOR.equals(flavor))
             return string;
         throw new UnsupportedFlavorException(flavor);
     }

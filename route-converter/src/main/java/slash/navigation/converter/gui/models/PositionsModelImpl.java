@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
@@ -33,13 +34,13 @@ import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
-import slash.navigation.image.ImageRoute;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -135,11 +136,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         switch (columnIndex) {
             case IMAGE_COLUMN_INDEX:
                 ImageIcon image = imageCache.get(rowIndex);
-                if (image == null && getRoute() instanceof ImageRoute) {
-                    ImageRoute route = (ImageRoute) getRoute();
-                    BufferedImage resize = resize(route.getImage(), IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
-                    image = new ImageIcon(resize);
-                    imageCache.put(rowIndex, image);
+                NavigationPosition position = getPosition(rowIndex);
+                if (image == null && position instanceof Wgs84Position) {
+                    Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
+                    File file = wgs84Position.getOrigin(File.class);
+                    if(file != null) {
+                        BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
+                        image = new ImageIcon(resize);
+                        imageCache.put(rowIndex, image);
+                    }
                 }
                 return new ImageAndDescription(image, getPosition(rowIndex).getDescription());
             case DISTANCE_COLUMN_INDEX:
@@ -193,6 +198,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public int getClosestPosition(double longitude, double latitude, double threshold) {
         return getRoute().getClosestPosition(longitude, latitude, threshold);
+    }
+
+    public int getClosestPosition(CompactCalendar time, long threshold) {
+        return getRoute().getClosestPosition(time, threshold);
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {

@@ -21,7 +21,11 @@
 package slash.navigation.bcr;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -29,7 +33,6 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.image.ImageFormat;
-import slash.navigation.image.ImageRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -51,7 +54,13 @@ import java.util.List;
 import java.util.Set;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.bcr.BcrFormat.*;
+import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
+import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION_LINE_COUNT;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
+import static slash.navigation.bcr.BcrFormat.ROUTE_NAME;
+import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
 
 /**
  * A Map&Guide Tourenplaner Route (.bcr) route.
@@ -178,12 +187,12 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected ImageRoute asImageFormat(ImageFormat format) {
+    protected SimpleRoute asImageFormat(ImageFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (BcrPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new ImageRoute(format, getName(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {

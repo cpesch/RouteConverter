@@ -39,8 +39,8 @@ import java.util.List;
 
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
-import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
-import static slash.navigation.converter.gui.dnd.PositionSelection.stringFlavor;
+import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
+import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
@@ -67,14 +67,14 @@ public class PasteAction extends FrameAction {
             return;
 
         try {
-            if (transferable.isDataFlavorSupported(positionFlavor)) {
-                Object selection = transferable.getTransferData(positionFlavor);
+            if (transferable.isDataFlavorSupported(POSITION_FLAVOR)) {
+                Object selection = transferable.getTransferData(POSITION_FLAVOR);
                 if (selection != null) {
                     PositionSelection positionsSelection = (PositionSelection) selection;
                     paste(positionsSelection.getPositions());
                 }
-            } else if (transferable.isDataFlavorSupported(stringFlavor)) {
-                Object string = transferable.getTransferData(stringFlavor);
+            } else if (transferable.isDataFlavorSupported(STRING_FLAVOR)) {
+                Object string = transferable.getTransferData(STRING_FLAVOR);
                 if (string != null) {
                     paste((String) string);
                 }

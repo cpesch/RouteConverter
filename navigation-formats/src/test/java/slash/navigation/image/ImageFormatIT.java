@@ -26,6 +26,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class ImageFormatIT {
         assertEquals(ImageFormat.class, result.getFormat().getClass());
         BaseRoute theRoute = result.getTheRoute();
         assertEquals(1, theRoute.getPositionCount());
-        ImageRoute route = (ImageRoute) theRoute;
+        Wgs84Route route = (Wgs84Route) theRoute;
         Wgs84Position position = route.getPosition(0);
         assertEquals("NIKON CORPORATION NIKON D90 Image from 2010-08-31T10:31:27Z", position.getDescription());
         assertDoubleEquals(135.0, position.getElevation());
@@ -74,7 +75,7 @@ public class ImageFormatIT {
         assertEquals(ImageFormat.class, result.getFormat().getClass());
         BaseRoute theRoute = result.getTheRoute();
         assertEquals(1, theRoute.getPositionCount());
-        ImageRoute route = (ImageRoute) theRoute;
+        Wgs84Route route = (Wgs84Route) theRoute;
         Wgs84Position position = route.getPosition(0);
         assertEquals("Palm Pre Image from 2010-01-30T13:10:15Z", position.getDescription());
         assertNull(position.getElevation());
@@ -97,7 +98,7 @@ public class ImageFormatIT {
         BaseRoute theRoute = result.getTheRoute();
         assertEquals(ImageFormat.class, result.getFormat().getClass());
         assertEquals(1, theRoute.getPositionCount());
-        ImageRoute route = (ImageRoute) theRoute;
+        Wgs84Route route = (Wgs84Route) theRoute;
         Wgs84Position position = route.getPosition(0);
         assertEquals("No EXIF data", position.getDescription());
         assertNull(position.getElevation());
@@ -118,7 +119,7 @@ public class ImageFormatIT {
         assertNotNull(result);
         BaseRoute theRoute = result.getTheRoute();
         ImageFormat format = (ImageFormat) result.getFormat();
-        ImageRoute route = (ImageRoute) theRoute;
+        Wgs84Route route = (Wgs84Route) theRoute;
         Wgs84Position position = route.getPosition(0);
         position.setDescription("description");
         position.setElevation(222.0);
@@ -142,7 +143,7 @@ public class ImageFormatIT {
             assertNotNull(result2);
             assertEquals(ImageFormat.class, result2.getFormat().getClass());
             BaseRoute theRoute2 = result2.getTheRoute();
-            ImageRoute route2 = (ImageRoute) theRoute2;
+            Wgs84Route route2 = (Wgs84Route) theRoute2;
             assertEquals(1, route2.getPositionCount());
             Wgs84Position position2 = route2.getPosition(0);
             assertEquals("description", position2.getDescription());

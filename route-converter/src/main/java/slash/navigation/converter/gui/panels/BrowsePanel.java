@@ -322,6 +322,11 @@ public class BrowsePanel implements PanelInTab {
         return buttonAddRouteFromFile;
     }
 
+    public void initializeSelection() {
+        handleCategoryTreeUpdate();
+        handleRouteListUpdate();
+    }
+
     private void selectTreePath(TreePath treePath, boolean selectCategoryTreePath) {
         RouteConverter r = RouteConverter.getInstance();
         startWaitCursor(r.getFrame().getRootPane());

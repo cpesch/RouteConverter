@@ -51,6 +51,7 @@ public interface PositionsModel extends TableModel {
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);
+    int getClosestPosition(CompactCalendar time, long threshold);
 
     void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
     void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;

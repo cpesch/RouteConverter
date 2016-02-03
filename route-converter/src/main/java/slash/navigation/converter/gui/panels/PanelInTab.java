@@ -36,4 +36,5 @@ public interface PanelInTab {
     JComponent getFocusComponent();
     String getLocalName();
     JButton getDefaultButton();
+    void initializeSelection();
 }

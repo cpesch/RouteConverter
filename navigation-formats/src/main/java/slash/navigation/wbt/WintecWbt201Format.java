@@ -84,7 +84,6 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-
     protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
 
     protected abstract List<Wgs84Route> internalRead(ByteBuffer source);

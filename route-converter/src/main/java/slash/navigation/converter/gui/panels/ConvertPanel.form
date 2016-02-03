@@ -223,7 +223,7 @@
             </constraints>
             <properties>
               <hideActionText value="true"/>
-              <icon value="slash/navigation/converter/gui/16/remove-route.png"/>
+              <icon value="slash/navigation/converter/gui/16/delete-action.png"/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positionlist-action-tooltip"/>
             </properties>
           </component>

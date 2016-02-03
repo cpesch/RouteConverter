@@ -20,7 +20,9 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
+import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.renderer.DateTimeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.ImageColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
@@ -32,6 +34,7 @@ import javax.swing.table.TableColumnModel;
 
 import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
@@ -49,7 +52,8 @@ public class EnrichmentTableColumnModel extends AbstractTableColumnModel {
     public EnrichmentTableColumnModel() {
         super(ENRICHMENTS);
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
-        predefineColumn(IMAGE_COLUMN_INDEX, "image", null, true, new ImageColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
+        predefineColumn(IMAGE_COLUMN_INDEX, "image", null, false, new ImageColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);

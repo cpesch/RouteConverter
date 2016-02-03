@@ -1121,6 +1121,7 @@ public class RouteConverter extends SingleFrameApplication {
             final ActionManager actionManager = getContext().getActionManager();
             actionManager.setLocalName(panel.getLocalName());
             frame.getRootPane().setDefaultButton(panel.getDefaultButton());
+            panel.initializeSelection();
             invokeLater(new Runnable() {
                 public void run() {
                     panel.getFocusComponent().grabFocus();

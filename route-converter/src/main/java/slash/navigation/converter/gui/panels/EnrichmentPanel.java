@@ -22,8 +22,15 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserCallback;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
+import slash.navigation.columbus.ImageNavigationFormatRegistry;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddPhotoAction;
@@ -34,8 +41,10 @@ import slash.navigation.converter.gui.helpers.EnrichmentTablePopupMenu;
 import slash.navigation.converter.gui.models.EnrichmentTableColumnModel;
 import slash.navigation.converter.gui.models.FilteringPositionsModel;
 import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.image.ImageFormat;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -46,15 +55,23 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.PointOfInterest;
 import static slash.navigation.base.WaypointType.Voice;
@@ -70,6 +87,9 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public class EnrichmentPanel implements PanelInTab {
+    private static final Logger log = Logger.getLogger(EnrichmentPanel.class.getName());
+    private static final int ROW_HEIGHT_FOR_IMAGE_COLUMN = 200;
+
     private JPanel enrichmentPanel;
     private JTable tableEnrichments;
     private JButton buttonAddPhoto;
@@ -77,8 +97,6 @@ public class EnrichmentPanel implements PanelInTab {
     private JButton buttonPlayVoice;
 
     private FilteringPositionsModel positionsModel;
-
-    private static final int ROW_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private int defaultTableRowHeight;
 
     public EnrichmentPanel() {
@@ -171,8 +189,80 @@ public class EnrichmentPanel implements PanelInTab {
         return buttonAddPhoto;
     }
 
+    public void initializeSelection() {
+        handlePositionsUpdate();
+    }
+
     public void addPhotosToPositionList(List<File> files) {
-        throw new UnsupportedOperationException(); // TODO
+        try {
+            for (File file : files) {
+                addPhotoToPositionList(file);
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // TODO need dialog here later
+        }
+    }
+
+    private void addPhotoToPositionList(File file) throws IOException {
+        long start = currentTimeMillis();
+        try {
+            Wgs84Route extractedRoute = extractMetadata(file);
+            log.info("Enrichment: reading photo " + file + " after " + (currentTimeMillis() - start) + " milliseconds");
+
+            Wgs84Position extractedPosition = extractedRoute.getPosition(0);
+
+            PositionsModel originalPositionsModel = RouteConverter.getInstance().getPositionsModel();
+            // TODO 1. search by coordinates
+
+            // TODO 2. time
+            // int index = originalPositionsModel.getClosestPosition(extractedPosition.getTime(), 15 * 60 * 1000); // TODO No Timezone offset yet
+            int index = (int) (Math.random() * originalPositionsModel.getRowCount()); // TODO No Timezone offset yet
+            if (index == -1) {
+                extractedPosition.setDescription("No Geotagging possible");
+                //noinspection unchecked
+                originalPositionsModel.add(originalPositionsModel.getRowCount(), (BaseRoute) extractedRoute);
+
+            } else {
+                NavigationPosition position = originalPositionsModel.getPosition(index);
+                if (!(position instanceof Wgs84Position))
+                    throw new UnsupportedOperationException("Writing images not supported for " + position);
+
+                Wgs84Position closestPosition = Wgs84Position.class.cast(position);
+                closestPosition.setOrigin(file);
+                extractedRoute.remove(0);
+                extractedRoute.add(0, closestPosition);
+                log.info("Enrichment: preparing write " + file + " after " + (currentTimeMillis() - start) + " milliseconds");
+
+                NavigationFormatParser parser = new NavigationFormatParser(new ImageNavigationFormatRegistry());
+                parser.write(extractedRoute, new ImageFormat(), false, false, new ParserCallback() {
+                    public void preprocess(BaseRoute route, NavigationFormat format) {
+                    }
+                }, new File(file.getAbsolutePath() + ".new"));
+                log.info("Enrichment: write " + file + " after " + (currentTimeMillis() - start) + " milliseconds");
+
+                closestPosition.setDescription(file.getAbsolutePath());
+
+                closestPosition.setWaypointType(Photo);
+                closestPosition.setOrigin(file);
+                originalPositionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
+            }
+        } finally {
+            long end = currentTimeMillis();
+            log.info("Enrichment: adding photo " + file + " took " + (end - start) + " milliseconds");
+        }
+    }
+
+    private Wgs84Route extractMetadata(File file) throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser(new ImageNavigationFormatRegistry());
+        ParserResult parserResult = parser.read(file);
+        if (parserResult.isSuccessful()) {
+            Wgs84Route route = Wgs84Route.class.cast(parserResult.getTheRoute());
+            if (route.getPositionCount() > 0) {
+                return route;
+            }
+        }
+        Wgs84Position position = new Wgs84Position(null, null, null, null, fromMillis(file.lastModified()), "No Metadata found", file);
+        return new Wgs84Route(new ImageFormat(), Waypoints, new ArrayList<>(singletonList(position)));
     }
 
     private FilteringPositionsModel getPositionsModel() {

@@ -21,7 +21,11 @@
 package slash.navigation.fpl;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
@@ -32,7 +36,6 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.image.ImageFormat;
-import slash.navigation.image.ImageRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -124,12 +127,12 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected ImageRoute asImageFormat(ImageFormat format) {
+    protected SimpleRoute asImageFormat(ImageFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new ImageRoute(format, getName(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
