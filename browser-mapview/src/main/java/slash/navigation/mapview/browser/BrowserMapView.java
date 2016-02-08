@@ -29,6 +29,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.*;
+import slash.navigation.gui.Application;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -229,6 +230,8 @@ public abstract class BrowserMapView implements MapView {
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
                     return registerTileServers(tileServerService, false);
+                if (tokenName.equals("menuItems"))
+                    return registerMenuItems();
                 return tokenName;
             }
         });
@@ -695,6 +698,20 @@ public abstract class BrowserMapView implements MapView {
 
         return buffer.toString();
     }
+
+    private static final String[] MENU_ITEM_KEYS = new String[]{ "center-here-action", "delete-action",
+            "new-position-action", "select-position-action", "zoom-in-action", "zoom-out-action" };
+
+    private String registerMenuItems() {
+        StringBuilder buffer = new StringBuilder();
+
+        ResourceBundle bundle = Application.getInstance().getContext().getBundle();
+        for (String menuItemKey : MENU_ITEM_KEYS)
+            buffer.append("menuItems[\"").append(menuItemKey).append("\"] = ").
+                    append("\"").append(bundle.getString(menuItemKey)).append("\";\n");
+
+        return buffer.toString();
+   }
 
     private boolean isColumbusTrack() {
         return positionsModel.getRoute().getFormat() instanceof ColumbusGpsFormat;
@@ -1334,10 +1351,10 @@ public abstract class BrowserMapView implements MapView {
     }
 
     private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(\\d*)/(\\d*)$");
-    private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
-    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)/(.*)$");
+    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
+    private static final Pattern INSERT_POSITION_AT_PATTERN = Pattern.compile("^insert-position-at/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
-    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)/(.*)$");
+    private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^map-type-changed/(.*)$");
@@ -1357,10 +1374,10 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
-        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
-        if (insertPositionMatcher.matches()) {
-            final int row = parseInt(insertPositionMatcher.group(1)) + 1;
-            final NavigationPosition position = parsePosition(insertPositionMatcher.group(2), insertPositionMatcher.group(3));
+        Matcher insertPositionAtMatcher = INSERT_POSITION_AT_PATTERN.matcher(callback);
+        if (insertPositionAtMatcher.matches()) {
+            final int row = parseInt(insertPositionAtMatcher.group(1)) + 1;
+            final NavigationPosition position = parsePosition(insertPositionAtMatcher.group(2), insertPositionAtMatcher.group(3));
             invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, position.getLongitude(), position.getLatitude());
@@ -1369,10 +1386,10 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
-        Matcher addPositionMatcher = ADD_POSITION_PATTERN.matcher(callback);
-        if (addPositionMatcher.matches()) {
+        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
+        if (insertPositionMatcher.matches()) {
             final int row = getAddRow();
-            final NavigationPosition position = parsePosition(addPositionMatcher.group(1), addPositionMatcher.group(2));
+            final NavigationPosition position = parsePosition(insertPositionMatcher.group(1), insertPositionMatcher.group(2));
             invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, position.getLongitude(), position.getLatitude());
@@ -1393,13 +1410,13 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
-        Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
-        if (removePositionMatcher.matches()) {
-            final NavigationPosition position = parsePosition(removePositionMatcher.group(1), removePositionMatcher.group(2));
-            final Double threshold = parseDouble(removePositionMatcher.group(3));
+        Matcher deletePositionMatcher = DELETE_POSITION_PATTERN.matcher(callback);
+        if (deletePositionMatcher.matches()) {
+            final NavigationPosition position = parsePosition(deletePositionMatcher.group(1), deletePositionMatcher.group(2));
+            final Double threshold = parseDouble(deletePositionMatcher.group(3));
             invokeLater(new Runnable() {
                 public void run() {
-                    removePosition(position.getLongitude(), position.getLatitude(), threshold);
+                    deletePosition(position.getLongitude(), position.getLatitude(), threshold);
                 }
             });
             return true;
@@ -1742,7 +1759,7 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private void removePosition(Double longitude, Double latitude, Double threshold) {
+    private void deletePosition(Double longitude, Double latitude, Double threshold) {
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1) {
             positionsModel.remove(new int[]{row});
@@ -1751,7 +1768,7 @@ public abstract class BrowserMapView implements MapView {
                 public void run() {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
-                        routeUpdateReason = "remove position";
+                        routeUpdateReason = "delete position";
                         notificationMutex.notifyAll();
                     }
                 }

@@ -343,7 +343,7 @@
                var via_waypoints = legs[j].via_waypoints;
                for (var k = 0; k < via_waypoints.length; k++) {
                    var latLng = via_waypoints[k];
-                   callJavaWithUri("insert-position/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
+                   callJavaWithUri("insert-position-at/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
                }
            }
        }
@@ -676,26 +676,29 @@ ${tileservers2}
            });
            addDebug("2. starting with maptype: " + map.getMapTypeId());
 
+           var menuItems = {};
+${menuItems}
+
            try {
                var menu = new ContextMenu({map: map});
-               menu.addItem('Select', function(map, latLng) {
+               menu.addItem(menuItems["select-position-action"], function(map, latLng) {
                    callJavaWithUri("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
                });
-               menu.addItem('Insert', function(map, latLng) {
-                   callJavaWithUri("add-position/" + latLng.lat() + "/" + latLng.lng());
+               menu.addItem(menuItems["new-position-action"], function(map, latLng) {
+                   callJavaWithUri("insert-position/" + latLng.lat() + "/" + latLng.lng());
                });
-               menu.addItem('Delete', function(map, latLng) {
-                   callJavaWithUri("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+               menu.addItem(menuItems["delete-action"], function(map, latLng) {
+                   callJavaWithUri("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
                });
                menu.addSep();
-               menu.addItem('Center Here', function(map, latLng) {
+               menu.addItem(menuItems["center-here-action"], function(map, latLng) {
                    map.panTo(latLng);
                });
-               menu.addItem('Zoom In', function(map, latLng) {
+               menu.addItem(menuItems["zoom-in-action"], function(map, latLng) {
                    map.setZoom(map.getZoom() + 1);
                    map.panTo(latLng);
                });
-               menu.addItem('Zoom Out', function(map, latLng) {
+               menu.addItem(menuItems["zoom-out-action"], function(map, latLng) {
                    map.setZoom(map.getZoom() - 1);
                    map.panTo(latLng);
                });
