@@ -19,10 +19,13 @@
 */
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.converter.gui.models.LocalNames;
 import slash.navigation.maps.impl.RemoteThemesTableModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.CATEGORIES;
+import static slash.navigation.converter.gui.models.LocalNames.DOWNLOADABLE_THEMES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -33,7 +36,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 public class DownloadableThemesTablePopupMenu extends AbstractTablePopupMenu {
     public DownloadableThemesTablePopupMenu(JTable table) {
-        super(table);
+        super(table, DOWNLOADABLE_THEMES);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

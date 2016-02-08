@@ -23,6 +23,7 @@ import slash.navigation.maps.impl.RemoteMapsTableModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.DOWNLOADABLE_MAPS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -33,7 +34,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 public class DownloadableMapsTablePopupMenu extends AbstractTablePopupMenu {
     public DownloadableMapsTablePopupMenu(JTable table) {
-        super(table);
+        super(table, DOWNLOADABLE_MAPS);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

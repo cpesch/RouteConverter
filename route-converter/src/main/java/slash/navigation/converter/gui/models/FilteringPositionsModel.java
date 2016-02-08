@@ -52,7 +52,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
         delegate.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 initializeMapping();
-                fireTableChanged(e);
+                fireTableDataChanged();
             }
         });
     }
@@ -132,6 +132,10 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     public int getClosestPosition(double longitude, double latitude, double threshold) {
+        throw new UnsupportedOperationException();
+    }
+
+    public int getClosestPosition(CompactCalendar time, long threshold) {
         throw new UnsupportedOperationException();
     }
 

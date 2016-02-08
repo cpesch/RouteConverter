@@ -51,6 +51,15 @@ public class ActionManager {
 
     private Map<String, Action> actionMap = new HashMap<>();
     private Map<String, ProxyAction> proxyActionMap = new HashMap<>();
+    private String localName;
+
+    public String getLocalName() {
+        return localName;
+    }
+
+    public void setLocalName(String localName) {
+        this.localName = localName;
+    }
 
     public Action get(String actionName) {
         Action action = actionMap.get(actionName);
@@ -67,7 +76,7 @@ public class ActionManager {
     public void register(String actionName, Action action) {
         Action found = actionMap.get(actionName);
         if (found != null)
-            throw new IllegalArgumentException("action '" + found + "' for '" + actionName + "' already registered");
+            throw new IllegalArgumentException("Action '" + found + "' for '" + actionName + "' already registered");
         actionMap.put(actionName, action);
         action.putValue(NAME, actionName);
         ProxyAction proxyAction = proxyActionMap.get(actionName);
@@ -78,6 +87,17 @@ public class ActionManager {
         }
     }
 
+    public void registerLocal(String globalName, String localName, String actionName) {
+        GlobalAction found = (GlobalAction) actionMap.get(globalName);
+        if (found == null)
+            throw new IllegalArgumentException("No action registered for '" + globalName + "'");
+        found.registerLocal(localName, actionName);
+    }
+
+    public void registerGlobal(String globalName) {
+        register(globalName, new GlobalAction(globalName));
+    }
+
     public void run(String actionName) {
         run(actionName, new ActionEvent(this, -1, actionName));
     }
@@ -85,18 +105,26 @@ public class ActionManager {
     public void run(String actionName, ActionEvent actionEvent) {
         Action action = actionMap.get(actionName);
         if (action == null)
-            throw new IllegalArgumentException("no action registered for '" + actionName + "'");
+            throw new IllegalArgumentException("No action registered for '" + actionName + "'");
         perform(action, actionEvent);
     }
 
     public void enable(String actionName, boolean enable) {
         Action action = actionMap.get(actionName);
         if (action == null)
-            throw new IllegalArgumentException("no action registered for '" + actionName + "'");
+            throw new IllegalArgumentException("No action registered for '" + actionName + "'");
         action.setEnabled(enable);
     }
 
-    private static void perform(Action action, ActionEvent event) {
+    public void enableLocal(String globalName, String localName, boolean enable) {
+        GlobalAction found = (GlobalAction) actionMap.get(globalName);
+        if (found == null)
+            throw new IllegalArgumentException("No action registered for '" + globalName + "'");
+        if(localName.equals(getLocalName()))
+            found.setEnabled(enable);
+    }
+
+    static void perform(Action action, ActionEvent event) {
         count(preferences, RUN_COUNT_PREFERENCE + action.getValue(NAME));
         action.actionPerformed(event);
     }

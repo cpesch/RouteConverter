@@ -33,20 +33,24 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata.Directory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -97,6 +101,8 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.ISO8601.formatDate;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 import static slash.navigation.common.UnitConversion.statuteMilesToKiloMeter;
 
@@ -105,7 +111,7 @@ import static slash.navigation.common.UnitConversion.statuteMilesToKiloMeter;
  *
  * @author Christian Pesch
  */
-public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
+public class ImageFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(ImageFormat.class.getName());
     private static final String DATE_FORMAT = "yyyy:MM:dd";
     private static final String DATE_TIME_FORMAT = "yyyy:MM:dd HH:mm:ss";
@@ -134,11 +140,21 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> ImageRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new ImageRoute(this, name, (List<Wgs84Position>) positions);
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<ImageRoute> context) throws Exception {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+        // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
+        throw new UnsupportedOperationException();
+    }
+
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
+        // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
+        throw new UnsupportedOperationException();
+    }
+
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         BufferedInputStream bufferedSource = new BufferedInputStream(source, READ_BUFFER_SIZE);
         bufferedSource.mark(READ_BUFFER_SIZE);
 
@@ -164,7 +180,9 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
 
         bufferedSource.reset();
         File image = extractToTempFile(bufferedSource);
-        context.appendRoute(new ImageRoute(this, null, singletonList(position), image));
+        position.setOrigin(image);
+        position.setWaypointType(Photo);
+        context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<>(singletonList(position))));
     }
 
     private TiffImageMetadata extractTiffImageMetadata(ImageMetadata metadata) {
@@ -203,17 +221,15 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
 
     private CompactCalendar parseExifTime(TiffImageMetadata metadata, CompactCalendar startDate) throws ImageReadException {
         String dateString = null;
-        TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
-        if (rootDirectory != null)
-            dateString = (String) rootDirectory.getFieldValue(TIFF_TAG_DATE_TIME);
-
         TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
         if (exifDirectory != null) {
-            if (dateString == null)
-                dateString = (String) exifDirectory.getFieldValue(EXIF_TAG_DATE_TIME_ORIGINAL);
+            dateString = (String) exifDirectory.getFieldValue(EXIF_TAG_DATE_TIME_ORIGINAL);
             if (dateString == null)
                 dateString = (String) exifDirectory.getFieldValue(EXIF_TAG_DATE_TIME_DIGITIZED);
         }
+        TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
+        if (rootDirectory != null && dateString == null)
+            dateString = (String) rootDirectory.getFieldValue(TIFF_TAG_DATE_TIME);
         return dateString != null ? parseDate(dateString, DATE_TIME_FORMAT) : startDate;
     }
 
@@ -308,45 +324,46 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
         return position;
     }
 
-    public void write(ImageRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        try {
-            File source = route.getImage();
-            if(source == null)
-                throw new IOException("Need an image file as source");
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        List<Wgs84Position> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            Wgs84Position position = positions.get(i);
 
-            ImageMetadata metadata = Imaging.getMetadata(source);
-            TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
+            try {
+                File source = position.getOrigin(File.class);
+                if (source == null)
+                    continue;
 
-            TiffOutputSet outputSet = null;
-            if (tiffImageMetadata != null)
-                outputSet = tiffImageMetadata.getOutputSet();
-            if (outputSet == null)
-                outputSet = new TiffOutputSet();
+                ImageMetadata metadata = Imaging.getMetadata(source);
+                TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
 
-            TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
-            exifDirectory.removeField(EXIF_TAG_USER_COMMENT);
+                TiffOutputSet outputSet = null;
+                if (tiffImageMetadata != null)
+                    outputSet = tiffImageMetadata.getOutputSet();
+                if (outputSet == null)
+                    outputSet = new TiffOutputSet();
 
-            TiffOutputDirectory gpsDirectory = outputSet.getOrCreateGPSDirectory();
-            gpsDirectory.removeField(GPS_TAG_GPS_VERSION_ID);
-            gpsDirectory.add(GPS_TAG_GPS_VERSION_ID, (byte) 2, (byte) 3, (byte) 0, (byte) 0);
+                TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
+                exifDirectory.removeField(EXIF_TAG_USER_COMMENT);
 
-            gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE);
-            gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE_REF);
-            gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE);
-            gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE_REF);
-            gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE);
-            gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE_REF);
-            gpsDirectory.removeField(GPS_TAG_GPS_SPEED);
-            gpsDirectory.removeField(GPS_TAG_GPS_SPEED_REF);
-            gpsDirectory.removeField(GPS_TAG_GPS_DATE_STAMP);
-            gpsDirectory.removeField(GPS_TAG_GPS_TIME_STAMP);
-            gpsDirectory.removeField(GPS_TAG_GPS_IMG_DIRECTION);
-            gpsDirectory.removeField(GPS_TAG_GPS_SATELLITES);
-            gpsDirectory.removeField(GPS_TAG_GPS_MEASURE_MODE);
-            gpsDirectory.removeField(GPS_TAG_GPS_DOP);
+                TiffOutputDirectory gpsDirectory = outputSet.getOrCreateGPSDirectory();
+                gpsDirectory.removeField(GPS_TAG_GPS_VERSION_ID);
+                gpsDirectory.add(GPS_TAG_GPS_VERSION_ID, (byte) 2, (byte) 3, (byte) 0, (byte) 0);
 
-            if (route.getPositionCount() > 0) {
-                Wgs84Position position = route.getPosition(0);
+                gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE);
+                gpsDirectory.removeField(GPS_TAG_GPS_LONGITUDE_REF);
+                gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE);
+                gpsDirectory.removeField(GPS_TAG_GPS_LATITUDE_REF);
+                gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE);
+                gpsDirectory.removeField(GPS_TAG_GPS_ALTITUDE_REF);
+                gpsDirectory.removeField(GPS_TAG_GPS_SPEED);
+                gpsDirectory.removeField(GPS_TAG_GPS_SPEED_REF);
+                gpsDirectory.removeField(GPS_TAG_GPS_DATE_STAMP);
+                gpsDirectory.removeField(GPS_TAG_GPS_TIME_STAMP);
+                gpsDirectory.removeField(GPS_TAG_GPS_IMG_DIRECTION);
+                gpsDirectory.removeField(GPS_TAG_GPS_SATELLITES);
+                gpsDirectory.removeField(GPS_TAG_GPS_MEASURE_MODE);
+                gpsDirectory.removeField(GPS_TAG_GPS_DOP);
 
                 exifDirectory.add(EXIF_TAG_USER_COMMENT, position.getDescription());
 
@@ -389,12 +406,11 @@ public class ImageFormat extends BaseNavigationFormat<ImageRoute> {
                     gpsDirectory.add(GPS_TAG_GPS_MEASURE_MODE, Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT));
                     gpsDirectory.add(GPS_TAG_GPS_DOP, RationalNumber.valueOf(position.getHdop()));
                 }
-            }
 
-            new ExifRewriter().updateExifMetadataLossless(source, target, outputSet);
-        }
-        catch (ImageReadException | ImageWriteException e) {
-            throw new IOException(e);
+                new ExifRewriter().updateExifMetadataLossless(source, target, outputSet);
+            } catch (ImageReadException | ImageWriteException e) {
+                throw new IOException(e);
+            }
         }
     }
 }

@@ -30,7 +30,6 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.image.ImageFormat;
-import slash.navigation.image.ImageRoute;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -119,12 +118,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected ImageRoute asImageFormat(ImageFormat format) {
+    protected SimpleRoute asImageFormat(ImageFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (P position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new ImageRoute(format, getName(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {

@@ -26,6 +26,8 @@ import java.awt.datatransfer.*;
 import java.util.logging.Logger;
 
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
+import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
 
 /**
  * Helps to interact with the system {@link Clipboard}.
@@ -55,7 +57,7 @@ public class ClipboardInteractor {
     private boolean isSupportedFlavor() {
         try {
             for (DataFlavor f : getClipboard().getAvailableDataFlavors()) {
-                if (f.equals(PositionSelection.positionFlavor) || f.equals(PositionSelection.stringFlavor))
+                if (f.equals(POSITION_FLAVOR) || f.equals(STRING_FLAVOR))
                     return true;
             }
         }

@@ -24,6 +24,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.models.LocalNames.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -35,7 +36,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 public class RoutesTablePopupMenu extends AbstractTablePopupMenu {
 
     public RoutesTablePopupMenu(JTable table) {
-        super(table);
+        super(table, ROUTES);
     }
 
     protected JPopupMenu doCreatePopupMenu() {

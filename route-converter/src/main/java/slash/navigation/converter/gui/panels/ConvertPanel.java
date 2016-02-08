@@ -182,8 +182,9 @@ import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
+import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
 import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.revert;
@@ -343,7 +344,7 @@ public class ConvertPanel implements PanelInTab {
         });
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                r.getContext().getActionManager().run("delete-position");
+                r.getContext().getActionManager().run("delete");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.registerKeyboardAction(new FrameAction() {
@@ -396,8 +397,10 @@ public class ConvertPanel implements PanelInTab {
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
         tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(), tableColumnModel, actionManager);
         JPopupMenu menu = new PositionsTablePopupMenu(tablePositions).createPopupMenu();
-        JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
-        new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
+        JMenu mergePopupMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
+        new MergePositionListMenu(mergePopupMenu, getPositionsView(), getFormatAndRoutesModel());
+        JMenu mergeMenuBarMenu = findMenuComponent(menuBar, "positionlist", "merge-positionlist", JMenu.class);
+        new MergePositionListMenu(mergeMenuBarMenu, getPositionsView(), getFormatAndRoutesModel());
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
@@ -408,6 +411,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("new-position", new AddPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
         actionManager.register("delete-position", new DeletePositionAction(getPositionsView(), getPositionsModel()));
+        actionManager.registerLocal("delete", POSITIONS, "delete-position");
         actionManager.register("top", new TopAction(this));
         actionManager.register("up", new UpAction(this));
         actionManager.register("down", new DownAction(this));
@@ -447,14 +451,14 @@ public class ConvertPanel implements PanelInTab {
         registerAction(buttonMovePositionToBottom, "bottom");
 
         buttonNewPosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/new-position-action.png"));
-        buttonDeletePosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/delete-action.png"));
+        buttonDeletePosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/delete-position-action.png"));
         buttonMovePositionToTop.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/top.png"));
         buttonMovePositionUp.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/up.png"));
         buttonMovePositionDown.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/down.png"));
         buttonMovePositionToBottom.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/bottom.png"));
         buttonNewPositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/new-route.png"));
         buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
-        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/remove-route.png"));
+        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/delete-action.png"));
 
         setHelpIDString(tablePositions, "position-list");
 
@@ -521,12 +525,20 @@ public class ConvertPanel implements PanelInTab {
         return convertPanel;
     }
 
+    public String getLocalName() {
+        return POSITIONS;
+    }
+
     public JComponent getFocusComponent() {
         return tablePositions;
     }
 
     public JButton getDefaultButton() {
         return buttonNewPositionList;
+    }
+
+    public void initializeSelection() {
+        handlePositionsUpdate();
     }
 
     // action methods
@@ -1057,6 +1069,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("cut", existsASelectedPosition);
         actionManager.enable("copy", existsASelectedPosition);
         actionManager.enable("delete-position", existsASelectedPosition);
+        actionManager.enableLocal("delete", POSITIONS, existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
         findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
@@ -1076,7 +1089,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("print-profile", existsAPosition);
 
         if (r.isConvertPanelSelected())
-            r.selectPositions(selectedRows);
+            r.selectPositionsInMap(selectedRows);
     }
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
@@ -1367,7 +1380,7 @@ public class ConvertPanel implements PanelInTab {
         panel3.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePositionList = new JButton();
         buttonDeletePositionList.setHideActionText(true);
-        buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/remove-route.png")));
+        buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/delete-action.png")));
         buttonDeletePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positionlist-action-tooltip"));
         panel3.add(buttonDeletePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
@@ -1404,7 +1417,7 @@ public class ConvertPanel implements PanelInTab {
         buttonDeletePosition = new JButton();
         buttonDeletePosition.setFocusable(false);
         buttonDeletePosition.setHideActionText(true);
-        buttonDeletePosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/delete-action.png")));
+        buttonDeletePosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/24/delete-position-action.png")));
         buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-position-action-tooltip"));
         panel4.add(buttonDeletePosition, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionDown = new JButton();
@@ -1466,7 +1479,7 @@ public class ConvertPanel implements PanelInTab {
         }
 
         public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(positionFlavor) || delegate.canImport(support);
+            return support.isDataFlavorSupported(POSITION_FLAVOR) || delegate.canImport(support);
         }
 
         private int[] toRows(List<NavigationPosition> positions) {
@@ -1498,8 +1511,8 @@ public class ConvertPanel implements PanelInTab {
         public boolean importData(TransferSupport support) {
             Transferable transferable = support.getTransferable();
             try {
-                if (support.isDataFlavorSupported(positionFlavor)) {
-                    Object selection = transferable.getTransferData(positionFlavor);
+                if (support.isDataFlavorSupported(POSITION_FLAVOR)) {
+                    Object selection = transferable.getTransferData(POSITION_FLAVOR);
                     if (selection != null) {
                         PositionSelection positionsSelection = (PositionSelection) selection;
                         int[] rows = toRows(positionsSelection.getPositions());

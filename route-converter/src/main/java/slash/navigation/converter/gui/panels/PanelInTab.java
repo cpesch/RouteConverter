@@ -34,5 +34,7 @@ import java.awt.*;
 public interface PanelInTab {
     Component getRootComponent();
     JComponent getFocusComponent();
+    String getLocalName();
     JButton getDefaultButton();
+    void initializeSelection();
 }

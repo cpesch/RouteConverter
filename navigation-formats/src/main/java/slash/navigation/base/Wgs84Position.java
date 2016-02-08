@@ -169,6 +169,10 @@ public class Wgs84Position extends BaseNavigationPosition {
             return null;
     }
 
+    public/* for ImageFormat */ void setOrigin(Object origin) {
+        this.origin = origin;
+    }
+
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
         position.setHeading(getHeading());

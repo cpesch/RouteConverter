@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,9 +105,10 @@ public class ColumbusGpsStandardFormat extends ColumbusGpsFormat {
         description = trim(description);
         if (description == null)
             description = waypointType + " " + trim(removeZeros(lineMatcher.group(1)));
+        File image = new File(description);
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), description);
+                parseDateAndTime(date, time), description, image.exists() ? image : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         return position;

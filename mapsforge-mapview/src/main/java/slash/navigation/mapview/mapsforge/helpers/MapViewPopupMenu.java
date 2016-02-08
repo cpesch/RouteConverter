@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
+import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
  * Opens a {@link JPopupMenu} upon mouse clicks of the {@link AwtGraphicMapView}.
@@ -49,10 +50,12 @@ public class MapViewPopupMenu extends MouseAdapter {
 
     public void mousePressed(MouseEvent e) {
         if (isLeftMouseButton(e)) {
+            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+            actionManager.setLocalName(MAP);
+
             boolean shiftKey = e.isShiftDown();
             boolean altKey = e.isAltDown();
             boolean ctrlKey = e.isControlDown();
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
             if (!shiftKey && !altKey && !ctrlKey)
                 actionManager.run("select-position");
             else if (shiftKey && !altKey && !ctrlKey)
@@ -60,7 +63,7 @@ public class MapViewPopupMenu extends MouseAdapter {
             else if (!shiftKey && !altKey && ctrlKey)
                 actionManager.run("add-position");
             else if (!shiftKey && altKey && ctrlKey)
-                actionManager.run("delete-position");
+                actionManager.run("delete-position-from-map");
 
         } else if (isRightMouseButton(e)) {
             popupMenu.show(component, e.getX(), e.getY());

@@ -18,31 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helpers;
+package slash.navigation.converter.gui.models;
 
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
-
 /**
- * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
+ * Contains constants for all {@link ActionManager#registerLocal(String, String, Action) local names}
+ * of the {@link ActionManager}.
  *
  * @author Christian Pesch
  */
 
-public class EnrichmentTablePopupMenu extends AbstractTablePopupMenu {
+public interface LocalNames {
+    String ENRICHMENTS = "enrichments";
+    String POSITIONS = "positions";
 
-    public EnrichmentTablePopupMenu(JTable table) {
-        super(table, ENRICHMENTS);
-    }
+    String CATEGORIES = "categories";
+    String ROUTES = "routes";
 
-    protected JPopupMenu doCreatePopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-enrichment"));
-        return menu;
-    }
+    String MAPS = "maps";
+    String THEMES = "themes";
+
+    String DOWNLOADS = "downloads";
+    String DOWNLOADABLE_MAPS = "downloadable-maps";
+    String DOWNLOADABLE_THEMES = "downloadable-themes";
 }

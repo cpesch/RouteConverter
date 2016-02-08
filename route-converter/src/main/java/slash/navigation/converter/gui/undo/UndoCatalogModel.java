@@ -100,18 +100,18 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new MoveCategories(this, categories, oldParents, parents));
     }
 
-    public void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
-        removeCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
+    public void deleteCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
+        deleteCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
     }
 
-    public void removeCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
-        removeCategories(parents, names, invokeLaterRunnable, true);
+    public void deleteCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
+        deleteCategories(parents, names, invokeLaterRunnable, true);
     }
 
-    void removeCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
-        delegate.removeCategories(categories, names, invokeLaterRunnable);
+    void deleteCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
+        delegate.deleteCategories(categories, names, invokeLaterRunnable);
         if (trackUndo)
-            undoManager.addEdit(new RemoveCategories(this, categories, names));
+            undoManager.addEdit(new DeleteCategories(this, categories, names));
     }
 
     public void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback) {

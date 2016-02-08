@@ -163,14 +163,14 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
-        removeCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
+    public void deleteCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
+        deleteCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
     }
 
-    public void removeCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
+    public void deleteCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
-                return "RemoveCategories";
+                return "DeleteCategories";
             }
 
             public void run() throws IOException {

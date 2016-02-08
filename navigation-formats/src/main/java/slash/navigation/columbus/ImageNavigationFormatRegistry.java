@@ -17,32 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.columbus;
 
-package slash.navigation.converter.gui.helpers;
-
-import slash.navigation.converter.gui.models.PositionsModel;
-
-import javax.swing.*;
-
-import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.image.ImageFormat;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
+ * A {@link NavigationFormatRegistry} that just uses the {@link ImageFormat}.
  *
  * @author Christian Pesch
  */
-
-public class EnrichmentTablePopupMenu extends AbstractTablePopupMenu {
-
-    public EnrichmentTablePopupMenu(JTable table) {
-        super(table, ENRICHMENTS);
-    }
-
-    protected JPopupMenu doCreatePopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-enrichment"));
-        return menu;
+public class ImageNavigationFormatRegistry extends NavigationFormatRegistry {
+    protected boolean includeReadFormat(NavigationFormat format) {
+        return format instanceof ImageFormat;
     }
 }

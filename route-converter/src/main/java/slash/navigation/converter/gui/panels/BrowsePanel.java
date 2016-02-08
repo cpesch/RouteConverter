@@ -24,9 +24,20 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.base.ParserResult;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.*;
+import slash.navigation.converter.gui.actions.AddCategoryAction;
+import slash.navigation.converter.gui.actions.AddFileAction;
+import slash.navigation.converter.gui.actions.AddUrlAction;
+import slash.navigation.converter.gui.actions.DeleteCategoriesAction;
+import slash.navigation.converter.gui.actions.DeleteRoutesAction;
+import slash.navigation.converter.gui.actions.RenameCategoryAction;
+import slash.navigation.converter.gui.actions.RenameRoutesAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
@@ -40,15 +51,25 @@ import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.Catalog;
-import slash.navigation.routes.impl.*;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNodeImpl;
+import slash.navigation.routes.impl.RootTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 import slash.navigation.routes.local.LocalCatalog;
 import slash.navigation.routes.remote.RemoteCatalog;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -69,7 +90,9 @@ import java.util.prefs.Preferences;
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
-import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.KeyEvent.VK_END;
+import static java.awt.event.KeyEvent.VK_HOME;
 import static java.util.Collections.singletonList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
@@ -85,7 +108,13 @@ import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavo
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectRoute;
+import static slash.navigation.converter.gui.models.LocalNames.CATEGORIES;
+import static slash.navigation.converter.gui.models.LocalNames.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
@@ -108,7 +137,7 @@ public class BrowsePanel implements PanelInTab {
     private JTable tableRoutes;
     private JButton buttonAddCategory;
     private JButton buttonRenameCategory;
-    private JButton buttonRemoveCategory;
+    private JButton buttonDeleteCategory;
     private JButton buttonAddRouteFromFile;
     private JButton buttonAddRouteFromUrl;
     private JButton buttonRenameRoute;
@@ -132,21 +161,23 @@ public class BrowsePanel implements PanelInTab {
         catalogModel = new UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        registerAction(buttonAddCategory, "add-category");
-        registerAction(buttonRenameCategory, "rename-category");
-        registerAction(buttonRemoveCategory, "remove-category");
-        registerAction(buttonAddRouteFromFile, "add-route-from-file");
-        registerAction(buttonAddRouteFromUrl, "add-route-from-url");
-        registerAction(buttonRenameRoute, "rename-route");
-        registerAction(buttonDeleteRoute, "delete-route");
-
         actionManager.register("add-category", new AddCategoryAction(treeCategories, catalogModel));
         actionManager.register("add-route-from-file", new AddFileAction());
         actionManager.register("add-route-from-url", new AddUrlAction());
         actionManager.register("rename-category", new RenameCategoryAction(treeCategories, catalogModel));
-        actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories, catalogModel));
+        actionManager.register("delete-category", new DeleteCategoriesAction(treeCategories, catalogModel));
+        actionManager.registerLocal("delete", CATEGORIES, "delete-category");
         actionManager.register("rename-route", new RenameRoutesAction(tableRoutes, catalogModel));
         actionManager.register("delete-route", new DeleteRoutesAction(tableRoutes, catalogModel));
+        actionManager.registerLocal("delete", ROUTES, "delete-route");
+
+        registerAction(buttonAddCategory, "add-category");
+        registerAction(buttonRenameCategory, "rename-category");
+        registerAction(buttonDeleteCategory, "delete-category");
+        registerAction(buttonAddRouteFromFile, "add-route-from-file");
+        registerAction(buttonAddRouteFromUrl, "add-route-from-url");
+        registerAction(buttonRenameRoute, "rename-route");
+        registerAction(buttonDeleteRoute, "delete-route");
 
         setHelpIDString(treeCategories, "category-tree");
         setHelpIDString(tableRoutes, "route-list");
@@ -160,6 +191,7 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
+                handleCategoryTreeUpdate();
                 selectTreePath(e.getPath(), false);
             }
         });
@@ -217,7 +249,8 @@ public class BrowsePanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                handlePositionListUpdate();
+                handleRouteListUpdate();
+                openRoute();
             }
         });
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
@@ -233,6 +266,9 @@ public class BrowsePanel implements PanelInTab {
         browsePanel.setTransferHandler(new PanelDropHandler());
 
         new RoutesTablePopupMenu(tableRoutes).createPopupMenu();
+
+        handleRouteListUpdate();
+        handleCategoryTreeUpdate();
 
         new Thread(new Runnable() {
             public void run() {
@@ -278,8 +314,17 @@ public class BrowsePanel implements PanelInTab {
         return tableRoutes;
     }
 
+    public String getLocalName() {
+        return CATEGORIES;
+    }
+
     public JButton getDefaultButton() {
         return buttonAddRouteFromFile;
+    }
+
+    public void initializeSelection() {
+        handleCategoryTreeUpdate();
+        handleRouteListUpdate();
     }
 
     private void selectTreePath(TreePath treePath, boolean selectCategoryTreePath) {
@@ -299,10 +344,11 @@ public class BrowsePanel implements PanelInTab {
         }
     }
 
-    private void handlePositionListUpdate() {
+    private void openRoute() {
         int[] selectedRows = tableRoutes.getSelectedRows();
         if (selectedRows.length == 0)
             return;
+
         RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
         URL url;
         try {
@@ -315,6 +361,26 @@ public class BrowsePanel implements PanelInTab {
             return;
         }
         RouteConverter.getInstance().openPositionList(singletonList(url), false);
+    }
+
+    private void handleRouteListUpdate() {
+        int[] selectedRows = tableRoutes.getSelectedRows();
+
+        boolean existsASelectedRoute = selectedRows.length > 0;
+
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.enable("delete-route", existsASelectedRoute);
+        actionManager.enableLocal("delete", ROUTES, existsASelectedRoute);
+    }
+
+    private void handleCategoryTreeUpdate() {
+        int[] selectedRows = treeCategories.getSelectionRows();
+
+        boolean existsASelectedCategory = selectedRows != null && selectedRows.length > 0;
+
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.enable("delete-category", existsASelectedCategory);
+        actionManager.enableLocal("delete", CATEGORIES, existsASelectedCategory);
     }
 
     private RoutesTableModel getRoutesListModel() {
@@ -380,7 +446,6 @@ public class BrowsePanel implements PanelInTab {
         addFilesToCatalog(getSelectedCategoryTreeNode(treeCategories), files);
     }
 
-
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
         AddUrlDialog addUrlDialog = new AddUrlDialog(catalogModel, categoryTreeNode, description, url);
         addUrlDialog.pack();
@@ -428,10 +493,10 @@ public class BrowsePanel implements PanelInTab {
         this.$$$loadButtonText$$$(buttonAddCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-category-action"));
         buttonAddCategory.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-category-action-tooltip"));
         panel1.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRemoveCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonRemoveCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-category-action"));
-        buttonRemoveCategory.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-category-action-tooltip"));
-        panel1.add(buttonRemoveCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDeleteCategory = new JButton();
+        this.$$$loadButtonText$$$(buttonDeleteCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-category-action"));
+        buttonDeleteCategory.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-category-action-tooltip"));
+        panel1.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenameCategory = new JButton();
         this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-category-action"));
         buttonRenameCategory.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-category-action-tooltip"));
