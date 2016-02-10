@@ -22,18 +22,17 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.gui.actions.ActionManager;
 
-import javax.swing.*;
-
 /**
- * Contains constants for all {@link ActionManager#registerLocal(String, String, Action) local names}
+ * Contains constants for all {@link ActionManager#registerLocal(String, String, String) local names}
  * of the {@link ActionManager}.
  *
  * @author Christian Pesch
  */
 
 public interface LocalNames {
-    String ENRICHMENTS = "enrichments";
     String POSITIONS = "positions";
+    String POINTS_OF_INTEREST = "points-of-interest";
+    String PHOTOS = "photos";
 
     String CATEGORIES = "categories";
     String ROUTES = "routes";

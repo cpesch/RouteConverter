@@ -69,9 +69,17 @@
                     <border type="none"/>
                     <children/>
                   </grid>
-                  <grid id="f738d" binding="enrichmentPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                  <grid id="f738d" binding="pointOfInterestPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                     <constraints>
-                      <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="enrichment-tab"/>
+                      <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="points-of-interest-tab"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                  <grid id="abcd" binding="photoPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints>
+                      <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="photos-tab"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>

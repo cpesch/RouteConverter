@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.EnrichmentPanel">
-  <grid id="27dc6" binding="enrichmentPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.PointOfInterestPanel">
+  <grid id="27dc6" binding="pointsOfInterestPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="3" left="3" bottom="3" right="3"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="509" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="4bcfb" class="javax.swing.JButton" binding="buttonDeleteEnrichment">
+      <component id="4bcfb" class="javax.swing.JButton" binding="buttonDeletePointsOfInterest">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-enrichment-action"/>
-          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-enrichment-action-tooltip"/>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-points-of-interest-action"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-points-of-interest-action-tooltip"/>
         </properties>
       </component>
       <scrollpane id="23cb9">
@@ -24,7 +24,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="d3a38" class="javax.swing.JTable" binding="tableEnrichments">
+          <component id="d3a38" class="javax.swing.JTable" binding="tablePointsOfInterest">
             <constraints/>
             <properties>
               <autoCreateColumnsFromModel value="false"/>
@@ -46,15 +46,6 @@
         <properties>
           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="play-voice-action"/>
           <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="play-voice-action-tooltip"/>
-        </properties>
-      </component>
-      <component id="848a7" class="javax.swing.JButton" binding="buttonAddPhoto">
-        <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-photo-action"/>
-          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-photo-action-tooltip"/>
         </properties>
       </component>
     </children>

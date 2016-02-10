@@ -19,24 +19,23 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.models.EnrichmentTableColumnModel;
-import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.models.PointsOfInterestTableColumnModel;
 import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
-import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
+import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
 
 /**
- * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
+ * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PointsOfInterestTableColumnModel}.
  *
  * @author Christian Pesch
  */
 
-public class EnrichmentTableHeaderMenu extends AbstractTableHeaderMenu {
-    public EnrichmentTableHeaderMenu(JTableHeader tableHeader, EnrichmentTableColumnModel columnModel, ActionManager actionManager) {
-        super(columnModel, actionManager, ENRICHMENTS);
+public class PointsOfInterestTableHeaderMenu extends AbstractTableHeaderMenu {
+    public PointsOfInterestTableHeaderMenu(JTableHeader tableHeader, PointsOfInterestTableColumnModel columnModel, ActionManager actionManager) {
+        super(columnModel, actionManager, POINTS_OF_INTEREST);
         initializeShowColumn(null);
         initializePopup(tableHeader);
     }

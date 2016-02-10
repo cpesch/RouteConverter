@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.ENRICHMENTS;
+import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
@@ -33,16 +33,16 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
  * @author Christian Pesch
  */
 
-public class EnrichmentTablePopupMenu extends AbstractTablePopupMenu {
+public class PointsOfInterestTablePopupMenu extends AbstractTablePopupMenu {
 
-    public EnrichmentTablePopupMenu(JTable table) {
-        super(table, ENRICHMENTS);
+    public PointsOfInterestTablePopupMenu(JTable table) {
+        super(table, POINTS_OF_INTEREST);
     }
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-enrichment"));
+        menu.add(createItem("delete-points-of-interest"));
         return menu;
     }
 }
