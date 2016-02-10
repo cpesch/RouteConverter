@@ -52,7 +52,11 @@ public class RouteConverterColumbus extends RouteConverter {
         return EclipseSWT;
     }
 
-    protected boolean isEnrichmentEnabled() {
+    protected boolean isPointsOfInterestEnabled() {
+        return true;
+    }
+
+    protected boolean isPhotosEnabled() {
         return true;
     }
 

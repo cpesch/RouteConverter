@@ -33,12 +33,12 @@ import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
- * {@link Action} that adds an image {@link File} to a {@link NavigationPosition}.
+ * {@link Action} that adds {@link File images} to {@link NavigationPosition}s.
  *
  * @author Christian Pesch
  */
 
-public class AddPhotoAction extends FrameAction {
+public class AddPhotosAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
