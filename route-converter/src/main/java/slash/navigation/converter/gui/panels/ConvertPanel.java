@@ -1072,6 +1072,10 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enableLocal("delete", POSITIONS, existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
         findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
+        actionManager.enable("top", existsASelectedPosition && existsMoreThanOnePosition);
+        actionManager.enable("up", existsASelectedPosition && existsMoreThanOnePosition);
+        actionManager.enable("down", existsASelectedPosition && existsMoreThanOnePosition);
+        actionManager.enable("bottom", existsASelectedPosition && existsMoreThanOnePosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
         actionManager.enable("add-elevation", existsASelectedPosition);
         actionManager.enable("add-postal-address", existsASelectedPosition);
