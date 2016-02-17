@@ -489,7 +489,7 @@ public class ConvertPanel implements PanelInTab {
         comboBoxChoosePositionList.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == SELECTED) {
-                    r.getBatchPositionAugmenter().interrupt();
+                    r.getPositionAugmenter().interrupt();
                     formatAndRoutesModel.setSelectedItem(e.getItem());
                 }
             }
@@ -518,7 +518,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void prepareForNewPositionList() {
         Application.getInstance().getContext().getUndoManager().discardAllEdits();
-        RouteConverter.getInstance().getBatchPositionAugmenter().interrupt();
+        RouteConverter.getInstance().getPositionAugmenter().interrupt();
     }
 
     public Component getRootComponent() {

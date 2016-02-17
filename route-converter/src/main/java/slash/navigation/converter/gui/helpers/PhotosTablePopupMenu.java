@@ -20,29 +20,30 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.panels.PointOfInterestPanel;
+import slash.navigation.converter.gui.panels.PhotoPanel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
+import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
- * Creates a {@link JPopupMenu} for for the photos table of the {@link PointOfInterestPanel}.
+ * Creates a {@link JPopupMenu} for the photos table of the {@link PhotoPanel}.
  *
  * @author Christian Pesch
  */
 
-public class PointsOfInterestTablePopupMenu extends AbstractTablePopupMenu {
+public class PhotosTablePopupMenu extends AbstractTablePopupMenu {
 
-    public PointsOfInterestTablePopupMenu(JTable table) {
-        super(table, POINTS_OF_INTEREST);
+    public PhotosTablePopupMenu(JTable table) {
+        super(table, PHOTOS);
     }
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-points-of-interest"));
+        menu.add(createItem("add-photos"));
+        menu.add(createItem("delete-photos"));
+        menu.add(createItem("tag-photos"));
         return menu;
     }
 }

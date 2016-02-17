@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.panels.PhotoPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -33,7 +33,7 @@ import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
- * {@link Action} that adds {@link File images} to {@link NavigationPosition}s.
+ * {@link Action} that adds {@link File images} to the photos table of the {@link PhotoPanel}s.
  *
  * @author Christian Pesch
  */
@@ -43,7 +43,7 @@ public class AddPhotosAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("add-photo"));
+        chooser.setDialogTitle(getBundle().getString("add-photos"));
         chooser.setSelectedFile(r.getAddPhotoPreference());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);

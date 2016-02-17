@@ -28,8 +28,6 @@ package slash.navigation.converter.gui.models;
 
 public interface PositionColumns {
     int DESCRIPTION_COLUMN_INDEX = 0;
-    int IMAGE_COLUMN_INDEX = 11;
-    int WAYPOINT_TYPE_COLUMN_INDEX = 12;
     int DATE_TIME_COLUMN_INDEX = 1;
     int TIME_COLUMN_INDEX = 2;
     int LONGITUDE_COLUMN_INDEX = 3;
@@ -40,4 +38,8 @@ public interface PositionColumns {
     int ELEVATION_ASCEND_COLUMN_INDEX = 8;
     int ELEVATION_DESCEND_COLUMN_INDEX = 9;
     int ELEVATION_DIFFERENCE_COLUMN_INDEX = 10;
+    int WAYPOINT_TYPE_COLUMN_INDEX = 12;
+    int IMAGE_COLUMN_INDEX = 11;
+    int EXIF_COLUMN_INDEX = 13;
+    int GPS_COLUMN_INDEX = 14;
 }

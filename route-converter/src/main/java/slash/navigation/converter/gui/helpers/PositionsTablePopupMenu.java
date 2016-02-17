@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 
 import javax.swing.*;
 
@@ -29,7 +29,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
+ * Creates a {@link JPopupMenu} for the positions table of the {@link ConvertPanel}.
  *
  * @author Christian Pesch
  */

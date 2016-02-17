@@ -17,32 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.panels.PointOfInterestPanel;
+import slash.navigation.converter.gui.models.PhotosTableColumnModel;
+import slash.navigation.gui.actions.ActionManager;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 
-import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
 
 /**
- * Creates a {@link JPopupMenu} for for the photos table of the {@link PointOfInterestPanel}.
+ * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PhotosTableColumnModel}.
  *
  * @author Christian Pesch
  */
 
-public class PointsOfInterestTablePopupMenu extends AbstractTablePopupMenu {
-
-    public PointsOfInterestTablePopupMenu(JTable table) {
-        super(table, POINTS_OF_INTEREST);
-    }
-
-    protected JPopupMenu doCreatePopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("play-voice"));
-        menu.add(createItem("delete-points-of-interest"));
-        return menu;
+public class PhotosTableHeaderMenu extends AbstractTableHeaderMenu {
+    public PhotosTableHeaderMenu(JTableHeader tableHeader, PhotosTableColumnModel columnModel, ActionManager actionManager) {
+        super(columnModel, actionManager, PHOTOS);
+        initializeShowColumn(null);
+        initializePopup(tableHeader);
     }
 }
