@@ -20,13 +20,18 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import com.bulenkov.iconloader.IconLoader;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.MissingResourceException;
+
+import static slash.navigation.base.WaypointType.Waypoint;
 
 /**
  * Renders the {@link WaypointType} column of the positions table.
@@ -39,23 +44,51 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
         super(LEFT);
     }
 
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        NavigationPosition position = BaseNavigationPosition.class.cast(value);
+
+        String key = null;
+        if (rowIndex == table.getRowCount() - 1)
+            key = "end";
+        else if (rowIndex == 0)
+            key = "start";
+        else {
+            WaypointType waypointType = getWaypointType(position);
+            if (waypointType != null && waypointType != Waypoint)
+                key = waypointType.name().toLowerCase();
+        }
+
+        Icon icon = null;
+        if (key != null)
+            icon = IconLoader.getIcon("/slash/navigation/converter/gui/waypoint-type/" + key + ".png");
+
+        label.setIcon(icon);
+        return label;
+    }
+
     protected void formatCell(JLabel label, NavigationPosition position) {
         label.setText(extractValue(position));
     }
 
     protected String extractValue(NavigationPosition position) {
         String text = "?";
-        if (position instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) position;
-            WaypointType waypointType = wgs84Position.getWaypointType();
-            if (waypointType != null) {
-                try {
-                    text = RouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase());
-                } catch (MissingResourceException e) {
-                    text = waypointType.name();
-                }
+        WaypointType waypointType = getWaypointType(position);
+        if (waypointType != null) {
+            try {
+                text = RouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase());
+            } catch (MissingResourceException e) {
+                text = waypointType.name();
             }
         }
         return text;
+    }
+
+    private WaypointType getWaypointType(NavigationPosition position) {
+        if (position instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) position;
+            return wgs84Position.getWaypointType();
+        }
+        return null;
     }
 }
