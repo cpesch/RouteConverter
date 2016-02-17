@@ -24,7 +24,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.actions.FrameAction;
@@ -69,8 +69,8 @@ public class AddPositionAction extends FrameAction {
         return new BoundingBox(asList(second, position)).getCenter();
     }
 
-    private BatchPositionAugmenter getBatchPositionAugmenter() {
-        return RouteConverter.getInstance().getBatchPositionAugmenter();
+    private PositionAugmenter getBatchPositionAugmenter() {
+        return RouteConverter.getInstance().getPositionAugmenter();
     }
 
     private NavigationPosition insertRow(int row, NavigationPosition position) {

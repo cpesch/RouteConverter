@@ -33,7 +33,17 @@ import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
 import slash.navigation.converter.gui.models.FixMapMode;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.DegreeFormatListCellRenderer;
+import slash.navigation.converter.gui.renderer.ElevationServiceListCellRenderer;
+import slash.navigation.converter.gui.renderer.FixMapModeListCellRenderer;
+import slash.navigation.converter.gui.renderer.GoogleMapsServerListCellRenderer;
+import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
+import slash.navigation.converter.gui.renderer.MapViewListCellRenderer;
+import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
+import slash.navigation.converter.gui.renderer.NumberingStrategyListCellRenderer;
+import slash.navigation.converter.gui.renderer.RoutingServiceListCellRenderer;
+import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
+import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.googlemaps.GoogleMapsServer;
 import slash.navigation.gui.Application;
@@ -55,27 +65,55 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.util.Arrays.sort;
-import static java.util.Locale.*;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.ROOT;
+import static java.util.Locale.US;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JFileChooser.*;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.common.helpers.LocaleHelper.*;
+import static slash.common.helpers.LocaleHelper.ARABIA;
+import static slash.common.helpers.LocaleHelper.CROATIA;
+import static slash.common.helpers.LocaleHelper.CZECH;
+import static slash.common.helpers.LocaleHelper.DENMARK;
+import static slash.common.helpers.LocaleHelper.NEDERLANDS;
+import static slash.common.helpers.LocaleHelper.POLAND;
+import static slash.common.helpers.LocaleHelper.PORTUGAL;
+import static slash.common.helpers.LocaleHelper.RUSSIA;
+import static slash.common.helpers.LocaleHelper.SERBIA;
+import static slash.common.helpers.LocaleHelper.SLOVAKIA;
+import static slash.common.helpers.LocaleHelper.SPAIN;
+import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
 import static slash.common.io.Transfer.getTimeZonePreference;
 import static slash.common.io.Transfer.setTimeZonePreference;
-import static slash.navigation.common.DegreeFormat.*;
-import static slash.navigation.common.NumberPattern.*;
+import static slash.navigation.common.DegreeFormat.Degrees;
+import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
+import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
+import static slash.navigation.common.NumberPattern.Description_Only;
+import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
+import static slash.navigation.common.NumberPattern.Number_Only;
+import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.common.NumberingStrategy.Relative_Position_In_Current_Selection;
-import static slash.navigation.common.UnitSystem.*;
+import static slash.navigation.common.UnitSystem.Metric;
+import static slash.navigation.common.UnitSystem.Nautic;
+import static slash.navigation.common.UnitSystem.Statute;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
-import static slash.navigation.converter.gui.models.FixMapMode.*;
-import static slash.navigation.googlemaps.GoogleMapsServer.*;
+import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
+import static slash.navigation.converter.gui.models.FixMapMode.No;
+import static slash.navigation.converter.gui.models.FixMapMode.Yes;
+import static slash.navigation.googlemaps.GoogleMapsServer.China;
+import static slash.navigation.googlemaps.GoogleMapsServer.Ditu;
+import static slash.navigation.googlemaps.GoogleMapsServer.International;
+import static slash.navigation.googlemaps.GoogleMapsServer.Uzbekistan;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
@@ -530,12 +568,6 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         textFieldElevationServicePath.setText(selected.getAbsolutePath());
-    }
-
-    private String[] getTimeZoneIds() {
-        String[] ids = TimeZone.getAvailableIDs();
-        sort(ids);
-        return ids;
     }
 
     private void close() {

@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds numbers to the selected rows of a {@link JTable}
- * with the help of a {@link BatchPositionAugmenter}.
+ * with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
@@ -39,7 +39,7 @@ public class AddNumberToPositionsAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         int[] selectedRows = r.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            r.getBatchPositionAugmenter().addNumbers(selectedRows);
+            r.getPositionAugmenter().addNumbers(selectedRows);
         }
     }
 }

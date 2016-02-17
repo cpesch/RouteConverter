@@ -92,7 +92,7 @@ public class InsertPositionFacade {
 
                 for (int j = 0; j < positions.size(); j++) {
                     int[] rows = new int[]{insertRow + j};
-                    r.getBatchPositionAugmenter().addData(rows, false, true, true, false, false);
+                    r.getPositionAugmenter().addData(rows, false, true, true, false, false);
                 }
             }
         }

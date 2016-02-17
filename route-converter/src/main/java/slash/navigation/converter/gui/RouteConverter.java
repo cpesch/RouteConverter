@@ -47,7 +47,7 @@ import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.AudioPlayer;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.converter.gui.helpers.ChecksumSender;
 import slash.navigation.converter.gui.helpers.DownloadNotifier;
 import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
@@ -504,8 +504,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
         getConvertPanel().dispose();
         getHgtFilesService().dispose();
-        if (batchPositionAugmenter != null)
-            batchPositionAugmenter.dispose();
+        if (positionAugmenter != null)
+            positionAugmenter.dispose();
         if (audioPlayer != null)
             audioPlayer.dispose();
         getDataSourceManager().dispose();
@@ -772,7 +772,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void addPhotosToPositionList(List<File> files) {
-        getPointOfInterestPanel().addPhotosToPositionList(files);
+        getPhotoPanel().addPhotosToPositionList(files);
     }
 
     public void openPositionList(List<URL> urls, boolean selectConvertPanel) {
@@ -831,13 +831,13 @@ public class RouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private BatchPositionAugmenter batchPositionAugmenter = null;
+    private PositionAugmenter positionAugmenter = null;
 
-    public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
-        if (batchPositionAugmenter == null) {
-            batchPositionAugmenter = new BatchPositionAugmenter(getPositionsView(), getPositionsModel(), getFrame());
+    public synchronized PositionAugmenter getPositionAugmenter() {
+        if (positionAugmenter == null) {
+            positionAugmenter = new PositionAugmenter(getPositionsView(), getPositionsModel(), getFrame());
         }
-        return batchPositionAugmenter;
+        return positionAugmenter;
     }
 
     private AudioPlayer audioPlayer = null;
@@ -985,6 +985,8 @@ public class RouteConverter extends SingleFrameApplication {
         return tabInitializer.getPointsOfInterestPanel();
     }
 
+    private PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }
+
     private BrowsePanel getBrowsePanel() {
         return tabInitializer.getBrowsePanel();
     }
@@ -1114,6 +1116,11 @@ public class RouteConverter extends SingleFrameApplication {
         private synchronized PointOfInterestPanel getPointsOfInterestPanel() {
             initialize(pointOfInterestPanel);
             return (PointOfInterestPanel) initialized.get(pointOfInterestPanel);
+        }
+
+        private synchronized PhotoPanel getPhotoPanel() {
+            initialize(photoPanel);
+            return (PhotoPanel) initialized.get(photoPanel);
         }
 
         private synchronized BrowsePanel getBrowsePanel() {

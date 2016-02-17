@@ -177,7 +177,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
             int[] rows = new int[]{insertRow};
             r.getPositionsSelectionModel().setSelectedPositions(rows, true);
-            r.getBatchPositionAugmenter().addData(rows, false, true, true, true, false);
+            r.getPositionAugmenter().addData(rows, false, true, true, true, false);
         }
     }
 

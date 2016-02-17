@@ -41,7 +41,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongit
 public class MapViewCallbackImpl implements MapViewCallback {
 
     public String createDescription(int index, String description) {
-        return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
+        return RouteConverter.getInstance().getPositionAugmenter().createDescription(index, description);
     }
 
     public String createCoordinates(Double longitude, Double latitude) {
@@ -49,7 +49,7 @@ public class MapViewCallbackImpl implements MapViewCallback {
     }
 
     public void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
+        RouteConverter.getInstance().getPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }
 
     public void startBrowser(String url) {

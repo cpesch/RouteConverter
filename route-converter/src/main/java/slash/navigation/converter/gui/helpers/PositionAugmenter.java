@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
@@ -66,15 +65,14 @@ import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
- * Helps to augment a batch of positions with geocoded coordinates, elevation,
- * position number for its description, postal address, populated place and speed
- * information.
+ * Helps to augment a positions with coordinates, elevation, position number for its description,
+ * postal address, populated place and speed information.
  *
  * @author Christian Pesch
  */
 
-public class BatchPositionAugmenter {
-    private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
+public class PositionAugmenter {
+    private static final Logger log = Logger.getLogger(PositionAugmenter.class.getName());
 
     private final JFrame frame;
     private final JTable positionsView;
@@ -87,7 +85,7 @@ public class BatchPositionAugmenter {
     private static final Object notificationMutex = new Object();
     private boolean running = true;
 
-    public BatchPositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame) {
+    public PositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame) {
         this.positionsView = positionsView;
         this.positionsModel = positionsModel;
         this.frame = frame;
