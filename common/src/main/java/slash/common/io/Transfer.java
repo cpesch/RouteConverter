@@ -79,6 +79,10 @@ public class Transfer {
         return floor(number * 10000.0) / 10000.0;
     }
 
+    public static long roundMillisecondsToSecondPrecision(long number) {
+        return (number / 1000) * 1000;
+    }
+
     public static int ceiling(int dividend, int divisor, boolean roundUpToAtLeastOne) {
         double fraction = (double) dividend / divisor;
         double result = ceil(fraction);

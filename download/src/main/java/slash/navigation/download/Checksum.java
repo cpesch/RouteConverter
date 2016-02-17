@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static slash.common.io.Files.generateChecksum;
+import static slash.common.io.Transfer.roundMillisecondsToSecondPrecision;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -74,7 +75,7 @@ public class Checksum {
 
     public static Checksum createChecksum(File file) throws IOException {
         return file != null && file.exists() ?
-                new Checksum(fromMillis(file.lastModified()), file.length(), generateChecksum(file)) : null;
+                new Checksum(fromMillis(roundMillisecondsToSecondPrecision(file.lastModified())), file.length(), generateChecksum(file)) : null;
     }
 
     public boolean equals(Object o) {
