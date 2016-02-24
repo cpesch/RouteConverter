@@ -66,7 +66,7 @@ public class DownloadTableModel extends AbstractTableModel {
         return downloads.get(rowIndex);
     }
 
-    Download getDownload(String url) {
+    public Download getDownload(String url) {
         for(Download download : downloads) {
             if(download.getUrl().equals(url))
                 return download;

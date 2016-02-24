@@ -202,7 +202,7 @@ public class MapManager {
             downloadableThemesModel.addOrUpdateTheme(remoteTheme);
     }
 
-    public void queueForDownload(List<? extends RemoteResource> resources) throws IOException {
+    public void queueForDownload(List<? extends RemoteResource> resources) {
         List<Download> downloads = new ArrayList<>();
         for (RemoteResource resource : resources) {
             Downloadable downloadable = resource.getDownloadable();

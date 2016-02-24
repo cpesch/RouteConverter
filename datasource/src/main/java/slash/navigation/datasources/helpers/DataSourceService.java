@@ -86,6 +86,19 @@ public class DataSourceService {
         return null;
     }
 
+    public Downloadable getDownloadable(String url) {
+        for (DataSource dataSource : dataSources) {
+            if(!url.startsWith(dataSource.getBaseUrl()))
+                continue;
+
+            String uri = url.substring(dataSource.getBaseUrl().length());
+            Downloadable downloadable = dataSource.getDownloadable(uri);
+            if (downloadable != null)
+                return downloadable;
+        }
+        return null;
+    }
+
     public Downloadable getDownloadable(File file) throws IOException {
         String filePath = file.getCanonicalPath();
 

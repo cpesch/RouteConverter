@@ -257,11 +257,20 @@ public class DownloadManager {
         return queue(new Download(description, url, action, file, fragments), true);
     }
 
-    public Download addToQueue(String description, String url, Action action, FileAndChecksum file,
-                               List<FileAndChecksum> fragments) throws IOException {
-        Download download = new Download(description, url, action, file, fragments);
-        download.setState(Succeeded);
-        return queue(download, false);
+    public Download addOrUpdateInQueue(String description, String url, Action action, FileAndChecksum file,
+                                       List<FileAndChecksum> fragments) {
+        Download queued = model.getDownload(url);
+        if(queued != null) {
+            queued.setAction(action);
+            queued.setFile(file);
+            queued.setFragments(fragments);
+            model.updateDownload(queued);
+            return queued;
+        } else {
+            Download download = new Download(description, url, action, file, fragments);
+            download.setState(Succeeded);
+            return queue(download, false);
+        }
     }
 
     public void scanForOutdatedFilesInQueue() throws IOException {

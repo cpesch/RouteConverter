@@ -44,10 +44,10 @@ import static slash.navigation.download.State.*;
 public class Download {
     private final String description, url;
     private String eTag;
-    private final Action action;
-    private final FileAndChecksum file;
+    private Action action;
+    private FileAndChecksum file;
+    private List<FileAndChecksum> fragments;
     private final File tempFile;
-    private final List<FileAndChecksum> fragments;
 
     private State state;
     private long processedBytes;
@@ -57,9 +57,9 @@ public class Download {
                     List<FileAndChecksum> fragments, String eTag, State state, File tempFile) {
         this.description = description;
         this.url = url;
-        this.action = action;
-        this.file = file;
-        this.fragments = fragments;
+        setAction(action);
+        setFile(file);
+        setFragments(fragments);
         setETag(eTag);
         this.state = state;
         this.tempFile = tempFile;
@@ -93,12 +93,24 @@ public class Download {
         return action;
     }
 
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
     public FileAndChecksum getFile() {
         return file;
     }
 
+    public void setFile(FileAndChecksum file) {
+        this.file = file;
+    }
+
     public List<FileAndChecksum> getFragments() {
         return fragments;
+    }
+
+    public void setFragments(List<FileAndChecksum> fragments) {
+        this.fragments = fragments;
     }
 
     public String getETag() {
