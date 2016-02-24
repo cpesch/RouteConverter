@@ -35,6 +35,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 
+import static java.io.File.separator;
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.Transfer.formatXMLTime;
@@ -223,5 +225,9 @@ public class DataSourcesUtil {
         if (inputStream != null)
             result.setSha1(generateChecksum(inputStream));
         return result;
+    }
+
+    public static String asMetaDataComparablePath(File file) throws IOException {
+        return file.getCanonicalPath().replace(separator, "/");
     }
 }

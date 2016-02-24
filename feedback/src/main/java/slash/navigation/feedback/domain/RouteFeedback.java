@@ -20,8 +20,16 @@
 
 package slash.navigation.feedback.domain;
 
-import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Fragment;
+import slash.navigation.datasources.Theme;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.rest.Credentials;
@@ -44,7 +52,13 @@ import static java.util.Locale.getDefault;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.DataSourceManager.V1;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksums;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asMetaDataComparablePath;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -152,18 +166,20 @@ public class RouteFeedback {
         return false;
     }
 
-    private Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) {
+    private Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) throws IOException {
         Set<FileAndChecksum> result = new HashSet<>();
         for (List<FileAndChecksum> fileAndChecksums : fileAndChecksumMap.values()) {
             for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
-                if (fileAndChecksum.getFile().getPath().contains(fragment.getKey()))
+
+                String filePath = asMetaDataComparablePath(fileAndChecksum.getFile());
+                if (filePath.contains(fragment.getKey()))
                     result.add(fileAndChecksum);
             }
         }
         return result;
     }
 
-    private List<FragmentType> createFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) {
+    private List<FragmentType> createFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) throws IOException {
         if (fragments == null)
             return null;
 

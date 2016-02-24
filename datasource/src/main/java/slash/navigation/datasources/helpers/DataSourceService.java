@@ -39,6 +39,7 @@ import java.util.List;
 
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.generateChecksum;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asMetaDataComparablePath;
 
 /**
  * Encapsulates access to a DataSources XML.
@@ -100,7 +101,7 @@ public class DataSourceService {
     }
 
     public Downloadable getDownloadable(File file) throws IOException {
-        String filePath = file.getCanonicalPath();
+        String filePath = asMetaDataComparablePath(file);
 
         for (DataSource dataSource : dataSources) {
             File directory = getApplicationDirectory(dataSource.getDirectory());
