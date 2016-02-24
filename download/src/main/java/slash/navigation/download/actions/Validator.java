@@ -69,10 +69,11 @@ public class Validator {
         if (existsTargets != null)
             return;
 
+        existsTargets = true;
+
         if (!download.getFile().getFile().exists()) {
             log.warning(format("%s does not exist", download.getFile()));
             existsTargets = false;
-            return;
         }
 
         List<FileAndChecksum> fragments = download.getFragments();
@@ -81,16 +82,9 @@ public class Validator {
                 if (!fragment.getFile().exists()) {
                     log.warning(format("%s does not exist", fragment));
                     existsTargets = false;
-                    return;
                 }
             }
         }
-
-        log.info(format("%s exists", download.getFile().getFile()));
-        if (fragments != null)
-            for (FileAndChecksum fragment : fragments)
-                log.info(format("%s exists", fragment.getFile()));
-        existsTargets = true;
     }
 
     public void calculateChecksums() throws IOException {
