@@ -170,6 +170,7 @@ import static slash.common.io.Files.toUrls;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isEclipseSWT;
 import static slash.common.system.Platform.isJavaFX7;
 import static slash.common.system.Platform.isJavaFX8;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -235,7 +236,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
-    private static final String SEARCH_POSITION_PREFERENCE = "searchPosition";
+    private static final String FIND_PLACE_PREFERENCE = "findPlace";
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
     private static final String PROFILE_DIVIDER_LOCATION_PREFERENCE = "profileDividerLocation";
 
@@ -468,7 +469,7 @@ public class RouteConverter extends SingleFrameApplication {
             location = 300;
         }
         mapSplitPane.setDividerLocation(location);
-        log.info("Initialized map divider to " + location);
+        log.fine("Initialized map divider to " + location);
     }
 
     public MapView getMapView() {
@@ -540,12 +541,12 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.putDouble(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
-    public String getSearchPositionPreference() {
-        return preferences.get(SEARCH_POSITION_PREFERENCE, "");
+    public String getFindPlacePreference() {
+        return preferences.get(FIND_PLACE_PREFERENCE, "");
     }
 
-    public void setSearchPositionPreference(String searchPositionPreference) {
-        preferences.put(SEARCH_POSITION_PREFERENCE, searchPositionPreference);
+    public void setFindPlacePreference(String searchPositionPreference) {
+        preferences.put(FIND_PLACE_PREFERENCE, searchPositionPreference);
     }
 
     public Credentials getCredentials() {
@@ -912,7 +913,8 @@ public class RouteConverter extends SingleFrameApplication {
         } else if (isJavaFX7()) {
             result.add(JavaFX7);
         }
-        result.add(EclipseSWT);
+        if (!isEclipseSWT())
+            result.add(EclipseSWT);
         return result;
     }
 
@@ -1173,7 +1175,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     getMapView().resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.fine("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
