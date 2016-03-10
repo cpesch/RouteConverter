@@ -94,7 +94,7 @@ public class PositionHelper {
         return degreeFormat.latitudeToDegrees(latitude);
     }
 
-    private static String formatSpeed(Double speed) {
+    public static String formatSpeed(Double speed) {
         if (speed == null)
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();

@@ -29,7 +29,7 @@ import java.io.File;
 
 import static java.util.Arrays.asList;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JFileChooser.FILES_AND_DIRECTORIES;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
@@ -45,7 +45,7 @@ public class AddPhotosAction extends FrameAction {
         JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(getBundle().getString("add-photos"));
         chooser.setSelectedFile(r.getAddPhotoPreference());
-        chooser.setFileSelectionMode(FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_AND_DIRECTORIES);
         chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(getFrame());
         if (open != APPROVE_OPTION)
@@ -56,6 +56,6 @@ public class AddPhotosAction extends FrameAction {
             return;
 
         r.setAddPhotoPreference(selected[0]);
-        r.addPhotosToPositionList(asList(selected));
+        r.getGeoTagger().addPhotos(asList(selected));
     }
 }

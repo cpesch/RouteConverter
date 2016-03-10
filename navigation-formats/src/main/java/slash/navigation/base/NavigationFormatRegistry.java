@@ -39,7 +39,7 @@ import slash.navigation.gpx.GarbleGpx10Format;
 import slash.navigation.gpx.GarbleGpx11Format;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.image.ImageFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
@@ -149,7 +149,7 @@ public class NavigationFormatRegistry {
         addFormat(NmnRouteFormat.class);
         addFormat(ApeMapFormat.class);
         addFormat(ZipFormat.class);
-        addFormat(ImageFormat.class);
+        addFormat(PhotoFormat.class);
 
         // GPSBabel-based formats
         addFormat(GarminMapSource6Format.class);

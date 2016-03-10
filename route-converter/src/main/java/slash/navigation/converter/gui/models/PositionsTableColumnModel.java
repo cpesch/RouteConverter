@@ -28,7 +28,7 @@ import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.ImageColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.PhotoColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
@@ -45,7 +45,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_AS
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
@@ -63,7 +63,7 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         super(POSITIONS);
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
-        predefineColumn(IMAGE_COLUMN_INDEX, "image", null, false, new ImageColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(PHOTO_COLUMN_INDEX, "photo", null, false, new PhotoColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer, new DateTimeComparator());
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);

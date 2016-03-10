@@ -47,15 +47,16 @@ import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.AudioPlayer;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.converter.gui.helpers.ChecksumSender;
 import slash.navigation.converter.gui.helpers.DownloadNotifier;
 import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
 import slash.navigation.converter.gui.helpers.FrameMenu;
+import slash.navigation.converter.gui.helpers.GeoTagger;
 import slash.navigation.converter.gui.helpers.GoogleDirectionsService;
 import slash.navigation.converter.gui.helpers.InsertPositionFacade;
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
@@ -64,10 +65,7 @@ import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.panels.BrowsePanel;
@@ -167,6 +165,7 @@ import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toUrls;
+import static slash.common.io.Transfer.getTimeZonePreference;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
@@ -225,7 +224,6 @@ public class RouteConverter extends SingleFrameApplication {
         return "Online";
     }
 
-    public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.16";
     private static final String MAP_VIEW_PREFERENCE = "mapView";
     private static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
     private static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
@@ -237,16 +235,20 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
     private static final String FIND_PLACE_PREFERENCE = "findPlace";
+    private static final String PHOTO_TIMEZONE_PREFERENCE = "photoTimeZone";
+
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
     private static final String PROFILE_DIVIDER_LOCATION_PREFERENCE = "profileDividerLocation";
 
-    private static final String DEBUG_PREFERENCE = "debug";
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String ADD_PHOTO_PREFERENCE = "addPhoto";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
-    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.16";
+
+    private static final String DEBUG_PREFERENCE = "debug";
+    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.18";
+    public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.18";
 
     private NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
     private RouteServiceOperator routeServiceOperator;
@@ -440,8 +442,8 @@ public class RouteConverter extends SingleFrameApplication {
             mapView.addMapViewListener(calculatedDistanceNotifier);
         }
 
-        getMapView().initialize(getPositionsModel(),
-                getPositionsSelectionModel(),
+        getMapView().initialize(getConvertPanel().getPositionsModel(),
+                getConvertPanel().getPositionsSelectionModel(),
                 getConvertPanel().getCharacteristicsModel(),
                 getMapViewCallback(),
                 getShowAllPositionsAfterLoading(),
@@ -480,8 +482,8 @@ public class RouteConverter extends SingleFrameApplication {
         invokeLater(new Runnable() {
             public void run() {
                 profileView = new ProfileView();
-                profileView.initialize(getPositionsModel(),
-                        getPositionsSelectionModel(),
+                profileView.initialize(getConvertPanel().getPositionsModel(),
+                        getConvertPanel().getPositionsSelectionModel(),
                         getUnitSystemModel(),
                         getProfileModeModel());
                 profilePanel.add(profileView.getComponent(), PROFILE_PANEL_CONSTRAINTS);
@@ -509,6 +511,8 @@ public class RouteConverter extends SingleFrameApplication {
             positionAugmenter.dispose();
         if (audioPlayer != null)
             audioPlayer.dispose();
+        if (geoTagger != null)
+            geoTagger.dispose();
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
         super.shutdown();
@@ -764,18 +768,6 @@ public class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public void addFilesToCatalog(List<File> files) {
-        getBrowsePanel().addFilesToCatalog(files);
-    }
-
-    public void addUrlToCatalog(String string) {
-        getBrowsePanel().addUrlToCatalog(string);
-    }
-
-    public void addPhotosToPositionList(List<File> files) {
-        getPhotoPanel().addPhotosToPositionList(files);
-    }
-
     public void openPositionList(List<URL> urls, boolean selectConvertPanel) {
         if (selectConvertPanel)
             tabbedPane.setSelectedComponent(convertPanel);
@@ -787,7 +779,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void revertPositions() {
-        getPositionsModel().revert();
+        getConvertPanel().getPositionsModel().revert();
         getConvertPanel().clearSelection();
     }
 
@@ -836,7 +828,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
-            positionAugmenter = new PositionAugmenter(getPositionsView(), getPositionsModel(), getFrame());
+            positionAugmenter = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(), getFrame());
         }
         return positionAugmenter;
     }
@@ -850,12 +842,25 @@ public class RouteConverter extends SingleFrameApplication {
         return audioPlayer;
     }
 
-    protected MapViewCallback getMapViewCallback() {
-        return new MapViewCallbackImpl();
+    private GeoTagger geoTagger = null;
+
+    public GeoTagger getGeoTagger() {
+        if (geoTagger == null) {
+            geoTagger = new GeoTagger(getPhotoPanel().getPhotosView(), getPhotoPanel().getPhotosModel(), getFrame());
+        }
+        return geoTagger;
     }
 
-    public JTable getPositionsView() {
-        return getConvertPanel().getPositionsView();
+    public String getPhotoTimeZone() {
+        return preferences.get(PHOTO_TIMEZONE_PREFERENCE, getTimeZonePreference());
+    }
+
+    public void setPhotoTimeZone(String timeZoneId) {
+        preferences.put(PHOTO_TIMEZONE_PREFERENCE, timeZoneId);
+    }
+
+    protected MapViewCallback getMapViewCallback() {
+        return new MapViewCallbackImpl();
     }
 
     public int selectPositionsWithinDistanceToPredecessor(double distance) {
@@ -939,20 +944,6 @@ public class RouteConverter extends SingleFrameApplication {
         getPreferences().put(MAP_VIEW_PREFERENCE, mapView.name());
     }
 
-    // profile view related helpers
-
-    public PositionsModel getPositionsModel() {
-        return getConvertPanel().getFormatAndRoutesModel().getPositionsModel();
-    }
-
-    public PositionsSelectionModel getPositionsSelectionModel() {
-        return getConvertPanel().getPositionsSelectionModel();
-    }
-
-    private RecentUrlsModel getRecentUrlsModel() {
-        return getConvertPanel().getRecentUrlsModel();
-    }
-
     // tab related helpers
 
     public boolean isConvertPanelSelected() {
@@ -979,17 +970,17 @@ public class RouteConverter extends SingleFrameApplication {
         return tabbedPane.getSelectedComponent().equals(browsePanel);
     }
 
-    private ConvertPanel getConvertPanel() {
+    public ConvertPanel getConvertPanel() {
         return tabInitializer.getConvertPanel();
     }
 
-    private PointOfInterestPanel getPointOfInterestPanel() {
+    public PointOfInterestPanel getPointOfInterestPanel() {
         return tabInitializer.getPointsOfInterestPanel();
     }
 
-    private PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }
+    public PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }
 
-    private BrowsePanel getBrowsePanel() {
+    public BrowsePanel getBrowsePanel() {
         return tabInitializer.getBrowsePanel();
     }
 
@@ -1273,7 +1264,7 @@ public class RouteConverter extends SingleFrameApplication {
         new XAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new YAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
-        new ReopenMenuSynchronizer(getContext().getMenuBar(), getRecentUrlsModel());
+        new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel().getRecentUrlsModel());
     }
 
     private void initializeHelp() {

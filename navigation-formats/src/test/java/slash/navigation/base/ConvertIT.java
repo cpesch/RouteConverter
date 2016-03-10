@@ -36,7 +36,7 @@ import slash.navigation.gopal.GoPal7RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.image.ImageFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
@@ -831,7 +831,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertImageToNokiaLandmarkExchange() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.jpg", new ImageFormat(), new NokiaLandmarkExchangeFormat());
+        convertRoundtrip(TEST_PATH + "from.jpg", new PhotoFormat(), new NokiaLandmarkExchangeFormat());
     }
 
     @Test

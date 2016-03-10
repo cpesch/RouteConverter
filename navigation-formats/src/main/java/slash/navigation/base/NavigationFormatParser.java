@@ -351,6 +351,10 @@ public class NavigationFormatParser {
         postProcessRoute(routeToWrite, format, duplicateFirstPosition);
     }
 
+    public void write(BaseRoute route, NavigationFormat format, File target) throws IOException {
+        write(route, format, false, false, null, target);
+    }
+
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
                       boolean ignoreMaximumPositionCount,

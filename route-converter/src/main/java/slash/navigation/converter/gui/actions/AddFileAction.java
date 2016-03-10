@@ -57,6 +57,6 @@ public class AddFileAction extends FrameAction {
             return;
 
         r.setUploadRoutePreference(selected[0]);
-        r.addFilesToCatalog(asList(selected));
+        r.getBrowsePanel().addFilesToCatalog(asList(selected));
     }
 }

@@ -23,6 +23,7 @@ package slash.common.type;
 import org.junit.Test;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertCalendarEquals;
@@ -59,4 +60,16 @@ public class CompactCalendarTest {
         assertFalse(early.before(early));
         assertFalse(early.after(early));
     }
+
+    @Test
+    public void testAsUTCTimeInTimeZone() {
+        CompactCalendar calendar = fromMillis(1000000);
+
+        CompactCalendar inTimeZone = calendar.asUTCTimeInTimeZone(TimeZone.getTimeZone("GMT+2"));
+
+        assertEquals(calendar.getCalendar().getTimeInMillis(), 1000000);
+        assertEquals(inTimeZone.getCalendar().getTimeInMillis(), 1000000 + 2 * 60 * 60 * 1000);
+        assertEquals("UTC", inTimeZone.getTimeZoneId());
+    }
+
 }

@@ -17,20 +17,14 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.columbus;
-
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.gpx.GpxFormat;
-import slash.navigation.image.ImageFormat;
+package slash.navigation.photo;
 
 /**
- * A {@link NavigationFormatRegistry} that just uses the {@link ImageFormat}.
+ * Enumeration of the state a {@link PhotoPosition} can have.
  *
  * @author Christian Pesch
  */
-public class ImageNavigationFormatRegistry extends NavigationFormatRegistry {
-    protected boolean includeReadFormat(NavigationFormat format) {
-        return format instanceof ImageFormat;
-    }
+
+public enum TagState {
+    Tagged, Taggable, NotTaggable;
 }

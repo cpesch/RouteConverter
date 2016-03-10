@@ -39,7 +39,7 @@ public interface PositionColumns {
     int ELEVATION_DESCEND_COLUMN_INDEX = 9;
     int ELEVATION_DIFFERENCE_COLUMN_INDEX = 10;
     int WAYPOINT_TYPE_COLUMN_INDEX = 12;
-    int IMAGE_COLUMN_INDEX = 11;
+    int PHOTO_COLUMN_INDEX = 11;
     int EXIF_COLUMN_INDEX = 13;
     int GPS_COLUMN_INDEX = 14;
 }

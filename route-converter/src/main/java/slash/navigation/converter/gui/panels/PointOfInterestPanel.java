@@ -22,9 +22,6 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.base.WaypointType;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
@@ -33,6 +30,7 @@ import slash.navigation.converter.gui.helpers.PointsOfInterestTablePopupMenu;
 import slash.navigation.converter.gui.models.FilteringPositionsModel;
 import slash.navigation.converter.gui.models.PointsOfInterestTableColumnModel;
 import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.converter.gui.predicates.PointOfInterestPositionPredicate;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
@@ -44,20 +42,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.*;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
-import static java.util.Arrays.asList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.base.WaypointType.Photo;
-import static slash.navigation.base.WaypointType.PointOfInterest;
-import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -68,7 +61,7 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public class PointOfInterestPanel implements PanelInTab {
-    private static final int ROW_HEIGHT_FOR_IMAGE_COLUMN = 200;
+    private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
     private int defaultTableRowHeight;
 
     private JPanel pointsOfInterestPanel;
@@ -86,14 +79,10 @@ public class PointOfInterestPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        positionsModel = new FilteringPositionsModel(r.getPositionsModel(), new FilteringPositionsModel.FilterPredicate() {
-            private final List<WaypointType> POINTS_OF_INTEREST_WAYPOINT_TYPES = asList(Photo, PointOfInterest, Voice);
-
-            public boolean shouldInclude(NavigationPosition position) {
-                return position instanceof Wgs84Position &&
-                        POINTS_OF_INTEREST_WAYPOINT_TYPES.contains(((Wgs84Position) position).getWaypointType());
-            }
-        });
+        positionsModel = new FilteringPositionsModel(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
+        tablePointsOfInterest.setModel(getPositionsModel());
+        PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel();
+        tablePointsOfInterest.setColumnModel(tableColumnModel);
 
         tablePointsOfInterest.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -113,10 +102,6 @@ public class PointOfInterestPanel implements PanelInTab {
                 handlePositionsUpdate();
             }
         });
-
-        tablePointsOfInterest.setModel(getPositionsModel());
-        PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel();
-        tablePointsOfInterest.setColumnModel(tableColumnModel);
 
         defaultTableRowHeight = tablePointsOfInterest.getRowHeight();
         tableColumnModel.addChangeListener(new ChangeListener() {
@@ -188,8 +173,8 @@ public class PointOfInterestPanel implements PanelInTab {
     }
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
-        if (column.getModelIndex() == IMAGE_COLUMN_INDEX)
-            tablePointsOfInterest.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_IMAGE_COLUMN : defaultTableRowHeight);
+        if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
+            tablePointsOfInterest.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : defaultTableRowHeight);
     }
 
     /**
@@ -259,4 +244,5 @@ public class PointOfInterestPanel implements PanelInTab {
     public JComponent $$$getRootComponent$$$() {
         return pointsOfInterestPanel;
     }
+
 }

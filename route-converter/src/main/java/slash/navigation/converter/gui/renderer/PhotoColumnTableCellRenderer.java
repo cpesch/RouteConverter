@@ -17,31 +17,32 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.models;
 
-import slash.navigation.common.NavigationPosition;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.converter.gui.models.ImageAndText;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
- * Combines the image and description of a {@link NavigationPosition}
+ * Renders the photo column of the photos table.
  *
  * @author Christian Pesch
  */
-public class ImageAndDescription {
-    private final ImageIcon image;
-    private final String description;
 
-    public ImageAndDescription(ImageIcon image, String description) {
-        this.image = image;
-        this.description = description;
-    }
+public class PhotoColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
+        JLabel label = JLabel.class.cast(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex));
+        ImageAndText imageAndText = ImageAndText.class.cast(value);
 
-    public ImageIcon getImage() {
-        return image;
-    }
-
-    public String getDescription() {
-        return description;
+        label.setToolTipText(imageAndText.getText());
+        ImageIcon image = imageAndText.getImage();
+        label.setIcon(image);
+        if (image != null)
+            label.setText(null);
+        else
+            label.setText(imageAndText.getText());
+        return label;
     }
 }

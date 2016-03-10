@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.comparators.DescriptionComparator;
 import slash.navigation.converter.gui.renderer.DateTimeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.ImageColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.PhotoColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
@@ -36,7 +36,7 @@ import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTERES
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.WAYPOINT_TYPE_COLUMN_INDEX;
@@ -54,7 +54,7 @@ public class PointsOfInterestTableColumnModel extends AbstractTableColumnModel {
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(WAYPOINT_TYPE_COLUMN_INDEX, "waypoint-type", getMaxWidth(POINTS_OF_INTEREST, 10), true, new WaypointTypeColumnTableCellEditor(), headerRenderer);
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
-        predefineColumn(IMAGE_COLUMN_INDEX, "image", null, false, new ImageColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(PHOTO_COLUMN_INDEX, "photo", null, false, new PhotoColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DATE_TIME_COLUMN_INDEX, "date", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
         predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 84, true, new LatitudeColumnTableCellEditor(), headerRenderer);

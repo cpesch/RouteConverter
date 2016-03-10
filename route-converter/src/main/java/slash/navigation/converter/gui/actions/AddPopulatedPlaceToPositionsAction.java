@@ -37,9 +37,6 @@ import java.awt.event.ActionListener;
 public class AddPopulatedPlaceToPositionsAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        int[] selectedRows = r.getPositionsView().getSelectedRows();
-        if (selectedRows.length > 0) {
-            r.getPositionAugmenter().addPopulatedPlaces(selectedRows);
-        }
+        r.getPositionAugmenter().addPopulatedPlaces();
     }
 }
