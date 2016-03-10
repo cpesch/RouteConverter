@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.image;
+package slash.navigation.photo;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
@@ -30,6 +30,7 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.apache.commons.imaging.formats.tiff.TiffDirectory;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata.Directory;
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import slash.common.type.CompactCalendar;
@@ -67,6 +68,12 @@ import static java.util.Calendar.YEAR;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_DIGITIZED;
 import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXIF_IMAGE_LENGTH;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXIF_IMAGE_WIDTH;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXPOSURE_TIME;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FLASH;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FNUMBER;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FOCAL_LENGTH;
 import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_USER_COMMENT;
 import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE;
 import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE_REF;
@@ -105,14 +112,16 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 import static slash.navigation.common.UnitConversion.statuteMilesToKiloMeter;
+import static slash.navigation.photo.TagState.NotTaggable;
+import static slash.navigation.photo.TagState.Tagged;
 
 /**
- * Reads a route with a position from Image (.jpg) files with embedded EXIF metadata.
+ * Reads a route with a position from Photo (.jpg) files with embedded EXIF and GPS metadata.
  *
  * @author Christian Pesch
  */
-public class ImageFormat extends SimpleFormat<Wgs84Route> {
-    private static final Logger log = Logger.getLogger(ImageFormat.class.getName());
+public class PhotoFormat extends SimpleFormat<Wgs84Route> {
+    private static final Logger log = Logger.getLogger(PhotoFormat.class.getName());
     private static final String DATE_FORMAT = "yyyy:MM:dd";
     private static final String DATE_TIME_FORMAT = "yyyy:MM:dd HH:mm:ss";
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
@@ -120,7 +129,7 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
     private static final int READ_BUFFER_SIZE = 32 * 1024;
 
     public String getName() {
-        return "Image (" + getExtension() + ")";
+        return "Photo (" + getExtension() + ")";
     }
 
     public String getExtension() {
@@ -162,7 +171,7 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
         if(size == null)
             return;
 
-        Wgs84Position position = new Wgs84Position(null, null, null, null, startDate, "No EXIF data");
+        PhotoPosition position = new PhotoPosition(NotTaggable, startDate, "No EXIF data", null);
 
         bufferedSource.reset();
         ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
@@ -173,16 +182,14 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
             for (Directory directory : directories)
                 log.info("Reading EXIF directory " + directory);
 
-            String userComment = parseExifUsercomment(tiffImageMetadata);
-            CompactCalendar time = parseExifTime(tiffImageMetadata, startDate);
-            position = parsePosition(tiffImageMetadata, userComment, time);
+            extendPosition(position, tiffImageMetadata, startDate);
         }
 
         bufferedSource.reset();
         File image = extractToTempFile(bufferedSource);
         position.setOrigin(image);
         position.setWaypointType(Photo);
-        context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<>(singletonList(position))));
+        context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<Wgs84Position>(singletonList(position))));
     }
 
     private TiffImageMetadata extractTiffImageMetadata(ImageMetadata metadata) {
@@ -195,26 +202,63 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private File extractToTempFile(InputStream inputStream) throws IOException {
-        File temp = createTempFile("image", ".jpg", getTemporaryDirectory());
+        File temp = createTempFile("photo", ".jpg", getTemporaryDirectory());
         temp.deleteOnExit();
         copyAndClose(inputStream, new FileOutputStream(temp));
         return temp;
     }
 
-    private String parseExifUsercomment(TiffImageMetadata metadata) throws ImageReadException {
+    private String parseRoot(TiffImageMetadata metadata, TagInfo tag) throws ImageReadException {
+        TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
+        return rootDirectory != null ? trim((String) rootDirectory.getFieldValue(tag)) : null;
+    }
+
+    private String parseMake(TiffImageMetadata metadata) throws ImageReadException {
+        return parseRoot(metadata, TIFF_TAG_MAKE);
+    }
+
+    private String parseModel(TiffImageMetadata metadata) throws ImageReadException {
+        return parseRoot(metadata, TIFF_TAG_MODEL);
+    }
+
+    private CompactCalendar parseDateTime(TiffImageMetadata metadata) throws ImageReadException {
+        return parseDate(parseRoot(metadata, TIFF_TAG_DATE_TIME), DATE_TIME_FORMAT);
+    }
+
+    private String parseExif(TiffImageMetadata metadata, TagInfo tag) throws ImageReadException {
+        TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
+        return exifDirectory != null ? trim((String) exifDirectory.getFieldValue(tag)) : null;
+    }
+
+    private Integer parseExifInteger(TiffImageMetadata metadata, TagInfo tag) throws ImageReadException {
+        TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
+        if(exifDirectory == null)
+            return null;
+        Object fieldValue = exifDirectory.getFieldValue(tag);
+        return fieldValue != null ? new Integer(fieldValue.toString()) : null;
+    }
+
+    private RationalNumber parseExifRationalNumber(TiffImageMetadata metadata, TagInfo tag) throws ImageReadException {
+        TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
+        if(exifDirectory == null)
+            return null;
+        return (RationalNumber) exifDirectory.getFieldValue(tag);
+    }
+
+    private String parseUserComment(TiffImageMetadata metadata) throws ImageReadException {
         TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
         if (exifDirectory != null) {
-            String userComment = trim((String) exifDirectory.getFieldValue(EXIF_TAG_USER_COMMENT));
+            String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
             if (userComment != null)
                 return userComment;
         }
 
         TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
         if (rootDirectory != null) {
-            String make = trim((String) rootDirectory.getFieldValue(TIFF_TAG_MAKE));
-            String model = trim((String) rootDirectory.getFieldValue(TIFF_TAG_MODEL));
-            CompactCalendar dateTime = parseDate((String) rootDirectory.getFieldValue(TIFF_TAG_DATE_TIME), DATE_TIME_FORMAT);
-            return trim((make != null ? make : "") + " " + (model != null ? model : "") + " Image" + (dateTime != null ? " from " + formatDate(dateTime) : ""));
+            String make = parseMake(metadata);
+            String model = parseModel(metadata);
+            CompactCalendar dateTime = parseDateTime(metadata);
+            return trim((make != null ? make : "") + " " + (model != null ? model : "") + " Photo" + (dateTime != null ? " from " + formatDate(dateTime) : ""));
         }
         return "GPS";
     }
@@ -223,9 +267,9 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
         String dateString = null;
         TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
         if (exifDirectory != null) {
-            dateString = (String) exifDirectory.getFieldValue(EXIF_TAG_DATE_TIME_ORIGINAL);
+            dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_ORIGINAL);
             if (dateString == null)
-                dateString = (String) exifDirectory.getFieldValue(EXIF_TAG_DATE_TIME_DIGITIZED);
+                dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_DIGITIZED);
         }
         TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
         if (rootDirectory != null && dateString == null)
@@ -293,26 +337,21 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
         return dop != null ? dop.doubleValue() : null;
     }
 
-    private Wgs84Position parsePosition(TiffImageMetadata metadata, String description, CompactCalendar startDate) throws ImageReadException {
-        Double altitude = null, speed = null;
-        CompactCalendar time = startDate;
-        TiffDirectory gpsDirectory = metadata.findDirectory(DIRECTORY_TYPE_GPS);
-        if (gpsDirectory != null) {
-            altitude = parseAltitude(gpsDirectory);
-            speed = parseSpeed(gpsDirectory);
-            time = parseGPSTime(gpsDirectory, time);
-        }
-
-        Double longitude = null, latitude = null;
+    private void extendPosition(PhotoPosition position, TiffImageMetadata metadata, CompactCalendar startDate) throws ImageReadException {
         TiffImageMetadata.GPSInfo gpsInfo = metadata.getGPS();
         if (gpsInfo != null) {
-            longitude = gpsInfo.getLongitudeAsDegreesEast();
-            latitude = gpsInfo.getLatitudeAsDegreesNorth();
+            position.setLongitude(gpsInfo.getLongitudeAsDegreesEast());
+            position.setLatitude(gpsInfo.getLatitudeAsDegreesNorth());
+            position.setTagState(Tagged);
         }
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, altitude, speed, time, description);
-
+        CompactCalendar time = parseExifTime(metadata, startDate);
+        TiffDirectory gpsDirectory = metadata.findDirectory(DIRECTORY_TYPE_GPS);
         if (gpsDirectory != null) {
+            position.setElevation(parseAltitude(gpsDirectory));
+            position.setSpeed(parseSpeed(gpsDirectory));
+            time = parseGPSTime(gpsDirectory, time);
+
             position.setHeading(parseDirection(gpsDirectory));
             position.setSatellites(parseSatellites(gpsDirectory));
             Double dop = parseDOP(gpsDirectory);
@@ -321,13 +360,23 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
             else
                 position.setPdop(dop);
         }
-        return position;
+        position.setTime(time);
+
+        position.setDescription(parseUserComment(metadata));
+        position.setMake(parseMake(metadata));
+        position.setModel(parseModel(metadata));
+        position.setWidth(parseExifInteger(metadata, EXIF_TAG_EXIF_IMAGE_WIDTH));
+        position.setHeight(parseExifInteger(metadata, EXIF_TAG_EXIF_IMAGE_LENGTH));
+        position.setfNumber(parseExifRationalNumber(metadata, EXIF_TAG_FNUMBER));
+        position.setExposure(parseExifRationalNumber(metadata, EXIF_TAG_EXPOSURE_TIME));
+        position.setFlash(parseExifInteger(metadata, EXIF_TAG_FLASH));
+        position.setFocal(parseExifRationalNumber(metadata, EXIF_TAG_FOCAL_LENGTH));
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
-            Wgs84Position position = positions.get(i);
+            PhotoPosition position = (PhotoPosition) positions.get(i);
 
             try {
                 File source = position.getOrigin(File.class);
@@ -343,8 +392,32 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
                 if (outputSet == null)
                     outputSet = new TiffOutputSet();
 
+                TiffOutputDirectory rootDirectory = outputSet.getOrCreateRootDirectory();
+                rootDirectory.removeField(TIFF_TAG_MAKE);
+                rootDirectory.removeField(TIFF_TAG_MODEL);
+
+                rootDirectory.add(TIFF_TAG_MAKE, position.getMake());
+                rootDirectory.add(TIFF_TAG_MODEL, position.getModel());
+
                 TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
                 exifDirectory.removeField(EXIF_TAG_USER_COMMENT);
+                exifDirectory.removeField(EXIF_TAG_EXIF_IMAGE_WIDTH);
+                exifDirectory.removeField(EXIF_TAG_EXIF_IMAGE_LENGTH);
+                exifDirectory.removeField(EXIF_TAG_FNUMBER);
+                exifDirectory.removeField(EXIF_TAG_EXPOSURE_TIME);
+                exifDirectory.removeField(EXIF_TAG_FLASH);
+                exifDirectory.removeField(EXIF_TAG_FOCAL_LENGTH);
+
+                exifDirectory.add(EXIF_TAG_USER_COMMENT, position.getDescription());
+                if (position.getWidth() != null)
+                    exifDirectory.add(EXIF_TAG_EXIF_IMAGE_WIDTH, position.getWidth().shortValue());
+                if (position.getHeight() != null)
+                    exifDirectory.add(EXIF_TAG_EXIF_IMAGE_LENGTH, position.getHeight().shortValue());
+                exifDirectory.add(EXIF_TAG_FNUMBER, position.getfNumber());
+                exifDirectory.add(EXIF_TAG_EXPOSURE_TIME, position.getExposure());
+                if (position.getFlash() != null)
+                    exifDirectory.add(EXIF_TAG_FLASH, position.getFlash().shortValue());
+                exifDirectory.add(EXIF_TAG_FOCAL_LENGTH, position.getFocal());
 
                 TiffOutputDirectory gpsDirectory = outputSet.getOrCreateGPSDirectory();
                 gpsDirectory.removeField(GPS_TAG_GPS_VERSION_ID);
@@ -364,8 +437,6 @@ public class ImageFormat extends SimpleFormat<Wgs84Route> {
                 gpsDirectory.removeField(GPS_TAG_GPS_SATELLITES);
                 gpsDirectory.removeField(GPS_TAG_GPS_MEASURE_MODE);
                 gpsDirectory.removeField(GPS_TAG_GPS_DOP);
-
-                exifDirectory.add(EXIF_TAG_USER_COMMENT, position.getDescription());
 
                 if (position.getLongitude() != null && position.getLatitude() != null)
                     outputSet.setGPSInDegrees(position.getLongitude(), position.getLatitude());

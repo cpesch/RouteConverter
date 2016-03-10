@@ -39,8 +39,7 @@ import static slash.navigation.base.RouteCharacteristics.*;
 public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
     private final JLabel label;
 
-    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
-                                        JLabel label) {
+    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel, JLabel label) {
         super(formatAndRoutesModel);
         this.label = label;
     }

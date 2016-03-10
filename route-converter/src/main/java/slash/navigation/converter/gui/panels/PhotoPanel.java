@@ -22,16 +22,56 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddPhotosAction;
+import slash.navigation.converter.gui.actions.DeletePositionAction;
+import slash.navigation.converter.gui.actions.TagPhotosAction;
+import slash.navigation.converter.gui.helpers.PhotosTableHeaderMenu;
+import slash.navigation.converter.gui.helpers.PhotosTablePopupMenu;
+import slash.navigation.converter.gui.models.FilteringPositionsModel;
+import slash.navigation.converter.gui.models.PhotoTagStateToJLabelAdapter;
+import slash.navigation.converter.gui.models.PhotosTableColumnModel;
+import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsModelImpl;
+import slash.navigation.converter.gui.predicates.FilterPredicate;
+import slash.navigation.converter.gui.predicates.TagStatePhotoPredicate;
+import slash.navigation.converter.gui.predicates.TautologyPredicate;
+import slash.navigation.converter.gui.renderer.FilterPredicateListCellRenderer;
 import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.photo.PhotoFormat;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
+import static java.awt.event.ItemEvent.SELECTED;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static javax.help.CSH.setHelpIDString;
+import static javax.swing.DropMode.ON;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
+import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.photo.TagState.NotTaggable;
+import static slash.navigation.photo.TagState.Taggable;
+import static slash.navigation.photo.TagState.Tagged;
 
 /**
  * The Photos panel of the route converter user interface.
@@ -40,9 +80,29 @@ import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
  */
 
 public class PhotoPanel implements PanelInTab {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ConvertPanel.class);
+    private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
+    private int defaultTableRowHeight;
+
+    private static final String FILTER_PHOTO_PREDICATE_PREFERENCE = "filterPhotoPredicate";
+
     private JPanel photosPanel;
-    private JButton buttonAddPhotos;
     private JTable tablePhotos;
+    private JLabel labelPhotos;
+    private JComboBox<FilterPredicate> comboBoxFilterPhotoPredicate;
+    private JButton buttonAddPhotos;
+    private JComboBox<String> comboBoxPhotoTimeZone;
+    private JComboBox<String> comboBoxTagStrategy;
+    private JButton buttonTagPhotos;
+
+    private static final ComboBoxModel<FilterPredicate> FILTER_PREDICATE_MODEL = new DefaultComboBoxModel<>(new FilterPredicate[]{
+            new TautologyPredicate("All"),
+            new TagStatePhotoPredicate(Tagged),
+            new TagStatePhotoPredicate(Taggable),
+            new TagStatePhotoPredicate(NotTaggable),
+    });
+
+    private PositionsModel photosModel = new PositionsModelImpl();
 
     public PhotoPanel() {
         $$$setupUI$$$();
@@ -52,10 +112,85 @@ public class PhotoPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("add-photo", new AddPhotosAction());
+        photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, new ArrayList<Wgs84Position>()));
+        tablePhotos.setModel(getPhotosModel());
+        PhotosTableColumnModel tableColumnModel = new PhotosTableColumnModel();
+        tablePhotos.setColumnModel(tableColumnModel);
 
-        registerAction(buttonAddPhotos, "add-photo");
+        tablePhotos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
+                if (getPhotosModel().isContinousRange())
+                    return;
+                handlePositionsUpdate();
+            }
+        });
+
+        defaultTableRowHeight = tablePhotos.getRowHeight();
+        tableColumnModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleColumnVisibilityUpdate((PositionTableColumn) e.getSource());
+            }
+        });
+
+        tablePhotos.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                r.getContext().getActionManager().run("delete-photos");
+            }
+        }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePhotos.setDropMode(ON);
+
+        new PhotoTagStateToJLabelAdapter(photosModel, labelPhotos);
+
+        ActionManager actionManager = r.getContext().getActionManager();
+        new PhotosTableHeaderMenu(tablePhotos.getTableHeader(), tableColumnModel, actionManager);
+        new PhotosTablePopupMenu(tablePhotos).createPopupMenu();
+
+        actionManager.register("add-photos", new AddPhotosAction());
+        actionManager.register("delete-photos", new DeletePositionAction(tablePhotos, getPhotosModel()));
+        actionManager.registerLocal("delete", PHOTOS, "delete-photos");
+        actionManager.register("tag-photos", new TagPhotosAction());
+
+        registerAction(buttonAddPhotos, "add-photos");
+        registerAction(buttonTagPhotos, "tag-photos");
+
+        setHelpIDString(tablePhotos, "photo-list");
+
+        final FilteringPositionsModel filteredPhotosModel = new FilteringPositionsModel(photosModel, getFilterPredicatePreference());
+        comboBoxFilterPhotoPredicate.setModel(FILTER_PREDICATE_MODEL);
+        comboBoxFilterPhotoPredicate.setSelectedItem(getFilterPredicatePreference());
+        comboBoxFilterPhotoPredicate.setRenderer(new FilterPredicateListCellRenderer());
+        comboBoxFilterPhotoPredicate.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED) {
+                    return;
+                }
+                FilterPredicate filterPredicate = FilterPredicate.class.cast(e.getItem());
+                setFilterPredicatePreference(filterPredicate);
+                filteredPhotosModel.setFilterPredicate(filterPredicate);
+            }
+        });
+
+        ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
+        timeZoneModel.setSelectedItem(r.getPhotoTimeZone());
+        comboBoxPhotoTimeZone.setModel(timeZoneModel);
+        comboBoxPhotoTimeZone.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED) {
+                    return;
+                }
+                String timeZoneId = String.valueOf(e.getItem());
+                r.setPhotoTimeZone(timeZoneId);
+            }
+        });
+
+        // TODO
+        comboBoxTagStrategy.setModel(new DefaultComboBoxModel(new Object[]{"Original �berschreiben", "Kopie anlegen"}));
+
+        handlePositionsUpdate();
+        for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
+            handleColumnVisibilityUpdate(column);
     }
 
     public Component getRootComponent() {
@@ -74,7 +209,52 @@ public class PhotoPanel implements PanelInTab {
         return buttonAddPhotos;
     }
 
+    public JTable getPhotosView() {
+        return tablePhotos;
+    }
+
+    public PositionsModel getPhotosModel() {
+        return photosModel;
+    }
+
     public void initializeSelection() {
+    }
+
+    private void handlePositionsUpdate() {
+        int[] selectedRows = tablePhotos.getSelectedRows();
+        boolean existsASelectedPosition = selectedRows.length > 0;
+
+        RouteConverter r = RouteConverter.getInstance();
+        ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.enableLocal("delete", PHOTOS, existsASelectedPosition);
+
+        if (r.isPhotosSelected()) {
+            // TODO show select positions by coordinates not index to positions model
+            r.selectPositionsInMap(selectedRows);
+        }
+    }
+
+    private void handleColumnVisibilityUpdate(PositionTableColumn column) {
+        if (column.getModelIndex() == PHOTO_COLUMN_INDEX || column.getModelIndex() == EXIF_COLUMN_INDEX ||
+                column.getModelIndex() == GPS_COLUMN_INDEX)
+            tablePhotos.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : defaultTableRowHeight);
+    }
+
+    private FilterPredicate getFilterPredicatePreference() {
+        FilterPredicate result = FILTER_PREDICATE_MODEL.getElementAt(0);
+        String name = preferences.get(FILTER_PHOTO_PREDICATE_PREFERENCE, result.getName());
+        for (int i = 0, c = FILTER_PREDICATE_MODEL.getSize(); i < c; i++) {
+            FilterPredicate filterPredicate = FILTER_PREDICATE_MODEL.getElementAt(i);
+            if (filterPredicate.getName().equals(name)) {
+                result = filterPredicate;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private void setFilterPredicatePreference(FilterPredicate filterPredicate) {
+        preferences.put(FILTER_PHOTO_PREDICATE_PREFERENCE, filterPredicate.getName());
     }
 
     /**
@@ -86,17 +266,82 @@ public class PhotoPanel implements PanelInTab {
      */
     private void $$$setupUI$$$() {
         photosPanel = new JPanel();
-        photosPanel.setLayout(new GridLayoutManager(2, 2, new Insets(3, 3, 3, 3), -1, -1));
+        photosPanel.setLayout(new GridLayoutManager(3, 1, new Insets(3, 3, 3, 3), -1, -1));
+        photosPanel.setMinimumSize(new Dimension(-1, -1));
+        photosPanel.setPreferredSize(new Dimension(560, 560));
         final JScrollPane scrollPane1 = new JScrollPane();
-        photosPanel.add(scrollPane1, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        photosPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tablePhotos = new JTable();
+        tablePhotos.setAutoCreateColumnsFromModel(false);
         scrollPane1.setViewportView(tablePhotos);
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
+        photosPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("photos-colon"));
+        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-photos"));
+        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxFilterPhotoPredicate = new JComboBox();
+        panel1.add(comboBoxFilterPhotoPredicate, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelPhotos = new JLabel();
+        labelPhotos.setHorizontalAlignment(2);
+        labelPhotos.setHorizontalTextPosition(2);
+        labelPhotos.setText("-");
+        panel1.add(labelPhotos, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel1.add(spacer1, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonAddPhotos = new JButton();
         this.$$$loadButtonText$$$(buttonAddPhotos, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photos-action"));
         buttonAddPhotos.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-photos-action-tooltip"));
-        photosPanel.add(buttonAddPhotos, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
-        final Spacer spacer1 = new Spacer();
-        photosPanel.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel1.add(buttonAddPhotos, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
+        photosPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("photo-timezone"));
+        panel2.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxPhotoTimeZone = new JComboBox();
+        panel2.add(comboBoxPhotoTimeZone, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("tag-strategy"));
+        panel2.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxTagStrategy = new JComboBox();
+        panel2.add(comboBoxTagStrategy, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel2.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        buttonTagPhotos = new JButton();
+        this.$$$loadButtonText$$$(buttonTagPhotos, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("tag-photos-action"));
+        buttonTagPhotos.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("tag-photos-action-tooltip"));
+        panel2.add(buttonTagPhotos, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private void $$$loadLabelText$$$(JLabel component, String text) {
+        StringBuffer result = new StringBuffer();
+        boolean haveMnemonic = false;
+        char mnemonic = '\0';
+        int mnemonicIndex = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '&') {
+                i++;
+                if (i == text.length()) break;
+                if (!haveMnemonic && text.charAt(i) != '&') {
+                    haveMnemonic = true;
+                    mnemonic = text.charAt(i);
+                    mnemonicIndex = result.length();
+                }
+            }
+            result.append(text.charAt(i));
+        }
+        component.setText(result.toString());
+        if (haveMnemonic) {
+            component.setDisplayedMnemonic(mnemonic);
+            component.setDisplayedMnemonicIndex(mnemonicIndex);
+        }
     }
 
     /**

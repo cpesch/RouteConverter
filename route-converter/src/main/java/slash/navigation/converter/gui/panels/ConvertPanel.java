@@ -185,7 +185,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
@@ -247,7 +247,7 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonMovePositionToBottom;
     private PositionsTableHeaderMenu tableHeaderMenu;
 
-    private static final int ROW_HEIGHT_FOR_IMAGE_COLUMN = 200;
+    private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
     private int defaultTableRowHeight;
 
     public ConvertPanel() {
@@ -1097,8 +1097,8 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
-        if (column.getModelIndex() == IMAGE_COLUMN_INDEX)
-            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_IMAGE_COLUMN : defaultTableRowHeight);
+        if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
+            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : defaultTableRowHeight);
     }
 
     // helpers
@@ -1194,7 +1194,7 @@ public class ConvertPanel implements PanelInTab {
         return formatAndRoutesModel;
     }
 
-    private PositionsModel getPositionsModel() {
+    public PositionsModel getPositionsModel() {
         return getFormatAndRoutesModel().getPositionsModel();
     }
 

@@ -46,7 +46,7 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.image.ImageFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRoute;
@@ -310,7 +310,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         for (int i = 0; i < positions.size(); ++i) {
             P position = positions.get(i);
             Double distance = position.calculateDistance(longitude, latitude);
-            if (distance != null && distance < closestDistance && distance < threshold) {
+            if (distance != null && distance < closestDistance && distance <= threshold) {
                 closestDistance = distance;
                 closestIndex = i;
             }
@@ -329,7 +329,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 continue;
 
             long distance = abs(position.getTime().getTimeInMillis() - time.getTimeInMillis());
-            if (distance < closestDistance && distance < threshold) {
+            if (distance < closestDistance && distance <= threshold) {
                 closestDistance = distance;
                 closestIndex = i;
             }
@@ -578,7 +578,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract GpxRoute asGpxFormat(GpxFormat format);
 
-    protected abstract SimpleRoute asImageFormat(ImageFormat format);
+    protected abstract SimpleRoute asPhotoFormat(PhotoFormat format);
 
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
 
@@ -752,10 +752,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public SimpleRoute asImageFormat() {
-        if (getFormat() instanceof ImageFormat)
+    public SimpleRoute asPhotoFormat() {
+        if (getFormat() instanceof PhotoFormat)
             return (SimpleRoute) this;
-        return asImageFormat(new ImageFormat());
+        return asPhotoFormat(new PhotoFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")

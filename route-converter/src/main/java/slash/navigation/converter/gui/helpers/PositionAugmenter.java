@@ -59,10 +59,13 @@ import static slash.navigation.base.RouteCalculations.interpolateTime;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * Helps to augment a positions with coordinates, elevation, position number for its description,
@@ -98,9 +101,9 @@ public class PositionAugmenter {
     }
 
     public void dispose() {
+        interrupt();
         executor.shutdownNow();
     }
-
 
     private interface OverwritePredicate {
         boolean shouldOverwrite(NavigationPosition position);
@@ -118,7 +121,6 @@ public class PositionAugmenter {
         }
     };
 
-
     private interface Operation {
         String getName();
         int getColumnIndex();
@@ -126,7 +128,6 @@ public class PositionAugmenter {
         boolean run(int index, NavigationPosition position) throws Exception;
         String getErrorMessage();
     }
-
 
     private NotificationManager getNotificationManager() {
         return Application.getInstance().getContext().getNotificationManager();
@@ -154,11 +155,19 @@ public class PositionAugmenter {
             this.running = true;
         }
 
-        startWaitCursor(frame.getRootPane());
         final CancelAction cancelAction = new CancelAction();
         executor.execute(new Runnable() {
             public void run() {
+                final int[] count = new int[1];
+                count[0] = 1;
+
                 try {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            if (positionsTable != null && rows.length > 0)
+                                scrollToPosition(positionsTable, rows[0]);
+                        }
+                    });
                     operation.performOnStart();
 
                     final Exception[] lastException = new Exception[1];
@@ -166,8 +175,6 @@ public class PositionAugmenter {
                     final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
 
                     new ContinousRange(rows, new RangeOperation() {
-                        private int count = 1;
-
                         public void performOnIndex(final int index) {
                             NavigationPosition position = positionsModel.getPosition(index);
                             if (predicate.shouldOverwrite(position)) {
@@ -180,10 +187,8 @@ public class PositionAugmenter {
                                     lastException[0] = e;
                                 }
                             }
-
-                            int percent = count++ * 100 / rows.length;
                             getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("augment-progressed"), percent), cancelAction);
+                                    RouteConverter.getBundle().getString("augmenting-progress"), count[0]++, rows.length), cancelAction);
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
@@ -191,7 +196,7 @@ public class PositionAugmenter {
                                 public void run() {
                                     positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, operation.getColumnIndex());
                                     if (positionsTable != null) {
-                                        scrollToPosition(positionsTable, min(lastIndex + maximumRangeLength, positionsModel.getRowCount()));
+                                        scrollToPosition(positionsTable, min(lastIndex + maximumRangeLength, positionsModel.getRowCount() - 1));
                                     }
                                 }
                             });
@@ -211,9 +216,8 @@ public class PositionAugmenter {
                 } finally {
                     invokeLater(new Runnable() {
                         public void run() {
-                            stopWaitCursor(frame.getRootPane());
                             getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("augment-completed"), rows.length), null);
+                                    RouteConverter.getBundle().getString("augmenting-finished"), count[0]), null);
                         }
                     });
                 }
@@ -254,8 +258,10 @@ public class PositionAugmenter {
         );
     }
 
-    public void addCoordinates(int[] rows) {
-        processCoordinates(positionsView, positionsModel, rows, TAUTOLOGY_PREDICATE);
+    public void addCoordinates() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            processCoordinates(positionsView, positionsModel, rows, TAUTOLOGY_PREDICATE);
     }
 
 
@@ -305,8 +311,10 @@ public class PositionAugmenter {
         elevationServiceFacade.downloadElevationDataFor(longitudeAndLatitudes, waitForDownload);
     }
 
-    public void addElevations(int[] rows) {
-        processElevations(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    public void addElevations() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            processElevations(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -343,8 +351,10 @@ public class PositionAugmenter {
         );
     }
 
-    public void addPopulatedPlaces(int[] rows) {
-        addPopulatedPlaces(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    public void addPopulatedPlaces() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            addPopulatedPlaces(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -379,8 +389,10 @@ public class PositionAugmenter {
         );
     }
 
-    public void addPostalAddresses(int[] rows) {
-        addPostalAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    public void addPostalAddresses() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            addPostalAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -421,8 +433,10 @@ public class PositionAugmenter {
         );
     }
 
-    public void addSpeeds(int[] rows) {
-        processSpeeds(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    public void addSpeeds() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            processSpeeds(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
     private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
@@ -481,14 +495,16 @@ public class PositionAugmenter {
         );
     }
 
-    public void addTimes(int[] rows) {
-        processTimes(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    public void addTimes() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length > 0)
+            processTimes(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
     private int findRelativeIndex(int[] selectedIndices, int indexToSearch) {
-        for (int i=0; i < selectedIndices.length; i++)
-            if(selectedIndices[i] == indexToSearch)
+        for (int i = 0; i < selectedIndices.length; i++)
+            if (selectedIndices[i] == indexToSearch)
                 return i;
         return indexToSearch;
     }
@@ -530,7 +546,11 @@ public class PositionAugmenter {
         );
     }
 
-    public void addNumbers(int[] rows) {
+    public void addNumbers() {
+        int[] rows = positionsView.getSelectedRows();
+        if (rows.length == 0)
+            return;
+
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         NumberingStrategy numberingStrategy = RouteConverter.getInstance().getNumberingStrategyPreference();
@@ -610,11 +630,11 @@ public class PositionAugmenter {
 
                     public String getErrorMessage() {
                         String messageKey = "add-data-error";
-                        if(complementDescription)
+                        if (complementDescription)
                             messageKey = "add-description-error";
-                        else if(complementElevation)
+                        else if (complementElevation)
                             messageKey = "add-elevation-error";
-                        else if(complementTime)
+                        else if (complementTime)
                             messageKey = "add-time-error";
                         return RouteConverter.getBundle().getString(messageKey);
                     }

@@ -228,7 +228,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asImagePosition() {
+    public Wgs84Position asPhotoPosition() {
         return asWgs84Position();
     }
 

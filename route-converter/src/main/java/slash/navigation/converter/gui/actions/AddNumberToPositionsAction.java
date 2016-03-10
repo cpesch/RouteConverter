@@ -37,9 +37,6 @@ import java.awt.event.ActionListener;
 public class AddNumberToPositionsAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        int[] selectedRows = r.getPositionsView().getSelectedRows();
-        if (selectedRows.length > 0) {
-            r.getPositionAugmenter().addNumbers(selectedRows);
-        }
+        r.getPositionAugmenter().addNumbers();
     }
 }

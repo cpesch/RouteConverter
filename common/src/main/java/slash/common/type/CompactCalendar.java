@@ -23,7 +23,11 @@ package slash.common.type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import static java.text.DateFormat.MEDIUM;
@@ -95,6 +99,10 @@ public class CompactCalendar {
 
     public static CompactCalendar getInstance(String timeZoneId) {
         return fromCalendar(Calendar.getInstance(TimeZone.getTimeZone(timeZoneId)));
+    }
+
+    public CompactCalendar asUTCTimeInTimeZone(TimeZone timeZone) {
+        return new CompactCalendar(timeInMillis + timeZone.getOffset(timeInMillis), "UTC");
     }
 
     public long getTimeInMillis() {

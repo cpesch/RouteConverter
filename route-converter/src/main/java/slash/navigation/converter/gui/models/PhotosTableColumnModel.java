@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.converter.gui.renderer.ExifColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.GpsColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.ImageColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.PhotoColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
 
 import javax.swing.table.TableColumnModel;
@@ -29,7 +29,7 @@ import javax.swing.table.TableColumnModel;
 import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
 import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -42,7 +42,7 @@ public class PhotosTableColumnModel extends AbstractTableColumnModel {
     public PhotosTableColumnModel() {
         super(PHOTOS);
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
-        predefineColumn(IMAGE_COLUMN_INDEX, "image", null, true, new ImageColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(PHOTO_COLUMN_INDEX, "photo", null, true, new PhotoColumnTableCellRenderer(), headerRenderer);
         predefineColumn(EXIF_COLUMN_INDEX, "exif", getMaxWidth("Exposure Time: 1/1000s", 5), true, new ExifColumnTableCellRenderer(), headerRenderer);
         predefineColumn(GPS_COLUMN_INDEX, "gps", getMaxWidth("Longitude: 111.223344", 5), true, new GpsColumnTableCellRenderer(), headerRenderer);
         initializeColumns();

@@ -37,6 +37,6 @@ import java.net.URL;
 public class AddUrlAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        r.addUrlToCatalog("");
+        r.getBrowsePanel().addUrlToCatalog("");
     }
 }

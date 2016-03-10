@@ -34,6 +34,7 @@ import java.util.List;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
@@ -380,6 +381,20 @@ public class Files {
         extension = extension != null ? extension.toLowerCase() : null;
         recursiveCollect(path, false, true, extension, list);
         return list;
+    }
+
+    public static List<File> collectFiles(List<File> files) {
+        List<File> result = new ArrayList<>();
+        for (File file : files) {
+            if (file.isFile())
+                result.add(file);
+            else if (file.isDirectory()) {
+                File[] list = file.listFiles(new FileFileFilter());
+                if (list != null)
+                    result.addAll(asList(list));
+            }
+        }
+        return result;
     }
 
     public static File findExistingPath(File path) {

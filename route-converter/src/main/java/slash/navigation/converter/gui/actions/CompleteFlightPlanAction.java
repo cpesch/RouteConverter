@@ -33,7 +33,8 @@ import slash.navigation.gui.actions.FrameAction;
 
 public class CompleteFlightPlanAction extends FrameAction {
     public void run() {
-        GarminFlightPlanRoute route = (GarminFlightPlanRoute) RouteConverter.getInstance().getPositionsModel().getRoute();
+        RouteConverter r = RouteConverter.getInstance();
+        GarminFlightPlanRoute route = (GarminFlightPlanRoute) r.getConvertPanel().getPositionsModel().getRoute();
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(route);
         dialog.pack();
         dialog.restoreLocation();

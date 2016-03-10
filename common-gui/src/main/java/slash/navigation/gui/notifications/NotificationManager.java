@@ -42,7 +42,7 @@ import static slash.navigation.gui.helpers.UIHelper.getFrame;
  */
 
 public class NotificationManager {
-    private static final int DISPLAY_TIMEOUT = 5 * 1000;
+    private static final int DISPLAY_TIMEOUT = 2 * 1000;
 
     private JWindow window;
     private JLabel label = new JLabel();

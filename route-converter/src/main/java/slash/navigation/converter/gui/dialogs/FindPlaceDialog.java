@@ -107,7 +107,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
         RouteConverter r = RouteConverter.getInstance();
 
-        textFieldSearch.setText(r.getSearchPositionPreference());
+        textFieldSearch.setText(r.getFindPlacePreference());
         textFieldSearch.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 searchPositions();
@@ -164,9 +164,9 @@ public class FindPlaceDialog extends SimpleDialog {
 
     private void insertPosition() {
         RouteConverter r = RouteConverter.getInstance();
-        PositionsModel positionsModel = r.getPositionsModel();
+        PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
-        int[] selectedRows = r.getPositionsView().getSelectedRows();
+        int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
@@ -176,14 +176,14 @@ public class FindPlaceDialog extends SimpleDialog {
                     position.getElevation(), null, null, position.getDescription());
 
             int[] rows = new int[]{insertRow};
-            r.getPositionsSelectionModel().setSelectedPositions(rows, true);
+            r.getConvertPanel().getPositionsSelectionModel().setSelectedPositions(rows, true);
             r.getPositionAugmenter().addData(rows, false, true, true, true, false);
         }
     }
 
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();
-        r.setSearchPositionPreference(textFieldSearch.getText());
+        r.setFindPlacePreference(textFieldSearch.getText());
     }
 
     private void close() {

@@ -74,7 +74,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_AS
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.IMAGE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
@@ -134,19 +134,21 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
-            case IMAGE_COLUMN_INDEX:
+            case PHOTO_COLUMN_INDEX:
                 ImageIcon image = imageCache.get(rowIndex);
                 NavigationPosition position = getPosition(rowIndex);
-                if (image == null && position instanceof Wgs84Position) {
-                    Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
-                    File file = wgs84Position.getOrigin(File.class);
-                    if(file != null) {
-                        BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
-                        image = new ImageIcon(resize);
-                        imageCache.put(rowIndex, image);
+                if (image == null) {
+                    if (position instanceof Wgs84Position) {
+                        Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
+                        File file = wgs84Position.getOrigin(File.class);
+                        if (file != null) {
+                            BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
+                            image = new ImageIcon(resize);
+                            imageCache.put(rowIndex, image);
+                        }
                     }
                 }
-                return new ImageAndDescription(image, getPosition(rowIndex).getDescription());
+                return new ImageAndText(image, position.getDescription());
             case DISTANCE_COLUMN_INDEX:
                 if (distanceCache == null)
                     distanceCache = getRoute().getDistancesFromStart(0, getRowCount() - 1);

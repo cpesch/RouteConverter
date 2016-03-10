@@ -20,28 +20,30 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.converter.gui.models.ImageAndDescription;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.predicates.FilterPredicate;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
- * Renders the image column of the positions table.
+ * Renders the {@link FilterPredicate} labels of the show photos combo box.
  *
  * @author Christian Pesch
  */
 
-public class ImageColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        ImageAndDescription imageAndDescription = ImageAndDescription.class.cast(value);
-        label.setToolTipText(imageAndDescription.getDescription());
-        ImageIcon image = imageAndDescription.getImage();
-        label.setIcon(image);
-        if (image != null)
-            label.setText(null);
-        else
-            label.setText(imageAndDescription.getDescription());
+public class FilterPredicateListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
+        FilterPredicate filterPredicate = FilterPredicate.class.cast(value);
+        String text;
+        try {
+            text = RouteConverter.getBundle().getString("filter-photos-" + filterPredicate.getName().toLowerCase());
+        } catch (MissingResourceException e) {
+            text = filterPredicate.getName();
+        }
+        label.setText(text);
         return label;
     }
 }

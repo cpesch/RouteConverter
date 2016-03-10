@@ -18,14 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.image;
+package slash.navigation.photo;
 
+import org.apache.commons.imaging.common.RationalNumber;
 import org.junit.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.File;
@@ -41,20 +41,26 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
-public class ImageFormatIT {
+public class PhotoFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+
+    public static void assertRationalNumberEquals(RationalNumber expected, RationalNumber was) {
+        assertEquals(expected.numerator, was.numerator);
+        assertEquals(expected.divisor, was.divisor);
+    }
+
 
     @Test
     public void testIsJpgWithEmbeddedExifGPSMetadata() throws IOException {
         File source = new File(TEST_PATH + "from-gps.jpg");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        assertEquals(ImageFormat.class, result.getFormat().getClass());
+        assertEquals(PhotoFormat.class, result.getFormat().getClass());
         BaseRoute theRoute = result.getTheRoute();
         assertEquals(1, theRoute.getPositionCount());
         Wgs84Route route = (Wgs84Route) theRoute;
-        Wgs84Position position = route.getPosition(0);
-        assertEquals("NIKON CORPORATION NIKON D90 Image from 2010-08-31T10:31:27Z", position.getDescription());
+        PhotoPosition position = (PhotoPosition) route.getPosition(0);
+        assertEquals("NIKON CORPORATION NIKON D90 Photo from 2010-08-31T10:31:27Z", position.getDescription());
         assertDoubleEquals(135.0, position.getElevation());
         assertDoubleEquals(8.474513333333334, position.getLongitude());
         assertDoubleEquals(53.026513333333334, position.getLatitude());
@@ -65,6 +71,14 @@ public class ImageFormatIT {
         assertNull(position.getPdop());
         assertNull(position.getVdop());
         assertNull(position.getHeading());
+        assertEquals("NIKON CORPORATION", position.getMake());
+        assertEquals("NIKON D90", position.getModel());
+        assertEquals(new Integer(1024), position.getWidth());
+        assertEquals(new Integer(680), position.getHeight());
+        assertRationalNumberEquals(new RationalNumber(50, 10), position.getfNumber());
+        assertRationalNumberEquals(new RationalNumber(10, 8000), position.getExposure());
+        assertEquals(new Integer(0), position.getFlash());
+        assertRationalNumberEquals(new RationalNumber(700, 10), position.getFocal());
     }
 
     @Test
@@ -72,12 +86,12 @@ public class ImageFormatIT {
         File source = new File(TEST_PATH + "from-exif.jpg");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        assertEquals(ImageFormat.class, result.getFormat().getClass());
+        assertEquals(PhotoFormat.class, result.getFormat().getClass());
         BaseRoute theRoute = result.getTheRoute();
         assertEquals(1, theRoute.getPositionCount());
         Wgs84Route route = (Wgs84Route) theRoute;
-        Wgs84Position position = route.getPosition(0);
-        assertEquals("Palm Pre Image from 2010-01-30T13:10:15Z", position.getDescription());
+        PhotoPosition position = (PhotoPosition) route.getPosition(0);
+        assertEquals("Palm Pre Photo from 2010-01-30T13:10:15Z", position.getDescription());
         assertNull(position.getElevation());
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
@@ -88,6 +102,14 @@ public class ImageFormatIT {
         assertNull(position.getPdop());
         assertNull(position.getVdop());
         assertNull(position.getHeading());
+        assertEquals("Palm", position.getMake());
+        assertEquals("Pre", position.getModel());
+        assertEquals(new Integer(1520), position.getWidth());
+        assertEquals(new Integer(2032), position.getHeight());
+        assertRationalNumberEquals(new RationalNumber(24, 10), position.getfNumber());
+        assertRationalNumberEquals(new RationalNumber(1, 65536000), position.getExposure());
+        assertEquals(new Integer(24), position.getFlash());
+        assertRationalNumberEquals(new RationalNumber(100, 41), position.getFocal());
     }
 
     @Test
@@ -96,10 +118,10 @@ public class ImageFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         BaseRoute theRoute = result.getTheRoute();
-        assertEquals(ImageFormat.class, result.getFormat().getClass());
+        assertEquals(PhotoFormat.class, result.getFormat().getClass());
         assertEquals(1, theRoute.getPositionCount());
         Wgs84Route route = (Wgs84Route) theRoute;
-        Wgs84Position position = route.getPosition(0);
+        PhotoPosition position = (PhotoPosition) route.getPosition(0);
         assertEquals("No EXIF data", position.getDescription());
         assertNull(position.getElevation());
         assertNull(position.getLongitude());
@@ -111,6 +133,14 @@ public class ImageFormatIT {
         assertNull(position.getPdop());
         assertNull(position.getVdop());
         assertNull(position.getHeading());
+        assertNull(position.getMake());
+        assertNull(position.getModel());
+        assertNull(position.getWidth());
+        assertNull(position.getHeight());
+        assertNull(position.getfNumber());
+        assertNull(position.getExposure());
+        assertNull(position.getFlash());
+        assertNull(position.getFocal());
     }
 
     private void modifyImage(String path) throws IOException {
@@ -118,9 +148,9 @@ public class ImageFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         BaseRoute theRoute = result.getTheRoute();
-        ImageFormat format = (ImageFormat) result.getFormat();
+        PhotoFormat format = (PhotoFormat) result.getFormat();
         Wgs84Route route = (Wgs84Route) theRoute;
-        Wgs84Position position = route.getPosition(0);
+        PhotoPosition position = (PhotoPosition) route.getPosition(0);
         position.setDescription("description");
         position.setElevation(222.0);
         position.setLongitude(10.0);
@@ -132,6 +162,14 @@ public class ImageFormatIT {
         position.setPdop(2.0);
         position.setVdop(3.0);
         position.setHeading(111.0);
+        position.setMake("make");
+        position.setModel("model");
+        position.setWidth(1024);
+        position.setHeight(512);
+        position.setfNumber(new RationalNumber(53, 10));
+        position.setExposure(new RationalNumber(11, 8000));
+        position.setFlash(1);
+        position.setFocal(new RationalNumber(35, 1));
 
         File target = createTempFile("target", ".jpg");
         target.deleteOnExit();
@@ -141,11 +179,11 @@ public class ImageFormatIT {
 
             ParserResult result2 = parser.read(target);
             assertNotNull(result2);
-            assertEquals(ImageFormat.class, result2.getFormat().getClass());
+            assertEquals(PhotoFormat.class, result2.getFormat().getClass());
             BaseRoute theRoute2 = result2.getTheRoute();
             Wgs84Route route2 = (Wgs84Route) theRoute2;
             assertEquals(1, route2.getPositionCount());
-            Wgs84Position position2 = route2.getPosition(0);
+            PhotoPosition position2 = (PhotoPosition) route2.getPosition(0);
             assertEquals("description", position2.getDescription());
             assertDoubleEquals(222.0, position2.getElevation());
             assertDoubleEquals(10.0, position2.getLongitude());
@@ -157,6 +195,14 @@ public class ImageFormatIT {
             assertDoubleEquals(2.0, position2.getPdop());
             assertNull(position2.getVdop());
             assertDoubleEquals(111.0, position2.getHeading());
+            assertEquals("make", position2.getMake());
+            assertEquals("model", position2.getModel());
+            assertEquals(new Integer(1024), position2.getWidth());
+            assertEquals(new Integer(512), position2.getHeight());
+            assertRationalNumberEquals(new RationalNumber(53, 10), position2.getfNumber());
+            assertRationalNumberEquals(new RationalNumber(11, 8000), position2.getExposure());
+            assertEquals(new Integer(1), position2.getFlash());
+            assertRationalNumberEquals(new RationalNumber(35, 1), position2.getFocal());
 
             assertTrue(target.delete());
         } finally {

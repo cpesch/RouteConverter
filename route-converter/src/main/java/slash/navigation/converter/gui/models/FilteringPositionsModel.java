@@ -25,6 +25,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.predicates.FilterPredicate;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -42,7 +43,7 @@ import static slash.common.io.Transfer.toArray;
 
 public class FilteringPositionsModel extends AbstractTableModel implements PositionsModel {
     private final PositionsModel delegate;
-    private final FilterPredicate predicate;
+    private FilterPredicate predicate;
     private Map<Integer, Integer> mapping;
 
     public FilteringPositionsModel(PositionsModel delegate, FilterPredicate predicate) {
@@ -89,6 +90,12 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
 
     public void setRoute(BaseRoute route) {
         delegate.setRoute(route);
+    }
+
+    public void setFilterPredicate(FilterPredicate predicate) {
+        this.predicate = predicate;
+        initializeMapping();
+        fireTableDataChanged();
     }
 
     public int getRowCount() {
@@ -201,9 +208,5 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
         throw new UnsupportedOperationException();
-    }
-
-    public interface FilterPredicate {
-        boolean shouldInclude(NavigationPosition position);
     }
 }
