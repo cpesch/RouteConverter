@@ -60,7 +60,8 @@ public class BcrRouteTest {
         positions.add(c);
         a.setTime(calendar(2015, 10, 5, 1, 2, 0, 0));
         b.setTime(calendar(2015, 10, 5, 1, 2, 15, 0));
-        c.setTime(calendar(2015, 10, 5, 1, 2, 30, 0));
+        c.setTime(calendar(2015, 10, 5, 1, 2, 15, 0));
+        d.setTime(calendar(2015, 10, 5, 1, 2, 30, 0));
     }
 
     private void assertPositions(BcrPosition... expected) {
@@ -581,7 +582,9 @@ public class BcrRouteTest {
     @Test
     public void testGetClosestPositionByTimeFirstWins() {
         initialize();
-        assertEquals(0, route.getClosestPosition(calendar(2015, 10, 5, 1, 2, 15), 30*1000));
+        List<BcrPosition> positions = route.getPositions();
+        positions.add(d);
+        assertEquals(1, route.getClosestPosition(calendar(2015, 10, 5, 1, 2, 15), 30*1000));
     }
 
     @Test
