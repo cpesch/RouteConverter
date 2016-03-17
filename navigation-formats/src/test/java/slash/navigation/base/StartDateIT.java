@@ -87,10 +87,10 @@ public class StartDateIT {
 
     @Test
     public void testCurrentStartDateForTomTomRouteWithDate() throws Exception {
-        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.itn"));
+        File source = new File(SAMPLE_PATH + "startdate-with-date.itn");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<TomTomRoute> context = new ParserContextImpl<>();
-        new TomTom5RouteFormat().read(source, fromCalendar(startDate), context);
+        ParserContext<TomTomRoute> context = new ParserContextImpl<>(source);
+        new TomTom5RouteFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         checkPositions(context.getRoutes());
     }
 
@@ -105,7 +105,7 @@ public class StartDateIT {
         File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        ParserContext<TomTomRoute> context = new ParserContextImpl<>();
+        ParserContext<TomTomRoute> context = new ParserContextImpl<>(source);
         new TomTom5RouteFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<TomTomRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
@@ -113,10 +113,10 @@ public class StartDateIT {
 
     @Test
     public void testCurrentStartDateForTomTomRouteWithoutDate() throws Exception {
-        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.itn"));
+        File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<TomTomRoute> context = new ParserContextImpl<>();
-        new TomTom5RouteFormat().read(source, fromCalendar(startDate), context);
+        ParserContext<TomTomRoute> context = new ParserContextImpl<>(source);
+        new TomTom5RouteFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<TomTomRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
@@ -137,10 +137,10 @@ public class StartDateIT {
 
     @Test
     public void testCurrentStartDateForNmeaWithDate() throws Exception {
-        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.nmea"));
+        File source = new File(SAMPLE_PATH + "startdate-with-date.nmea");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
-        new NmeaFormat().read(source, fromCalendar(startDate), context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>(source);
+        new NmeaFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<NmeaRoute> routes = context.getRoutes();
         checkPositions(routes);
     }
@@ -156,7 +156,7 @@ public class StartDateIT {
         File source = new File(SAMPLE_PATH + "startdate-without-date.nmea");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>(source);
         new NmeaFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<NmeaRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
@@ -164,10 +164,10 @@ public class StartDateIT {
 
     @Test
     public void testCurrentStartDateForNmeaWithoutDate() throws Exception {
-        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.nmea"));
+        File source = new File(SAMPLE_PATH + "startdate-without-date.nmea");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
-        new NmeaFormat().read(source, fromCalendar(startDate), context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>(source);
+        new NmeaFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<NmeaRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
@@ -185,7 +185,7 @@ public class StartDateIT {
         File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>();
+        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source);
         new GoPalTrackFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<SimpleRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
@@ -193,10 +193,10 @@ public class StartDateIT {
 
     @Test
     public void testCurrentStartDateForGopalTrackWithoutDate() throws Exception {
-        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.trk"));
+        File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>();
-        new GoPalTrackFormat().read(source, fromCalendar(startDate), context);
+        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source);
+        new GoPalTrackFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
         List<SimpleRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }

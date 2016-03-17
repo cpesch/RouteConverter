@@ -186,7 +186,9 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         }
 
         bufferedSource.reset();
-        File image = extractToTempFile(bufferedSource);
+        File image = context.getFile();
+        if (image == null)
+            image = extractToTempFile(bufferedSource);
         position.setOrigin(image);
         position.setWaypointType(Photo);
         context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<Wgs84Position>(singletonList(position))));
