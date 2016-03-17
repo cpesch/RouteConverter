@@ -140,14 +140,7 @@ public class NavigationFormatParser {
 
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        FileInputStream fis = new FileInputStream(source);
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis));
-        buffer.mark((int) source.length() + 1);
-        try {
-            return read(buffer, (int) source.length(), getStartDate(source), formats);
-        } finally {
-            buffer.closeUnderlyingInputStream();
-        }
+        return read(new FileInputStream(source), (int) source.length(), getStartDate(source), source, formats);
     }
 
     public ParserResult read(File source) throws IOException {
@@ -207,6 +200,10 @@ public class NavigationFormatParser {
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
+        public InternalParserContext(File file) {
+            super(file);
+        }
+
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
             internalRead(inputStream, startDate, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
         }
@@ -227,13 +224,13 @@ public class NavigationFormatParser {
         }
     }
 
-    private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate,
+    private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate, File file,
                               List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source));
         buffer.mark(readBufferSize + 1);
         try {
-            ParserContext<BaseRoute> context = new InternalParserContext<>();
+            ParserContext<BaseRoute> context = new InternalParserContext<>(file);
             internalRead(buffer, startDate, formats, context);
             return createResult(context);
         } finally {
@@ -246,11 +243,11 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, getNavigationFormatRegistry().getReadFormats());
+        return read(source, getNavigationFormatRegistry().getReadFormats());
     }
 
     public ParserResult read(InputStream source, List<NavigationFormat> formats) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, formats);
+        return read(source, READ_BUFFER_SIZE, null, null, formats);
     }
 
     private int getSize(URL url) throws IOException {
@@ -291,18 +288,18 @@ public class NavigationFormatParser {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
 
         } else if (isMotoPlanerUrl(url)) {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<>(formats);
             readFormats.add(0, new MotoPlanerUrlFormat());
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
         }
 
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(url.openStream(), readBufferSize, getStartDate(url), formats);
+        return read(url.openStream(), readBufferSize, getStartDate(url), null, formats);
     }
 
     public ParserResult read(URL url) throws IOException {

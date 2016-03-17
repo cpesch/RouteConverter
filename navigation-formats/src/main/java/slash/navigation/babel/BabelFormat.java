@@ -419,7 +419,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<>();
+        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<>(null);
         if (isStreamingCapable()) {
             readStream(source, startDate, gpxContext);
         } else {

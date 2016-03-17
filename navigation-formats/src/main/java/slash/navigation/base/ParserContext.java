@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -42,6 +43,8 @@ public interface ParserContext<R extends BaseRoute> {
 
     void addFormat(NavigationFormat<R> format);
     List<NavigationFormat<R>> getFormats();
+
+    File getFile();
 
     void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException;
     void parse(String url) throws IOException;
