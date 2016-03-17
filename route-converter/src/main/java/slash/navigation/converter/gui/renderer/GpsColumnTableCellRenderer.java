@@ -29,12 +29,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.MessageFormat;
 
-import static slash.common.io.Transfer.formatTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 import static slash.navigation.photo.TagState.NotTaggable;
 import static slash.navigation.photo.TagState.Taggable;
 import static slash.navigation.photo.TagState.Tagged;

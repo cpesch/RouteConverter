@@ -31,8 +31,8 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static slash.common.io.Transfer.formatTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 
 /**
  * Renders the EXIF column of the photos table.

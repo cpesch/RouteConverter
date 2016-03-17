@@ -66,6 +66,7 @@ import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.ProfileModeModel;
+import slash.navigation.converter.gui.models.StringModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.panels.BrowsePanel;
@@ -123,6 +124,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -165,7 +167,6 @@ import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toUrls;
-import static slash.common.io.Transfer.getTimeZonePreference;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
@@ -229,6 +230,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
+    private static final String TIME_ZONE_PREFERENCE = "timeZone";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -262,6 +264,7 @@ public class RouteConverter extends SingleFrameApplication {
     private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
     private BooleanModel showCoordinates = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
     private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
+    private StringModel timeZone = new StringModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
     private FixMapModeModel fixMapModeModel = new FixMapModeModel();
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
@@ -852,7 +855,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public String getPhotoTimeZone() {
-        return preferences.get(PHOTO_TIMEZONE_PREFERENCE, getTimeZonePreference());
+        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
+        return preferences.get(PHOTO_TIMEZONE_PREFERENCE, timeZone.getString());
     }
 
     public void setPhotoTimeZone(String timeZoneId) {
@@ -903,6 +907,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public BooleanModel getShowWaypointDescription() {
         return showWaypointDescription;
+    }
+
+    public StringModel getTimeZone() {
+        return timeZone;
     }
 
     public void showMapBorder(BoundingBox mapBoundingBox) {

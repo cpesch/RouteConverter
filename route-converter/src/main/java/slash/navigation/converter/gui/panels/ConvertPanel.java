@@ -312,6 +312,11 @@ public class ConvertPanel implements PanelInTab {
                 getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }
         });
+        r.getTimeZone().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+            }
+        });
 
         tablePositions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
