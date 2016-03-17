@@ -91,8 +91,6 @@ import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.helpers.LocaleHelper.SLOVAKIA;
 import static slash.common.helpers.LocaleHelper.SPAIN;
 import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
-import static slash.common.io.Transfer.getTimeZonePreference;
-import static slash.common.io.Transfer.setTimeZonePreference;
 import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
@@ -446,7 +444,7 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
-        timeZoneModel.setSelectedItem(getTimeZonePreference());
+        timeZoneModel.setSelectedItem(r.getTimeZone().getString());
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -454,7 +452,7 @@ public class OptionsDialog extends SimpleDialog {
                     return;
                 }
                 String timeZoneId = String.valueOf(e.getItem());
-                setTimeZonePreference(timeZoneId);
+                r.getTimeZone().setString(timeZoneId);
             }
         });
 

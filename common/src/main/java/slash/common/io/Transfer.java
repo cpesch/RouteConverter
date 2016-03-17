@@ -58,7 +58,6 @@ public class Transfer {
     private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
     private static final String REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE = "reduceTimeToSecondPrecision";
-    private static final String TIME_ZONE_PREFERENCE = "timeZone";
 
     public static final String ISO_LATIN1_ENCODING = "ISO-8859-1";
     public static final String UTF8_ENCODING = "UTF-8";
@@ -310,23 +309,15 @@ public class Transfer {
         return builder.toString();
     }
 
-
-    public static String getTimeZonePreference() {
-        return preferences.get(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
-    }
-
-    public static void setTimeZonePreference(String timeZoneId) {
-        preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
-    }
-
     private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static String currentDateTimeZone = "";
     private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeZone = "";
 
     public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
-        if (!currentTimeZone.equals(timeZonePreference)) {
+        if (!currentDateTimeZone.equals(timeZonePreference)) {
             dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
+            currentDateTimeZone = timeZonePreference;
         }
         return dateTimeFormat;
     }
@@ -337,10 +328,6 @@ public class Transfer {
             currentTimeZone = timeZonePreference;
         }
         return timeFormat;
-    }
-
-    public static String formatTime(CompactCalendar time) {
-        return getTimeFormat(getTimeZonePreference()).format(time.getTime());
     }
 
     public static CompactCalendar parseXMLTime(XMLGregorianCalendar calendar) {
