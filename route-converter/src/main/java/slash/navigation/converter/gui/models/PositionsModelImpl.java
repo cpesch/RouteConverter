@@ -65,8 +65,10 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateT
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
@@ -254,6 +256,9 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             case DATE_TIME_COLUMN_INDEX:
                 position.setTime(parseDateTime(value, string));
                 break;
+            case DATE_COLUMN_INDEX:
+                position.setTime(parseDate(value, string));
+                break;
             case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(value, string, position.getTime()));
                 break;
@@ -341,13 +346,26 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return null;
     }
 
+    private CompactCalendar parseDate(Object objectValue, String stringValue) {
+        if (objectValue == null || objectValue instanceof CompactCalendar) {
+            return (CompactCalendar) objectValue;
+        } else if (stringValue != null) {
+            try {
+                return PositionHelper.parseDate(stringValue);
+            } catch (ParseException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
+    }
+
     private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
                 if (positionTime != null)
-                    return PositionHelper.parseDateTime(PositionHelper.formatDate(positionTime) + " " + stringValue);
+                    return PositionHelper.parseDateTime(formatDate(positionTime) + " " + stringValue);
                 else
                     return PositionHelper.parseTime(stringValue);
             } catch (ParseException e) {
