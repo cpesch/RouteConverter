@@ -310,22 +310,32 @@ public class Transfer {
     }
 
     private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static String currentDateTimeTimeZone = "";
+    private static final DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
     private static String currentDateTimeZone = "";
     private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
-    private static String currentTimeZone = "";
+    private static String currentTimeTimeZone = "";
 
     public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
-        if (!currentDateTimeZone.equals(timeZonePreference)) {
+        if (!currentDateTimeTimeZone.equals(timeZonePreference)) {
             dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentDateTimeZone = timeZonePreference;
+            currentDateTimeTimeZone = timeZonePreference;
         }
         return dateTimeFormat;
     }
 
+    public synchronized static DateFormat getDateFormat(String timeZonePreference) {
+        if (!currentDateTimeZone.equals(timeZonePreference)) {
+            dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+            currentDateTimeZone = timeZonePreference;
+        }
+        return dateFormat;
+    }
+
     public synchronized static DateFormat getTimeFormat(String timeZonePreference) {
-        if (!currentTimeZone.equals(timeZonePreference)) {
+        if (!currentTimeTimeZone.equals(timeZonePreference)) {
             timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
+            currentTimeTimeZone = timeZonePreference;
         }
         return timeFormat;
     }

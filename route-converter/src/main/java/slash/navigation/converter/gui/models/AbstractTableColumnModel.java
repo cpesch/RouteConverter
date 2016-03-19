@@ -31,12 +31,24 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.prefs.Preferences;
 
-import static java.text.DateFormat.*;
+import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.*;
+import static java.text.DateFormat.getDateInstance;
+import static java.text.DateFormat.getDateTimeInstance;
+import static java.text.DateFormat.getTimeInstance;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
 import static java.util.Locale.US;
 import static slash.navigation.converter.gui.models.PositionTableColumn.VISIBLE_PROPERTY_NAME;
 
@@ -113,6 +125,11 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
     protected static String getExampleDateTimeFromCurrentLocale() {
         Calendar calendar = createExampleCalendar();
         return getDateTimeInstance(SHORT, MEDIUM).format(new Date(calendar.getTimeInMillis()));
+    }
+
+    protected static String getExampleDateFromCurrentLocale() {
+        Calendar calendar = createExampleCalendar();
+        return getDateInstance(SHORT).format(new Date(calendar.getTimeInMillis()));
     }
 
     protected static String getExampleTimeFromCurrentLocale() {

@@ -29,6 +29,7 @@ package slash.navigation.converter.gui.models;
 public interface PositionColumns {
     int DESCRIPTION_COLUMN_INDEX = 0;
     int DATE_TIME_COLUMN_INDEX = 1;
+    int DATE_COLUMN_INDEX = 15;
     int TIME_COLUMN_INDEX = 2;
     int LONGITUDE_COLUMN_INDEX = 3;
     int LATITUDE_COLUMN_INDEX = 4;

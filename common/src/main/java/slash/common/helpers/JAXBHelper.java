@@ -40,7 +40,7 @@ import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
 
 public class JAXBHelper {
     private static final Preferences preferences = Preferences.userNodeForPackage(JAXBHelper.class);
-    public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders".intern();
+    public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders";
 
     private static Map<List<Class<?>>, JAXBContext> classesToContext = new HashMap<>();
     private static boolean cacheContexts = false;

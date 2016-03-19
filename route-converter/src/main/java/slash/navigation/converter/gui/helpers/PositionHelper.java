@@ -28,16 +28,14 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.StringModel;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.String.format;
-import static java.text.DateFormat.SHORT;
+import static slash.common.io.Transfer.getDateFormat;
 import static slash.common.io.Transfer.getDateTimeFormat;
 import static slash.common.io.Transfer.getTimeFormat;
 import static slash.common.io.Transfer.roundFraction;
@@ -112,16 +110,6 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
-    public static String formatDate(CompactCalendar time) {
-        if(time == null)
-            return "?";
-
-        DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        dateFormat.setTimeZone(TimeZone.getTimeZone(timeZone.getString()));
-        return dateFormat.format(time.getTime());
-    }
-
     private static String formatDateTime(CompactCalendar time) {
         StringModel timeZone = RouteConverter.getInstance().getTimeZone();
         return getDateTimeFormat(timeZone.getString()).format(time.getTime());
@@ -130,6 +118,19 @@ public class PositionHelper {
     public static String extractDateTime(NavigationPosition position) {
         CompactCalendar time = position.getTime();
         return time != null ? formatDateTime(time) : "";
+    }
+
+    public static String formatDate(CompactCalendar time) {
+        if(time == null)
+            return "?";
+
+        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
+        return getDateFormat(timeZone.getString()).format(time.getTime());
+    }
+
+    public static String extractDate(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatDate(time) : "";
     }
 
     public static String formatTime(CompactCalendar time) {
@@ -147,14 +148,24 @@ public class PositionHelper {
         return fromDate(parsed);
     }
 
-    static CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
-        Date parsed = getTimeFormat(timeZonePreference).parse(stringValue);
-        return fromDate(parsed);
-    }
-
     public static CompactCalendar parseDateTime(String stringValue) throws ParseException {
         StringModel timeZone = RouteConverter.getInstance().getTimeZone();
         return parseDateTime(stringValue, timeZone.getString());
+    }
+
+    private static CompactCalendar parseDate(String stringValue, String timeZonePreference) throws ParseException {
+        Date parsed = getDateFormat(timeZonePreference).parse(stringValue);
+        return fromDate(parsed);
+    }
+
+    public static CompactCalendar parseDate(String stringValue) throws ParseException {
+        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
+        return parseDate(stringValue, timeZone.getString());
+    }
+
+    private static CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
+        Date parsed = getTimeFormat(timeZonePreference).parse(stringValue);
+        return fromDate(parsed);
     }
 
     public static CompactCalendar parseTime(String stringValue) throws ParseException {
