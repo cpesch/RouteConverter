@@ -54,18 +54,18 @@ public class GpsColumnTableCellRenderer extends AlternatingColorTableCellRendere
         String text = "?";
         if(tagState.equals(Tagged))
             text = MessageFormat.format(RouteConverter.getBundle().getString("gps-data-tagged"),
+                    formatDate(position.getTime()), formatTime(position.getTime()),
                     formatLongitude(position.getLongitude()), formatLatitude(position.getLatitude()),
-                    formatElevation(position.getElevation()), formatSpeed(position.getSpeed()),
-                    formatDate(position.getTime()), formatTime(position.getTime()));
+                    formatElevation(position.getElevation()), formatSpeed(position.getSpeed()));
         else if (tagState.equals(Taggable)) {
             NavigationPosition closestPositionForTagging = position.getClosestPositionForTagging();
             text = MessageFormat.format(RouteConverter.getBundle().getString("gps-data-taggable"),
+                    formatDate(closestPositionForTagging.getTime()), formatTime(closestPositionForTagging.getTime()),
                     closestPositionForTagging.getDescription(),
                     formatLongitude(closestPositionForTagging.getLongitude()),
                     formatLatitude(closestPositionForTagging.getLatitude()),
                     formatElevation(closestPositionForTagging.getElevation()),
-                    formatSpeed(closestPositionForTagging.getSpeed()),
-                    formatDate(closestPositionForTagging.getTime()), formatTime(closestPositionForTagging.getTime()));
+                    formatSpeed(closestPositionForTagging.getSpeed()));
         } else if (tagState.equals(NotTaggable))
             text = MessageFormat.format(RouteConverter.getBundle().getString("gps-data-nottaggable"),
                     formatDate(position.getTime()), formatTime(position.getTime()));

@@ -56,6 +56,6 @@ public class AddPhotosAction extends FrameAction {
             return;
 
         r.setAddPhotoPreference(selected[0]);
-        r.getGeoTagger().addPhotos(asList(selected));
+        r.getPhotoPanel().addPhotos(asList(selected));
     }
 }

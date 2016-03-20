@@ -131,26 +131,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
     }
 
-    private Map<Integer,ImageIcon> imageCache = new HashMap<>();
+    private Map<Integer,ImageAndFile> photoCache = new HashMap<>();
     private double[] distanceCache = null;
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case PHOTO_COLUMN_INDEX:
-                ImageIcon image = imageCache.get(rowIndex);
-                NavigationPosition position = getPosition(rowIndex);
-                if (image == null) {
+                ImageAndFile imageAndFile = photoCache.get(rowIndex);
+                if (imageAndFile == null) {
+                    NavigationPosition position = getPosition(rowIndex);
                     if (position instanceof Wgs84Position) {
                         Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
                         File file = wgs84Position.getOrigin(File.class);
                         if (file != null) {
                             BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
-                            image = new ImageIcon(resize);
-                            imageCache.put(rowIndex, image);
+                            if(resize != null) {
+                                imageAndFile = new ImageAndFile(new ImageIcon(resize), file);
+                                photoCache.put(rowIndex, imageAndFile);
+                            }
                         }
                     }
                 }
-                return new ImageAndText(image, position.getDescription());
+                return imageAndFile;
             case DISTANCE_COLUMN_INDEX:
                 if (distanceCache == null)
                     distanceCache = getRoute().getDistancesFromStart(0, getRowCount() - 1);
@@ -511,7 +513,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void fireTableChanged(TableModelEvent e) {
         this.currentEvent = e;
-        imageCache.clear();
+        photoCache.clear();
         distanceCache = null;
         super.fireTableChanged(e);
         this.currentEvent = null;

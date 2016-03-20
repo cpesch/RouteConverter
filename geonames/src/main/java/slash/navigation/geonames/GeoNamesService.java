@@ -70,7 +70,7 @@ public class GeoNamesService implements ElevationService {
     }
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
-        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude); // TODO could be up to 20 points
+        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude); // could be up to 20 points
         if (result != null) {
             try {
                 Integer elevation = parseInteger(result);

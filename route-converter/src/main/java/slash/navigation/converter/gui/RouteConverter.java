@@ -60,6 +60,7 @@ import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
+import slash.navigation.converter.gui.helpers.TagStrategy;
 import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.converter.gui.models.BooleanModel;
@@ -182,6 +183,7 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX7;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
+import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
@@ -238,6 +240,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
     private static final String FIND_PLACE_PREFERENCE = "findPlace";
     private static final String PHOTO_TIMEZONE_PREFERENCE = "photoTimeZone";
+    private static final String TAG_STRATEGY_PREFERENCE = "tagStrategy";
 
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
     private static final String PROFILE_DIVIDER_LOCATION_PREFERENCE = "profileDividerLocation";
@@ -590,6 +593,18 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setAddPhotoPreference(File path) {
         preferences.put(ADD_PHOTO_PREFERENCE, path.getPath());
+    }
+
+    public TagStrategy getTagStrategyPreference() {
+        try {
+            return TagStrategy.valueOf(preferences.get(TAG_STRATEGY_PREFERENCE, Create_Backup_In_Subdirectory.toString()));
+        } catch (IllegalArgumentException e) {
+            return Create_Backup_In_Subdirectory;
+        }
+    }
+
+    public void setTagStrategyPreference(TagStrategy tagStrategy) {
+        preferences.put(TAG_STRATEGY_PREFERENCE, tagStrategy.toString());
     }
 
     public String getCategoryPreference() {
@@ -962,7 +977,7 @@ public class RouteConverter extends SingleFrameApplication {
         return false;
     }
 
-    public boolean isPointsOfInterestSelected() {
+    public boolean isPointsOfInterestPanelSelected() {
         return tabbedPane.getSelectedComponent().equals(pointOfInterestPanel);
     }
 
@@ -970,7 +985,7 @@ public class RouteConverter extends SingleFrameApplication {
         return false;
     }
 
-    public boolean isPhotosSelected() {
+    public boolean isPhotosPanelSelected() {
         return tabbedPane.getSelectedComponent().equals(photoPanel);
     }
 
@@ -980,10 +995,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public ConvertPanel getConvertPanel() {
         return tabInitializer.getConvertPanel();
-    }
-
-    public PointOfInterestPanel getPointOfInterestPanel() {
-        return tabInitializer.getPointsOfInterestPanel();
     }
 
     public PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }

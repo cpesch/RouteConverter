@@ -154,7 +154,7 @@ public class GoogleMapsService implements ElevationService {
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        String url = getElevationUrl("locations=" + latitude + "," + longitude); // TODO could be up to 512 locations
+        String url = getElevationUrl("locations=" + latitude + "," + longitude); // could be up to 512 locations
         Get get = get(url);
         log.info("Getting elevation for " + longitude + "," + latitude);
         String result = get.executeAsString();

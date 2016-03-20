@@ -36,7 +36,7 @@ public class PhotoPosition extends Wgs84Position {
     private NavigationPosition closestPositionForTagging;
     private String make, model;
     private RationalNumber exposure, fNumber, focal;
-    private Integer width, height, flash;
+    private Integer width, height, flash, photographicSensitivity;
 
     public PhotoPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time,
                          String description, Object origin,
@@ -140,5 +140,13 @@ public class PhotoPosition extends Wgs84Position {
 
     public void setFocal(RationalNumber focal) {
         this.focal = focal;
+    }
+
+    public Integer getPhotographicSensitivity() {
+        return photographicSensitivity;
+    }
+
+    public void setPhotographicSensitivity(Integer photographicSensitivity) {
+        this.photographicSensitivity = photographicSensitivity;
     }
 }

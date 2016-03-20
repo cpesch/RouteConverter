@@ -47,7 +47,9 @@ public class ImageHelper {
     public static BufferedImage resize(File file, int height) {
         try {
             BufferedImage image = ImageIO.read(file);
-            double factor = (double)height / image.getHeight();
+            if (image == null)
+                return null;
+            double factor = (double) height / image.getHeight();
             return resize(image, (int) (image.getWidth() * factor), height);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

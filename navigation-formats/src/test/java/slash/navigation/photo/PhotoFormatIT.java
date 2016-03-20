@@ -79,6 +79,7 @@ public class PhotoFormatIT {
         assertRationalNumberEquals(new RationalNumber(10, 8000), position.getExposure());
         assertEquals(new Integer(0), position.getFlash());
         assertRationalNumberEquals(new RationalNumber(700, 10), position.getFocal());
+        assertEquals(new Integer(200), position.getPhotographicSensitivity());
     }
 
     @Test
@@ -110,6 +111,7 @@ public class PhotoFormatIT {
         assertRationalNumberEquals(new RationalNumber(1, 65536000), position.getExposure());
         assertEquals(new Integer(24), position.getFlash());
         assertRationalNumberEquals(new RationalNumber(100, 41), position.getFocal());
+        assertNull(position.getPhotographicSensitivity());
     }
 
     @Test
@@ -141,6 +143,7 @@ public class PhotoFormatIT {
         assertNull(position.getExposure());
         assertNull(position.getFlash());
         assertNull(position.getFocal());
+        assertNull(position.getPhotographicSensitivity());
     }
 
     private void modifyImage(String path) throws IOException {
@@ -170,6 +173,7 @@ public class PhotoFormatIT {
         position.setExposure(new RationalNumber(11, 8000));
         position.setFlash(1);
         position.setFocal(new RationalNumber(35, 1));
+        position.setPhotographicSensitivity(800);
 
         File target = createTempFile("target", ".jpg");
         target.deleteOnExit();
@@ -203,6 +207,7 @@ public class PhotoFormatIT {
             assertRationalNumberEquals(new RationalNumber(11, 8000), position2.getExposure());
             assertEquals(new Integer(1), position2.getFlash());
             assertRationalNumberEquals(new RationalNumber(35, 1), position2.getFocal());
+            assertEquals(new Integer(800), position.getPhotographicSensitivity());
 
             assertTrue(target.delete());
         } finally {

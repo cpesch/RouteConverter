@@ -20,10 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.converter.gui.models.ImageAndText;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.ImageAndFile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 /**
  * Renders the photo column of the photos table.
@@ -32,17 +34,27 @@ import java.awt.*;
  */
 
 public class PhotoColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
+
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = JLabel.class.cast(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex));
-        ImageAndText imageAndText = ImageAndText.class.cast(value);
+        label.setHorizontalTextPosition(RIGHT);
+        label.setVerticalTextPosition(CENTER);
+        label.setText(RouteConverter.getBundle().getString("no-photo"));
+        label.setToolTipText(null);
+        label.setIcon(null);
 
-        label.setToolTipText(imageAndText.getText());
-        ImageIcon image = imageAndText.getImage();
-        label.setIcon(image);
-        if (image != null)
-            label.setText(null);
-        else
-            label.setText(imageAndText.getText());
+        ImageAndFile imageAndFile = ImageAndFile.class.cast(value);
+        if (imageAndFile != null) {
+            File file = imageAndFile.getFile();
+            if (file != null) {
+                label.setText(file.getName());
+                label.setToolTipText(file.getPath());
+            }
+
+            ImageIcon image = imageAndFile.getImage();
+            label.setIcon(image);
+        }
         return label;
     }
 }

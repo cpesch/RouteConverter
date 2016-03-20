@@ -31,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import static slash.common.type.CompactCalendar.UTC;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 
@@ -42,6 +43,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 
 public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
     private static final String COMMA = ", ";
+    public static final String UTC_TIMEZONE_ID = UTC.getID();
     private static Map<String, Integer> EXIF_FLASH_CONSTANTS = new HashMap<>();
 
     static {
@@ -81,9 +83,11 @@ public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRender
         PhotoPosition position = PhotoPosition.class.cast(value);
         String exposure = position.getExposure() != null ? position.getExposure().numerator + "/" + position.getExposure().divisor : "?";
         String text = MessageFormat.format(RouteConverter.getBundle().getString("exif-data"),
-                position.getDescription(), formatDate(position.getTime()), formatTime(position.getTime()),
+                formatDate(position.getTime(), UTC_TIMEZONE_ID),
+                formatTime(position.getTime(), UTC_TIMEZONE_ID),
                 position.getMake(), position.getModel(), position.getWidth(), position.getHeight(),
-                position.getfNumber(), exposure, position.getFocal(), getFlash(position.getFlash()));
+                position.getfNumber(), exposure, position.getFocal(), getFlash(position.getFlash()),
+                position.getPhotographicSensitivity());
         label.setText(text);
         label.setVerticalAlignment(TOP);
         return label;
