@@ -48,8 +48,11 @@ public class PanelDropHandler extends TransferHandler {
         if (r.isConvertPanelSelected()) {
             List<File> onlyFiles = Files.collectFiles(files);
             r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])), true);
-        } else if (r.isBrowsePanelSelected())
+        } else if (r.isBrowsePanelSelected()) {
             r.getBrowsePanel().addFilesToCatalog(files);
+        } else if (r.isPhotosPanelSelected()) {
+            r.getPhotoPanel().addPhotos(files);
+        }
     }
 
     private void openOrAdd(String string) {

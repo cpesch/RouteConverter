@@ -145,7 +145,7 @@ public class OptionsDialog extends SimpleDialog {
     private JButton buttonChooseElevationServicePath;
     private JComboBox<TravelMode> comboboxTravelMode;
     private JComboBox<NumberPattern> comboboxNumberPattern;
-    private JComboBox<NumberingStrategy> comboboxNumberingStrategy;
+    private JComboBox<NumberingStrategy> comboBoxNumberingStrategy;
     private JComboBox<UnitSystem> comboBoxUnitSystem;
     private JComboBox<String> comboBoxTimeZone;
     private JComboBox<DegreeFormat> comboBoxDegreeFormat;
@@ -358,9 +358,9 @@ public class OptionsDialog extends SimpleDialog {
                 Absolute_Position_Within_Position_List, Relative_Position_In_Current_Selection
         });
         numberingStrategyModel.setSelectedItem(r.getNumberingStrategyPreference());
-        comboboxNumberingStrategy.setModel(numberingStrategyModel);
-        comboboxNumberingStrategy.setRenderer(new NumberingStrategyListCellRenderer());
-        comboboxNumberingStrategy.addItemListener(new ItemListener() {
+        comboBoxNumberingStrategy.setModel(numberingStrategyModel);
+        comboBoxNumberingStrategy.setRenderer(new NumberingStrategyListCellRenderer());
+        comboBoxNumberingStrategy.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
                     return;
@@ -705,8 +705,8 @@ public class OptionsDialog extends SimpleDialog {
         final JLabel label16 = new JLabel();
         this.$$$loadLabelText$$$(label16, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("numbering-strategy"));
         panel9.add(label16, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboboxNumberingStrategy = new JComboBox();
-        panel9.add(comboboxNumberingStrategy, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxNumberingStrategy = new JComboBox();
+        panel9.add(comboBoxNumberingStrategy, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
         panel2.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

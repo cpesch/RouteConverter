@@ -39,6 +39,7 @@ import slash.navigation.photo.PhotoPosition;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -60,8 +61,9 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.WaypointType.Photo;
+import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
+import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.photo.TagState.NotTaggable;
 import static slash.navigation.photo.TagState.Taggable;
@@ -107,10 +109,8 @@ public class GeoTagger {
 
     private interface Operation {
         String getName();
-
         boolean run(int index, NavigationPosition position) throws Exception;
-
-        String getErrorMessage();
+        String getMessagePrefix();
     }
 
     private NotificationManager getNotificationManager() {
@@ -138,8 +138,6 @@ public class GeoTagger {
         executor.execute(new Runnable() {
             public void run() {
                 final int[] count = new int[1];
-                count[0] = 1;
-
                 try {
                     final List<File> files = collectFiles(filesAndDirectories);
 
@@ -166,7 +164,7 @@ public class GeoTagger {
                             lastException[0] = e;
                         }
                         getNotificationManager().showNotification(MessageFormat.format(
-                                RouteConverter.getBundle().getString("tagging-progress"), count[0]++, files.size()), cancelAction);
+                                RouteConverter.getBundle().getString("add-photos-progress"), count[0]++, files.size()), cancelAction);
                     }
 
                     if (lastException[0] != null)
@@ -178,7 +176,7 @@ public class GeoTagger {
                     invokeLater(new Runnable() {
                         public void run() {
                             getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("tagging-finished"), count[0]), null);
+                                    RouteConverter.getBundle().getString("add-photos-finished"), count[0]), null);
                         }
                     });
                 }
@@ -188,6 +186,13 @@ public class GeoTagger {
 
     private PhotoPosition extractPhotoPosition(File file) throws IOException {
         PhotoPosition position = extractMetadata(file);
+        updateClosestPositionForTagging(position);
+        return position;
+    }
+
+    private void updateClosestPositionForTagging(PhotoPosition position) {
+        position.setTagState(NotTaggable);
+        position.setClosestPositionForTagging(null);
 
         PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
         int index = getClosestPositionByCoordinates(position);
@@ -202,8 +207,6 @@ public class GeoTagger {
                 position.setClosestPositionForTagging(originalPositionsModel.getPosition(index));
             }
         }
-
-        return position;
     }
 
     private int getClosestPositionByCoordinates(NavigationPosition position) {
@@ -254,8 +257,6 @@ public class GeoTagger {
         executor.execute(new Runnable() {
             public void run() {
                 final int[] count = new int[1];
-                count[0] = 1;
-
                 try {
                     invokeLater(new Runnable() {
                         public void run() {
@@ -277,8 +278,8 @@ public class GeoTagger {
                                 log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
                                 lastException[0] = e;
                             }
-                            getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("tagging-progress"), count[0]++, rows.length), cancelAction);
+                            String progressMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "progress");
+                            getNotificationManager().showNotification(MessageFormat.format(progressMessage, count[0]++, rows.length), cancelAction);
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
@@ -299,15 +300,16 @@ public class GeoTagger {
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
-                    if (lastException[0] != null)
+                    if (lastException[0] != null) {
+                        String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
                         showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), getLocalizedMessage(lastException[0])),
-                                frame.getTitle(), ERROR_MESSAGE);
+                                MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle(), ERROR_MESSAGE);
+                    }
                 } finally {
                     invokeLater(new Runnable() {
                         public void run() {
-                            getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("tagging-finished"), count[0]), null);
+                            String finishedMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "finished");
+                            getNotificationManager().showNotification(MessageFormat.format(finishedMessage, count[0]), null);
                         }
                     });
                 }
@@ -316,8 +318,10 @@ public class GeoTagger {
     }
 
 
-    private void updateMetaData(PhotoPosition position, NavigationPosition closestPositionForTagging) throws IOException {
-        File file = position.getOrigin(File.class);
+    private void updateMetaData(PhotoPosition position, NavigationPosition closestPositionForTagging,
+                                TagStrategy tagStrategy) throws IOException {
+        File source = position.getOrigin(File.class);
+        File target = null;
 
         long start = currentTimeMillis();
         try {
@@ -327,16 +331,28 @@ public class GeoTagger {
             position.setSpeed(closestPositionForTagging.getSpeed());
             position.setWaypointType(Photo);
 
-            Wgs84Route route = new Wgs84Route(new PhotoFormat(), Waypoints, new ArrayList<Wgs84Position>(singletonList(position)));
-            NavigationFormatParser parser = new NavigationFormatParser(new PhotoNavigationFormatRegistry());
-            // TODO currently writing to separate file
-            parser.write(route, new PhotoFormat(), new File(file.getAbsolutePath() + ".new"));
+            if (tagStrategy.equals(Create_Tagged_Photo_In_Subdirectory)) {
+                File subDirectory = createSubDirectory(source, "tagged");
+                target = new File(subDirectory, source.getName());
+
+            } else {
+                File subDirectory = createSubDirectory(source, "bak");
+                File sourceBackup = new File(subDirectory, source.getName());
+                if (!source.renameTo(sourceBackup))
+                    throw new IOException(format("Cannot rename %s to %s", source.getPath(), subDirectory.getPath()));
+                target = source;
+                source = sourceBackup;
+            }
+
+            new PhotoFormat().write(position, source, new FileOutputStream(target));
+
+            position.setTagState(Tagged);
 
             if (closestPositionForTagging instanceof Wgs84Position) {
                 Wgs84Position wgs84Position = Wgs84Position.class.cast(closestPositionForTagging);
-                wgs84Position.setDescription(file.getAbsolutePath());
+                wgs84Position.setDescription(source.getAbsolutePath());
                 wgs84Position.setWaypointType(Photo);
-                wgs84Position.setOrigin(file);
+                wgs84Position.setOrigin(source);
 
                 PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
                 int index = originalPositionsModel.getIndex(wgs84Position);
@@ -345,13 +361,49 @@ public class GeoTagger {
 
         } finally {
             long end = currentTimeMillis();
-            log.info("Updating metadata of " + file + " took " + (end - start) + " milliseconds");
+            log.info("Updating metadata of " + target + " took " + (end - start) + " milliseconds");
         }
+    }
+
+    private File createSubDirectory(File source, String name) throws IOException {
+        File subDirectory = new File(source.getParentFile(), name);
+        if (!subDirectory.exists()) {
+            if (!subDirectory.mkdir())
+                throw new IOException(format("Cannot create directory %s", subDirectory.getPath()));
+        }
+        return subDirectory;
+    }
+
+    public void updateClosestPositionsForTagging() {
+        int[] rows = asRange(0, photosModel.getRowCount() - 1);
+        executeOperation(photosView, photosModel, rows, new Operation() {
+            public String getName() {
+                return "UpdateClosestPositionForTagging";
+            }
+
+            public boolean run(int index, NavigationPosition navigationPosition) throws Exception {
+                if (!(navigationPosition instanceof PhotoPosition))
+                    return false;
+
+                PhotoPosition position = PhotoPosition.class.cast(navigationPosition);
+                if (position.getTagState().equals(Tagged))
+                    return false;
+
+                updateClosestPositionForTagging(position);
+                return true;
+            }
+
+            public String getMessagePrefix() {
+                return "update-closest-position-";
+            }
+        });
     }
 
     public void tagPhotos() {
         int[] rows = photosView.getSelectedRows();
-        if (rows.length > 0)
+        if (rows.length > 0) {
+            final TagStrategy tagStrategy = RouteConverter.getInstance().getTagStrategyPreference();
+
             executeOperation(photosView, photosModel, rows, new Operation() {
                 public String getName() {
                     return "TagPhotosTagger";
@@ -369,13 +421,14 @@ public class GeoTagger {
                     if (closestPositionForTagging == null)
                         return false;
 
-                    updateMetaData(position, closestPositionForTagging);
+                    updateMetaData(position, closestPositionForTagging, tagStrategy);
                     return true;
                 }
 
-                public String getErrorMessage() {
-                    return RouteConverter.getBundle().getString("tag-photos-error");
+                public String getMessagePrefix() {
+                    return "tag-photos-";
                 }
             });
+        }
     }
 }

@@ -275,7 +275,7 @@ public class DataSourceManager {
                 DataSource dataSource = downloadable.getDataSource();
                 addOrUpdateInQueue(dataSource, downloadable);
             } else
-                log.info("Cannot find downloadable for " + download.getUrl()); // TODO fine
+                log.fine("Cannot find downloadable for " + download.getUrl());
 
         }
     }

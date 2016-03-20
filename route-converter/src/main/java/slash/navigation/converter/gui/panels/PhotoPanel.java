@@ -28,8 +28,10 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddPhotosAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.TagPhotosAction;
+import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.PhotosTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PhotosTablePopupMenu;
+import slash.navigation.converter.gui.helpers.TagStrategy;
 import slash.navigation.converter.gui.models.FilteringPositionsModel;
 import slash.navigation.converter.gui.models.PhotoTagStateToJLabelAdapter;
 import slash.navigation.converter.gui.models.PhotosTableColumnModel;
@@ -40,6 +42,7 @@ import slash.navigation.converter.gui.predicates.FilterPredicate;
 import slash.navigation.converter.gui.predicates.TagStatePhotoPredicate;
 import slash.navigation.converter.gui.predicates.TautologyPredicate;
 import slash.navigation.converter.gui.renderer.FilterPredicateListCellRenderer;
+import slash.navigation.converter.gui.renderer.TagStrategyListCellRenderer;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.photo.PhotoFormat;
@@ -52,18 +55,23 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.lang.Integer.MAX_VALUE;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
+import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
 import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
@@ -92,7 +100,7 @@ public class PhotoPanel implements PanelInTab {
     private JComboBox<FilterPredicate> comboBoxFilterPhotoPredicate;
     private JButton buttonAddPhotos;
     private JComboBox<String> comboBoxPhotoTimeZone;
-    private JComboBox<String> comboBoxTagStrategy;
+    private JComboBox<TagStrategy> comboBoxTagStrategy;
     private JButton buttonTagPhotos;
 
     private static final ComboBoxModel<FilterPredicate> FILTER_PREDICATE_MODEL = new DefaultComboBoxModel<>(new FilterPredicate[]{
@@ -103,6 +111,7 @@ public class PhotoPanel implements PanelInTab {
     });
 
     private PositionsModel photosModel = new PositionsModelImpl();
+    private FilteringPositionsModel filteredPhotosModel;
 
     public PhotoPanel() {
         $$$setupUI$$$();
@@ -113,15 +122,28 @@ public class PhotoPanel implements PanelInTab {
         final RouteConverter r = RouteConverter.getInstance();
 
         photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, new ArrayList<Wgs84Position>()));
-        tablePhotos.setModel(getPhotosModel());
+        filteredPhotosModel = new FilteringPositionsModel(photosModel, getFilterPredicatePreference());
+        tablePhotos.setModel(filteredPhotosModel);
         PhotosTableColumnModel tableColumnModel = new PhotosTableColumnModel();
         tablePhotos.setColumnModel(tableColumnModel);
+        tablePhotos.setDropMode(ON);
+
+        r.getUnitSystemModel().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getFilteredPhotosModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+            }
+        });
+        r.getTimeZone().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getFilteredPhotosModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+            }
+        });
 
         tablePhotos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                if (getPhotosModel().isContinousRange())
+                if (getFilteredPhotosModel().isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
@@ -148,7 +170,7 @@ public class PhotoPanel implements PanelInTab {
         new PhotosTablePopupMenu(tablePhotos).createPopupMenu();
 
         actionManager.register("add-photos", new AddPhotosAction());
-        actionManager.register("delete-photos", new DeletePositionAction(tablePhotos, getPhotosModel()));
+        actionManager.register("delete-photos", new DeletePositionAction(tablePhotos, getFilteredPhotosModel()));
         actionManager.registerLocal("delete", PHOTOS, "delete-photos");
         actionManager.register("tag-photos", new TagPhotosAction());
 
@@ -157,7 +179,6 @@ public class PhotoPanel implements PanelInTab {
 
         setHelpIDString(tablePhotos, "photo-list");
 
-        final FilteringPositionsModel filteredPhotosModel = new FilteringPositionsModel(photosModel, getFilterPredicatePreference());
         comboBoxFilterPhotoPredicate.setModel(FILTER_PREDICATE_MODEL);
         comboBoxFilterPhotoPredicate.setSelectedItem(getFilterPredicatePreference());
         comboBoxFilterPhotoPredicate.setRenderer(new FilterPredicateListCellRenderer());
@@ -182,11 +203,27 @@ public class PhotoPanel implements PanelInTab {
                 }
                 String timeZoneId = String.valueOf(e.getItem());
                 r.setPhotoTimeZone(timeZoneId);
+                r.getGeoTagger().updateClosestPositionsForTagging();
             }
         });
 
-        // TODO
-        comboBoxTagStrategy.setModel(new DefaultComboBoxModel(new Object[]{"Original �berschreiben", "Kopie anlegen"}));
+        ComboBoxModel<TagStrategy> tagStrategyModel = new DefaultComboBoxModel<>(new TagStrategy[]{
+                Create_Backup_In_Subdirectory, Create_Tagged_Photo_In_Subdirectory
+        });
+        tagStrategyModel.setSelectedItem(r.getTagStrategyPreference());
+        comboBoxTagStrategy.setModel(tagStrategyModel);
+        comboBoxTagStrategy.setRenderer(new TagStrategyListCellRenderer());
+        comboBoxTagStrategy.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED) {
+                    return;
+                }
+                TagStrategy tagStrategy = TagStrategy.class.cast(e.getItem());
+                r.setTagStrategyPreference(tagStrategy);
+            }
+        });
+
+        photosPanel.setTransferHandler(new PanelDropHandler());
 
         handlePositionsUpdate();
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
@@ -217,6 +254,10 @@ public class PhotoPanel implements PanelInTab {
         return photosModel;
     }
 
+    private PositionsModel getFilteredPhotosModel() {
+        return filteredPhotosModel;
+    }
+
     public void initializeSelection() {
     }
 
@@ -227,9 +268,10 @@ public class PhotoPanel implements PanelInTab {
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
         actionManager.enableLocal("delete", PHOTOS, existsASelectedPosition);
+        actionManager.enable("tag-photos", existsASelectedPosition);
 
-        if (r.isPhotosSelected()) {
-            // TODO show select positions by coordinates not index to positions model
+        if (r.isPhotosPanelSelected()) {
+            // TODO show select positions by coordinates not index to positions model!
             r.selectPositionsInMap(selectedRows);
         }
     }
@@ -255,6 +297,10 @@ public class PhotoPanel implements PanelInTab {
 
     private void setFilterPredicatePreference(FilterPredicate filterPredicate) {
         preferences.put(FILTER_PHOTO_PREDICATE_PREFERENCE, filterPredicate.getName());
+    }
+
+    public void addPhotos(List<File> files) {
+        RouteConverter.getInstance().getGeoTagger().addPhotos(files);
     }
 
     /**
@@ -300,7 +346,7 @@ public class PhotoPanel implements PanelInTab {
         panel2.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
         photosPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
-        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("photo-timezone"));
+        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("camera-timezone"));
         panel2.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxPhotoTimeZone = new JComboBox();
         panel2.add(comboBoxPhotoTimeZone, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -377,4 +423,5 @@ public class PhotoPanel implements PanelInTab {
     public JComponent $$$getRootComponent$$$() {
         return photosPanel;
     }
+
 }

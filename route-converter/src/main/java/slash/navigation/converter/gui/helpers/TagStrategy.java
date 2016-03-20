@@ -17,31 +17,20 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.models;
 
-import slash.navigation.common.NavigationPosition;
-
-import javax.swing.*;
+package slash.navigation.converter.gui.helpers;
 
 /**
- * Combines the image and text of a {@link NavigationPosition}
+ * Enumeration of the strategies how to tag photos.
+ *
+ * Create_Backup_In_Subdirectory: First create a backup of the photo to be modified in a subdirectory,
+ * then modify the original photo
+ *
+ * Create_Tagged_Photo_In_Subdirectory: Create the tagged photo in a subdirectory
  *
  * @author Christian Pesch
  */
-public class ImageAndText {
-    private final ImageIcon image;
-    private final String text;
 
-    public ImageAndText(ImageIcon image, String text) {
-        this.image = image;
-        this.text = text;
-    }
-
-    public ImageIcon getImage() {
-        return image;
-    }
-
-    public String getText() {
-        return text;
-    }
+public enum TagStrategy {
+    Create_Backup_In_Subdirectory, Create_Tagged_Photo_In_Subdirectory
 }

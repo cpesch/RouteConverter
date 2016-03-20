@@ -120,12 +120,14 @@ public class PositionHelper {
         return time != null ? formatDateTime(time) : "";
     }
 
-    public static String formatDate(CompactCalendar time) {
+    public static String formatDate(CompactCalendar time, String timeZone) {
         if(time == null)
             return "?";
+        return getDateFormat(timeZone).format(time.getTime());
+    }
 
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return getDateFormat(timeZone.getString()).format(time.getTime());
+    public static String formatDate(CompactCalendar time) {
+        return formatDate(time, RouteConverter.getInstance().getTimeZone().getString());
     }
 
     public static String extractDate(NavigationPosition position) {
@@ -133,9 +135,14 @@ public class PositionHelper {
         return time != null ? formatDate(time) : "";
     }
 
+    public static String formatTime(CompactCalendar time, String timeZone) {
+        if(time == null)
+            return "?";
+        return getTimeFormat(timeZone).format(time.getTime());
+    }
+
     public static String formatTime(CompactCalendar time) {
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return getTimeFormat(timeZone.getString()).format(time.getTime());
+        return formatTime(time, RouteConverter.getInstance().getTimeZone().getString());
     }
 
     public static String extractTime(NavigationPosition position) {

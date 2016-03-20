@@ -126,7 +126,7 @@ public class PositionAugmenter {
         int getColumnIndex();
         void performOnStart();
         boolean run(int index, NavigationPosition position) throws Exception;
-        String getErrorMessage();
+        String getMessagePrefix();
     }
 
     private NotificationManager getNotificationManager() {
@@ -209,10 +209,11 @@ public class PositionAugmenter {
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
-                    if (lastException[0] != null)
+                    if (lastException[0] != null) {
+                        String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
                         showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), getLocalizedMessage(lastException[0])),
-                                frame.getTitle(), ERROR_MESSAGE);
+                                MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle(), ERROR_MESSAGE);
+                    }
                 } finally {
                     invokeLater(new Runnable() {
                         public void run() {
@@ -251,8 +252,8 @@ public class PositionAugmenter {
                         return coordinates != null;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-coordinates-error");
+                    public String getMessagePrefix() {
+                        return "add-coordinates-";
                     }
                 }
         );
@@ -292,8 +293,8 @@ public class PositionAugmenter {
                         return changed;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-elevation-error");
+                    public String getMessagePrefix() {
+                        return "add-elevation-";
                     }
                 }
         );
@@ -344,8 +345,8 @@ public class PositionAugmenter {
                         return description != null;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-populated-place-error");
+                    public String getMessagePrefix() {
+                        return "add-populated-place-";
                     }
                 }
         );
@@ -382,8 +383,8 @@ public class PositionAugmenter {
                         return description != null;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-postal-address-error");
+                    public String getMessagePrefix() {
+                        return "add-postal-address-";
                     }
                 }
         );
@@ -426,8 +427,8 @@ public class PositionAugmenter {
                         return false;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-speed-error");
+                    public String getMessagePrefix() {
+                        return "add-speed-";
                     }
                 }
         );
@@ -488,8 +489,8 @@ public class PositionAugmenter {
                         return false;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-time-error");
+                    public String getMessagePrefix() {
+                        return "add-time-";
                     }
                 }
         );
@@ -539,8 +540,8 @@ public class PositionAugmenter {
                         return changed;
                     }
 
-                    public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-number-error");
+                    public String getMessagePrefix() {
+                        return "add-number-";
                     }
                 }
         );
@@ -628,15 +629,15 @@ public class PositionAugmenter {
                                 complementTime && columnIndices.contains(DATE_TIME_COLUMN_INDEX);
                     }
 
-                    public String getErrorMessage() {
-                        String messageKey = "add-data-error";
+                    public String getMessagePrefix() {
+                        String messageKey = "add-data-";
                         if (complementDescription)
-                            messageKey = "add-description-error";
+                            messageKey = "add-description-";
                         else if (complementElevation)
-                            messageKey = "add-elevation-error";
+                            messageKey = "add-elevation-";
                         else if (complementTime)
-                            messageKey = "add-time-error";
-                        return RouteConverter.getBundle().getString(messageKey);
+                            messageKey = "add-time-";
+                        return messageKey;
                     }
                 }
         );

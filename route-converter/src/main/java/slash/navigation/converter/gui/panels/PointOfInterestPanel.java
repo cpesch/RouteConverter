@@ -45,10 +45,12 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.lang.Integer.MAX_VALUE;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
@@ -83,6 +85,17 @@ public class PointOfInterestPanel implements PanelInTab {
         tablePointsOfInterest.setModel(getPositionsModel());
         PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel();
         tablePointsOfInterest.setColumnModel(tableColumnModel);
+
+        r.getUnitSystemModel().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+            }
+        });
+        r.getTimeZone().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+            }
+        });
 
         tablePointsOfInterest.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -168,7 +181,7 @@ public class PointOfInterestPanel implements PanelInTab {
         actionManager.enableLocal("delete", POINTS_OF_INTEREST, existsASelectedPosition);
         actionManager.enable("play-voice", existsASelectedPosition);
 
-        if (r.isPointsOfInterestSelected())
+        if (r.isPointsOfInterestPanelSelected())
             r.selectPositionsInMap(getPositionsModel().mapRows(selectedRows));
     }
 
