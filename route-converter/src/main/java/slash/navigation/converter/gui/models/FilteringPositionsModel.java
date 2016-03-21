@@ -167,7 +167,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     public void add(int rowIndex, List<BaseNavigationPosition> positions) {
-        delegate.add(mapRow(rowIndex), positions);
+        throw new UnsupportedOperationException();
     }
 
     public void remove(int firstIndex, int lastIndex) {
