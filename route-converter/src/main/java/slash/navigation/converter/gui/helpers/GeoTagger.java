@@ -59,6 +59,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.WaypointType.Photo;
@@ -367,11 +368,7 @@ public class GeoTagger {
 
     private File createSubDirectory(File source, String name) throws IOException {
         File subDirectory = new File(source.getParentFile(), name);
-        if (!subDirectory.exists()) {
-            if (!subDirectory.mkdir())
-                throw new IOException(format("Cannot create directory %s", subDirectory.getPath()));
-        }
-        return subDirectory;
+        return ensureDirectory(subDirectory);
     }
 
     public void updateClosestPositionsForTagging() {
