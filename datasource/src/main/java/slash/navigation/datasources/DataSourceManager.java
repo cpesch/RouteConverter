@@ -39,6 +39,8 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
@@ -243,7 +245,7 @@ public class DataSourceManager {
         File directory = getApplicationDirectory(dataSource.getDirectory());
         File target = new File(directory, downloadable.getUri().toLowerCase());
         if (action.equals(Extract) || action.equals(Flatten))
-            target = target.getParentFile();
+            target = ensureDirectory(target.getParentFile());
 
         return downloadManager.queueForDownload(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,

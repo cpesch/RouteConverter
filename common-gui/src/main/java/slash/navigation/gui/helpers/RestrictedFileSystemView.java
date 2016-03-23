@@ -28,6 +28,8 @@ import java.text.MessageFormat;
 import java.util.Vector;
 
 import static java.io.File.createTempFile;
+
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 
 /**
@@ -236,10 +238,8 @@ class RestrictedFileSystemView extends FileSystemView {
         if (newFolder.exists()) {
             throw new IOException("Directory already exists:" + newFolder.getAbsolutePath());
         } else {
-            if (!newFolder.mkdirs())
-                throw new IOException("Could not create directories: " + newFolder.getAbsolutePath());
+            newFolder = ensureDirectory(newFolder);
         }
-
         return newFolder;
     }
 }
