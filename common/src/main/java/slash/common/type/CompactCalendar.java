@@ -102,7 +102,7 @@ public class CompactCalendar {
     }
 
     public CompactCalendar asUTCTimeInTimeZone(TimeZone timeZone) {
-        return new CompactCalendar(timeInMillis + timeZone.getOffset(timeInMillis), "UTC");
+        return new CompactCalendar(timeInMillis - timeZone.getOffset(timeInMillis), "UTC");
     }
 
     public long getTimeInMillis() {

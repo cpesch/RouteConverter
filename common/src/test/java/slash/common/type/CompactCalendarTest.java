@@ -68,7 +68,7 @@ public class CompactCalendarTest {
         CompactCalendar inTimeZone = calendar.asUTCTimeInTimeZone(TimeZone.getTimeZone("GMT+2"));
 
         assertEquals(calendar.getCalendar().getTimeInMillis(), 1000000);
-        assertEquals(inTimeZone.getCalendar().getTimeInMillis(), 1000000 + 2 * 60 * 60 * 1000);
+        assertEquals(inTimeZone.getCalendar().getTimeInMillis(), 1000000 - 2 * 60 * 60 * 1000);
         assertEquals("UTC", inTimeZone.getTimeZoneId());
     }
 
