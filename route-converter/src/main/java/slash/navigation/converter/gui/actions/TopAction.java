@@ -41,7 +41,7 @@ public class TopAction extends FrameAction {
     public void run() {
         int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            convertPanel.getFormatAndRoutesModel().getPositionsModel().top(selectedRows);
+            convertPanel.getPositionsModel().top(selectedRows);
             convertPanel.selectPositions(selectedRows);
         }
     }

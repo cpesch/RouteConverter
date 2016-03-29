@@ -41,7 +41,7 @@ public class BottomAction extends FrameAction {
     public void run() {
         int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            convertPanel.getFormatAndRoutesModel().getPositionsModel().bottom(selectedRows);
+            convertPanel.getPositionsModel().bottom(selectedRows);
             convertPanel.selectPositions(selectedRows);
         }
     }

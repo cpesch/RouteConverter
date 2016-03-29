@@ -38,14 +38,16 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public class FormatAndRoutesModelImpl extends AbstractListModel implements FormatAndRoutesModel {
+    private final PositionsModel positionsModel;
+    private final CharacteristicsModel characteristicsModel;
     private boolean modified = false;
     private FormatAndRoutes formatAndRoutes;
-    private PositionsModel positionsModel;
-    private CharacteristicsModel characteristicsModel = new CharacteristicsModel();
 
-    public FormatAndRoutesModelImpl(PositionsModel positionsModel) {
+    public FormatAndRoutesModelImpl(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
         this.positionsModel = positionsModel;
-        getPositionsModel().addTableModelListener(new TableModelListener() {
+        this.characteristicsModel = characteristicsModel;
+
+        positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
@@ -61,7 +63,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
                 setModified(true);
             }
         });
-        getCharacteristicsModel().addListDataListener(new ListDataListener() {
+        characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
             }
 
@@ -153,14 +155,6 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         return getRoutes().indexOf(route);
     }
 
-    public PositionsModel getPositionsModel() {
-        return positionsModel;
-    }
-
-    public CharacteristicsModel getCharacteristicsModel() {
-        return characteristicsModel;
-    }
-
     public boolean isModified() {
         return modified;
     }
@@ -190,7 +184,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     }
 
     public BaseRoute getSelectedRoute() {
-        return getPositionsModel().getRoute();
+        return positionsModel.getRoute();
     }
 
     @SuppressWarnings("unchecked")
@@ -202,8 +196,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     public void setSelectedRoute(BaseRoute route) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
-            getPositionsModel().setRoute(route);
-            getCharacteristicsModel().setRoute(route);
+            positionsModel.setRoute(route);
+            characteristicsModel.setRoute(route);
             fireContentsChanged(this, -1, -1);
         }
     }

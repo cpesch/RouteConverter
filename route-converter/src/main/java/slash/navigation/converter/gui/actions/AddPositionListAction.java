@@ -26,6 +26,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -39,16 +40,17 @@ import java.util.ArrayList;
  */
 
 public class AddPositionListAction extends FrameAction {
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final ConvertPanel convertPanel;
 
-    public AddPositionListAction(FormatAndRoutesModel formatAndRoutesModel) {
-        this.formatAndRoutesModel = formatAndRoutesModel;
+    public AddPositionListAction(ConvertPanel convertPanel) {
+        this.convertPanel = convertPanel;
     }
 
     @SuppressWarnings("unchecked")
     public void run() {
+        FormatAndRoutesModel formatAndRoutesModel = convertPanel.getFormatAndRoutesModel();
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        BaseRoute route = format.createRoute((RouteCharacteristics) formatAndRoutesModel.getCharacteristicsModel().getSelectedItem(),
+        BaseRoute route = format.createRoute((RouteCharacteristics) convertPanel.getCharacteristicsModel().getSelectedItem(),
                 MessageFormat.format(getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
                 new ArrayList<NavigationPosition>());
         formatAndRoutesModel.addPositionList(formatAndRoutesModel.getSize(), route);
