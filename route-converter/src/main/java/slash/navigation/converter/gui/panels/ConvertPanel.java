@@ -77,6 +77,7 @@ import slash.navigation.converter.gui.helpers.PositionsTablePopupMenu;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
+import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
 import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
 import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
@@ -91,6 +92,7 @@ import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
+import slash.navigation.converter.gui.undo.UndoPositionsModel;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanRoute;
@@ -222,7 +224,9 @@ public class ConvertPanel implements PanelInTab {
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
     private RecentFormatsModel recentFormatsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
+    private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
+    private CharacteristicsModel characteristicsModel;
     private LengthCalculator lengthCalculator;
 
     private JPanel convertPanel;
@@ -260,7 +264,17 @@ public class ConvertPanel implements PanelInTab {
         final RouteConverter r = RouteConverter.getInstance();
 
         recentFormatsModel = new RecentFormatsModel(getNavigationFormatRegistry());
-        formatAndRoutesModel = new UndoFormatAndRoutesModel(r.getContext().getUndoManager());
+
+        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        undoManager.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleUndoUpdate();
+            }
+        });
+
+        positionsModel = new UndoPositionsModel(undoManager);
+        characteristicsModel = new CharacteristicsModel();
+        formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, characteristicsModel));
         positionsSelectionModel = new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
                 if (replaceSelection) {
@@ -287,13 +301,13 @@ public class ConvertPanel implements PanelInTab {
         };
 
         lengthCalculator = new LengthCalculator();
-        lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
+        lengthCalculator.initialize(positionsModel, characteristicsModel);
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
-        new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
-        new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
-        new ElevationToJLabelAdapter(getPositionsModel(), labelOverallAscend, labelOverallDescend);
+        new PositionsCountToJLabelAdapter(positionsModel, labelPositions);
+        new LengthToJLabelAdapter(positionsModel, lengthCalculator, labelLength, labelDuration);
+        new ElevationToJLabelAdapter(positionsModel, labelOverallAscend, labelOverallDescend);
 
         formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
@@ -309,12 +323,12 @@ public class ConvertPanel implements PanelInTab {
         });
         r.getUnitSystemModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+                positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }
         });
         r.getTimeZone().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+                positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }
         });
 
@@ -322,22 +336,22 @@ public class ConvertPanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                if (getPositionsModel().isContinousRange())
+                if (positionsModel.isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
         });
-        getPositionsModel().addTableModelListener(new TableModelListener() {
+        positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 if (!isFirstToLastRow(e))
                     return;
-                if (getPositionsModel().isContinousRange())
+                if (positionsModel.isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
         });
 
-        tablePositions.setModel(getPositionsModel());
+        tablePositions.setModel(positionsModel);
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
 
@@ -400,22 +414,22 @@ public class ConvertPanel implements PanelInTab {
 
         final ActionManager actionManager = r.getContext().getActionManager();
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, getPositionsModel(), tableColumnModel, actionManager);
+        tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, positionsModel, tableColumnModel, actionManager);
         JPopupMenu menu = new PositionsTablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergePopupMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
-        new MergePositionListMenu(mergePopupMenu, getPositionsView(), getFormatAndRoutesModel());
+        new MergePositionListMenu(this, mergePopupMenu);
         JMenu mergeMenuBarMenu = findMenuComponent(menuBar, "positionlist", "merge-positionlist", JMenu.class);
-        new MergePositionListMenu(mergeMenuBarMenu, getPositionsView(), getFormatAndRoutesModel());
+        new MergePositionListMenu(this, mergeMenuBarMenu);
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
 
         actionManager.register("undo", new UndoAction());
         actionManager.register("redo", new RedoAction());
-        actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
-        actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
-        actionManager.register("new-position", new AddPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
-        actionManager.register("delete-position", new DeletePositionAction(getPositionsView(), getPositionsModel()));
+        actionManager.register("copy", new CopyAction(getPositionsView(), positionsModel, clipboardInteractor));
+        actionManager.register("cut", new CutAction(getPositionsView(), positionsModel, clipboardInteractor));
+        actionManager.register("new-position", new AddPositionAction(getPositionsView(), positionsModel, getPositionsSelectionModel()));
+        actionManager.register("delete-position", new DeletePositionAction(getPositionsView(), positionsModel));
         actionManager.registerLocal("delete", POSITIONS, "delete-position");
         actionManager.register("top", new TopAction(this));
         actionManager.register("up", new UpAction(this));
@@ -423,11 +437,11 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("bottom", new BottomAction(this));
         actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
-        actionManager.register("paste", new PasteAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
+        actionManager.register("paste", new PasteAction(getPositionsView(), positionsModel, clipboardInteractor));
         actionManager.register("save", new SaveAction(this));
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
-        actionManager.register("new-positionlist", new AddPositionListAction(getFormatAndRoutesModel()));
+        actionManager.register("new-positionlist", new AddPositionListAction(this));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction());
@@ -437,7 +451,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("add-speed", new AddSpeedToPositionsAction());
         actionManager.register("add-time", new AddTimeToPositionsAction());
         actionManager.register("add-number", new AddNumberToPositionsAction());
-        actionManager.register("split-positionlist", new SplitPositionListAction(tablePositions, getPositionsModel(), formatAndRoutesModel));
+        actionManager.register("split-positionlist", new SplitPositionListAction(getPositionsView(), positionsModel, getFormatAndRoutesModel()));
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
         actionManager.register("export-positionlist", new ExportPositionListAction(this));
 
@@ -475,13 +489,6 @@ public class ConvertPanel implements PanelInTab {
             }
         });
 
-        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                handleUndoUpdate();
-            }
-        });
-
         handleUndoUpdate();
         handleRoutesUpdate();
         handlePositionsUpdate();
@@ -500,7 +507,7 @@ public class ConvertPanel implements PanelInTab {
             }
         });
         //noinspection unchecked
-        comboBoxChoosePositionListCharacteristics.setModel(getCharacteristicsModel());
+        comboBoxChoosePositionListCharacteristics.setModel(characteristicsModel);
         comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
         convertPanel.setTransferHandler(dropHandler);
@@ -725,10 +732,10 @@ public class ConvertPanel implements PanelInTab {
                                     } else {
                                         // insert all position lists, which are in reverse order, at the given row or at the end
                                         try {
-                                            int insertRow = row > 0 ? row : getPositionsModel().getRowCount();
+                                            int insertRow = row > 0 ? row : positionsModel.getRowCount();
                                             for (BaseRoute route : result.getAllRoutes()) {
                                                 //noinspection unchecked
-                                                getPositionsModel().add(insertRow, route);
+                                                positionsModel.add(insertRow, route);
                                             }
                                         } catch (FileNotFoundException e) {
                                             r.handleFileNotFound(finalPath);
@@ -1025,9 +1032,9 @@ public class ConvertPanel implements PanelInTab {
         boolean supportsMultipleRoutes = format instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
-        boolean existsAPosition = getPositionsModel().getRowCount() > 0;
-        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-        RouteCharacteristics characteristics = getCharacteristicsModel().getSelectedCharacteristics();
+        boolean existsAPosition = positionsModel.getRowCount() > 0;
+        boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
+        RouteCharacteristics characteristics = characteristicsModel.getSelectedCharacteristics();
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
 
@@ -1058,10 +1065,10 @@ public class ConvertPanel implements PanelInTab {
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
-        boolean existsAPosition = getPositionsModel().getRowCount() > 0;
-        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
+        boolean existsAPosition = positionsModel.getRowCount() > 0;
+        boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-        RouteCharacteristics characteristics = getCharacteristicsModel().getSelectedCharacteristics();
+        RouteCharacteristics characteristics = characteristicsModel.getSelectedCharacteristics();
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
@@ -1200,7 +1207,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public PositionsModel getPositionsModel() {
-        return getFormatAndRoutesModel().getPositionsModel();
+        return positionsModel;
     }
 
     public PositionsSelectionModel getPositionsSelectionModel() {
@@ -1208,7 +1215,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public CharacteristicsModel getCharacteristicsModel() {
-        return formatAndRoutesModel.getCharacteristicsModel();
+        return characteristicsModel;
     }
 
     // helpers for external components
@@ -1240,20 +1247,20 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public int selectPositionsWithinDistanceToPredecessor(double distance) {
-        int[] indices = getPositionsModel().getPositionsWithinDistanceToPredecessor(distance);
+        int[] indices = positionsModel.getPositionsWithinDistanceToPredecessor(distance);
         selectPositions(indices);
         return indices.length;
     }
 
     public int[] selectAllButEveryNthPosition(int order) {
-        int rowCount = getPositionsModel().getRowCount();
+        int rowCount = positionsModel.getRowCount();
         int[] indices = allButEveryNthAndFirstAndLast(rowCount, order);
         selectPositions(indices);
         return new int[]{indices.length, rowCount - indices.length};
     }
 
     public int selectInsignificantPositions(double threshold) {
-        int[] indices = getPositionsModel().getInsignificantPositions(threshold);
+        int[] indices = positionsModel.getInsignificantPositions(threshold);
         selectPositions(indices);
         return indices.length;
     }
@@ -1494,7 +1501,7 @@ public class ConvertPanel implements PanelInTab {
         private int[] toRows(List<NavigationPosition> positions) {
             int[] result = new int[positions.size()];
             for (int i = 0; i < result.length; i++) {
-                result[i] = getPositionsModel().getIndex(positions.get(i));
+                result[i] = positionsModel.getIndex(positions.get(i));
             }
             return result;
         }
@@ -1508,10 +1515,10 @@ public class ConvertPanel implements PanelInTab {
                 index = rowCount;
 
             if (rows[0] > index) {
-                getPositionsModel().up(rows, rows[0] - index);
+                positionsModel.up(rows, rows[0] - index);
                 JTableHelper.selectPositions(table, index, index + rows.length - 1);
             } else {
-                getPositionsModel().down(revert(rows), index - rows[0] - rows.length + 1);
+                positionsModel.down(revert(rows), index - rows[0] - rows.length + 1);
                 JTableHelper.selectPositions(table, index - rows.length + 1, index);
             }
         }
@@ -1543,8 +1550,7 @@ public class ConvertPanel implements PanelInTab {
 
         protected Transferable createTransferable(JComponent c) {
             int[] selectedRows = tablePositions.getSelectedRows();
-            return new PositionSelection(getPositionsModel().getPositions(selectedRows),
-                    getPositionsModel().getRoute().getFormat());
+            return new PositionSelection(positionsModel.getPositions(selectedRows), positionsModel.getRoute().getFormat());
         }
     }
 }

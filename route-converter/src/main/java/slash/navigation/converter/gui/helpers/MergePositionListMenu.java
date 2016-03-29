@@ -22,8 +22,8 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.actions.MergePositionListAction;
-import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -38,25 +38,25 @@ import static slash.navigation.base.RouteComments.shortenRouteName;
  */
 
 public class MergePositionListMenu {
+    private final ConvertPanel convertPanel;
     private final JMenu menu;
-    private final FormatAndRoutesModel formatAndRoutesModel;
 
-    public MergePositionListMenu(JMenu menu, JTable table, FormatAndRoutesModel formatAndRoutesModel) {
+    public MergePositionListMenu(ConvertPanel convertPanel, JMenu menu) {
+        this.convertPanel = convertPanel;
         this.menu = menu;
-        this.formatAndRoutesModel = formatAndRoutesModel;
-        initialize(table);
+        initialize();
     }
 
-    private void initialize(final JTable table) {
-        formatAndRoutesModel.addListDataListener(new ListDataListener() {
+    private void initialize() {
+        convertPanel.getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                    BaseRoute route = formatAndRoutesModel.getRoute(i);
-                    JMenuItem menuItem = new JMenuItem(new MergePositionListAction(table, route, formatAndRoutesModel));
+                    BaseRoute route = convertPanel.getFormatAndRoutesModel().getRoute(i);
+                    JMenuItem menuItem = new JMenuItem(new MergePositionListAction(convertPanel, route));
                     menuItem.setText(shortenRouteName(route));
                     menu.add(menuItem, i);
                 }
-                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
+                menu.setEnabled(convertPanel.getFormatAndRoutesModel().getSize() > 1);
             }
 
             public void intervalRemoved(ListDataEvent e) {
@@ -69,13 +69,13 @@ public class MergePositionListMenu {
                     }
                     menu.remove(i);
                 }
-                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
+                menu.setEnabled(convertPanel.getFormatAndRoutesModel().getSize() > 1);
             }
 
             public void contentsChanged(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     if (i >= 0 && i < menu.getMenuComponentCount()) {
-                        BaseRoute route = formatAndRoutesModel.getRoute(i);
+                        BaseRoute route = convertPanel.getFormatAndRoutesModel().getRoute(i);
                         JMenuItem menuItem = (JMenuItem) menu.getMenuComponent(i);
                         menuItem.setText(shortenRouteName(route));
                     }

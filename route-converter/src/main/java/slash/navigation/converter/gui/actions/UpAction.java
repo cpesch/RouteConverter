@@ -43,7 +43,7 @@ public class UpAction extends FrameAction {
     public void run() {
         int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
-            convertPanel.getFormatAndRoutesModel().getPositionsModel().up(selectedRows, 1);
+            convertPanel.getPositionsModel().up(selectedRows, 1);
             convertPanel.selectPositions(increment(selectedRows, -1));
         }
     }
