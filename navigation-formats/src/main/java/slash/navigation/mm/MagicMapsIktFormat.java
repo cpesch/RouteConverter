@@ -20,7 +20,6 @@
 
 package slash.navigation.mm;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -166,7 +165,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return null;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<MagicMapsIktRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<MagicMapsIktRoute> context) throws Exception {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
         context.appendRoutes(process(eventReader));

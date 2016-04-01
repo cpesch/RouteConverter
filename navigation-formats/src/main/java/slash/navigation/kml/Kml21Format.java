@@ -53,15 +53,15 @@ public class Kml21Format extends KmlFormat {
         return "Google Earth 4 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
         KmlType kmlType = unmarshal21(source);
-        process(kmlType, startDate, context);
+        process(kmlType, context);
     }
 
-    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    protected void process(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         if (kmlType == null || kmlType.getFeature() == null)
             return;
-        extractTracks(kmlType, startDate, context);
+        extractTracks(kmlType, context);
     }
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
@@ -76,7 +76,7 @@ public class Kml21Format extends KmlFormat {
         return result;
     }
 
-    private void extractTracks(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    private void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         FeatureType feature = kmlType.getFeature().getValue();
         if (feature instanceof ContainerType) {
             ContainerType containerType = (ContainerType) feature;
@@ -85,7 +85,7 @@ public class Kml21Format extends KmlFormat {
                 features = ((FolderType) containerType).getFeature();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getFeature();
-            extractTracks(trim(containerType.getName()), trim(containerType.getDescription()), features, startDate, context);
+            extractTracks(trim(containerType.getName()), trim(containerType.getDescription()), features, context);
         }
 
         if (feature instanceof PlacemarkType) {
@@ -95,15 +95,15 @@ public class Kml21Format extends KmlFormat {
 
             List<KmlPosition> positions = extractPositions(placemarkType.getGeometry());
             for (KmlPosition position : positions) {
-                enrichPosition(position, extractTime(placemarkType.getTimePrimitive()), placemarkName, placemarkType.getDescription(), startDate);
+                enrichPosition(position, extractTime(placemarkType.getTimePrimitive()), placemarkName, placemarkType.getDescription(), context.getStartDate());
             }
             context.appendRoute(new KmlRoute(this, Waypoints, placemarkName, null, positions));
         }
     }
 
-    private void extractTracks(String name, String description, List<JAXBElement<? extends FeatureType>> features, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    private void extractTracks(String name, String description, List<JAXBElement<? extends FeatureType>> features, ParserContext<KmlRoute> context) throws IOException {
         List<JAXBElement<PlacemarkType>> placemarks = find(features, "Placemark", PlacemarkType.class);
-        extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate, context);
+        extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, context);
 
         List<JAXBElement<NetworkLinkType>> networkLinks = find(features, "NetworkLink", NetworkLinkType.class);
         extractWayPointsAndTracksFromNetworkLinks(networkLinks, context);
@@ -112,18 +112,18 @@ public class Kml21Format extends KmlFormat {
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
             String folderName = concatPath(name, folderTypeValue.getName());
-            extractTracks(folderName, description, folderTypeValue.getFeature(), startDate, context);
+            extractTracks(folderName, description, folderTypeValue.getFeature(), context);
         }
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
         for (JAXBElement<DocumentType> document : documents) {
             DocumentType documentTypeValue = document.getValue();
             String documentName = concatPath(name, documentTypeValue.getName());
-            extractTracks(documentName, description, documentTypeValue.getFeature(), startDate, context);
+            extractTracks(documentName, description, documentTypeValue.getFeature(), context);
         }
     }
 
-    private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+    private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, ParserContext<KmlRoute> context) {
         List<KmlPosition> waypoints = new ArrayList<>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
@@ -134,7 +134,7 @@ public class Kml21Format extends KmlFormat {
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getTimePrimitive()), placemarkName, placemarkTypeValue.getDescription(), startDate);
+                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getTimePrimitive()), placemarkName, placemarkTypeValue.getDescription(), context.getStartDate());
                 waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track

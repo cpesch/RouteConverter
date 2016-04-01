@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
@@ -70,7 +70,7 @@ public class Nmn5Format extends NmnFormat {
         return result;
     }
 
-    protected NmnPosition parsePosition(String line, CompactCalendar startDate) {
+    protected NmnPosition parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

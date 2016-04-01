@@ -20,7 +20,6 @@
 
 package slash.navigation.gopal;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
@@ -68,7 +67,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         return new GoPalRoute(this, null, tour.getOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPalRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GoPalRoute> context) throws Exception {
         Tour tour = unmarshal3(source);
         context.appendRoute(process(tour));
     }

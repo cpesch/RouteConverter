@@ -20,7 +20,6 @@
 
 package slash.navigation.copilot;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Route;
 
@@ -43,8 +42,8 @@ public class CoPilot9Format extends CoPilotFormat {
         return "CoPilot 9 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
-        read(source, startDate, UTF16LE_ENCODING, context);
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+        read(source, UTF16LE_ENCODING, context);
     }
 
     protected boolean isDataVersion(String line) {

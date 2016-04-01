@@ -21,7 +21,6 @@
 
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 
 import java.io.IOException;
@@ -107,7 +106,7 @@ public class GarbleNavilinkFormat extends NavilinkFormat implements GarbleNaviga
         }
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] record = new byte[SBP_RECORD_LENGTH];
         ByteBuffer sbpRecordByteBuffer = ByteBuffer.wrap(record);
         sbpRecordByteBuffer.order(ByteOrder.LITTLE_ENDIAN);

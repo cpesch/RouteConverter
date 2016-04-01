@@ -107,7 +107,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -118,7 +118,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         CompactCalendar time = parseTime(trim(lineMatcher.group(5)), trim(lineMatcher.group(6)));
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, elevation, null, time, description);
-        position.setStartDate(startDate);
+        position.setStartDate(context.getStartDate());
         return position;
     }
 

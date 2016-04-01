@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.IOException;
@@ -47,6 +46,6 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     <P extends NavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
-    void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception;
+    void read(InputStream source, ParserContext<R> context) throws Exception;
     void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException;
 }

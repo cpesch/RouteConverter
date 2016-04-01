@@ -22,7 +22,6 @@ package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
@@ -72,7 +71,7 @@ public class Gpx11Format extends GpxFormat {
         context.appendRoutes(extractTracks(gpxType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         GpxType gpxType = unmarshal11(source);
         process(gpxType, context);
     }

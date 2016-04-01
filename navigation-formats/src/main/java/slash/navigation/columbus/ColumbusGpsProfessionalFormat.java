@@ -20,7 +20,7 @@
 
 package slash.navigation.columbus;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
@@ -36,6 +36,7 @@ import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.isPositionDescription;
+import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
@@ -105,7 +106,7 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
         return HEADER_PATTERN;
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -134,10 +135,12 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
         description = trim(description);
         if (description == null)
             description = waypointType + " " + trim(removeZeros(lineMatcher.group(1)));
-        File image = new File(description);
+        if(waypointType.equals(Voice) && !description.endsWith(".wav"))
+            description += ".wav";
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), description, image.exists() ? image : null);
+                parseDateAndTime(date, time), description,
+                context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         position.setPdop(parseDouble(pdop));

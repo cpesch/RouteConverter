@@ -20,7 +20,6 @@
 
 package slash.navigation.fpl;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.WaypointType;
@@ -126,7 +125,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return new GarminFlightPlanRoute(flightPlan.getRoute().getRouteName(), asDescription(flightPlan.getRoute().getRouteDescription()), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GarminFlightPlanRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GarminFlightPlanRoute> context) throws Exception {
         FlightPlan flightPlan = unmarshal(source);
         context.appendRoute(process(flightPlan));
     }

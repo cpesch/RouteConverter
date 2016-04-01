@@ -20,7 +20,6 @@
 
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -82,7 +81,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return simpleMatcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
         if (commentMatcher.matches()) {
             String latitude = commentMatcher.group(1);

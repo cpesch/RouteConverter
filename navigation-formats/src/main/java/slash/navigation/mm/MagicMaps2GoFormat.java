@@ -86,7 +86,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

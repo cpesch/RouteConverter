@@ -102,9 +102,10 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return Track;
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<NmeaRoute> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<NmeaRoute> context) throws IOException {
         List<NmeaPosition> positions = new ArrayList<>();
 
+        CompactCalendar startDate = context.getStartDate();
         CompactCalendar originalStartDate = startDate;
         int lineCount = 0;
         NmeaPosition previous = null;

@@ -22,7 +22,6 @@ package slash.navigation.zip;
 
 import slash.common.io.Files;
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ParserContext;
@@ -78,7 +77,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<BaseRoute> parserContext) throws Exception {
+    public void read(InputStream source, ParserContext<BaseRoute> context) throws Exception {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
@@ -88,7 +87,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
                 buffer.mark(size);
-                parserContext.parse(buffer, startDate, Files.getExtension(entry.getName()));
+                context.parse(buffer, context.getStartDate(), Files.getExtension(entry.getName()));
                 zip.closeEntry();
             }
         } catch (IOException e) {

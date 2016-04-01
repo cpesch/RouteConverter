@@ -47,7 +47,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return (R)new Wgs84Route(this, characteristics, positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<R> context) throws IOException {
         List<Wgs84Position> positions = new ArrayList<>();
 
         int lineCount = 0;
@@ -60,7 +60,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
             if (isValidLine(line)) {
                 if (isPosition(line)) {
-                    Wgs84Position position = parsePosition(line, startDate);
+                    Wgs84Position position = parsePosition(line, context);
                     positions.add(position);
                 }
             } else {
@@ -85,7 +85,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return isPosition(line);
     }
     protected abstract boolean isPosition(String line);
-    protected abstract Wgs84Position parsePosition(String line, CompactCalendar startDate);
+    protected abstract Wgs84Position parsePosition(String line, ParserContext context);
 
 
     @SuppressWarnings("unchecked")

@@ -20,7 +20,6 @@
 
 package slash.navigation.klicktel;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -83,7 +82,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KlickTelRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KlickTelRoute> context) throws Exception {
         KDRoute KDRoute = unmarshal(source);
         context.appendRoute(process(KDRoute));
     }

@@ -20,7 +20,6 @@
 
 package slash.navigation.itn;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 
 import java.io.IOException;
@@ -40,8 +39,8 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return "Tom Tom 8 Route (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<TomTomRoute> context) throws Exception {
-        read(source, startDate, UTF8_ENCODING, context);
+    public void read(InputStream source, ParserContext<TomTomRoute> context) throws Exception {
+        read(source, UTF8_ENCODING, context);
     }
 
     protected boolean isIso885915ButReadWithUtf8(String string) {

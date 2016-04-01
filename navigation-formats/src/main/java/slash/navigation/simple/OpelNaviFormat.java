@@ -21,7 +21,6 @@
 package slash.navigation.simple;
 
 import slash.common.io.Transfer;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -68,8 +67,8 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return "Opel Navi 600/900 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<SimpleRoute> context) throws Exception {
-        read(source, startDate, UTF8_ENCODING, context);
+    public void read(InputStream source, ParserContext<SimpleRoute> context) throws Exception {
+        read(source, UTF8_ENCODING, context);
     }
 
     public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
@@ -86,7 +85,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -103,7 +102,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
             description += ";" + phone;
 
         Wgs84Position position = asWgs84Position(longitude, latitude, description);
-        position.setStartDate(startDate);
+        position.setStartDate(context.getStartDate());
         return position;
     }
 

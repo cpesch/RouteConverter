@@ -102,8 +102,8 @@ public class MagellanExploristFormatTest {
         StringReader reader = new StringReader(
                 "$PMGNTRK,4914.9672,N,00651.2081,E,00199,M,152224,A,KLLERTAL-RADWEG,210307*7B"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);

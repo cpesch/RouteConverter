@@ -20,7 +20,6 @@
 
 package slash.navigation.tour;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -89,11 +88,11 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<TourRoute> context) throws Exception {
-        read(source, startDate, UTF8_ENCODING, context);
+    public void read(InputStream source, ParserContext<TourRoute> context) throws Exception {
+        read(source, UTF8_ENCODING, context);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<TourRoute> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<TourRoute> context) throws IOException {
         List<TourPosition> positions = new ArrayList<>();
         Map<String, String> map = new HashMap<>();
         String sectionTitle = null, routeName = null;

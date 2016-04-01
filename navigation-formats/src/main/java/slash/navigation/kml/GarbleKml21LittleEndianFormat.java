@@ -20,7 +20,6 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.GarbleNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding21.KmlType;
@@ -47,10 +46,10 @@ public class GarbleKml21LittleEndianFormat extends Kml21Format implements Garble
         return false;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
         try (InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING)) {
             KmlType kmlType = unmarshal21(reader);
-            process(kmlType, startDate, context);
+            process(kmlType, context);
         }
     }
 }

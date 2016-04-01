@@ -20,7 +20,6 @@
 
 package slash.navigation.wbt;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -74,7 +73,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -88,7 +87,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
     protected abstract List<Wgs84Route> internalRead(ByteBuffer source);
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[getHeaderSize()];
         if (source.read(header) == getHeaderSize()) {
 

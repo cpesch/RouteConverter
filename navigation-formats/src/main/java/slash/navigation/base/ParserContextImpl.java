@@ -38,9 +38,15 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     private List<R> routes = new ArrayList<>();
     private List<NavigationFormat<R>> formats = new ArrayList<>();
     private File file;
+    private CompactCalendar startDate;
 
-    public ParserContextImpl(File file) {
+    public ParserContextImpl(File file, CompactCalendar startDate) {
         this.file = file;
+        this.startDate = startDate;
+    }
+
+    public ParserContextImpl() {
+        this(null, null);
     }
 
     public void prependRoute(R route) {
@@ -73,6 +79,10 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
 
     public File getFile() {
         return file;
+    }
+
+    public CompactCalendar getStartDate() {
+        return startDate;
     }
 
     public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {

@@ -110,7 +110,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -126,7 +126,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, parseDouble(speed), parseDateAndTime(date, time), null);
         if (date == null)
-            position.setStartDate(startDate);
+            position.setStartDate(context.getStartDate());
         position.setHeading(parseDouble(heading));
         position.setHdop(parseDouble(hdop));
         position.setSatellites(parseInteger(satellites));

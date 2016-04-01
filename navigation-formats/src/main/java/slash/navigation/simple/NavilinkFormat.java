@@ -91,7 +91,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return newRoute;
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -203,7 +203,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return position;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[HEADER_SIZE];
         if ((source.read(header) == HEADER_SIZE) && checkHeader(header)) {
             ByteBuffer sbpRecordByteBuffer = ByteBuffer.allocate(SBP_RECORD_LENGTH);

@@ -308,8 +308,8 @@ public class NmeaFormatTest {
                         "$GPZDA,130441,29,07,2013,00,00*47\n" +
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
@@ -336,8 +336,8 @@ public class NmeaFormatTest {
                         "$GPWPL,4300.898329,N,00948.227878,E,Position 3*62\n" +
                         "$GPVTG,,T,,M,0.0000,N,19.3175,K,A*1B"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
@@ -361,8 +361,8 @@ public class NmeaFormatTest {
                 "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.7654,M,00.0,M,,*47\n" +
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
@@ -389,8 +389,8 @@ public class NmeaFormatTest {
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
-        ParserContext<NmeaRoute> context2 = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, ISO_LATIN1_ENCODING, context2);
+        ParserContext<NmeaRoute> context2 = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), ISO_LATIN1_ENCODING, context2);
         List<NmeaRoute> routes2 = context2.getRoutes();
         assertEquals(1, routes2.size());
         NmeaRoute route2 = routes2.get(0);

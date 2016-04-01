@@ -154,7 +154,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -164,7 +164,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         BufferedInputStream bufferedSource = new BufferedInputStream(source, READ_BUFFER_SIZE);
         bufferedSource.mark(READ_BUFFER_SIZE);
 
@@ -172,7 +172,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         if (size == null)
             return;
 
-        PhotoPosition position = new PhotoPosition(NotTaggable, startDate, "No EXIF data", null);
+        PhotoPosition position = new PhotoPosition(NotTaggable, context.getStartDate(), "No EXIF data", null);
 
         bufferedSource.reset();
         ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
@@ -183,7 +183,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
             for (Directory directory : directories)
                 log.info("Reading EXIF directory " + directory);
 
-            extendPosition(position, tiffImageMetadata, startDate);
+            extendPosition(position, tiffImageMetadata, context.getStartDate());
         }
 
         bufferedSource.reset();

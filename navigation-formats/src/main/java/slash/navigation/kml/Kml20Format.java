@@ -56,23 +56,23 @@ public class Kml20Format extends KmlFormat {
         return "Google Earth 3 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
         Object o = unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
-            extractTracks(kml.getDocument(), kml.getFolder(), startDate, context);
+            extractTracks(kml.getDocument(), kml.getFolder(), context);
         }
         if (o instanceof Document) {
             Document document = (Document) o;
-            extractTracks(document, null, startDate, context);
+            extractTracks(document, null, context);
         }
         if (o instanceof Folder) {
             Folder folder = (Folder) o;
-            extractTracks(null, folder, startDate, context);
+            extractTracks(null, folder, context);
         }
     }
 
-    private void extractTracks(Document document, Folder folder, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    private void extractTracks(Document document, Folder folder, ParserContext<KmlRoute> context) throws IOException {
         List<Object> elements = null;
         if (document != null && document.getDocumentOrFolderOrGroundOverlay().size() > 0)
             elements = document.getDocumentOrFolderOrGroundOverlay();
@@ -81,7 +81,7 @@ public class Kml20Format extends KmlFormat {
             elements = folder.getDocumentOrFolderOrGroundOverlay();
 
         if (elements != null)
-            extractTracks(extractName(elements), extractDescriptionList(elements), elements, startDate, context);
+            extractTracks(extractName(elements), extractDescriptionList(elements), elements, context);
     }
 
     private JAXBElement findElement(List elements, String name) {
@@ -164,9 +164,9 @@ public class Kml20Format extends KmlFormat {
         return networkLinks;
     }
 
-    private void extractTracks(String name, List<String> description, List<Object> elements, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    private void extractTracks(String name, List<String> description, List<Object> elements, ParserContext<KmlRoute> context) throws IOException {
         List<Placemark> placemarks = findPlacemarks(elements);
-        extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate, context);
+        extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, context);
 
         List<NetworkLink> networkLinks = findNetworkLinks(elements);
         extractWayPointsAndTracksFromNetworkLinks(networkLinks, context);
@@ -175,11 +175,11 @@ public class Kml20Format extends KmlFormat {
         for (Folder folder : folders) {
             List<Object> overlays = folder.getDocumentOrFolderOrGroundOverlay();
             String folderName = concatPath(name, extractName(overlays));
-            extractTracks(folderName, description, overlays, startDate, context);
+            extractTracks(folderName, description, overlays, context);
         }
     }
 
-    private void extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+    private void extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, ParserContext<KmlRoute> context) {
         List<KmlPosition> waypoints = new ArrayList<>();
         for (Placemark placemark : placemarks) {
             String placemarkName = asDescription(extractName(placemark.getDescriptionOrNameOrSnippet()),
@@ -189,7 +189,7 @@ public class Kml20Format extends KmlFormat {
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                enrichPosition(wayPoint, extractTime(placemark.getDescriptionOrNameOrSnippet()), placemarkName, extractDescription(placemark.getDescriptionOrNameOrSnippet()), startDate);
+                enrichPosition(wayPoint, extractTime(placemark.getDescriptionOrNameOrSnippet()), placemarkName, extractDescription(placemark.getDescriptionOrNameOrSnippet()), context.getStartDate());
                 waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track

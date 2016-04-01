@@ -44,6 +44,7 @@ public interface ParserContext<R extends BaseRoute> {
     void addFormat(NavigationFormat<R> format);
     List<NavigationFormat<R>> getFormats();
 
+    CompactCalendar getStartDate();
     File getFile();
 
     void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException;

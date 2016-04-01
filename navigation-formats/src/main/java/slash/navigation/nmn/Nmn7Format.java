@@ -20,7 +20,6 @@
 
 package slash.navigation.nmn;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
@@ -65,7 +64,7 @@ public class Nmn7Format extends NmnFormat {
         throw new UnsupportedOperationException();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         throw new UnsupportedOperationException();
     }
 
@@ -77,7 +76,7 @@ public class Nmn7Format extends NmnFormat {
         return new NmnRoute(this, Route, route.getName(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<NmnRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<NmnRoute> context) throws Exception {
         Route route = unmarshal(source);
         context.appendRoute(process(route));
     }

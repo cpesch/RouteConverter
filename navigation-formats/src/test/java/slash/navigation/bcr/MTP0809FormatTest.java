@@ -40,8 +40,8 @@ public class MTP0809FormatTest {
     public void testReaddescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
-        ParserContext<BcrRoute> context = new ParserContextImpl<>(null);
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<BcrRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(writer.toString())), ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);

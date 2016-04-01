@@ -112,7 +112,7 @@ public class ApeMapFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return fromMillis(milliseconds * 1000);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

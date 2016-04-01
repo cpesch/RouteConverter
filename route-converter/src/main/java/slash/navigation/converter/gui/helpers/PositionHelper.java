@@ -22,12 +22,14 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.StringModel;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.prefs.Preferences;
@@ -40,6 +42,8 @@ import static slash.common.io.Transfer.getDateTimeFormat;
 import static slash.common.io.Transfer.getTimeFormat;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.fromDate;
+import static slash.navigation.base.WaypointType.Photo;
+import static slash.navigation.base.WaypointType.Voice;
 
 /**
  * A helper for rendering aspects of {@link BaseNavigationPosition}.
@@ -199,5 +203,18 @@ public class PositionHelper {
             unit = "Bytes";
         }
         return format("%d %s", size, unit);
+    }
+
+    public static File extractFile(NavigationPosition position) {
+        if (position instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) position;
+            if (wgs84Position.getWaypointType().equals(Photo) || wgs84Position.getWaypointType().equals(Voice)) {
+                File file = wgs84Position.getOrigin(File.class);
+                if (file != null) {
+                    return file;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -20,7 +20,6 @@
 
 package slash.navigation.gpx;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.GarbleNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.GpxType;
@@ -46,7 +45,7 @@ public class GarbleGpx11Format extends Gpx11Format implements GarbleNavigationFo
         return false;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         try (InputStreamReader reader = new InputStreamReader(source)) {
             GpxType gpxType = unmarshal11(reader);
             process(gpxType, context);

@@ -20,7 +20,6 @@
 
 package slash.navigation.mm;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -65,7 +64,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
         List<GkPosition> positions = new ArrayList<>();
 
         while (true) {

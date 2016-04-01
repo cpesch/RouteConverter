@@ -21,7 +21,6 @@
 package slash.navigation.kml;
 
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
@@ -69,7 +68,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
@@ -77,7 +76,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
                     continue;
 
                 try {
-                    delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
+                    delegate.read(new NotClosingUnderlyingInputStream(zip), context);
                 }
                 catch(Exception e) {
                     log.info(format("Error reading %s with %s: %s, %s", entry, delegate, e.getClass(), e));

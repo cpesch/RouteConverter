@@ -20,7 +20,6 @@
 
 package slash.navigation.viamichelin;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -107,7 +106,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<ViaMichelinRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<ViaMichelinRoute> context) throws Exception {
         try (InputStreamReader reader = new InputStreamReader(source)) {
             PoiList poiList = unmarshal(reader);
             context.appendRoute(process(poiList));

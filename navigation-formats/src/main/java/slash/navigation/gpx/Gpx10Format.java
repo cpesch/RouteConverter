@@ -20,7 +20,6 @@
 
 package slash.navigation.gpx;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
@@ -79,7 +78,7 @@ public class Gpx10Format extends GpxFormat {
         context.appendRoutes(extractTracks(gpx, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         Gpx gpx = unmarshal10(source);
         process(gpx, context);
     }

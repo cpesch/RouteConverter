@@ -20,7 +20,6 @@
 
 package slash.navigation.copilot;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -90,7 +89,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         List<Wgs84Position> positions = new ArrayList<>();
         Map<String, String> map = new HashMap<>();
         String routeName = null;

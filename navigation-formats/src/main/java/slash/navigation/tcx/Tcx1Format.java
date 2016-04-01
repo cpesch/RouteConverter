@@ -21,7 +21,6 @@
 package slash.navigation.tcx;
 
 import slash.common.io.Transfer;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding1.*;
@@ -224,7 +223,7 @@ public class Tcx1Format extends TcxFormat {
         return result;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<TcxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<TcxRoute> context) throws Exception {
         TrainingCenterDatabaseT trainingCenterDatabase = unmarshal1(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }

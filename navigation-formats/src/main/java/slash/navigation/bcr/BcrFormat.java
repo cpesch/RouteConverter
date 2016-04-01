@@ -20,7 +20,6 @@
 
 package slash.navigation.bcr;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -88,7 +87,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<BcrRoute> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<BcrRoute> context) throws IOException {
         List<BcrSection> sections = new ArrayList<>();
         List<BcrPosition> positions = new ArrayList<>();
         BcrSection current = null;

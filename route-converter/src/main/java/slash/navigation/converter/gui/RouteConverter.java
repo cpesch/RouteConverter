@@ -249,6 +249,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String ADD_PHOTO_PREFERENCE = "addPhoto";
+    private static final String ADD_AUDIO_PREFERENCE = "addAudio";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
     private static final String DEBUG_PREFERENCE = "debug";
@@ -593,6 +594,15 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setAddPhotoPreference(File path) {
         preferences.put(ADD_PHOTO_PREFERENCE, path.getPath());
+    }
+
+    public File getAddAudioPreference() {
+        File path = new File(preferences.get(ADD_AUDIO_PREFERENCE, ""));
+        return findExistingPath(path);
+    }
+
+    public void setAddAudioPreference(File path) {
+        preferences.put(ADD_AUDIO_PREFERENCE, path.getPath());
     }
 
     public TagStrategy getTagStrategyPreference() {
@@ -996,6 +1006,8 @@ public class RouteConverter extends SingleFrameApplication {
     public ConvertPanel getConvertPanel() {
         return tabInitializer.getConvertPanel();
     }
+
+    public PointOfInterestPanel getPointOfInterestPanel() { return tabInitializer.getPointsOfInterestPanel(); }
 
     public PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }
 

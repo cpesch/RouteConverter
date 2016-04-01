@@ -20,7 +20,6 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.GarbleNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding22beta.KmlType;
@@ -46,10 +45,10 @@ public class GarbleKml22BetaFormat extends Kml22BetaFormat implements GarbleNavi
         return false;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
         try (InputStreamReader reader = new InputStreamReader(source)) {
             KmlType kmlType = unmarshal22Beta(reader);
-            process(kmlType, startDate, context);
+            process(kmlType, context);
         }
     }
 }

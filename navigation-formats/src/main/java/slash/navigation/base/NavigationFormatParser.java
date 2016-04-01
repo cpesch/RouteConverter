@@ -98,8 +98,7 @@ public class NavigationFormatParser {
     }
 
     @SuppressWarnings("unchecked")
-    private void internalRead(InputStream buffer, CompactCalendar startDate,
-                              List<NavigationFormat> formats, ParserContext context) throws IOException {
+    private void internalRead(InputStream buffer, List<NavigationFormat> formats, ParserContext context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
         NavigationFormat firstSuccessfulFormat = null;
 
@@ -109,7 +108,7 @@ public class NavigationFormatParser {
 
                 log.fine(format("Trying to read with %s", format));
                 try {
-                    format.read(buffer, startDate, context);
+                    format.read(buffer, context);
 
                     // if no route has been read, take the first that didn't throw an exception
                     if (firstSuccessfulFormat == null)
@@ -140,7 +139,7 @@ public class NavigationFormatParser {
 
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        return read(new FileInputStream(source), (int) source.length(), getStartDate(source), source, formats);
+        return read(new FileInputStream(source), (int) source.length(), extractStartDate(source), source, formats);
     }
 
     public ParserResult read(File source) throws IOException {
@@ -200,12 +199,12 @@ public class NavigationFormatParser {
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
-        public InternalParserContext(File file) {
-            super(file);
+        public InternalParserContext(File file, CompactCalendar startDate) {
+            super(file, startDate);
         }
 
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
-            internalRead(inputStream, startDate, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
+            internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -217,7 +216,9 @@ public class NavigationFormatParser {
             NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream()));
             buffer.mark(readBufferSize + 1);
             try {
-                internalRead(buffer, getStartDate(url), getNavigationFormatRegistry().getReadFormats(), this);
+                CompactCalendar startDate = extractStartDate(url);
+                ParserContext context = startDate != null ? new InternalParserContext(getFile(), startDate) : this;
+                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), context);
             } finally {
                 buffer.closeUnderlyingInputStream();
             }
@@ -230,8 +231,8 @@ public class NavigationFormatParser {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source));
         buffer.mark(readBufferSize + 1);
         try {
-            ParserContext<BaseRoute> context = new InternalParserContext<>(file);
-            internalRead(buffer, startDate, formats, context);
+            ParserContext<BaseRoute> context = new InternalParserContext<>(file, startDate);
+            internalRead(buffer, formats, context);
             return createResult(context);
         } finally {
             buffer.closeUnderlyingInputStream();
@@ -261,21 +262,29 @@ public class NavigationFormatParser {
         }
     }
 
-    private CompactCalendar getStartDate(File file) {
+    private CompactCalendar extractStartDate(File file) {
         Calendar startDate = Calendar.getInstance(UTC);
         startDate.setTimeInMillis(file.lastModified());
         return fromCalendar(startDate);
     }
 
-    private CompactCalendar getStartDate(URL url) throws IOException {
+    private File extractFile(URL url) throws IOException {
         try {
             if (url.getProtocol().equals("file")) {
-                return getStartDate(new File(url.toURI()));
+                return new File(url.toURI());
             } else
                 return null;
         } catch (URISyntaxException e) {
             throw new IOException("Cannot determine file from URL: " + e);
         }
+    }
+
+    private CompactCalendar extractStartDate(URL url) throws IOException {
+        File file = extractFile(url);
+        if (file != null) {
+            return extractStartDate(file);
+        } else
+            return null;
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
@@ -299,7 +308,7 @@ public class NavigationFormatParser {
 
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(url.openStream(), readBufferSize, getStartDate(url), null, formats);
+        return read(url.openStream(), readBufferSize, extractStartDate(url), extractFile(url), formats);
     }
 
     public ParserResult read(URL url) throws IOException {
