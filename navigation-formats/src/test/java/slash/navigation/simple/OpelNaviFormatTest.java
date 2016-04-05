@@ -21,6 +21,7 @@
 package slash.navigation.simple;
 
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 public class OpelNaviFormatTest extends NavigationTestCase {
@@ -35,14 +36,14 @@ public class OpelNaviFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\"", null);
+        Wgs84Position position = format.parsePosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\"", new ParserContextImpl());
         assertEquals(8.402824, position.getLongitude());
         assertEquals(49.986889, position.getLatitude());
         assertEquals("Tor 45;Opel, Rüsselsheim;+49-6142-77-0", position.getDescription());
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("-8.402824,-49.986889,\"Tor 45\",\"\",\"\"", null);
+        Wgs84Position position = format.parsePosition("-8.402824,-49.986889,\"Tor 45\",\"\",\"\"", new ParserContextImpl());
         assertEquals(-8.402824, position.getLongitude());
         assertEquals(-49.986889, position.getLatitude());
         assertEquals("Tor 45", position.getDescription());

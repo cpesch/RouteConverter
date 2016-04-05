@@ -22,6 +22,7 @@ package slash.navigation.simple;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
@@ -50,7 +51,7 @@ public class KienzleGpsFormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
+        Wgs84Position position = format.parsePosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", new ParserContextImpl());
         assertDoubleEquals(7.0475000000, position.getLongitude());
         assertDoubleEquals(50.7500000000, position.getLatitude());
         assertNull(position.getElevation());
@@ -64,7 +65,7 @@ public class KienzleGpsFormatTest {
 
     @Test
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("113;-7.0475000000;-50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
+        Wgs84Position position = format.parsePosition("113;-7.0475000000;-50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", new ParserContextImpl());
         assertDoubleEquals(-7.0475000000, position.getLongitude());
         assertDoubleEquals(-50.7500000000, position.getLatitude());
     }

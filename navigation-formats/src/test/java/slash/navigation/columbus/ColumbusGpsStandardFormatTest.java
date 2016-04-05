@@ -22,11 +22,15 @@ package slash.navigation.columbus;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
@@ -56,7 +60,7 @@ public class ColumbusGpsStandardFormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,8 ,206,VOX00006 ", null);
+        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,8 ,206,VOX00006 ", new ParserContextImpl());
         assertDoubleEquals(13.049739, position.getLongitude());
         assertDoubleEquals(47.797278, position.getLatitude());
         assertDoubleEquals(502.0, position.getElevation());
@@ -74,16 +78,16 @@ public class ColumbusGpsStandardFormatTest {
 
     @Test
     public void testParseSouthWestPosition() {
-        Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,-102  ,8   ,206,", null);
+        Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,-102  ,8   ,206,", new ParserContextImpl());
         assertDoubleEquals(-13.049739, position.getLongitude());
         assertDoubleEquals(-47.797278, position.getLatitude());
         assertDoubleEquals(-102.0, position.getElevation());
-        assertEquals("Voice 6", position.getDescription());
+        assertEquals("Voice 6.wav", position.getDescription());
     }
 
     @Test
     public void testParsePOIPosition() {
-        Wgs84Position position = format.parsePosition("7     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
+        Wgs84Position position = format.parsePosition("7     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", new ParserContextImpl());
         assertEquals("PointOfInterest 7", position.getDescription());
     }
 }
