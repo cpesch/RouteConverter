@@ -28,9 +28,20 @@ import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractFile;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
@@ -42,6 +53,8 @@ import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
  */
 
 public class AddAudioAction extends FrameAction {
+    private static final Logger log = getLogger(AddAudioAction.class.getName());
+
     private final JTable table;
     private final PositionsModel positionsModel;
 
@@ -83,5 +96,23 @@ public class AddAudioAction extends FrameAction {
 
         r.setAddAudioPreference(selected);
         r.getPointOfInterestPanel().addAudio(position, selected);
+
+        File track = new File(r.getConvertPanel().getUrlModel().getString());
+        if (!track.exists())
+            return;
+
+        File nextToTrack = new File(track.getParentFile(), selected.getName());
+        if(!nextToTrack.exists()) {
+            try {
+                copyAndClose(new FileInputStream(selected), new FileOutputStream(nextToTrack));
+            }
+            catch (IOException e) {
+                log.severe(format("Could copy audio %s to %s: %s", selected, nextToTrack, e));
+                showMessageDialog(r.getFrame(),
+                        MessageFormat.format(RouteConverter.getBundle().getString("add-audio-error"), getLocalizedMessage(e)),
+                        r.getFrame().getTitle(), ERROR_MESSAGE);
+
+            }
+        }
     }
 }
