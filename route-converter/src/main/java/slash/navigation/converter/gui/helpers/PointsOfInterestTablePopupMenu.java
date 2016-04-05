@@ -42,6 +42,7 @@ public class PointsOfInterestTablePopupMenu extends AbstractTablePopupMenu {
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("play-voice"));
+        menu.add(createItem("add-audio"));
         menu.add(createItem("delete-points-of-interest"));
         return menu;
     }
