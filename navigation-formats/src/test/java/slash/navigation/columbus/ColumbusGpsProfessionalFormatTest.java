@@ -22,6 +22,7 @@ package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
@@ -53,7 +54,7 @@ public class ColumbusGpsProfessionalFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", null);
+        Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", new ParserContextImpl());
         assertEquals(16.321871, position.getLongitude());
         assertEquals(48.132451, position.getLatitude());
         assertEquals(319.0, position.getElevation());
@@ -67,6 +68,6 @@ public class ColumbusGpsProfessionalFormatTest extends NavigationTestCase {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals("VOX02971", position.getDescription());
+        assertEquals("VOX02971.wav", position.getDescription());
     }
 }

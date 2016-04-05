@@ -21,6 +21,7 @@ package slash.navigation.simple;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.SimpleDateFormat;
@@ -44,7 +45,7 @@ public class GroundTrackFormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("   83    52.73522      9.88576   4508.976      0.04336 17:01:43.800", null);
+        Wgs84Position position = format.parsePosition("   83    52.73522      9.88576   4508.976      0.04336 17:01:43.800", new ParserContextImpl());
         assertDoubleEquals(9.88576, position.getLongitude());
         assertDoubleEquals(52.73522, position.getLatitude());
         assertDoubleEquals(4508.976, position.getElevation());
@@ -64,13 +65,13 @@ public class GroundTrackFormatTest {
 
     @Test
     public void testParsePositionWithInvalidTime() {
-        Wgs84Position position = format.parsePosition("   83    52.73522      9.88576   4508.976      0.04336 -17:-01:-43.800", null);
+        Wgs84Position position = format.parsePosition("   83    52.73522      9.88576   4508.976      0.04336 -17:-01:-43.800", new ParserContextImpl());
         assertNull(position.getTime());
     }
 
     @Test
     public void testParsePositionWithoutMilliseconds() {
-        Wgs84Position position = format.parsePosition("  158    52.04482      8.43606  13110.903      0.26909 12:13:40", null);
+        Wgs84Position position = format.parsePosition("  158    52.04482      8.43606  13110.903      0.26909 12:13:40", new ParserContextImpl());
         assertDoubleEquals(8.43606, position.getLongitude());
         assertDoubleEquals(52.04482, position.getLatitude());
         assertDoubleEquals(13110.903, position.getElevation());

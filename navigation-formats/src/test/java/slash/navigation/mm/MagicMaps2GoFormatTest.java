@@ -21,6 +21,7 @@
 package slash.navigation.mm;
 
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 public class MagicMaps2GoFormatTest extends NavigationTestCase {
@@ -31,7 +32,7 @@ public class MagicMaps2GoFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("52.4135141 13.3115464 40.8000000 31.05.09 07:05:58", null);
+        Wgs84Position position = format.parsePosition("52.4135141 13.3115464 40.8000000 31.05.09 07:05:58", new ParserContextImpl());
         assertNotNull(position);
         assertNearBy(13.3115464, position.getLongitude());
         assertNearBy(52.4135141, position.getLatitude());
