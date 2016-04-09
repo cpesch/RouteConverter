@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddPhotosAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
@@ -46,6 +47,7 @@ import slash.navigation.converter.gui.renderer.TagStrategyListCellRenderer;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.photo.PhotoFormat;
+import slash.navigation.photo.PhotoPosition;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -56,8 +58,9 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
@@ -259,6 +262,7 @@ public class PhotoPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        handlePositionsUpdate();
     }
 
     private void handlePositionsUpdate() {
@@ -271,8 +275,15 @@ public class PhotoPanel implements PanelInTab {
         actionManager.enable("tag-photos", existsASelectedPosition);
 
         if (r.isPhotosPanelSelected()) {
-            // TODO show select positions by coordinates not index to positions model!
-            r.selectPositionsInMap(selectedRows);
+            List<NavigationPosition> selectedPositions = new ArrayList<>();
+            for (int selectedRow : selectedRows) {
+                PhotoPosition photoPosition = (PhotoPosition) getFilteredPhotosModel().getPosition(selectedRow);
+                NavigationPosition closestPositionForTagging = photoPosition.getClosestPositionForTagging();
+                NavigationPosition position = closestPositionForTagging != null ? closestPositionForTagging : photoPosition;
+                if (position.hasCoordinates())
+                    selectedPositions.add(position);
+            }
+            r.selectPositionsInMap(selectedPositions);
         }
     }
 

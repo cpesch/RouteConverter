@@ -116,6 +116,7 @@ public abstract class BrowserMapView implements MapView {
     private CharacteristicsModel characteristicsModel;
     private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
+    private List<NavigationPosition> selectedPositions = new ArrayList<>();
     private int lastZoom = -1;
 
     private ServerSocket callbackListenerServerSocket;
@@ -453,7 +454,8 @@ public abstract class BrowserMapView implements MapView {
                             continue;
                     }
 
-                    List<NavigationPosition> render = positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices);
+                    List<NavigationPosition> render = new ArrayList<>(positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices));
+                    render.addAll(selectedPositions);
                     NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
                     selectPositions(render, recenter ? centerPosition : null);
                     log.info("Selected positions updated for " + render.size() + " positions , reason: " +
@@ -860,10 +862,22 @@ public abstract class BrowserMapView implements MapView {
                 System.arraycopy(selectedPositions, 0, indices, selectedPositionIndices.length, selectedPositions.length);
                 this.selectedPositionIndices = indices;
             }
+            this.selectedPositions = new ArrayList<>();
             haveToRecenterMap = selectedPositions.length > 0;
             haveToRepaintSelection = true;
             selectionUpdateReason = "selected " + selectedPositions.length + " positions; " +
                     "replacing selection: " + replaceSelection;
+            notificationMutex.notifyAll();
+        }
+    }
+
+    public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
+        synchronized (notificationMutex) {
+            this.selectedPositions = selectedPositions;
+            this.selectedPositionIndices = new int[0];
+            haveToRecenterMap = selectedPositions.size() > 0;
+            haveToRepaintSelection = true;
+            selectionUpdateReason = "selected " + selectedPositions.size() + " positions without model";
             notificationMutex.notifyAll();
         }
     }
