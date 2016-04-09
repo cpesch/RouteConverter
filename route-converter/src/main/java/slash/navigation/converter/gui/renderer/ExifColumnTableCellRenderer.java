@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import org.apache.commons.imaging.common.RationalNumber;
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.photo.PhotoPosition;
@@ -63,13 +64,15 @@ public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRender
 
     private String getFlash(Integer value) {
         StringBuilder buffer = new StringBuilder();
-
-        for (Map.Entry<String, Integer> entry : EXIF_FLASH_CONSTANTS.entrySet()) {
-            int fieldValue = entry.getValue();
-            int andValue = value & fieldValue;
-            if (andValue == fieldValue)
-                buffer.append(entry.getKey()).append(COMMA);
-        }
+        if(value != null) {
+            for (Map.Entry<String, Integer> entry : EXIF_FLASH_CONSTANTS.entrySet()) {
+                int fieldValue = entry.getValue();
+                int andValue = value & fieldValue;
+                if (andValue == fieldValue)
+                    buffer.append(entry.getKey()).append(COMMA);
+            }
+        } else
+            buffer.append("?");
 
         String result = buffer.toString();
         if(result.endsWith(COMMA))
@@ -85,11 +88,24 @@ public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRender
         String text = MessageFormat.format(RouteConverter.getBundle().getString("exif-data"),
                 formatDate(position.getTime(), UTC_TIMEZONE_ID),
                 formatTime(position.getTime(), UTC_TIMEZONE_ID),
-                position.getMake(), position.getModel(), position.getWidth(), position.getHeight(),
-                position.getfNumber(), exposure, position.getFocal(), getFlash(position.getFlash()),
-                position.getPhotographicSensitivity());
+                formatString(position.getMake()), formatString(position.getModel()),
+                formatString(position.getWidth()), formatString(position.getHeight()),
+                formatString(position.getfNumber()), exposure, formatString(position.getFocal()), getFlash(position.getFlash()),
+                formatString(position.getPhotographicSensitivity()));
         label.setText(text);
         label.setVerticalAlignment(TOP);
         return label;
+    }
+
+    private String formatString(String string) {
+        return string != null ? string : "?";
+    }
+
+    private String formatString(Integer integer) {
+        return integer != null ? integer.toString() : "?";
+    }
+
+    private String formatString(RationalNumber rationalNumber) {
+        return rationalNumber != null ? rationalNumber.toString() : "?";
     }
 }
