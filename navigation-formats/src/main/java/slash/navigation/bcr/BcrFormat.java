@@ -192,9 +192,15 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (!clientMatcher.matches())
             log.info("'" + client + "' does not match client station pattern; ignoring it");
         else {
-            Long aLong = parseLong(clientMatcher.group(2));
-            if (aLong != null)
-                altitude = aLong;
+            String string = clientMatcher.group(2);
+            try {
+                Long aLong = parseLong(string);
+                if (aLong != null)
+                    altitude = aLong;
+            }
+            catch (NumberFormatException e) {
+                log.info("'" + string + "' is not a valid altitude; ignoring it");
+            }
         }
         return new BcrPosition(parseInt(x), parseInt(y), altitude, trim(description));
     }
