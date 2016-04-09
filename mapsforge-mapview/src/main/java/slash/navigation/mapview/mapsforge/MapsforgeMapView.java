@@ -1007,6 +1007,10 @@ public class MapsforgeMapView implements MapView {
         selectionUpdater.setSelectedPositions(selectedPositions, replaceSelection);
     }
 
+    public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
+        throw new UnsupportedOperationException("photo panel not available in Offline Edition");
+    }
+
     private LatLong getMousePosition() {
         Point point = mapViewMoverAndZoomer.getLastMousePoint();
         return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :

@@ -828,6 +828,12 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    public void selectPositionsInMap(List<NavigationPosition> selectedPositions) {
+        if (isMapViewAvailable()) {
+            getMapView().setSelectedPositions(selectedPositions);
+        }
+    }
+
     public ElevationServiceFacade getElevationServiceFacade() {
         return elevationServiceFacade;
     }

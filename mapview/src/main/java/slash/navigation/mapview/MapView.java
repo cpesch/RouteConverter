@@ -22,9 +22,16 @@ package slash.navigation.mapview;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Interface for a component that displays the positions of a position list on a map.
@@ -59,6 +66,8 @@ public interface MapView extends PositionsSelectionModel {
     void showMapBorder(BoundingBox mapBoundingBox);
 
     NavigationPosition getCenter();
+
+    void setSelectedPositions(List<NavigationPosition> selectedPositions);
     void print(String title, boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);
