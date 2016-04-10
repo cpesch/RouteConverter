@@ -127,7 +127,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
     private static final String DATE_TIME_FORMAT = "yyyy:MM:dd HH:mm:ss";
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
-    private static final int READ_BUFFER_SIZE = 32 * 1024;
+    private static final int READ_BUFFER_SIZE = 64 * 1024;
 
     public String getName() {
         return "Photo (" + getExtension() + ")";
