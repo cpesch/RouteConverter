@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
@@ -208,7 +209,8 @@ public class PositionHelper {
     public static File extractFile(NavigationPosition position) {
         if (position instanceof Wgs84Position) {
             Wgs84Position wgs84Position = (Wgs84Position) position;
-            if (wgs84Position.getWaypointType().equals(Photo) || wgs84Position.getWaypointType().equals(Voice)) {
+            WaypointType waypointType = wgs84Position.getWaypointType();
+            if (waypointType != null && (waypointType.equals(Photo) || waypointType.equals(Voice))) {
                 File file = wgs84Position.getOrigin(File.class);
                 if (file != null) {
                     return file;
