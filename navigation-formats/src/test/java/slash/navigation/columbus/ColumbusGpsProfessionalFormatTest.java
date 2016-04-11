@@ -20,6 +20,7 @@
 
 package slash.navigation.columbus;
 
+import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserContextImpl;
@@ -27,9 +28,16 @@ import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class ColumbusGpsProfessionalFormatTest extends NavigationTestCase {
-    ColumbusGpsProfessionalFormat format = new ColumbusGpsProfessionalFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class ColumbusGpsProfessionalFormatTest {
+    private ColumbusGpsProfessionalFormat format = new ColumbusGpsProfessionalFormat();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,ALTITUDE,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
@@ -43,6 +51,7 @@ public class ColumbusGpsProfessionalFormatTest extends NavigationTestCase {
         assertFalse(format.isValidLine("422   ,G,150911,092432,47.456091N,010.992004E,1135 ,0   ,0  ,2D,S ,2.0  ,1.8  ,1.0  ,         "));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971"));
         assertTrue(format.isPosition("1,T,130830,145806,50.636938N,008.141175E,643,0,0,,,,,,"));
@@ -53,16 +62,17 @@ public class ColumbusGpsProfessionalFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", new ParserContextImpl());
-        assertEquals(16.321871, position.getLongitude());
-        assertEquals(48.132451, position.getLatitude());
-        assertEquals(319.0, position.getElevation());
-        assertEquals(12.0, position.getSpeed());
-        assertEquals(207.0, position.getHeading());
-        assertEquals(1.6, position.getPdop());
-        assertEquals(1.3, position.getHdop());
-        assertEquals(0.9, position.getVdop());
+        assertDoubleEquals(16.321871, position.getLongitude());
+        assertDoubleEquals(48.132451, position.getLatitude());
+        assertDoubleEquals(319.0, position.getElevation());
+        assertDoubleEquals(12.0, position.getSpeed());
+        assertDoubleEquals(207.0, position.getHeading());
+        assertDoubleEquals(1.6, position.getPdop());
+        assertDoubleEquals(1.3, position.getHdop());
+        assertDoubleEquals(0.9, position.getVdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());

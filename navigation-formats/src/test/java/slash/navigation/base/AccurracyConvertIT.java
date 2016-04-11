@@ -23,6 +23,7 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -53,6 +54,7 @@ public class AccurracyConvertIT {
     public void testConvertColumbusGpsToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new Gpx11Format());
     }
 
     @Test

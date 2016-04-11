@@ -46,6 +46,7 @@ import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.columbus.GarbleColumbusGpsProfessionalFormat;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -177,6 +178,7 @@ public class NavigationFormatRegistry {
         addFormat(GlopusFormat.class);
         addFormat(ColumbusGpsProfessionalFormat.class);
         addFormat(ColumbusGpsStandardFormat.class);
+        addFormat(ColumbusGpsType2Format.class);
         addFormat(QstarzQ1000Format.class);
         addFormat(Iblue747Format.class);
         addFormat(SygicAsciiFormat.class);

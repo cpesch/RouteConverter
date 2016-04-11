@@ -26,33 +26,29 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
-import static java.util.Arrays.asList;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteComments.isPositionDescription;
-import static slash.navigation.base.WaypointType.Voice;
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
- * Reads and writes Columbus GPS Professional (.csv) files.
+ * Reads and writes Columbus GPS Type 2 (.csv) files.
  *
- * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX<br/>
- * Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
+ * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP<br/>
+ * Format: 7,T,160325,151927,26.097885N,119.265160E,-25,39.3,83,1020.2,17
  *
  * @author Christian Pesch
  */
 
-public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusGpsProfessionalFormat.class);
-    private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
-    private static final Pattern HEADER_PATTERN = Pattern.
-            compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX");
+public class ColumbusGpsType2Format extends ColumbusGpsFormat {
+    private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP";
+    private static final Pattern HEADER_PATTERN = Pattern.compile(HEADER_LINE);
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -62,22 +58,15 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
-
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR + "?" +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
-    private static final Set<String> VALID_FIX_MODES = new HashSet<>(asList("2D", "3D"));
-    private static final Set<String> VALID_VALID = new HashSet<>(asList("SPS", "DGPS"));
 
     public String getName() {
-        return "Columbus GPS Professional (*" + getExtension() + ")";
+        return "Columbus GPS Type 2 (*" + getExtension() + ")";
     }
 
     protected Pattern getLinePattern() {
@@ -85,17 +74,8 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
     }
 
 
-    private boolean hasValidField(String line, String field, Set<String> validValues) {
-        if (field != null && !validValues.contains(field)) {
-            ColumbusGpsProfessionalFormat.log.severe("Field for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + validValues + "'");
-            return preferences.getBoolean("ignoreInvalidFix", false);
-        }
-        return true;
-    }
-
     protected boolean hasValidFix(String line, Matcher matcher) {
-        return hasValidField(line, trim(matcher.group(12)), VALID_FIX_MODES) &&
-                hasValidField(line, trim(matcher.group(13)), VALID_VALID);
+        return true;
     }
 
     protected String getHeader() {
@@ -124,19 +104,17 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
-        String pdop = lineMatcher.group(14);
-        String hdop = lineMatcher.group(15);
-        String vdop = lineMatcher.group(16);
-        String description = parseDescription(removeZeros(lineMatcher.group(17)), removeZeros(lineMatcher.group(1)), waypointType);
+        String pressure = lineMatcher.group(12);
+        String temperature = lineMatcher.group(13);
+        String description = parseDescription(removeZeros(lineMatcher.group(14)), removeZeros(lineMatcher.group(1)), waypointType);
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), description,
                 context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
-        position.setPdop(parseDouble(pdop));
-        position.setHdop(parseDouble(hdop));
-        position.setVdop(parseDouble(vdop));
+        position.setPressure(parseDouble(pressure));
+        position.setTemperature(parseDouble(temperature));
         return position;
     }
 
@@ -148,11 +126,10 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
         String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
-        String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
+        String speed = position.getSpeed() != null ? formatDoubleAsString(position.getSpeed()) : "0";
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "", 5);
-        String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "", 5);
-        String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "", 5);
+        String pressure = position.getPressure() != null ? formatDoubleAsString(position.getPressure()) : "0";
+        String temperature = fillWithZeros(position.getTemperature() != null ? formatIntAsString(position.getTemperature().intValue()) : "0", 2);
         String description = !isPositionDescription(position.getDescription()) ? position.getDescription() : "";
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
@@ -163,11 +140,8 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
                 height + SEPARATOR +
                 speed + SEPARATOR +
                 heading + SEPARATOR +
-                "3D" + SEPARATOR +
-                "SPS" + SEPARATOR +
-                pdop + SEPARATOR +
-                hdop + SEPARATOR +
-                vdop + SEPARATOR +
+                pressure + SEPARATOR +
+                temperature + SEPARATOR +
                 fillWithZeros(escape(description, SEPARATOR, ';'), 8));
     }
 }

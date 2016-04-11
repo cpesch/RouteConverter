@@ -100,6 +100,18 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
         return type != null ? type : Waypoint;
     }
 
+    protected String parseDescription(String description, String index, WaypointType waypointType) {
+        int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
+        if (descriptionSeparatorIndex != -1)
+            description = description.substring(descriptionSeparatorIndex + 1);
+        description = trim(description);
+        if (description == null)
+            description = waypointType + " " + trim(removeZeros(index));
+        if (waypointType.equals(Voice) && !description.endsWith(".wav"))
+            description += ".wav";
+        return description;
+    }
+
     protected String removeZeros(String string) {
         return string != null ? string.replace('\u0000', ' ') : "";
     }

@@ -98,16 +98,7 @@ public class ColumbusGpsStandardFormat extends ColumbusGpsFormat {
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
-
-        String description = removeZeros(lineMatcher.group(12));
-        int descriptionSeparatorIndex = description.lastIndexOf(SEPARATOR);
-        if (descriptionSeparatorIndex != -1)
-            description = description.substring(descriptionSeparatorIndex + 1);
-        description = trim(description);
-        if (description == null)
-            description = waypointType + " " + trim(removeZeros(lineMatcher.group(1)));
-        if(waypointType.equals(Voice) && !description.endsWith(".wav"))
-            description += ".wav";
+        String description = parseDescription(removeZeros(lineMatcher.group(12)), removeZeros(lineMatcher.group(1)), waypointType);
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), description,
