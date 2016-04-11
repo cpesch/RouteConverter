@@ -27,6 +27,7 @@ import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilot6Format;
@@ -611,6 +612,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof ColumbusGpsProfessionalFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new ColumbusGpsProfessionalFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public SimpleRoute asColumbusGpsType2Format() {
+        if (getFormat() instanceof ColumbusGpsType2Format)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new ColumbusGpsType2Format());
     }
 
     @SuppressWarnings("UnusedDeclaration")

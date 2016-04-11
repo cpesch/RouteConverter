@@ -34,7 +34,7 @@ import static slash.navigation.base.RouteComments.parseDescription;
  */
 
 public class Wgs84Position extends BaseNavigationPosition {
-    protected Double longitude, latitude, heading, hdop, vdop, pdop;
+    protected Double longitude, latitude, heading, pressure, temperature, hdop, vdop, pdop;
     protected String description;
     protected Integer satellites;
     protected WaypointType waypointType;
@@ -109,7 +109,6 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.time = time;
     }
 
-
     public WaypointType getWaypointType() {
         return waypointType;
     }
@@ -124,6 +123,22 @@ public class Wgs84Position extends BaseNavigationPosition {
 
     public void setHeading(Double heading) {
         this.heading = heading;
+    }
+
+    public Double getPressure() {
+        return pressure;
+    }
+
+    public void setPressure(Double pressure) {
+        this.pressure = pressure;
+    }
+
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
     }
 
     public Double getHdop() {
