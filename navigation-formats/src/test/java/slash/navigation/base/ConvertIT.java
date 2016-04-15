@@ -831,7 +831,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertImageToNokiaLandmarkExchange() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.jpg", new PhotoFormat(), new NokiaLandmarkExchangeFormat());
+        convertRoundtrip(TEST_PATH + "from-gps.jpg", new PhotoFormat(), new NokiaLandmarkExchangeFormat());
     }
 
     @Test

@@ -24,6 +24,7 @@ import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.columbus.GarbleColumbusGpsProfessionalFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.simple.GarbleHaicomLoggerFormat;
@@ -66,10 +67,11 @@ public class NavigationFormatRegistryTest {
         assertEquals(Route66Format.class, formats.get(1).getClass());
         assertEquals(ColumbusGpsProfessionalFormat.class, formats.get(2).getClass());
         assertEquals(ColumbusGpsStandardFormat.class, formats.get(3).getClass());
-        assertEquals(QstarzQ1000Format.class, formats.get(4).getClass());
-        assertEquals(Iblue747Format.class, formats.get(5).getClass());
-        assertEquals(GarbleColumbusGpsProfessionalFormat.class, formats.get(6).getClass());
-        assertEquals(GarbleHaicomLoggerFormat.class, formats.get(7).getClass());
-        assertEquals(NmeaFormat.class, formats.get(8).getClass());
+        assertEquals(ColumbusGpsType2Format.class, formats.get(4).getClass());
+        assertEquals(QstarzQ1000Format.class, formats.get(5).getClass());
+        assertEquals(Iblue747Format.class, formats.get(6).getClass());
+        assertEquals(GarbleColumbusGpsProfessionalFormat.class, formats.get(7).getClass());
+        assertEquals(GarbleHaicomLoggerFormat.class, formats.get(8).getClass());
+        assertEquals(NmeaFormat.class, formats.get(9).getClass());
     }
 }
