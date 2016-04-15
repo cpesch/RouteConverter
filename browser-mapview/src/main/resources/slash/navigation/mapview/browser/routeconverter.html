@@ -343,7 +343,7 @@
                var via_waypoints = legs[j].via_waypoints;
                for (var k = 0; k < via_waypoints.length; k++) {
                    var latLng = via_waypoints[k];
-                   callJavaWithUri("insert-position-at/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
+                   callJavaWithUri("add-position-at/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
                }
            }
        }
@@ -679,7 +679,7 @@ ${menuItems}
                    callJavaWithUri("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
                });
                menu.addItem(menuItems["new-position-action"], function(map, latLng) {
-                   callJavaWithUri("insert-position/" + latLng.lat() + "/" + latLng.lng());
+                   callJavaWithUri("add-position/" + latLng.lat() + "/" + latLng.lng());
                });
                menu.addItem(menuItems["delete-action"], function(map, latLng) {
                    callJavaWithUri("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
@@ -758,7 +758,7 @@ ${menuItems}
                } else if (!shiftKey && !altKey && ctrlKey) {
                    callJavaWithUri("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
-                   callJavaWithUri("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
+                   callJavaWithUri("delete-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
 
                $('body').on('click', 'a', function(e) {
