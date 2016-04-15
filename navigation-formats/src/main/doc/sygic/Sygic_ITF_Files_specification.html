@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)https://developers.sygic.com/documentation.php?action=navifiles_ITF -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <link type="text/css" rel="stylesheet" href="./Sygic_ITF_Files_specification_files/font.css">
+        <link type="text/css" rel="stylesheet" href="./Sygic_ITF_Files_specification_files/main.css">
+        <!--<link type="text/css" rel="stylesheet" href="fixed_width.css" />-->
+
+            <!-- Scripts & styles for syntax highlighting -->
+            <script type="text/javascript" async="" defer="" src="./Sygic_ITF_Files_specification_files/piwik.js"></script><script type="text/javascript" src="./Sygic_ITF_Files_specification_files/shCore.js"></script>
+            <script type="text/javascript" src="./Sygic_ITF_Files_specification_files/shBrushCpp.js"></script>
+            <script type="text/javascript" src="./Sygic_ITF_Files_specification_files/shBrushCSharp.js"></script>
+            <script type="text/javascript" src="./Sygic_ITF_Files_specification_files/shBrushJava.js"></script>
+            <link type="text/css" rel="stylesheet" href="./Sygic_ITF_Files_specification_files/shCoreDefault.css">
+            <script type="text/javascript">SyntaxHighlighter.all();</script>
+        <title>Sygic | Fleet Navigation SDK</title>
+    </head>
+  <body>
+      <div class="alt_fixed_width">
+        <header>
+<h1>Sygic</h1>
+<h2>Navigation SDK</h2>
+<span class="back-link"><a href="https://developers.sygic.com/documentation.php?action=navifiles_ITF#link-to-sygic.com">Back to Sygic</a></span>
+</header>      </div>
+
+      <nav>
+      <div class="alt_fixed_width">
+          <ul>
+            <li><a href="https://developers.sygic.com/">Introduction</a></li>
+<li><a href="https://developers.sygic.com/documentation.php">Documentation</a></li>
+<li><a href="https://developers.sygic.com/documentation.php?action=download">Download</a></li>
+<li><a href="https://developers.sygic.com/documentation.php?action=codesamples">Samples</a></li>
+<!-- <li><a href="documentation.php?action=reference">Reference</a></li> -->
+<li><a href="https://developers.sygic.com/documentation.php?action=support">Support</a></li>
+<li><a href="https://developers.sygic.com/documentation.php?action=reference" id="nav_subnav">References</a>
+    <ul class="nav_subnav" style="display: none;">
+             <li><a target="_blank" href="https://developers.sygic.com/reference/cpp/html/class_c_application_a_p_i.html">C++ reference</a></li>
+             <li><a target="_blank" href="https://developers.sygic.com/reference/cs/html/class_application_a_p_i_1_1_c_application_a_p_i.html">C# reference</a></li>
+             <li><a target="_blank" href="https://developers.sygic.com/reference/java2d/html/classcom_1_1sygic_1_1sdk_1_1remoteapi_1_1_api.html">Java 2D reference</a></li>
+             <li><a target="_blank" href="https://developers.sygic.com/reference/java3d/html/classcom_1_1sygic_1_1sdk_1_1remoteapi_1_1_api.html">Java 3D reference</a></li>
+    </ul>
+</li>
+
+
+          </ul>
+      </div>
+      </nav>
+
+      <div class="alt_fixed_width">
+          <div id="main_container">
+
+              <div class="breadcrumps">
+                  <a href="http://developers.sygic.com/">Sygic</a> → <a href="http://developers.sygic.com/documentation.php">Documentation</a>              </div>
+
+              <aside style="height: 946px;">
+                  <ul>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=introduction">Overview</a>
+        <ul class="sub_first" style="display: none;">
+			 <li><a href="https://developers.sygic.com/documentation.php?action=integration">Integration concept</a></li>
+			 <li><a href="https://developers.sygic.com/documentation.php?action=functionlist">Function list overview</a></li>
+			 <li><a href="https://developers.sygic.com/documentation.php?action=productlist">Product list overview</a></li>
+        </ul>
+    </li>
+
+    <li><a href="https://developers.sygic.com/documentation.php?action=download">Download</a></li>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=trydemo">Try demo</a>
+        <ul class="sub_first" style="display: none;">
+			 <li><a href="https://developers.sygic.com/documentation.php?action=trydemo_android">Demo Example on Android</a></li>
+			 <li><a href="https://developers.sygic.com/documentation.php?action=trydemo_wince">Demo Example on WindowsCE .NET</a></li>
+			 <li><a href="https://developers.sygic.com/documentation.php?action=trydemo_wince_cpp">Demo Example on WindowsCE CPP</a></li>
+			 <li><a href="https://developers.sygic.com/documentation.php?action=trydemo_linux_x86">Demo Example on Linux x86</a></li>
+        </ul>
+    </li>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=getstarted">Getting started</a>
+        <ul class="sub_first" style="display: none;">
+            <li><a href="https://developers.sygic.com/documentation.php?action=getstarted_android">Getting started with Android</a></li>
+            <li><a href="https://developers.sygic.com/documentation.php?action=getstarted_csharp">Getting started with WindowsCE C#</a></li>
+            <li><a href="https://developers.sygic.com/documentation.php?action=getstarted_xamarin">Getting started with Xamarin Android</a></li>
+        </ul>
+    </li>
+
+    <li class="item_sub open"><a href="https://developers.sygic.com/documentation.php?action=development">Application development</a>
+        <ul class="sub_first" style="display: block;">
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=compconfig_wince">Compiler configuration</a>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=library">Library installation</a>
+                <ul class="sub_second" style="display: none;">
+			           <li><a href="https://developers.sygic.com/documentation.php?action=library_wince">Library installation for Windows</a></li>
+			           <li><a href="https://developers.sygic.com/documentation.php?action=library_android">Library installation for Android</a></li>
+                </ul>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=projstart_wince">Start project</a>
+                <ul class="sub_second" style="display: none;">
+			           <li><a href="https://developers.sygic.com/documentation.php?action=projstart_wince">C# with Visual Studio</a></li>
+			           <li><a href="https://developers.sygic.com/documentation.php?action=projstart_android">Java with Eclipse</a></li>
+                </ul>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=codesamples">Code samples</a>
+                <ul class="sub_second" style="display: none;">
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_startsygic">Application control</a>
+			            <ul class="sub_third" style="display: none;">
+			                <li><a href="https://developers.sygic.com/documentation.php?action=code_startsygic">Start Sygic application</a></li>
+					        <!-- <li><a href="?action=code_startintegrated">Start Sygic integrated</a></li> -->
+					        <!-- <li><a href="?action=code_startstandalone">Start Sygic standalone</a></li> -->
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_background">Switch to background</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_mapversion">Get map version</a></li>
+                        </ul>
+			        </li>
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_getdistance">Route info functions</a>
+			            <ul class="sub_third" style="display: none;">
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_getdistance">Get distance to destination</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_geteta">Get ETA</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_notifyroutecalc">Notify route calculated</a></li>
+                        </ul>
+			        </li>
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_navigateaddress">Navigation functions</a>
+			            <ul class="sub_third" style="display: none;">
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_navigateaddress">Navigate to address</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_itinerary">Navigate with itinerary</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_jsonitinerary">Navigate with json itinerary</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_notifyreached">Notify destination reached</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_notifyspeed">Notify speed exceeded</a></li>
+                        </ul>
+			        </li>
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_getaddress">Location functions</a>
+			            <ul class="sub_third" style="display: none;">
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_getaddress">Get current address</a></li>
+                        </ul>
+			        </li>
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_findpoi">POI functions</a>
+			            <ul class="sub_third" style="display: none;">
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_findpoi">Find nearest POI</a></li>
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_getpoionroute">Get POIs on route</a></li>
+                        </ul>
+			        </li>
+			        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=code_trucksettings">Settings</a>
+			            <ul class="sub_third" style="display: none;">
+					        <li><a href="https://developers.sygic.com/documentation.php?action=code_trucksettings">Set truck settings</a></li>
+                        </ul>
+			        </li>
+                </ul>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=customization">Customization</a>
+                <ul class="sub_second" style="display: none;">
+                    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=customization_settings">Application settings</a>
+                         <ul class="sub_third" style="display: none;">
+							 <li><a href="https://developers.sygic.com/documentation.php?action=customization_settings_2d">Sygic 2D settings</a></li>
+							 <li><a href="https://developers.sygic.com/documentation.php?action=customization_settings_3d">Sygic 3D settings</a></li>
+                        </ul>
+                    </li>
+                    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=customization_menu">Menu control</a>
+                         <ul class="sub_third" style="display: none;">
+							 <li><a href="https://developers.sygic.com/documentation.php?action=customization_menu_2d">Sygic 2D menu</a></li>
+							 <li><a href="https://developers.sygic.com/documentation.php?action=customization_menu_3d">Sygic 3D menu</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=customization_keymap">Key mapping</a></li>
+                </ul>
+            </li>
+            <li class="item_sub open"><a href="https://developers.sygic.com/documentation.php?action=navifiles">Navigation file objects</a>
+                <ul class="sub_second" style="display: block;">
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_GF">Geofiles</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_RAD">Geofences</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_TMC">TMC messages</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_RSAV">Precomputed routes</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_ITF" class="active">Itineraries</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_sif">Json itineraries</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_ofg">Offroad routes</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=navifiles_EXR">EXR files</a></li>
+                </ul>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=extfuncs">Extended functions</a>
+                <ul class="sub_second" style="display: none;">
+                    <li><a href="https://developers.sygic.com/documentation.php?action=ext_workmates">Workmates</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=ext_precomproute">Precomputed routes</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=ext_sidebar">Custom sidebar</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=ext_pushroute">Push route service</a></li>
+                    <li><a href="https://developers.sygic.com/documentation.php?action=ext_hud">Head up display</a></li>
+                </ul>
+            </li>
+            <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=appexamples">Application examples</a>
+                <ul class="sub_second" style="display: none;">
+                </ul>
+            </li>
+        </ul>
+    </li>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=navigation_installation">Navigation installation and activation</a>
+      <ul class="sub_first" style="display: none;">
+        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=installation">Installation of Navigation</a>
+            <ul class="sub_first" style="display: none;">
+               <li><a href="https://developers.sygic.com/documentation.php?action=installation_wince_navi2d">Sygic Fleet 2D on Windows</a></li>
+               <li><a href="https://developers.sygic.com/documentation.php?action=installation_android_navi2d">Sygic Fleet 2D on Android</a></li>
+               <li><a href="https://developers.sygic.com/documentation.php?action=installation_android_navi3d">Sygic Fleet 3D on Android</a></li>
+               <li><a href="https://developers.sygic.com/documentation.php?action=installation_linux_navi2d">Sygic Fleet 2D on Linux</a></li>
+            </ul>
+        </li>
+
+        <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=activation">Activation of Navigation</a>
+            <ul class="sub_first" style="display: none;">
+               <li><a href="https://developers.sygic.com/documentation.php?action=activation_trialcode">Activation with trial code</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_productcodes">Activation with product codes</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_sdtool">Remote activation with SD card tool</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_php">Remote activation with PHP request</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_utility">Remote activation with Sygic utility</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_library">Remote activation with Sygic library</a></li>
+	           <li><a href="https://developers.sygic.com/documentation.php?action=activation_url">Remote activation with URL scheme</a></li>
+               <li><a href="https://developers.sygic.com/documentation.php?action=activation_dpreactivation">On-device preactivation</a></li>
+               <li><a href="https://developers.sygic.com/documentation.php?action=activation_spreactivation">Server preactivation</a></li>
+           </ul>
+        </li>
+      </ul>
+    </li>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=reference">Reference manual</a>
+        <ul class="sub_first" style="display: none;">
+             <li><a href="https://developers.sygic.com/reference/cpp/html/class_c_application_a_p_i.html">C++ SDK reference</a></li>
+             <li><a href="https://developers.sygic.com/reference/cs/html/class_application_a_p_i_1_1_c_application_a_p_i.html">C# SDK reference</a></li>
+             <li><a href="https://developers.sygic.com/reference/cs_workmates/html/class_workmate_a_p_i_1_1_workmate_api.html">C# Workmates API</a></li>
+             <li><a href="https://developers.sygic.com/reference/java2d/html/classcom_1_1sygic_1_1sdk_1_1remoteapi_1_1_api.html">Java 2D SDK reference</a></li>
+             <li><a href="https://developers.sygic.com/reference/java3d/html/classcom_1_1sygic_1_1sdk_1_1remoteapi_1_1_api.html">Java 3D SDK reference</a></li>
+             <li><a href="https://developers.sygic.com/reference/java3d_sidebar/html/classcom_1_1sygic_1_1sidebar_1_1_sidebar.html">Java 3D Sidebar API</a></li>
+             <li><a href="https://developers.sygic.com/documentation.php?action=customurl_android">Android Custom URL</a></li>
+             <li><a href="https://developers.sygic.com/documentation.php?action=customurl_ios">iOS Custom URL</a></li>
+        </ul>
+    </li>
+
+    <li class="item_sub"><a href="https://developers.sygic.com/documentation.php?action=support">Support</a>
+        <ul class="sub_first" style="display: none;">
+            <li><a href="http://devforum.sygic.com/">Developers forum</a></li>
+            <li><a href="https://developers.sygic.com/documentation.php?action=support_faq">FAQ</a></li>
+            <li><a href="https://developers.sygic.com/documentation.php?action=support_troubleshoot">Troubleshooting</a></li>
+        </ul>
+    </li>
+
+</ul>              </aside>
+
+              <section style="margin-left: 320px;">
+
+                  
+
+
+            <center>
+              <h2>ITF Files specification</h2>
+              <h3><i>Specification version 2.0</i></h3>
+            </center>
+            <hr>
+
+            <ul>
+              <li> <a href="https://developers.sygic.com/documentation.php?action=navifiles_ITF#chapter1section0">1. About ITF Files</a> </li>
+
+              <li> <a href="https://developers.sygic.com/documentation.php?action=navifiles_ITF#chapter2section0">2. Itinerary File Attributes</a> </li>
+            </ul>
+
+                <p>
+                This section explains how to work with itinerary files (also referred to as ITF files).
+                </p>
+
+             <a name="chapter1section0"></a>
+             <h3>1. About ITF Files</h3>
+
+                <p>
+                The ITF file contains the list of waypoints, which define the input for a route calculations.<br>
+				Each waypoint contains 6 attributes,
+				and each waypoint is of the following type attribute: via point, finish, start and invisible.<br>
+				Route follows the points in the itinerary in a defined order.
+				</p>
+
+			 <a name="chapter2section0"></a>
+             <h3>2. Itinerary File Attributes</h3>
+
+<table bgcolor="#E0E0E0">
+ <tbody><tr><th>Section</th><th>Name</th><th>c++ type</th><th>Bytes</th><th>Description</th></tr>
+ <tr><td>Header</td><td>Time</td><td>long</td><td>4 bytes</td><td>Creation time of itimerary In Sygic format. Count of seconds snce 1.1.2001</td></tr>
+ <tr><td>&nbsp;</td><td>Empty</td><td>unsigned int</td><td>4 bytes</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Visited Index</td><td>short int</td><td>2 bytes</td><td>Index of last visited point in itinerary</td></tr>
+ <tr><td>&nbsp;</td><td>Count of points</td><td>unsigned short int</td><td>2 bytes</td><td>Count of points in itinerary file</td></tr>
+ <tr><td>Point 1</td><td>Longitude</td><td>long</td><td>4 bytes</td><td>Longitude in degrees x 100 000</td></tr>
+ <tr><td>&nbsp;</td><td>Latitude</td><td>long</td><td>4 bytes</td><td>Latitude in degrees x 100 000</td></tr>
+ <tr><td>&nbsp;</td><td>Type</td><td>unsigned char</td><td>1 byte</td><td>Type of itinerary point: Via Point = 1,  Finish  = 2, Start  = 3,  Invisible = 4.</td></tr>
+ <tr><td>&nbsp;</td><td>Empty</td><td>unsigned char</td><td>1 byte</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Length of Name</td><td>unsigned short int</td><td>2 bytes</td><td>Length of  Point name in bytes = (unsigned short int)( ( wcslen(Name) + 1 ) * sizeof(wchar_t))</td></tr>
+ <tr><td>&nbsp;</td><td>Name</td><td>wchar_t[]</td><td>Length of Name</td><td>Name of point. Unicode null terminated string.</td></tr>
+ <tr><td>Point n</td><td>Longitude</td><td>long</td><td>4 bytes</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Latitude</td><td>long</td><td>4 bytes</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Type</td><td>unsigned char</td><td>1 byte</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Empty</td><td>unsigned char</td><td>1 byte</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Length of Name</td><td>unsigned short int</td><td>2 bytes</td><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Name</td><td>wchar_t[]</td><td>Length of Name</td><td></td></tr>
+</tbody></table>
+
+
+
+              </section>
+
+          </div>
+      </div>
+
+<script src="./Sygic_ITF_Files_specification_files/jquery.min.js"></script>
+
+<script>
+    // Dynamic change of 'aside' height:
+    $(document).ready(function(){
+    $('aside').height( $('#main_container').height() );
+    });
+    // Show-hide tree in 'aside':
+    $( '.sub_first, .sub_second, .sub_third' ).hide();
+    $('.item_sub').click(function(e){
+      $(this).children('ul').toggle();
+      $(this).toggleClass('open');
+      e.stopPropagation();
+    });
+    // Check if 'aside' exists then move 'section':
+    jQuery.fn.exists = function(){return this.length>0;}
+    if ($('aside').exists()) {
+      $('section').css('margin-left',320);
+    }
+    // If link is active show the whole tree structure to the link:
+    $(document).ready(function () {
+        var path = $(location).attr('search')
+        $('aside ul').find('a[href^="' + path + '"]').addClass('active');
+        $('aside a.active').parents('ul').show().parents('li.item_sub').addClass('open');
+    });
+
+        // Sub-navigation in main navigation
+	    $( '.nav_subnav' ).hide();
+	    $( '#nav_subnav' ).click(function(f) {
+	        $( '.nav_subnav' ).toggle();
+	        f.preventDefault();
+	    });
+
+
+    $(function(){
+
+        function contentSwitcher(settings){
+            var settings = {
+               contentClass : '.content_switch',
+               navigationId : '#switcher'
+            };
+
+            //Hide all of the content except the first one on the nav
+            $(settings.contentClass).not(':first').hide();
+            $(settings.navigationId).find('li:first').addClass('active');
+
+            //onClick set the active state,
+            //hide the content panels and show the correct one
+            $(settings.navigationId).find('a').click(function(e){
+                var contentToShow = $(this).attr('href');
+                contentToShow = $(contentToShow);
+
+                //dissable normal link behaviour
+                e.preventDefault();
+
+                //set the proper active class for active state css
+                $(settings.navigationId).find('li').removeClass('active');
+                $(this).parent('li').addClass('active');
+
+                //hide the old content and show the new
+                $(settings.contentClass).hide();
+                contentToShow.show();
+            });
+        }
+        contentSwitcher();
+    });
+</script>
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.sygic.com/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>&lt;p&gt;&lt;img src="//analytics.sygic.com/piwik.php?idsite=1" style="border:0;" alt="" /&gt;&lt;/p&gt;</noscript>
+<!-- End Piwik Code -->
+
+  
+
+</body></html>
