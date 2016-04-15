@@ -45,10 +45,6 @@ public class Platform {
                 System.getProperty("os.arch");
     }
 
-    public static boolean isEclipseSWT() {
-        return !isMac() || System.getProperty("java.version").compareTo("1.6.0") >= 0;
-    }
-
     public static boolean isJavaFX7() {
         return System.getProperty("java.vendor").contains("Oracle") &&
                 System.getProperty("java.version").compareTo("1.7.0_40") >= 0;
