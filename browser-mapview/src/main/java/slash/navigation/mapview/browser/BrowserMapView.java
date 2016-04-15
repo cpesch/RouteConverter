@@ -1365,8 +1365,8 @@ public abstract class BrowserMapView implements MapView {
     }
 
     private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(\\d*)/(\\d*)$");
-    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
-    private static final Pattern INSERT_POSITION_AT_PATTERN = Pattern.compile("^insert-position-at/(.*)/(.*)/(.*)$");
+    private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
+    private static final Pattern ADD_POSITION_AT_PATTERN = Pattern.compile("^add-position-at/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
@@ -1388,7 +1388,7 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
-        Matcher insertPositionAtMatcher = INSERT_POSITION_AT_PATTERN.matcher(callback);
+        Matcher insertPositionAtMatcher = ADD_POSITION_AT_PATTERN.matcher(callback);
         if (insertPositionAtMatcher.matches()) {
             final int row = parseInt(insertPositionAtMatcher.group(1)) + 1;
             final NavigationPosition position = parsePosition(insertPositionAtMatcher.group(2), insertPositionAtMatcher.group(3));
@@ -1400,7 +1400,7 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
-        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
+        Matcher insertPositionMatcher = ADD_POSITION_PATTERN.matcher(callback);
         if (insertPositionMatcher.matches()) {
             final int row = getAddRow();
             final NavigationPosition position = parsePosition(insertPositionMatcher.group(1), insertPositionMatcher.group(2));
