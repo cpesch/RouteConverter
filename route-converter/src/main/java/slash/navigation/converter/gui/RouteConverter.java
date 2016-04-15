@@ -171,7 +171,6 @@ import static slash.common.io.Files.toUrls;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
-import static slash.common.system.Platform.isEclipseSWT;
 import static slash.common.system.Platform.isJavaFX7;
 import static slash.common.system.Platform.isJavaFX8;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -957,8 +956,7 @@ public class RouteConverter extends SingleFrameApplication {
         } else if (isJavaFX7()) {
             result.add(JavaFX7);
         }
-        if (!isEclipseSWT())
-            result.add(EclipseSWT);
+        result.add(EclipseSWT);
         return result;
     }
 
