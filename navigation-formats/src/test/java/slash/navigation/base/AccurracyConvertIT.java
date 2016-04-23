@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
 import slash.navigation.columbus.ColumbusGpsType2Format;
@@ -41,12 +42,12 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 public class AccurracyConvertIT {
 
     @Test
-    public void testConvertColumbusGpsToGoPalTrack() throws IOException {
+    public void testConvertColumbusGpsProfessionalToGoPalTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new GoPalTrackFormat());
     }
 
     @Test
-    public void testConvertColumbusGpsToGpsTuner() throws IOException {
+    public void testConvertColumbusGpsProfessionalToGpsTuner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new GpsTunerFormat());
     }
 
@@ -55,15 +56,21 @@ public class AccurracyConvertIT {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx11Format());
         convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new Gpx11Format());
     }
 
     @Test
-    public void testConvertColumbusGpsToNmea() throws IOException {
+    public void testConvertColumbusGpsProfessionalToNmea() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new NmeaFormat());
     }
 
     @Test
-    public void testConvertColumbusGpsToTomTomRoute() throws IOException {
+    public void testConvertColumbusGpBinaryToNmea() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new NmeaFormat());
+    }
+
+    @Test
+    public void testConvertColumbusGpsProfessionalToTomTomRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new TomTom8RouteFormat());
     }
 

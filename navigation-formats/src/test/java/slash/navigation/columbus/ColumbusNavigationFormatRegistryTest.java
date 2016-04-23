@@ -51,4 +51,10 @@ public class ColumbusNavigationFormatRegistryTest {
         assertEquals(ColumbusGpsType2Format.class, formats.get(2).getClass());
         assertEquals(GarbleColumbusGpsProfessionalFormat.class, formats.get(3).getClass());
     }
+
+    @Test
+    public void testGetReadFormatsSortedByExtensionGps() {
+        List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".gps");
+        assertEquals(ColumbusGpsBinaryFormat.class, formats.get(0).getClass());
+    }
 }

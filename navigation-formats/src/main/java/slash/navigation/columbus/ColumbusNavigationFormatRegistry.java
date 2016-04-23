@@ -30,6 +30,6 @@ import slash.navigation.gpx.GpxFormat;
  */
 public class ColumbusNavigationFormatRegistry extends NavigationFormatRegistry {
     protected boolean includeReadFormat(NavigationFormat format) {
-        return format instanceof GpxFormat || format instanceof ColumbusGpsFormat;
+        return format instanceof GpxFormat || format instanceof ColumbusGpsFormat || format instanceof ColumbusGpsBinaryFormat;
     }
 }

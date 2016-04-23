@@ -44,6 +44,7 @@ import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
 import slash.navigation.columbus.ColumbusGpsType2Format;
@@ -201,6 +202,7 @@ public class NavigationFormatRegistry {
         addFormat(GarminFlightPlanFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
+        addFormat(ColumbusGpsBinaryFormat.class);
         addFormat(NavilinkFormat.class);
         addFormat(GoRiderGpsFormat.class);
         addFormat(KienzleGpsFormat.class);
