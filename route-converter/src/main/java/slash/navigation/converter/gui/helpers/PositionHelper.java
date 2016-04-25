@@ -115,6 +115,18 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
+    public static String extractTemperature(NavigationPosition position) {
+        if (!(position instanceof Wgs84Position))
+            return "";
+        return format("%d\u00B0C", round(((Wgs84Position)position).getTemperature()));
+    }
+
+    public static String extractPressure(NavigationPosition position) {
+        if (!(position instanceof Wgs84Position))
+            return "";
+        return format("%d hPa", round(((Wgs84Position)position).getPressure()));
+    }
+
     private static String formatDateTime(CompactCalendar time) {
         StringModel timeZone = RouteConverter.getInstance().getTimeZone();
         return getDateTimeFormat(timeZone.getString()).format(time.getTime());
