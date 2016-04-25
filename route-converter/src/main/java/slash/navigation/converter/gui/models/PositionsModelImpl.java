@@ -143,7 +143,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                     if (position instanceof Wgs84Position) {
                         Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
                         File file = wgs84Position.getOrigin(File.class);
-                        if (file != null) {
+                        if (file != null && file.exists()) {
                             BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
                             if(resize != null) {
                                 imageAndFile = new ImageAndFile(new ImageIcon(resize), file);
