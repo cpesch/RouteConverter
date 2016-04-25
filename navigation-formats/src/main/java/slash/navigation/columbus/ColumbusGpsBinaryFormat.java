@@ -147,8 +147,8 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
             CompactCalendar time = parseTime(buffer.getInt());
             boolean isSouth = hasBitSet(byte3, 2);
             boolean isWest = hasBitSet(byte3, 3);
-            double latitude = buffer.getInt() / COORDINATE_FACTOR * (isSouth ? -1 : 1);
-            double longitude = buffer.getInt() / COORDINATE_FACTOR * (isWest ? -1 : 1);
+            double latitude = parseCoordinate(buffer.getInt(), isSouth);
+            double longitude = parseCoordinate(buffer.getInt(), isWest);
             double altitude = buffer.getInt() / ALTITUDE_FACTOR;
             double speed = buffer.getShort() / SPEED_FACTOR;
             double heading = buffer.getShort();
@@ -203,6 +203,10 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         calendar.set(MILLISECOND, 0);
 
         return fromCalendar(calendar);
+    }
+
+    private double parseCoordinate(int integer, boolean isSouthOrWest) {
+        return integer / COORDINATE_FACTOR * (isSouthOrWest ? -1 : 1);
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
