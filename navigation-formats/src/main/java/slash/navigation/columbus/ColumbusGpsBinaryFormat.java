@@ -136,7 +136,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
     private List<Wgs84Position> internalRead(ByteBuffer buffer) {
         List<Wgs84Position> result = new ArrayList<>();
 
-        while (buffer.position() + 28 < buffer.capacity()) {
+        while (buffer.position() + 28 <= buffer.capacity()) {
             byte index0 = buffer.get();
             byte index1 = buffer.get();
             byte index2 = buffer.get();
