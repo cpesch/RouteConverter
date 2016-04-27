@@ -22,7 +22,6 @@ package slash.navigation.columbus;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 

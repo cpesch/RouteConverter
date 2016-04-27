@@ -34,9 +34,12 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteComments.isPositionDescription;
-import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
@@ -87,7 +90,7 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
 
     private boolean hasValidField(String line, String field, Set<String> validValues) {
         if (field != null && !validValues.contains(field)) {
-            ColumbusGpsProfessionalFormat.log.severe("Field for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + validValues + "'");
+            log.severe("Field for '" + line + "' is invalid. Contains '" + field + "' but expecting '" + validValues + "'");
             return preferences.getBoolean("ignoreInvalidFix", false);
         }
         return true;

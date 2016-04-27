@@ -17,19 +17,32 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.columbus;
 
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.gpx.GpxFormat;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.common.NavigationPosition;
+
+import javax.swing.*;
+
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractTemperature;
 
 /**
- * Managed the navigation formats for the RouteConverter Columbus Edition.
+ * Renders the temperature column of the positions table.
  *
  * @author Christian Pesch
  */
-public class ColumbusNavigationFormatRegistry extends NavigationFormatRegistry {
-    protected boolean includeReadFormat(NavigationFormat format) {
-        return format instanceof GpxFormat || format instanceof ColumbusGpsFormat || format instanceof ColumbusGpsBinaryFormat;
+
+public class TemperatureColumnTableCellEditor extends PositionsTableCellEditor {
+    public TemperatureColumnTableCellEditor() {
+        super(RIGHT);
+    }
+
+    protected void formatCell(JLabel label, NavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(NavigationPosition position) {
+        return extractTemperature(position);
     }
 }

@@ -24,8 +24,10 @@ import org.junit.Test;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -109,6 +111,8 @@ public class ConvertIT {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot8Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-type.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.csv", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
     }
 
     @Test

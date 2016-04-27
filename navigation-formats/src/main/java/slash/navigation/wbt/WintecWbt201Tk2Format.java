@@ -41,7 +41,7 @@ import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
  */
 
 public class WintecWbt201Tk2Format extends WintecWbt201Format {
-    private static final String FORMAT_DESCRIPTOR = "WintecLogTk2".toLowerCase(); // or WintecLogTK2
+    private static final String FORMAT_DESCRIPTOR = "WintecLogTk2"; // or WintecLogTK2
 
     public String getExtension() {
         return ".tk2";
@@ -56,7 +56,7 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
         byte[] bytes = new byte[16];
         buffer.get(bytes, 0, 16);
         String formatDescriptor = new String(bytes, 0, 12, ISO_LATIN1_ENCODING).toLowerCase();
-        return formatDescriptor.equals(FORMAT_DESCRIPTOR);
+        return formatDescriptor.equals(FORMAT_DESCRIPTOR.toLowerCase());
     }
 
     protected List<Wgs84Route> internalRead(ByteBuffer buffer) {

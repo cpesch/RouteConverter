@@ -83,9 +83,9 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
+    protected abstract boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException;
 
-    protected abstract List<Wgs84Route> internalRead(ByteBuffer source);
+    protected abstract List<Wgs84Route> internalRead(ByteBuffer buffer);
 
     public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[getHeaderSize()];
@@ -98,17 +98,17 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
             if (checkFormatDescriptor(headerBuffer)) {
                 // read whole file in ByteBuffer with a size limit of about 2 MB
-                ByteBuffer sourceData = allocate(header.length + source.available());
                 int available = source.available();
+                ByteBuffer sourceBuffer = allocate(header.length + available);
                 byte[] data = new byte[available];
                 if (source.read(data) != available)
                     throw new IOException("Could not read " + available + " bytes");
 
-                sourceData.position(0);
-                sourceData.put(header);
-                sourceData.put(data);
+                sourceBuffer.position(0);
+                sourceBuffer.put(header);
+                sourceBuffer.put(data);
 
-                context.appendRoutes(internalRead(sourceData));
+                context.appendRoutes(internalRead(sourceBuffer));
             }
         }
     }

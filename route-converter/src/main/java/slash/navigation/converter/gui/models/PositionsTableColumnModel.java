@@ -33,7 +33,9 @@ import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.PhotoColumnTableCellRenderer;
 import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
+import slash.navigation.converter.gui.renderer.PressureColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.TemperatureColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.table.TableColumnModel;
@@ -50,7 +52,9 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DI
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.PRESSURE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TEMPERATURE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
@@ -70,6 +74,8 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(DATE_COLUMN_INDEX, "date", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new DateColumnTableCellEditor(), headerRenderer);
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
+        predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100°C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
+        predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
         predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 84, true, new LatitudeColumnTableCellEditor(), headerRenderer);
