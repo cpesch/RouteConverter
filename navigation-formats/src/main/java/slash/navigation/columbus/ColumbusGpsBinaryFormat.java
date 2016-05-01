@@ -166,8 +166,8 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    private boolean hasBitSet(byte aByte, int position) {
-        return (aByte & (0x01 << position)) == 1;
+    boolean hasBitSet(byte aByte, int position) {
+        return ((aByte >> position) & 1) == 1;
     }
 
     private WaypointType parseTag(byte aByte) {
@@ -205,7 +205,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         return fromCalendar(calendar);
     }
 
-    private double parseCoordinate(int integer, boolean isSouthOrWest) {
+    double parseCoordinate(int integer, boolean isSouthOrWest) {
         return integer / COORDINATE_FACTOR * (isSouthOrWest ? -1 : 1);
     }
 
