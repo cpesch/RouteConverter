@@ -32,6 +32,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ColumbusGpsType2FormatTest {
     private ColumbusGpsType2Format format = new ColumbusGpsType2Format();
@@ -54,20 +58,45 @@ public class ColumbusGpsType2FormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
-        assertDoubleEquals(119.269951, position.getLongitude());
-        assertDoubleEquals(26.099775, position.getLatitude());
-        assertDoubleEquals(-71.0, position.getElevation());
-        assertDoubleEquals(22.9, position.getSpeed());
-        assertDoubleEquals(51.0, position.getHeading());
-        assertDoubleEquals(1021.3, position.getPressure());
-        assertDoubleEquals(1.0, position.getTemperature());
-        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        CompactCalendar expectedCal = calendar(2016, 3, 25, 15, 20, 59);
-        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
-        assertEquals(expected, actual);
-        assertEquals(expectedCal, position.getTime());
-        assertEquals("Waypoint 17", position.getDescription());
+        boolean useLocalTimeZone = getUseLocalTimeZone();
+        try {
+            setUseLocalTimeZone(false);
+            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
+            assertDoubleEquals(119.269951, position.getLongitude());
+            assertDoubleEquals(26.099775, position.getLatitude());
+            assertDoubleEquals(-71.0, position.getElevation());
+            assertDoubleEquals(22.9, position.getSpeed());
+            assertDoubleEquals(51.0, position.getHeading());
+            assertDoubleEquals(1021.3, position.getPressure());
+            assertDoubleEquals(1.0, position.getTemperature());
+            String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+            CompactCalendar expectedCal = calendar(2016, 3, 25, 15, 20, 59);
+            String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+            assertEquals(expected, actual);
+            assertEquals(expectedCal, position.getTime());
+            assertEquals("Waypoint 17", position.getDescription());
+        } finally {
+            setUseLocalTimeZone(useLocalTimeZone);
+        }
+    }
+
+    @Test
+    public void testParsePositionWithShanghaiTimezone() {
+        boolean useLocalTimeZone = getUseLocalTimeZone();
+        String timeZone = getTimeZone();
+        try {
+            setUseLocalTimeZone(true);
+            setTimeZone("Asia/Shanghai");
+            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
+            String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+            CompactCalendar expectedCal = calendar(2016, 3, 25, 7, 20, 59);
+            String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+            assertEquals(expected, actual);
+            assertEquals(expectedCal, position.getTime());
+        } finally {
+            setUseLocalTimeZone(useLocalTimeZone);
+            setTimeZone(timeZone);
+        }
     }
 
     @Test

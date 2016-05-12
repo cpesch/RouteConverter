@@ -25,7 +25,7 @@ import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
-import slash.navigation.columbus.PhotoNavigationFormatRegistry;
+import slash.navigation.photo.PhotoNavigationFormatRegistry;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;

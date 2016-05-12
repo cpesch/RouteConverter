@@ -26,6 +26,7 @@ import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.columbus.ColumbusV1000Device;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
@@ -137,6 +138,7 @@ import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.toString;
 import static java.util.Locale.CHINA;
 import static java.util.Locale.FRANCE;
 import static java.util.Locale.GERMANY;
@@ -1267,6 +1269,11 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
         hgtFilesService = new HgtFilesService(dataSourceManager);
+        timeZone.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                ColumbusV1000Device.setTimeZone(timeZone.getString());
+            }
+        });
     }
 
     protected void initializeActions() {

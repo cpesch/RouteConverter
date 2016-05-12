@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import static java.lang.Long.parseLong;
 import static java.nio.ByteBuffer.allocate;
@@ -55,6 +56,8 @@ import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.WaypointType.PointOfInterest;
 import static slash.navigation.base.WaypointType.Waypoint;
+import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
 /**
  * Reads Columbus GPS Binary (.gps) files.
@@ -202,7 +205,10 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         calendar.set(SECOND, second);
         calendar.set(MILLISECOND, 0);
 
-        return fromCalendar(calendar);
+        CompactCalendar dateAndTime = fromCalendar(calendar);
+        if(getUseLocalTimeZone())
+            dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
+        return dateAndTime;
     }
 
     double parseCoordinate(int integer, boolean isSouthOrWest) {

@@ -20,12 +20,14 @@
 
 package slash.navigation.columbus;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +38,8 @@ import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteComments.isPositionDescription;
+import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
 /**
  * Reads and writes Columbus GPS Type 2 (.csv) files.
@@ -108,9 +112,11 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         String temperature = lineMatcher.group(13);
         String description = parseDescription(removeZeros(lineMatcher.group(14)), removeZeros(lineMatcher.group(1)), waypointType);
 
+        CompactCalendar dateAndTime = parseDateAndTime(date, time);
+        if(getUseLocalTimeZone())
+            dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), description,
-                context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
+                dateAndTime, description, context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         position.setPressure(parseDouble(pressure));
