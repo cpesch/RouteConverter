@@ -234,8 +234,8 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
     private static final String TIME_ZONE_PREFERENCE = "timeZone";
-    public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
-    public static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
+    private static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
+    private static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
@@ -652,7 +652,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     // helpers for external components
 
-
     public NavigationFormatRegistry getNavigationFormatRegistry() {
         return navigationFormatRegistry;
     }
@@ -673,7 +672,7 @@ public class RouteConverter extends SingleFrameApplication {
         return googleMapsServerModel;
     }
 
-    public ProfileModeModel getProfileModeModel() {
+    private ProfileModeModel getProfileModeModel() {
         return profileModeModel;
     }
 
@@ -979,7 +978,7 @@ public class RouteConverter extends SingleFrameApplication {
         return preferred;
     }
 
-    public void setMapViewPreference(MapViewImplementation mapView) {
+    private void setMapViewPreference(MapViewImplementation mapView) {
         getPreferences().put(MAP_VIEW_PREFERENCE, mapView.name());
     }
 

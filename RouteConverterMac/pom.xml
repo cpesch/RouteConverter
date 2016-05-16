@@ -131,6 +131,7 @@
                 </executions>
             </plugin>
 
+            <!--
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -147,6 +148,53 @@
                     </descriptors>
                     <finalName>RouteConverterMac.app</finalName>
                 </configuration>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.4.0</version>
+                <configuration>
+                    <identifier>slash.navigation.converter.gui.RouteConverter</identifier>
+                    <appName>RouteConverter</appName>
+                    <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                    <jvmArgs>
+                        <jvmArg>-Xmx512m</jvmArg>
+                        <jvmArg>-Dapple.laf.useScreenMenuBar=true</jvmArg>
+                    </jvmArgs>
+                    <verbose>true</verbose>
+                    <keyStore>${keystorePath}</keyStore>
+                    <keyStoreAlias>${keystoreAlias}</keyStoreAlias>
+                    <keyStorePassword>${keystorePassword}</keyStorePassword>
+                    <keyPassword>${keyPassword}</keyPassword>
+                    <nativeReleaseVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}</nativeReleaseVersion>
+                    <!-- <bundler>dmg</bundler> -->
+                    <bundler>mac.app</bundler>
+                    <bundleArguments>
+                        <runtime/>
+                        <mac.category>Navigation</mac.category>
+                        <mac.signing-key-developer-id-app>${keyId}</mac.signing-key-developer-id-app>
+                        <copyright>Created by Christian Pesch</copyright>
+                    </bundleArguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- required before build-native -->
+                        <id>create-jfxjar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-native</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-native</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
