@@ -60,8 +60,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -466,7 +464,8 @@ public class OptionsDialog extends SimpleDialog {
         ButtonGroup group = new ButtonGroup();
         group.add(radioButtonV1000LocalTime);
         group.add(radioButtonV1000UTC);
-        group.setSelected(radioButtonV1000LocalTime.getModel(), ColumbusV1000Device.getUseLocalTimeZone());
+        radioButtonV1000LocalTime.setSelected(ColumbusV1000Device.getUseLocalTimeZone());
+        radioButtonV1000UTC.setSelected(!ColumbusV1000Device.getUseLocalTimeZone());
         radioButtonV1000LocalTime.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 ColumbusV1000Device.setUseLocalTimeZone(radioButtonV1000LocalTime.isSelected());
