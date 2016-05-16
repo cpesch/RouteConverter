@@ -23,6 +23,7 @@ package slash.navigation.mapview.browser;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
@@ -716,7 +717,8 @@ public abstract class BrowserMapView implements MapView {
    }
 
     private boolean isColumbusTrack() {
-        return positionsModel.getRoute().getFormat() instanceof ColumbusGpsFormat;
+        BaseNavigationFormat format = positionsModel.getRoute().getFormat();
+        return format instanceof ColumbusGpsFormat || format instanceof ColumbusGpsBinaryFormat;
     }
 
     // resizing
