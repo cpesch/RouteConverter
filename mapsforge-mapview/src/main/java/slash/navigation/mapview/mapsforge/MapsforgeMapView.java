@@ -49,6 +49,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.PositionColumnValues;
@@ -141,9 +142,7 @@ import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
 import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
 import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
 import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
-import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_COLOR_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
-import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_COLOR_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -170,6 +169,8 @@ public class MapsforgeMapView implements MapView {
     private BooleanModel showAllPositionsAfterLoading;
     private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
+    private ColorModel routeColorModel;
+    private ColorModel trackColorModel;
     private UnitSystemModel unitSystemModel;
     private MapViewCallbackOffline mapViewCallback;
 
@@ -177,6 +178,7 @@ public class MapsforgeMapView implements MapView {
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
     private MapViewCallbackListener mapViewCallbackListener = new MapViewCallbackListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
+    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
@@ -204,6 +206,8 @@ public class MapsforgeMapView implements MapView {
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
                            FixMapModeModel fixMapModeModel,            /* ignored */
+                           ColorModel routeColorModel,
+                           ColorModel trackColorModel,
                            UnitSystemModel unitSystemModel,            /* ignored */
                            GoogleMapsServerModel googleMapsServerModel /* ignored */) {
         this.mapViewCallback = (MapViewCallbackOffline) mapViewCallback;
@@ -213,6 +217,8 @@ public class MapsforgeMapView implements MapView {
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
+        this.routeColorModel = routeColorModel;
+        this.trackColorModel = trackColorModel;
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
@@ -337,7 +343,7 @@ public class MapsforgeMapView implements MapView {
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 Paint routePaint = GRAPHIC_FACTORY.createPaint();
-                routePaint.setColor(preferences.getInt(ROUTE_LINE_COLOR_PREFERENCE, 0x993379FF));
+                routePaint.setColor(MapsforgeMapView.this.routeColorModel.getColor().getRGB());
                 routePaint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = MapsforgeMapView.this.mapViewCallback.getRoutingService();
@@ -419,7 +425,7 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(preferences.getInt(TRACK_LINE_COLOR_PREFERENCE, 0xFF0000FF));
+                paint.setColor(MapsforgeMapView.this.mapViewCallback.getTrackColor().getRGB());
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
@@ -495,6 +501,8 @@ public class MapsforgeMapView implements MapView {
         characteristicsModel.addListDataListener(characteristicsModelListener);
         mapViewCallback.addChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
+        routeColorModel.addChangeListener(repaintPositionListListener);
+        trackColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
 
         initializeActions();
@@ -801,6 +809,8 @@ public class MapsforgeMapView implements MapView {
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
         mapViewCallback.removeChangeListener(mapViewCallbackListener);
+        routeColorModel.removeChangeListener(repaintPositionListListener);
+        trackColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
 
         NavigationPosition center = getCenter();
@@ -1181,6 +1191,12 @@ public class MapsforgeMapView implements MapView {
     private class ShowCoordinatesListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             mapViewCoordinateDisplayer.setShowCoordinates(showCoordinates.getBoolean());
+        }
+    }
+
+    private class RepaintPositionListListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            replaceRoute();
         }
     }
 

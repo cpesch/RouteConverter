@@ -94,7 +94,7 @@
         </plugins>
     </build>
 
-    <profiles><profile><id>routeconverter</id>
+    <profiles><profile><id>routeconverter-mac</id>
     <build>
         <plugins>
             <plugin>

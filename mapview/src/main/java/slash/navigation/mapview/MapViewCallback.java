@@ -24,6 +24,7 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -40,6 +41,8 @@ public interface MapViewCallback {
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
+    Color getRouteColor();
+    Color getTrackColor();
     boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();

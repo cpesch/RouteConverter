@@ -65,6 +65,7 @@ import slash.navigation.converter.gui.helpers.TagStrategy;
 import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.ProfileModeModel;
@@ -271,6 +272,8 @@ public class RouteConverter extends SingleFrameApplication {
     private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
     private StringModel timeZone = new StringModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
     private FixMapModeModel fixMapModeModel = new FixMapModeModel();
+    private ColorModel routeColorModel = new ColorModel("route", 7123443); // "6CB1F3"
+    private ColorModel trackColorModel = new ColorModel("track", 13311); // "0033FF"
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -459,6 +462,8 @@ public class RouteConverter extends SingleFrameApplication {
                 getShowCoordinates(),
                 getShowWaypointDescription(),
                 getFixMapModeModel(),
+                getRouteColorModel(),
+                getTrackColorModel(),
                 getUnitSystemModel(),
                 getGoogleMapsServerModel());
 
@@ -662,6 +667,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     public FixMapModeModel getFixMapModeModel() {
         return fixMapModeModel;
+    }
+
+    public ColorModel getRouteColorModel() {
+        return routeColorModel;
+    }
+
+    public ColorModel getTrackColorModel() {
+        return trackColorModel;
     }
 
     public UnitSystemModel getUnitSystemModel() {

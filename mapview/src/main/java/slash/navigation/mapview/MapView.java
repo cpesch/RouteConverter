@@ -24,6 +24,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -49,6 +50,8 @@ public interface MapView extends PositionsSelectionModel {
                     BooleanModel showCoordinates,
                     BooleanModel showWaypointDescription,
                     FixMapModeModel fixMapModeModel,
+                    ColorModel routeColorModel,
+                    ColorModel trackColorModel,
                     UnitSystemModel unitSystemModel,
                     GoogleMapsServerModel googleMapsServerModel);
     boolean isInitialized();

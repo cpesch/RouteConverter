@@ -22,6 +22,8 @@ package slash.common.type;
 
 import org.apache.commons.codec.DecoderException;
 
+import java.awt.*;
+
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
 
@@ -46,5 +48,9 @@ public class HexadecimalNumber {
         } catch (DecoderException e) {
             throw new IllegalArgumentException("Not an even number of hex digits: " + string);
         }
+    }
+
+    public static String encodeColor(Color color) {
+        return encodeByte((byte) color.getRed()) + encodeByte((byte) color.getGreen()) + encodeByte((byte) color.getBlue());
     }
 }
