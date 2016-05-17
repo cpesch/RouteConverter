@@ -114,7 +114,6 @@ public abstract class BrowserMapView implements MapView {
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
-    private static final String RECENTER_MAP_PREFERENCE = "recenterMap";
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -395,7 +394,7 @@ public abstract class BrowserMapView implements MapView {
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
                             copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
-                            recenter = isRecenteringMap() && haveToReplaceRoute;
+                            recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
                             haveToRepaintRouteImmediately = false;
@@ -456,7 +455,7 @@ public abstract class BrowserMapView implements MapView {
                                     " haveToRepaintSelection: " + haveToRepaintSelection +
                                     " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
                                     " haveToRecenterMap: " + haveToRecenterMap);
-                            recenter = isRecenteringMap() && haveToRecenterMap;
+                            recenter = haveToRecenterMap;
                             haveToRecenterMap = false;
                             haveToRepaintSelectionImmediately = false;
                             haveToRepaintSelection = false;
@@ -928,10 +927,6 @@ public abstract class BrowserMapView implements MapView {
 
     private void setZoom(int zoom) {
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
-    }
-
-    private boolean isRecenteringMap() {
-        return preferences.getBoolean(RECENTER_MAP_PREFERENCE, true);
     }
 
     // bounds and center
@@ -1604,7 +1599,7 @@ public abstract class BrowserMapView implements MapView {
         if(fixMapModeModel.getFixMapMode().equals(Automatic)) {
             invokeLater(new Runnable() {
                 public void run() {
-                    update(true, false);
+                    update(false, false);
                 }
             });
         }
