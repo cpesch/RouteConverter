@@ -27,8 +27,6 @@ package slash.navigation.mapview;
  */
 
 public interface MapViewConstants {
-    String TRACK_LINE_COLOR_PREFERENCE = "trackLineColor";
     String TRACK_LINE_WIDTH_PREFERENCE = "trackLineWidth";
-    String ROUTE_LINE_COLOR_PREFERENCE = "routeLineColor";
     String ROUTE_LINE_WIDTH_PREFERENCE = "routeLineWidth";
 }

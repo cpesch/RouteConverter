@@ -118,13 +118,19 @@ public class PositionHelper {
     public static String extractTemperature(NavigationPosition position) {
         if (!(position instanceof Wgs84Position))
             return "";
-        return format("%d\u00B0C", round(((Wgs84Position)position).getTemperature()));
+        Double temperature = ((Wgs84Position) position).getTemperature();
+        if (temperature == null)
+            return "";
+        return format("%d\u00B0C", round(temperature));
     }
 
     public static String extractPressure(NavigationPosition position) {
         if (!(position instanceof Wgs84Position))
             return "";
-        return format("%d hPa", round(((Wgs84Position)position).getPressure()));
+        Double pressure = ((Wgs84Position) position).getPressure();
+        if(pressure == null)
+            return "";
+        return format("%d hPa", round(pressure));
     }
 
     private static String formatDateTime(CompactCalendar time) {

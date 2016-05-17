@@ -21,6 +21,7 @@ package slash.navigation.graphhopper;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
+import com.graphhopper.PathWrapper;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
 import slash.navigation.common.BoundingBox;
@@ -163,7 +164,8 @@ public class GraphHopper implements RoutingService {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
-            return new RoutingResult(asPositions(response.getPoints()), response.getDistance(), response.getTime(), true);
+            PathWrapper best = response.getBest();
+            return new RoutingResult(asPositions(best.getPoints()), best.getDistance(), best.getTime(), true);
         } catch (Exception e) {
             e.printStackTrace();
             log.warning(format("Exception while routing between %s and %s: %s", from, to, e));

@@ -22,7 +22,9 @@ package slash.navigation.mapview.browser;
 
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
+import slash.common.type.HexadecimalNumber;
 import slash.navigation.base.*;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
@@ -40,6 +42,7 @@ import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
 import javax.xml.bind.JAXBException;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
@@ -48,6 +51,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -76,6 +80,7 @@ import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.HexadecimalNumber.encodeColor;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
@@ -134,6 +139,8 @@ public abstract class BrowserMapView implements MapView {
     private BooleanModel showCoordinates;
     private BooleanModel showWaypointDescription;
     private FixMapModeModel fixMapModeModel;
+    private ColorModel routeColorModel;
+    private ColorModel trackColorModel;
     private UnitSystemModel unitSystemModel;
     private GoogleMapsServerModel googleMapsServerModel;
 
@@ -142,7 +149,7 @@ public abstract class BrowserMapView implements MapView {
     private MapViewCallbackListener mapViewCallbackListener = new MapViewCallbackListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
     private ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
-    private FixMapForChinaListener fixMapForChinaListener = new FixMapForChinaListener();
+    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
 
@@ -163,6 +170,8 @@ public abstract class BrowserMapView implements MapView {
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
                            FixMapModeModel fixMapModeModel,
+                           ColorModel routeColorModel,
+                           ColorModel trackColorModel,
                            UnitSystemModel unitSystemModel,
                            GoogleMapsServerModel googleMapsServerModel) {
         this.positionsModel = positionsModel;
@@ -175,6 +184,8 @@ public abstract class BrowserMapView implements MapView {
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
         this.fixMapModeModel = fixMapModeModel;
+        this.routeColorModel = routeColorModel;
+        this.trackColorModel = trackColorModel;
         this.unitSystemModel = unitSystemModel;
         this.googleMapsServerModel = googleMapsServerModel;
 
@@ -185,7 +196,9 @@ public abstract class BrowserMapView implements MapView {
         mapViewCallback.addChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
-        fixMapModeModel.addChangeListener(fixMapForChinaListener);
+        fixMapModeModel.addChangeListener(repaintPositionListListener);
+        routeColorModel.addChangeListener(repaintPositionListListener);
+        trackColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
         googleMapsServerModel.addChangeListener(googleMapsServerListener);
 
@@ -716,7 +729,8 @@ public abstract class BrowserMapView implements MapView {
    }
 
     private boolean isColumbusTrack() {
-        return positionsModel.getRoute().getFormat() instanceof ColumbusGpsFormat;
+        BaseNavigationFormat format = positionsModel.getRoute().getFormat();
+        return format instanceof ColumbusGpsFormat || format instanceof ColumbusGpsBinaryFormat;
     }
 
     // resizing
@@ -767,7 +781,9 @@ public abstract class BrowserMapView implements MapView {
             mapViewCallback.removeChangeListener(mapViewCallbackListener);
             showCoordinates.removeChangeListener(showCoordinatesListener);
             showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
-            fixMapModeModel.removeChangeListener(fixMapForChinaListener);
+            fixMapModeModel.removeChangeListener(repaintPositionListListener);
+            routeColorModel.removeChangeListener(repaintPositionListListener);
+            trackColorModel.removeChangeListener(repaintPositionListListener);
             unitSystemModel.removeChangeListener(unitSystemListener);
             googleMapsServerModel.removeChangeListener(googleMapsServerListener);
         }
@@ -1029,7 +1045,7 @@ public abstract class BrowserMapView implements MapView {
 
         executeScript("removeOverlays();");
 
-        String color = preferences.get(ROUTE_LINE_COLOR_PREFERENCE, "6CB1F3");
+        String color = encodeColor(mapViewCallback.getRouteColor());
         int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
@@ -1074,7 +1090,7 @@ public abstract class BrowserMapView implements MapView {
             return;
         }
 
-        String color = preferences.get(TRACK_LINE_COLOR_PREFERENCE, "0033FF");
+        String color = encodeColor(mapViewCallback.getTrackColor());
         int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);
@@ -1888,7 +1904,7 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private class FixMapForChinaListener implements ChangeListener {
+    private class RepaintPositionListListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             update(true, false);
         }
