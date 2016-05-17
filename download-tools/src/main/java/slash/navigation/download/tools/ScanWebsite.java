@@ -144,7 +144,7 @@ public class ScanWebsite extends BaseDownloadTool {
 
         DataSource source = loadDataSource(getId());
         if (!getUrl().equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
-            throw new IllegalArgumentException("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + getUrl());
+            log.warning("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + getUrl());
 
         Set<String> files = collectURIs(source);
 
