@@ -175,6 +175,7 @@ import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Platform.isJavaFX7;
 import static slash.common.system.Platform.isJavaFX8;
+import static slash.common.system.Platform.isMac;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
@@ -957,7 +958,8 @@ public class RouteConverter extends SingleFrameApplication {
         } else if (isJavaFX7()) {
             result.add(JavaFX7);
         }
-        result.add(EclipseSWT);
+        if (!isMac())
+            result.add(EclipseSWT);
         return result;
     }
 

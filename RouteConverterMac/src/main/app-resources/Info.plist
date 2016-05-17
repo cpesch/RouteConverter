@@ -4,8 +4,12 @@
     <dict>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>English</string>
+        <key>CFBundleAllowMixedLocalizations</key>
+        <true/>
         <key>CFBundleExecutable</key>
-        <string>JavaAppLauncher</string>
+        <string>RouteConverter</string>
         <key>CFBundleGetInfoString</key>
         <string>RouteConverter for Mac OS X</string>
         <key>CFBundleIconFile</key>
@@ -14,28 +18,21 @@
         <string>slash.navigation.converter.gui.RouteConverter</string>
         <key>CFBundleName</key>
         <string>RouteConverter</string>
-        <key>CFBundleDisplayName</key>
-        <string>RouteConverter</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleSignature</key>
         <string>RTCV</string>
         <key>CFBundleShortVersionString</key>
-        <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</string>
+        <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}</string>
         <key>CFBundleVersion</key>
         <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
         <key>NSHighResolutionCapable</key>
         <true/>
-        <key>JVMMainClassName</key>
-        <string>slash.navigation.converter.gui.RouteConverter</string>
-        <key>JVMClassPaths</key>
-        <array><string>RouteConverterMac.jar</string></array>
-        <key>JVMVersion</key>
-        <string>1.7+</string>
-        <key>JVMOptions</key>
-        <array><string>-Xmx512m</string><string>-Dapple.laf.useScreenMenuBar=true</string>
-               <string>-Xdock:name=RouteConverter</string><string>-Xdock:icon=RouteConverter.icns</string></array>
-        <key>JVMArguments</key>
-        <array/>
+        <key>NSHumanReadableCopyright</key>
+        <string>Created by Christian Pesch</string>
+        <key>LSMinimumSystemVersion</key>
+        <string>10.7.4</string>
+        <key>LSApplicationCategoryType</key>
+        <string>Navigation</string>
     </dict>
 </plist>
