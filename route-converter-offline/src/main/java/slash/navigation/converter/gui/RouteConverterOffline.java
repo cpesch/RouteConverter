@@ -66,8 +66,12 @@ public class RouteConverterOffline extends RouteConverter {
         launch(RouteConverterOffline.class, new String[]{ RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
-    public String getEdition() {
-        return "Offline";
+    public String getEditionName() {
+        return "RouteConverter Offline Edition";
+    }
+
+    public String getEditionId() {
+        return "offline";
     }
 
     public List<MapViewImplementation> getAvailableMapViews() {

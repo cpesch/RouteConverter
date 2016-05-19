@@ -20,20 +20,18 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.AboutDialog;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.converter.gui.dialogs.AboutTimeAlbumProDialog;
+import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Show options of the program.
+ * Show information about the TimeAlbum Pro tool.
  *
  * @author Christian Pesch
  */
 
-public class OptionAction extends FrameAction {
-    public void run() {
-        AboutDialog aboutDialog = new AboutDialog();
-        aboutDialog.pack();
-        aboutDialog.restoreLocation();
-        aboutDialog.setVisible(true);
+public class ShowAboutTimeAlbumProAction extends SingletonDialogAction {
+    protected SimpleDialog createDialog() {
+        return new AboutTimeAlbumProDialog();
     }
 }

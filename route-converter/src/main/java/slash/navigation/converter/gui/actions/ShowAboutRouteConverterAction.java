@@ -20,18 +20,18 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.AboutDialog;
+import slash.navigation.converter.gui.dialogs.AboutRouteConverterDialog;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Show information about the program.
+ * Show information about the RouteConverter UI tool.
  *
  * @author Christian Pesch
  */
 
-public class ShowAboutAction extends SingletonDialogAction {
+public class ShowAboutRouteConverterAction extends SingletonDialogAction {
     protected SimpleDialog createDialog() {
-        return new AboutDialog();
+        return new AboutRouteConverterDialog();
     }
 }

@@ -21,27 +21,33 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.columbus.ColumbusNavigationFormatRegistry;
+import slash.navigation.converter.gui.actions.ShowAboutTimeAlbumProAction;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.gui.actions.SingletonDialogAction;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 
 /**
- * A small graphical user interface for the Columbus route conversion.
+ * A graphical user interface for Columbus devices.
  *
  * @author Christian Pesch
  */
 
-public class RouteConverterColumbus extends RouteConverter {
+public class TimeAlbumPro extends RouteConverter {
     private NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
 
     public static void main(String[] args) {
-        launch(RouteConverterColumbus.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+        launch(TimeAlbumPro.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
-    public String getEdition() {
-        return "Columbus";
+    public String getEditionName() {
+        return "TimeAlbum Pro";
+    }
+
+    public String getEditionId() {
+        return "timealbum";
     }
 
     public NavigationFormatRegistry getNavigationFormatRegistry() {
@@ -60,6 +66,10 @@ public class RouteConverterColumbus extends RouteConverter {
         return true;
     }
 
+    protected SingletonDialogAction createAboutAction() {
+        return new ShowAboutTimeAlbumProAction();
+    }
+
     static {
         Thread thread = new Thread(new Runnable() {
             public void run() {
@@ -67,7 +77,7 @@ public class RouteConverterColumbus extends RouteConverter {
                     Thread.sleep(10 * 60 * 1000);
                 } catch (InterruptedException e) {
                 }
-                showMessageDialog(null, "Thank you for testing.", "RouteConverter for Columbus", ERROR_MESSAGE);
+                showMessageDialog(null, "Thank you for testing.", "TimeAlbum Pro", ERROR_MESSAGE);
                 System.exit(5);
             }
         });

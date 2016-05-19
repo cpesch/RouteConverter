@@ -78,7 +78,7 @@ public class UpdateChecker {
         UpdateResult result = new UpdateResult(myRouteConverterVersion, myJavaVersion);
         try {
             String parameters = routeFeedback.checkForUpdate(myRouteConverterVersion,
-                    RouteConverter.getInstance().getEdition(),
+                    RouteConverter.getInstance().getEditionId(),
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
@@ -96,14 +96,18 @@ public class UpdateChecker {
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result) {
         int confirm = showConfirmDialog(window,
-                format(RouteConverter.getBundle().getString("confirm-routeconverter-update"), result.getMyRouteConverterVersion(), result.getLatestRouteConverterVersion()),
+                format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
+                        result.getMyRouteConverterVersion(),
+                        RouteConverter.getInstance().getEditionName(),
+                        result.getLatestRouteConverterVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
             startBrowserForUpdateCheck(window, result.getMyRouteConverterVersion(), getStartTime());
     }
 
     private void noUpdateAvailable(Window window) {
-        showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available")),
+        showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available"),
+                RouteConverter.getInstance().getEditionName()),
                 RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 

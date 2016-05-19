@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterWindowsColumbus</artifactId>
+    <artifactId>TimeAlbumProWindows</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter UI tool for Windows (Columbus)</name>
+    <name>The TimeAlbum Pro tool for Windows</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -57,7 +57,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>RouteConverterWindowsColumbus</finalName>
+                            <finalName>TimeAlbumProWindows</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -66,11 +66,11 @@
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverterColumbus</Main-Class>
+                                        <Main-Class>slash.navigation.converter.gui.TimeAlbumPro</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
-                                        <Application-Name>RouteConverter</Application-Name>
+                                        <Application-Name>TimeAlbumPro</Application-Name>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -109,7 +109,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <archive>target/RouteConverterWindowsColumbus.jar</archive>
+                    <archive>target/TimeAlbumProWindows.jar</archive>
                     <keystore>${keystorePath}</keystore>
                     <alias>${keystoreAlias}</alias>
                     <storepass>${keystorePassword}</storepass>
@@ -142,9 +142,9 @@
                        </goals>
                        <configuration>
                            <headerType>gui</headerType>
-                           <outfile>target/RouteConverterWindowsColumbus.exe</outfile>
-                           <jar>target/RouteConverterWindowsColumbus.jar</jar>
-                           <errTitle>RouteConverter</errTitle>
+                           <outfile>target/TimeAlbumProWindows.exe</outfile>
+                           <jar>target/TimeAlbumProWindows.jar</jar>
+                           <errTitle>TimeAlbumPro</errTitle>
                            <icon>src/main/app-resources/RouteConverter.ico</icon>
                            <runtimeBits>32/64</runtimeBits>
                            <splash>
@@ -152,7 +152,7 @@
                                <timeout>10</timeout>
                            </splash>
                            <classPath>
-                               <mainClass>slash.navigation.converter.gui.RouteConverterColumbus</mainClass>
+                               <mainClass>slash.navigation.converter.gui.TimeAlbumPro</mainClass>
                            </classPath>
                            <jre>
                                <minVersion>1.7.0</minVersion>
@@ -161,13 +161,13 @@
                            <versionInfo>
                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
-                               <fileDescription>RouteConverter for Columbus displays, modifies and converts Columbus GPS data</fileDescription>
+                               <fileDescription>TimeAlbum Pro displays, modifies and converts Columbus GPS data</fileDescription>
                                <copyright>Christian Pesch</copyright>
-                               <productName>RouteConverter</productName>
+                               <productName>TimeAlbumPro</productName>
                                <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
-                               <internalName>RouteConverter for Columbus Windows Executable</internalName>
-                               <originalFilename>RouteConverterWindowsColumbus.exe</originalFilename>
+                               <internalName>TimeAlbum Pro for Windows Executable</internalName>
+                               <originalFilename>TimeAlbumProWindows.exe</originalFilename>
                            </versionInfo>
                        </configuration>
                    </execution>
@@ -180,7 +180,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter-columbus</artifactId>
+            <artifactId>time-album-pro</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

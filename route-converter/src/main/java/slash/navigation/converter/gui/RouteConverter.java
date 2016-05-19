@@ -42,7 +42,7 @@ import slash.navigation.converter.gui.actions.InsertPositionsAction;
 import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
 import slash.navigation.converter.gui.actions.RevertPositionListAction;
 import slash.navigation.converter.gui.actions.SendErrorReportAction;
-import slash.navigation.converter.gui.actions.ShowAboutAction;
+import slash.navigation.converter.gui.actions.ShowAboutRouteConverterAction;
 import slash.navigation.converter.gui.actions.ShowDownloadsAction;
 import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
@@ -94,6 +94,7 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
+import slash.navigation.gui.actions.SingletonDialogAction;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.mapview.AbstractMapViewListener;
@@ -139,7 +140,6 @@ import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.toString;
 import static java.util.Locale.CHINA;
 import static java.util.Locale.FRANCE;
 import static java.util.Locale.GERMANY;
@@ -223,11 +223,15 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEditionName(), version.getVersion(), version.getDate());
     }
 
-    public String getEdition() {
-        return "Online";
+    public String getEditionName() {
+        return "RouteConverter Online Edition";
+    }
+
+    public String getEditionId() {
+        return "online";
     }
 
     private static final String MAP_VIEW_PREFERENCE = "mapView";
@@ -1291,7 +1295,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeActions() {
-        final ActionManager actionManager = getContext().getActionManager();
+        ActionManager actionManager = getContext().getActionManager();
         actionManager.setLocalName(POSITIONS);
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
@@ -1315,12 +1319,16 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
-        actionManager.register("show-about", new ShowAboutAction());
+        actionManager.register("show-about", createAboutAction());
 
         new XAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new YAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
         new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
         new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel().getRecentUrlsModel());
+    }
+
+    protected SingletonDialogAction createAboutAction() {
+        return new ShowAboutRouteConverterAction();
     }
 
     private void initializeHelp() {
@@ -1358,7 +1366,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void initializeDatasources() {
         try {
-            getDataSourceManager().initialize(getEdition().toLowerCase(), getDataSourcesDirectory());
+            getDataSourceManager().initialize(getEditionId(), getDataSourcesDirectory());
         } catch (Exception e) {
             log.warning("Could not initialize datasource manager: " + e);
             getContext().getNotificationManager().showNotification(MessageFormat.format(
@@ -1385,7 +1393,7 @@ public class RouteConverter extends SingleFrameApplication {
                 scanLocalMapsAndThemes();
 
                 try {
-                    getDataSourceManager().update(getEdition().toLowerCase(), getApiUrl(), getDataSourcesDirectory());
+                    getDataSourceManager().update(getEditionId(), getApiUrl(), getDataSourcesDirectory());
                 } catch (Exception e) {
                     log.warning("Could not update datasource manager: " + e);
                     getContext().getNotificationManager().showNotification(MessageFormat.format(

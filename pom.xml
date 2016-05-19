@@ -312,7 +312,6 @@
         <module>swt-mapview</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>
-        <module>route-converter-columbus</module>
         <module>route-converter-build</module>
         <module>route-converter-license</module>
         <module>route-converter-offline</module>
@@ -324,8 +323,9 @@
         <module>RouteConverterMac</module>
         <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindows</module>
-        <module>RouteConverterWindowsColumbus</module>
         <module>RouteConverterWindowsOffline</module>
         <module>RouteConverterWebstart</module>
+        <module>time-album-pro</module>
+        <module>TimeAlbumProWindows</module>
     </modules>
 </project>

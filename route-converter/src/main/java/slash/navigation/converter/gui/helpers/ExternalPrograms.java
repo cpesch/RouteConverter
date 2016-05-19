@@ -50,8 +50,12 @@ public class ExternalPrograms {
         return getDefault().getLanguage().equals(GERMAN.getLanguage());
     }
 
-    public static void startBrowserForHomepage(Window window) {
+    public static void startBrowserForRouteConverter(Window window) {
         startBrowser(window, isGerman() ? "http://www.routeconverter.de/" : "http://www.routeconverter.com/");
+    }
+
+    public static void startBrowserForTimeAlbumProDownload(Window window) {
+        startBrowser(window, "http://cbgps.com/download_en.htm");
     }
 
     public static void startBrowserForUpdateCheck(Window window, String version, long startTime) {
@@ -67,8 +71,13 @@ public class ExternalPrograms {
         startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
     }
 
-    public static void startBrowserForForum(Window window) {
-        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/" : "http://forum.routeconverter.com/");
+    public static void startBrowserForTimeAlbumSupport(Window window) {
+        startMail(window, "mailto:columbus-service@hotmail.com");
+    }
+
+    public static void startBrowserForRouteConverterForum(Window window) {
+        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/forum-4.html" :
+                "http://forum.routeconverter.com/forum-12.html");
     }
 
     public static void startBrowserForGeonames(Window window) {

@@ -48,16 +48,16 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
  * @author Christian Pesch
  */
 
-public class AboutDialog extends SimpleDialog {
+public class AboutRouteConverterDialog extends SimpleDialog {
     private JPanel contentPane;
-    private JLabel labelBrowse;
-    private JLabel labelMail;
+    private JLabel labelAbout;
+    private JLabel labelContact;
     private JLabel labelCp;
     private JLabel labelCredit;
     private JLabel labelFeature;
     private JButton buttonClose;
 
-    public AboutDialog() {
+    public AboutRouteConverterDialog() {
         super(RouteConverter.getInstance().getFrame(), "about");
         setTitle(RouteConverter.getBundle().getString("about-title"));
         setContentPane(contentPane);
@@ -65,9 +65,9 @@ public class AboutDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        labelBrowse.addMouseListener(new MouseAdapter() {
+        labelAbout.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                startBrowserForHomepage(r.getFrame());
+                startBrowserForRouteConverter(r.getFrame());
             }
         });
 
@@ -77,9 +77,9 @@ public class AboutDialog extends SimpleDialog {
             }
         });
 
-        labelMail.addMouseListener(new MouseAdapter() {
+        labelContact.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                startBrowserForForum(r.getFrame());
+                startBrowserForRouteConverterForum(r.getFrame());
             }
         });
 
@@ -139,12 +139,12 @@ public class AboutDialog extends SimpleDialog {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(6, 2, new Insets(3, 3, 3, 3), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelBrowse = new JLabel();
-        this.$$$loadLabelText$$$(labelBrowse, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-www"));
-        panel1.add(labelBrowse, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelMail = new JLabel();
-        this.$$$loadLabelText$$$(labelMail, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-mail"));
-        panel1.add(labelMail, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelAbout = new JLabel();
+        this.$$$loadLabelText$$$(labelAbout, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-routeconverter"));
+        panel1.add(labelAbout, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelContact = new JLabel();
+        this.$$$loadLabelText$$$(labelContact, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-routeconverter-contact"));
+        panel1.add(labelContact, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelCp = new JLabel();
         labelCp.setForeground(UIManager.getColor("Label.background"));
         labelCp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/cp.png")));
