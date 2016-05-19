@@ -55,7 +55,6 @@ public class XAxisModeMenu {
             buttonGroup.add(menuItem);
             menu.add(menuItem);
         }
-        menu.setEnabled(false);
     }
 
     private class XAxisModeListener implements ChangeListener {
