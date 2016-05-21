@@ -211,6 +211,7 @@
                     <descriptors>
                         <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
                     </descriptors>
+                    <encoding>ISO-8859-15</encoding>
                     <finalName>RouteConverterMac.app</finalName>
                 </configuration>
             </plugin>
