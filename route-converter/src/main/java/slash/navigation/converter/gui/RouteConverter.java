@@ -415,7 +415,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
-        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
+        final FrameMenu frameMenu = new FrameMenu();
+        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, frameMenu.createMenuBar());
+        frameMenu.addApplicationMenuItems();
 
         new Thread(new Runnable() {
             public void run() {

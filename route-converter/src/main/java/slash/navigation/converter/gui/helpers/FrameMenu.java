@@ -20,15 +20,16 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.RouteConverter;
-
 import javax.swing.*;
 
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
+import slash.navigation.gui.Application;
+
 /**
- * Creates a {@link JMenuBar} for a {@link RouteConverter}.
+ * Creates a {@link JMenuBar} for a RouteConverter.
  *
  * @author Christian Pesch
  */
@@ -46,8 +47,10 @@ public class FrameMenu {
         printMenu.add(createItem("print-map-and-route"));
         printMenu.add(createItem("print-profile"));
         fileMenu.add(printMenu);
-        fileMenu.addSeparator();
-        fileMenu.add(createItem("exit"));
+        if(!isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(createItem("exit"));
+        }
 
         JMenu editMenu = createMenu("edit");
         editMenu.add(createItem("undo"));
@@ -112,13 +115,15 @@ public class FrameMenu {
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));
         extrasMenu.add(createItem("show-downloads"));
-        extrasMenu.add(createItem("show-options"));
+        if (!isMac())
+            extrasMenu.add(createItem("show-options"));
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
-        helpMenu.add(createItem("show-about"));
+        if (!isMac())
+            helpMenu.add(createItem("show-about"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -127,8 +132,34 @@ public class FrameMenu {
         menuBar.add(positionlistMenu);
         menuBar.add(viewMenu);
         menuBar.add(extrasMenu);
-        // menuBar.addChild(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
         return menuBar;
+    }
+
+    public void addApplicationMenuItems() {
+        if (!isMac())
+            return;
+
+        com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+        application.setAboutHandler(new com.apple.eawt.AboutHandler() {
+            public void handleAbout(com.apple.eawt.AppEvent.AboutEvent aboutEvent) {
+                run("show-about");
+            }
+        });
+        application.setPreferencesHandler(new com.apple.eawt.PreferencesHandler() {
+            public void handlePreferences(com.apple.eawt.AppEvent.PreferencesEvent preferencesEvent) {
+                run("show-options");
+            }
+        });
+        application.setQuitHandler(new com.apple.eawt.QuitHandler() {
+            public void handleQuitRequestWith(com.apple.eawt.AppEvent.QuitEvent quitEvent,
+                    com.apple.eawt.QuitResponse quitResponse) {
+                run("exit");
+            }
+        });
+    }
+
+    private void run(String actionName) {
+        Application.getInstance().getContext().getActionManager().run(actionName);
     }
 }
