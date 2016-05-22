@@ -10,6 +10,7 @@
             <source>src/main/app-resources/Java/RouteConverter.cfg</source>
             <outputDirectory>/Contents/Java/</outputDirectory>
             <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Java/RouteConverterStart.jar</source>
@@ -32,6 +33,7 @@
             <source>src/main/app-resources/Info.plist</source>
             <outputDirectory>/Contents/</outputDirectory>
             <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>target/RouteConverterMac.jar</source>
