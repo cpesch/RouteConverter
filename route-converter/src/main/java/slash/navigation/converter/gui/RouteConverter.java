@@ -46,6 +46,7 @@ import slash.navigation.converter.gui.actions.ShowAboutRouteConverterAction;
 import slash.navigation.converter.gui.actions.ShowDownloadsAction;
 import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
+import slash.navigation.converter.gui.helpers.ApplicationMenu;
 import slash.navigation.converter.gui.helpers.AudioPlayer;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.ChecksumSender;
@@ -415,9 +416,13 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
-        final FrameMenu frameMenu = new FrameMenu();
-        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, frameMenu.createMenuBar());
-        frameMenu.addApplicationMenuItems();
+        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
+        try {
+            new ApplicationMenu().addApplicationMenuItems();
+        }
+        catch (Throwable t) {
+            // intentionally left empty
+        }
 
         new Thread(new Runnable() {
             public void run() {
