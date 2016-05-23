@@ -417,12 +417,8 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void openFrame() {
         createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
-        try {
+        if (isMac())
             new ApplicationMenu().addApplicationMenuItems();
-        }
-        catch (Throwable t) {
-            // intentionally left empty
-        }
 
         new Thread(new Runnable() {
             public void run() {
@@ -1038,9 +1034,13 @@ public class RouteConverter extends SingleFrameApplication {
         return tabInitializer.getConvertPanel();
     }
 
-    public PointOfInterestPanel getPointOfInterestPanel() { return tabInitializer.getPointsOfInterestPanel(); }
+    public PointOfInterestPanel getPointOfInterestPanel() {
+        return tabInitializer.getPointsOfInterestPanel();
+    }
 
-    public PhotoPanel getPhotoPanel() { return tabInitializer.getPhotoPanel(); }
+    public PhotoPanel getPhotoPanel() {
+        return tabInitializer.getPhotoPanel();
+    }
 
     public BrowsePanel getBrowsePanel() {
         return tabInitializer.getBrowsePanel();
