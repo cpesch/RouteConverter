@@ -138,4 +138,10 @@ public class LoggingHelper {
         System.setOut(stdout);
         System.setErr(stderr);
     }
+
+    public static void logException(Logger log, Throwable t) {
+        StringWriter writer = new StringWriter();
+        t.printStackTrace(new PrintWriter(writer));
+        log.severe(writer.toString());
+    }
 }

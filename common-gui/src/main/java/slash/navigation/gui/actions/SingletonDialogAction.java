@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.log.LoggingHelper.logException;
 
 /**
  * Show a dialog at most once.
@@ -54,6 +55,7 @@ public abstract class SingletonDialogAction extends FrameAction {
         } catch(Exception e) {
             e.printStackTrace();
             log.severe("Could not open dialog: " + e);
+            logException(log, e);
             showMessageDialog(null, "Could not open dialog: " + getLocalizedMessage(e), "Error", ERROR_MESSAGE);
         }
     }
