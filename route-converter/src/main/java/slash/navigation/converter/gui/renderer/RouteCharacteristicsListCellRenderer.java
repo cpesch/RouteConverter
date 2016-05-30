@@ -38,11 +38,13 @@ public class RouteCharacteristicsListCellRenderer extends DefaultListCellRendere
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RouteCharacteristics characteristics = RouteCharacteristics.class.cast(value);
-        String text;
-        try {
-            text = RouteConverter.getBundle().getString(characteristics.name().toLowerCase() + "-characteristics");
-        } catch (MissingResourceException e) {
-            text = characteristics.name();
+        String text = "?";
+        if(characteristics != null) {
+            try {
+                text = RouteConverter.getBundle().getString(characteristics.name().toLowerCase() + "-characteristics");
+            } catch (MissingResourceException e) {
+                text = characteristics.name();
+            }
         }
         label.setText(text);
         return label;
