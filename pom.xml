@@ -267,6 +267,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.intellij</groupId>
+                <artifactId>forms-rt</artifactId>
+                <version>2016.1.2</version>
+                <classifier>stripped</classifier>
+            </dependency>
+            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>

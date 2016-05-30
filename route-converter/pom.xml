@@ -142,7 +142,6 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms-rt</artifactId>
-            <version>6.0.5</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
