@@ -280,7 +280,7 @@ public class OptionsDialog extends SimpleDialog {
                 r.getShowWaypointDescription().setBoolean(checkBoxShowWaypointDescription.isSelected());
             }
         });
-        checkBoxShowWaypointDescription.setEnabled(r.isMapViewAvailable() ? !r.getMapView().isDownload() : false);
+        checkBoxShowWaypointDescription.setEnabled(r.isMapViewAvailable() && !r.getMapView().isDownload());
 
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
         for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices()) {
