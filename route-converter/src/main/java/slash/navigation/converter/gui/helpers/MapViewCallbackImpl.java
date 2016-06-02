@@ -65,14 +65,6 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getRoutingServiceFacade().getTravelMode();
     }
 
-    public Color getRouteColor() {
-        return RouteConverter.getInstance().getRouteColorModel().getColor();
-    }
-
-    public Color getTrackColor() {
-        return RouteConverter.getInstance().getTrackColorModel().getColor();
-    }
-
     public boolean isAvoidFerries() {
         return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidFerries();
     }

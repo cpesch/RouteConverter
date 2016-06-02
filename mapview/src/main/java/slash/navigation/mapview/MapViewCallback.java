@@ -41,8 +41,6 @@ public interface MapViewCallback {
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
-    Color getRouteColor();
-    Color getTrackColor();
     boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();

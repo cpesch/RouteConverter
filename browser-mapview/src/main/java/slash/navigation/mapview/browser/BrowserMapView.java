@@ -169,8 +169,8 @@ public abstract class BrowserMapView implements MapView {
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
                            FixMapModeModel fixMapModeModel,
-                           ColorModel routeColorModel,
-                           ColorModel trackColorModel,
+                           ColorModel aRouteColorModel,
+                           ColorModel aTrackColorModel,
                            UnitSystemModel unitSystemModel,
                            GoogleMapsServerModel googleMapsServerModel) {
         this.positionsModel = positionsModel;
@@ -183,8 +183,8 @@ public abstract class BrowserMapView implements MapView {
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
         this.fixMapModeModel = fixMapModeModel;
-        this.routeColorModel = routeColorModel;
-        this.trackColorModel = trackColorModel;
+        this.routeColorModel = aRouteColorModel;
+        this.trackColorModel = aTrackColorModel;
         this.unitSystemModel = unitSystemModel;
         this.googleMapsServerModel = googleMapsServerModel;
 
@@ -1040,7 +1040,7 @@ public abstract class BrowserMapView implements MapView {
 
         executeScript("removeOverlays();");
 
-        String color = encodeColor(mapViewCallback.getRouteColor());
+        String color = encodeColor(routeColorModel.getColor());
         int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
@@ -1085,7 +1085,7 @@ public abstract class BrowserMapView implements MapView {
             return;
         }
 
-        String color = encodeColor(mapViewCallback.getTrackColor());
+        String color = encodeColor(trackColorModel.getColor());
         int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);

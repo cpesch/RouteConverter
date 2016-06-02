@@ -206,8 +206,8 @@ public class MapsforgeMapView implements MapView {
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
                            FixMapModeModel fixMapModeModel,            /* ignored */
-                           ColorModel routeColorModel,
-                           ColorModel trackColorModel,
+                           ColorModel aRouteColorModel,
+                           final ColorModel aTrackColorModel,
                            UnitSystemModel unitSystemModel,            /* ignored */
                            GoogleMapsServerModel googleMapsServerModel /* ignored */) {
         this.mapViewCallback = (MapViewCallbackOffline) mapViewCallback;
@@ -217,8 +217,8 @@ public class MapsforgeMapView implements MapView {
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
-        this.routeColorModel = routeColorModel;
-        this.trackColorModel = trackColorModel;
+        this.routeColorModel = aRouteColorModel;
+        this.trackColorModel = aTrackColorModel;
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
@@ -342,9 +342,9 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
-                Paint routePaint = GRAPHIC_FACTORY.createPaint();
-                routePaint.setColor(MapsforgeMapView.this.routeColorModel.getColor().getRGB());
-                routePaint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
+                Paint paint = GRAPHIC_FACTORY.createPaint();
+                paint.setColor(extractColor(routeColorModel));
+                paint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = MapsforgeMapView.this.mapViewCallback.getRoutingService();
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
@@ -352,7 +352,7 @@ public class MapsforgeMapView implements MapView {
                         continue;
 
                     IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
-                    Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? routePaint : ROUTE_NOT_VALID_PAINT, tileSize);
+                    Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
                     removeLayer(pairWithLayer);
                     mapView.addLayer(polyline);
@@ -425,7 +425,7 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(MapsforgeMapView.this.mapViewCallback.getTrackColor().getRGB());
+                paint.setColor(extractColor(trackColorModel));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
@@ -696,7 +696,7 @@ public class MapsforgeMapView implements MapView {
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
-    public void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
+    private void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
         Layers layers = getLayerManager().getLayers();
 
         // add new map with a theme
@@ -872,6 +872,12 @@ public class MapsforgeMapView implements MapView {
         Polyline polyline = new Polyline(asLatLong(boundingBox), paint, mapView.getModel().displayModel.getTileSize());
         mapView.addLayer(polyline);
         return polyline;
+    }
+
+    private int extractColor(ColorModel colorModel) {
+        int rgba = colorModel.getColor().getRGB();
+        // mask away any alpha present
+        return rgba & 0x00FFFFFF;
     }
 
     private BoundingBox getMapBoundingBox() {
