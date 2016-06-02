@@ -55,7 +55,6 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -512,11 +511,13 @@ public class OptionsDialog extends SimpleDialog {
 
     private void reducePanels(JColorChooser chooser) {
         chooser.setPreviewPanel(new JPanel());
+        /* this works for all Locales but French and Chinese
         for (AbstractColorChooserPanel panel : chooser.getChooserPanels()) {
             if (!panel.getDisplayName().equals("HSV")) {
                 chooser.removeChooserPanel(panel);
             }
         }
+        */
     }
 
     private void handleRoutingServiceUpdate() {
