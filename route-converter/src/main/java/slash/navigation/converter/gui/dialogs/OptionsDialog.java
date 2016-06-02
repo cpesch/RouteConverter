@@ -55,6 +55,7 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -65,12 +66,15 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.util.Arrays.asList;
 import static java.util.Locale.CHINA;
 import static java.util.Locale.FRANCE;
 import static java.util.Locale.GERMANY;
@@ -509,15 +513,22 @@ public class OptionsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private static final Set<String> REMOVEABLE_COLOR_PANELS = new HashSet<>(
+            asList("Swatches", "HSV", "HSL", "CMYK",
+                    // French locale has different names
+                    "Echantillons", "TSV", "TSL",
+                    // Chinese locale has different names
+                    "\u6837\u672c(S)", "HSV(H)", "HSL(L)"
+            )
+    );
+
     private void reducePanels(JColorChooser chooser) {
         chooser.setPreviewPanel(new JPanel());
-        /* this works for all Locales but French and Chinese
         for (AbstractColorChooserPanel panel : chooser.getChooserPanels()) {
-            if (!panel.getDisplayName().equals("HSV")) {
+            String displayName = panel.getDisplayName();
+            if (REMOVEABLE_COLOR_PANELS.contains(displayName))
                 chooser.removeChooserPanel(panel);
-            }
         }
-        */
     }
 
     private void handleRoutingServiceUpdate() {
