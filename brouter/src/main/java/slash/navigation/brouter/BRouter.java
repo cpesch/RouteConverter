@@ -209,7 +209,7 @@ public class BRouter implements RoutingService {
 
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
-            routingEngine.doRun(preferences.getLong("routingTimeout", 1000L));
+            routingEngine.doRun(preferences.getLong("routingTimeout", 5000L));
             if (routingEngine.getErrorMessage() != null) {
                 // TODO handle routing timeouts differently
                 log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
