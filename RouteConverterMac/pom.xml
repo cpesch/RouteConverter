@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.18-SNAPSHOT</version>
+        <version>2.18</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
@@ -168,7 +168,7 @@
                     <bundler>mac.app</bundler>   dmg
                     <updateExistingJar>true</updateExistingJar>
                     <bundleArguments>
-                        <runtime/>
+                        <runtime />
                         <srcdir>target</srcdir>
                         <srcfiles>
                             <srcfile>RouteConverterMac.jar</srcfile>
