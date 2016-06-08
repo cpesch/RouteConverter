@@ -37,6 +37,7 @@ import org.mapsforge.map.model.Model;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.MapScaleBar;
 import org.mapsforge.map.util.MapPositionUtil;
+import org.mapsforge.map.util.MapViewProjection;
 import org.mapsforge.map.view.FpsCounter;
 import org.mapsforge.map.view.FrameBuffer;
 
@@ -59,6 +60,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     private final LayerManager layerManager;
     private final FpsCounter fpsCounter;
     private MapScaleBar mapScaleBar;
+    private final MapViewProjection mapViewProjection;
     private final Model model;
 
     public AwtGraphicMapView() {
@@ -77,6 +79,8 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         MapViewController.create(this, model);
 
         this.mapScaleBar = new DefaultMapScaleBar(model.mapViewPosition, model.mapViewDimension, GRAPHIC_FACTORY, model.displayModel);
+
+        this.mapViewProjection = new MapViewProjection(this);
     }
 
     public void addLayer(Layer layer) {
@@ -135,6 +139,10 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         return mapScaleBar;
     }
 
+    public MapViewProjection getMapViewProjection() {
+        return mapViewProjection;
+    }
+
     public Model getModel() {
         return model;
     }
@@ -149,7 +157,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     }
 
     public void setCenter(LatLong center) {
-        this.model.mapViewPosition.setCenter(center);
+        model.mapViewPosition.setCenter(center);
     }
 
     public void setMapScaleBar(MapScaleBar mapScaleBar) {
@@ -158,6 +166,14 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     }
 
     public void setZoomLevel(byte zoomLevel) {
-        this.model.mapViewPosition.setZoomLevel(zoomLevel);
+        model.mapViewPosition.setZoomLevel(zoomLevel);
+    }
+
+    public void setZoomLevelMax(byte zoomLevelMax) {
+        model.mapViewPosition.setZoomLevelMax(zoomLevelMax);
+    }
+
+    public void setZoomLevelMin(byte zoomLevelMin) {
+        model.mapViewPosition.setZoomLevelMin(zoomLevelMin);
     }
 }

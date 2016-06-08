@@ -660,7 +660,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(File map) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map), mapView.getModel().mapViewPosition, true, true, GRAPHIC_FACTORY);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map), mapView.getModel().mapViewPosition, true, true, true, GRAPHIC_FACTORY);
         tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
         return tileRendererLayer;
     }
@@ -953,11 +953,11 @@ public class MapsforgeMapView implements MapView {
         if (map.isVector() && mapView.getModel().mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) max(0, zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), mapView.getModel().displayModel.getTileSize()) - 3);
-        mapView.getModel().mapViewPosition.setZoomLevelMin(zoomLevelMin);
+        mapView.setZoomLevelMin(zoomLevelMin);
 
         // limit maximum to prevent zooming in to grey area
         byte zoomLevelMax = (byte) (map.isVector() ? 22 : 18);
-        mapView.getModel().mapViewPosition.setZoomLevelMax(zoomLevelMax);
+        mapView.setZoomLevelMax(zoomLevelMax);
     }
 
     private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
