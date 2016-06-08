@@ -22,6 +22,9 @@
 
 package slash.navigation.converter.gui.models;
 
+import static slash.common.type.HexadecimalNumber.decodeInt;
+import static slash.common.type.HexadecimalNumber.encodeInt;
+
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.awt.*;
@@ -38,26 +41,26 @@ public class ColorModel {
 
     private EventListenerList listenerList = new EventListenerList();
     private final String preferencesPrefix;
-    private final int preferencesDefault;
+    private final String preferencesDefault;
 
-    public ColorModel(String preferencesPrefix, int preferencesDefault) {
+    public ColorModel(String preferencesPrefix, String preferencesDefault) {
         this.preferencesPrefix = preferencesPrefix;
         this.preferencesDefault = preferencesDefault;
     }
 
     private Color fromString(String color) {
-        return new Color(Integer.parseInt(color), true);
+        return new Color(decodeInt(color), true);
     }
 
     private String toString(Color color) {
-        return Integer.toString(color.getRGB());
+        return encodeInt(color.getRGB());
     }
 
     public Color getColor() {
         try {
-            return fromString(preferences.get(preferencesPrefix + COLOR_SUFFIX, Integer.toString(preferencesDefault)));
+            return fromString(preferences.get(preferencesPrefix + COLOR_SUFFIX, preferencesDefault));
         } catch (IllegalArgumentException e) {
-            return new Color(preferencesDefault);
+            return new Color(decodeInt(preferencesDefault), true);
         }
     }
 

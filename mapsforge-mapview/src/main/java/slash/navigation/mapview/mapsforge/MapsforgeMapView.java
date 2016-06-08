@@ -280,12 +280,13 @@ public class MapsforgeMapView implements MapView {
             private void internalAdd(final List<PairWithLayer> pairWithLayers) {
                 pairs.addAll(pairWithLayers);
 
-                drawBeeline(pairWithLayers);
-                fireDistanceAndTime();
-
+                stopDrawingRoute();
                 executor.execute(new Runnable() {
                     public void run() {
                         try {
+                            drawBeeline(pairWithLayers);
+                            fireDistanceAndTime();
+
                             RoutingService service = MapsforgeMapView.this.mapViewCallback.getRoutingService();
                             waitForInitialization(service);
                             waitForDownload(service);
@@ -343,7 +344,7 @@ public class MapsforgeMapView implements MapView {
 
             private void drawRoute(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(extractColor(routeColorModel));
+                paint.setColor(asRGBA(routeColorModel));
                 paint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 RoutingService routingService = MapsforgeMapView.this.mapViewCallback.getRoutingService();
@@ -355,21 +356,21 @@ public class MapsforgeMapView implements MapView {
                     Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, tileSize);
                     // remove beeline layer then add polyline layer from routing
                     removeLayer(pairWithLayer);
-                    mapView.addLayer(polyline);
                     pairWithLayer.setLayer(polyline);
+                    mapView.addLayer(polyline);
                 }
             }
 
             private IntermediateRoute calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
                 List<LatLong> latLongs = new ArrayList<>();
                 latLongs.add(asLatLong(pairWithLayer.getFirst()));
-                RoutingResult intermediate = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), MapsforgeMapView.this.mapViewCallback.getTravelMode());
-                if (intermediate.isValid())
-                    latLongs.addAll(asLatLong(intermediate.getPositions()));
-                pairWithLayer.setDistance(intermediate.getDistance());
-                pairWithLayer.setTime(intermediate.getTime());
+                RoutingResult result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), MapsforgeMapView.this.mapViewCallback.getTravelMode());
+                if (result.isValid())
+                    latLongs.addAll(asLatLong(result.getPositions()));
+                pairWithLayer.setDistance(result.getDistance());
+                pairWithLayer.setTime(result.getTime());
                 latLongs.add(asLatLong(pairWithLayer.getSecond()));
-                return new IntermediateRoute(latLongs, intermediate.isValid());
+                return new IntermediateRoute(latLongs, result.isValid());
             }
 
             private void removeLayer(PairWithLayer pairWithLayer) {
@@ -425,7 +426,7 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(extractColor(trackColorModel));
+                paint.setColor(asRGBA(trackColorModel));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = mapView.getModel().displayModel.getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
@@ -762,12 +763,16 @@ public class MapsforgeMapView implements MapView {
         replaceRoute();
     }
 
-    private void replaceRoute() {
+    private void stopDrawingRoute() {
         // throw away running routing executions      // TODO use signals later
         List<Runnable> runnables = executor.shutdownNow();
         if (runnables.size() > 0)
             log.info("Replacing route stopped runnables: " + runnables);
         executor = newSingleThreadExecutor();
+    }
+
+    private void replaceRoute() {
+        stopDrawingRoute();
 
         // remove all from previous event map updater
         eventMapUpdater.handleRemove(0, MAX_VALUE);
@@ -819,7 +824,7 @@ public class MapsforgeMapView implements MapView {
         int zoom = getZoom();
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
 
-        executor.shutdownNow();
+        stopDrawingRoute();
         mapView.destroyAll();
     }
 
@@ -874,10 +879,17 @@ public class MapsforgeMapView implements MapView {
         return polyline;
     }
 
-    private int extractColor(ColorModel colorModel) {
-        int rgba = colorModel.getColor().getRGB();
-        // mask away any alpha present
-        return rgba & 0x00FFFFFF;
+    private static final int MINIMUM_ALPHA = (int)(256 * 0.3);
+
+    private int asRGBA(ColorModel colorModel) {
+        return asRGBA(colorModel.getColor());
+    }
+
+    int asRGBA(Color color) {
+        int rgba = color.getRGB();
+        int alpha = MINIMUM_ALPHA + (int)(color.getAlpha() * (256.0 / MINIMUM_ALPHA) * 256.0);
+        alpha = alpha << 24;
+        return alpha | rgba;
     }
 
     private BoundingBox getMapBoundingBox() {

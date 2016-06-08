@@ -515,6 +515,8 @@ public class OptionsDialog extends SimpleDialog {
 
     private static final Set<String> REMOVEABLE_COLOR_PANELS = new HashSet<>(
             asList("Swatches", "HSV", "HSL", "CMYK",
+                    // German Mac OS X has different names
+                    "Muster",
                     // French locale has different names
                     "Echantillons", "TSV", "TSL",
                     // Chinese locale has different names

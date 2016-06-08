@@ -20,12 +20,10 @@
 
 package slash.common.type;
 
-import org.apache.commons.codec.DecoderException;
-
-import java.awt.*;
-
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
+
+import org.apache.commons.codec.DecoderException;
 
 /**
  * Helps to encode bytes to hexadecimal encoded numbers and back.
@@ -50,7 +48,13 @@ public class HexadecimalNumber {
         }
     }
 
-    public static String encodeColor(Color color) {
-        return encodeByte((byte) color.getRed()) + encodeByte((byte) color.getGreen()) + encodeByte((byte) color.getBlue());
+    public static String encodeInt(int integer) {
+        // with Java 8 use Integer#toUnsignedString
+        return Integer.toHexString(integer);
+    }
+
+    public static int decodeInt(String string) {
+        // with Java 8 use Integer#parseUnsignedInt
+        return (int) Long.parseLong(string, 16);
     }
 }

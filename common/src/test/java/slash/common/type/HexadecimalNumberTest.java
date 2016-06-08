@@ -1,15 +1,15 @@
 package slash.common.type;
 
-import org.junit.Test;
-
-import java.awt.*;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+
 import static slash.common.type.HexadecimalNumber.decodeBytes;
+import static slash.common.type.HexadecimalNumber.decodeInt;
 import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
-import static slash.common.type.HexadecimalNumber.encodeColor;
+import static slash.common.type.HexadecimalNumber.encodeInt;
+
+import org.junit.Test;
 
 public class HexadecimalNumberTest {
     @Test
@@ -21,12 +21,17 @@ public class HexadecimalNumberTest {
     @Test
     public void testDecodeBytes() {
         assertArrayEquals(new byte[]{1, 2, 3}, decodeBytes("010203"));
+        assertArrayEquals(new byte[]{2, 3, 4}, decodeBytes("020304"));
     }
 
     @Test
-    public void testEncodeColor() {
-        assertEquals("6CB1F3", encodeColor(new Color(7123443)));
-        assertEquals("0033FF", encodeColor(new Color(13311)));
+    public void testEncodeInt() {
+        assertEquals("2030405", encodeInt(2 * 256 * 256 * 256 + 3 * 256 * 256 + 4 * 256 + 5));
+    }
+
+    @Test
+    public void testDecodeInt() {
+        assertEquals(2 * 256 * 256 + 3 * 256 + 4, decodeInt("020304"));
     }
 }
 

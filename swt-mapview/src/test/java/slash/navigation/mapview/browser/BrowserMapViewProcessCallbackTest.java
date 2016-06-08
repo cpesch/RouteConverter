@@ -57,6 +57,5 @@ public class BrowserMapViewProcessCallbackTest {
     @Test
     public void testCallback() throws InterruptedException {
         processCallback("callback-port/49632");
-
     }
 }

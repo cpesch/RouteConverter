@@ -22,7 +22,6 @@ package slash.navigation.mapview.browser;
 
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
-import slash.common.type.HexadecimalNumber;
 import slash.navigation.base.*;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
@@ -80,7 +79,7 @@ import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.HexadecimalNumber.encodeColor;
+import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
@@ -1029,6 +1028,16 @@ public abstract class BrowserMapView implements MapView {
         executeScript("removeOverlays();\nremoveDirections();");
     }
 
+    String asColor(Color color) {
+        return encodeByte((byte) color.getRed()) + encodeByte((byte) color.getGreen()) + encodeByte((byte) color.getBlue());
+    }
+
+    private static final float MINIMUM_OPACITY = 0.3f;
+
+    float asOpacity(Color color) {
+        return MINIMUM_OPACITY + color.getAlpha() / 256f * (1 - MINIMUM_OPACITY);
+    }
+
     private void addDirectionsToMap(List<NavigationPosition> positions) {
         executeScript("resetDirections();");
 
@@ -1040,7 +1049,8 @@ public abstract class BrowserMapView implements MapView {
 
         executeScript("removeOverlays();");
 
-        String color = encodeColor(routeColorModel.getColor());
+        String color = asColor(routeColorModel.getColor());
+        float opacity = asOpacity(routeColorModel.getColor());
         int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
@@ -1068,7 +1078,7 @@ public abstract class BrowserMapView implements MapView {
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(",");
             boolean lastSegment = (j == directionsCount - 1);
-            buffer.append(lastSegment).append(",\"#").append(color).append("\",").append(width).append(");\n");
+            buffer.append(lastSegment).append(",\"#").append(color).append("\",").append(opacity).append(",").append(width).append(");\n");
             try {
                 sleep(preferences.getInt("routeSegmentTimeout", 250));
             } catch (InterruptedException e) {
@@ -1085,7 +1095,8 @@ public abstract class BrowserMapView implements MapView {
             return;
         }
 
-        String color = encodeColor(trackColorModel.getColor());
+        String color = asColor(trackColorModel.getColor());
+        float opacity = asOpacity(trackColorModel.getColor());
         int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);
@@ -1099,7 +1110,7 @@ public abstract class BrowserMapView implements MapView {
                 if (i < maximum - 1)
                     latlngs.append(",");
             }
-            executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + width + ");");
+            executeScript("addPolyline([" + latlngs + "],\"#" + color + "\"," + opacity + "," + width + ");");
         }
 
         addWaypointIconsToMap(allPositions);

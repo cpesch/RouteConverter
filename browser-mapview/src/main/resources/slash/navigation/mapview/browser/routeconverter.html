@@ -242,8 +242,9 @@
        newSelectedPositions = [];
    }
 
-   function addPolyline(latLngs, color, weight) {
-       addOverlay(new google.maps.Polyline({path:latLngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false, geodesic:true}));
+   function addPolyline(latLngs, color, opacity, weight) {
+       addOverlay(new google.maps.Polyline({path:latLngs, strokeColor:color, strokeOpacity:opacity, strokeWeight:weight,
+           clickable:false, geodesic:true}));
    }
 
    var waypointIcons = {};
@@ -372,12 +373,12 @@
        return path;
    }
 
-   function renderDirections(directionsRequest, startIndex, lastSegment, color, weight) {
+   function renderDirections(directionsRequest, startIndex, lastSegment, color, opacity, weight) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
                var panel = document.createElement("div");
                var renderer = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
-                   polylineOptions: {strokeColor: color, strokeWeight: weight, strokeOpacity: 0.8 },
+                   polylineOptions: {strokeColor: color, strokeOpacity: opacity, strokeWeight: weight },
                    draggable: true, hideRouteList: true, directions: result, panel: panel, map: map});
                google.maps.event.addListener(renderer, "directions_changed", function() {
                    insertPosition(renderer.directions, startIndex);
