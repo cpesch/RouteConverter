@@ -19,8 +19,105 @@
 */
 package slash.navigation.converter.gui;
 
+import static java.awt.event.KeyEvent.VK_F1;
+import static java.awt.event.KeyEvent.VK_HELP;
+import static java.lang.Integer.MAX_VALUE;
+import static java.util.Arrays.asList;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.US;
+
+import static javax.help.CSH.setHelpIDString;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
+
+import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
+import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.LocaleHelper.CROATIA;
+import static slash.common.helpers.LocaleHelper.CZECH;
+import static slash.common.helpers.LocaleHelper.DENMARK;
+import static slash.common.helpers.LocaleHelper.NEDERLANDS;
+import static slash.common.helpers.LocaleHelper.POLAND;
+import static slash.common.helpers.LocaleHelper.PORTUGAL;
+import static slash.common.helpers.LocaleHelper.RUSSIA;
+import static slash.common.helpers.LocaleHelper.SERBIA;
+import static slash.common.helpers.LocaleHelper.SLOVAKIA;
+import static slash.common.helpers.LocaleHelper.SPAIN;
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.findExistingPath;
+import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.recursiveDelete;
+import static slash.common.io.Files.shortenPath;
+import static slash.common.io.Files.toUrls;
+import static slash.common.system.Platform.getJava;
+import static slash.common.system.Platform.getMaximumMemory;
+import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isJavaFX7;
+import static slash.common.system.Platform.isJavaFX8;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.feature.client.Feature.initializePreferences;
+import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
+import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX7;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
+import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
+import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
+import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
+import static slash.navigation.datasources.DataSourceManager.V1;
+import static slash.navigation.download.Action.Copy;
+import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.xml.bind.UnmarshalException;
+
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
@@ -104,98 +201,6 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
 import slash.navigation.routing.RoutingService;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.xml.bind.UnmarshalException;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
-import static java.awt.event.KeyEvent.VK_F1;
-import static java.awt.event.KeyEvent.VK_HELP;
-import static java.lang.Integer.MAX_VALUE;
-import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.US;
-import static javax.help.CSH.setHelpIDString;
-import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
-import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
-import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.helpers.LocaleHelper.CROATIA;
-import static slash.common.helpers.LocaleHelper.CZECH;
-import static slash.common.helpers.LocaleHelper.DENMARK;
-import static slash.common.helpers.LocaleHelper.NEDERLANDS;
-import static slash.common.helpers.LocaleHelper.POLAND;
-import static slash.common.helpers.LocaleHelper.PORTUGAL;
-import static slash.common.helpers.LocaleHelper.RUSSIA;
-import static slash.common.helpers.LocaleHelper.SERBIA;
-import static slash.common.helpers.LocaleHelper.SLOVAKIA;
-import static slash.common.helpers.LocaleHelper.SPAIN;
-import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.findExistingPath;
-import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.recursiveDelete;
-import static slash.common.io.Files.shortenPath;
-import static slash.common.io.Files.toUrls;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
-import static slash.common.system.Platform.isJavaFX7;
-import static slash.common.system.Platform.isJavaFX8;
-import static slash.common.system.Platform.isMac;
-import static slash.common.system.Version.parseVersionFromManifest;
-import static slash.feature.client.Feature.initializePreferences;
-import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
-import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX7;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
-import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
-import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
-import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
-import static slash.navigation.datasources.DataSourceManager.V1;
-import static slash.navigation.download.Action.Copy;
-import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-
 /**
  * A small graphical user interface for the route conversion.
  *
@@ -278,8 +283,8 @@ public class RouteConverter extends SingleFrameApplication {
     private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
     private StringModel timeZone = new StringModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
     private FixMapModeModel fixMapModeModel = new FixMapModeModel();
-    private ColorModel routeColorModel = new ColorModel("route", 7123443); // "6CB1F3"
-    private ColorModel trackColorModel = new ColorModel("track", 13311); // "0033FF"
+    private ColorModel routeColorModel = new ColorModel("route", "C86CB1F3"); // "6CB1F3" w 0.8 alpha
+    private ColorModel trackColorModel = new ColorModel("track", "FF0033FF"); // "0033FF" w 1.0 alpha
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
