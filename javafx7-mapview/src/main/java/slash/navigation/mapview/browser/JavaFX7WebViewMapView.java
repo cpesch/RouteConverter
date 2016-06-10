@@ -256,12 +256,22 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
         if (!isFxApplicationThread()) {
             runLater(new Runnable() {
                 public void run() {
-                    webView.getEngine().executeScript(script);
+                    try {
+                        webView.getEngine().executeScript(script);
+                    } catch (Throwable t) {
+                        log.info("Exception during runLater executeScript of " + script + ": " + t);
+                    }
+
                     logJavaScript(script, null);
                 }
             });
         } else {
-            webView.getEngine().executeScript(script);
+            try {
+                webView.getEngine().executeScript(script);
+            } catch (Throwable t) {
+                log.info("Exception during executeScript of " + script + ": " + t);
+            }
+
             logJavaScript(script, null);
         }
     }
@@ -281,7 +291,14 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
             runLater(new Runnable() {
                 public void run() {
-                    Object r = webView.getEngine().executeScript(script);
+                    Object r = null;
+                    try {
+                        r = webView.getEngine().executeScript(script);
+                    }
+                    catch (Throwable t) {
+                        log.info("Exception during runLater executeScript with result of " + script + ": " + t);
+                    }
+
                     if (debug && pollingCallback) {
                         log.info("After runLater, executeScript with result " + r);
                     }
@@ -304,7 +321,13 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                 }
             }
         } else {
-            result[0] = webView.getEngine().executeScript(script);
+            try {
+                result[0] = webView.getEngine().executeScript(script);
+            }
+            catch (Throwable t) {
+                log.info("Exception during executeScript with result of " + script + ": " + t);
+            }
+
             if (debug && pollingCallback) {
                 log.info("After executeScript with result " + result[0]);
             }
