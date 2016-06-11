@@ -19,10 +19,24 @@
 */
 package slash.navigation.download.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.datasources.*;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Map;
+import slash.navigation.datasources.Theme;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -45,13 +59,20 @@ import java.util.zip.ZipInputStream;
 import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
-import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.extractFileName;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
-import static slash.navigation.download.Action.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asBoundingBoxType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.toXml;
+import static slash.navigation.download.Action.Copy;
+import static slash.navigation.download.Action.GetRange;
+import static slash.navigation.download.Action.Head;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
@@ -350,16 +371,16 @@ public class UpdateCatalog extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption(withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
-                withDescription("ID of the data source").create());
-        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
-                withDescription("Data sources server").create());
-        options.addOption(withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
-                withDescription("Data sources server user name").create());
-        options.addOption(withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
-                withDescription("Data sources server password").create());
-        options.addOption(withArgName(MIRROR_ARGUMENT).hasArgs(1).isRequired().withLongOpt("mirror").
-                withDescription("Filesystem path to mirror resources").create());
+        options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().required().longOpt("id").
+                desc("ID of the data source").build());
+        options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
+                desc("Data sources server").build());
+        options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
+                desc("Data sources server user name").build());
+        options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
+                desc("Data sources server password").build());
+        options.addOption(Option.builder().argName(MIRROR_ARGUMENT).numberOfArgs(1).required().longOpt("mirror").
+                desc("Filesystem path to mirror resources").build());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {

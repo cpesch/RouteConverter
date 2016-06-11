@@ -20,7 +20,13 @@
 package slash.navigation.download.tools;
 
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 import slash.navigation.datasources.Map;
@@ -50,9 +56,11 @@ import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
@@ -270,26 +278,26 @@ public class ScanWebsite extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption(withArgName(ID_ARGUMENT).hasArgs().isRequired().withLongOpt("id").
-                withDescription("ID of the data source").create());
-        options.addOption(withArgName(URL_ARGUMENT).hasArgs(1).isRequired().withLongOpt("url").
-                withDescription("URL to scan for resources").create());
-        options.addOption(withArgName(BASE_URL_ARGUMENT).hasArgs(1).withLongOpt("baseUrl").
-                withDescription("URL to use as a base for resources").create());
-        options.addOption(withArgName(EXTENSION_ARGUMENT).hasArgs().withLongOpt("extension").
-                withDescription("Extensions to scan for").create());
-        options.addOption(withArgName(INCLUDE_ARGUMENT).hasArgs().withLongOpt("include").
-                withDescription("Regex for resources to include").create());
-        options.addOption(withArgName(EXCLUDE_ARGUMENT).hasArgs().withLongOpt("exclude").
-                withDescription("Regex for resources to exclude").create());
-        options.addOption(withArgName(TYPE_ARGUMENT).hasArgs(1).withLongOpt("type").
-                withDescription("Type of the resources").create());
-        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
-                withDescription("Data sources server").create());
-        options.addOption(withArgName(DATASOURCES_USERNAME_ARGUMENT).hasArgs(1).withLongOpt("username").
-                withDescription("Data sources server user name").create());
-        options.addOption(withArgName(DATASOURCES_PASSWORD_ARGUMENT).hasArgs(1).withLongOpt("password").
-                withDescription("Data sources server password").create());
+        options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().required().longOpt("id").
+                desc("ID of the data source").build());
+        options.addOption(Option.builder().argName(URL_ARGUMENT).numberOfArgs(1).required().longOpt("url").
+                desc("URL to scan for resources").build());
+        options.addOption(Option.builder().argName(BASE_URL_ARGUMENT).numberOfArgs(1).longOpt("baseUrl").
+                desc("URL to use as a base for resources").build());
+        options.addOption(Option.builder().argName(EXTENSION_ARGUMENT).hasArgs().longOpt("extension").
+                desc("Extensions to scan for").build());
+        options.addOption(Option.builder().argName(INCLUDE_ARGUMENT).hasArgs().longOpt("include").
+                desc("Regex for resources to include").build());
+        options.addOption(Option.builder().argName(EXCLUDE_ARGUMENT).hasArgs().longOpt("exclude").
+                desc("Regex for resources to exclude").build());
+        options.addOption(Option.builder().argName(TYPE_ARGUMENT).numberOfArgs(1).longOpt("type").
+                desc("Type of the resources").build());
+        options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
+                desc("Data sources server").build());
+        options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
+                desc("Data sources server user name").build());
+        options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
+                desc("Data sources server password").build());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {

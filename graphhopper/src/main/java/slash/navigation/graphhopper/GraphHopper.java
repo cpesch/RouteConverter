@@ -206,7 +206,7 @@ public class GraphHopper implements RoutingService {
         try {
             hopper = new com.graphhopper.GraphHopper().forDesktop().
                     setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                    setCHEnable(false).
+                    setCHEnabled(false).
                     setEnableInstructions(false).
                     setGraphHopperLocation(createPath(file).getAbsolutePath()).
                     setOSMFile(file.getAbsolutePath()).
