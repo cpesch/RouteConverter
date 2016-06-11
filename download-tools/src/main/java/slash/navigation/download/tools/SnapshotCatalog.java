@@ -19,7 +19,13 @@
 */
 package slash.navigation.download.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Edition;
@@ -37,7 +43,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.System.exit;
-import static org.apache.commons.cli.OptionBuilder.withArgName;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.datasources.DataSourceManager.loadAllDataSources;
 
@@ -108,10 +113,10 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption(withArgName(DATASOURCES_SERVER_ARGUMENT).hasArgs(1).withLongOpt("server").
-                withDescription("Data sources server").create());
-        options.addOption(withArgName(RESET_ARGUMENT).withLongOpt("reset").
-                withDescription("Reset local snapshot").create());
+        options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
+                desc("Data sources server").build());
+        options.addOption(Option.builder().argName(RESET_ARGUMENT).longOpt("reset").
+                desc("Reset local snapshot").build());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
