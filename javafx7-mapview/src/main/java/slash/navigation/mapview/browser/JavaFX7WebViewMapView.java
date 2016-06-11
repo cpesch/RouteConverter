@@ -22,7 +22,6 @@ package slash.navigation.mapview.browser;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -30,12 +29,6 @@ import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.html.HTMLAnchorElement;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
@@ -44,15 +37,14 @@ import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.logging.Logger;
-import org.w3c.dom.events.Event;
-
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.currentTimeMillis;
-import static javafx.application.Platform.*;
+import static javafx.application.Platform.isFxApplicationThread;
+import static javafx.application.Platform.runLater;
+import static javafx.application.Platform.setImplicitExit;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -104,13 +96,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
             webView.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
                 public WebEngine call(PopupFeatures config) {
                     // grab the last hyperlink that has :hover pseudoclass
-                    String url = executeScriptWithResult(
-                            "var list = document.querySelectorAll( ':hover' );" +
-                                    "for (i=list.length-1; i>-1; i--) {" +
-                                    "  if (list.item(i).getAttribute('href')) {" +
-                                    "    list.item(i).getAttribute('href'); break; " +
-                                    "}}");
-
+                    String url = executeScriptWithResult("extractPopupHrefs()");
                     if (url != null && isUrl(url)) {
                         mapViewCallback.startBrowser(url);
                     } else {
@@ -190,7 +176,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                 if (webView == null)
                     return;
 
-                log.info("Using JavaFX WebView to create map view");
+                log.info("Using JavaFX WebView to create map view: " + JavaFX7WebViewMapView.this.getClass().getName());
                 initializeWebPage();
             }
         });
