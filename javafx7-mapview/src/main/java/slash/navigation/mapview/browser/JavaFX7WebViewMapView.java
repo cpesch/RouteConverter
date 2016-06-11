@@ -22,6 +22,7 @@ package slash.navigation.mapview.browser;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -29,6 +30,12 @@ import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLAnchorElement;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
@@ -36,7 +43,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.logging.Logger;
+import org.w3c.dom.events.Event;
+
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.currentTimeMillis;
@@ -99,7 +111,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                                     "    list.item(i).getAttribute('href'); break; " +
                                     "}}");
 
-                    if (url != null) {
+                    if (url != null && isUrl(url)) {
                         mapViewCallback.startBrowser(url);
                     } else {
                         log.warning("No result from popup uri detector");
@@ -107,6 +119,15 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
                     // prevent from opening in WebView
                     return null;
+                }
+
+                private boolean isUrl(String url) {
+                    try {
+                        new URL(url);
+                        return true;
+                    } catch (MalformedURLException e) {
+                        return false;
+                    }
                 }
             });
             webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
