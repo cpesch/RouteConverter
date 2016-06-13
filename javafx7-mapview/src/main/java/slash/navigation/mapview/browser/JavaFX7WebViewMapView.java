@@ -123,11 +123,11 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                     log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                     if (newState == SUCCEEDED) {
                         // get out of the listener callback
-                        invokeLater(new Runnable() {
+                        new Thread(new Runnable() {
                             public void run() {
                                 tryToInitialize(startCount++, currentTimeMillis());
                             }
-                        });
+                        }, "MapViewInitializer").start();
                     }
                 }
             });
