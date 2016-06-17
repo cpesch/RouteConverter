@@ -28,6 +28,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
 import slash.navigation.common.NavigationPosition;
@@ -782,6 +783,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof OziExplorerFormat ||
                 sourceFormat instanceof GpxFormat && targetFormat instanceof GoRiderGpsFormat ||
                 sourceFormat instanceof ColumbusGpsFormat && targetFormat instanceof CoPilotFormat ||
+                sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof Iblue747Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof CoPilotFormat) {
             assertNotNull(sourcePosition.getTime());
