@@ -29,7 +29,7 @@ import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.simple.GpsTunerFormat;
 
@@ -65,13 +65,13 @@ public class AccurracyConvertIT {
     }
 
     @Test
-    public void testConvertColumbusGpBinaryToNmea() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new NmeaFormat());
+    public void testConvertColumbusGpBinaryToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new Gpx11Format());
     }
 
     @Test
     public void testConvertColumbusGpsProfessionalToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertGoPalTrackToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertGpsTunerToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class AccurracyConvertIT {
     @Test
     public void testConvertGpxToTomTomRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom5RouteFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertNmeaToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new TomTom95RouteFormat());
     }
 
     @Test

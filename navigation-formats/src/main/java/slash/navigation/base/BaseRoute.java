@@ -48,6 +48,7 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.photo.PhotoFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
@@ -1067,6 +1068,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof TomTom8RouteFormat)
             return (TomTomRoute) this;
         return asTomTomRouteFormat(new TomTom8RouteFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public TomTomRoute asTomTom95RouteFormat() {
+        if (getFormat() instanceof TomTom95RouteFormat)
+            return (TomTomRoute) this;
+        return asTomTomRouteFormat(new TomTom95RouteFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")

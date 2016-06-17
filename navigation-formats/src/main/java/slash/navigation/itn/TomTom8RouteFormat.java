@@ -39,6 +39,10 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return "Tom Tom 8 Route (*" + getExtension() + ")";
     }
 
+    public boolean isSupportsReading() {
+        return false;
+    }
+
     public void read(InputStream source, ParserContext<TomTomRoute> context) throws Exception {
         read(source, UTF8_ENCODING, context);
     }

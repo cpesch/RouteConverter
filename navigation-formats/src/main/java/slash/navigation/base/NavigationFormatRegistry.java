@@ -64,6 +64,7 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.GarbleKml21Format;
 import slash.navigation.kml.GarbleKml21LittleEndianFormat;
@@ -149,6 +150,7 @@ public class NavigationFormatRegistry {
         addFormat(NmeaFormat.class);
         addFormat(MTP0809Format.class);
         addFormat(MTP0607Format.class);
+        addFormat(TomTom95RouteFormat.class);
         addFormat(TomTom8RouteFormat.class);
         addFormat(TomTom5RouteFormat.class);
         addFormat(Igo8RouteFormat.class);

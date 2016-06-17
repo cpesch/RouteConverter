@@ -50,7 +50,7 @@ import static slash.navigation.base.RouteComments.TRIPMASTER_TIME;
  */
 
 public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute> {
-    private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
+    protected static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
     private static final char SEPARATOR = '|';
     private static final String REGEX_SEPARATOR = "\\" + SEPARATOR;
     private static final Pattern POSITION_PATTERN = Pattern.

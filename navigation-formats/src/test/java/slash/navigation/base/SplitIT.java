@@ -23,13 +23,15 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 
 import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
@@ -227,7 +229,7 @@ public class SplitIT {
 
     @Test
     public void testConvertLargeTomTomRouteToSeveralTomTomRoutes() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new TomTom8RouteFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -237,7 +239,7 @@ public class SplitIT {
 
     @Test
     public void testConvertLargeMTP0607ToSeveralTomTomRoutes() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new TomTom8RouteFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new TomTom95RouteFormat());
     }
 
     @Test
