@@ -22,6 +22,7 @@ package slash.navigation.hgt;
 import org.junit.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.binding.ActionType;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.FragmentType;
@@ -45,6 +46,7 @@ public class HgtFilesIT {
         datasourceType.setName(name);
         datasourceType.setBaseUrl(baseUrl);
         datasourceType.setDirectory(directory);
+        datasourceType.setAction(ActionType.fromValue("Flatten"));
 
         FileType fileType1 = new FileType();
         fileType1.setUri("Eurasia/N59E011.hgt.zip");

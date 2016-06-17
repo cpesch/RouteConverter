@@ -27,6 +27,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
+import slash.navigation.download.Action;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -58,6 +59,7 @@ public class GraphHopperIT {
         when(dataSource.getDownloadable(URI)).thenReturn(downloadable);
         when(dataSource.getBaseUrl()).thenReturn("http://download.geofabrik.de/");
         when(dataSource.getDirectory()).thenReturn("test");
+        when(dataSource.getAction()).thenReturn(Action.Copy.name());
         slash.navigation.datasources.File file = mock(slash.navigation.datasources.File.class);
         when(file.getBoundingBox()).thenReturn(new BoundingBox(10.33637, 53.7465, 9.613465, 53.38581));
         when(file.getUri()).thenReturn(URI);
@@ -84,18 +86,18 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Car"));
-        assertEquals(163, result.getPositions().size());
+        assertEquals(172, result.getPositions().size());
         assertEquals(13633.0, result.getDistance(), 5.0);
-        assertEquals(981304.0, result.getTime(), 100);
+        assertEquals(1062488, result.getTime(), 100);
         assertTrue(result.isValid());
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
-        assertEquals(114, result.getPositions().size());
+        assertEquals(118, result.getPositions().size());
         assertEquals(13655.4, result.getDistance(), 5.0);
-        assertEquals(2752267.0, result.getTime(), 100);
+        assertEquals(2752840, result.getTime(), 100);
         assertTrue(result.isValid());
     }
 }

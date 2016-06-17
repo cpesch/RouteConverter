@@ -180,7 +180,7 @@ public class GraphHopper implements RoutingService {
         StringBuilder result = new StringBuilder();
         List<TravelMode> availableTravelModes = getAvailableTravelModes();
         for(int i=0; i < availableTravelModes.size(); i++) {
-            result.append(availableTravelModes.get(i).getName().toUpperCase());
+            result.append(availableTravelModes.get(i).getName().toLowerCase());
             if(i < availableTravelModes.size() - 1)
                 result.append(",");
         }

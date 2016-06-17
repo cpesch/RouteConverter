@@ -997,7 +997,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<TomTomRoute> context = new ParserContextImpl<>(source, fromMillis(source.lastModified()));
+        ParserContext<TomTomRoute> context = new ParserContextImpl<>(source, startDate);
         new TomTom5RouteFormat().read(new FileInputStream(source), context);
         return context.getRoutes();
     }
@@ -1010,7 +1010,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<NmeaRoute> context = new ParserContextImpl<>(source, fromMillis(source.lastModified()));
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>(source, startDate);
         new NmeaFormat().read(new FileInputStream(source), context);
         return context.getRoutes();
     }
@@ -1023,7 +1023,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source, fromMillis(source.lastModified()));
+        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source, startDate);
         new GoPalTrackFormat().read(new FileInputStream(source), context);
         return context.getRoutes();
     }

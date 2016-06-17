@@ -100,7 +100,7 @@ public class ResourceBundleTest {
     }
 
     private void checkMnemonicsAreUnique(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, NO_FALLBACK_CONTROL);
+        ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale);
         Enumeration<String> keys = bundle.getKeys();
         Map<String, Set<String>> mnemonics = new HashMap<>();
         while (keys.hasMoreElements()) {

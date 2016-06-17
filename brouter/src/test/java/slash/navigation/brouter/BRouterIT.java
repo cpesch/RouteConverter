@@ -26,6 +26,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
+import slash.navigation.download.Action;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -57,14 +58,14 @@ public class BRouterIT {
         when(car.getUri()).thenReturn(CAR_PROFILE_URI);
         Downloadable trekking = mock(Downloadable.class);
         when(trekking.getUri()).thenReturn(TREKKING_PROFILE_URI);
-        DataSource brouterProfiles = mock(DataSource.class);
-        when(brouterProfiles.getDownloadable(CAR_PROFILE_URI)).thenReturn(car);
-        when(brouterProfiles.getDownloadable(TREKKING_PROFILE_URI)).thenReturn(trekking);
-        when(brouterProfiles.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/profiles2/");
-        when(brouterProfiles.getDirectory()).thenReturn("test");
-        prepareFile(brouterProfiles.getDirectory(), CAR_PROFILE_URI);
-        prepareFile(brouterProfiles.getDirectory(), TREKKING_PROFILE_URI);
-        prepareFile(brouterProfiles.getDirectory(), "lookups.dat");
+        DataSource profiles = mock(DataSource.class);
+        when(profiles.getDownloadable(CAR_PROFILE_URI)).thenReturn(car);
+        when(profiles.getDownloadable(TREKKING_PROFILE_URI)).thenReturn(trekking);
+        when(profiles.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/profiles2/");
+        when(profiles.getDirectory()).thenReturn("test");
+        prepareFile(profiles.getDirectory(), CAR_PROFILE_URI);
+        prepareFile(profiles.getDirectory(), TREKKING_PROFILE_URI);
+        prepareFile(profiles.getDirectory(), "lookups.dat");
 
         Downloadable segment = mock(Downloadable.class);
         when(segment.getUri()).thenReturn(SEGMENT_URI);
@@ -72,9 +73,10 @@ public class BRouterIT {
         when(brouterSegments.getDownloadable(SEGMENT_URI)).thenReturn(segment);
         when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments4/");
         when(brouterSegments.getDirectory()).thenReturn("test");
+        when(brouterSegments.getAction()).thenReturn(Action.Copy.name());
 
         router = new BRouter(new DownloadManager(createTempFile("queueFile", ".xml")));
-        router.setProfilesAndSegments(brouterProfiles, brouterSegments);
+        router.setProfilesAndSegments(profiles, brouterSegments);
         DownloadFuture future = router.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();
@@ -100,8 +102,8 @@ public class BRouterIT {
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
         assertTrue(result.isValid());
-        assertEquals(172, result.getPositions().size());
-        assertEquals(13820.0, result.getDistance(), 5.0);
+        assertEquals(191, result.getPositions().size());
+        assertEquals(13828.0, result.getDistance(), 5.0);
         assertEquals(0, result.getTime());
     }
 
@@ -109,7 +111,7 @@ public class BRouterIT {
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
         assertTrue(result.isValid());
-        assertEquals(115, result.getPositions().size());
+        assertEquals(120, result.getPositions().size());
         assertEquals(13963.0, result.getDistance(), 5.0);
         assertEquals(0, result.getTime());
     }
