@@ -63,7 +63,7 @@ public class NavigationFormatParserIT {
                                   int characteristicsCount, int[] positionCount) throws IOException {
         ParserResult result = read(testFileName);
         List<BaseRoute> routes = getRouteCharacteristics(result.getAllRoutes(), characteristics);
-        if (characteristicsCount == 0) {
+        if (routes == null || characteristicsCount == 0) {
             assertNull(routes);
         } else {
             assertEquals(characteristicsCount, routes.size());
