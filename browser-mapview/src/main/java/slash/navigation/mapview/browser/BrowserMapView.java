@@ -650,9 +650,11 @@ public abstract class BrowserMapView implements MapView {
         return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
     }
 
-    private boolean isGoogleMap() {
+    private static final List<String> GOOGLE_FIX_MAP_TYPES = asList("ROADMAP", "TERRAIN");
+
+    private boolean isGoogleFixMap() {
         String mapType = getMapType();
-        return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
+        return mapType != null && GOOGLE_FIX_MAP_TYPES.contains(mapType.toUpperCase());
     }
 
     private static final String DOT_XML = ".xml";
@@ -960,7 +962,7 @@ public abstract class BrowserMapView implements MapView {
 
     private boolean isFixMap(Double longitude, Double latitude) {
         FixMapMode fixMapMode = fixMapModeModel.getFixMapMode();
-        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
+        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleFixMap() && isPositionInChina(longitude, latitude);
     }
 
     private NavigationPosition parsePosition(String latitudeString, String longitudeString) {
