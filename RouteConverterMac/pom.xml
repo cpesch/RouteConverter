@@ -12,43 +12,6 @@
 
     <build>
         <plugins>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>eclipse.swt</groupId>
-                                    <artifactId>cocoa.macosx.x86</artifactId>
-                                    <version>4.4</version>
-                                    <classifier>stripped</classifier>
-                                    <overWrite>false</overWrite>
-                                    <destFileName>swt-mac_os_x-32.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>eclipse.swt</groupId>
-                                    <artifactId>cocoa.macosx.x86_64</artifactId>
-                                    <version>4.5</version>
-                                    <classifier>stripped</classifier>
-                                    <overWrite>false</overWrite>
-                                    <destFileName>swt-mac_os_x-64.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
