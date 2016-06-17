@@ -71,8 +71,8 @@ public class ExternalPrograms {
         startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
     }
 
-    public static void startBrowserForTimeAlbumSupport(Window window) {
-        startMail(window, "mailto:columbus-service@hotmail.com");
+    public static void startBrowserForTimeAlbumProSupport(Window window) {
+        startMail(window, "mailto:columbusservice@hotmail.com");
     }
 
     public static void startBrowserForRouteConverterForum(Window window) {
