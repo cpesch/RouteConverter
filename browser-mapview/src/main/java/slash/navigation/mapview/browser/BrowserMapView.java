@@ -650,11 +650,9 @@ public abstract class BrowserMapView implements MapView {
         return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
     }
 
-    private static final List<String> GOOGLE_FIX_MAP_TYPES = asList("ROADMAP", "TERRAIN");
-
     private boolean isGoogleFixMap() {
         String mapType = getMapType();
-        return mapType != null && GOOGLE_FIX_MAP_TYPES.contains(mapType.toUpperCase());
+        return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
     }
 
     private static final String DOT_XML = ".xml";
