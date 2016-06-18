@@ -25,8 +25,6 @@ import slash.navigation.converter.gui.actions.ShowAboutTimeAlbumProAction;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 
 /**
@@ -68,19 +66,5 @@ public class TimeAlbumPro extends RouteConverter {
 
     protected SingletonDialogAction createAboutAction() {
         return new ShowAboutTimeAlbumProAction();
-    }
-
-    static {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(10 * 60 * 1000);
-                } catch (InterruptedException e) {
-                }
-                showMessageDialog(null, "Thank you for testing.", "TimeAlbum Pro", ERROR_MESSAGE);
-                System.exit(5);
-            }
-        });
-        thread.start();
     }
 }

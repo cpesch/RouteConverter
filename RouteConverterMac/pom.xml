@@ -131,7 +131,7 @@
                     <bundler>mac.app</bundler>   dmg
                     <updateExistingJar>true</updateExistingJar>
                     <bundleArguments>
-                        <runtime />
+                        <runtime/>
                         <srcdir>target</srcdir>
                         <srcfiles>
                             <srcfile>RouteConverterMac.jar</srcfile>

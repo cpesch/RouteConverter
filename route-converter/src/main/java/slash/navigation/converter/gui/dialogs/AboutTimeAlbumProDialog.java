@@ -41,7 +41,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.feature.client.Feature.getFeature;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGeonames;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTimeAlbumSupport;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTimeAlbumProSupport;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTimeAlbumProDownload;
 
 /**
@@ -74,7 +74,7 @@ public class AboutTimeAlbumProDialog extends SimpleDialog {
 
         labelContact.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                startBrowserForTimeAlbumSupport(r.getFrame());
+                startBrowserForTimeAlbumProSupport(r.getFrame());
             }
         });
 
