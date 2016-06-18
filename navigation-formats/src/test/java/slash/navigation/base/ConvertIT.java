@@ -111,8 +111,8 @@ public class ConvertIT {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot8Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv1000-type.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.csv", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
     }
 
     @Test

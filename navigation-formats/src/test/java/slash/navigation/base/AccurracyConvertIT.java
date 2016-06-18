@@ -65,8 +65,8 @@ public class AccurracyConvertIT {
     }
 
     @Test
-    public void testConvertColumbusGpBinaryToNmea() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new NmeaFormat());
+    public void testConvertColumbusGpBinaryToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new Gpx11Format());
     }
 
     @Test
