@@ -229,10 +229,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEditionName(), version.getVersion(), version.getDate());
+        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
     }
 
-    public String getEditionName() {
+    protected String getProduct() {
+        return "RouteConverter";
+    }
+
+    public String getEdition() {
         return "RouteConverter Online Edition";
     }
 
@@ -421,7 +425,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
-        createFrame(getTitle(), "/slash/navigation/converter/gui/" + getClass().getSimpleName() + ".png", contentPane, null, new FrameMenu().createMenuBar());
+        createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null, new FrameMenu().createMenuBar());
         if (isMac())
             new ApplicationMenu().addApplicationMenuItems();
 

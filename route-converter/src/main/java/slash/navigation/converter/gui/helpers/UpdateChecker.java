@@ -98,7 +98,7 @@ public class UpdateChecker {
         int confirm = showConfirmDialog(window,
                 format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
                         result.getMyRouteConverterVersion(),
-                        RouteConverter.getInstance().getEditionName(),
+                        RouteConverter.getInstance().getEdition(),
                         result.getLatestRouteConverterVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
@@ -107,7 +107,7 @@ public class UpdateChecker {
 
     private void noUpdateAvailable(Window window) {
         showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available"),
-                RouteConverter.getInstance().getEditionName()),
+                RouteConverter.getInstance().getEdition()),
                 RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 
