@@ -40,7 +40,11 @@ public class TimeAlbumPro extends RouteConverter {
         launch(TimeAlbumPro.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
-    public String getEditionName() {
+    protected String getProduct() {
+        return "TimeAlbumPro";
+    }
+
+    public String getEdition() {
         return "TimeAlbum Pro";
     }
 
