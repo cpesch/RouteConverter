@@ -273,12 +273,15 @@ public class Transfer {
 
     public static String encodeUri(String uri) {
         try {
-            String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
-            return encoded.replace("%2F", "/"); // better not .replace("%3A", ":");
+            return URLEncoder.encode(uri, UTF8_ENCODING);
         } catch (UnsupportedEncodingException e) {
             log.severe("Cannot encode uri " + uri + ": " + e);
             return uri;
         }
+    }
+
+    public static String encodeUriButKeepSlashes(String uri) {
+        return encodeUri(uri).replace("%2F", "/"); // better not .replace("%3A", ":");
     }
 
     public static String decodeUri(String uri) {

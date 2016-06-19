@@ -27,8 +27,11 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
+import org.mapsforge.map.layer.TileLayer;
+import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
@@ -131,6 +134,8 @@ import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
+import static slash.common.io.Directories.getTemporaryDirectory;
+import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
@@ -659,22 +664,21 @@ public class MapsforgeMapView implements MapView {
         return menu;
     }
 
-    private TileRendererLayer createTileRendererLayer(File map) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(), new MapFile(map), mapView.getModel().mapViewPosition, true, true, true, GRAPHIC_FACTORY);
+    private TileRendererLayer createTileRendererLayer(File mapFile, String cacheId) {
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), new MapFile(mapFile), mapView.getModel().mapViewPosition, true, true, true, GRAPHIC_FACTORY);
         tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
         return tileRendererLayer;
     }
 
-    private TileDownloadLayer createTileDownloadLayer(TileSource tileSource) {
-        return new TileDownloadLayer(createTileCache(), mapView.getModel().mapViewPosition, tileSource, GRAPHIC_FACTORY);
+    private TileDownloadLayer createTileDownloadLayer(TileSource tileSource, String cacheId) {
+        return new TileDownloadLayer(createTileCache(cacheId), mapView.getModel().mapViewPosition, tileSource, GRAPHIC_FACTORY);
     }
 
-    private TileCache createTileCache() {
-        // TODO think about replacing with file system cache that survives restarts
-        // File cacheDirectory = new File(System.getProperty("java.io.tmpdir"), "mapsforge");
-        // TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, GRAPHIC_FACTORY);
-        // return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
-        return new InMemoryTileCache(64);
+    private TileCache createTileCache(String cacheId) {
+        TileCache firstLevelTileCache = new InMemoryTileCache(64);
+        File cacheDirectory = new File(getTemporaryDirectory(), encodeUri(cacheId));
+        TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, GRAPHIC_FACTORY);
+        return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
     }
 
     private void updateSelectionAfterUpdate(List<PairWithLayer> pairWithLayers) {
@@ -704,7 +708,7 @@ public class MapsforgeMapView implements MapView {
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
         Layer layer;
         try {
-            layer = map.isVector() ? createTileRendererLayer(map.getFile()) : createTileDownloadLayer(map.getTileSource());
+            layer = map.isVector() ? createTileRendererLayer(map.getFile(), map.getUrl()) : createTileDownloadLayer(map.getTileSource(), map.getUrl());
         } catch (Exception e) {
             mapViewCallback.showMapException(map != null ? map.getDescription() : "<no map>", e);
             return;
@@ -715,6 +719,9 @@ public class MapsforgeMapView implements MapView {
             Layer remove = entry.getValue();
             layers.remove(remove);
             remove.onDestroy();
+
+            if(remove instanceof TileLayer)
+                ((TileLayer)remove).getTileCache().destroy();
         }
         mapsToLayers.clear();
 
@@ -724,7 +731,7 @@ public class MapsforgeMapView implements MapView {
 
         // initialize tile renderer layer for background map
         if (backgroundMap != null) {
-            backgroundLayer = createTileRendererLayer(backgroundMap);
+            backgroundLayer = createTileRendererLayer(backgroundMap, backgroundMap.getName());
             backgroundMap = null;
         }
         if(backgroundLayer != null) {

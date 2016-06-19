@@ -44,6 +44,7 @@ import org.mapsforge.map.view.FrameBuffer;
 import java.awt.*;
 
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.clearResourceFileCache;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.clearResourceMemoryCache;
 
 /**
@@ -101,7 +102,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
             layerManager.getLayers().remove(layer);
             layer.onDestroy();
             if (layer instanceof TileLayer) {
-                ((TileLayer<?>) layer).getTileCache().destroy();
+                ((TileLayer) layer).getTileCache().destroy();
             }
             if (layer instanceof TileRendererLayer) {
                 LabelStore labelStore = ((TileRendererLayer) layer).getLabelStore();
@@ -112,6 +113,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         }
         destroy();
         clearResourceMemoryCache();
+        clearResourceFileCache();
     }
 
     public BoundingBox getBoundingBox() {

@@ -33,7 +33,7 @@ import static org.apache.http.Consts.UTF_8;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
-import static slash.common.io.Transfer.encodeUri;
+import static slash.common.io.Transfer.encodeUriButKeepSlashes;
 
 /**
  * Wrapper for a HTTP Multipart Request.
@@ -67,13 +67,13 @@ abstract class MultipartRequest extends HttpRequest {
     public void addFile(String name, File value) throws IOException {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
-        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(value.getName()));
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(value.getName()));
     }
 
     public void addFile(String name, byte[] value) throws IOException {
         if (value.length > 4096)
             containsFileLargerThan4k = true;
-        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(name + ".xml"));
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(name + ".xml"));
     }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
