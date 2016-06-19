@@ -72,6 +72,7 @@ public class GraphHopper implements RoutingService {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
+    // omitted: Bike2, Hike, MotorCycle, MTB, RacingBike
 
     private final DownloadManager downloadManager;
     private DataSource dataSource;
@@ -213,7 +214,7 @@ public class GraphHopper implements RoutingService {
             try {
                 hopper = new com.graphhopper.GraphHopper().forDesktop().
                         setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                        setCHEnable(false).
+                        setCHEnabled(false).
                         setEnableInstructions(false).
                         setGraphHopperLocation(createPath(file).getAbsolutePath()).
                         setOSMFile(file.getAbsolutePath()).

@@ -90,6 +90,11 @@
             <version>0.45</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
             <groupId>net.sf.trove4j</groupId>
             <artifactId>trove4j</artifactId>
             <version>3.0.3</version>

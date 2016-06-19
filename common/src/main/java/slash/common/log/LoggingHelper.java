@@ -101,7 +101,8 @@ public class LoggingHelper {
 
     private static final Filter FILTER = new Filter() {
         public boolean isLoggable(LogRecord record) {
-            return record.getLoggerName().startsWith("slash");
+            return record.getLoggerName().startsWith("slash") ||
+                    record.getLoggerName().startsWith("com.graphhopper");
         }
     };
 

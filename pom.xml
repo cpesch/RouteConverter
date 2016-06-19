@@ -61,7 +61,7 @@
     <properties>
         <targetJdk>1.7</targetJdk>
         <brouter.version>1.4.1</brouter.version>
-        <graphhopper.version>0.7.0-RC2</graphhopper.version>
+        <graphhopper.version>0.7.0</graphhopper.version>
         <mapsforge.version>0.6.1-rc2</mapsforge.version>
     </properties>
 
@@ -259,7 +259,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.0.54-beta</version>
+            <version>2.0.62-beta</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
