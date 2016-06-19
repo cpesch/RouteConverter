@@ -187,47 +187,54 @@ public class GraphHopper implements RoutingService {
         return result.toString();
     }
 
-    private synchronized java.io.File getOsmPbfFile() {
-        return osmPbfFile;
-    }
+    private static final Object initializationLock = new Object();
 
-    synchronized void setOsmPbfFile(java.io.File osmPbfFile) {
-        this.osmPbfFile = osmPbfFile;
-    }
-
-    synchronized void initializeHopper() {
-        java.io.File file = getOsmPbfFile();
-        if(file == null)
-            return;
-
-        if (hopper != null)
-            hopper.close();
-
-        try {
-            hopper = new com.graphhopper.GraphHopper().forDesktop().
-                    setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                    setCHEnabled(false).
-                    setEnableInstructions(false).
-                    setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                    setOSMFile(file.getAbsolutePath()).
-                    importOrLoad();
+    private java.io.File getOsmPbfFile() {
+        synchronized (initializationLock) {
+            return osmPbfFile;
         }
-        catch(IllegalStateException e) {
-            log.warning("Could not initialize GraphHopper: " + e);
+    }
 
-            if (e.getMessage().contains("Version of shortcuts unsupported")) {
-                log.info("Deleting old GraphHopper indexes");
-                try {
-                    recursiveDelete(createPath(file));
-                } catch (IOException e2) {
-                    log.warning("Could not delete GraphHopper indexes: " + e2);
+    void setOsmPbfFile(java.io.File osmPbfFile) {
+        synchronized (initializationLock) {
+            this.osmPbfFile = osmPbfFile;
+        }
+    }
+
+    void initializeHopper() {
+        synchronized (initializationLock) {
+            java.io.File file = getOsmPbfFile();
+            if (file == null)
+                return;
+
+            if (hopper != null)
+                hopper.close();
+
+            try {
+                hopper = new com.graphhopper.GraphHopper().forDesktop().
+                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                        setCHEnable(false).
+                        setEnableInstructions(false).
+                        setGraphHopperLocation(createPath(file).getAbsolutePath()).
+                        setOSMFile(file.getAbsolutePath()).
+                        importOrLoad();
+            } catch (IllegalStateException e) {
+                log.warning("Could not initialize GraphHopper: " + e);
+
+                if (e.getMessage().contains("Version of shortcuts unsupported")) {
+                    log.info("Deleting old GraphHopper indexes");
+                    try {
+                        recursiveDelete(createPath(file));
+                    } catch (IOException e2) {
+                        log.warning("Could not delete GraphHopper indexes: " + e2);
+                    }
                 }
+
+                throw e;
             }
 
-            throw e;
+            setOsmPbfFile(null);
         }
-
-        setOsmPbfFile(null);
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
