@@ -62,7 +62,7 @@
         <targetJdk>1.7</targetJdk>
         <brouter.version>1.4.1</brouter.version>
         <graphhopper.version>0.7.0</graphhopper.version>
-        <mapsforge.version>0.6.1-rc2</mapsforge.version>
+        <mapsforge.version>0.6.1</mapsforge.version>
     </properties>
 
     <build>
