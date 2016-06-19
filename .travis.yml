@@ -1,6 +1,9 @@
 # configuration for https://travis-ci.org/cpesch/RouteConverter
 sudo: false
 language: java
+cache:
+ directories:
+   - $HOME/.m2
 jdk:
   - openjdk7
   - oraclejdk7
@@ -10,3 +13,6 @@ git:
 branches:
   only:
     - master
+notifications:
+  email:
+  - support@routeconverter.com
