@@ -17,18 +17,29 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.mapview.mapsforge.helpers;
 
-package slash.navigation.mapview.mapsforge.models;
+import slash.navigation.converter.gui.models.ColorModel;
 
-import slash.navigation.gui.actions.ActionManager;
+import java.awt.*;
 
 /**
- * Contains constants for the map related {@link ActionManager#registerLocal(String, String, String) local names}
- * of the {@link ActionManager}.
+ * Provides {@link Color} helpers.
  *
  * @author Christian Pesch
  */
 
-public interface LocalNames {
-    String MAP = "map";
+public class ColorHelper {
+    private static final int MINIMUM_ALPHA = (int)(256 * 0.3);
+
+    public static int asRGBA(ColorModel colorModel) {
+        return asRGBA(colorModel.getColor());
+    }
+
+    static int asRGBA(Color color) {
+        int rgba = color.getRGB();
+        int alpha = MINIMUM_ALPHA + (int)(color.getAlpha() * (256.0 / MINIMUM_ALPHA) * 256.0);
+        alpha = alpha << 24;
+        return alpha | rgba;
+    }
 }

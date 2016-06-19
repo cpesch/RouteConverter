@@ -47,7 +47,6 @@ import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.BooleanModel;
@@ -67,14 +66,15 @@ import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
+import slash.navigation.mapview.mapsforge.helpers.ColorHelper;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
 import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
-import slash.navigation.mapview.mapsforge.models.IntermediateRoute;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
+import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
 import slash.navigation.mapview.mapsforge.updater.EventMapUpdater;
 import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
 import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
@@ -84,9 +84,6 @@ import slash.navigation.mapview.mapsforge.updater.TrackOperation;
 import slash.navigation.mapview.mapsforge.updater.TrackUpdater;
 import slash.navigation.mapview.mapsforge.updater.WaypointOperation;
 import slash.navigation.mapview.mapsforge.updater.WaypointUpdater;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -107,7 +104,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -120,9 +116,8 @@ import static java.awt.event.KeyEvent.VK_RIGHT;
 import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
-import static java.lang.Thread.sleep;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -134,6 +129,7 @@ import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
+import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -147,7 +143,6 @@ import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
 import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
 import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
 import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
-import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -193,12 +188,15 @@ public class MapsforgeMapView implements MapView {
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
-    private static Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
     private File backgroundMap;
     private TileRendererLayer backgroundLayer;
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
-    private ExecutorService executor = newSingleThreadExecutor();
+    private RouteRenderer routeRenderer;
+    private Thread routeReplacer;
+    private final Object notificationMutex = new Object();
+    private final Object eventMapUpdaterLock = new Object();
+    private boolean running = true, haveToReplaceRoute = false;
 
     // initialization
 
@@ -240,12 +238,12 @@ public class MapsforgeMapView implements MapView {
                             MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                                     Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
                             // ensure this marker is on top of the moved waypoint marker
-                            getLayerManager().getLayers().remove(this);
-                            mapView.addLayer(this);
+                            removeLayer(this);
+                            addLayer(this);
                         }
                     };
                     positionWithLayer.setLayer(marker);
-                    mapView.addLayer(marker);
+                    addLayer(marker);
                     center = latLong;
                 }
                 if (center != null)
@@ -253,14 +251,8 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    Layer layer = positionWithLayer.getLayer();
-                    if (layer != null)
-                        getLayerManager().getLayers().remove(layer);
-                    else
-                        log.warning("Could not find layer for selection position " + positionWithLayer);
-                    positionWithLayer.setLayer(null);
-                }
+                for (PositionWithLayer positionWithLayer : positionWithLayers)
+                    removeLayer(positionWithLayer);
             }
         });
 
@@ -282,109 +274,9 @@ public class MapsforgeMapView implements MapView {
                 updateSelectionAfterRemove(pairWithLayers);
             }
 
-            private void internalAdd(final List<PairWithLayer> pairWithLayers) {
+            private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 pairs.addAll(pairWithLayers);
-
-                stopDrawingRoute();
-                executor.execute(new Runnable() {
-                    public void run() {
-                        try {
-                            drawBeeline(pairWithLayers);
-                            fireDistanceAndTime();
-
-                            RoutingService service = MapsforgeMapView.this.mapViewCallback.getRoutingService();
-                            waitForInitialization(service);
-                            waitForDownload(service);
-
-                            drawRoute(pairWithLayers);
-                            fireDistanceAndTime();
-                        }
-                        catch(Exception e) {
-                            MapsforgeMapView.this.mapViewCallback.showRoutingException(e);
-                        }
-                    }
-
-                    private void waitForInitialization(RoutingService service) {
-                        if (!service.isInitialized()) {
-                            while (!service.isInitialized()) {
-                                try {
-                                    sleep(100);
-                                } catch (InterruptedException e) {
-                                    // intentionally left empty
-                                }
-                            }
-                        }
-                    }
-
-                    private void waitForDownload(RoutingService service) {
-                        if (service.isDownload()) {
-                            DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-                            if (future.isRequiresDownload()) {
-                                MapsforgeMapView.this.mapViewCallback.showDownloadNotification();
-                                future.download();
-                            }
-                            if (future.isRequiresProcessing()) {
-                                MapsforgeMapView.this.mapViewCallback.showProcessNotification();
-                                future.process();
-                            }
-                        }
-                    }
-                });
-            }
-
-            private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
-                int tileSize = mapView.getModel().displayModel.getTileSize();
-                for (PairWithLayer pairWithLayer : pairsWithLayer) {
-                    if(!pairWithLayer.hasCoordinates())
-                        continue;
-
-                    Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, tileSize);
-                    pairWithLayer.setLayer(line);
-                    mapView.addLayer(line);
-
-                    pairWithLayer.setDistance(pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond()));
-                    pairWithLayer.setTime(pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond()));
-                }
-            }
-
-            private void drawRoute(List<PairWithLayer> pairWithLayers) {
-                Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(asRGBA(routeColorModel));
-                paint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
-                int tileSize = mapView.getModel().displayModel.getTileSize();
-                RoutingService routingService = MapsforgeMapView.this.mapViewCallback.getRoutingService();
-                for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    if(!pairWithLayer.hasCoordinates())
-                        continue;
-
-                    IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
-                    Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, tileSize);
-                    // remove beeline layer then add polyline layer from routing
-                    removeLayer(pairWithLayer);
-                    pairWithLayer.setLayer(polyline);
-                    mapView.addLayer(polyline);
-                }
-            }
-
-            private IntermediateRoute calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
-                List<LatLong> latLongs = new ArrayList<>();
-                latLongs.add(asLatLong(pairWithLayer.getFirst()));
-                RoutingResult result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), MapsforgeMapView.this.mapViewCallback.getTravelMode());
-                if (result.isValid())
-                    latLongs.addAll(asLatLong(result.getPositions()));
-                pairWithLayer.setDistance(result.getDistance());
-                pairWithLayer.setTime(result.getTime());
-                latLongs.add(asLatLong(pairWithLayer.getSecond()));
-                return new IntermediateRoute(latLongs, result.isValid());
-            }
-
-            private void removeLayer(PairWithLayer pairWithLayer) {
-                Layer layer = pairWithLayer.getLayer();
-                if (layer != null)
-                    getLayerManager().getLayers().remove(layer);
-                else
-                    log.warning("Could not find layer for route pair " + pairWithLayer);
-                pairWithLayer.setLayer(null);
+                routeRenderer.renderRoute(pairWithLayers);
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
@@ -395,21 +287,7 @@ public class MapsforgeMapView implements MapView {
                     pairWithLayer.setDistance(null);
                     pairWithLayer.setTime(null);
                 }
-                fireDistanceAndTime();
-            }
-
-            private void fireDistanceAndTime() {
-                double totalDistance = 0.0;
-                long totalTime = 0;
-                for (PairWithLayer pairWithLayer : pairs) {
-                    Double distance = pairWithLayer.getDistance();
-                    if (distance != null)
-                        totalDistance += distance;
-                    Long time = pairWithLayer.getTime();
-                    if (time != null)
-                        totalTime += time;
-                }
-                fireCalculatedDistance((int) totalDistance, (int) (totalTime > 0 ? totalTime / 1000 : 0));
+                fireDistanceAndTime(pairs);
             }
         });
 
@@ -431,28 +309,22 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(asRGBA(trackColorModel));
+                paint.setColor(ColorHelper.asRGBA(trackColorModel));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
-                int tileSize = mapView.getModel().displayModel.getTileSize();
+                int tileSize = getTileSize();
                 for (PairWithLayer pair : pairWithLayers) {
                     if(!pair.hasCoordinates())
                         continue;
 
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
-                    mapView.addLayer(line);
+                    addLayer(line);
                 }
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    Layer layer = pairWithLayer.getLayer();
-                    if (layer != null)
-                        getLayerManager().getLayers().remove(layer);
-                    else
-                        log.warning("Could not find layer for track pair " + pairWithLayer);
-                    pairWithLayer.setLayer(null);
-                }
+                for (PairWithLayer pairWithLayer : pairWithLayers)
+                    removeLayer(pairWithLayer);
             }
         });
 
@@ -488,16 +360,11 @@ public class MapsforgeMapView implements MapView {
 
                 Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
                 positionWithLayer.setLayer(marker);
-                mapView.addLayer(marker);
+                addLayer(marker);
             }
 
             private void internalRemove(PositionWithLayer positionWithLayer) {
-                Layer layer = positionWithLayer.getLayer();
-                if (layer != null)
-                    getLayerManager().getLayers().remove(layer);
-                else
-                    log.warning("Could not find layer for position " + positionWithLayer);
-                positionWithLayer.setLayer(null);
+                removeLayer(positionWithLayer);
             }
         });
 
@@ -513,6 +380,38 @@ public class MapsforgeMapView implements MapView {
 
         initializeActions();
         initializeMapView();
+        routeRenderer = new RouteRenderer(this, this.mapViewCallback, routeColorModel, GRAPHIC_FACTORY);
+
+        routeReplacer = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    synchronized (notificationMutex) {
+                        try {
+                            notificationMutex.wait(50);
+                        } catch (InterruptedException e) {
+                            // ignore this
+                        }
+
+                        if (!running)
+                            return;
+                        if (!haveToReplaceRoute)
+                            continue;
+
+                        haveToReplaceRoute = false;
+                    }
+
+                    synchronized (eventMapUpdaterLock) {
+                        // remove all from previous event map updater
+                        eventMapUpdater.handleRemove(0, MAX_VALUE);
+
+                        // select current event map updater and let him add all
+                        eventMapUpdater = getEventMapUpdaterFor(lastCharacteristics);
+                        eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
+                    }
+                }
+            }
+        }, "RouteReplacer");
+        routeReplacer.start();
     }
 
     private void initializeActions() {
@@ -545,13 +444,6 @@ public class MapsforgeMapView implements MapView {
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e);
         }
-        ROUTE_NOT_VALID_PAINT = GRAPHIC_FACTORY.createPaint();
-        ROUTE_NOT_VALID_PAINT.setColor(0xFFFF0000);
-        ROUTE_NOT_VALID_PAINT.setStrokeWidth(5);
-        ROUTE_DOWNLOADING_PAINT = GRAPHIC_FACTORY.createPaint();
-        ROUTE_DOWNLOADING_PAINT.setColor(0x993379FF);
-        ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
-        ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
 
         mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
@@ -756,6 +648,13 @@ public class MapsforgeMapView implements MapView {
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
     }
 
+    private void replaceRoute() {
+        synchronized (notificationMutex) {
+            haveToReplaceRoute = true;
+            notificationMutex.notifyAll();
+        }
+    }
+
     private BaseRoute lastRoute = null;
     private RouteCharacteristics lastCharacteristics = Waypoints; // corresponds to default eventMapUpdater
 
@@ -768,25 +667,6 @@ public class MapsforgeMapView implements MapView {
         lastCharacteristics = characteristics;
         lastRoute = route;
         replaceRoute();
-    }
-
-    private void stopDrawingRoute() {
-        // throw away running routing executions      // TODO use signals later
-        List<Runnable> runnables = executor.shutdownNow();
-        if (runnables.size() > 0)
-            log.info("Replacing route stopped runnables: " + runnables);
-        executor = newSingleThreadExecutor();
-    }
-
-    private void replaceRoute() {
-        stopDrawingRoute();
-
-        // remove all from previous event map updater
-        eventMapUpdater.handleRemove(0, MAX_VALUE);
-
-        // select current event map updater and let him add all
-        eventMapUpdater = getEventMapUpdaterFor(lastCharacteristics);
-        eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
     }
 
     private EventMapUpdater getEventMapUpdaterFor(RouteCharacteristics characteristics) {
@@ -825,13 +705,30 @@ public class MapsforgeMapView implements MapView {
         trackColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
 
+        long start = currentTimeMillis();
+        synchronized (notificationMutex) {
+            running = false;
+            notificationMutex.notifyAll();
+        }
+
+        if (routeReplacer != null) {
+            try {
+                safeJoin(routeReplacer);
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
+            long end = currentTimeMillis();
+            log.info("RouteReplacer stopped after " + (end - start) + " ms");
+        }
+
+        routeRenderer.dispose();
+
         NavigationPosition center = getCenter();
         preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, center.getLongitude());
         preferences.putDouble(CENTER_LATITUDE_PREFERENCE, center.getLatitude());
         int zoom = getZoom();
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
 
-        stopDrawingRoute();
         mapView.destroyAll();
     }
 
@@ -857,11 +754,11 @@ public class MapsforgeMapView implements MapView {
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
         if (mapBorder != null) {
-            getLayerManager().getLayers().remove(mapBorder);
+            removeLayer(mapBorder);
             mapBorder = null;
         }
         if (routeBorder != null) {
-            getLayerManager().getLayers().remove(routeBorder);
+            removeLayer(routeBorder);
             routeBorder = null;
         }
 
@@ -881,22 +778,35 @@ public class MapsforgeMapView implements MapView {
         paint.setColor(BLUE);
         paint.setStrokeWidth(3);
         paint.setDashPathEffect(new float[]{3, 12});
-        Polyline polyline = new Polyline(asLatLong(boundingBox), paint, mapView.getModel().displayModel.getTileSize());
-        mapView.addLayer(polyline);
+        Polyline polyline = new Polyline(asLatLong(boundingBox), paint, getTileSize());
+        addLayer(polyline);
         return polyline;
     }
 
-    private static final int MINIMUM_ALPHA = (int)(256 * 0.3);
-
-    private int asRGBA(ColorModel colorModel) {
-        return asRGBA(colorModel.getColor());
+    public void addLayer(Layer layer) {
+        mapView.addLayer(layer);
     }
 
-    int asRGBA(Color color) {
-        int rgba = color.getRGB();
-        int alpha = MINIMUM_ALPHA + (int)(color.getAlpha() * (256.0 / MINIMUM_ALPHA) * 256.0);
-        alpha = alpha << 24;
-        return alpha | rgba;
+    private void removeLayer(Layer layer) {
+        mapView.removeLayer(layer);
+    }
+
+    private void removeLayer(PositionWithLayer positionWithLayer) {
+        Layer layer = positionWithLayer.getLayer();
+        if (layer != null)
+            removeLayer(layer);
+        else
+            log.warning("Could not find layer for position " + positionWithLayer);
+        positionWithLayer.setLayer(null);
+    }
+
+    public void removeLayer(PairWithLayer pairWithLayer) {
+        Layer layer = pairWithLayer.getLayer();
+        if (layer != null)
+            removeLayer(layer);
+        else
+            log.warning("Could not find layer for pair " + pairWithLayer);
+        pairWithLayer.setLayer(null);
     }
 
     private BoundingBox getMapBoundingBox() {
@@ -909,6 +819,10 @@ public class MapsforgeMapView implements MapView {
             }
         }
         return null;
+    }
+
+    public int getTileSize() {
+        return mapView.getModel().displayModel.getTileSize();
     }
 
     @SuppressWarnings("unchecked")
@@ -959,28 +873,12 @@ public class MapsforgeMapView implements MapView {
         LocalMap map = mapsToLayers.keySet().iterator().next();
         if (map.isVector() && mapView.getModel().mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) max(0, zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
-                    asBoundingBox(map.getBoundingBox()), mapView.getModel().displayModel.getTileSize()) - 3);
+                    asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
         mapView.setZoomLevelMin(zoomLevelMin);
 
         // limit maximum to prevent zooming in to grey area
         byte zoomLevelMax = (byte) (map.isVector() ? 22 : 18);
         mapView.setZoomLevelMax(zoomLevelMax);
-    }
-
-    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
-        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
-    }
-
-    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
-        List<LongitudeAndLatitude> result = new ArrayList<>();
-        for (PairWithLayer pairWithLayer : pairWithLayers) {
-            if(!pairWithLayer.hasCoordinates())
-                continue;
-
-            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
-            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
-        }
-        return result;
     }
 
     private boolean isVisible(LatLong latLong, int border) {
@@ -1016,7 +914,7 @@ public class MapsforgeMapView implements MapView {
         Dimension dimension = mapView.getModel().mapViewDimension.getDimension();
         if (dimension == null)
             return;
-        byte zoom = zoomForBounds(dimension, boundingBox, mapView.getModel().displayModel.getTileSize());
+        byte zoom = zoomForBounds(dimension, boundingBox, getTileSize());
         setZoom(zoom);
     }
 
@@ -1053,7 +951,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private double getThresholdForPixel(LatLong latLong, int pixel) {
-        long mapSize = getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), mapView.getModel().displayModel.getTileSize());
+        long mapSize = getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), getTileSize());
         double metersPerPixel = calculateGroundResolution(latLong.latitude, mapSize);
         return metersPerPixel * pixel;
     }
@@ -1163,6 +1061,20 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
+    public void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
+        double totalDistance = 0.0;
+        long totalTime = 0;
+        for (PairWithLayer pairWithLayer : pairWithLayers) {
+            Double distance = pairWithLayer.getDistance();
+            if (distance != null)
+                totalDistance += distance;
+            Long time = pairWithLayer.getTime();
+            if (time != null)
+                totalTime += time;
+        }
+        fireCalculatedDistance((int) totalDistance, (int) (totalTime > 0 ? totalTime / 1000 : 0));
+    }
+
     private class MapViewCallbackListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             if (positionsModel.getRoute().getCharacteristics().equals(Route))
@@ -1174,7 +1086,8 @@ public class MapsforgeMapView implements MapView {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
                 case INSERT:
-                    eventMapUpdater.handleAdd(e.getFirstRow(), e.getLastRow());
+                case DELETE:
+                    handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                     break;
                 case UPDATE:
                     if (positionsModel.isContinousRange())
@@ -1187,17 +1100,35 @@ public class MapsforgeMapView implements MapView {
 
                     boolean allRowsChanged = isFirstToLastRow(e);
                     if (!allRowsChanged)
-                        eventMapUpdater.handleUpdate(e.getFirstRow(), e.getLastRow());
+                        handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                     if (allRowsChanged && showAllPositionsAfterLoading.getBoolean())
                         centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true);
-
-                    break;
-                case DELETE:
-                    eventMapUpdater.handleRemove(e.getFirstRow(), e.getLastRow());
                     break;
                 default:
                     throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
+        }
+
+        private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
+            new Thread(new Runnable() {
+                public void run() {
+                    synchronized (eventMapUpdaterLock) {
+                        switch(eventType) {
+                            case INSERT:
+                                eventMapUpdater.handleAdd(firstRow, lastRow);
+                                break;
+                            case UPDATE:
+                                eventMapUpdater.handleUpdate(firstRow, lastRow);
+                                break;
+                            case DELETE:
+                                eventMapUpdater.handleRemove(firstRow, lastRow);
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Event type " + eventType + " is not supported");
+                        }
+                    }
+                }
+            }, "UpdateDecoupler").start();
         }
     }
 

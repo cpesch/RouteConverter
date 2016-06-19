@@ -88,6 +88,10 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
         this.layerManager.getLayers().add(layer);
     }
 
+    public void removeLayer(Layer layer) {
+        this.layerManager.getLayers().remove(layer);
+    }
+
     public void destroy() {
         layerManager.interrupt();
         frameBufferController.destroy();
