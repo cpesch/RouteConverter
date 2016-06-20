@@ -350,19 +350,6 @@
        }
    }
 
-   var meters = 0;
-   var seconds = 0;
-
-   function fireDirectionsLoaded() {
-       callJavaWithUri("directions-load/" + meters + "/" + seconds);
-   }
-
-   function resetDirections() {
-       meters = 0;
-       seconds = 0;
-       fireDirectionsLoaded();
-   }
-
    function extractPath(directionsRequest) {
        var path = [];
        path.push(directionsRequest['origin']);
@@ -385,14 +372,15 @@
                });
                addDirections(renderer, panel);
 
+               var waypoints = [];
                for (var i = 0; i < result.routes.length; i++) {
                    var legs = result.routes[i].legs;
                    for (var j = 0; j < legs.length; j++) {
-                       meters += legs[j].distance.value;
-                       seconds += legs[j].duration.value;
+                       waypoints.push(legs[j].distance.value);
+                       waypoints.push(legs[j].duration.value);
                    }
                }
-               fireDirectionsLoaded();
+               callJavaWithUri("directions-load/" + startIndex + "/" + waypoints.join("/"));
 
            } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
                var path = extractPath(directionsRequest);
@@ -400,7 +388,6 @@
                    strokeOpacity: 0.3, clickable: false, geodesic: true, map: map});
                addDirections(polyline, undefined);
 
-               resetDirections();
                callJavaWithUri("zero-results");
 
            } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
@@ -833,7 +820,7 @@ ${menuItems}
                    "<li>Your machine is not connected to the Internet. Check the connection.</li>" +
                    "<li>A personal firewall or proxy blocks the access for RouteConverter. Allow access for RouteConverter.</li>" +
                    "<li>Windows: The Internet Explorer browser fails or is not configured properly. Check the FAQ for help.</li>" +
-                   "<li>Something blocks the access to ${mapserver}. Remove the block.</li>" +
+                   "<li>Something blocks the access to ${mapserverapiurl}. Remove the block.</li>" +
                    "</ol>" +
                    "<p><a href='javascript:self.location.reload()'>Retry</a></p>" +
                    "<h2>Details</h2>" +

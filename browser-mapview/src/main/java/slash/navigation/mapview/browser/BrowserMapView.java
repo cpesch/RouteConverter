@@ -66,6 +66,7 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static java.util.Calendar.SECOND;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -1039,7 +1040,7 @@ public abstract class BrowserMapView implements MapView {
     }
 
     private void addDirectionsToMap(List<NavigationPosition> positions) {
-        executeScript("resetDirections();");
+        resetDirections();
 
         // avoid throwing javascript exceptions if there is nothing to direct
         if (positions.size() < 2) {
@@ -1253,6 +1254,35 @@ public abstract class BrowserMapView implements MapView {
         });
     }
 
+    private void insertWaypointsCallback(Integer key, List<String> parameters) {
+        PositionPair pair;
+        synchronized (insertWaypointsQueue) {
+            pair = insertWaypointsQueue.remove(key);
+        }
+
+        if (parameters.size() < 5 || pair == null)
+            return;
+
+        final NavigationPosition before = pair.getFirst();
+        NavigationPosition after = pair.getSecond();
+        final BaseRoute route = parseRoute(parameters, before, after);
+        @SuppressWarnings("unchecked")
+        final List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
+        synchronized (notificationMutex) {
+            int row = positions.indexOf(before) + 1;
+            insertPositions(row, route);
+        }
+        invokeLater(new Runnable() {
+            public void run() {
+                int row;
+                synchronized (notificationMutex) {
+                    row = positions.indexOf(before) + 1;
+                }
+                complementPositions(row, route);
+            }
+        });
+    }
+
     // call Google Maps API functions
 
     @SuppressWarnings("unused")
@@ -1294,31 +1324,30 @@ public abstract class BrowserMapView implements MapView {
     private void processStream(Socket socket) throws IOException {
         List<String> lines = new ArrayList<>();
         boolean processingPost = false, processingBody = false;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
-        while (true) {
-            try {
-                String line = trim(reader.readLine());
-                if (line == null) {
-                    if (processingPost && !processingBody) {
-                        processingBody = true;
-                        continue;
-                    } else
-                        break;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024)) {
+            while (true) {
+                try {
+                    String line = trim(reader.readLine());
+                    if (line == null) {
+                        if (processingPost && !processingBody) {
+                            processingBody = true;
+                            continue;
+                        } else
+                            break;
+                    }
+                    if (line.startsWith("POST"))
+                        processingPost = true;
+                    lines.add(line);
+                } catch (IOException e) {
+                    log.severe("Cannot read line from callback listener port:" + e);
+                    break;
                 }
-                if (line.startsWith("POST"))
-                    processingPost = true;
-                lines.add(line);
-            } catch (IOException e) {
-                log.severe("Cannot read line from callback listener port:" + e);
-                break;
             }
-        }
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
-            writer.write("HTTP/1.1 200 OK\n");
-            writer.write("Content-Type: text/plain\n");
-        } finally {
-            reader.close();
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+                writer.write("HTTP/1.1 200 OK\n");
+                writer.write("Content-Type: text/plain\n");
+            }
         }
 
         StringBuilder buffer = new StringBuilder();
@@ -1386,7 +1415,6 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(\\d*)/(\\d*)$");
     private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
     private static final Pattern ADD_POSITION_AT_PATTERN = Pattern.compile("^add-position-at/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
@@ -1400,16 +1428,9 @@ public abstract class BrowserMapView implements MapView {
     private static final Pattern OVER_QUERY_LIMIT_PATTERN = Pattern.compile("^over-query-limit$");
     private static final Pattern ZERO_RESULTS_PATTERN = Pattern.compile("^zero-results$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(-?\\d+)/(.*)$");
 
     boolean processCallback(String callback) {
-        Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
-        if (directionsLoadMatcher.matches()) {
-            int meters = parseInt(directionsLoadMatcher.group(1));
-            int seconds = parseInt(directionsLoadMatcher.group(2));
-            fireCalculatedDistance(meters, seconds);
-            return true;
-        }
-
         Matcher insertPositionAtMatcher = ADD_POSITION_AT_PATTERN.matcher(callback);
         if (insertPositionAtMatcher.matches()) {
             final int row = parseInt(insertPositionAtMatcher.group(1)) + 1;
@@ -1530,39 +1551,20 @@ public abstract class BrowserMapView implements MapView {
             return true;
         }
 
+        Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
+        if (directionsLoadMatcher.matches()) {
+            Integer startIndex = parseInt(directionsLoadMatcher.group(1));
+            List<DistanceAndTime> distanceAndTimes = parseDistanceAndTimeParameters(directionsLoadMatcher.group(2));
+            directionsLoadCallback(startIndex, distanceAndTimes);
+            return true;
+        }
+
         Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
             Integer key = parseInteger(insertWaypointsMatcher.group(2));
-            List<String> parameters = parseParameters(insertWaypointsMatcher.group(3));
-
-            PositionPair pair;
-            synchronized (insertWaypointsQueue) {
-                pair = insertWaypointsQueue.remove(key);
-            }
-
-            if (parameters.size() < 5 || pair == null)
-                return true;
-
-            final NavigationPosition before = pair.getFirst();
-            NavigationPosition after = pair.getSecond();
-            final BaseRoute route = parseRoute(parameters, before, after);
-            @SuppressWarnings("unchecked")
-            final List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
-            synchronized (notificationMutex) {
-                int row = positions.indexOf(before) + 1;
-                insertPositions(row, route);
-            }
-            invokeLater(new Runnable() {
-                public void run() {
-                    int row;
-                    synchronized (notificationMutex) {
-                        row = positions.indexOf(before) + 1;
-                    }
-                    complementPositions(row, route);
-                }
-            });
-            log.info("processed insert " + callback);
-            return false;
+            List<String> parameters = parsePositionParameters(insertWaypointsMatcher.group(3));
+            insertWaypointsCallback(key, parameters);
+            return true;
         }
         return false;
     }
@@ -1633,7 +1635,7 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private List<String> parseParameters(String parameters) {
+    private List<String> parsePositionParameters(String parameters) {
         List<String> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(parameters, "/");
         while (tokenizer.hasMoreTokens()) {
@@ -1654,6 +1656,19 @@ public abstract class BrowserMapView implements MapView {
                         }
                     }
                 }
+            }
+        }
+        return result;
+    }
+
+    private List<DistanceAndTime> parseDistanceAndTimeParameters(String parameters) {
+        List<DistanceAndTime> result = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(parameters, "/");
+        while (tokenizer.hasMoreTokens()) {
+            String distance = trim(tokenizer.nextToken());
+            if (tokenizer.hasMoreTokens()) {
+                String time = trim(tokenizer.nextToken());
+                result.add(new DistanceAndTime(parseInt(distance), parseInt(time)));
             }
         }
         return result;
@@ -1809,6 +1824,56 @@ public abstract class BrowserMapView implements MapView {
                     }
                 }
             });
+        }
+    }
+
+    private Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
+
+    private void resetDirections() {
+        indexToDistanceAndTime.clear();
+    }
+
+    private void directionsLoadCallback(final int startIndex, final List<DistanceAndTime> distanceAndTimes) {
+        executor.execute(new Runnable() {
+            public void run() {
+                for (int i = 0; i < distanceAndTimes.size(); i++)
+                    indexToDistanceAndTime.put(startIndex + i, distanceAndTimes.get(i));
+
+                Integer[] sorted = indexToDistanceAndTime.keySet().toArray(new Integer[indexToDistanceAndTime.size()]);
+                sort(sorted, new Comparator<Integer>() {
+                    public int compare(Integer i1, Integer i2) {
+                        return i1 - i2;
+                    }
+                });
+
+                int meters = 0;
+                int seconds = 0;
+                for(int index : sorted) {
+                    DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
+                    meters += distanceAndTime.getDistance();
+                    seconds += distanceAndTime.getTime();
+                }
+
+                fireCalculatedDistance(meters, seconds);
+            }
+        });
+    }
+
+    private static class DistanceAndTime {
+        private final int distance;
+        private final int time;
+
+        public DistanceAndTime(int distance, int time) {
+            this.distance = distance;
+            this.time = time;
+        }
+
+        public int getDistance() {
+            return distance;
+        }
+
+        public int getTime() {
+            return time;
         }
     }
 
