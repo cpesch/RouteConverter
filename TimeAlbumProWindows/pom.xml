@@ -67,7 +67,7 @@
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.TimeAlbumPro</Main-Class>
-                                        <SplashScreen-Image>slash/navigation/converter/gui/TimeAlbumPro.png</SplashScreen-Image>
+                                        <SplashScreen-Image>slash/navigation/converter/gui/TimeAlbumProSplashScreen.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
                                         <Application-Name>TimeAlbumPro</Application-Name>
@@ -150,7 +150,7 @@
                            <icon>src/main/app-resources/TimeAlbumPro.ico</icon>
                            <runtimeBits>32/64</runtimeBits>
                            <splash>
-                               <file>src/main/app-resources/TimeAlbumPro.bmp</file>
+                               <file>src/main/app-resources/TimeAlbumProSplashScreen.bmp</file>
                                <timeout>10</timeout>
                            </splash>
                            <classPath>
