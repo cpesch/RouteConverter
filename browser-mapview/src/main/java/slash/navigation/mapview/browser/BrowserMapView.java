@@ -104,6 +104,7 @@ public abstract class BrowserMapView implements MapView {
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String GOOGLE_MAPS_API_KEY_PREFERENCE = "googleMapsApiKey";
     protected static final String DEBUG_PREFERENCE = "debug";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
@@ -238,6 +239,8 @@ public abstract class BrowserMapView implements MapView {
                     return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
                     return getMapType();
+                if (tokenName.equals("mapsapikey"))
+                    return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, "AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
