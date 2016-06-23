@@ -193,7 +193,7 @@ public abstract class BrowserMapView implements MapView {
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
-        mapViewCallback.addChangeListener(mapViewCallbackListener);
+        mapViewCallback.addRoutingServiceChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
         fixMapModeModel.addChangeListener(repaintPositionListListener);
@@ -780,7 +780,7 @@ public abstract class BrowserMapView implements MapView {
         if(positionsModel != null) {
             positionsModel.removeTableModelListener(positionsModelListener);
             characteristicsModel.removeListDataListener(characteristicsModelListener);
-            mapViewCallback.removeChangeListener(mapViewCallbackListener);
+            mapViewCallback.removeRoutingServiceChangeListener(mapViewCallbackListener);
             showCoordinates.removeChangeListener(showCoordinatesListener);
             showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
             fixMapModeModel.removeChangeListener(repaintPositionListListener);

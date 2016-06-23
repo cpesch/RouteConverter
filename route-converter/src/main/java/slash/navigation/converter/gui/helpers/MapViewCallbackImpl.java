@@ -81,11 +81,11 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getTileServersDirectory();
     }
 
-    public void addChangeListener(ChangeListener l) {
+    public void addRoutingServiceChangeListener(ChangeListener l) {
         RouteConverter.getInstance().getRoutingServiceFacade().addChangeListener(l);
     }
 
-    public void removeChangeListener(ChangeListener l) {
+    public void removeRoutingServiceChangeListener(ChangeListener l) {
         RouteConverter.getInstance().getRoutingServiceFacade().removeChangeListener(l);
     }
 }

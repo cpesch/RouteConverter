@@ -372,7 +372,7 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
-        mapViewCallback.addChangeListener(mapViewCallbackListener);
+        mapViewCallback.addRoutingServiceChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         routeColorModel.addChangeListener(repaintPositionListListener);
         trackColorModel.addChangeListener(repaintPositionListListener);
@@ -700,7 +700,7 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
-        mapViewCallback.removeChangeListener(mapViewCallbackListener);
+        mapViewCallback.removeRoutingServiceChangeListener(mapViewCallbackListener);
         routeColorModel.removeChangeListener(repaintPositionListListener);
         trackColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
