@@ -1086,6 +1086,12 @@ public abstract class BrowserMapView implements MapView {
             }
             executeScript(buffer.toString());
         }
+
+        try {
+            sleep(preferences.getInt("routeCompleteTimeout", 1000));
+        } catch (InterruptedException e) {
+            // intentionally left empty
+        }
     }
 
     private void addPolylinesToMap(final List<NavigationPosition> reducedPositions, List<NavigationPosition> allPositions) {
