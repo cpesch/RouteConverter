@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -55,7 +56,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.widthInDigits;
-import static slash.navigation.base.RouteCalculations.interpolateTime;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
@@ -440,22 +441,41 @@ public class PositionAugmenter {
             processSpeeds(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
-    private NavigationPosition findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while (index-- > 0) {
+    private int findPredecessorWithTime(PositionsModel positionsModel, int index) {
+        do {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
-                return position;
-        }
-        return null;
+                return index;
+        } while (index-- > 0);
+        return -1;
     }
 
-    private NavigationPosition findSuccessorWithTime(PositionsModel positionsModel, int index) {
-        while (index++ < positionsModel.getRowCount() - 1) {
+    private int findSuccessorWithTime(PositionsModel positionsModel, int index) {
+        do {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
-                return position;
-        }
-        return null;
+                return index;
+        } while (index++ < positionsModel.getRowCount() - 1);
+        return -1;
+    }
+
+    private CompactCalendar interpolateTime(PositionsModel positionsModel, int positionIndex,
+                                            int predecessorIndex, int successorIndex) {
+        NavigationPosition predecessor = positionsModel.getPosition(predecessorIndex);
+        if (!predecessor.hasTime())
+            return null;
+        NavigationPosition successor = positionsModel.getPosition(successorIndex);
+        if (!successor.hasTime())
+            return null;
+
+        long timeDelta = abs(predecessor.calculateTime(successor));
+
+        double distanceToPredecessor = positionsModel.getRoute().getDistance(predecessorIndex, positionIndex);
+        double distanceToSuccessor = positionsModel.getRoute().getDistance(positionIndex, successorIndex);
+        double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
+
+        long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
+        return fromMillis(time);
     }
 
     private void processTimes(final JTable positionsTable,
@@ -464,6 +484,8 @@ public class PositionAugmenter {
                               final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
+                    private int predecessorIndex, successorIndex;
+
                     public String getName() {
                         return "TimePositionAugmenter";
                     }
@@ -473,14 +495,14 @@ public class PositionAugmenter {
                     }
 
                     public void performOnStart() {
+                        predecessorIndex = findPredecessorWithTime(positionsModel, rows[0]);
+                        successorIndex = findSuccessorWithTime(positionsModel, rows[rows.length-1]);
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        NavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
-                        NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
-                        if (predecessor != null && successor != null) {
+                        if (predecessorIndex != -1 && successorIndex != -1) {
                             CompactCalendar previousTime = position.getTime();
-                            CompactCalendar nextTime = interpolateTime(position, predecessor, successor);
+                            CompactCalendar nextTime = interpolateTime(positionsModel, index, predecessorIndex, successorIndex);
                             boolean changed = nextTime != null && !nextTime.equals(previousTime);
                             if (changed)
                                 positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, nextTime), false, true);
@@ -570,7 +592,7 @@ public class PositionAugmenter {
                          final boolean trackUndo) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private NavigationPosition predecessor, successor;
+                    private int predecessorIndex, successorIndex;
 
                     public String getName() {
                         return "DataPositionAugmenter";
@@ -581,9 +603,8 @@ public class PositionAugmenter {
                     }
 
                     public void performOnStart() {
-                        // TODO assuming order
-                        predecessor = findPredecessorWithTime(positionsModel, rows[0]);
-                        successor = findSuccessorWithTime(positionsModel, rows[rows.length-1]);
+                        predecessorIndex = findPredecessorWithTime(positionsModel, rows[0]);
+                        successorIndex = findSuccessorWithTime(positionsModel, rows[rows.length-1]);
                         downloadElevationData(rows, waitForDownload);
                     }
 
@@ -615,9 +636,9 @@ public class PositionAugmenter {
                         }
 
                         if (complementTime) {
-                            if (predecessor != null && successor != null) {
+                            if (predecessorIndex != -1 && successorIndex != -1) {
                                 CompactCalendar previousTime = position.getTime();
-                                CompactCalendar nextTime = interpolateTime(position, predecessor, successor);
+                                CompactCalendar nextTime = interpolateTime(positionsModel, index, predecessorIndex, successorIndex);
                                 boolean changed = nextTime != null && !nextTime.equals(previousTime);
                                 if (changed) {
                                     columnIndices.add(DATE_TIME_COLUMN_INDEX);

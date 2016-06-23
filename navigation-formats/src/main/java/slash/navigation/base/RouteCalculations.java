@@ -103,6 +103,7 @@ public class RouteCalculations {
         return fromMillis(time);
     }
 
+    @SuppressWarnings("unused")
     public static CompactCalendar interpolateTime(NavigationPosition position, NavigationPosition predecessor, NavigationPosition successor) {
         if (!predecessor.hasTime() || !successor.hasTime())
             return null;
