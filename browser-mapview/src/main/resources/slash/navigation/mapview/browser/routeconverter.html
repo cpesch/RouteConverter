@@ -391,6 +391,11 @@
                callJavaWithUri("zero-results");
 
            } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+               var path = extractPath(directionsRequest);
+               var polyline = new google.maps.Polyline({path: path, strokeColor: "#FF8000", strokeWeight: 5,
+                   strokeOpacity: 0.3, clickable: false, geodesic: true, map: map});
+               addDirections(polyline, undefined);
+
                callJavaWithUri("over-query-limit");
 
            } else {
