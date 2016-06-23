@@ -86,6 +86,7 @@ import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.googlemaps.GoogleMapsAPIKey.getAPIKey;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.*;
@@ -104,7 +105,6 @@ public abstract class BrowserMapView implements MapView {
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
-    private static final String GOOGLE_MAPS_API_KEY_PREFERENCE = "googleMapsApiKey";
     protected static final String DEBUG_PREFERENCE = "debug";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
@@ -240,7 +240,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("maptype"))
                     return getMapType();
                 if (tokenName.equals("mapsapikey"))
-                    return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, "AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw");
+                    return getAPIKey("map");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))

@@ -34,9 +34,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.String.format;
 import static java.util.Collections.sort;
 import static javax.swing.Action.NAME;
-import static slash.navigation.gui.helpers.PreferencesHelper.count;
+import static slash.common.helpers.PreferencesHelper.count;
 
 /**
  * Manages the {@link Action}s of an {@link Application}.
@@ -140,7 +141,7 @@ public class ActionManager {
         for (String actionName : getActionsSortedByName()) {
             int runs = preferences.getInt(RUN_COUNT_PREFERENCE + actionName, 0);
             if (runs > 0)
-                builder.append(String.format("%n%s, runs: %d", actionName, runs));
+                builder.append(format("%n%s, runs: %d", actionName, runs));
         }
         log.info("Action usage:" + builder.toString());
     }

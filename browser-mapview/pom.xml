@@ -23,6 +23,11 @@
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
+            <artifactId>googlemaps</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
             <artifactId>mapview</artifactId>
             <version>${project.version}</version>
         </dependency>

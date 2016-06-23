@@ -185,6 +185,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsAPIKey;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -412,6 +413,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeHelp();
         getContext().getActionManager().logUsage();
+        GoogleMapsAPIKey.logUsage();
     }
 
     private MapView createMapView(String className) {

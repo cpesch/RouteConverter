@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui.helpers;
+package slash.common.helpers;
 
 import java.util.prefs.Preferences;
 
