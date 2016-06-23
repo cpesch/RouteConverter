@@ -570,6 +570,8 @@ public class PositionAugmenter {
                          final boolean trackUndo) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
+                    private NavigationPosition predecessor, successor;
+
                     public String getName() {
                         return "DataPositionAugmenter";
                     }
@@ -579,6 +581,9 @@ public class PositionAugmenter {
                     }
 
                     public void performOnStart() {
+                        // TODO assuming order
+                        predecessor = findPredecessorWithTime(positionsModel, rows[0]);
+                        successor = findSuccessorWithTime(positionsModel, rows[rows.length-1]);
                         downloadElevationData(rows, waitForDownload);
                     }
 
@@ -610,8 +615,6 @@ public class PositionAugmenter {
                         }
 
                         if (complementTime) {
-                            NavigationPosition predecessor = findPredecessorWithTime(positionsModel, index);
-                            NavigationPosition successor = findSuccessorWithTime(positionsModel, index);
                             if (predecessor != null && successor != null) {
                                 CompactCalendar previousTime = position.getTime();
                                 CompactCalendar nextTime = interpolateTime(position, predecessor, successor);

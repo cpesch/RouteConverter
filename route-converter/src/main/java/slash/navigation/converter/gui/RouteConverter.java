@@ -81,6 +81,7 @@ import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;
+import static slash.navigation.googlemaps.GoogleMapsAPIKey.setAPIKey;
 import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -213,6 +214,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
     public static void main(String[] args) {
+        setAPIKey("AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw");
         launch(RouteConverter.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
