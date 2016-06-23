@@ -85,7 +85,7 @@ public class GeoNamesService implements ElevationService {
 
     private void checkCurrentlyOverloaded(String url, String result) throws ServiceUnavailableException {
         if (result.contains("limit") && (result.contains("overloaded") || result.contains("exceeded")))
-            throw new ServiceUnavailableException("geonames.org", url);
+            throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
     }
 
     Integer getAsterGDEMElevationFor(double longitude, double latitude) throws IOException {

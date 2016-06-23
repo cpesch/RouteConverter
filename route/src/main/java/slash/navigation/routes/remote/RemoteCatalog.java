@@ -242,7 +242,7 @@ public class RemoteCatalog implements Catalog {
         if (request.isForbidden())
             throw new ForbiddenException("Forbidden to add file " + file, fileUrl);
         if (request.isPreconditionFailed())
-            throw new ServiceUnavailableException("File " + file + " is too large", fileUrl);
+            throw new ServiceUnavailableException("File " + file + " is too large", fileUrl, result);
         if (!request.isSuccessful())
             throw new IOException("POST on " + fileUrl + " with file " + file + " not successful: " + result);
         return request.getLocation();

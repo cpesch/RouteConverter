@@ -197,7 +197,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
-import static slash.navigation.gui.helpers.PreferencesHelper.count;
+import static slash.common.helpers.PreferencesHelper.count;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;

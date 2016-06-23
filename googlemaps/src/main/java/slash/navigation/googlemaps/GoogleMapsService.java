@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.googlemaps.GoogleMapsAPIKey.getAPIKey;
 import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalElevation;
 import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
@@ -54,8 +55,6 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class GoogleMapsService implements ElevationService {
     private static final Logger log = Logger.getLogger(GoogleMapsService.class.getName());
-    private static final String OK = "OK";
-    private static final String OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
 
     public String getName() {
         return "Google Maps";
@@ -64,7 +63,7 @@ public class GoogleMapsService implements ElevationService {
     private String getGoogleMapsApiUrl(String api, String payload) {
         String language = Locale.getDefault().getLanguage();
         return getGoogleMapsServer().getApiUrl() + "/maps/api/" + api + "/xml?" + payload +
-                "&sensor=false&language=" + language;
+                "&sensor=false&language=" + language + "&key=" + getAPIKey(api);
     }
 
     private String getElevationUrl(String payload) {
@@ -81,6 +80,11 @@ public class GoogleMapsService implements ElevationService {
         return get;
     }
 
+    private void checkForError(String url, String status) throws ServiceUnavailableException {
+        if (!status.equals("OK"))
+            throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
+    }
+
     public String getLocationFor(double longitude, double latitude) throws IOException {
         String url = getGeocodingUrl("latlng=" + latitude + "," + longitude);
         Get get = get(url);
@@ -91,10 +95,8 @@ public class GoogleMapsService implements ElevationService {
                 GeocodeResponse geocodeResponse = unmarshalGeocode(result);
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
-                    if (status.equals(OK))
-                        return extractClosestLocation(geocodeResponse.getResult(), longitude, latitude);
-                    if (status.equals(OVER_QUERY_LIMIT))
-                        throw new ServiceUnavailableException("maps.googleapis.com", url);
+                    checkForError(url, status);
+                    return extractClosestLocation(geocodeResponse.getResult(), longitude, latitude);
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
@@ -132,10 +134,8 @@ public class GoogleMapsService implements ElevationService {
                 GeocodeResponse geocodeResponse = unmarshalGeocode(result);
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
-                    if (status.equals(OK))
-                        return extractAdresses(geocodeResponse.getResult());
-                    if (status.equals(OVER_QUERY_LIMIT))
-                        throw new ServiceUnavailableException("maps.googleapis.com", url);
+                    checkForError(url, status);
+                    return extractAdresses(geocodeResponse.getResult());
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
@@ -163,12 +163,9 @@ public class GoogleMapsService implements ElevationService {
                 ElevationResponse elevationResponse = unmarshalElevation(result);
                 if (elevationResponse != null) {
                     String status = elevationResponse.getStatus();
-                    if (status.equals(OK)) {
-                        List<Double> elevations = extractElevations(elevationResponse.getResult());
-                        return elevations != null && elevations.size() > 0 ? elevations.get(0) : null;
-                    }
-                    if (status.equals(OVER_QUERY_LIMIT))
-                        throw new ServiceUnavailableException("maps.googleapis.com", url);
+                    checkForError(url, status);
+                    List<Double> elevations = extractElevations(elevationResponse.getResult());
+                    return elevations != null && elevations.size() > 0 ? elevations.get(0) : null;
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
