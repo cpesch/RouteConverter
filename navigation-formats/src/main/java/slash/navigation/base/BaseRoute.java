@@ -135,6 +135,7 @@ import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
 import static slash.common.io.Transfer.toArray;
+import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
@@ -227,7 +228,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         int index = 0;
         while (index < positions.size()) {
             P next = positions.get(index);
-            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= 0.0)) {
+            Double nextDistance = next.calculateDistance(previous);
+            if (previous != null && (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= 0.0)) {
                 positions.remove(index);
             } else
                 index++;

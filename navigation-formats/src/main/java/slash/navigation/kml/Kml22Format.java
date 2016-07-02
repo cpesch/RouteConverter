@@ -42,6 +42,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.Math.*;
 import static java.lang.String.valueOf;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.toDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.type.ISO8601.formatDate;

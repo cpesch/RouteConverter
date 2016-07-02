@@ -22,6 +22,7 @@ package slash.navigation.bcr;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.gpx.GpxPosition;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,6 +52,7 @@ public class BcrRouteTest {
     BcrPosition c = new BcrPosition(3, 2, 0, "c");
     BcrPosition d = new BcrPosition(1, 3, 0, "d");
     BcrPosition e = new BcrPosition(1, 1, 0, "e");
+    GpxPosition zero = new GpxPosition(null, null, null, null, null, null);
 
     private void initialize() {
         List<BcrPosition> positions = route.getPositions();
@@ -230,6 +232,11 @@ public class BcrRouteTest {
         assertDoubleEquals(2.4858, c.calculateDistance(d));
         assertDoubleEquals(2.2114, d.calculateDistance(e));
         assertDoubleEquals(0.0, e.calculateDistance(a));
+    }
+
+    @Test
+    public void testCalculateNullDistance() {
+        assertNull(a.calculateDistance(zero));
     }
 
     @Test
