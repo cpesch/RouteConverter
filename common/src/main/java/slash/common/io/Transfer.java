@@ -263,6 +263,10 @@ public class Transfer {
         return aDouble == null || aDouble == 0.0;
     }
 
+    public static double toDouble(Double aDouble) {
+        return aDouble == null ? 0.0 : aDouble;
+    }
+
     public static int[] toArray(List<Integer> integers) {
         int[] result = new int[integers.size()];
         for (int i = 0; i < result.length; i++) {

@@ -137,6 +137,7 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.toArray;
+import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
@@ -229,8 +230,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         int index = 0;
         while (index < positions.size()) {
             P next = positions.get(index);
-            Double nextDistance = next.calculateDistance(previous);
-            if (previous != null && (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= 0.0)) {
+            if (previous != null && (!next.hasCoordinates() || toDouble(next.calculateDistance(previous)) <= 0.0)) {
                 positions.remove(index);
             } else
                 index++;
@@ -285,8 +285,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = positions.get(0);
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
-            Double nextDistance = next.calculateDistance(previous);
-            if (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= distance)
+            if (!next.hasCoordinates() || toDouble(next.calculateDistance(previous)) <= distance)
                 result.add(i);
             else
                 previous = next;

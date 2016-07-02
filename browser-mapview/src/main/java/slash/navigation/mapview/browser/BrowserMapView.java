@@ -1631,7 +1631,7 @@ public abstract class BrowserMapView implements MapView {
         if (position == null)
             return false;
         Double distance = position.calculateDistance(insert);
-        return !isEmpty(distance) && distance < 10.0;
+        return toDouble(distance) < 10.0;
     }
 
     private String trimSpaces(String string) {
