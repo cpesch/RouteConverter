@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.tcx.TcxUtil.marshal2;
@@ -250,7 +251,9 @@ public class Tcx2Format extends TcxFormat {
             trackpointT.setTime(Transfer.formatXMLTime(position.getTime()));
 
             if (previous != null) {
-                distance += previous.calculateDistance(position);
+                Double previousDistance = previous.calculateDistance(position);
+                if (!isEmpty(previousDistance))
+                    distance += previousDistance;
             }
             previous = position;
             trackpointT.setDistanceMeters(distance);

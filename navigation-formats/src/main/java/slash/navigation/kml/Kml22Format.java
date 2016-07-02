@@ -547,7 +547,7 @@ public class Kml22Format extends KmlFormat {
             KmlPosition currentPosition = positions.get(i);
 
             Double distance = currentPosition.calculateDistance(previousPosition);
-            if (distance == null)
+            if (isEmpty(distance))
                 continue;
 
             currentDistance += distance;
@@ -559,6 +559,7 @@ public class Kml22Format extends KmlFormat {
 
                 // remaining distance between the last point and the mark
                 double remainingDistance = METERS_BETWEEN_MARKS - (previousDistance % METERS_BETWEEN_MARKS);
+                Double intermediateDistance = intermediate.calculateDistance(currentPosition);
                 do {
                     double angle = toRadians(intermediate.calculateAngle(currentPosition));
                     double latitude1 = toRadians(intermediate.getLatitude());
@@ -575,7 +576,7 @@ public class Kml22Format extends KmlFormat {
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));
 
                     remainingDistance = METERS_BETWEEN_MARKS;
-                } while (intermediate.calculateDistance(currentPosition) > METERS_BETWEEN_MARKS);
+                } while (!isEmpty(intermediateDistance) && intermediateDistance > METERS_BETWEEN_MARKS);
 
                 currentDistance = currentDistance % METERS_BETWEEN_MARKS;
             }

@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.common.Bearing;
@@ -38,6 +39,7 @@ import java.util.Calendar;
 import static java.lang.Double.isNaN;
 import static java.lang.Math.*;
 import static java.util.Calendar.*;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.common.Bearing.EARTH_RADIUS;
 import static slash.navigation.common.Bearing.calculateBearing;
@@ -125,7 +127,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         if (hasTime() && other.hasTime()) {
             double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
             Double distance = calculateDistance(other);
-            if (distance != null && interval > 0.0)
+            if (!isEmpty(distance) && interval > 0.0)
                 return distance / interval * 3.6;
         }
         return null;

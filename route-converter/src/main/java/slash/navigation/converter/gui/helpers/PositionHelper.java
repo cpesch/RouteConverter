@@ -62,6 +62,7 @@ public class PositionHelper {
     private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
 
     public static String formatDistance(Double distance) {
+        // don't use isEmpty(distance) here since a 0.0 makes sense to display
         if (distance == null || distance <= 0.0)
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();

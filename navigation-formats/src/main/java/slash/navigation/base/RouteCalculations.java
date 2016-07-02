@@ -46,9 +46,13 @@ public class RouteCalculations {
         for (int i = from + 1; i < to; i++) {
             NavigationPosition position = positions.get(i);
             if (position.hasCoordinates()) {
-                double distance = abs(position.calculateOrthogonalDistance(pointA, pointB));
-                if (distance > maximumDistance) {
-                    maximumDistance = distance;
+                Double distance = position.calculateOrthogonalDistance(pointA, pointB);
+                if (distance == null)
+                    continue;
+
+                double absDistance = abs(distance);
+                if (absDistance > maximumDistance) {
+                    maximumDistance = absDistance;
                     maximumDistanceIndex = i;
                 }
             }

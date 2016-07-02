@@ -135,6 +135,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -228,7 +229,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         int index = 0;
         while (index < positions.size()) {
             P next = positions.get(index);
-            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= 0.0)) {
+            Double nextDistance = next.calculateDistance(previous);
+            if (previous != null && (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= 0.0)) {
                 positions.remove(index);
             } else
                 index++;
@@ -255,7 +257,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             CompactCalendar time = next.getTime();
             if (time == null || time.equals(previous.getTime())) {
                 Double distance = next.calculateDistance(previous);
-                Long millis = distance != null ? (long) (distance / averageSpeed * 1000) : null;
+                Long millis = !isEmpty(distance) ? (long) (distance / averageSpeed * 1000) : null;
                 if (millis == null || millis < 1000)
                     millis = 1000L;
                 next.setTime(fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));
@@ -283,7 +285,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = positions.get(0);
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
-            if (!next.hasCoordinates() || next.calculateDistance(previous) <= distance)
+            Double nextDistance = next.calculateDistance(previous);
+            if (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= distance)
                 result.add(i);
             else
                 previous = next;
@@ -393,7 +396,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             NavigationPosition next = positions.get(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
-                if (distance != null)
+                if (!isEmpty(distance))
                     result += distance;
             }
             previous = next;
@@ -411,7 +414,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             NavigationPosition next = positions.get(index);
             if (previous != null) {
                 Double delta = previous.calculateDistance(next);
-                if (delta != null)
+                if (!isEmpty(delta))
                     distance += delta;
                 if (index >= startIndex)
                     result[index - startIndex] = distance;
@@ -436,7 +439,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 NavigationPosition next = positions.get(index);
                 if (previous != null) {
                     Double delta = previous.calculateDistance(next);
-                    if (delta != null)
+                    if (!isEmpty(delta))
                         distance += delta;
                     int indexInIndices = binarySearch(indices, index);
                     if (indexInIndices >= 0)

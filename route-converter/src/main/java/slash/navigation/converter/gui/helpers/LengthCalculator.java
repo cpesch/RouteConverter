@@ -39,6 +39,7 @@ import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
@@ -138,7 +139,7 @@ public class LengthCalculator {
             NavigationPosition next = positionsModel.getPosition(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
-                if (distance != null)
+                if (!isEmpty(distance))
                     distanceMeters += distance;
                 Long time = previous.calculateTime(next);
                 if (time != null && time > 0)
