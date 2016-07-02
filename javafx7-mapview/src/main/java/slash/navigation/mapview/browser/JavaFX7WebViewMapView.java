@@ -47,7 +47,6 @@ import static javafx.application.Platform.runLater;
 import static javafx.application.Platform.setImplicitExit;
 import static javafx.concurrent.Worker.State;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
-import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.rest.HttpRequest.USER_AGENT;
 

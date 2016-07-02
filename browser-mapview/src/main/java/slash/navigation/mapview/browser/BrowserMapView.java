@@ -36,6 +36,7 @@ import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.tileserver.TileServerService;
+import slash.navigation.mapview.tileserver.binding.CopyrightType;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
@@ -693,13 +694,15 @@ public abstract class BrowserMapView implements MapView {
         }
 
         for (TileServerType tileServer : tileServerService.getTileServers()) {
-            if (tileServer.isActive() != null && !tileServer.isActive())
+            if (tileServer.getActive() != null && !tileServer.getActive())
                 continue;
 
-            if (register)
+            if (register) {
+                CopyrightType copyrightType = tileServer.getCopyright();
                 buffer.append("mapTypeIds.push(\"").append(tileServer.getId()).append("\"); ").
                         append("mapCopyrights[\"").append(tileServer.getId()).append("\"] = \"").
-                        append(tileServer.getCopyright().value()).append("\";\n");
+                        append(copyrightType != null ? copyrightType.value() : "unknown").append("\";\n");
+            }
             else
                 buffer.append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
                         append("  getTileUrl: function(coordinates, zoom) {\n").
