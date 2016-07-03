@@ -111,7 +111,7 @@ public class BRouterIT {
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
         assertTrue(result.isValid());
-        assertEquals(120, result.getPositions().size());
+        assertEquals(123, result.getPositions().size());
         assertEquals(13963.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());
     }

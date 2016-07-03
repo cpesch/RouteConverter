@@ -85,6 +85,11 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
         return startDate;
     }
 
+    protected void internalSetStartDate(CompactCalendar startDate) {
+        if (startDate != null)
+            this.startDate = startDate;
+    }
+
     public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
         throw new UnsupportedOperationException();
     }

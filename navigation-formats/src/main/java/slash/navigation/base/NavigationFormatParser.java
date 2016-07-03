@@ -130,6 +130,7 @@ public class NavigationFormatParser {
                 }
             }
         } finally {
+            //noinspection ThrowFromFinallyBlock
             buffer.close();
         }
 
@@ -204,6 +205,7 @@ public class NavigationFormatParser {
         }
 
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
+            internalSetStartDate(startDate);
             internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
         }
 
@@ -217,9 +219,10 @@ public class NavigationFormatParser {
             buffer.mark(readBufferSize + 1);
             try {
                 CompactCalendar startDate = extractStartDate(url);
-                ParserContext context = startDate != null ? new InternalParserContext(getFile(), startDate) : this;
-                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), context);
+                internalSetStartDate(startDate);
+                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
             } finally {
+                //noinspection ThrowFromFinallyBlock
                 buffer.closeUnderlyingInputStream();
             }
         }
@@ -235,6 +238,7 @@ public class NavigationFormatParser {
             internalRead(buffer, formats, context);
             return createResult(context);
         } finally {
+            //noinspection ThrowFromFinallyBlock
             buffer.closeUnderlyingInputStream();
         }
     }
