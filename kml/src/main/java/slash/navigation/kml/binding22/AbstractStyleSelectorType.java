@@ -81,7 +81,7 @@ public abstract class AbstractStyleSelectorType
      */
     public List<Object> getAbstractStyleSelectorSimpleExtensionGroup() {
         if (abstractStyleSelectorSimpleExtensionGroup == null) {
-            abstractStyleSelectorSimpleExtensionGroup = new ArrayList<Object>();
+            abstractStyleSelectorSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractStyleSelectorSimpleExtensionGroup;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractStyleSelectorType
      */
     public List<AbstractObjectType> getAbstractStyleSelectorObjectExtensionGroup() {
         if (abstractStyleSelectorObjectExtensionGroup == null) {
-            abstractStyleSelectorObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractStyleSelectorObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractStyleSelectorObjectExtensionGroup;
     }

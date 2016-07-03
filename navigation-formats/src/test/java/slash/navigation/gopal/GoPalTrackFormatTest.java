@@ -22,18 +22,14 @@ package slash.navigation.gopal;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.SECOND;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static java.util.Calendar.*;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.UTC;
@@ -65,7 +61,7 @@ public class GoPalTrackFormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000001, 4", null);
+        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000001, 4", new ParserContextImpl());
         assertDoubleEquals(8.016903, position.getLongitude());
         assertDoubleEquals(52.34555, position.getLatitude());
         assertNull(position.getElevation());
@@ -89,7 +85,7 @@ public class GoPalTrackFormatTest {
 
     @Test
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("6664226, 180820, -8.016903, -52.345550, 12.95, 30.0394, 2, 3.000000, 3", null);
+        Wgs84Position position = format.parsePosition("6664226, 180820, -8.016903, -52.345550, 12.95, 30.0394, 2, 3.000000, 3", new ParserContextImpl());
         assertDoubleEquals(-8.016903, position.getLongitude());
         assertDoubleEquals(-52.34555, position.getLatitude());
         assertNull(position.getElevation());
@@ -109,7 +105,7 @@ public class GoPalTrackFormatTest {
 
     @Test
     public void testParsePositionWithDate() {
-        Wgs84Position position = format.parsePosition("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14", null);
+        Wgs84Position position = format.parsePosition("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14", new ParserContextImpl());
         assertDoubleEquals(-22.760357, position.getLongitude());
         assertDoubleEquals(65.125717, position.getLatitude());
         assertNull(position.getElevation());

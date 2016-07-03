@@ -17,10 +17,10 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:kml="http://earth.google.com/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" targetNamespace="http://earth.google.com/kml/2.2" elementFormDefault="qualified" version="080116 BETA">
 
   <!-- import atom:author and atom:link -->
-  <import namespace="http://www.w3.org/2005/Atom" schemaLocation="http://code.google.com/apis/kml/schema/atom-author-link.xsd"/>
+  <import namespace="http://www.w3.org/2005/Atom" schemaLocation="atom-author-link.xsd"/>
 
   <!-- import xAL:Address -->
-  <import namespace="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" schemaLocation="http://docs.oasis-open.org/election/external/xAL.xsd"/>
+  <import namespace="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" schemaLocation="xAL.xsd"/>
 
   <annotation>
     <documentation><![CDATA[

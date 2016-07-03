@@ -28,6 +28,6 @@ package slash.navigation.rest.exception;
 
 public class UnAuthorizedException extends RuntimeException {
     public UnAuthorizedException(String message, String url) {
-        super(message + ":" + url);
+        super(message + "\n" + url);
     }
 }

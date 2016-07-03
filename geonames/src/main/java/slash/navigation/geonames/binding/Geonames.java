@@ -126,7 +126,7 @@ public class Geonames {
      */
     public List<Geonames.Code> getCode() {
         if (code == null) {
-            code = new ArrayList<Geonames.Code>();
+            code = new ArrayList<>();
         }
         return this.code;
     }
@@ -155,7 +155,7 @@ public class Geonames {
      */
     public List<Geonames.Geoname> getGeoname() {
         if (geoname == null) {
-            geoname = new ArrayList<Geonames.Geoname>();
+            geoname = new ArrayList<>();
         }
         return this.geoname;
     }

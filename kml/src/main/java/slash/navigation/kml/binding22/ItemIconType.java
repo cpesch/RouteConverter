@@ -84,7 +84,7 @@ public class ItemIconType
      */
     public List<ItemIconStateEnumType> getState() {
         if (state == null) {
-            state = new ArrayList<ItemIconStateEnumType>();
+            state = new ArrayList<>();
         }
         return this.state;
     }
@@ -137,7 +137,7 @@ public class ItemIconType
      */
     public List<Object> getItemIconSimpleExtensionGroup() {
         if (itemIconSimpleExtensionGroup == null) {
-            itemIconSimpleExtensionGroup = new ArrayList<Object>();
+            itemIconSimpleExtensionGroup = new ArrayList<>();
         }
         return this.itemIconSimpleExtensionGroup;
     }
@@ -166,7 +166,7 @@ public class ItemIconType
      */
     public List<AbstractObjectType> getItemIconObjectExtensionGroup() {
         if (itemIconObjectExtensionGroup == null) {
-            itemIconObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            itemIconObjectExtensionGroup = new ArrayList<>();
         }
         return this.itemIconObjectExtensionGroup;
     }

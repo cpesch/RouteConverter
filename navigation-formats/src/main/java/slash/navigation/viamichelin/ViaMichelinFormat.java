@@ -20,18 +20,12 @@
 
 package slash.navigation.viamichelin;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
-import slash.navigation.viamichelin.binding.Description;
-import slash.navigation.viamichelin.binding.Itinerary;
-import slash.navigation.viamichelin.binding.ObjectFactory;
-import slash.navigation.viamichelin.binding.Poi;
-import slash.navigation.viamichelin.binding.PoiList;
-import slash.navigation.viamichelin.binding.Step;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -95,7 +89,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
 
     private ViaMichelinRoute process(PoiList poiList) {
         String routeName = null;
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (Object itineraryOrPoi : poiList.getItineraryOrPoi()) {
             if (itineraryOrPoi instanceof Itinerary) {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;
@@ -112,14 +106,10 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<ViaMichelinRoute> context) throws Exception {
-        InputStreamReader reader = new InputStreamReader(source);
-        try {
+    public void read(InputStream source, ParserContext<ViaMichelinRoute> context) throws Exception {
+        try (InputStreamReader reader = new InputStreamReader(source)) {
             PoiList poiList = unmarshal(reader);
             context.appendRoute(process(poiList));
-        }
-        finally {
-            reader.close();
         }
     }
 

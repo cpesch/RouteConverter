@@ -80,7 +80,7 @@ public class StyleMapType
      */
     public List<PairType> getPair() {
         if (pair == null) {
-            pair = new ArrayList<PairType>();
+            pair = new ArrayList<>();
         }
         return this.pair;
     }
@@ -109,7 +109,7 @@ public class StyleMapType
      */
     public List<Object> getStyleMapSimpleExtensionGroup() {
         if (styleMapSimpleExtensionGroup == null) {
-            styleMapSimpleExtensionGroup = new ArrayList<Object>();
+            styleMapSimpleExtensionGroup = new ArrayList<>();
         }
         return this.styleMapSimpleExtensionGroup;
     }
@@ -138,7 +138,7 @@ public class StyleMapType
      */
     public List<AbstractObjectType> getStyleMapObjectExtensionGroup() {
         if (styleMapObjectExtensionGroup == null) {
-            styleMapObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            styleMapObjectExtensionGroup = new ArrayList<>();
         }
         return this.styleMapObjectExtensionGroup;
     }

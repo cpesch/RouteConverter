@@ -20,20 +20,15 @@
 
 package slash.common.io;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import static java.lang.Long.MAX_VALUE;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.common.io.InputOutput.copy;
+import static slash.common.io.Files.extractFileName;
+import static slash.common.io.InputOutput.copyAndClose;
 
 /**
  * Provides externalization functionality.
@@ -45,10 +40,7 @@ public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
 
     private static File getTempFile(String fileName) {
-        int index = fileName.lastIndexOf('/');
-        if (index != -1)
-            fileName = fileName.substring(index);
-        return new File(getTemporaryDirectory(), fileName);
+        return new File(getTemporaryDirectory(), extractFileName(fileName));
     }
 
     private static long getLastModified(String fileName) throws IOException {
@@ -74,7 +66,7 @@ public class Externalization {
 
         log.info("Extracting " + fileName + " to " + target);
         FileOutputStream output = new FileOutputStream(target);
-        copy(input, output);
+        copyAndClose(input, output);
         if (!target.setLastModified(lastModifiedInClassPath))
             log.warning("Cannot set last modified date for " + target);
         return target;
@@ -89,7 +81,7 @@ public class Externalization {
         log.info("Extracting " + fileName + " to " + target);
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
-        copy(reader, writer);
+        copyAndClose(reader, writer);
         return target;
     }
 }

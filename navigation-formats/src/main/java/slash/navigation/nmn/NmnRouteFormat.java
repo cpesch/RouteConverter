@@ -20,22 +20,10 @@
 
 package slash.navigation.nmn;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,7 +66,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -188,7 +176,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         if (checkHeader(source)) {
             // copy whole file to a bytebuffer
             byte[] bodyBytes = new byte[source.available()];
@@ -217,7 +205,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 log.fine("Unknown 13-16: seen " + unknown + ", not expected 0 or 1");
             }
 
-            List<NavigationPosition> positions = new ArrayList<NavigationPosition>();
+            List<NavigationPosition> positions = new ArrayList<>();
             int readedPositions = 0;
             //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
             //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.
@@ -247,7 +235,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             // 4 Byte: unknown
             fileContent.getInt();
             // 4 Byte: number of following data points (1, 2, 4)
-            int numberOfDataPoints = fileContent.getInt();
+            fileContent.getInt();
             // 8 Byte: unknown
             if (fileContent.position() < positionEndPosition)
                 fileContent.getInt();
@@ -492,6 +480,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                     getText(byteBuffer);
                     getText(byteBuffer);
                     break;
+                default:
             }
         }
 
@@ -581,7 +570,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         //bytelength
         byteBuffer.putLong(0); //filled at the end
         byteBuffer.putInt(mapName.length()); //textlänge
-        byteBuffer.put(mapName.getBytes()); //3 bytes text
+        byteBuffer.put(mapName.getBytes(UTF8_ENCODING)); //3 bytes text
 
         byteBuffer.putInt(timeStamp);
         byteBuffer.put(rawData, 0, 4);
@@ -633,7 +622,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 
         SimpleDateFormat dateFormat = new SimpleDateFormat("'R'yyyyMMdd'-'HH:mm:ss");
         String date = dateFormat.format(System.currentTimeMillis());
-        byteArrayOutputStream.write(date.getBytes());
+        byteArrayOutputStream.write(date.getBytes(UTF8_ENCODING));
 
 
         // 4 Byte Pointcount, max. 255 Points with this style

@@ -20,11 +20,10 @@
 package slash.navigation.nmn;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class NavigatingPoiWarnerFormatTest {
@@ -47,7 +46,7 @@ public class NavigatingPoiWarnerFormatTest {
 
     @Test
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\"", null);
+        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\"", new ParserContextImpl());
         assertDoubleEquals(8.6180901, position.getLongitude());
         assertDoubleEquals(50.2175101, position.getLatitude());
         assertEquals("[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]", position.getDescription());
@@ -55,7 +54,7 @@ public class NavigatingPoiWarnerFormatTest {
 
     @Test
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"", null);
+        Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"", new ParserContextImpl());
         assertDoubleEquals(-8.6180901, position.getLongitude());
         assertDoubleEquals(-50.2175101, position.getLatitude());
         assertEquals("ABC", position.getDescription());
@@ -65,7 +64,7 @@ public class NavigatingPoiWarnerFormatTest {
     public void testParseControlCharacters() {
         char[] chars = new char[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 23, 24, 25, 26, 27, 28, 29, 30, 31};
         for (char c : chars) {
-            Wgs84Position position = format.parsePosition("1.2,3.4,\"äöüßA" + c + "Z+*$%\"", null);
+            Wgs84Position position = format.parsePosition("1.2,3.4,\"äöüßA" + c + "Z+*$%\"", new ParserContextImpl());
             assertDoubleEquals(1.2, position.getLongitude());
             assertDoubleEquals(3.4, position.getLatitude());
             assertEquals("äöüßAZ+*$%", position.getDescription());

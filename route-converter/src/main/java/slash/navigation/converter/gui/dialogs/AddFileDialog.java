@@ -23,12 +23,12 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,7 +79,8 @@ public class AddFileDialog extends SimpleDialog {
         panelRemoteCategory.setVisible(category.isRemote());
         labelLabel.setText(format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(createReadablePath(file));
-        textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
+        if (length != null)
+            textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);
 
         buttonAdd.addActionListener(new DialogAction(this) {

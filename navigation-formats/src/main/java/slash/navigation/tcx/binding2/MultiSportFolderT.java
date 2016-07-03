@@ -88,7 +88,7 @@ public class MultiSportFolderT {
      */
     public List<MultiSportFolderT> getFolder() {
         if (folder == null) {
-            folder = new ArrayList<MultiSportFolderT>();
+            folder = new ArrayList<>();
         }
         return this.folder;
     }
@@ -117,7 +117,7 @@ public class MultiSportFolderT {
      */
     public List<ActivityReferenceT> getMultisportActivityRef() {
         if (multisportActivityRef == null) {
-            multisportActivityRef = new ArrayList<ActivityReferenceT>();
+            multisportActivityRef = new ArrayList<>();
         }
         return this.multisportActivityRef;
     }
@@ -146,7 +146,7 @@ public class MultiSportFolderT {
      */
     public List<WeekT> getWeek() {
         if (week == null) {
-            week = new ArrayList<WeekT>();
+            week = new ArrayList<>();
         }
         return this.week;
     }

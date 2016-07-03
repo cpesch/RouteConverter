@@ -20,14 +20,8 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.kml.binding22.DocumentType;
-import slash.navigation.kml.binding22.FolderType;
-import slash.navigation.kml.binding22.KmlType;
-import slash.navigation.kml.binding22.ObjectFactory;
-import slash.navigation.kml.binding22.PlacemarkType;
-import slash.navigation.kml.binding22.PointType;
+import slash.navigation.kml.binding22.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,10 +57,10 @@ public class Igo8RouteFormat extends Kml22Format {
         return preferences.getInt("maximumiGo8RoutePositionCount", 100);
     }
 
-    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
+    protected void process(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return;
-        extractTracks(kmlType, startDate, context);
+        extractTracks(kmlType, context);
 
         List<KmlRoute> routes = context.getRoutes();
         context.removeRoutes();

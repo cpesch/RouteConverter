@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormats;
+import slash.navigation.base.NavigationFormatRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +41,12 @@ public class RecentFormatsModel {
     private static final String RECENT_FORMAT_PREFERENCE = "recentFormat";
     private static final String MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE = "maximumRecentFormatCount";
     private static final char FIRST_CHAR = 'a';
+
+    private NavigationFormatRegistry navigationFormatRegistry;
+
+    public RecentFormatsModel(NavigationFormatRegistry navigationFormatRegistry) {
+        this.navigationFormatRegistry = navigationFormatRegistry;
+    }
 
     private int getMaximumCount() {
         return preferences.getInt(MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE, 5);
@@ -86,12 +92,12 @@ public class RecentFormatsModel {
     }
 
     public List<NavigationFormat> getFormats() {
-        List<NavigationFormat> result = new ArrayList<NavigationFormat>();
+        List<NavigationFormat> result = new ArrayList<>();
         String recentFormats = preferences.get(RECENT_FORMATS_PREFERENCE, "");
         for (char c : recentFormats.toCharArray()) {
             String formatString = preferences.get(RECENT_FORMAT_PREFERENCE + c, null);
             if (formatString != null) {
-                List<NavigationFormat> writeFormats = NavigationFormats.getWriteFormats();
+                List<NavigationFormat> writeFormats = navigationFormatRegistry.getWriteFormats();
                 for (NavigationFormat format : writeFormats) {
                     if (format.getClass().getName().equals(formatString)) {
                         result.add(0, format);

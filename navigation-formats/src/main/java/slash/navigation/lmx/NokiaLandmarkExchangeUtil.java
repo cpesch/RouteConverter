@@ -20,7 +20,7 @@
 
 package slash.navigation.lmx;
 
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.lmx.binding.Lmx;
 import slash.navigation.lmx.binding.ObjectFactory;
 
@@ -33,18 +33,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
-class NokiaLandmarkExchangeUtil {
-    private static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";
+public class NokiaLandmarkExchangeUtil {
+    public static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class),
-                LMX_NAMESPACE_URI, "lm"
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class)
         );
     }
 
@@ -54,7 +53,7 @@ class NokiaLandmarkExchangeUtil {
         try {
             result = (Lmx) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -62,14 +61,14 @@ class NokiaLandmarkExchangeUtil {
     public static void marshal(Lmx lmx, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<Lmx>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), out);
             }
             finally {
                 out.flush();
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

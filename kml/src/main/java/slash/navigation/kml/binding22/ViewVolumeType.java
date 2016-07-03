@@ -216,7 +216,7 @@ public class ViewVolumeType
      */
     public List<Object> getViewVolumeSimpleExtensionGroup() {
         if (viewVolumeSimpleExtensionGroup == null) {
-            viewVolumeSimpleExtensionGroup = new ArrayList<Object>();
+            viewVolumeSimpleExtensionGroup = new ArrayList<>();
         }
         return this.viewVolumeSimpleExtensionGroup;
     }
@@ -245,7 +245,7 @@ public class ViewVolumeType
      */
     public List<AbstractObjectType> getViewVolumeObjectExtensionGroup() {
         if (viewVolumeObjectExtensionGroup == null) {
-            viewVolumeObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            viewVolumeObjectExtensionGroup = new ArrayList<>();
         }
         return this.viewVolumeObjectExtensionGroup;
     }

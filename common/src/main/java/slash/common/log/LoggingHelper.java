@@ -20,23 +20,10 @@
 
 package slash.common.log;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Filter;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.io.*;
+import java.util.logging.*;
 
-import static java.util.logging.Level.ALL;
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.*;
 
 /**
  * Allows to control log output
@@ -73,7 +60,8 @@ public class LoggingHelper {
             System.err.println("Cannot configure file logging");
             e.printStackTrace();
         }
-        logger.setLevel(ALL);
+        // using ALL brings up a colored JavaFX WebView
+        // logger.setLevel(ALL);
         redirectStdOutAndErrToLog();
     }
 
@@ -88,24 +76,33 @@ public class LoggingHelper {
         handler.setFormatter(new SimpleFormatter());
         Logger logger = Logger.getLogger("");
         logger.addHandler(handler);
-        logger.setLevel(ALL);
+        // using ALL brings up a colored JavaFX WebView
+        // logger.setLevel(ALL);
     }
 
     public void logAsDefault() {
         LogManager.getLogManager().reset();
     }
 
-
     public String getLogFileAsString() {
         logAsDefault();
-        String logAsString = readFile(getLogFile());
+
+        File logFile = getLogFile();
+        String logAsString;
+        try {
+            logAsString = readFile(logFile);
+        } catch (IOException e) {
+            logAsString = "Cannot read file " + logFile + ":" + e;
+        }
+
         logToFile();
         return logAsString;
     }
 
     private static final Filter FILTER = new Filter() {
         public boolean isLoggable(LogRecord record) {
-            return record.getLoggerName().startsWith("slash");
+            return record.getLoggerName().startsWith("slash") ||
+                    record.getLoggerName().startsWith("com.graphhopper");
         }
     };
 
@@ -113,34 +110,20 @@ public class LoggingHelper {
         return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
     }
 
-    private String readFile(File file) {
+    private String readFile(File file) throws IOException {
         StringBuilder buffer = new StringBuilder();
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (buffer.length() < LOG_SIZE) {
                 String line = reader.readLine();
                 if (line == null)
                     break;
                 buffer.append(line).append("\n");
             }
-        } catch (IOException e) {
-            System.err.println("Cannot read file " + file.getAbsolutePath());
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    // intentionally left empty
-                }
-            }
         }
 
         return buffer.toString();
     }
-
 
     private void redirectStdOutAndErrToLog() {
         Logger logger = Logger.getLogger("stdout");
@@ -155,5 +138,11 @@ public class LoggingHelper {
     private void resetStdOutAndErr() {
         System.setOut(stdout);
         System.setErr(stderr);
+    }
+
+    public static void logException(Logger log, Throwable t) {
+        StringWriter writer = new StringWriter();
+        t.printStackTrace(new PrintWriter(writer));
+        log.severe(writer.toString());
     }
 }

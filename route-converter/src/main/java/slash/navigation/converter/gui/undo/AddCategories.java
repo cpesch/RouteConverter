@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -55,7 +55,7 @@ class AddCategories extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.removeCategories(categories, names, null, false);
+        catalogModel.deleteCategories(categories, names, null, false);
     }
 
     public void redo() throws CannotRedoException {

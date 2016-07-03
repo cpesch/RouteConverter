@@ -116,7 +116,7 @@ public class PoiList {
      */
     public List<Object> getItineraryOrPoi() {
         if (itineraryOrPoi == null) {
-            itineraryOrPoi = new ArrayList<Object>();
+            itineraryOrPoi = new ArrayList<>();
         }
         return this.itineraryOrPoi;
     }

@@ -84,7 +84,7 @@ public class Itinerary {
      */
     public List<Step> getStep() {
         if (step == null) {
-            step = new ArrayList<Step>();
+            step = new ArrayList<>();
         }
         return this.step;
     }

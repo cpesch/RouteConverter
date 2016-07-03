@@ -212,7 +212,7 @@ public class ScreenOverlayType
      */
     public List<Object> getScreenOverlaySimpleExtensionGroup() {
         if (screenOverlaySimpleExtensionGroup == null) {
-            screenOverlaySimpleExtensionGroup = new ArrayList<Object>();
+            screenOverlaySimpleExtensionGroup = new ArrayList<>();
         }
         return this.screenOverlaySimpleExtensionGroup;
     }
@@ -241,7 +241,7 @@ public class ScreenOverlayType
      */
     public List<AbstractObjectType> getScreenOverlayObjectExtensionGroup() {
         if (screenOverlayObjectExtensionGroup == null) {
-            screenOverlayObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            screenOverlayObjectExtensionGroup = new ArrayList<>();
         }
         return this.screenOverlayObjectExtensionGroup;
     }

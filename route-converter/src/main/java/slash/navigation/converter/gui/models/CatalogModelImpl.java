@@ -20,16 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.domain.Category;
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeModel;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.CategoryTreeNodeImpl;
-import slash.navigation.catalog.model.RouteComparator;
-import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.Route;
+import slash.navigation.routes.impl.*;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;
@@ -69,7 +64,7 @@ public class CatalogModelImpl implements CatalogModel {
 
     public void setCurrentCategory(CategoryTreeNode category) {
         List<Route> routes = category.getRoutes();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        List<RouteModel> routeModels = new ArrayList<>();
         if (routes != null) {
             Route[] routesArray = routes.toArray(new Route[routes.size()]);
             sort(routesArray, routeComparator);
@@ -86,7 +81,7 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                final List<CategoryTreeNode> categories = new ArrayList<CategoryTreeNode>();
+                final List<CategoryTreeNode> categories = new ArrayList<>();
                 for (int i = 0; i < parents.size(); i++) {
                     CategoryTreeNode parent = parents.get(i);
                     Category category = parent.getCategory().create(names.get(i));
@@ -168,14 +163,14 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
-        removeCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
+    public void deleteCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
+        deleteCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
     }
 
-    public void removeCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
+    public void deleteCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
-                return "RemoveCategories";
+                return "DeleteCategories";
             }
 
             public void run() throws IOException {
@@ -190,12 +185,13 @@ public class CatalogModelImpl implements CatalogModel {
 
                 invokeLater(new Runnable() {
                     public void run() {
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
+
                         for (int i = 0; i < parents.size(); i++) {
                             CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
                             categoryTreeModel.removeNodeFromParent(category);
                         }
-                        if (invokeLaterRunnable != null)
-                            invokeLaterRunnable.run();
                     }
                 });
             }
@@ -222,7 +218,7 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void renameRoute(final RouteModel route, final String name) {
+    public void renameRoute(final RouteModel route, final String name, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RenameRoute";
@@ -234,6 +230,9 @@ public class CatalogModelImpl implements CatalogModel {
                 invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.updateRoute(route);
+
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
                     }
                 });
             }
@@ -277,24 +276,23 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void removeRoutes(final List<RouteModel> routes) {
+    public void deleteRoutes(final List<RouteModel> routes) {
         operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
-                return "RemoveRoutes";
+                return "DeleteRoutes";
             }
 
             public void run() throws IOException {
-                for (RouteModel route : routes) {
+                for (final RouteModel route : routes) {
                     route.getRoute().delete();
+
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            routesTableModel.deleteRoute(route);
+                        }
+                    });
                 }
 
-                invokeLater(new Runnable() {
-                    public void run() {
-                        for (RouteModel route : routes) {
-                            routesTableModel.removeRoute(route);
-                        }
-                    }
-                });
             }
         });
     }

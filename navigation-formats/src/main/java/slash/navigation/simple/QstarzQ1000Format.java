@@ -21,12 +21,8 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -36,16 +32,11 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes Qstarz BT-Q1000 (.csv) files.
@@ -126,7 +117,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -148,7 +139,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), null);
         position.setHdop(parseDouble(hdop));
-        position.setSatellites(parseInt(satellites));
+        position.setSatellites(parseInteger(satellites));
         return position;
     }
 

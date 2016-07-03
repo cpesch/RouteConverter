@@ -22,8 +22,8 @@ package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.SimpleRoute;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.simple.GlopusFormat;
 
 import java.awt.datatransfer.DataFlavor;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.navigation.base.NavigationFormats.asFormatForPositions;
+import static slash.navigation.base.NavigationFormatConverter.convertPositions;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -47,8 +47,8 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class PositionSelection implements Transferable {
     private static final Logger log = Logger.getLogger(PositionSelection.class.getName());
-    public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
-    public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
+    public static final DataFlavor POSITION_FLAVOR = new DataFlavor(PositionSelection.class, "List of Positions");
+    public static final DataFlavor STRING_FLAVOR = DataFlavor.stringFlavor;
 
     private final List<NavigationPosition> positions;
     private final BaseNavigationFormat format;
@@ -62,11 +62,11 @@ public class PositionSelection implements Transferable {
 
     private String createStringFor(List<NavigationPosition> sourcePositions) {
         GlopusFormat targetFormat = new GlopusFormat();
-        List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
+        List<BaseNavigationPosition> targetPositions = new ArrayList<>();
         try {
-            targetPositions = asFormatForPositions(sourcePositions, targetFormat);
+            targetPositions = convertPositions(sourcePositions, targetFormat);
         } catch (IOException e) {
-            log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
+            log.severe("Cannot convert " + sourcePositions + " for selection: " + e);
         }
         SimpleRoute targetRoute = targetFormat.createRoute(Waypoints, null, targetPositions);
 
@@ -84,7 +84,7 @@ public class PositionSelection implements Transferable {
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{positionFlavor, stringFlavor};
+        return new DataFlavor[]{POSITION_FLAVOR, STRING_FLAVOR};
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
@@ -97,9 +97,9 @@ public class PositionSelection implements Transferable {
     }
 
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        if (positionFlavor.equals(flavor))
+        if (POSITION_FLAVOR.equals(flavor))
             return this;
-        if (stringFlavor.equals(flavor))
+        if (STRING_FLAVOR.equals(flavor))
             return string;
         throw new UnsupportedFlavorException(flavor);
     }

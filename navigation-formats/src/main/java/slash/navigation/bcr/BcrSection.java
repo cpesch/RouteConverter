@@ -51,7 +51,7 @@ class BcrSection extends IniFileSection {
     }
 
     void removeStations() {
-        for (String key : new HashSet<String>(keySet())) {
+        for (String key : new HashSet<>(keySet())) {
             if (key.startsWith(STATION_PREFIX))
                 remove(key);
         }

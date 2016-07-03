@@ -24,9 +24,9 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.rest.exception.DuplicateNameException;
 
 import javax.swing.*;
@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTerms;
 
@@ -237,8 +238,8 @@ public class LoginDialog extends SimpleDialog {
             labelRegisterResult.setText(RouteConverter.getBundle().getString("register-username-exists-error"));
             pack();
         } catch (Throwable t) {
-            log.severe("Could not register: " + t.getMessage());
-            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getLocalizedMessage()));
+            log.severe("Could not register: " + t);
+            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), getLocalizedMessage(t)));
             pack();
         }
     }
@@ -353,7 +354,7 @@ public class LoginDialog extends SimpleDialog {
         this.$$$loadLabelText$$$(labelAcceptTerms, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("accept-terms"));
         panel3.add(labelAcceptTerms, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxAcceptTerms = new JCheckBox();
-        checkBoxAcceptTerms.setText("");
+        checkBoxAcceptTerms.setHideActionText(true);
         panel3.add(checkBoxAcceptTerms, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel3.add(spacer4, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));

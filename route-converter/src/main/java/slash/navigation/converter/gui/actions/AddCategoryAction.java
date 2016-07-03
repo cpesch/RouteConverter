@@ -20,22 +20,20 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.domain.Category;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 
 import static java.text.MessageFormat.format;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
 
 /**
  * {@link Action} that adds a {@link Category} to the {@link CatalogModel}.
@@ -53,23 +51,20 @@ public class AddCategoryAction extends FrameAction {
     }
 
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-
         final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
         if (category == null)
             return;
 
-        final String name = showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE);
+        final String name = showInputDialog(getFrame(),
+                format(getBundle().getString("add-category-label"), category.getName()),
+                getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 
-        catalogModel.addCategories(asList(category), asList(name),
+        catalogModel.addCategories(singletonList(category), singletonList(name),
                 new Runnable() {
                     public void run() {
-                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));
-                        selectCategoryTreePath(tree, treePath);
+                        selectCategory(tree, catalogModel.getCategoryTreeModel().getChild(category, name));
                     }
                 });
     }

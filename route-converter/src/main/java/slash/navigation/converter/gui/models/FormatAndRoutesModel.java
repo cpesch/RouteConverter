@@ -20,11 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.FormatAndRoutes;
-import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -41,9 +37,6 @@ public interface FormatAndRoutesModel extends ComboBoxModel {
     void setRoutes(FormatAndRoutes<BaseNavigationFormat, BaseRoute, BaseNavigationPosition> formatAndRoutes);
     NavigationFormat<BaseRoute> getFormat();
     void setFormat(NavigationFormat<BaseRoute> format);
-
-    PositionsModel getPositionsModel();
-    CharacteristicsModel getCharacteristicsModel();
 
     boolean isModified();
     void setModified(boolean modified);

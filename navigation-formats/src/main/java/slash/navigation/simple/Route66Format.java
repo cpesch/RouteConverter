@@ -20,23 +20,15 @@
 package slash.navigation.simple;
 
 import slash.common.io.Transfer;
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.toMixedCase;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
@@ -75,7 +67,7 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

@@ -21,10 +21,10 @@
 package slash.navigation.url;
 
 import slash.navigation.base.BaseUrlFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.IOException;
 import java.io.PrintWriter;

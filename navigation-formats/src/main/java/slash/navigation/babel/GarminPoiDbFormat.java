@@ -26,7 +26,7 @@ import slash.navigation.gpx.GpxRoute;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -50,7 +50,7 @@ public class GarminPoiDbFormat extends BabelFormat {
     }
 
     protected List<RouteCharacteristics> getBabelCharacteristics() {
-        return asList(Waypoints);
+        return singletonList(Waypoints);
     }
 
     public boolean isSupportsMultipleRoutes() {

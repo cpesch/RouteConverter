@@ -25,22 +25,16 @@ import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.readGpxFile;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.navigation.base.NavigationTestCase.*;
 
 public class GpxFormatIT {
 
@@ -83,14 +77,10 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getRte().size());
     }
 
-    @Test
-    public void testUnmarshal10TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal10TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from10.gpx");
-        try {
-            GpxUtil.unmarshal11(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        GpxUtil.unmarshal11(reader);
     }
 
     @Test
@@ -102,14 +92,10 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getWpt().size());
     }
 
-    @Test
-    public void testUnmarshal11TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal11TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
-        try {
-            GpxUtil.unmarshal10(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        GpxUtil.unmarshal10(reader);
     }
 
     @Test
@@ -122,14 +108,40 @@ public class GpxFormatIT {
     }
 
     @Test
-    public void testGarminExtensions() throws Exception {
-        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "MS.gpx");
+    public void testGarminGpxExtensionsv3() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-route.gpx");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         GpxRoute route = routes.get(0);
         assertEquals(2, route.getPositionCount());
         GpxRoute track = routes.get(1);
         assertEquals(1073, track.getPositionCount());
+    }
+
+    @Test
+    public void testGarminTrackPointExtensionv1() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v1.gpx");
+        assertNotNull(routes);
+        assertEquals(1, routes.size());
+        GpxRoute track = routes.get(0);
+        assertEquals(1207, track.getPositionCount());
+        assertDoubleEquals(0.444479976, track.getPosition(1).getSpeed());
+        assertNull(track.getPosition(1).getHeading());
+        assertDoubleEquals(6.6301596, track.getPosition(1000).getSpeed());
+    }
+
+    @Test
+    public void testGarminTrackPointExtensionv2() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v2.gpx");
+        assertNotNull(routes);
+        assertEquals(2, routes.size());
+        GpxRoute track1 = routes.get(0);
+        assertEquals(1571, track1.getPositionCount());
+        assertDoubleEquals(14.832, track1.getPosition(1).getSpeed());
+        assertDoubleEquals(9.88, track1.getPosition(1).getHeading());
+        GpxRoute track2 = routes.get(1);
+        assertEquals(896, track2.getPositionCount());
+        assertDoubleEquals(9.9, track2.getPosition(1).getSpeed());
     }
 
     @Test

@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.domain.Category;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Category;
 
 import javax.swing.*;
 import java.io.File;
@@ -44,11 +44,11 @@ public class AddFileAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
+        chooser.setDialogTitle(getBundle().getString("add-file"));
         chooser.setSelectedFile(r.getUploadRoutePreference());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(r.getFrame());
+        int open = chooser.showOpenDialog(getFrame());
         if (open != APPROVE_OPTION)
             return;
 
@@ -57,6 +57,6 @@ public class AddFileAction extends FrameAction {
             return;
 
         r.setUploadRoutePreference(selected[0]);
-        r.addFilesToCatalog(asList(selected));
+        r.getBrowsePanel().addFilesToCatalog(asList(selected));
     }
 }

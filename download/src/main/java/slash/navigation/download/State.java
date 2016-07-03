@@ -32,11 +32,14 @@ public enum State {
     Resuming,
     Downloading,
     Processing,
+    Validating,
+
+    NotModified,
+    Outdated,
 
     Succeeded,
+    Stopped,
     NoFileError,
     ChecksumError,
-    SizeError,
-    TimestampError,
     Failed
 }

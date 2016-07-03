@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -55,11 +55,11 @@ class RenameRoute extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.renameRoute(route, oldName, false);
+        catalogModel.renameRoute(route, oldName, null, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.renameRoute(route, newName, false);
+        catalogModel.renameRoute(route, newName, null, false);
     }
 }

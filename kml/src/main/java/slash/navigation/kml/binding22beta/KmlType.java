@@ -115,7 +115,7 @@ public class KmlType {
      *     
      */
     public void setAbstractFeatureGroup(JAXBElement<? extends AbstractFeatureType> value) {
-        this.abstractFeatureGroup = ((JAXBElement<? extends AbstractFeatureType> ) value);
+        this.abstractFeatureGroup = value;
     }
 
     /**

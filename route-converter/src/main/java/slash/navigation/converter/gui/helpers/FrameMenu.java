@@ -20,15 +20,14 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.RouteConverter;
-
 import javax.swing.*;
 
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
- * Creates a {@link JMenuBar} for a {@link RouteConverter}.
+ * Creates a {@link JMenuBar} for RouteConverter.
  *
  * @author Christian Pesch
  */
@@ -44,10 +43,12 @@ public class FrameMenu {
         JMenu printMenu = createMenu("print");
         printMenu.add(createItem("print-map"));
         printMenu.add(createItem("print-map-and-route"));
-        printMenu.add(createItem("print-elevation-profile"));
+        printMenu.add(createItem("print-profile"));
         fileMenu.add(printMenu);
-        fileMenu.addSeparator();
-        fileMenu.add(createItem("exit"));
+        if(!isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(createItem("exit"));
+        }
 
         JMenu editMenu = createMenu("edit");
         editMenu.add(createItem("undo"));
@@ -56,11 +57,18 @@ public class FrameMenu {
         editMenu.add(createItem("cut"));
         editMenu.add(createItem("copy"));
         editMenu.add(createItem("paste"));
+        editMenu.add(createItem("delete"));
+        editMenu.addSeparator();
         editMenu.add(createItem("select-all"));
 
         JMenu positionMenu = createMenu("position");
         positionMenu.add(createItem("new-position"));
-        positionMenu.add(createItem("delete"));
+        positionMenu.add(createItem("delete-position"));
+        positionMenu.addSeparator();
+        positionMenu.add(createItem("top"));
+        positionMenu.add(createItem("up"));
+        positionMenu.add(createItem("down"));
+        positionMenu.add(createItem("bottom"));
         positionMenu.addSeparator();
         positionMenu.add(createItem("find-place"));
         JMenu completeMenu = createMenu("complete");
@@ -96,20 +104,24 @@ public class FrameMenu {
         viewMenu.add(createItem("show-profile"));
         viewMenu.add(createItem("maximize-map"));
         viewMenu.add(createItem("maximize-positionlist"));
+        viewMenu.add(createItem("show-all-positions-on-map"));
         viewMenu.addSeparator();
         viewMenu.add(createMenu("show-column"));
-        viewMenu.add(createMenu("show-profile"));
+        viewMenu.add(createMenu("show-profile-x-axis"));
+        viewMenu.add(createMenu("show-profile-y-axis"));
 
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));
         extrasMenu.add(createItem("show-downloads"));
-        extrasMenu.add(createItem("show-options"));
+        if (!isMac())
+            extrasMenu.add(createItem("show-options"));
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
-        helpMenu.add(createItem("show-about"));
+        if (!isMac())
+            helpMenu.add(createItem("show-about"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -118,7 +130,6 @@ public class FrameMenu {
         menuBar.add(positionlistMenu);
         menuBar.add(viewMenu);
         menuBar.add(extrasMenu);
-        // menuBar.addChild(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
         return menuBar;
     }

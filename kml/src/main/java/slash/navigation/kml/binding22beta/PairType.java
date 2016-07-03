@@ -126,7 +126,7 @@ public class PairType
      *     
      */
     public void setAbstractStyleSelectorGroup(JAXBElement<? extends AbstractStyleSelectorType> value) {
-        this.abstractStyleSelectorGroup = ((JAXBElement<? extends AbstractStyleSelectorType> ) value);
+        this.abstractStyleSelectorGroup = value;
     }
 
 }

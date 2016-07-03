@@ -125,7 +125,7 @@ public class Document {
      */
     public List<Object> getDocumentOrFolderOrGroundOverlay() {
         if (documentOrFolderOrGroundOverlay == null) {
-            documentOrFolderOrGroundOverlay = new ArrayList<Object>();
+            documentOrFolderOrGroundOverlay = new ArrayList<>();
         }
         return this.documentOrFolderOrGroundOverlay;
     }

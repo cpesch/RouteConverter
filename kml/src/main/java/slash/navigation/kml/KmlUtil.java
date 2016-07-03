@@ -30,18 +30,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class KmlUtil {
-    private static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
-    private static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
-    private static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
-    private static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
-    private static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
-    private static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
-    private static final String KML_22_EXT_NAMESPACE_URI = "http://www.google.com/kml/ext/2.2";
+    public static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
+    public static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
+    public static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
+    public static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
+    public static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
+    public static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
+    public static final String KML_22_EXT_NAMESPACE_URI = "http://www.google.com/kml/ext/2.2";
 
     public static Unmarshaller newUnmarshaller20() {
         return newUnmarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class));
@@ -60,10 +58,7 @@ public class KmlUtil {
     }
 
     private static Marshaller newMarshaller20() {
-        return newMarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class),
-                KML_20_NAMESPACE_URI, "",
-                XAL_20_NAMESPACE_URI, "xal"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding20.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller21() {
@@ -71,18 +66,11 @@ public class KmlUtil {
     }
 
     private static Marshaller newMarshaller22Beta() {
-        return newMarshaller(newContext(slash.navigation.kml.binding22beta.ObjectFactory.class),
-                ATOM_2005_NAMESPACE_URI, "atom",
-                XAL_20_NAMESPACE_URI, "xal"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding22beta.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller22() {
-        return newMarshaller(newContext(slash.navigation.kml.binding22.ObjectFactory.class),
-                ATOM_2005_NAMESPACE_URI, "atom",
-                XAL_20_NAMESPACE_URI, "xal",
-                KML_22_EXT_NAMESPACE_URI, "gx"
-        );
+        return newMarshaller(newContext(slash.navigation.kml.binding22.ObjectFactory.class));
     }
 
 
@@ -91,7 +79,7 @@ public class KmlUtil {
         try {
             result = (slash.navigation.kml.binding20.Kml) newUnmarshaller20().unmarshal(reader);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -101,7 +89,7 @@ public class KmlUtil {
         try {
             result = newUnmarshaller20().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -112,7 +100,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(reader);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -123,7 +111,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -134,7 +122,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(reader);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -145,7 +133,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(in);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -156,7 +144,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(reader);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -167,7 +155,7 @@ public class KmlUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+            throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
@@ -176,13 +164,13 @@ public class KmlUtil {
     public static void marshal20(slash.navigation.kml.binding20.Kml kml, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller20().marshal(new JAXBElement<slash.navigation.kml.binding20.Kml>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), out);
+                newMarshaller20().marshal(new JAXBElement<>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), out);
             } finally {
                 out.flush();
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -195,7 +183,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -208,7 +196,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -221,7 +209,7 @@ public class KmlUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

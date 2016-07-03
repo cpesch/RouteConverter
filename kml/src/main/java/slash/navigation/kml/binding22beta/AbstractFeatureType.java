@@ -375,7 +375,7 @@ public abstract class AbstractFeatureType
      *     
      */
     public void setAbstractViewGroup(JAXBElement<? extends AbstractViewType> value) {
-        this.abstractViewGroup = ((JAXBElement<? extends AbstractViewType> ) value);
+        this.abstractViewGroup = value;
     }
 
     /**
@@ -403,7 +403,7 @@ public abstract class AbstractFeatureType
      *     
      */
     public void setAbstractTimePrimitiveGroup(JAXBElement<? extends AbstractTimePrimitiveType> value) {
-        this.abstractTimePrimitiveGroup = ((JAXBElement<? extends AbstractTimePrimitiveType> ) value);
+        this.abstractTimePrimitiveGroup = value;
     }
 
     /**
@@ -456,7 +456,7 @@ public abstract class AbstractFeatureType
      */
     public List<JAXBElement<? extends AbstractStyleSelectorType>> getAbstractStyleSelectorGroup() {
         if (abstractStyleSelectorGroup == null) {
-            abstractStyleSelectorGroup = new ArrayList<JAXBElement<? extends AbstractStyleSelectorType>>();
+            abstractStyleSelectorGroup = new ArrayList<>();
         }
         return this.abstractStyleSelectorGroup;
     }

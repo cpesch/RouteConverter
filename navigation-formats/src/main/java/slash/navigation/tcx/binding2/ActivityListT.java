@@ -72,7 +72,7 @@ public class ActivityListT {
      */
     public List<ActivityT> getActivity() {
         if (activity == null) {
-            activity = new ArrayList<ActivityT>();
+            activity = new ArrayList<>();
         }
         return this.activity;
     }
@@ -101,7 +101,7 @@ public class ActivityListT {
      */
     public List<MultiSportSessionT> getMultiSportSession() {
         if (multiSportSession == null) {
-            multiSportSession = new ArrayList<MultiSportSessionT>();
+            multiSportSession = new ArrayList<>();
         }
         return this.multiSportSession;
     }

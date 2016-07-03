@@ -21,11 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.PrintWriter;
@@ -129,18 +125,18 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (matcher.matches()) {
             String date = matcher.group(1);
             String time = matcher.group(2);
             Double latitude = parseDouble(matcher.group(3));
             String northOrSouth = trim(matcher.group(4));
-            if("S".equals(northOrSouth))
+            if("S".equals(northOrSouth) && latitude != null)
                 latitude = -latitude;
             Double longitude = parseDouble(matcher.group(5));
             String westOrEast = trim(matcher.group(6));
-            if("W".equals(westOrEast))
+            if("W".equals(westOrEast) && longitude != null)
                 longitude = -longitude;
             String altitude = matcher.group(7);
             String speed = matcher.group(9);

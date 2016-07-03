@@ -20,11 +20,7 @@
 
 package slash.common.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static slash.common.io.Files.getExtension;
 
@@ -64,20 +60,14 @@ public class WindowsShortcut {
         if (!file.isFile() || !getExtension(file).equals(".lnk"))
             return false;
 
-        InputStream fis = new FileInputStream(file);
-        try {
-            return fis.available() >= MINIMUM_LENGTH && isMagicPresent(getBytes(fis, 32));
-        } finally {
-            fis.close();
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return inputStream.available() >= MINIMUM_LENGTH && isMagicPresent(getBytes(inputStream, 32));
         }
     }
 
     public WindowsShortcut(File file) throws IOException {
-        InputStream in = new FileInputStream(file);
-        try {
-            parseLink(getBytes(in));
-        } finally {
-            in.close();
+        try (InputStream inputStream = new FileInputStream(file)) {
+            parseLink(getBytes(inputStream));
         }
     }
 

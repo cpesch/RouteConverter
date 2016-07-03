@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.routeconverter.de/xmlschemas/Queue/1.0"
-            targetNamespace="http://www.routeconverter.de/xmlschemas/Queue/1.0"
+            xmlns="http://api.routeconverter.com/v1/schemas/download-queue"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/download-queue"
             elementFormDefault="qualified">
 
     <xsd:element name="queue" type="queueType">
@@ -15,7 +15,7 @@
     <xsd:complexType name="queueType">
         <xsd:annotation>
             <xsd:documentation>
-                queue contain download items.
+                a queue contains queued downloads and a last sync time
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -31,27 +31,60 @@
     <xsd:complexType name="downloadType">
         <xsd:annotation>
             <xsd:documentation>
-                a download contains a description, an url, optionally size and checksum,
-                plus data to perform the download upon restart.
+                a download refers to a downloadable, a file/map/theme, optionally fragments and
+                adds data to perform the download, resume, extraction, validation
             </xsd:documentation>
         </xsd:annotation>
+
+        <xsd:sequence>
+            <xsd:element name="downloadable" type="downloadableType" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+
         <xsd:attribute name="description" type="xsd:string" use="required"/>
         <xsd:attribute name="url" type="xsd:string" use="required"/>
-        <xsd:attribute name="size" type="xsd:long"/>
-        <xsd:attribute name="checksum" type="xsd:string"/>
-        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
-
-        <!-- what to do with the download -->
         <xsd:attribute name="action" type="xsd:string" use="required"/>
-        <xsd:attribute name="target" type="xsd:string" use="required"/>
-
-        <!-- temporary state -->
-        <xsd:attribute name="lastSync" type="xsd:dateTime" use="required"/>
+        <xsd:attribute name="eTag" type="xsd:string" use="required"/>
         <xsd:attribute name="state" type="xsd:string" use="required"/>
         <xsd:attribute name="tempFile" type="xsd:string" use="required"/>
+    </xsd:complexType>
 
-        <!-- data from HEAD request -->
+    <xsd:complexType name="checksumType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a checksum allows for resuming downloads, checking integrity, displaying freshness
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:attribute name="lastModified" type="xsd:dateTime"/>
         <xsd:attribute name="contentLength" type="xsd:long"/>
+        <xsd:attribute name="sha1" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="downloadableType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a queued downloadable
+            </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="fragment" type="fragmentType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="target" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fragmentType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a queued fragment
+            </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="target" type="xsd:string" use="required"/>
     </xsd:complexType>
 </xsd:schema>

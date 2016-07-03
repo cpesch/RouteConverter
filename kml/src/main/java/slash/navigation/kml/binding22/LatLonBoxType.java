@@ -104,7 +104,7 @@ public class LatLonBoxType
      */
     public List<Object> getLatLonBoxSimpleExtensionGroup() {
         if (latLonBoxSimpleExtensionGroup == null) {
-            latLonBoxSimpleExtensionGroup = new ArrayList<Object>();
+            latLonBoxSimpleExtensionGroup = new ArrayList<>();
         }
         return this.latLonBoxSimpleExtensionGroup;
     }
@@ -133,7 +133,7 @@ public class LatLonBoxType
      */
     public List<AbstractObjectType> getLatLonBoxObjectExtensionGroup() {
         if (latLonBoxObjectExtensionGroup == null) {
-            latLonBoxObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            latLonBoxObjectExtensionGroup = new ArrayList<>();
         }
         return this.latLonBoxObjectExtensionGroup;
     }

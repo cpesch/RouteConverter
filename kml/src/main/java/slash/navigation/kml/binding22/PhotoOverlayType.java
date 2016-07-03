@@ -216,7 +216,7 @@ public class PhotoOverlayType
      */
     public List<Object> getPhotoOverlaySimpleExtensionGroup() {
         if (photoOverlaySimpleExtensionGroup == null) {
-            photoOverlaySimpleExtensionGroup = new ArrayList<Object>();
+            photoOverlaySimpleExtensionGroup = new ArrayList<>();
         }
         return this.photoOverlaySimpleExtensionGroup;
     }
@@ -245,7 +245,7 @@ public class PhotoOverlayType
      */
     public List<AbstractObjectType> getPhotoOverlayObjectExtensionGroup() {
         if (photoOverlayObjectExtensionGroup == null) {
-            photoOverlayObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            photoOverlayObjectExtensionGroup = new ArrayList<>();
         }
         return this.photoOverlayObjectExtensionGroup;
     }

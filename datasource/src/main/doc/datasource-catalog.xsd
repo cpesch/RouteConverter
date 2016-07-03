@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/datasource-catalog"
+            elementFormDefault="qualified">
+
+    <xsd:element name="catalog" type="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog contains edition and datasource definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="edition" type="editionType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-edition-id">
+                    <xsd:selector xpath="edition"/>
+                    <xsd:field xpath="@id"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded">
+                <xsd:unique name="unique-datasource-id">
+                    <xsd:selector xpath="datasource"/>
+                    <xsd:field xpath="@id"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="editionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                an edition contains an id, a name, a href and datasources
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="href" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="actionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Copy"/>
+            <xsd:enumeration value="Flatten"/>
+            <xsd:enumeration value="Extract"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="datasourceType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a datasource contains an id, a name, and optionally a href, a base url, a directory, files, themes and maps
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-file-uri">
+                    <xsd:selector xpath="file"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="map" type="mapType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-map-uri">
+                    <xsd:selector xpath="map"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+            <xsd:element name="theme" type="themeType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-theme-uri">
+                    <xsd:selector xpath="theme"/>
+                    <xsd:field xpath="@uri"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="href" type="xsd:string"/>
+        <xsd:attribute name="baseUrl" type="xsd:string"/>
+        <xsd:attribute name="directory" type="xsd:string"/>
+        <xsd:attribute name="action" type="actionType"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fragmentType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a fragment is a part of a file, map or theme with a key
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="key" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="downloadableType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a downloadable contains checksums, fragments and uri for a file relative to the base url
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="fragment" type="fragmentType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-file-key">
+                    <xsd:selector xpath="fragment"/>
+                    <xsd:field xpath="@key"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="uri" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="fileType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a file is a downloadable which optionally defines a bounding box
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="downloadableType">
+                <xsd:sequence>
+                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="mapType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a map is a downloadable with a bounding box
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="downloadableType">
+                <xsd:sequence>
+                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="themeType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a theme is an XML file with references to images
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="downloadableType">
+                <xsd:attribute name="imageUrl" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="checksumType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a checksum allows for resuming downloads, checking integrity, displaying freshness
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="lastModified" type="xsd:dateTime"/>
+        <xsd:attribute name="contentLength" type="xsd:long"/>
+        <xsd:attribute name="sha1" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="positionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a position is a point on the globe defined by longitude and latitude
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="longitude" type="xsd:double" use="required"/>
+        <xsd:attribute name="latitude" type="xsd:double" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="boundingBoxType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a bounding box is a north east and a south west position
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="northEast" type="positionType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="southWest" type="positionType" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

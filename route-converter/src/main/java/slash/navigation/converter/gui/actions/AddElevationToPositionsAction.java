@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -29,26 +29,14 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds elevations to the selected rows of a {@link JTable}
- * with the help of a {@link BatchPositionAugmenter}.
+ * with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
 public class AddElevationToPositionsAction extends FrameAction {
-    private final JTable table;
-    private final PositionsModel positionsModel;
-    private final BatchPositionAugmenter augmenter;
-
-    public AddElevationToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
-        this.table = table;
-        this.positionsModel = positionsModel;
-        this.augmenter = augmenter;
-    }
-
     public void run() {
-        int[] selectedRows = table.getSelectedRows();
-        if (selectedRows.length > 0) {
-            augmenter.addElevations(table, positionsModel, selectedRows);
-        }
+        RouteConverter r = RouteConverter.getInstance();
+        r.getPositionAugmenter().addElevations();
     }
 }

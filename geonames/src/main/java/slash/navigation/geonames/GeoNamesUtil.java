@@ -20,35 +20,26 @@
 
 package slash.navigation.geonames;
 
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.geonames.binding.ObjectFactory;
-import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.common.helpers.JAXBHelper.newContext;
 
 class GeoNamesUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
-    }
-
-    private static Geonames unmarshal(StringReader reader) throws JAXBException {
-        Geonames result = null;
-        try {
-            result = (Geonames) newUnmarshaller().unmarshal(reader);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
-        }
-        finally {
-            reader.close();
-        }
-        return result;
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     public static Geonames unmarshal(String string) throws JAXBException {
-        return unmarshal(new StringReader(string));
+        try (StringReader reader = new StringReader(string)){
+            return (Geonames) newUnmarshaller().unmarshal(reader);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error: " + e, e);
+        }
     }
 }

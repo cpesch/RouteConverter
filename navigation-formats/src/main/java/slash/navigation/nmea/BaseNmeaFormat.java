@@ -43,9 +43,7 @@ import java.util.regex.Pattern;
 import static java.util.Locale.US;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromDate;
-import static slash.common.type.CompactCalendar.parseDate;
+import static slash.common.type.CompactCalendar.*;
 import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -58,7 +56,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BaseNmeaFormat.class);
-    protected static Logger log = Logger.getLogger(BaseNmeaFormat.class.getName());
+    protected final Logger log;
 
     static final char SEPARATOR = ',';
     static final String BEGIN_OF_LINE = "^\\$GP";
@@ -88,6 +86,10 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
 
+    public BaseNmeaFormat() {
+        this.log = Logger.getLogger(getClass().getName());
+    }
+
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
@@ -100,9 +102,10 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return Track;
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<NmeaRoute> context) throws IOException {
-        List<NmeaPosition> positions = new ArrayList<NmeaPosition>();
+    public void read(BufferedReader reader, String encoding, ParserContext<NmeaRoute> context) throws IOException {
+        List<NmeaPosition> positions = new ArrayList<>();
 
+        CompactCalendar startDate = context.getStartDate();
         CompactCalendar originalStartDate = startDate;
         int lineCount = 0;
         NmeaPosition previous = null;

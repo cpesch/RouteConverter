@@ -21,12 +21,8 @@
 package slash.navigation.url;
 
 import org.junit.Test;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +35,7 @@ public class GoogleMapsUrlFormatIT {
 
     private void checkBookmark(String name) throws IOException {
         File source = new File(SAMPLE_PATH + name);
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());

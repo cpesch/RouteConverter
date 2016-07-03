@@ -26,8 +26,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,7 +173,7 @@ public class SendErrorReportDialog extends SimpleDialog {
         this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("send-error-report-file"));
         panel3.add(label3, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonChooseFilePath = new JButton();
-        buttonChooseFilePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/select.png")));
+        buttonChooseFilePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
         buttonChooseFilePath.setText("");
         panel3.add(buttonChooseFilePath, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldFilePath = new JTextField();

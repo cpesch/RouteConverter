@@ -470,7 +470,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2", name = "TrainingCenterDatabase")
     public JAXBElement<TrainingCenterDatabaseT> createTrainingCenterDatabase(TrainingCenterDatabaseT value) {
-        return new JAXBElement<TrainingCenterDatabaseT>(_TrainingCenterDatabase_QNAME, TrainingCenterDatabaseT.class, null, value);
+        return new JAXBElement<>(_TrainingCenterDatabase_QNAME, TrainingCenterDatabaseT.class, null, value);
     }
 
 }

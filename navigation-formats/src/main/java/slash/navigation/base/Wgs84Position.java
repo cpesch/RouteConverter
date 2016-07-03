@@ -34,9 +34,10 @@ import static slash.navigation.base.RouteComments.parseDescription;
  */
 
 public class Wgs84Position extends BaseNavigationPosition {
-    protected Double longitude, latitude, heading, hdop, vdop, pdop;
+    protected Double longitude, latitude, heading, pressure, temperature, hdop, vdop, pdop;
     protected String description;
     protected Integer satellites;
+    protected WaypointType waypointType;
     private Double elevation;
     private Double speed;
     private CompactCalendar time;
@@ -108,6 +109,13 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.time = time;
     }
 
+    public WaypointType getWaypointType() {
+        return waypointType;
+    }
+
+    public void setWaypointType(WaypointType waypointType) {
+        this.waypointType = waypointType;
+    }
 
     public Double getHeading() {
         return heading;
@@ -115,6 +123,22 @@ public class Wgs84Position extends BaseNavigationPosition {
 
     public void setHeading(Double heading) {
         this.heading = heading;
+    }
+
+    public Double getPressure() {
+        return pressure;
+    }
+
+    public void setPressure(Double pressure) {
+        this.pressure = pressure;
+    }
+
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
     }
 
     public Double getHdop() {
@@ -160,6 +184,10 @@ public class Wgs84Position extends BaseNavigationPosition {
             return null;
     }
 
+    public/* for ImageFormat */ void setOrigin(Object origin) {
+        this.origin = origin;
+    }
+
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
         position.setHeading(getHeading());
@@ -189,7 +217,6 @@ public class Wgs84Position extends BaseNavigationPosition {
     public Wgs84Position asWgs84Position() {
         return this;
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

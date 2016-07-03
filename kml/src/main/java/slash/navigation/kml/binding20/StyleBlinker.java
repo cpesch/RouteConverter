@@ -98,7 +98,7 @@ public class StyleBlinker {
      */
     public List<State> getState() {
         if (state == null) {
-            state = new ArrayList<State>();
+            state = new ArrayList<>();
         }
         return this.state;
     }

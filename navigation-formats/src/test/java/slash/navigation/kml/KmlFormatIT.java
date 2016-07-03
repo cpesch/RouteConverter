@@ -24,26 +24,15 @@ import org.junit.Test;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertEquals;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.readKmlFile;
+import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.kml.KmlUtil.newUnmarshaller20;
-import static slash.navigation.kml.KmlUtil.unmarshal20;
-import static slash.navigation.kml.KmlUtil.unmarshal21;
-import static slash.navigation.kml.KmlUtil.unmarshal22;
-import static slash.navigation.kml.KmlUtil.unmarshal22Beta;
+import static slash.navigation.kml.KmlUtil.*;
 
 public class KmlFormatIT {
     @Test
@@ -73,14 +62,10 @@ public class KmlFormatIT {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
-    @Test
-    public void testUnmarshal20TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal20TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
-        try {
-            unmarshal21(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        unmarshal21(reader);
     }
 
     @Test
@@ -90,14 +75,10 @@ public class KmlFormatIT {
         assertNotNull(kml);
     }
 
-    @Test
-    public void testUnmarshal21TypeError() throws IOException {
+    @Test(expected = JAXBException.class)
+    public void testUnmarshal21TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
-        try {
-            unmarshal20(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
+        unmarshal20(reader);
     }
 
     @Test
@@ -157,7 +138,7 @@ public class KmlFormatIT {
 
     @Test
     public void testItnConvKml() throws Exception {
-        List<KmlRoute> routes = readKmlFile(new BrokenKml21Format(), SAMPLE_PATH + "bcr_with_itnconv.kml");
+        List<KmlRoute> routes = readKmlFile(new GarbleKml21Format(), SAMPLE_PATH + "bcr_with_itnconv.kml");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         for (KmlRoute route : routes) {

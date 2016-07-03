@@ -1,7 +1,7 @@
 package slash.navigation.nmea;
 
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
@@ -9,14 +9,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.toMixedCase;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Magellan Explorist (.log) files.
@@ -28,10 +24,6 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class MagellanExploristFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(MagellanExploristFormat.class.getName());
-    }
-
     private static final String HEADER_LINE = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII";
     
     private static final Pattern TRK_PATTERN = Pattern.

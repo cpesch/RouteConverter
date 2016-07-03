@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.navigation.jaxb.JaxbUtils.*;
+import static slash.common.helpers.JAXBHelper.*;
 
 class TcxUtil {
-    private static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
-    private static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+    public static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
+    public static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 
     private static Unmarshaller newUnmarshaller1() {
         return newUnmarshaller(newContext(slash.navigation.tcx.binding1.ObjectFactory.class));
@@ -57,7 +57,7 @@ class TcxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller1().unmarshal(in);
             result = (slash.navigation.tcx.binding1.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -72,7 +72,7 @@ class TcxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
@@ -83,7 +83,7 @@ class TcxUtil {
             JAXBElement element = (JAXBElement) newUnmarshaller2().unmarshal(in);
             result = (slash.navigation.tcx.binding2.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -98,7 +98,7 @@ class TcxUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

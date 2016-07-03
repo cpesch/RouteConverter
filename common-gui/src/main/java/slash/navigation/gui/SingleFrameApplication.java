@@ -24,8 +24,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.net.URL;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -39,7 +43,6 @@ import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
-import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -64,8 +67,7 @@ public abstract class SingleFrameApplication extends Application {
         return frame;
     }
 
-    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton,
-                               JMenuBar menuBar) {
+    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton, JMenuBar menuBar) {
         GraphicsConfiguration gc = null;
         String deviceId = preferences.get(DEVICE_PREFERENCE, null);
         if (deviceId != null) {
@@ -80,7 +82,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(loadIcon(iconName).getImage());
+        frame.setIconImage(loadImage(iconName));
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
@@ -90,17 +92,22 @@ public abstract class SingleFrameApplication extends Application {
         }
     }
 
+    private Image loadImage(String name) {
+        URL iconURL = SingleFrameApplication.class.getResource(name);
+        return new ImageIcon(iconURL).getImage();
+    }
+
     protected void openFrame(JPanel contentPane) {
         frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                exit(e);
+                Application.getInstance().getContext().getActionManager().run("exit");
             }
         });
 
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exit(e);
+                Application.getInstance().getContext().getActionManager().run("exit");
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -111,7 +118,7 @@ public abstract class SingleFrameApplication extends Application {
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
         log.info("Screen size is " + bounds + ", insets are " + insets);
 
-        int state = preferences.getInt(STATE_PREFERENCE, NORMAL);
+        int state = getPreferencesState();
         int width = crop("width", getPreferenceWidth(),
                 (int) bounds.getX() - (insets.left + insets.right),
                 (int) bounds.getWidth() - (insets.left + insets.right));
@@ -126,10 +133,10 @@ public abstract class SingleFrameApplication extends Application {
             frame.setSize(width, height);
         log.info("Frame size is " + frame.getSize());
 
-        int x = crop("x", preferences.getInt(X_PREFERENCE, -1),
+        int x = crop("x", getPreferencesX(),
                 (int) bounds.getX() + insets.left,
                 (int) bounds.getX() + insets.left + (int) bounds.getWidth() - insets.right - width);
-        int y = crop("y", preferences.getInt(Y_PREFERENCE, -1),
+        int y = crop("y", getPreferencesY(),
                 (int) bounds.getY() + insets.top,
                 (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - height);
         if ((state & MAXIMIZED_HORIZ) == MAXIMIZED_HORIZ)
@@ -145,6 +152,28 @@ public abstract class SingleFrameApplication extends Application {
 
         frame.setVisible(true);
         frame.toFront();
+
+        frame.addComponentListener(new ComponentAdapter() {
+            public void componentMoved(ComponentEvent e) {
+                putPreferencesLocation();
+            }
+            public void componentResized(ComponentEvent e) {
+                putPreferencesSize();
+            }
+        });
+        frame.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                putPreferencesState();
+            }
+        });
+    }
+
+    private int getPreferencesX() {
+        return preferences.getInt(X_PREFERENCE, -1);
+    }
+
+    private int getPreferencesY() {
+        return preferences.getInt(Y_PREFERENCE, -1);
     }
 
     private int getPreferenceHeight() {
@@ -155,33 +184,61 @@ public abstract class SingleFrameApplication extends Application {
         return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, MAX_VALUE);
     }
 
+    private int getPreferencesState() {
+        return preferences.getInt(STATE_PREFERENCE, NORMAL);
+    }
+
     static int crop(String name, int position, int minimum, int maximum) {
         int result = position < minimum ? (position == -1 ? -1 : minimum) :
                 position > maximum ? (position == -1 ? -1 : maximum) : position;
-        log.fine("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
+        log.finer("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
         return result;
     }
 
-    void closeFrame() {
-        preferences.putInt(X_PREFERENCE, frame.getLocation().x);
-        preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
-        log.info("Storing frame location as " + frame.getLocation());
-        preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
-        preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
-        log.info("Storing frame size as " + frame.getSize());
+    private void putPreferencesLocation() {
+        int x = frame.getLocation().x;
+        int y = frame.getLocation().y;
+        if(getPreferencesX() == x && getPreferencesY() == y)
+            return;
 
-        int state = frame.getExtendedState();
-        preferences.putInt(STATE_PREFERENCE, state);
-        log.info("Storing frame state as " + state);
+        preferences.putInt(X_PREFERENCE, x);
+        preferences.putInt(Y_PREFERENCE, y);
+        log.info("Storing frame location as " + frame.getLocation());
 
         String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
         preferences.put(DEVICE_PREFERENCE, deviceId);
         log.info("Storing graphics device as " + deviceId);
+    }
 
+    private void putPreferencesSize() {
+        int width = frame.getSize().width;
+        int height = frame.getSize().height;
+        if(getPreferenceWidth() == width && getPreferenceHeight() == height)
+            return;
+
+        preferences.putInt(WIDTH_PREFERENCE, width);
+        preferences.putInt(HEIGHT_PREFERENCE, height);
+        log.info("Storing frame size as " + frame.getSize());
+    }
+
+    private void putPreferencesState() {
+        int state = frame.getExtendedState();
+        if(getPreferencesState() == state)
+            return;
+
+        preferences.putInt(STATE_PREFERENCE, state);
+        log.info("Storing frame state as " + state);
+    }
+
+    void closeFrame() {
+        putPreferencesLocation();
+        putPreferencesSize();
+        putPreferencesState();
         frame.dispose();
     }
 
     protected void shutdown() {
+        super.shutdown();
         closeFrame();
     }
 }

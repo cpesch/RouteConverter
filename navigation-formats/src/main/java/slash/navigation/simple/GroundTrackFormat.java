@@ -21,12 +21,8 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -38,9 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -113,7 +107,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -124,7 +118,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         CompactCalendar time = parseTime(trim(lineMatcher.group(5)), trim(lineMatcher.group(6)));
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, elevation, null, time, description);
-        position.setStartDate(startDate);
+        position.setStartDate(context.getStartDate());
         return position;
     }
 

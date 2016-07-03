@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.model.CategoryTreeModel;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesTableModel;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;
@@ -46,12 +46,12 @@ public interface CatalogModel {
     void renameCategory(CategoryTreeNode category, String name);
     void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent, Runnable invokeLaterRunnable);
     void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);
-    void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable);
-    void removeCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
+    void deleteCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable);
+    void deleteCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
 
     void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback);
-    void renameRoute(RouteModel route, String name);
+    void renameRoute(RouteModel route, String name, Runnable invokeLaterRunnable);
     void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable);
     void moveRoutes(List<RouteModel> routes, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);
-    void removeRoutes(List<RouteModel> routes);
+    void deleteRoutes(List<RouteModel> routes);
 }

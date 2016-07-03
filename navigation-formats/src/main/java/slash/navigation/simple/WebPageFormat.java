@@ -20,7 +20,6 @@
 
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
@@ -68,7 +67,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -77,7 +76,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")));
+        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")), UTF8_ENCODING);
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();

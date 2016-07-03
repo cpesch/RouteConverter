@@ -42,8 +42,8 @@ public class Kml21FormatTest {
                 "<coordinates>151.2393322528181, -33.59862693992532, 0\n" +
                 "</coordinates>\n" +
                 "</Point></Placemark></Document></kml>";
-        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
-        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        ParserContext<KmlRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(string.getBytes()), context);
         List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
@@ -65,8 +65,8 @@ public class Kml21FormatTest {
                 "151.2179531903903, -33.59844652615273, 0 \n\n" +
                 "</coordinates>\n" +
                 "</LineString></Placemark></Document></kml>";
-        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
-        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        ParserContext<KmlRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(string.getBytes()), context);
         List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);

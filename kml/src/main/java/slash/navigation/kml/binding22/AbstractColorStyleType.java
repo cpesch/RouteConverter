@@ -91,7 +91,7 @@ public abstract class AbstractColorStyleType
      *     
      */
     public void setColor(byte[] value) {
-        this.color = ((byte[]) value);
+        this.color = value;
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class AbstractColorStyleType
      */
     public List<Object> getAbstractColorStyleSimpleExtensionGroup() {
         if (abstractColorStyleSimpleExtensionGroup == null) {
-            abstractColorStyleSimpleExtensionGroup = new ArrayList<Object>();
+            abstractColorStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractColorStyleSimpleExtensionGroup;
     }
@@ -171,7 +171,7 @@ public abstract class AbstractColorStyleType
      */
     public List<AbstractObjectType> getAbstractColorStyleObjectExtensionGroup() {
         if (abstractColorStyleObjectExtensionGroup == null) {
-            abstractColorStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractColorStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractColorStyleObjectExtensionGroup;
     }

@@ -199,7 +199,7 @@ public class ChangeType {
      */
     public List<JAXBElement<? extends AbstractObjectType>> getAbstractObjectGroup() {
         if (abstractObjectGroup == null) {
-            abstractObjectGroup = new ArrayList<JAXBElement<? extends AbstractObjectType>>();
+            abstractObjectGroup = new ArrayList<>();
         }
         return this.abstractObjectGroup;
     }

@@ -21,20 +21,22 @@
 package slash.navigation.kml;
 
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import static java.lang.String.format;
 
 /**
  * The base of all compressed Google Earth formats.
@@ -43,6 +45,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 public abstract class KmzFormat extends BaseKmlFormat {
+    private static final Logger log = Logger.getLogger(KmzFormat.class.getName());
     private KmlFormat delegate;
 
     protected KmzFormat(KmlFormat delegate) {
@@ -65,15 +68,21 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        ZipInputStream zip = new ZipInputStream(source);
-        try {
-            while ((zip.getNextEntry()) != null) {
-                delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
+        try (ZipInputStream zip = new ZipInputStream(source)) {
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
+                if(entry.isDirectory())
+                    continue;
+
+                try {
+                    delegate.read(new NotClosingUnderlyingInputStream(zip), context);
+                }
+                catch(Exception e) {
+                    log.info(format("Error reading %s with %s: %s, %s", entry, delegate, e.getClass(), e));
+                }
                 zip.closeEntry();
             }
-        } finally {
-            zip.close();
         }
     }
 

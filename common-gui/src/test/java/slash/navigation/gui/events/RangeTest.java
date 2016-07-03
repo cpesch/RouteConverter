@@ -23,12 +23,10 @@ package slash.navigation.gui.events;
 import org.junit.Test;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertIntArrayEquals;
-import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
-import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
-import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
-import static slash.navigation.gui.events.Range.asRange;
+import static slash.navigation.gui.events.Range.*;
 
 public class RangeTest {
     @Test
@@ -40,25 +38,25 @@ public class RangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyIncreasingRanges() {
-        assertEquals(asList(asList(0, 1)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1}));
-        assertEquals(asList(asList(0), asList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 2}));
-        assertEquals(asList(asList(0), asList(2, 3), asList(5, 6, 7)), asContinuousMonotonicallyIncreasingRanges(new int[]{6, 0, 5, 2, 7, 3}));
+        assertEquals(singletonList(asList(0, 1)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1}));
+        assertEquals(asList(singletonList(0), singletonList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 2}));
+        assertEquals(asList(singletonList(0), asList(2, 3), asList(5, 6, 7)), asContinuousMonotonicallyIncreasingRanges(new int[]{6, 0, 5, 2, 7, 3}));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyIncreasingRangesWithLimit() {
-        assertEquals(asList(asList(0), asList(1), asList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2}, 1));
-        assertEquals(asList(asList(0, 1), asList(2, 3), asList(4)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2, 3, 4}, 2));
-        assertEquals(asList(asList(0, 1), asList(3), asList(5, 6)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 3, 5, 6}, 2));
+        assertEquals(asList(singletonList(0), singletonList(1), singletonList(2)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2}, 1));
+        assertEquals(asList(asList(0, 1), asList(2, 3), singletonList(4)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2, 3, 4}, 2));
+        assertEquals(asList(asList(0, 1), singletonList(3), asList(5, 6)), asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 3, 5, 6}, 2));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testAsContinuousMonotonicallyDecreasingRanges() {
-        assertEquals(asList(asList(1, 0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 1}));
-        assertEquals(asList(asList(2), asList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 2}));
-        assertEquals(asList(asList(7, 6, 5), asList(3, 2), asList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{3, 6, 0, 7, 5, 2}));
+        assertEquals(singletonList(asList(1, 0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 1}));
+        assertEquals(asList(singletonList(2), singletonList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{0, 2}));
+        assertEquals(asList(asList(7, 6, 5), asList(3, 2), singletonList(0)), asContinuousMonotonicallyDecreasingRanges(new int[]{3, 6, 0, 7, 5, 2}));
     }
 
     @Test

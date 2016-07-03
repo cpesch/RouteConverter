@@ -33,8 +33,7 @@ import java.util.List;
 import static java.io.File.createTempFile;
 import static org.junit.Assert.*;
 import static slash.common.io.Files.getExtension;
-import static slash.navigation.base.NavigationFormats.asFormat;
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
+import static slash.navigation.base.NavigationFormatConverter.asFormat;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
 import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -45,13 +44,13 @@ public abstract class ConvertBase {
     public static void convertRoundtrip(String testFileName,
                                         BaseNavigationFormat sourceFormat,
                                         BaseNavigationFormat targetFormat) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         assertTrue(sourceFormat.isSupportsReading());
         assertTrue(targetFormat.isSupportsWriting());
 
         File source = new File(testFileName);
-        ParserResult result = parser.read(source, getReadFormatsPreferredByExtension(getExtension(testFileName)));
+        ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull("Cannot read route from " + source, result);
         assertTrue(result.isSuccessful());
         assertNotNull(result.getFormat());
@@ -74,7 +73,7 @@ public abstract class ConvertBase {
 
     @SuppressWarnings("unchecked")
     private static void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File target = createTempFile("singletarget", targetFormat.getExtension());
         target.deleteOnExit();
@@ -82,9 +81,9 @@ public abstract class ConvertBase {
             parser.write(sourceRoute, targetFormat, false, false, null, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source, getReadFormatsPreferredByExtension(getExtension(source)));
+            ParserResult sourceResult = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
-            ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
+            ParserResult targetResult = parser.read(target, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
@@ -111,7 +110,7 @@ public abstract class ConvertBase {
 
     @SuppressWarnings("unchecked")
     private static void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File target = createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();
@@ -119,10 +118,10 @@ public abstract class ConvertBase {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source, getReadFormatsPreferredByExtension(getExtension(source)));
+            ParserResult sourceResult = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
             assertTrue(sourceResult.isSuccessful());
-            ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
+            ParserResult targetResult = parser.read(target, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
             assertTrue(targetResult.isSuccessful());
 

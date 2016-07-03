@@ -24,11 +24,7 @@ import org.junit.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,8 +40,8 @@ public class MTP0809FormatTest {
     public void testReaddescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
-        ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
-        format.read(new BufferedReader(new StringReader(writer.toString())), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<BcrRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(writer.toString())), ISO_LATIN1_ENCODING, context);
         List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);

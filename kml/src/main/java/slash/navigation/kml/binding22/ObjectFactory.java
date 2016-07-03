@@ -763,7 +763,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "refreshVisibility", defaultValue = "0")
     public JAXBElement<Boolean> createRefreshVisibility(Boolean value) {
-        return new JAXBElement<Boolean>(_RefreshVisibility_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_RefreshVisibility_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -772,7 +772,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "description")
     public JAXBElement<String> createDescription(String value) {
-        return new JAXBElement<String>(_Description_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Description_QNAME, String.class, null, value);
     }
 
     /**
@@ -781,7 +781,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "CameraObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createCameraObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_CameraObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_CameraObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -790,7 +790,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "key", defaultValue = "normal")
     public JAXBElement<StyleStateEnumType> createKey(StyleStateEnumType value) {
-        return new JAXBElement<StyleStateEnumType>(_Key_QNAME, StyleStateEnumType.class, null, value);
+        return new JAXBElement<>(_Key_QNAME, StyleStateEnumType.class, null, value);
     }
 
     /**
@@ -799,7 +799,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractSubStyleSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractSubStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractSubStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractSubStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -808,7 +808,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "CameraSimpleExtensionGroup")
     public JAXBElement<Object> createCameraSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_CameraSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_CameraSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -817,7 +817,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Scale", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<ScaleType> createScale(ScaleType value) {
-        return new JAXBElement<ScaleType>(_Scale_QNAME, ScaleType.class, null, value);
+        return new JAXBElement<>(_Scale_QNAME, ScaleType.class, null, value);
     }
 
     /**
@@ -826,7 +826,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonBoxSimpleExtensionGroup")
     public JAXBElement<Object> createLatLonBoxSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LatLonBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LatLonBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -835,7 +835,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxWidth", defaultValue = "0")
     public JAXBElement<Integer> createMaxWidth(Integer value) {
-        return new JAXBElement<Integer>(_MaxWidth_QNAME, Integer.class, null, value);
+        return new JAXBElement<>(_MaxWidth_QNAME, Integer.class, null, value);
     }
 
     /**
@@ -844,7 +844,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "GroundOverlaySimpleExtensionGroup")
     public JAXBElement<Object> createGroundOverlaySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_GroundOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_GroundOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -853,7 +853,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractOverlayObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractOverlayObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -862,7 +862,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractViewSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractViewSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractViewSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractViewSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -871,7 +871,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LocationSimpleExtensionGroup")
     public JAXBElement<Object> createLocationSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LocationSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LocationSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -880,7 +880,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "innerBoundaryIs")
     public JAXBElement<BoundaryType> createInnerBoundaryIs(BoundaryType value) {
-        return new JAXBElement<BoundaryType>(_InnerBoundaryIs_QNAME, BoundaryType.class, null, value);
+        return new JAXBElement<>(_InnerBoundaryIs_QNAME, BoundaryType.class, null, value);
     }
 
     /**
@@ -889,7 +889,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SimpleData")
     public JAXBElement<SimpleDataType> createSimpleData(SimpleDataType value) {
-        return new JAXBElement<SimpleDataType>(_SimpleData_QNAME, SimpleDataType.class, null, value);
+        return new JAXBElement<>(_SimpleData_QNAME, SimpleDataType.class, null, value);
     }
 
     /**
@@ -898,7 +898,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LinearRing", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<LinearRingType> createLinearRing(LinearRingType value) {
-        return new JAXBElement<LinearRingType>(_LinearRing_QNAME, LinearRingType.class, null, value);
+        return new JAXBElement<>(_LinearRing_QNAME, LinearRingType.class, null, value);
     }
 
     /**
@@ -907,7 +907,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "MultiGeometrySimpleExtensionGroup")
     public JAXBElement<Object> createMultiGeometrySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_MultiGeometrySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_MultiGeometrySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -916,7 +916,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "linkDescription")
     public JAXBElement<String> createLinkDescription(String value) {
-        return new JAXBElement<String>(_LinkDescription_QNAME, String.class, null, value);
+        return new JAXBElement<>(_LinkDescription_QNAME, String.class, null, value);
     }
 
     /**
@@ -925,7 +925,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "near", defaultValue = "0.0")
     public JAXBElement<Double> createNear(Double value) {
-        return new JAXBElement<Double>(_Near_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Near_QNAME, Double.class, null, value);
     }
 
     /**
@@ -934,7 +934,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "FolderSimpleExtensionGroup")
     public JAXBElement<Object> createFolderSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_FolderSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_FolderSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -943,7 +943,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ViewVolumeSimpleExtensionGroup")
     public JAXBElement<Object> createViewVolumeSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ViewVolumeSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ViewVolumeSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -952,7 +952,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PolyStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPolyStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PolyStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PolyStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -961,7 +961,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractGeometrySimpleExtensionGroup")
     public JAXBElement<Object> createAbstractGeometrySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractGeometrySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractGeometrySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -970,7 +970,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "UpdateExtensionGroup")
     public JAXBElement<Object> createUpdateExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_UpdateExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_UpdateExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -979,7 +979,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "viewRefreshTime", defaultValue = "4.0")
     public JAXBElement<Double> createViewRefreshTime(Double value) {
-        return new JAXBElement<Double>(_ViewRefreshTime_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_ViewRefreshTime_QNAME, Double.class, null, value);
     }
 
     /**
@@ -988,7 +988,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "width", defaultValue = "1.0")
     public JAXBElement<Double> createWidth(Double value) {
-        return new JAXBElement<Double>(_Width_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Width_QNAME, Double.class, null, value);
     }
 
     /**
@@ -997,7 +997,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LodSimpleExtensionGroup")
     public JAXBElement<Object> createLodSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LodSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LodSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1006,7 +1006,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Change")
     public JAXBElement<ChangeType> createChange(ChangeType value) {
-        return new JAXBElement<ChangeType>(_Change_QNAME, ChangeType.class, null, value);
+        return new JAXBElement<>(_Change_QNAME, ChangeType.class, null, value);
     }
 
     /**
@@ -1015,7 +1015,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "text")
     public JAXBElement<String> createText(String value) {
-        return new JAXBElement<String>(_Text_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Text_QNAME, String.class, null, value);
     }
 
     /**
@@ -1024,7 +1024,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "size")
     public JAXBElement<Vec2Type> createSize(Vec2Type value) {
-        return new JAXBElement<Vec2Type>(_Size_QNAME, Vec2Type.class, null, value);
+        return new JAXBElement<>(_Size_QNAME, Vec2Type.class, null, value);
     }
 
     /**
@@ -1033,7 +1033,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractLatLonBoxObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractLatLonBoxObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractLatLonBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractLatLonBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1042,7 +1042,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LinkObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLinkObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1051,7 +1051,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LookAtObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLookAtObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LookAtObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LookAtObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1060,7 +1060,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "outerBoundaryIs")
     public JAXBElement<BoundaryType> createOuterBoundaryIs(BoundaryType value) {
-        return new JAXBElement<BoundaryType>(_OuterBoundaryIs_QNAME, BoundaryType.class, null, value);
+        return new JAXBElement<>(_OuterBoundaryIs_QNAME, BoundaryType.class, null, value);
     }
 
     /**
@@ -1069,7 +1069,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "name")
     public JAXBElement<String> createName(String value) {
-        return new JAXBElement<String>(_Name_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Name_QNAME, String.class, null, value);
     }
 
     /**
@@ -1078,7 +1078,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractTimePrimitiveSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractTimePrimitiveSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractTimePrimitiveSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractTimePrimitiveSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1087,7 +1087,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Region", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<RegionType> createRegion(RegionType value) {
-        return new JAXBElement<RegionType>(_Region_QNAME, RegionType.class, null, value);
+        return new JAXBElement<>(_Region_QNAME, RegionType.class, null, value);
     }
 
     /**
@@ -1096,7 +1096,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractViewObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractViewObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractViewObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractViewObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1105,7 +1105,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ItemIcon", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<ItemIconType> createItemIcon(ItemIconType value) {
-        return new JAXBElement<ItemIconType>(_ItemIcon_QNAME, ItemIconType.class, null, value);
+        return new JAXBElement<>(_ItemIcon_QNAME, ItemIconType.class, null, value);
     }
 
     /**
@@ -1114,7 +1114,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractStyleSelectorGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractStyleSelectorType> createAbstractStyleSelectorGroup(AbstractStyleSelectorType value) {
-        return new JAXBElement<AbstractStyleSelectorType>(_AbstractStyleSelectorGroup_QNAME, AbstractStyleSelectorType.class, null, value);
+        return new JAXBElement<>(_AbstractStyleSelectorGroup_QNAME, AbstractStyleSelectorType.class, null, value);
     }
 
     /**
@@ -1123,7 +1123,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PhotoOverlaySimpleExtensionGroup")
     public JAXBElement<Object> createPhotoOverlaySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PhotoOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PhotoOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1132,7 +1132,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "sourceHref")
     public JAXBElement<String> createSourceHref(String value) {
-        return new JAXBElement<String>(_SourceHref_QNAME, String.class, null, value);
+        return new JAXBElement<>(_SourceHref_QNAME, String.class, null, value);
     }
 
     /**
@@ -1141,7 +1141,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonAltBoxObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLatLonAltBoxObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LatLonAltBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LatLonAltBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1150,7 +1150,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BalloonStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractSubStyleGroup")
     public JAXBElement<BalloonStyleType> createBalloonStyle(BalloonStyleType value) {
-        return new JAXBElement<BalloonStyleType>(_BalloonStyle_QNAME, BalloonStyleType.class, null, value);
+        return new JAXBElement<>(_BalloonStyle_QNAME, BalloonStyleType.class, null, value);
     }
 
     /**
@@ -1159,7 +1159,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "MultiGeometry", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<MultiGeometryType> createMultiGeometry(MultiGeometryType value) {
-        return new JAXBElement<MultiGeometryType>(_MultiGeometry_QNAME, MultiGeometryType.class, null, value);
+        return new JAXBElement<>(_MultiGeometry_QNAME, MultiGeometryType.class, null, value);
     }
 
     /**
@@ -1168,7 +1168,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractTimePrimitiveGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractTimePrimitiveType> createAbstractTimePrimitiveGroup(AbstractTimePrimitiveType value) {
-        return new JAXBElement<AbstractTimePrimitiveType>(_AbstractTimePrimitiveGroup_QNAME, AbstractTimePrimitiveType.class, null, value);
+        return new JAXBElement<>(_AbstractTimePrimitiveGroup_QNAME, AbstractTimePrimitiveType.class, null, value);
     }
 
     /**
@@ -1177,7 +1177,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Update")
     public JAXBElement<UpdateType> createUpdate(UpdateType value) {
-        return new JAXBElement<UpdateType>(_Update_QNAME, UpdateType.class, null, value);
+        return new JAXBElement<>(_Update_QNAME, UpdateType.class, null, value);
     }
 
     /**
@@ -1186,7 +1186,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ItemIconObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createItemIconObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ItemIconObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ItemIconObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1195,7 +1195,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LodObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLodObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LodObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LodObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1204,7 +1204,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "OrientationObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createOrientationObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_OrientationObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_OrientationObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1213,7 +1213,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "screenXY")
     public JAXBElement<Vec2Type> createScreenXY(Vec2Type value) {
-        return new JAXBElement<Vec2Type>(_ScreenXY_QNAME, Vec2Type.class, null, value);
+        return new JAXBElement<>(_ScreenXY_QNAME, Vec2Type.class, null, value);
     }
 
     /**
@@ -1222,7 +1222,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Alias", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AliasType> createAlias(AliasType value) {
-        return new JAXBElement<AliasType>(_Alias_QNAME, AliasType.class, null, value);
+        return new JAXBElement<>(_Alias_QNAME, AliasType.class, null, value);
     }
 
     /**
@@ -1232,7 +1232,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "color", defaultValue = "ffffffff")
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     public JAXBElement<byte[]> createColor(byte[] value) {
-        return new JAXBElement<byte[]>(_Color_QNAME, byte[].class, null, ((byte[]) value));
+        return new JAXBElement<>(_Color_QNAME, byte[].class, null, ((byte[]) value));
     }
 
     /**
@@ -1241,7 +1241,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "StyleMapSimpleExtensionGroup")
     public JAXBElement<Object> createStyleMapSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_StyleMapSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_StyleMapSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1250,7 +1250,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractTimePrimitiveObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractTimePrimitiveObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractTimePrimitiveObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractTimePrimitiveObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1259,7 +1259,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "message")
     public JAXBElement<String> createMessage(String value) {
-        return new JAXBElement<String>(_Message_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Message_QNAME, String.class, null, value);
     }
 
     /**
@@ -1268,7 +1268,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ImagePyramidObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createImagePyramidObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ImagePyramidObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ImagePyramidObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1277,7 +1277,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxSnippetLines", defaultValue = "2")
     public JAXBElement<Integer> createMaxSnippetLines(Integer value) {
-        return new JAXBElement<Integer>(_MaxSnippetLines_QNAME, Integer.class, null, value);
+        return new JAXBElement<>(_MaxSnippetLines_QNAME, Integer.class, null, value);
     }
 
     /**
@@ -1286,7 +1286,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Icon", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LinkType> createIcon(LinkType value) {
-        return new JAXBElement<LinkType>(_Icon_QNAME, LinkType.class, null, value);
+        return new JAXBElement<>(_Icon_QNAME, LinkType.class, null, value);
     }
 
     /**
@@ -1295,7 +1295,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "displayName")
     public JAXBElement<String> createDisplayName(String value) {
-        return new JAXBElement<String>(_DisplayName_QNAME, String.class, null, value);
+        return new JAXBElement<>(_DisplayName_QNAME, String.class, null, value);
     }
 
     /**
@@ -1304,7 +1304,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractViewGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractViewType> createAbstractViewGroup(AbstractViewType value) {
-        return new JAXBElement<AbstractViewType>(_AbstractViewGroup_QNAME, AbstractViewType.class, null, value);
+        return new JAXBElement<>(_AbstractViewGroup_QNAME, AbstractViewType.class, null, value);
     }
 
     /**
@@ -1313,7 +1313,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BoundaryObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createBoundaryObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_BoundaryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_BoundaryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1322,7 +1322,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractGeometryGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractGeometryType> createAbstractGeometryGroup(AbstractGeometryType value) {
-        return new JAXBElement<AbstractGeometryType>(_AbstractGeometryGroup_QNAME, AbstractGeometryType.class, null, value);
+        return new JAXBElement<>(_AbstractGeometryGroup_QNAME, AbstractGeometryType.class, null, value);
     }
 
     /**
@@ -1331,7 +1331,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLinkControl")
     public JAXBElement<NetworkLinkControlType> createNetworkLinkControl(NetworkLinkControlType value) {
-        return new JAXBElement<NetworkLinkControlType>(_NetworkLinkControl_QNAME, NetworkLinkControlType.class, null, value);
+        return new JAXBElement<>(_NetworkLinkControl_QNAME, NetworkLinkControlType.class, null, value);
     }
 
     /**
@@ -1340,7 +1340,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "GroundOverlayObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createGroundOverlayObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_GroundOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_GroundOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1349,7 +1349,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "IconStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createIconStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_IconStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_IconStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1358,7 +1358,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractGeometryObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractGeometryObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractGeometryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractGeometryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1367,7 +1367,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "tessellate", defaultValue = "0")
     public JAXBElement<Boolean> createTessellate(Boolean value) {
-        return new JAXBElement<Boolean>(_Tessellate_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Tessellate_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -1376,7 +1376,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "phoneNumber")
     public JAXBElement<String> createPhoneNumber(String value) {
-        return new JAXBElement<String>(_PhoneNumber_QNAME, String.class, null, value);
+        return new JAXBElement<>(_PhoneNumber_QNAME, String.class, null, value);
     }
 
     /**
@@ -1385,7 +1385,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "roll", defaultValue = "0.0")
     public JAXBElement<Double> createRoll(Double value) {
-        return new JAXBElement<Double>(_Roll_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Roll_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1394,7 +1394,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Point", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<PointType> createPoint(PointType value) {
-        return new JAXBElement<PointType>(_Point_QNAME, PointType.class, null, value);
+        return new JAXBElement<>(_Point_QNAME, PointType.class, null, value);
     }
 
     /**
@@ -1403,7 +1403,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractSubStyleGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractSubStyleType> createAbstractSubStyleGroup(AbstractSubStyleType value) {
-        return new JAXBElement<AbstractSubStyleType>(_AbstractSubStyleGroup_QNAME, AbstractSubStyleType.class, null, value);
+        return new JAXBElement<>(_AbstractSubStyleGroup_QNAME, AbstractSubStyleType.class, null, value);
     }
 
     /**
@@ -1412,7 +1412,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxLodPixels", defaultValue = "-1.0")
     public JAXBElement<Double> createMaxLodPixels(Double value) {
-        return new JAXBElement<Double>(_MaxLodPixels_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MaxLodPixels_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1421,7 +1421,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "href")
     public JAXBElement<String> createHref(String value) {
-        return new JAXBElement<String>(_Href_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Href_QNAME, String.class, null, value);
     }
 
     /**
@@ -1430,7 +1430,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "overlayXY")
     public JAXBElement<Vec2Type> createOverlayXY(Vec2Type value) {
-        return new JAXBElement<Vec2Type>(_OverlayXY_QNAME, Vec2Type.class, null, value);
+        return new JAXBElement<>(_OverlayXY_QNAME, Vec2Type.class, null, value);
     }
 
     /**
@@ -1439,7 +1439,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "tileSize", defaultValue = "256")
     public JAXBElement<Integer> createTileSize(Integer value) {
-        return new JAXBElement<Integer>(_TileSize_QNAME, Integer.class, null, value);
+        return new JAXBElement<>(_TileSize_QNAME, Integer.class, null, value);
     }
 
     /**
@@ -1448,7 +1448,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AliasSimpleExtensionGroup")
     public JAXBElement<Object> createAliasSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AliasSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AliasSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1457,7 +1457,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LabelStyleSimpleExtensionGroup")
     public JAXBElement<Object> createLabelStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LabelStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LabelStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1466,7 +1466,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "visibility", defaultValue = "1")
     public JAXBElement<Boolean> createVisibility(Boolean value) {
-        return new JAXBElement<Boolean>(_Visibility_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Visibility_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -1475,7 +1475,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "StyleSimpleExtensionGroup")
     public JAXBElement<Object> createStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_StyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_StyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1484,7 +1484,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Model", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<ModelType> createModel(ModelType value) {
-        return new JAXBElement<ModelType>(_Model_QNAME, ModelType.class, null, value);
+        return new JAXBElement<>(_Model_QNAME, ModelType.class, null, value);
     }
 
     /**
@@ -1493,7 +1493,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PolyStyleSimpleExtensionGroup")
     public JAXBElement<Object> createPolyStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PolyStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PolyStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1502,7 +1502,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLinkControlSimpleExtensionGroup")
     public JAXBElement<Object> createNetworkLinkControlSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_NetworkLinkControlSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_NetworkLinkControlSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1511,7 +1511,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SimpleFieldExtension")
     public JAXBElement<Object> createSimpleFieldExtension(Object value) {
-        return new JAXBElement<Object>(_SimpleFieldExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_SimpleFieldExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1520,7 +1520,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "cookie")
     public JAXBElement<String> createCookie(String value) {
-        return new JAXBElement<String>(_Cookie_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Cookie_QNAME, String.class, null, value);
     }
 
     /**
@@ -1529,7 +1529,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "UpdateOpExtensionGroup")
     public JAXBElement<Object> createUpdateOpExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_UpdateOpExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_UpdateOpExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1538,7 +1538,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "altitudeMode", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "altitudeModeGroup", defaultValue = "clampToGround")
     public JAXBElement<AltitudeModeEnumType> createAltitudeMode(AltitudeModeEnumType value) {
-        return new JAXBElement<AltitudeModeEnumType>(_AltitudeMode_QNAME, AltitudeModeEnumType.class, null, value);
+        return new JAXBElement<>(_AltitudeMode_QNAME, AltitudeModeEnumType.class, null, value);
     }
 
     /**
@@ -1547,7 +1547,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "latitude", defaultValue = "0.0")
     public JAXBElement<Double> createLatitude(Double value) {
-        return new JAXBElement<Double>(_Latitude_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Latitude_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1556,7 +1556,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LinearRingSimpleExtensionGroup")
     public JAXBElement<Object> createLinearRingSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LinearRingSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LinearRingSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1565,7 +1565,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "viewBoundScale", defaultValue = "1.0")
     public JAXBElement<Double> createViewBoundScale(Double value) {
-        return new JAXBElement<Double>(_ViewBoundScale_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_ViewBoundScale_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1574,7 +1574,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "KmlSimpleExtensionGroup")
     public JAXBElement<Object> createKmlSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_KmlSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_KmlSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1583,7 +1583,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractFeatureGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractFeatureType> createAbstractFeatureGroup(AbstractFeatureType value) {
-        return new JAXBElement<AbstractFeatureType>(_AbstractFeatureGroup_QNAME, AbstractFeatureType.class, null, value);
+        return new JAXBElement<>(_AbstractFeatureGroup_QNAME, AbstractFeatureType.class, null, value);
     }
 
     /**
@@ -1592,7 +1592,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PolygonSimpleExtensionGroup")
     public JAXBElement<Object> createPolygonSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PolygonSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PolygonSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1601,7 +1601,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "OrientationSimpleExtensionGroup")
     public JAXBElement<Object> createOrientationSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_OrientationSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_OrientationSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1610,7 +1610,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "gridOrigin", defaultValue = "lowerLeft")
     public JAXBElement<GridOriginEnumType> createGridOrigin(GridOriginEnumType value) {
-        return new JAXBElement<GridOriginEnumType>(_GridOrigin_QNAME, GridOriginEnumType.class, null, value);
+        return new JAXBElement<>(_GridOrigin_QNAME, GridOriginEnumType.class, null, value);
     }
 
     /**
@@ -1619,7 +1619,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BalloonStyleSimpleExtensionGroup")
     public JAXBElement<Object> createBalloonStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_BalloonStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_BalloonStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1628,7 +1628,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PlacemarkSimpleExtensionGroup")
     public JAXBElement<Object> createPlacemarkSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PlacemarkSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PlacemarkSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1637,7 +1637,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LocationObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLocationObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LocationObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LocationObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1646,7 +1646,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "RegionSimpleExtensionGroup")
     public JAXBElement<Object> createRegionSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_RegionSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_RegionSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1655,7 +1655,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Create")
     public JAXBElement<CreateType> createCreate(CreateType value) {
-        return new JAXBElement<CreateType>(_Create_QNAME, CreateType.class, null, value);
+        return new JAXBElement<>(_Create_QNAME, CreateType.class, null, value);
     }
 
     /**
@@ -1664,7 +1664,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "refreshMode", defaultValue = "onChange")
     public JAXBElement<RefreshModeEnumType> createRefreshMode(RefreshModeEnumType value) {
-        return new JAXBElement<RefreshModeEnumType>(_RefreshMode_QNAME, RefreshModeEnumType.class, null, value);
+        return new JAXBElement<>(_RefreshMode_QNAME, RefreshModeEnumType.class, null, value);
     }
 
     /**
@@ -1673,7 +1673,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractContainerObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractContainerObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractContainerObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractContainerObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1682,7 +1682,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ScaleSimpleExtensionGroup")
     public JAXBElement<Object> createScaleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ScaleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ScaleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1691,7 +1691,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ListStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractSubStyleGroup")
     public JAXBElement<ListStyleType> createListStyle(ListStyleType value) {
-        return new JAXBElement<ListStyleType>(_ListStyle_QNAME, ListStyleType.class, null, value);
+        return new JAXBElement<>(_ListStyle_QNAME, ListStyleType.class, null, value);
     }
 
     /**
@@ -1700,7 +1700,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ItemIconSimpleExtensionGroup")
     public JAXBElement<Object> createItemIconSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ItemIconSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ItemIconSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1709,7 +1709,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "IconStyleSimpleExtensionGroup")
     public JAXBElement<Object> createIconStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_IconStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_IconStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1718,7 +1718,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Pair", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<PairType> createPair(PairType value) {
-        return new JAXBElement<PairType>(_Pair_QNAME, PairType.class, null, value);
+        return new JAXBElement<>(_Pair_QNAME, PairType.class, null, value);
     }
 
     /**
@@ -1727,7 +1727,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "flyToView", defaultValue = "0")
     public JAXBElement<Boolean> createFlyToView(Boolean value) {
-        return new JAXBElement<Boolean>(_FlyToView_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_FlyToView_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -1736,7 +1736,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineStringSimpleExtensionGroup")
     public JAXBElement<Object> createLineStringSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LineStringSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LineStringSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1745,7 +1745,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonAltBoxSimpleExtensionGroup")
     public JAXBElement<Object> createLatLonAltBoxSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LatLonAltBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LatLonAltBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1754,7 +1754,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "listItemType", defaultValue = "check")
     public JAXBElement<ListItemTypeEnumType> createListItemType(ListItemTypeEnumType value) {
-        return new JAXBElement<ListItemTypeEnumType>(_ListItemType_QNAME, ListItemTypeEnumType.class, null, value);
+        return new JAXBElement<>(_ListItemType_QNAME, ListItemTypeEnumType.class, null, value);
     }
 
     /**
@@ -1763,7 +1763,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonBox", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LatLonBoxType> createLatLonBox(LatLonBoxType value) {
-        return new JAXBElement<LatLonBoxType>(_LatLonBox_QNAME, LatLonBoxType.class, null, value);
+        return new JAXBElement<>(_LatLonBox_QNAME, LatLonBoxType.class, null, value);
     }
 
     /**
@@ -1772,7 +1772,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractSubStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractSubStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractSubStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractSubStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1781,7 +1781,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ScaleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createScaleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ScaleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ScaleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1790,7 +1790,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Polygon", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<PolygonType> createPolygon(PolygonType value) {
-        return new JAXBElement<PolygonType>(_Polygon_QNAME, PolygonType.class, null, value);
+        return new JAXBElement<>(_Polygon_QNAME, PolygonType.class, null, value);
     }
 
     /**
@@ -1799,7 +1799,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Link", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LinkType> createLink(LinkType value) {
-        return new JAXBElement<LinkType>(_Link_QNAME, LinkType.class, null, value);
+        return new JAXBElement<>(_Link_QNAME, LinkType.class, null, value);
     }
 
     /**
@@ -1808,7 +1808,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LookAtSimpleExtensionGroup")
     public JAXBElement<Object> createLookAtSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LookAtSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LookAtSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1817,7 +1817,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeStamp", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractTimePrimitiveGroup")
     public JAXBElement<TimeStampType> createTimeStamp(TimeStampType value) {
-        return new JAXBElement<TimeStampType>(_TimeStamp_QNAME, TimeStampType.class, null, value);
+        return new JAXBElement<>(_TimeStamp_QNAME, TimeStampType.class, null, value);
     }
 
     /**
@@ -1826,7 +1826,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "y", defaultValue = "1.0")
     public JAXBElement<Double> createY(Double value) {
-        return new JAXBElement<Double>(_Y_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Y_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1835,7 +1835,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "x", defaultValue = "1.0")
     public JAXBElement<Double> createX(Double value) {
-        return new JAXBElement<Double>(_X_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_X_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1844,7 +1844,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AliasObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAliasObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AliasObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AliasObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1853,7 +1853,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "z", defaultValue = "1.0")
     public JAXBElement<Double> createZ(Double value) {
-        return new JAXBElement<Double>(_Z_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Z_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1862,7 +1862,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "RegionObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createRegionObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_RegionObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_RegionObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1871,7 +1871,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PointObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPointObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PointObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PointObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1880,7 +1880,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "south", defaultValue = "-180.0")
     public JAXBElement<Double> createSouth(Double value) {
-        return new JAXBElement<Double>(_South_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_South_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1889,7 +1889,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ModelObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createModelObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ModelObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ModelObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1898,7 +1898,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "tilt", defaultValue = "0.0")
     public JAXBElement<Double> createTilt(Double value) {
-        return new JAXBElement<Double>(_Tilt_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Tilt_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1907,7 +1907,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BasicLinkSimpleExtensionGroup")
     public JAXBElement<Object> createBasicLinkSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_BasicLinkSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_BasicLinkSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1916,7 +1916,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Orientation", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<OrientationType> createOrientation(OrientationType value) {
-        return new JAXBElement<OrientationType>(_Orientation_QNAME, OrientationType.class, null, value);
+        return new JAXBElement<>(_Orientation_QNAME, OrientationType.class, null, value);
     }
 
     /**
@@ -1925,7 +1925,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeSpan", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractTimePrimitiveGroup")
     public JAXBElement<TimeSpanType> createTimeSpan(TimeSpanType value) {
-        return new JAXBElement<TimeSpanType>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
+        return new JAXBElement<>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
     }
 
     /**
@@ -1934,7 +1934,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractFeatureSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractFeatureSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractFeatureSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractFeatureSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1943,7 +1943,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonAltBox", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LatLonAltBoxType> createLatLonAltBox(LatLonAltBoxType value) {
-        return new JAXBElement<LatLonAltBoxType>(_LatLonAltBox_QNAME, LatLonAltBoxType.class, null, value);
+        return new JAXBElement<>(_LatLonAltBox_QNAME, LatLonAltBoxType.class, null, value);
     }
 
     /**
@@ -1952,7 +1952,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "when")
     public JAXBElement<String> createWhen(String value) {
-        return new JAXBElement<String>(_When_QNAME, String.class, null, value);
+        return new JAXBElement<>(_When_QNAME, String.class, null, value);
     }
 
     /**
@@ -1961,7 +1961,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ScreenOverlay", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractOverlayGroup")
     public JAXBElement<ScreenOverlayType> createScreenOverlay(ScreenOverlayType value) {
-        return new JAXBElement<ScreenOverlayType>(_ScreenOverlay_QNAME, ScreenOverlayType.class, null, value);
+        return new JAXBElement<>(_ScreenOverlay_QNAME, ScreenOverlayType.class, null, value);
     }
 
     /**
@@ -1970,7 +1970,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PolygonObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPolygonObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PolygonObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PolygonObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -1980,7 +1980,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "bgColor", defaultValue = "ffffffff")
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     public JAXBElement<byte[]> createBgColor(byte[] value) {
-        return new JAXBElement<byte[]>(_BgColor_QNAME, byte[].class, null, ((byte[]) value));
+        return new JAXBElement<>(_BgColor_QNAME, byte[].class, null, ((byte[]) value));
     }
 
     /**
@@ -1989,7 +1989,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxSessionLength", defaultValue = "-1.0")
     public JAXBElement<Double> createMaxSessionLength(Double value) {
-        return new JAXBElement<Double>(_MaxSessionLength_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MaxSessionLength_QNAME, Double.class, null, value);
     }
 
     /**
@@ -1998,7 +1998,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "longitude", defaultValue = "0.0")
     public JAXBElement<Double> createLongitude(Double value) {
-        return new JAXBElement<Double>(_Longitude_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Longitude_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2007,7 +2007,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Delete")
     public JAXBElement<DeleteType> createDelete(DeleteType value) {
-        return new JAXBElement<DeleteType>(_Delete_QNAME, DeleteType.class, null, value);
+        return new JAXBElement<>(_Delete_QNAME, DeleteType.class, null, value);
     }
 
     /**
@@ -2016,7 +2016,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLinkSimpleExtensionGroup")
     public JAXBElement<Object> createNetworkLinkSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_NetworkLinkSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_NetworkLinkSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2025,7 +2025,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "kml")
     public JAXBElement<KmlType> createKml(KmlType value) {
-        return new JAXBElement<KmlType>(_Kml_QNAME, KmlType.class, null, value);
+        return new JAXBElement<>(_Kml_QNAME, KmlType.class, null, value);
     }
 
     /**
@@ -2034,7 +2034,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "value")
     public JAXBElement<String> createValue(String value) {
-        return new JAXBElement<String>(_Value_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Value_QNAME, String.class, null, value);
     }
 
     /**
@@ -2043,7 +2043,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ViewVolumeObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createViewVolumeObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ViewVolumeObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ViewVolumeObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2052,7 +2052,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ResourceMapObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createResourceMapObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ResourceMapObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ResourceMapObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2061,7 +2061,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLink", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureGroup")
     public JAXBElement<NetworkLinkType> createNetworkLink(NetworkLinkType value) {
-        return new JAXBElement<NetworkLinkType>(_NetworkLink_QNAME, NetworkLinkType.class, null, value);
+        return new JAXBElement<>(_NetworkLink_QNAME, NetworkLinkType.class, null, value);
     }
 
     /**
@@ -2070,7 +2070,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractColorStyleGroup")
     public JAXBElement<LineStyleType> createLineStyle(LineStyleType value) {
-        return new JAXBElement<LineStyleType>(_LineStyle_QNAME, LineStyleType.class, null, value);
+        return new JAXBElement<>(_LineStyle_QNAME, LineStyleType.class, null, value);
     }
 
     /**
@@ -2079,7 +2079,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BasicLinkObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createBasicLinkObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_BasicLinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_BasicLinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2088,7 +2088,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ResourceMap", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<ResourceMapType> createResourceMap(ResourceMapType value) {
-        return new JAXBElement<ResourceMapType>(_ResourceMap_QNAME, ResourceMapType.class, null, value);
+        return new JAXBElement<>(_ResourceMap_QNAME, ResourceMapType.class, null, value);
     }
 
     /**
@@ -2097,7 +2097,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Style", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractStyleSelectorGroup")
     public JAXBElement<StyleType> createStyle(StyleType value) {
-        return new JAXBElement<StyleType>(_Style_QNAME, StyleType.class, null, value);
+        return new JAXBElement<>(_Style_QNAME, StyleType.class, null, value);
     }
 
     /**
@@ -2106,7 +2106,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "drawOrder", defaultValue = "0")
     public JAXBElement<Integer> createDrawOrder(Integer value) {
-        return new JAXBElement<Integer>(_DrawOrder_QNAME, Integer.class, null, value);
+        return new JAXBElement<>(_DrawOrder_QNAME, Integer.class, null, value);
     }
 
     /**
@@ -2115,7 +2115,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LinearRingObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLinearRingObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LinearRingObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LinearRingObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2124,7 +2124,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "west", defaultValue = "-180.0")
     public JAXBElement<Double> createWest(Double value) {
-        return new JAXBElement<Double>(_West_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_West_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2133,7 +2133,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "GroundOverlay", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractOverlayGroup")
     public JAXBElement<GroundOverlayType> createGroundOverlay(GroundOverlayType value) {
-        return new JAXBElement<GroundOverlayType>(_GroundOverlay_QNAME, GroundOverlayType.class, null, value);
+        return new JAXBElement<>(_GroundOverlay_QNAME, GroundOverlayType.class, null, value);
     }
 
     /**
@@ -2142,7 +2142,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "FolderObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createFolderObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_FolderObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_FolderObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2151,7 +2151,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "minAltitude", defaultValue = "0.0")
     public JAXBElement<Double> createMinAltitude(Double value) {
-        return new JAXBElement<Double>(_MinAltitude_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MinAltitude_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2160,7 +2160,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PairSimpleExtensionGroup")
     public JAXBElement<Object> createPairSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PairSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PairSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2169,7 +2169,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxHeight", defaultValue = "0")
     public JAXBElement<Integer> createMaxHeight(Integer value) {
-        return new JAXBElement<Integer>(_MaxHeight_QNAME, Integer.class, null, value);
+        return new JAXBElement<>(_MaxHeight_QNAME, Integer.class, null, value);
     }
 
     /**
@@ -2178,7 +2178,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LatLonBoxObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLatLonBoxObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LatLonBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LatLonBoxObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2187,7 +2187,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractColorStyleSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractColorStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractColorStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractColorStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2196,7 +2196,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PointSimpleExtensionGroup")
     public JAXBElement<Object> createPointSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_PointSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_PointSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2205,7 +2205,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PolyStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractColorStyleGroup")
     public JAXBElement<PolyStyleType> createPolyStyle(PolyStyleType value) {
-        return new JAXBElement<PolyStyleType>(_PolyStyle_QNAME, PolyStyleType.class, null, value);
+        return new JAXBElement<>(_PolyStyle_QNAME, PolyStyleType.class, null, value);
     }
 
     /**
@@ -2214,7 +2214,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PairObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPairObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PairObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PairObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2223,7 +2223,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "StyleMap", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractStyleSelectorGroup")
     public JAXBElement<StyleMapType> createStyleMap(StyleMapType value) {
-        return new JAXBElement<StyleMapType>(_StyleMap_QNAME, StyleMapType.class, null, value);
+        return new JAXBElement<>(_StyleMap_QNAME, StyleMapType.class, null, value);
     }
 
     /**
@@ -2232,7 +2232,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractColorStyleGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractSubStyleGroup")
     public JAXBElement<AbstractColorStyleType> createAbstractColorStyleGroup(AbstractColorStyleType value) {
-        return new JAXBElement<AbstractColorStyleType>(_AbstractColorStyleGroup_QNAME, AbstractColorStyleType.class, null, value);
+        return new JAXBElement<>(_AbstractColorStyleGroup_QNAME, AbstractColorStyleType.class, null, value);
     }
 
     /**
@@ -2241,7 +2241,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "shape", defaultValue = "rectangle")
     public JAXBElement<ShapeEnumType> createShape(ShapeEnumType value) {
-        return new JAXBElement<ShapeEnumType>(_Shape_QNAME, ShapeEnumType.class, null, value);
+        return new JAXBElement<>(_Shape_QNAME, ShapeEnumType.class, null, value);
     }
 
     /**
@@ -2250,7 +2250,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LookAt", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractViewGroup")
     public JAXBElement<LookAtType> createLookAt(LookAtType value) {
-        return new JAXBElement<LookAtType>(_LookAt_QNAME, LookAtType.class, null, value);
+        return new JAXBElement<>(_LookAt_QNAME, LookAtType.class, null, value);
     }
 
     /**
@@ -2259,7 +2259,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "MultiGeometryObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createMultiGeometryObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_MultiGeometryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_MultiGeometryObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2268,7 +2268,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "displayMode", defaultValue = "default")
     public JAXBElement<DisplayModeEnumType> createDisplayMode(DisplayModeEnumType value) {
-        return new JAXBElement<DisplayModeEnumType>(_DisplayMode_QNAME, DisplayModeEnumType.class, null, value);
+        return new JAXBElement<>(_DisplayMode_QNAME, DisplayModeEnumType.class, null, value);
     }
 
     /**
@@ -2277,7 +2277,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Lod", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LodType> createLod(LodType value) {
-        return new JAXBElement<LodType>(_Lod_QNAME, LodType.class, null, value);
+        return new JAXBElement<>(_Lod_QNAME, LodType.class, null, value);
     }
 
     /**
@@ -2286,7 +2286,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "StyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_StyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_StyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2295,7 +2295,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "linkName")
     public JAXBElement<String> createLinkName(String value) {
-        return new JAXBElement<String>(_LinkName_QNAME, String.class, null, value);
+        return new JAXBElement<>(_LinkName_QNAME, String.class, null, value);
     }
 
     /**
@@ -2304,7 +2304,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "coordinates")
     public JAXBElement<List<String>> createCoordinates(List<String> value) {
-        return new JAXBElement<List<String>>(_Coordinates_QNAME, ((Class) List.class), null, ((List<String> ) value));
+        return new JAXBElement<>(_Coordinates_QNAME, ((Class) List.class), null, ((List<String> ) value));
     }
 
     /**
@@ -2313,7 +2313,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeSpanSimpleExtensionGroup")
     public JAXBElement<Object> createTimeSpanSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_TimeSpanSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_TimeSpanSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2322,7 +2322,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "east", defaultValue = "180.0")
     public JAXBElement<Double> createEast(Double value) {
-        return new JAXBElement<Double>(_East_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_East_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2331,7 +2331,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ImagePyramidSimpleExtensionGroup")
     public JAXBElement<Object> createImagePyramidSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ImagePyramidSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ImagePyramidSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2340,7 +2340,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PhotoOverlayObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPhotoOverlayObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PhotoOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PhotoOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2349,7 +2349,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "altitudeModeGroup")
     public JAXBElement<Object> createAltitudeModeGroup(Object value) {
-        return new JAXBElement<Object>(_AltitudeModeGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AltitudeModeGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2358,7 +2358,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLineStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LineStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LineStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2367,7 +2367,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractContainerGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureGroup")
     public JAXBElement<AbstractContainerType> createAbstractContainerGroup(AbstractContainerType value) {
-        return new JAXBElement<AbstractContainerType>(_AbstractContainerGroup_QNAME, AbstractContainerType.class, null, value);
+        return new JAXBElement<>(_AbstractContainerGroup_QNAME, AbstractContainerType.class, null, value);
     }
 
     /**
@@ -2376,7 +2376,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractFeatureObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractFeatureObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractFeatureObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractFeatureObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2385,7 +2385,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SimpleField")
     public JAXBElement<SimpleFieldType> createSimpleField(SimpleFieldType value) {
-        return new JAXBElement<SimpleFieldType>(_SimpleField_QNAME, SimpleFieldType.class, null, value);
+        return new JAXBElement<>(_SimpleField_QNAME, SimpleFieldType.class, null, value);
     }
 
     /**
@@ -2394,7 +2394,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "minRefreshPeriod", defaultValue = "0.0")
     public JAXBElement<Double> createMinRefreshPeriod(Double value) {
-        return new JAXBElement<Double>(_MinRefreshPeriod_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MinRefreshPeriod_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2412,7 +2412,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "DocumentObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createDocumentObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_DocumentObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_DocumentObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2421,7 +2421,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeStampObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createTimeStampObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_TimeStampObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_TimeStampObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2430,7 +2430,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ViewVolume", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<ViewVolumeType> createViewVolume(ViewVolumeType value) {
-        return new JAXBElement<ViewVolumeType>(_ViewVolume_QNAME, ViewVolumeType.class, null, value);
+        return new JAXBElement<>(_ViewVolume_QNAME, ViewVolumeType.class, null, value);
     }
 
     /**
@@ -2439,7 +2439,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ListStyleSimpleExtensionGroup")
     public JAXBElement<Object> createListStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ListStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ListStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2448,7 +2448,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "north", defaultValue = "180.0")
     public JAXBElement<Double> createNorth(Double value) {
-        return new JAXBElement<Double>(_North_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_North_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2457,7 +2457,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "KmlObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createKmlObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_KmlObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_KmlObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2466,7 +2466,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "state")
     public JAXBElement<List<ItemIconStateEnumType>> createState(List<ItemIconStateEnumType> value) {
-        return new JAXBElement<List<ItemIconStateEnumType>>(_State_QNAME, ((Class) List.class), null, ((List<ItemIconStateEnumType> ) value));
+        return new JAXBElement<>(_State_QNAME, ((Class) List.class), null, ((List<ItemIconStateEnumType> ) value));
     }
 
     /**
@@ -2475,7 +2475,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "DataExtension")
     public JAXBElement<Object> createDataExtension(Object value) {
-        return new JAXBElement<Object>(_DataExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_DataExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2484,7 +2484,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ScreenOverlayObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createScreenOverlayObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ScreenOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ScreenOverlayObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2493,7 +2493,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "address")
     public JAXBElement<String> createAddress(String value) {
-        return new JAXBElement<String>(_Address_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Address_QNAME, String.class, null, value);
     }
 
     /**
@@ -2502,7 +2502,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineStyleSimpleExtensionGroup")
     public JAXBElement<Object> createLineStyleSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LineStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LineStyleSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2511,7 +2511,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Placemark", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureGroup")
     public JAXBElement<PlacemarkType> createPlacemark(PlacemarkType value) {
-        return new JAXBElement<PlacemarkType>(_Placemark_QNAME, PlacemarkType.class, null, value);
+        return new JAXBElement<>(_Placemark_QNAME, PlacemarkType.class, null, value);
     }
 
     /**
@@ -2520,7 +2520,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "leftFov", defaultValue = "0.0")
     public JAXBElement<Double> createLeftFov(Double value) {
-        return new JAXBElement<Double>(_LeftFov_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_LeftFov_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2529,7 +2529,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "fill", defaultValue = "1")
     public JAXBElement<Boolean> createFill(Boolean value) {
-        return new JAXBElement<Boolean>(_Fill_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Fill_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -2538,7 +2538,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractOverlaySimpleExtensionGroup")
     public JAXBElement<Object> createAbstractOverlaySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2547,7 +2547,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Document", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractContainerGroup")
     public JAXBElement<DocumentType> createDocument(DocumentType value) {
-        return new JAXBElement<DocumentType>(_Document_QNAME, DocumentType.class, null, value);
+        return new JAXBElement<>(_Document_QNAME, DocumentType.class, null, value);
     }
 
     /**
@@ -2556,7 +2556,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Folder", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractContainerGroup")
     public JAXBElement<FolderType> createFolder(FolderType value) {
-        return new JAXBElement<FolderType>(_Folder_QNAME, FolderType.class, null, value);
+        return new JAXBElement<>(_Folder_QNAME, FolderType.class, null, value);
     }
 
     /**
@@ -2565,7 +2565,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PlacemarkObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createPlacemarkObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_PlacemarkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_PlacemarkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2574,7 +2574,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "begin")
     public JAXBElement<String> createBegin(String value) {
-        return new JAXBElement<String>(_Begin_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Begin_QNAME, String.class, null, value);
     }
 
     /**
@@ -2583,7 +2583,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Location", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LocationType> createLocation(LocationType value) {
-        return new JAXBElement<LocationType>(_Location_QNAME, LocationType.class, null, value);
+        return new JAXBElement<>(_Location_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -2592,7 +2592,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "rotation", defaultValue = "0.0")
     public JAXBElement<Double> createRotation(Double value) {
-        return new JAXBElement<Double>(_Rotation_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Rotation_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2601,7 +2601,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Url", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<LinkType> createUrl(LinkType value) {
-        return new JAXBElement<LinkType>(_Url_QNAME, LinkType.class, null, value);
+        return new JAXBElement<>(_Url_QNAME, LinkType.class, null, value);
     }
 
     /**
@@ -2610,7 +2610,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractLatLonBoxSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractLatLonBoxSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractLatLonBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractLatLonBoxSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2619,7 +2619,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractColorStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractColorStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractColorStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractColorStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2628,7 +2628,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "expires")
     public JAXBElement<String> createExpires(String value) {
-        return new JAXBElement<String>(_Expires_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Expires_QNAME, String.class, null, value);
     }
 
     /**
@@ -2637,7 +2637,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "open", defaultValue = "0")
     public JAXBElement<Boolean> createOpen(Boolean value) {
-        return new JAXBElement<Boolean>(_Open_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Open_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -2646,7 +2646,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Data", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<DataType> createData(DataType value) {
-        return new JAXBElement<DataType>(_Data_QNAME, DataType.class, null, value);
+        return new JAXBElement<>(_Data_QNAME, DataType.class, null, value);
     }
 
     /**
@@ -2655,7 +2655,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "topFov", defaultValue = "0.0")
     public JAXBElement<Double> createTopFov(Double value) {
-        return new JAXBElement<Double>(_TopFov_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_TopFov_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2664,7 +2664,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLinkObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createNetworkLinkObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_NetworkLinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_NetworkLinkObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2673,7 +2673,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "bottomFov", defaultValue = "0.0")
     public JAXBElement<Double> createBottomFov(Double value) {
-        return new JAXBElement<Double>(_BottomFov_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_BottomFov_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2682,7 +2682,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "altitude", defaultValue = "0.0")
     public JAXBElement<Double> createAltitude(Double value) {
-        return new JAXBElement<Double>(_Altitude_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Altitude_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2691,7 +2691,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "rightFov", defaultValue = "0.0")
     public JAXBElement<Double> createRightFov(Double value) {
-        return new JAXBElement<Double>(_RightFov_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_RightFov_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2700,7 +2700,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxAltitude", defaultValue = "0.0")
     public JAXBElement<Double> createMaxAltitude(Double value) {
-        return new JAXBElement<Double>(_MaxAltitude_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MaxAltitude_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2709,7 +2709,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "styleUrl")
     public JAXBElement<String> createStyleUrl(String value) {
-        return new JAXBElement<String>(_StyleUrl_QNAME, String.class, null, value);
+        return new JAXBElement<>(_StyleUrl_QNAME, String.class, null, value);
     }
 
     /**
@@ -2718,7 +2718,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ResourceMapSimpleExtensionGroup")
     public JAXBElement<Object> createResourceMapSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ResourceMapSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ResourceMapSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2727,7 +2727,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractObjectGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractObjectGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractObjectGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2736,7 +2736,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "minFadeExtent", defaultValue = "0.0")
     public JAXBElement<Double> createMinFadeExtent(Double value) {
-        return new JAXBElement<Double>(_MinFadeExtent_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MinFadeExtent_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2745,7 +2745,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "heading", defaultValue = "0.0")
     public JAXBElement<Double> createHeading(Double value) {
-        return new JAXBElement<Double>(_Heading_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Heading_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2754,7 +2754,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ListStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createListStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_ListStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_ListStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2763,7 +2763,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeSpanObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createTimeSpanObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_TimeSpanObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_TimeSpanObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2772,7 +2772,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "maxFadeExtent", defaultValue = "0.0")
     public JAXBElement<Double> createMaxFadeExtent(Double value) {
-        return new JAXBElement<Double>(_MaxFadeExtent_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MaxFadeExtent_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2781,7 +2781,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "rotationXY")
     public JAXBElement<Vec2Type> createRotationXY(Vec2Type value) {
-        return new JAXBElement<Vec2Type>(_RotationXY_QNAME, Vec2Type.class, null, value);
+        return new JAXBElement<>(_RotationXY_QNAME, Vec2Type.class, null, value);
     }
 
     /**
@@ -2790,7 +2790,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Metadata")
     public JAXBElement<MetadataType> createMetadata(MetadataType value) {
-        return new JAXBElement<MetadataType>(_Metadata_QNAME, MetadataType.class, null, value);
+        return new JAXBElement<>(_Metadata_QNAME, MetadataType.class, null, value);
     }
 
     /**
@@ -2799,7 +2799,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "IconStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractColorStyleGroup")
     public JAXBElement<IconStyleType> createIconStyle(IconStyleType value) {
-        return new JAXBElement<IconStyleType>(_IconStyle_QNAME, IconStyleType.class, null, value);
+        return new JAXBElement<>(_IconStyle_QNAME, IconStyleType.class, null, value);
     }
 
     /**
@@ -2808,7 +2808,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "NetworkLinkControlObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createNetworkLinkControlObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_NetworkLinkControlObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_NetworkLinkControlObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2817,7 +2817,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Snippet")
     public JAXBElement<SnippetType> createSnippet(SnippetType value) {
-        return new JAXBElement<SnippetType>(_Snippet_QNAME, SnippetType.class, null, value);
+        return new JAXBElement<>(_Snippet_QNAME, SnippetType.class, null, value);
     }
 
     /**
@@ -2826,7 +2826,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "viewRefreshMode", defaultValue = "never")
     public JAXBElement<ViewRefreshModeEnumType> createViewRefreshMode(ViewRefreshModeEnumType value) {
-        return new JAXBElement<ViewRefreshModeEnumType>(_ViewRefreshMode_QNAME, ViewRefreshModeEnumType.class, null, value);
+        return new JAXBElement<>(_ViewRefreshMode_QNAME, ViewRefreshModeEnumType.class, null, value);
     }
 
     /**
@@ -2835,7 +2835,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Camera", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractViewGroup")
     public JAXBElement<CameraType> createCamera(CameraType value) {
-        return new JAXBElement<CameraType>(_Camera_QNAME, CameraType.class, null, value);
+        return new JAXBElement<>(_Camera_QNAME, CameraType.class, null, value);
     }
 
     /**
@@ -2844,7 +2844,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "DocumentSimpleExtensionGroup")
     public JAXBElement<Object> createDocumentSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_DocumentSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_DocumentSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2853,7 +2853,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "linkSnippet")
     public JAXBElement<SnippetType> createLinkSnippet(SnippetType value) {
-        return new JAXBElement<SnippetType>(_LinkSnippet_QNAME, SnippetType.class, null, value);
+        return new JAXBElement<>(_LinkSnippet_QNAME, SnippetType.class, null, value);
     }
 
     /**
@@ -2862,7 +2862,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ModelSimpleExtensionGroup")
     public JAXBElement<Object> createModelSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ModelSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ModelSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2871,7 +2871,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "hotSpot")
     public JAXBElement<Vec2Type> createHotSpot(Vec2Type value) {
-        return new JAXBElement<Vec2Type>(_HotSpot_QNAME, Vec2Type.class, null, value);
+        return new JAXBElement<>(_HotSpot_QNAME, Vec2Type.class, null, value);
     }
 
     /**
@@ -2880,7 +2880,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractStyleSelectorSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractStyleSelectorSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractStyleSelectorSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractStyleSelectorSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2889,7 +2889,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "StyleMapObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createStyleMapObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_StyleMapObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_StyleMapObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2898,7 +2898,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BalloonStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createBalloonStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_BalloonStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_BalloonStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -2907,7 +2907,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "extrude", defaultValue = "0")
     public JAXBElement<Boolean> createExtrude(Boolean value) {
-        return new JAXBElement<Boolean>(_Extrude_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Extrude_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -2916,7 +2916,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ScreenOverlaySimpleExtensionGroup")
     public JAXBElement<Object> createScreenOverlaySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ScreenOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ScreenOverlaySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2925,7 +2925,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "end")
     public JAXBElement<String> createEnd(String value) {
-        return new JAXBElement<String>(_End_QNAME, String.class, null, value);
+        return new JAXBElement<>(_End_QNAME, String.class, null, value);
     }
 
     /**
@@ -2934,7 +2934,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractContainerSimpleExtensionGroup")
     public JAXBElement<Object> createAbstractContainerSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_AbstractContainerSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_AbstractContainerSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2943,7 +2943,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "minLodPixels", defaultValue = "0.0")
     public JAXBElement<Double> createMinLodPixels(Double value) {
-        return new JAXBElement<Double>(_MinLodPixels_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_MinLodPixels_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2952,7 +2952,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "colorMode", defaultValue = "normal")
     public JAXBElement<ColorModeEnumType> createColorMode(ColorModeEnumType value) {
-        return new JAXBElement<ColorModeEnumType>(_ColorMode_QNAME, ColorModeEnumType.class, null, value);
+        return new JAXBElement<>(_ColorMode_QNAME, ColorModeEnumType.class, null, value);
     }
 
     /**
@@ -2961,7 +2961,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "range", defaultValue = "0.0")
     public JAXBElement<Double> createRange(Double value) {
-        return new JAXBElement<Double>(_Range_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_Range_QNAME, Double.class, null, value);
     }
 
     /**
@@ -2970,7 +2970,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "TimeStampSimpleExtensionGroup")
     public JAXBElement<Object> createTimeStampSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_TimeStampSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_TimeStampSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2979,7 +2979,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "viewFormat")
     public JAXBElement<String> createViewFormat(String value) {
-        return new JAXBElement<String>(_ViewFormat_QNAME, String.class, null, value);
+        return new JAXBElement<>(_ViewFormat_QNAME, String.class, null, value);
     }
 
     /**
@@ -2988,7 +2988,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SchemaExtension")
     public JAXBElement<Object> createSchemaExtension(Object value) {
-        return new JAXBElement<Object>(_SchemaExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_SchemaExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2997,7 +2997,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "refreshInterval", defaultValue = "4.0")
     public JAXBElement<Double> createRefreshInterval(Double value) {
-        return new JAXBElement<Double>(_RefreshInterval_QNAME, Double.class, null, value);
+        return new JAXBElement<>(_RefreshInterval_QNAME, Double.class, null, value);
     }
 
     /**
@@ -3006,7 +3006,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SchemaDataExtension")
     public JAXBElement<Object> createSchemaDataExtension(Object value) {
-        return new JAXBElement<Object>(_SchemaDataExtension_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_SchemaDataExtension_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3015,7 +3015,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "outline", defaultValue = "1")
     public JAXBElement<Boolean> createOutline(Boolean value) {
-        return new JAXBElement<Boolean>(_Outline_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Outline_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -3033,7 +3033,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "PhotoOverlay", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractOverlayGroup")
     public JAXBElement<PhotoOverlayType> createPhotoOverlay(PhotoOverlayType value) {
-        return new JAXBElement<PhotoOverlayType>(_PhotoOverlay_QNAME, PhotoOverlayType.class, null, value);
+        return new JAXBElement<>(_PhotoOverlay_QNAME, PhotoOverlayType.class, null, value);
     }
 
     /**
@@ -3042,7 +3042,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "BoundarySimpleExtensionGroup")
     public JAXBElement<Object> createBoundarySimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_BoundarySimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_BoundarySimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3051,7 +3051,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LabelStyle", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractColorStyleGroup")
     public JAXBElement<LabelStyleType> createLabelStyle(LabelStyleType value) {
-        return new JAXBElement<LabelStyleType>(_LabelStyle_QNAME, LabelStyleType.class, null, value);
+        return new JAXBElement<>(_LabelStyle_QNAME, LabelStyleType.class, null, value);
     }
 
     /**
@@ -3060,7 +3060,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "httpQuery")
     public JAXBElement<String> createHttpQuery(String value) {
-        return new JAXBElement<String>(_HttpQuery_QNAME, String.class, null, value);
+        return new JAXBElement<>(_HttpQuery_QNAME, String.class, null, value);
     }
 
     /**
@@ -3069,7 +3069,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "targetHref")
     public JAXBElement<String> createTargetHref(String value) {
-        return new JAXBElement<String>(_TargetHref_QNAME, String.class, null, value);
+        return new JAXBElement<>(_TargetHref_QNAME, String.class, null, value);
     }
 
     /**
@@ -3078,7 +3078,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ImagePyramid", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<ImagePyramidType> createImagePyramid(ImagePyramidType value) {
-        return new JAXBElement<ImagePyramidType>(_ImagePyramid_QNAME, ImagePyramidType.class, null, value);
+        return new JAXBElement<>(_ImagePyramid_QNAME, ImagePyramidType.class, null, value);
     }
 
     /**
@@ -3087,7 +3087,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractStyleSelectorObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createAbstractStyleSelectorObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_AbstractStyleSelectorObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_AbstractStyleSelectorObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -3096,7 +3096,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "Schema")
     public JAXBElement<SchemaType> createSchema(SchemaType value) {
-        return new JAXBElement<SchemaType>(_Schema_QNAME, SchemaType.class, null, value);
+        return new JAXBElement<>(_Schema_QNAME, SchemaType.class, null, value);
     }
 
     /**
@@ -3106,7 +3106,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "textColor", defaultValue = "ff000000")
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     public JAXBElement<byte[]> createTextColor(byte[] value) {
-        return new JAXBElement<byte[]>(_TextColor_QNAME, byte[].class, null, ((byte[]) value));
+        return new JAXBElement<>(_TextColor_QNAME, byte[].class, null, ((byte[]) value));
     }
 
     /**
@@ -3115,7 +3115,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "SchemaData", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<SchemaDataType> createSchemaData(SchemaDataType value) {
-        return new JAXBElement<SchemaDataType>(_SchemaData_QNAME, SchemaDataType.class, null, value);
+        return new JAXBElement<>(_SchemaData_QNAME, SchemaDataType.class, null, value);
     }
 
     /**
@@ -3124,7 +3124,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineStringObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLineStringObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LineStringObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LineStringObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -3133,7 +3133,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ObjectSimpleExtensionGroup")
     public JAXBElement<Object> createObjectSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_ObjectSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_ObjectSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3142,7 +3142,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LinkSimpleExtensionGroup")
     public JAXBElement<Object> createLinkSimpleExtensionGroup(Object value) {
-        return new JAXBElement<Object>(_LinkSimpleExtensionGroup_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_LinkSimpleExtensionGroup_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3151,7 +3151,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "ExtendedData")
     public JAXBElement<ExtendedDataType> createExtendedData(ExtendedDataType value) {
-        return new JAXBElement<ExtendedDataType>(_ExtendedData_QNAME, ExtendedDataType.class, null, value);
+        return new JAXBElement<>(_ExtendedData_QNAME, ExtendedDataType.class, null, value);
     }
 
     /**
@@ -3160,7 +3160,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "AbstractOverlayGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractFeatureGroup")
     public JAXBElement<AbstractOverlayType> createAbstractOverlayGroup(AbstractOverlayType value) {
-        return new JAXBElement<AbstractOverlayType>(_AbstractOverlayGroup_QNAME, AbstractOverlayType.class, null, value);
+        return new JAXBElement<>(_AbstractOverlayGroup_QNAME, AbstractOverlayType.class, null, value);
     }
 
     /**
@@ -3169,7 +3169,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LabelStyleObjectExtensionGroup", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractObjectGroup")
     public JAXBElement<AbstractObjectType> createLabelStyleObjectExtensionGroup(AbstractObjectType value) {
-        return new JAXBElement<AbstractObjectType>(_LabelStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
+        return new JAXBElement<>(_LabelStyleObjectExtensionGroup_QNAME, AbstractObjectType.class, null, value);
     }
 
     /**
@@ -3178,7 +3178,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.opengis.net/kml/2.2", name = "LineString", substitutionHeadNamespace = "http://www.opengis.net/kml/2.2", substitutionHeadName = "AbstractGeometryGroup")
     public JAXBElement<LineStringType> createLineString(LineStringType value) {
-        return new JAXBElement<LineStringType>(_LineString_QNAME, LineStringType.class, null, value);
+        return new JAXBElement<>(_LineString_QNAME, LineStringType.class, null, value);
     }
 
 }

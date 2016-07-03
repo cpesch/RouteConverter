@@ -90,7 +90,7 @@ public class RepeatT
      */
     public List<AbstractStepT> getChild() {
         if (child == null) {
-            child = new ArrayList<AbstractStepT>();
+            child = new ArrayList<>();
         }
         return this.child;
     }

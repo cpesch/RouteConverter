@@ -25,10 +25,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.NavigationFormat;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
-import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.undo.UndoManager;
 
 import javax.swing.event.ChangeListener;
@@ -42,12 +39,12 @@ import java.util.List;
  */
 
 public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
-    private FormatAndRoutesModelImpl delegate;
-    private UndoManager undoManager;
+    private final UndoManager undoManager;
+    private final FormatAndRoutesModel delegate;
 
-    public UndoFormatAndRoutesModel(UndoManager undoManager) {
+    public UndoFormatAndRoutesModel(UndoManager undoManager, FormatAndRoutesModel delegate) {
         this.undoManager = undoManager;
-        delegate = new FormatAndRoutesModelImpl(new UndoPositionsModel(undoManager));
+        this.delegate = delegate;
     }
 
     // ListModel
@@ -96,14 +93,6 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
 
     public void setFormat(NavigationFormat<BaseRoute> format) {
         delegate.setFormat(format);
-    }
-
-    public PositionsModel getPositionsModel() {
-        return delegate.getPositionsModel();
-    }
-
-    public CharacteristicsModel getCharacteristicsModel() {
-        return delegate.getCharacteristicsModel();
     }
 
     public boolean isModified() {

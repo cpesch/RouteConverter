@@ -20,16 +20,8 @@
 
 package slash.navigation.copilot;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,9 +34,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
@@ -99,9 +89,9 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        Map<String, String> map = new HashMap<String, String>();
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+        List<Wgs84Position> positions = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         String routeName = null;
 
         while (true) {
@@ -157,8 +147,8 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     Wgs84Position parsePosition(Map<String, String> map) {
-        Integer latitude = parseInt(map.get(LATITUDE));
-        Integer longitude = parseInt(map.get(LONGITUDE));
+        Integer latitude = parseInteger(map.get(LATITUDE));
+        Integer longitude = parseInteger(map.get(LONGITUDE));
         String state = trim(map.get(STATE));
         String zip = trim(map.get(ZIP));
         String city = trim(map.get(CITY));

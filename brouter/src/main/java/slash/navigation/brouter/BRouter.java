@@ -20,30 +20,38 @@
 package slash.navigation.brouter;
 
 import btools.router.*;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.actions.Validator;
-import slash.navigation.download.datasources.DataSourceService;
-import slash.navigation.download.datasources.File;
-import slash.navigation.download.helpers.FileAndTarget;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Externalization.extractFile;
-import static slash.navigation.download.Action.Copy;
+import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.removeExtension;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * Encapsulates access to the BRouter.
@@ -55,55 +63,38 @@ public class BRouter implements RoutingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(BRouter.class);
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
-    private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final int MAX_RUNNING_TIME = 1000;
-    private static final String DATASOURCE_URL = "brouter-datasources.xml";
+    private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
+    private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
+    private static final TravelMode MOPED = new TravelMode("moped");
 
     private final DownloadManager downloadManager;
+    private DataSource profiles, segments;
+
     private final RoutingContext routingContext = new RoutingContext();
-    private Map<String, File> fileMap;
-    private String baseUrl, directory;
 
     public BRouter(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
-        initialize();
-    }
-
-    private void initialize() {
-        DataSourceService service = new DataSourceService();
-        try {
-            service.load(getClass().getResourceAsStream(DATASOURCE_URL));
-        } catch (JAXBException e) {
-            log.severe(format("Cannot load '%s': %s", DATASOURCE_URL, e.getMessage()));
-        }
-        this.fileMap = service.getFiles(getName());
-        this.baseUrl = service.getDataSource(getName()).getBaseUrl();
-        this.directory = service.getDataSource(getName()).getDirectory();
-
-        try {
-            extractFile("slash/navigation/brouter/car-test.brf");
-            extractFile("slash/navigation/brouter/fastbike.brf");
-            extractFile("slash/navigation/brouter/lookups.dat");
-            extractFile("slash/navigation/brouter/moped.brf");
-            extractFile("slash/navigation/brouter/safety.brf");
-            extractFile("slash/navigation/brouter/shortest.brf");
-            routingContext.localFunction = extractFile("slash/navigation/brouter/trekking.brf").getPath(); // TODO make configurable
-            extractFile("slash/navigation/brouter/trekking-ignore-cr.brf");
-            extractFile("slash/navigation/brouter/trekking-noferries.brf");
-            extractFile("slash/navigation/brouter/trekking-nosteps.brf");
-            extractFile("slash/navigation/brouter/trekking-steep.brf");
-        }
-        catch(IOException e) {
-            log.warning("Cannot initialize BRouter: " + e.getMessage());
-        }
     }
 
     public String getName() {
         return "BRouter";
     }
 
-    private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, baseUrl);
+    public synchronized boolean isInitialized() {
+        return getProfiles() != null && getSegments() != null;
+    }
+
+    public synchronized DataSource getProfiles() {
+        return profiles;
+    }
+
+    public synchronized DataSource getSegments() {
+        return segments;
+    }
+
+    public synchronized void setProfilesAndSegments(DataSource profiles, DataSource segments) {
+        this.profiles = profiles;
+        this.segments = segments;
     }
 
     public boolean isDownload() {
@@ -114,6 +105,37 @@ public class BRouter implements RoutingService {
         return false;
     }
 
+    public boolean isSupportAvoidFerries() {
+        return false;
+    }
+
+    public boolean isSupportAvoidHighways() {
+        return false;
+    }
+
+    public boolean isSupportAvoidTolls() {
+        return false;
+    }
+
+    public List<TravelMode> getAvailableTravelModes() {
+        List<TravelMode> result = new ArrayList<>();
+        File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return getExtension(name).equals(".brf");
+            }
+        });
+        if (files != null) {
+            for(File file : files) {
+                result.add(new TravelMode(removeExtension(file.getName())));
+            }
+        }
+        return result;
+    }
+
+    public TravelMode getPreferredTravelMode() {
+        return MOPED;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }
@@ -122,30 +144,92 @@ public class BRouter implements RoutingService {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    private java.io.File getDirectory() {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
-        if(!f.exists())
-            directoryName = getApplicationDirectory(directory).getAbsolutePath();
+    private String getProfilesBaseUrl() {
+        return preferences.get(PROFILES_BASE_URL_PREFERENCE, getProfiles().getBaseUrl());
+    }
+
+    private String getSegmentsBaseUrl() {
+        return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, getSegments().getBaseUrl());
+    }
+
+    private java.io.File getDirectory(DataSource dataSource, String directoryName) {
+        String path = getPath() + "/" + directoryName;
+        java.io.File f = new java.io.File(path);
+        if (!f.exists())
+            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
-        RoutingEngine routingEngine = new RoutingEngine(null, null, getDirectory().getPath(), createWaypoints(from, to), routingContext);
-        routingEngine.quite = true;
-        routingEngine.doRun(MAX_RUNNING_TIME);
-        if (routingEngine.getErrorMessage() != null) {
-            log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
-            return null;
-        }
+    private java.io.File getProfilesDirectory() {
+        return getDirectory(getProfiles(), "profiles");
+    }
 
-        OsmTrack track = routingEngine.getFoundTrack();
-        int distance = routingEngine.getDistance();
-        return new RoutingResult(asPositions(track), distance, 0);
+    private java.io.File createProfileFile(String key) {
+        return new java.io.File(getProfilesDirectory(), key);
+    }
+
+    private java.io.File getSegmentsDirectory() {
+        return getDirectory(getSegments(), "segments4");
+    }
+
+    private java.io.File createSegmentFile(String key) {
+        return new java.io.File(getSegmentsDirectory(), key);
+    }
+
+    String createFileKey(double longitude, double latitude) {
+        int longitudeAsInteger = ((int) longitude / 5) * 5;
+        int latitudeAsInteger = ((int) latitude / 5) * 5;
+        return format("%s%d_%s%d.rd5",
+                longitude < 0 ? "W" : "E",
+                longitude < 0 ? -longitudeAsInteger : longitudeAsInteger,
+                latitude < 0 ? "S" : "N",
+                latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
+    }
+
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+        long start = currentTimeMillis();
+        try {
+            File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
+            if (!profile.exists()) {
+                profile = new File(getProfilesDirectory(), getPreferredTravelMode().getName() + ".brf");
+                log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
+            }
+            if (!profile.exists()) {
+                List<TravelMode> availableTravelModes = getAvailableTravelModes();
+                if (availableTravelModes.size() == 0) {
+                    log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
+                    return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+                }
+
+                TravelMode firstTravelMode = availableTravelModes.get(0);
+                profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
+                log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
+            }
+            routingContext.localFunction = profile.getPath();
+
+            RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
+            routingEngine.quite = true;
+            routingEngine.doRun(preferences.getLong("routingTimeout", 5000L));
+            if (routingEngine.getErrorMessage() != null) {
+                // TODO handle routing timeouts differently
+                log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
+                return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+            }
+
+            OsmTrack track = routingEngine.getFoundTrack();
+            int distance = routingEngine.getDistance();
+            return new RoutingResult(asPositions(track), distance, 0L, true);
+        } catch (Exception e) {
+            log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
+            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+        } finally {
+            long end = currentTimeMillis();
+            log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
+        }
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
-        List<OsmNodeNamed> result = new ArrayList<OsmNodeNamed>();
+        List<OsmNodeNamed> result = new ArrayList<>();
         result.add(asOsmNodeNamed(from.getDescription(), from.getLongitude(), from.getLatitude()));
         result.add(asOsmNodeNamed(to.getDescription(), to.getLongitude(), to.getLatitude()));
         return result;
@@ -168,15 +252,11 @@ public class BRouter implements RoutingService {
     }
 
     private List<NavigationPosition> asPositions(OsmTrack track) {
-        List<NavigationPosition> result = new ArrayList<NavigationPosition>();
+        List<NavigationPosition> result = new ArrayList<>();
         for (OsmPathElement element : track.nodes) {
-            result.add(asPosition(element));
+            result.add(new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), null));
         }
         return result;
-    }
-
-    private NavigationPosition asPosition(OsmPathElement element) {
-        return new SimpleNavigationPosition(asLongitude(element.getILon()), asLatitude(element.getILat()), element.getElev(), element.message);
     }
 
     double asLongitude(int longitude) {
@@ -188,83 +268,115 @@ public class BRouter implements RoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<String> keys = createKeys(longitudeAndLatitudes);
+        Collection<String> uris = new HashSet<>();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            uris.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+        }
 
-        Set<FileAndTarget> files = createFileAndTargets(keys);
+        final Collection<Downloadable> notExistingSegments = new HashSet<>();
+        if(isInitialized()) {
+            for (String key : uris) {
+                Downloadable downloadable = getSegments().getDownloadable(key);
+                if (downloadable != null) {
+                    if (!createSegmentFile(downloadable.getUri()).exists())
+                        notExistingSegments.add(downloadable);
+                }
+            }
+        }
 
-        final Set<FileAndTarget> notExistingFiles = createNotExistingFiles(files);
+        final Collection<Downloadable> notExistingProfiles = new HashSet<>();
+        if (isInitialized()) {
+            for (Downloadable downloadable : getProfiles().getFiles()) {
+                if (!createProfileFile(downloadable.getUri()).exists())
+                    notExistingProfiles.add(downloadable);
+            }
+        }
 
         return new DownloadFuture() {
             public boolean isRequiresDownload() {
-                return !notExistingFiles.isEmpty();
+                return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
             }
             public boolean isRequiresProcessing() {
                 return false;
             }
             public void download() {
-                downloadFiles(notExistingFiles);
+                downloadAndWait(notExistingProfiles, notExistingSegments);
             }
-            public void process() {
-                // intentionally do nothing
-            }
+            public void process() {}
         };
     }
 
-    private Set<String> createKeys(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<String> keys = new HashSet<String>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
-        }
-        return keys;
-    }
-
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), format("%s%s", key, ".rd5"));
-    }
-
-    String createFileKey(double longitude, double latitude) {
-        int longitudeAsInteger = ((int) longitude / 5) * 5;
-        int latitudeAsInteger = ((int) latitude / 5) * 5;
-        return format("%s%d_%s%d",
-                longitude < 0 ? "W" : "E",
-                longitude < 0 ? -longitudeAsInteger : longitudeAsInteger,
-                latitude < 0 ? "S" : "N",
-                latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
-    }
-
-    private Set<FileAndTarget> createFileAndTargets(Set<String> keys) {
-        Set<FileAndTarget> files = new HashSet<FileAndTarget>();
-        for (String key : keys) {
-            File catalog = fileMap.get(key + ".rd5");
-            if (catalog != null)
-                files.add(new FileAndTarget(catalog, createFile(key)));
-        }
-        return files;
-    }
-
-    private Set<FileAndTarget> createNotExistingFiles(Set<FileAndTarget> files) {
-        final Set<FileAndTarget> notExistingFiles = new HashSet<FileAndTarget>();
-        for (FileAndTarget file : files) {
-            if (new Validator(file.target).existsFile())
-                continue;
-            notExistingFiles.add(file);
-        }
-        return notExistingFiles;
-    }
-
-    private void downloadFiles(Set<FileAndTarget> retrieve) {
-        Collection<Download> downloads = new HashSet<Download>();
-        for (FileAndTarget file : retrieve)
-            downloads.add(initiateDownload(file));
+    private void downloadAndWait(Collection<Downloadable> profiles, Collection<Downloadable> segments) {
+        Collection<Download> downloads = new HashSet<>();
+        for (Downloadable downloadable : profiles)
+            downloads.add(downloadProfile(downloadable));
+        for (Downloadable downloadable : segments)
+            downloads.add(downloadSegment(downloadable));
 
         if (!downloads.isEmpty())
             downloadManager.waitForCompletion(downloads);
     }
 
-    private Download initiateDownload(FileAndTarget file) {
-        String uri = file.file.getUri();
-        String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " routing data for " + uri, url,
-                file.file.getSize(), file.file.getChecksum(), file.file.getTimestamp(), Copy, file.target);
+    private Download downloadProfile(Downloadable downloadable) {
+        String uri = downloadable.getUri();
+        String url = getProfilesBaseUrl() + uri;
+        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
+                new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+    }
+
+    private Download downloadSegment(Downloadable downloadable) {
+        String uri = downloadable.getUri();
+        String url = getSegmentsBaseUrl() + uri;
+        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
+                new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+    }
+
+    private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
+        Collection<Downloadable> result = new HashSet<>();
+
+        double longitude = boundingBox.getSouthWest().getLongitude();
+        while (longitude < boundingBox.getNorthEast().getLongitude()) {
+
+            double latitude = boundingBox.getSouthWest().getLatitude();
+            while (latitude < boundingBox.getNorthEast().getLatitude()) {
+                String key = createFileKey(longitude, latitude);
+                Downloadable downloadable = getSegments().getDownloadable(key);
+                if (downloadable != null)
+                    result.add(downloadable);
+                latitude += 1.0;
+            }
+
+            longitude += 1.0;
+        }
+        return result;
+    }
+
+    private Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> result = new HashSet<>();
+        for (BoundingBox boundingBox : boundingBoxes)
+            result.addAll(getDownloadablesFor(boundingBox));
+        return result;
+    }
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
+        long notExists = 0L;
+        for(Downloadable downloadable : downloadables) {
+            Long contentLength = downloadable.getLatestChecksum().getContentLength();
+            if(contentLength == null)
+                continue;
+
+            java.io.File file = createSegmentFile(downloadable.getUri());
+            if(!file.exists())
+                notExists += contentLength;
+        }
+        return notExists;
+    }
+
+    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
+        for(Downloadable downloadable : downloadables) {
+            downloadSegment(downloadable);
+        }
     }
 }

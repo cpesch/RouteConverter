@@ -34,7 +34,7 @@ import static java.util.Calendar.YEAR;
 /**
  * Reads and writes Wintec WBT-202 (.tes) files.
  * <p/>
- * Format is basically {@link WintecWbt201Tk2Format) without a 16 byte header as described at:
+ * Format is basically {@link WintecWbt201Tk2Format} without a 16 byte header as described at:
  * http://www.geosetter.de/mantis/view.php?id=373
  *
  * @author Malte Neumann

@@ -19,13 +19,8 @@
 */
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -71,7 +66,7 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

@@ -76,7 +76,7 @@ public abstract class OverlayType
      *     
      */
     public void setColor(byte[] value) {
-        this.color = ((byte[]) value);
+        this.color = value;
     }
 
     /**

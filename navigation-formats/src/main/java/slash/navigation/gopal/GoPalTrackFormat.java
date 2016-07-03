@@ -21,12 +21,8 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.Calendar;
@@ -35,19 +31,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.SECOND;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.trim;
+import static java.util.Calendar.*;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes GoPal Track (.trk) files.
@@ -109,7 +97,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Integer satellites = parseInt(matcher.group(7));
+        Integer satellites = parseInteger(matcher.group(7));
         return satellites != null && satellites > 0;
     }
 
@@ -122,7 +110,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -138,10 +126,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, parseDouble(speed), parseDateAndTime(date, time), null);
         if (date == null)
-            position.setStartDate(startDate);
+            position.setStartDate(context.getStartDate());
         position.setHeading(parseDouble(heading));
         position.setHdop(parseDouble(hdop));
-        position.setSatellites(parseInt(satellites));
+        position.setSatellites(parseInteger(satellites));
         return position;
     }
 

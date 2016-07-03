@@ -23,6 +23,9 @@ package slash.navigation.converter.gui.renderer;
 import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
+import java.io.File;
+
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractFile;
 
 /**
  * Renders the description column of the positions table.
@@ -37,9 +40,20 @@ public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
 
     protected void formatCell(JLabel label, NavigationPosition position) {
         label.setText(extractValue(position));
+        label.setToolTipText(extractToolTipText(position));
     }
 
     protected String extractValue(NavigationPosition position) {
+        File file = extractFile(position);
+        if (file != null)
+            return (file.exists() ? "" : "MISSING: ") + position.getDescription();
         return position.getDescription();
+    }
+
+    private String extractToolTipText(NavigationPosition position) {
+        File file = extractFile(position);
+        if (file != null)
+            return (file.exists() ? "" : "MISSING: ") + file.getPath();
+        return "";
     }
 }

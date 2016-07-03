@@ -51,12 +51,13 @@ public interface PositionsModel extends TableModel {
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
     int getClosestPosition(double longitude, double latitude, double threshold);
+    int getClosestPosition(CompactCalendar time, long threshold);
 
     void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
     void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
     void add(int rowIndex, List<BaseNavigationPosition> positions);
 
-    void edit(int rowIndex, int firstColumnIndex, Object firstValue, int secondColumnIndex, Object secondValue, boolean fireEvent, boolean trackUndo);
+    void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo);
 
     void remove(int firstIndex, int lastIndex);
     void remove(int[] rowIndices);

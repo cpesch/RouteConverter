@@ -20,9 +20,10 @@
 
 package slash.navigation.base;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.Bearing;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.common.Bearing;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
@@ -36,13 +37,9 @@ import slash.navigation.tour.TourPosition;
 import java.util.Calendar;
 
 import static java.lang.Double.isNaN;
-import static java.lang.Math.abs;
-import static java.lang.Math.asin;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
+import static java.lang.Math.*;
+import static java.util.Calendar.*;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.common.Bearing.EARTH_RADIUS;
 import static slash.navigation.common.Bearing.calculateBearing;
@@ -118,12 +115,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
             Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
             Double distanceAtoD = bearingAD.getDistance();
-            if (distanceAtoD != null) {
-                double courseAtoD = toRadians(bearingAD.getAngle());
-                double courseAtoB = toRadians(pointA.calculateAngle(pointB));
-                return asin(sin(distanceAtoD / EARTH_RADIUS) *
-                        sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
-            }
+            double courseAtoD = toRadians(bearingAD.getAngle());
+            double courseAtoB = toRadians(pointA.calculateAngle(pointB));
+            return asin(sin(distanceAtoD / EARTH_RADIUS) *
+                    sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
         }
         return null;
     }
@@ -132,55 +127,60 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         if (hasTime() && other.hasTime()) {
             double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
             Double distance = calculateDistance(other);
-            if (distance != null && interval > 0.0)
+            if (!isEmpty(distance) && interval > 0.0)
                 return distance / interval * 3.6;
         }
         return null;
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public GpxPosition asBrokenGpxPosition() {
-        return asGpxPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlLittleEndianPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmlBetaPosition() {
-        return asKmlPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmzPosition() {
-        return asKmzPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public KmlPosition asBrokenKmzLittleEndianPosition() {
-        return asKmzPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asColumbusVStandardPosition() {
+    public Wgs84Position asColumbusGpsStandardPosition() {
         return asWgs84Position();
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asColumbusVProfessionalPosition() {
+    public Wgs84Position asColumbusGpsProfessionalPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asColumbusGpsType2Position() {
         return asWgs84Position();
     }
 
     @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public GpxPosition asGarbleGpxPosition() {
+        return asGpxPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlLittleEndianPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmzPosition() {
+        return asKmzPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asGarbleKmzLittleEndianPosition() {
+        return asKmzPosition();
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
@@ -225,7 +225,17 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    public KmlPosition asIgoRoutePosition() {
+        return asKmlPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asHaicomLoggerPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asPhotoPosition() {
         return asWgs84Position();
     }
 
@@ -375,5 +385,9 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asWintecWbtTesPosition() {
         return asWgs84Position();
+    }
+
+    public String toString() {
+        return super.toString() + "[longitude=" + getLongitude() + ", latitude=" + getLatitude() + ", description=" + getDescription() + "]";
     }
 }

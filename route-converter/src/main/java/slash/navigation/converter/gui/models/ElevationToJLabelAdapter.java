@@ -46,9 +46,10 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
         super(positionsModel);
         this.labelAscend = labelAscend;
         this.labelDescend = labelDescend;
+        initialize();
     }
 
-    public void initialize() {
+    private void initialize() {
         updateAdapterFromDelegate(new TableModelEvent(getDelegate()));
     }
 

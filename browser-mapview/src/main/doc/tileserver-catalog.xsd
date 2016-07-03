@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://api.routeconverter.com/v1/schemas/tileserver-catalog"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/tileserver-catalog"
+            elementFormDefault="qualified">
+
+    <xsd:element name="catalog" type="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog contains tile server definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="tileServer" type="tileServerType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-tile-server-id">
+                    <xsd:selector xpath="tileServer"/>
+                    <xsd:field xpath="@id"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="copyrightType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Google"/>
+            <xsd:enumeration value="OpenStreetMap"/>
+            <xsd:enumeration value="OutdoorActive"/>
+            <xsd:enumeration value="Wanderreitkarte"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="tileServerType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a tile server contains an id, a name, a minimum and maximum zoom level, a copyright and a tile url pattern
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="id" type="xsd:string" use="required"/>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="minZoom" type="xsd:integer" use="required"/>
+                <xsd:attribute name="maxZoom" type="xsd:integer" use="required"/>
+                <xsd:attribute name="copyright" type="copyrightType" use="required"/>
+                <xsd:attribute name="active" type="xsd:boolean"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+</xsd:schema>

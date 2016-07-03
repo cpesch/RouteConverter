@@ -20,6 +20,7 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
@@ -33,11 +34,20 @@ import java.util.List;
 
 public interface RoutingService {
     String getName();
+    boolean isInitialized();
     boolean isDownload();
     boolean isSupportTurnpoints();
+    boolean isSupportAvoidFerries();
+    boolean isSupportAvoidHighways();
+    boolean isSupportAvoidTolls();
+    List<TravelMode> getAvailableTravelModes();
+    TravelMode getPreferredTravelMode();
     String getPath();
     void setPath(String path);
 
-    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to);
+    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
+
     DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
+    void downloadRoutingData(List<BoundingBox> boundingBoxes);
 }

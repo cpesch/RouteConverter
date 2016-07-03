@@ -6,24 +6,24 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>common-gui</artifactId>
+            <artifactId>googlemaps</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>navigation-formats</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>routing-service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

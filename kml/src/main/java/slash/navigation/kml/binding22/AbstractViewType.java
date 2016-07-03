@@ -83,7 +83,7 @@ public abstract class AbstractViewType
      */
     public List<Object> getAbstractViewSimpleExtensionGroup() {
         if (abstractViewSimpleExtensionGroup == null) {
-            abstractViewSimpleExtensionGroup = new ArrayList<Object>();
+            abstractViewSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractViewSimpleExtensionGroup;
     }
@@ -114,7 +114,7 @@ public abstract class AbstractViewType
      */
     public List<JAXBElement<? extends AbstractObjectType>> getAbstractViewObjectExtensionGroup() {
         if (abstractViewObjectExtensionGroup == null) {
-            abstractViewObjectExtensionGroup = new ArrayList<JAXBElement<? extends AbstractObjectType>>();
+            abstractViewObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractViewObjectExtensionGroup;
     }

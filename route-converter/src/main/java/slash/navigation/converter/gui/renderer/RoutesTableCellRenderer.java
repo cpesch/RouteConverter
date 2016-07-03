@@ -20,13 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helpers.RouteHelper.formatCreator;
-import static slash.navigation.converter.gui.helpers.RouteHelper.formatName;
+import static slash.navigation.converter.gui.helpers.RouteHelper.*;
 
 /**
  * Renders the table cells of the routes table.
@@ -40,10 +39,12 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
         RouteModel route = (RouteModel) value;
         switch (columnIndex) {
             case 0:
-                label.setText(formatName(route));
+                label.setText(formatDescription(route));
+                label.setToolTipText(formatUrl(route));
                 break;
             case 1:
                 label.setText(formatCreator(route));
+                label.setToolTipText(formatUrl(route));
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

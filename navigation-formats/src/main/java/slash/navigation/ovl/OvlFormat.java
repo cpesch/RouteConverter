@@ -20,33 +20,22 @@
 
 package slash.navigation.ovl;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.base.IniFileFormat;
-import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.ovl.OvlSection.GROUP;
+import static slash.navigation.ovl.OvlSection.TEXT;
 
 /**
  * Reads and writes Top50 OVL ASCII (.ovl) files.
@@ -92,8 +81,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<OvlRoute> context) throws IOException {
-        List<OvlSection> sections = new ArrayList<OvlSection>();
+    public void read(BufferedReader reader, String encoding, ParserContext<OvlRoute> context) throws IOException {
+        List<OvlSection> sections = new ArrayList<>();
         OvlSection current = null;
 
         while (true) {
@@ -170,7 +159,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private List<OvlRoute> extractRoutes(List<OvlSection> sections) {
-        List<OvlRoute> result = new ArrayList<OvlRoute>();
+        List<OvlRoute> result = new ArrayList<>();
 
         OvlSection mapLage = findSection(sections, MAPLAGE_TITLE);
         if(mapLage == null)
@@ -180,8 +169,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         int symbolCount = getSymbolCount(overlay);
 
         // process all sections with same group into one route
-        Map<Integer, List<OvlSection>> sectionsByGroup = new LinkedHashMap<Integer, List<OvlSection>>();
-        List<OvlSection> sectionsWithoutGroup = new ArrayList<OvlSection>();
+        Map<Integer, List<OvlSection>> sectionsByGroup = new LinkedHashMap<>();
+        List<OvlSection> sectionsWithoutGroup = new ArrayList<>();
         for (int i = 0; i < symbolCount; i++) {
             OvlSection section = findSection(sections, SYMBOL_TITLE + " " + (i + 1));
             if (section != null) {
@@ -189,7 +178,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
                 if (group != null) {
                     List<OvlSection> groupedSections = sectionsByGroup.get(group);
                     if (groupedSections == null) {
-                        groupedSections = new ArrayList<OvlSection>();
+                        groupedSections = new ArrayList<>();
                         sectionsByGroup.put(group, groupedSections);
                     }
                     groupedSections.add(section);
@@ -217,7 +206,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private OvlRoute extractRoute(OvlSection symbol, OvlSection overlay, OvlSection mapLage) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         int positionCount = symbol.getPositionCount();
         for (int i = 0; i < positionCount; i++) {
             positions.add(symbol.getPosition(i));
@@ -227,7 +216,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private OvlRoute extractRoute(List<OvlSection> symbols, OvlSection overlay, OvlSection mapLage) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (OvlSection symbol : symbols) {
             int positionCount = symbol.getPositionCount();
             for (int i = 0; i < positionCount; i++) {
@@ -258,9 +247,9 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
 
     private void writeSymbol(OvlRoute route, PrintWriter writer, int startIndex, int endIndex, int symbolIndex) {
         writer.println(SECTION_PREFIX + SYMBOL_TITLE + " " + symbolIndex + SECTION_POSTFIX);
-        writer.println(OvlSection.GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
+        writer.println(GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
 
-        writeSection(route.getSymbol(), writer, asList(OvlSection.TEXT));
+        writeSection(route.getSymbol(), writer, singletonList(TEXT));
         writeMissingAttribute(route.getSymbol(), writer, "Typ", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Col", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Zoom", "1");
@@ -276,18 +265,18 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             writer.println(OvlSection.Y_POSITION + index + NAME_VALUE_SEPARATOR + position.getLatitude());
             index++;
         }
-        writer.println(OvlSection.TEXT + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
+        writer.println(TEXT + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
     }
 
     private void writeOverlay(OvlRoute route, PrintWriter writer, int symbolCount) {
         writer.println(SECTION_PREFIX + OVERLAY_TITLE + SECTION_POSTFIX);
-        writeSection(route.getOverlay(), writer, asList(SYMBOL_COUNT));
+        writeSection(route.getOverlay(), writer, singletonList(SYMBOL_COUNT));
         writer.println(SYMBOL_COUNT + NAME_VALUE_SEPARATOR + symbolCount);
     }
 
     private void writeMapLage(OvlRoute route, PrintWriter writer) {
         writer.println(SECTION_PREFIX + MAPLAGE_TITLE + SECTION_POSTFIX);
-        writeSection(route.getMapLage(), writer, asList(CREATOR));
+        writeSection(route.getMapLage(), writer, singletonList(CREATOR));
         // Top. Karte 1:50.000 Hessen
         // Top. Karte 1:50.000 Nieders.
         // Top. Karte 1:50000 Sh/HH

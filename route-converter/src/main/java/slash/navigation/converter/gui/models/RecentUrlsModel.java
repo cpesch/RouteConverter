@@ -103,7 +103,7 @@ public class RecentUrlsModel {
     }
 
     public List<URL> getUrls() {
-        List<URL> result = new ArrayList<URL>();
+        List<URL> result = new ArrayList<>();
         String recentUrls = preferences.get(RECENT_URLS_PREFERENCE, "");
         for(char c : recentUrls.toCharArray()) {
             String urlString = preferences.get(RECENT_URL_PREFERENCE + c, null);
@@ -114,7 +114,7 @@ public class RecentUrlsModel {
                     if (file == null || file.exists())
                         result.add(0, url);
                 } catch (MalformedURLException e) {
-                    log.warning("Recent URL '" + urlString + "' is malformed: " + e.getMessage());
+                    log.warning("Recent URL '" + urlString + "' is malformed: " + e);
                 }
             }
         }

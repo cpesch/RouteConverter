@@ -139,7 +139,7 @@ public class PairType
      *     
      */
     public void setAbstractStyleSelectorGroup(JAXBElement<? extends AbstractStyleSelectorType> value) {
-        this.abstractStyleSelectorGroup = ((JAXBElement<? extends AbstractStyleSelectorType> ) value);
+        this.abstractStyleSelectorGroup = value;
     }
 
     /**
@@ -166,7 +166,7 @@ public class PairType
      */
     public List<Object> getPairSimpleExtensionGroup() {
         if (pairSimpleExtensionGroup == null) {
-            pairSimpleExtensionGroup = new ArrayList<Object>();
+            pairSimpleExtensionGroup = new ArrayList<>();
         }
         return this.pairSimpleExtensionGroup;
     }
@@ -195,7 +195,7 @@ public class PairType
      */
     public List<AbstractObjectType> getPairObjectExtensionGroup() {
         if (pairObjectExtensionGroup == null) {
-            pairObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            pairObjectExtensionGroup = new ArrayList<>();
         }
         return this.pairObjectExtensionGroup;
     }

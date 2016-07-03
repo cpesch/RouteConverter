@@ -55,7 +55,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         this.labelDuration = labelDuration;
 
         lengthCalculator.addLengthCalculatorListener(new LengthCalculatorListener() {
-            public void calculatedDistance(final int meters, final int seconds) {
+            public void calculatedDistance(final double meters, final long seconds) {
                 invokeLater(new Runnable() {
                     public void run() {
                         updateLabel(meters, seconds);
@@ -70,9 +70,9 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         throw new UnsupportedOperationException();
     }
 
-    private void updateLabel(int meters, int seconds) {
-        labelLength.setText(meters > 0 ? formatDistance((double) meters) : "-");
-        Long milliseconds = (long) seconds * 1000;
+    private void updateLabel(double meters, long seconds) {
+        labelLength.setText(meters > 0 ? formatDistance(meters) : "-");
+        long milliseconds = seconds * 1000;
         labelDuration.setText(milliseconds > 0 ? formatDuration(milliseconds) : "-");
     }
 

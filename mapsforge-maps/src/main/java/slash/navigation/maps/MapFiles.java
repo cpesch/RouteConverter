@@ -19,14 +19,13 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.download.datasources.File;
-import slash.navigation.maps.models.RemoteMapImpl;
-import slash.navigation.maps.models.RemoteResourceImpl;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Theme;
+import slash.navigation.maps.impl.RemoteMapImpl;
+import slash.navigation.maps.impl.RemoteThemeImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.prefs.Preferences;
 
 /**
  * Encapsulates access to mapsforge .map and theme files.
@@ -35,41 +34,24 @@ import java.util.prefs.Preferences;
  */
 
 public class MapFiles {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapFiles.class);
-    private static final String BASE_URL_PREFERENCE = "baseUrl";
+    private final DataSource dataSource;
 
-    private final String name, baseUrl, subDirectory;
-    private final Map<String, File> fileMap;
-    private final Map<String, slash.navigation.download.datasources.Map> mapMap;
-
-    public MapFiles(String name, String baseUrl, String subDirectory,
-                    Map<String, File> fileMap, Map<String, slash.navigation.download.datasources.Map> mapMap) {
-        this.name = name;
-        this.baseUrl = baseUrl;
-        this.subDirectory = subDirectory;
-        this.fileMap = fileMap;
-        this.mapMap = mapMap;
+    public MapFiles(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    private String getName() {
-        return name;
-    }
-
-    private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE + getName(), baseUrl);
-    }
-
-    private String getSubDirectory() {
-        return subDirectory;
-    }
-
-    public List<RemoteResource> getResources() {
-        List<RemoteResource> result = new ArrayList<RemoteResource>();
-        for(final File file : fileMap.values()) {
-            result.add(new RemoteResourceImpl(getName(), getBaseUrl(), getSubDirectory(), file));
+    public List<RemoteMap> getMaps() {
+        List<RemoteMap> result = new ArrayList<>();
+        for (slash.navigation.datasources.Map map : dataSource.getMaps()) {
+            result.add(new RemoteMapImpl(dataSource, map));
         }
-        for(final slash.navigation.download.datasources.Map map : mapMap.values()) {
-            result.add(new RemoteMapImpl(getName(), getBaseUrl(), getSubDirectory(), map));
+        return result;
+    }
+
+    public List<RemoteTheme> getThemes() {
+        List<RemoteTheme> result = new ArrayList<>();
+        for (Theme theme : dataSource.getThemes()) {
+            result.add(new RemoteThemeImpl(dataSource, theme));
         }
         return result;
     }

@@ -1,8 +1,7 @@
 <jaxb:bindings
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-    xmlns:kml="http://earth.google.com/kml/2.2"
-    version="2.0">
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        version="2.0">
     <jaxb:bindings schemaLocation="kml22beta.xsd" node="/xsd:schema">
         <jaxb:schemaBindings>
             <jaxb:package name="slash.navigation.kml.binding22beta"/>

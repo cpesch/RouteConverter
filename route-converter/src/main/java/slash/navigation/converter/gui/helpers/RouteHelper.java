@@ -19,10 +19,10 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.routes.impl.RouteModel;
 
-import java.io.IOException;
+import static slash.common.io.Transfer.decodeUri;
 
 /**
  * A helper for rendering aspects of {@link RouteModel}.
@@ -35,14 +35,19 @@ public class RouteHelper {
         String name = route.getName();
         if (name == null)
             name = RouteConverter.getBundle().getString("no-name");
+        return name;
+    }
+
+    public static String formatDescription(RouteModel route) {
+        String description = "";
         try {
-            String description = route.getRoute().getDescription();
-            if(description != null)
-                name = description + " (" + name + ")";
+            description = route.getRoute().getDescription();
+            if(description == null)
+                formatName(route);
         } catch (Exception e) {
             // intentionally left empty
         }
-        return name;
+        return description;
     }
 
     public static String formatCreator(RouteModel route) {
@@ -55,5 +60,17 @@ public class RouteHelper {
             creator = RouteConverter.getBundle().getString("loading");
         }
         return creator;
+    }
+
+    public static String formatUrl(RouteModel route) {
+        String url = route.getUrl();
+        url = url.replaceAll("file:/", "");
+        try {
+            url = decodeUri(url);
+        }
+        catch (IllegalArgumentException e) {
+            // intentionally left empty
+        }
+        return url;
     }
 }

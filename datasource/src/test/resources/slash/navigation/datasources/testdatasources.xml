@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog">
+    <datasource id="id1" name="name1" baseUrl="http://local1/1/" directory="dir1">
+        <file uri="x/y/z.data">
+            <checksum contentLength="1" sha1="x"/>
+            <fragment key="a">
+                <checksum contentLength="1" sha1="a"/>
+            </fragment>
+        </file>
+    </datasource>
+    <datasource id="id2" name="name2" baseUrl="http://local2/2/" directory="dir2/dir3">
+        <file uri="z/y/x.data">
+            <checksum contentLength="2" sha1="z"/>
+            <fragment key="c">
+                <checksum contentLength="2" sha1="c"/>
+            </fragment>
+        </file>
+        <file uri="x/y/z.data">
+            <checksum contentLength="3" sha1="x"/>
+            <fragment key="b">
+                <checksum contentLength="31" sha1="b"/>
+            </fragment>
+        </file>
+    </datasource>
+    <datasource id="id3" name="name3" baseUrl="http://local3/3/" directory="dir4"/>
+</catalog>

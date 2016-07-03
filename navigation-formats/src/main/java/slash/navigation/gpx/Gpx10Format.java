@@ -20,7 +20,6 @@
 
 package slash.navigation.gpx;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
@@ -35,20 +34,9 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
-import static slash.common.io.Transfer.formatInt;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatHeading;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
-import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.common.UnitConversion.kmhToMs;
 import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
@@ -90,13 +78,13 @@ public class Gpx10Format extends GpxFormat {
         context.appendRoutes(extractTracks(gpx, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         Gpx gpx = unmarshal10(source);
         process(gpx, context);
     }
 
     private List<GpxRoute> extractRoutes(Gpx gpx, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
 
         for (Gpx.Rte rte : gpx.getRte()) {
             String name = rte.getName();
@@ -125,7 +113,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxRoute> extractTracks(Gpx gpx, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
         for (Gpx.Trk trk : gpx.getTrk()) {
             String name = trk.getName();
             String desc = trk.getDesc();
@@ -138,29 +126,29 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private List<GpxPosition> extractRoute(Gpx.Rte rte, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(rtept.getCourse()), parseTime(rtept.getTime()), asDescription(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(rtept.getCourse()), parseXMLTime(rtept.getTime()), asDescription(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
             }
         }
         return positions;
     }
 
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(wpt.getCourse()), parseTime(wpt.getTime()), asWayPointDescription(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(wpt.getCourse()), parseXMLTime(wpt.getTime()), asWayPointDescription(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
         }
         return positions;
     }
 
     private List<GpxPosition> extractTrack(Gpx.Trk trk, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+        List<GpxPosition> positions = new ArrayList<>();
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asDescription(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(trkPt.getCourse()), parseXMLTime(trkPt.getTime()), asDescription(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
                 }
             }
         }
@@ -193,7 +181,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Wpt> wpts = new ArrayList<Gpx.Wpt>();
+        List<Gpx.Wpt> wpts = new ArrayList<>();
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
@@ -206,7 +194,7 @@ public class Gpx10Format extends GpxFormat {
                 wpt = objectFactory.createGpxWpt();
             wpt.setLat(latitude);
             wpt.setLon(longitude);
-            wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
+            wpt.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             wpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
@@ -227,7 +215,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Rte> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Rte> rtes = new ArrayList<Gpx.Rte>();
+        List<Gpx.Rte> rtes = new ArrayList<>();
 
         Gpx.Rte rte = route.getOrigin(Gpx.Rte.class);
         if (rte != null && reuseReadObjectsForWriting)
@@ -252,7 +240,7 @@ public class Gpx10Format extends GpxFormat {
                 rtept = objectFactory.createGpxRteRtept();
             rtept.setLat(latitude);
             rtept.setLon(longitude);
-            rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
+            rtept.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             rtept.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
@@ -273,7 +261,7 @@ public class Gpx10Format extends GpxFormat {
 
     private List<Gpx.Trk> createTrack(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<Gpx.Trk> trks = new ArrayList<Gpx.Trk>();
+        List<Gpx.Trk> trks = new ArrayList<>();
 
         Gpx.Trk trk = route.getOrigin(Gpx.Trk.class);
         if (trk != null && reuseReadObjectsForWriting)
@@ -299,7 +287,7 @@ public class Gpx10Format extends GpxFormat {
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
             trkpt.setLat(latitude);
             trkpt.setLon(longitude);
-            trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
+            trkpt.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             trkpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?

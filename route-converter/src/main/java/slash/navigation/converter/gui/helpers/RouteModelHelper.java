@@ -20,13 +20,17 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
  * A helper for simplified {@link RouteModel} operations.
@@ -35,18 +39,11 @@ import java.util.List;
  */
 
 public class RouteModelHelper {
-    public static RouteModel getSelectedRouteModel(JTable table) {
-        int row = table.getSelectedRow();
-        if (row == -1)
-            return null;
-        Object value = table.getModel().getValueAt(row, 1);
-        return value instanceof RouteModel ? (RouteModel) value : null;
-    }
-
     public static List<RouteModel> getSelectedRouteModels(JTable table) {
-        int[] rows = table.getSelectedRows();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
-        for (int row : rows) {
+        int[] selectedRows = table.getSelectedRows();
+        List<RouteModel> routeModels = new ArrayList<>();
+        for (int selectedRow : selectedRows) {
+            int row = table.convertRowIndexToView(selectedRow);
             Object value = table.getModel().getValueAt(row, 1);
             if (value instanceof RouteModel)
                 routeModels.add((RouteModel) value);
@@ -65,9 +62,21 @@ public class RouteModelHelper {
         return (CategoryTreeNode) value;
     }
 
+    public static void selectRoute(JTable table, RouteModel route) {
+        // search for RouteModel with same Route (Category might be different due to move)
+        RoutesTableModel model = (RoutesTableModel) table.getModel();
+        for(int i = 0; i < model.getRowCount(); i++) {
+            if(model.getRoute(i).getRoute().equals(route.getRoute())) {
+                scrollToPosition(table, i);
+                table.getSelectionModel().addSelectionInterval(i, i);
+                break;
+            }
+        }
+    }
+
     public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {
         TreePath[] treePaths = tree.getSelectionPaths();
-        List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
+        List<CategoryTreeNode> treeNodes = new ArrayList<>();
         if (treePaths != null) {
             for (TreePath treePath : treePaths) {
                 Object treeNode = treePath.getLastPathComponent();
@@ -79,6 +88,11 @@ public class RouteModelHelper {
         return treeNodes;
     }
 
+    public static void selectCategory(JTree tree, CategoryTreeNode category) {
+        TreePath treePath = new TreePath(((CategoryTreeModel)tree.getModel()).getPathToRoot(category));
+        selectCategoryTreePath(tree, treePath);
+    }
+
     public static void selectCategoryTreePath(JTree tree, TreePath treePath) {
         tree.expandPath(treePath);
         tree.scrollPathToVisible(treePath);
@@ -86,7 +100,7 @@ public class RouteModelHelper {
     }
 
     public static List<String> asNames(List<CategoryTreeNode> categories) {
-        List<String> names = new ArrayList<String>(categories.size());
+        List<String> names = new ArrayList<>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {
             names.add(categoryTreeNode.getName());
         }
@@ -94,7 +108,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParents(List<CategoryTreeNode> categories) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
+        List<CategoryTreeNode> parents = new ArrayList<>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {
             parents.add((CategoryTreeNode) categoryTreeNode.getParent());
         }
@@ -102,7 +116,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParentsFromRoutes(List<RouteModel> routes) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(routes.size());
+        List<CategoryTreeNode> parents = new ArrayList<>(routes.size());
         for (RouteModel routeModel : routes) {
             parents.add(routeModel.getCategory());
         }
@@ -110,7 +124,7 @@ public class RouteModelHelper {
     }
 
     public static List<CategoryTreeNode> asParents(CategoryTreeNode parent, int count) {
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(count);
+        List<CategoryTreeNode> parents = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             parents.add(parent);
         }

@@ -5,5 +5,11 @@
 // Generated on: 2010.06.29 at 05:04:10 PM MESZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.nokia.com/schemas/location/landmarks/1/0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED, xmlns = {
+		@XmlNs(prefix = "", namespaceURI = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI),
+		@XmlNs(prefix = "lm", namespaceURI = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI)})
 package slash.navigation.lmx.binding;
+import javax.xml.bind.annotation.XmlNs;
+
+import slash.navigation.lmx.NokiaLandmarkExchangeUtil;
+

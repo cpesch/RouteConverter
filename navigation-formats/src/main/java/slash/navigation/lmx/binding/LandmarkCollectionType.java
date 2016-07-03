@@ -127,7 +127,7 @@ public class LandmarkCollectionType {
      */
     public List<LandmarkType> getLandmark() {
         if (landmark == null) {
-            landmark = new ArrayList<LandmarkType>();
+            landmark = new ArrayList<>();
         }
         return this.landmark;
     }

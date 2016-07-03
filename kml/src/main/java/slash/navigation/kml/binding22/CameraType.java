@@ -251,7 +251,7 @@ public class CameraType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -278,7 +278,7 @@ public class CameraType
      */
     public List<Object> getCameraSimpleExtensionGroup() {
         if (cameraSimpleExtensionGroup == null) {
-            cameraSimpleExtensionGroup = new ArrayList<Object>();
+            cameraSimpleExtensionGroup = new ArrayList<>();
         }
         return this.cameraSimpleExtensionGroup;
     }
@@ -307,7 +307,7 @@ public class CameraType
      */
     public List<AbstractObjectType> getCameraObjectExtensionGroup() {
         if (cameraObjectExtensionGroup == null) {
-            cameraObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            cameraObjectExtensionGroup = new ArrayList<>();
         }
         return this.cameraObjectExtensionGroup;
     }

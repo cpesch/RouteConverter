@@ -214,7 +214,7 @@ public class Premise {
     @XmlSchemaType(name = "anySimpleType")
     protected String premiseThoroughfareConnector;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -240,7 +240,7 @@ public class Premise {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -269,7 +269,7 @@ public class Premise {
      */
     public List<Premise.PremiseName> getPremiseName() {
         if (premiseName == null) {
-            premiseName = new ArrayList<Premise.PremiseName>();
+            premiseName = new ArrayList<>();
         }
         return this.premiseName;
     }
@@ -322,7 +322,7 @@ public class Premise {
      */
     public List<PremiseNumber> getPremiseNumber() {
         if (premiseNumber == null) {
-            premiseNumber = new ArrayList<PremiseNumber>();
+            premiseNumber = new ArrayList<>();
         }
         return this.premiseNumber;
     }
@@ -375,7 +375,7 @@ public class Premise {
      */
     public List<PremiseNumberPrefix> getPremiseNumberPrefix() {
         if (premiseNumberPrefix == null) {
-            premiseNumberPrefix = new ArrayList<PremiseNumberPrefix>();
+            premiseNumberPrefix = new ArrayList<>();
         }
         return this.premiseNumberPrefix;
     }
@@ -404,7 +404,7 @@ public class Premise {
      */
     public List<PremiseNumberSuffix> getPremiseNumberSuffix() {
         if (premiseNumberSuffix == null) {
-            premiseNumberSuffix = new ArrayList<PremiseNumberSuffix>();
+            premiseNumberSuffix = new ArrayList<>();
         }
         return this.premiseNumberSuffix;
     }
@@ -433,7 +433,7 @@ public class Premise {
      */
     public List<BuildingNameType> getBuildingName() {
         if (buildingName == null) {
-            buildingName = new ArrayList<BuildingNameType>();
+            buildingName = new ArrayList<>();
         }
         return this.buildingName;
     }
@@ -462,7 +462,7 @@ public class Premise {
      */
     public List<SubPremiseType> getSubPremise() {
         if (subPremise == null) {
-            subPremise = new ArrayList<SubPremiseType>();
+            subPremise = new ArrayList<>();
         }
         return this.subPremise;
     }
@@ -587,7 +587,7 @@ public class Premise {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -736,7 +736,7 @@ public class Premise {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -851,7 +851,7 @@ public class Premise {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -1325,7 +1325,7 @@ public class Premise {
              */
             public List<AddressLine> getAddressLine() {
                 if (addressLine == null) {
-                    addressLine = new ArrayList<AddressLine>();
+                    addressLine = new ArrayList<>();
                 }
                 return this.addressLine;
             }
@@ -1354,7 +1354,7 @@ public class Premise {
              */
             public List<PremiseNumberPrefix> getPremiseNumberPrefix() {
                 if (premiseNumberPrefix == null) {
-                    premiseNumberPrefix = new ArrayList<PremiseNumberPrefix>();
+                    premiseNumberPrefix = new ArrayList<>();
                 }
                 return this.premiseNumberPrefix;
             }
@@ -1383,7 +1383,7 @@ public class Premise {
              */
             public List<PremiseNumber> getPremiseNumber() {
                 if (premiseNumber == null) {
-                    premiseNumber = new ArrayList<PremiseNumber>();
+                    premiseNumber = new ArrayList<>();
                 }
                 return this.premiseNumber;
             }
@@ -1412,7 +1412,7 @@ public class Premise {
              */
             public List<PremiseNumberSuffix> getPremiseNumberSuffix() {
                 if (premiseNumberSuffix == null) {
-                    premiseNumberSuffix = new ArrayList<PremiseNumberSuffix>();
+                    premiseNumberSuffix = new ArrayList<>();
                 }
                 return this.premiseNumberSuffix;
             }
@@ -1484,7 +1484,7 @@ public class Premise {
              */
             public List<AddressLine> getAddressLine() {
                 if (addressLine == null) {
-                    addressLine = new ArrayList<AddressLine>();
+                    addressLine = new ArrayList<>();
                 }
                 return this.addressLine;
             }
@@ -1513,7 +1513,7 @@ public class Premise {
              */
             public List<PremiseNumberPrefix> getPremiseNumberPrefix() {
                 if (premiseNumberPrefix == null) {
-                    premiseNumberPrefix = new ArrayList<PremiseNumberPrefix>();
+                    premiseNumberPrefix = new ArrayList<>();
                 }
                 return this.premiseNumberPrefix;
             }
@@ -1542,7 +1542,7 @@ public class Premise {
              */
             public List<PremiseNumber> getPremiseNumber() {
                 if (premiseNumber == null) {
-                    premiseNumber = new ArrayList<PremiseNumber>();
+                    premiseNumber = new ArrayList<>();
                 }
                 return this.premiseNumber;
             }
@@ -1571,7 +1571,7 @@ public class Premise {
              */
             public List<PremiseNumberSuffix> getPremiseNumberSuffix() {
                 if (premiseNumberSuffix == null) {
-                    premiseNumberSuffix = new ArrayList<PremiseNumberSuffix>();
+                    premiseNumberSuffix = new ArrayList<>();
                 }
                 return this.premiseNumberSuffix;
             }

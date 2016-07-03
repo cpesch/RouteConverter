@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,8 +35,19 @@ import java.util.List;
  */
 
 public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> {
-    private List<R> routes = new ArrayList<R>();
-    private List<NavigationFormat<R>> formats = new ArrayList<NavigationFormat<R>>();
+    private List<R> routes = new ArrayList<>();
+    private List<NavigationFormat<R>> formats = new ArrayList<>();
+    private File file;
+    private CompactCalendar startDate;
+
+    public ParserContextImpl(File file, CompactCalendar startDate) {
+        this.file = file;
+        this.startDate = startDate;
+    }
+
+    public ParserContextImpl() {
+        this(null, null);
+    }
 
     public void prependRoute(R route) {
         this.routes.add(0, route);
@@ -58,14 +70,22 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     }
 
     public List<R> getRoutes() {
-        return new ArrayList<R>(routes);
+        return new ArrayList<>(routes);
     }
 
     public List<NavigationFormat<R>> getFormats() {
         return formats;
     }
 
-    public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+    public File getFile() {
+        return file;
+    }
+
+    public CompactCalendar getStartDate() {
+        return startDate;
+    }
+
+    public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
         throw new UnsupportedOperationException();
     }
 

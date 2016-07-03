@@ -23,8 +23,9 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserResult;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -37,9 +38,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.base.NavigationFormats.asFormatForPositions;
-import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
-import static slash.navigation.converter.gui.dnd.PositionSelection.stringFlavor;
+import static slash.navigation.base.NavigationFormatConverter.convertPositions;
+import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
+import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 
 /**
@@ -66,21 +67,19 @@ public class PasteAction extends FrameAction {
             return;
 
         try {
-            if (transferable.isDataFlavorSupported(positionFlavor)) {
-                Object selection = transferable.getTransferData(positionFlavor);
+            if (transferable.isDataFlavorSupported(POSITION_FLAVOR)) {
+                Object selection = transferable.getTransferData(POSITION_FLAVOR);
                 if (selection != null) {
                     PositionSelection positionsSelection = (PositionSelection) selection;
                     paste(positionsSelection.getPositions());
                 }
-            } else if (transferable.isDataFlavorSupported(stringFlavor)) {
-                Object string = transferable.getTransferData(stringFlavor);
+            } else if (transferable.isDataFlavorSupported(STRING_FLAVOR)) {
+                Object string = transferable.getTransferData(STRING_FLAVOR);
                 if (string != null) {
                     paste((String) string);
                 }
             }
-        } catch (UnsupportedFlavorException e) {
-            // intentionally left empty
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty
         }
     }
@@ -89,7 +88,7 @@ public class PasteAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         final int insertRow = selectedRows.length > 0 ? selectedRows[0] + 1 : table.getRowCount();
 
-        List<BaseNavigationPosition> targetPositions = asFormatForPositions(sourcePositions, positionsModel.getRoute().getFormat());
+        List<BaseNavigationPosition> targetPositions = convertPositions(sourcePositions, positionsModel.getRoute().getFormat());
         positionsModel.add(insertRow, targetPositions);
 
         final int lastRow = insertRow - 1 + targetPositions.size();
@@ -102,7 +101,7 @@ public class PasteAction extends FrameAction {
 
     @SuppressWarnings("unchecked")
     private void paste(String string) {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(RouteConverter.getInstance().getNavigationFormatRegistry());
         try {
             ParserResult result = parser.read(string);
             if (result.isSuccessful()) {

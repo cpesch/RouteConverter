@@ -27,10 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class NmnUrlFormatTest {
@@ -137,7 +134,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testCreateDeURL() {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
         positions.add(new Wgs84Position(10.20026067, 53.57662034, null, 4.5, null, "Stemwarde, Germany"));
         positions.add(new Wgs84Position(10.35735078, 53.59171021, null, 3.5, null, "Groöensee, Germany"));
@@ -149,7 +146,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testCreateUsaURL() {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         positions.add(new Wgs84Position(-113.240014, 36.114526, 1134.0, null, null, "Grand Canyon, Arizona, USA"));
         positions.add(new Wgs84Position(-115.139973, 53.574977, 648.0, null, null, "Las Vegas, Nevada, USA"));
         String expected = "navigon://route/?target=coordinate//-113.240014/36.114526&target=coordinate//-115.139973/53.574977";

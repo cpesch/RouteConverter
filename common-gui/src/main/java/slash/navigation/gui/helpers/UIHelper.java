@@ -20,10 +20,11 @@
 
 package slash.navigation.gui.helpers;
 
+import slash.navigation.gui.Application;
+import slash.navigation.gui.SingleFrameApplication;
+
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
+import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 
@@ -45,17 +47,6 @@ public class UIHelper {
     private static final Logger log = getLogger(UIHelper.class.getName());
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
-    // for language support which is not defined by a constant in Locale
-    public static final Locale ARABIA = new Locale("ar", "SA");
-    public static final Locale CZECH = new Locale("cs", "CZ");
-    public static final Locale CROATIA = new Locale("hr", "HR");
-    public static final Locale NEDERLANDS = new Locale("nl", "NL");
-    public static final Locale POLAND = new Locale("pl", "PL");
-    public static final Locale RUSSIA = new Locale("ru", "RU");
-    public static final Locale SERBIA = new Locale("sr", "SR");
-    public static final Locale SLOVAKIA = new Locale("sk", "SK");
-    public static final Locale SPAIN = new Locale("es", "ES");
-
     public static void setLookAndFeel() {
         try {
             String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
@@ -69,6 +60,10 @@ public class UIHelper {
         JDialog.setDefaultLookAndFeelDecorated(true);
     }
 
+    public static void setUseSystemProxies() {
+        System.setProperty("java.net.useSystemProxies", "true");
+    }
+
     public static void startWaitCursor(JComponent component) {
         RootPaneContainer root = (RootPaneContainer) component.getTopLevelAncestor();
         startWaitCursor(root.getGlassPane());
@@ -79,19 +74,18 @@ public class UIHelper {
         component.setCursor(Cursor.getPredefinedCursor(WAIT_CURSOR));
     }
 
+    public static void startDragCursor(Component component) {
+        component.setCursor(DefaultMoveDrop);
+    }
+
     public static void stopWaitCursor(JComponent component) {
         RootPaneContainer root = (RootPaneContainer) component.getTopLevelAncestor();
         stopWaitCursor(root.getGlassPane());
         root.getGlassPane().setVisible(false);
     }
 
-    private static void stopWaitCursor(Component component) {
+    public static void stopWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(DEFAULT_CURSOR));
-    }
-
-    public static ImageIcon loadIcon(String name) {
-        URL iconURL = UIHelper.class.getClassLoader().getResource(name);
-        return new ImageIcon(iconURL);
     }
 
     public static JFileChooser createJFileChooser() {
@@ -114,9 +108,8 @@ public class UIHelper {
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
             try {
-                String text = bundle.getString(key);
-                if (text != null)
-                    UIManager.getDefaults().put(key, text);
+                if (bundle.containsKey(key))
+                    UIManager.getDefaults().put(key, bundle.getString(key));
             } catch (MissingResourceException e) {
                 // intentionally left empty
             }
@@ -132,5 +125,12 @@ public class UIHelper {
         }
         int width = fontMetrics.stringWidth(string);
         return width + extraWidth;
+    }
+
+    public static JFrame getFrame() {
+        Application application = Application.getInstance();
+        if (!(application instanceof SingleFrameApplication))
+            return null;
+        return ((SingleFrameApplication) application).getFrame();
     }
 }

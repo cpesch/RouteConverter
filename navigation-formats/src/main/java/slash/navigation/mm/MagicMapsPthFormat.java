@@ -20,12 +20,11 @@
 
 package slash.navigation.mm;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.GkPosition;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,9 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
@@ -67,8 +64,8 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
-        List<GkPosition> positions = new ArrayList<GkPosition>();
+    public void read(BufferedReader reader, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
+        List<GkPosition> positions = new ArrayList<>();
 
         while (true) {
             String line = reader.readLine();

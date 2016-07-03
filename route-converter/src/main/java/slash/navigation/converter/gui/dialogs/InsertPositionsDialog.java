@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
@@ -105,9 +106,12 @@ public class InsertPositionsDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
 
-        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+        r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
+                    return;
+                if (positionsModel.isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
@@ -117,8 +121,10 @@ public class InsertPositionsDialog extends SimpleDialog {
                 handlePositionsUpdate();
             }
         });
-        r.getPositionsModel().addTableModelListener(new TableModelListener() {
+        positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                if (positionsModel.isContinousRange())
+                    return;
                 handlePositionsUpdate();
             }
         });
@@ -128,7 +134,7 @@ public class InsertPositionsDialog extends SimpleDialog {
 
     private void handlePositionsUpdate() {
         RouteConverter r = RouteConverter.getInstance();
-        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
+        int selectedRowCount = r.getConvertPanel().getPositionsView().getSelectedRowCount();
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
 
         boolean existsSelectedPosition = selectedRowCount > 0;
@@ -136,14 +142,14 @@ public class InsertPositionsDialog extends SimpleDialog {
         buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition && r.getRoutingServiceFacade().getRoutingService().isSupportTurnpoints());
         buttonClearSelection.setEnabled(existsSelectedPosition);
 
-        boolean notAllPositionsSelected = r.getPositionsView().getRowCount() > selectedRowCount;
+        boolean notAllPositionsSelected = r.getConvertPanel().getPositionsView().getRowCount() > selectedRowCount;
         buttonSelectAll.setEnabled(notAllPositionsSelected);
     }
 
     private void selectAll() {
         RouteConverter r = RouteConverter.getInstance();
         r.getContext().getActionManager().run("select-all");
-        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
+        int selectedRowCount = r.getConvertPanel().getPositionsView().getSelectedRowCount();
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
 

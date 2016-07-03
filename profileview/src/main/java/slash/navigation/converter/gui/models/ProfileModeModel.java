@@ -19,36 +19,52 @@
 */
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.converter.gui.profileview.ProfileMode;
+import slash.navigation.converter.gui.profileview.XAxisMode;
+import slash.navigation.converter.gui.profileview.YAxisMode;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
+import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
+import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 
 /**
- * A model for {@link ProfileMode}.
+ * A model for {@link XAxisMode} and {@link YAxisMode}.
  *
  * @author Christian Pesch
  */
 
 public class ProfileModeModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(ProfileModeModel.class);
-    private static final String PROFILE_MODE_PREFERENCE = "profileMode";
+    private static final String X_AXIS_MODE_PREFERENCE = "xAxis";
+    private static final String Y_AXIS_MODE_PREFERENCE = "yAxis";
 
     private EventListenerList listenerList = new EventListenerList();
 
-    public ProfileMode getProfileMode() {
+    public XAxisMode getXAxisMode() {
         try {
-            return ProfileMode.valueOf(preferences.get(PROFILE_MODE_PREFERENCE, Elevation.toString()));
+            return XAxisMode.valueOf(preferences.get(X_AXIS_MODE_PREFERENCE, Distance.toString()));
+        } catch (IllegalArgumentException e) {
+            return Distance;
+        }
+    }
+
+    public void setXAxisMode(XAxisMode xAxisMode) {
+        preferences.put(X_AXIS_MODE_PREFERENCE, xAxisMode.toString());
+        fireChanged();
+    }
+
+    public YAxisMode getYAxisMode() {
+        try {
+            return YAxisMode.valueOf(preferences.get(Y_AXIS_MODE_PREFERENCE, Elevation.toString()));
         } catch (IllegalArgumentException e) {
             return Elevation;
         }
     }
 
-    public void setProfileMode(ProfileMode profileMode) {
-        preferences.put(PROFILE_MODE_PREFERENCE, profileMode.toString());
+    public void setYAxisMode(YAxisMode yAxisMode) {
+        preferences.put(Y_AXIS_MODE_PREFERENCE, yAxisMode.toString());
         fireChanged();
     }
 

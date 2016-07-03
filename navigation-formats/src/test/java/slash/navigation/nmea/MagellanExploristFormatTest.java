@@ -25,17 +25,11 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
@@ -108,8 +102,8 @@ public class MagellanExploristFormatTest {
         StringReader reader = new StringReader(
                 "$PMGNTRK,4914.9672,N,00651.2081,E,00199,M,152224,A,KLLERTAL-RADWEG,210307*7B"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);

@@ -21,9 +21,9 @@
 package slash.navigation.gpx;
 
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -142,5 +142,9 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
 
     protected boolean isWriteMetaData() {
         return preferences.getBoolean("writeMetaData", true);
+    }
+
+    protected boolean isWriteTrip() {
+        return preferences.getBoolean("writeTrip", false);
     }
 }

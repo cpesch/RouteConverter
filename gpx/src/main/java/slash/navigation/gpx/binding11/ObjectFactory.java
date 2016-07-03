@@ -158,7 +158,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.topografix.com/GPX/1/1", name = "gpx")
     public JAXBElement<GpxType> createGpx(GpxType value) {
-        return new JAXBElement<GpxType>(_Gpx_QNAME, GpxType.class, null, value);
+        return new JAXBElement<>(_Gpx_QNAME, GpxType.class, null, value);
     }
 
 }

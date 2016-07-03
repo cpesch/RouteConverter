@@ -20,6 +20,7 @@
 
 package slash.navigation.elevation;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 
 import java.io.IOException;
@@ -34,9 +35,13 @@ import java.util.List;
 public interface ElevationService {
     String getName();
     boolean isDownload();
+    boolean isSupportsPath();
     String getPath();
     void setPath(String path);
 
     Double getElevationFor(double longitude, double latitude) throws IOException;
-    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+
+    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload);
+    long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
+    void downloadElevationData(List<BoundingBox> boundingBoxes);
 }

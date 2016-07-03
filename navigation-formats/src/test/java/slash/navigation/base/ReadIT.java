@@ -43,8 +43,8 @@ import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
-    private NavigationFormatParser parser = new NavigationFormatParser();
-    private static Set<String> comments = new HashSet<String>();
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private static Set<String> comments = new HashSet<>();
 
     protected interface TestFileCallback {
         void test(File file) throws IOException;
@@ -112,7 +112,7 @@ public class ReadIT {
 
     @Test
     public void testCsvFilesAreValid() throws IOException {
-        // Columbus V900
+        // Columbus Gps
         // iBlue 747
         // Qstarz Q1000
         readFiles(".csv");
@@ -403,7 +403,7 @@ public class ReadIT {
                 try {
                     ParserResult result = parser.read(file);
                     assertNotNull(result);
-                    assertFalse("Can read route from " + file, result.isSuccessful());
+                    assertFalse("Can read route from " + file, result.getAllRoutes().size() == 0);
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }

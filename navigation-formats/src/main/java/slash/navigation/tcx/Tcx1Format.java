@@ -20,27 +20,10 @@
 
 package slash.navigation.tcx;
 
-import slash.common.type.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.tcx.binding1.ActivityLapT;
-import slash.navigation.tcx.binding1.CourseFolderT;
-import slash.navigation.tcx.binding1.CourseLapT;
-import slash.navigation.tcx.binding1.CoursePointT;
-import slash.navigation.tcx.binding1.CourseT;
-import slash.navigation.tcx.binding1.CoursesT;
-import slash.navigation.tcx.binding1.HistoryFolderT;
-import slash.navigation.tcx.binding1.HistoryT;
-import slash.navigation.tcx.binding1.IntensityT;
-import slash.navigation.tcx.binding1.MultiSportFolderT;
-import slash.navigation.tcx.binding1.MultiSportSessionT;
-import slash.navigation.tcx.binding1.NextSportT;
-import slash.navigation.tcx.binding1.ObjectFactory;
-import slash.navigation.tcx.binding1.PositionT;
-import slash.navigation.tcx.binding1.RunT;
-import slash.navigation.tcx.binding1.TrackT;
-import slash.navigation.tcx.binding1.TrackpointT;
-import slash.navigation.tcx.binding1.TrainingCenterDatabaseT;
+import slash.navigation.tcx.binding1.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -51,12 +34,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.common.io.Transfer.formatTime;
-import static slash.common.io.Transfer.parseTime;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseXMLTime;
+import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.tcx.TcxUtil.marshal1;
+import static slash.navigation.tcx.TcxUtil.unmarshal1;
 
 /**
  * Reads Training Center Database 1 (.tcx) files.
@@ -79,13 +61,13 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<Wgs84Position> processTrack(TrackT trackT) {
-        List<Wgs84Position> result = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> result = new ArrayList<>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
             result.add(new Wgs84Position(convertLongitude(trackpointT.getPosition()),
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
-                    parseTime(trackpointT.getTime()),
+                    parseXMLTime(trackpointT.getTime()),
                     null,
                     trackpointT));
         }
@@ -93,20 +75,20 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private TcxRoute processCoursePoints(String name, CourseT courseT) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (CoursePointT coursePointT : courseT.getCoursePoint()) {
             positions.add(new Wgs84Position(convertLongitude(coursePointT.getPosition()),
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
                     null,
-                    parseTime(coursePointT.getTime()),
+                    parseXMLTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, name, positions) : null;
     }
 
     private TcxRoute processCourseLap(String name, CourseLapT courseLapT) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         positions.add(new Wgs84Position(convertLongitude(courseLapT.getBeginPosition()),
                 convertLatitude(courseLapT.getBeginPosition()),
                 courseLapT.getBeginAltitudeMeters(),
@@ -126,7 +108,7 @@ public class Tcx1Format extends TcxFormat {
 
 
     private TcxRoute processTracks(String name, List<TrackT> trackListT) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (TrackT trackT : trackListT) {
             positions.addAll(processTrack(trackT));
         }
@@ -134,14 +116,14 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<TcxRoute> processRun(String name, RunT runT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
         for (ActivityLapT activityLapT : runT.getLap())
             result.add(processTracks(name, activityLapT.getTrack()));
         return result;
     }
 
     private List<TcxRoute> processCourseLap(String name, CourseT courseT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
         for (CourseLapT courseLapT : courseT.getLap()) {
             result.add(processCourseLap(name, courseLapT));
         }
@@ -152,7 +134,7 @@ public class Tcx1Format extends TcxFormat {
         boolean writtenByRouteConverter = courseFolderT.getNotes() != null && courseFolderT.getNotes().equals(GENERATED_BY);
         String prefix = name != null && !writtenByRouteConverter ? name + "/" : "";
 
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
         for (CourseFolderT folderT : courseFolderT.getFolder())
             result.addAll(process(prefix + folderT.getName(), folderT));
 
@@ -173,7 +155,7 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<TcxRoute> process(String name, MultiSportFolderT multiSportFolderT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
         for (MultiSportFolderT folderT : multiSportFolderT.getFolder())
             result.addAll(process(name + "/" + folderT.getName(), folderT));
 
@@ -195,7 +177,7 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<TcxRoute> process(String name, HistoryFolderT historyFolderT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
         for (HistoryFolderT folderT : historyFolderT.getFolder())
             result.addAll(process(name + "/" + folderT.getName(), folderT));
 
@@ -209,7 +191,7 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<TcxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        List<TcxRoute> result = new ArrayList<>();
 
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> Courses -> CourseFolder -> CourseFolder* -> Course -> CoursePoint -> Position
@@ -242,8 +224,8 @@ public class Tcx1Format extends TcxFormat {
         return result;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<TcxRoute> context) throws Exception {
-        TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal1(source);
+    public void read(InputStream source, ParserContext<TcxRoute> context) throws Exception {
+        TrainingCenterDatabaseT trainingCenterDatabase = unmarshal1(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }
 
@@ -296,10 +278,12 @@ public class Tcx1Format extends TcxFormat {
             trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(formatTime(position.getTime()));
+            trackpointT.setTime(Transfer.formatXMLTime(position.getTime()));
 
             if (previous != null) {
-                distance += previous.calculateDistance(position);
+                Double previousDistance = previous.calculateDistance(position);
+                if (!isEmpty(previousDistance))
+                    distance += previousDistance;
             }
             previous = position;
             trackpointT.setDistanceMeters(distance);
@@ -344,7 +328,7 @@ public class Tcx1Format extends TcxFormat {
         CourseFolderT courseFolderT = createCourseFolder(coursesT);
         List<CourseT> courses = courseFolderT.getCourse();
 
-        Set<String> routeNames = new HashSet<String>(routes.size());
+        Set<String> routeNames = new HashSet<>(routes.size());
         for (TcxRoute route : routes) {
             String routeName = createUniqueRouteName(route.getName(), routeNames);
             routeNames.add(routeName);

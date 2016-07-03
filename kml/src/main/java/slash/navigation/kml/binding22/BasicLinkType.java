@@ -112,7 +112,7 @@ public class BasicLinkType
      */
     public List<JAXBElement<?>> getBasicLinkSimpleExtensionGroup() {
         if (basicLinkSimpleExtensionGroup == null) {
-            basicLinkSimpleExtensionGroup = new ArrayList<JAXBElement<?>>();
+            basicLinkSimpleExtensionGroup = new ArrayList<>();
         }
         return this.basicLinkSimpleExtensionGroup;
     }
@@ -141,7 +141,7 @@ public class BasicLinkType
      */
     public List<AbstractObjectType> getBasicLinkObjectExtensionGroup() {
         if (basicLinkObjectExtensionGroup == null) {
-            basicLinkObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            basicLinkObjectExtensionGroup = new ArrayList<>();
         }
         return this.basicLinkObjectExtensionGroup;
     }

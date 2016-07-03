@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.common.io.FileFileFilter;
+import slash.common.io.Files;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -28,12 +28,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
-import static java.util.Arrays.asList;
 import static slash.common.io.Files.toUrls;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
@@ -44,36 +42,26 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
  */
 
 public class PanelDropHandler extends TransferHandler {
-    private List<File> toFilesOnly(List<File> files) {
-        List<File> result = new ArrayList<File>();
-        for (File file : files) {
-            if (file.isFile())
-                result.add(file);
-            else if (file.isDirectory()) {
-                File[] list = file.listFiles(new FileFileFilter());
-                if (list != null)
-                    result.addAll(asList(list));
-            }
-        }
-        return result;
-    }
 
     private void openOrAdd(List<File> files) {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
-            List<File> onlyFiles = toFilesOnly(files);
-            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])));
-        } else if (r.isBrowsePanelSelected())
-            r.addFilesToCatalog(files);
+            List<File> onlyFiles = Files.collectFiles(files);
+            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])), true);
+        } else if (r.isBrowsePanelSelected()) {
+            r.getBrowsePanel().addFilesToCatalog(files);
+        } else if (r.isPhotosPanelSelected()) {
+            r.getPhotoPanel().addPhotos(files);
+        }
     }
 
     private void openOrAdd(String string) {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
             String url = extractUrl(string);
-            r.openPositionList(toUrls(url));
+            r.openPositionList(toUrls(url), true);
         } else if (r.isBrowsePanelSelected()) {
-            r.addUrlToCatalog(string);
+            r.getBrowsePanel().addUrlToCatalog(string);
         }
     }
 
@@ -86,15 +74,6 @@ public class PanelDropHandler extends TransferHandler {
     public boolean importData(TransferSupport support) {
         Transferable transferable = support.getTransferable();
         try {
-            if (support.isDataFlavorSupported(javaFileListFlavor)) {
-                Object data = transferable.getTransferData(javaFileListFlavor);
-                if (data != null) {
-                    List<File> files = (List<File>) data;
-                    openOrAdd(files);
-                    return true;
-                }
-            }
-
             if (support.isDataFlavorSupported(stringFlavor)) {
                 Object data = transferable.getTransferData(stringFlavor);
                 if (data != null) {
@@ -103,9 +82,16 @@ public class PanelDropHandler extends TransferHandler {
                     return true;
                 }
             }
-        } catch (UnsupportedFlavorException e) {
-            // intentionally left empty
-        } catch (IOException e) {
+
+            if (support.isDataFlavorSupported(javaFileListFlavor)) {
+                Object data = transferable.getTransferData(javaFileListFlavor);
+                if (data != null) {
+                    List<File> files = (List<File>) data;
+                    openOrAdd(files);
+                    return true;
+                }
+            }
+        } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty
         }
         return false;

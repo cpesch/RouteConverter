@@ -20,7 +20,6 @@
 
 package slash.navigation.babel;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
@@ -42,7 +41,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
-import static slash.common.io.InputOutput.copy;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.system.Platform.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 
@@ -58,6 +57,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private static final String BABEL_PATH_PREFERENCE = "babelPath";
     private static final String BABEL_INTERFACE_FORMAT_NAME = "gpx";
     private static final String[] ROUTE_WAYPOINTS_TRACKS = new String[]{"-r", "-w", "-t"};
+    private static final String USR_BIN_GPSBABEL = "/usr/bin/gpsbabel";
     private Gpx10Format gpxFormat;
 
     private Gpx10Format getGpxFormat() {
@@ -119,7 +119,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     // stream
 
     private Process execute(String babel, String sourceFormat, String targetFormat, String[] globalFlags) throws IOException {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         args.add(babel);
         args.addAll(asList(globalFlags));
         args.addAll(asList("-i", sourceFormat, "-f", "-",
@@ -175,7 +175,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             output.close();
                     }
                 } catch (IOException e) {
-                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
+                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e);
                 }
             }
         }, "BabelStreamPumper-" + streamName).start();
@@ -189,12 +189,12 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return process;
     }
 
-    private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    private void readStream(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
         InputStream target = process.getInputStream();
-        getGpxFormat().read(target, startDate, context);
+        getGpxFormat().read(target, context);
         observer.interrupt();
         target.close();
     }
@@ -213,7 +213,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                                String[] globalFlags, String formatFlags,
                                int timeout) throws IOException {
         String babel = findBabel();
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         args.add(babel);
         args.addAll(asList(globalFlags));
         args.addAll(asList("-i", sourceFormat,
@@ -252,7 +252,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     readStream(errorStream, "error");
                 }
             } catch (IOException e) {
-                log.severe("Couldn't read response: " + e.getMessage());
+                log.severe("Couldn't read response: " + e);
             }
 
             try {
@@ -275,16 +275,11 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             }
         }
 
-        if (!hasExitValue) {
-            log.severe("Command doesn't return exit value. Shutting down args...");
-            process.destroy();
-        }
-
         try {
             readStream(inputStream, "input");
             readStream(errorStream, "error");
         } catch (IOException e) {
-            log.severe("Couldn't read final response: " + e.getMessage());
+            log.severe("Couldn't read final response: " + e);
         }
 
         log.info("Executed '" + process + "' with exit value: " + exitValue);
@@ -301,18 +296,18 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
     }
 
-    private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+    private void readFile(InputStream source, ParserContext<GpxRoute> context) throws Exception {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babel-read-source", "." + getFormatName(), getTemporaryDirectory());
-            copy(source, new FileOutputStream(sourceFile));
+            copyAndClose(source, new FileOutputStream(sourceFile));
             targetFile = createTempFile("babel-read-target", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
-                InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile));
-                getGpxFormat().read(target, startDate, context);
-                target.close();
-                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+                try (InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile))) {
+                    getGpxFormat().read(target, context);
+                    log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+                }
             }
         } finally {
             delete(sourceFile);
@@ -346,12 +341,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         // 3. look for "/usr/bin/gpsbabel" in path
         if (babelFile == null && !isWindows()) {
-            babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
+            babelFile = checkIfBabelExists(USR_BIN_GPSBABEL);
         }
 
         // 4. extract from classpath into temp directrory and execute there
         if (babelFile == null) {
-            String path = getOperationSystem() + "/" + getArchitecture() + "/";
+            // x86 since there is only one gpsbabel executable for 32- and 64-bit
+            String path = getOperationSystem() + "/x86/";
             if (isWindows()) {
                 extractFile(path + "libexpat.dll");
                 babelFile = extractFile(path + "gpsbabel.exe");
@@ -396,7 +392,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         if (routes == null)
             return null;
 
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        List<GpxRoute> result = new ArrayList<>();
         for (GpxRoute aRoute : routes) {
             GpxRoute route = sanitizeRoute(aRoute);
             if (isValidRoute(route))
@@ -421,12 +417,12 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<GpxRoute>();
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<>();
         if (isStreamingCapable()) {
-            readStream(source, startDate, gpxContext);
+            readStream(source, gpxContext);
         } else {
-            readFile(source, startDate, gpxContext);
+            readFile(source, gpxContext);
         }
         List<GpxRoute> result = filterValidRoutes(gpxContext.getRoutes());
         if (result != null && result.size() > 0) {
@@ -446,7 +442,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            copyAndClose(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
@@ -465,7 +461,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            copyAndClose(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);

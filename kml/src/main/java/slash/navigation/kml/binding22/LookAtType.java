@@ -251,7 +251,7 @@ public class LookAtType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -278,7 +278,7 @@ public class LookAtType
      */
     public List<Object> getLookAtSimpleExtensionGroup() {
         if (lookAtSimpleExtensionGroup == null) {
-            lookAtSimpleExtensionGroup = new ArrayList<Object>();
+            lookAtSimpleExtensionGroup = new ArrayList<>();
         }
         return this.lookAtSimpleExtensionGroup;
     }
@@ -307,7 +307,7 @@ public class LookAtType
      */
     public List<AbstractObjectType> getLookAtObjectExtensionGroup() {
         if (lookAtObjectExtensionGroup == null) {
-            lookAtObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            lookAtObjectExtensionGroup = new ArrayList<>();
         }
         return this.lookAtObjectExtensionGroup;
     }

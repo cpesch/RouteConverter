@@ -20,11 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.base.WaypointType;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.fpl.WaypointType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.MissingResourceException;
 
 /**
  * Renders the {@link WaypointType} labels of the complete flight plan waypoint type combo box.
@@ -36,12 +37,15 @@ public class WaypointTypeListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         WaypointType waypointType = WaypointType.class.cast(value);
-        String text;
-        if (waypointType != null)
-            text = RouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase()) +
-                    " (" + waypointType.value() + ")";
-        else
-            text = null;
+        String text = "?";
+        if (waypointType != null) {
+            try {
+                text = RouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase());
+            } catch (MissingResourceException e) {
+                text = waypointType.name();
+            }
+            text += " (" + waypointType.value() + ")";
+        }
         label.setText(text);
         return label;
     }

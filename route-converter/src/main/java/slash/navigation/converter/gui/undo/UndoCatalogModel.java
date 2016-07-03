@@ -20,24 +20,22 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.model.CategoryTreeModel;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
 import slash.navigation.gui.undo.UndoManager;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.util.List;
 
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asNames;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParentsFromRoutes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
@@ -102,18 +100,18 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new MoveCategories(this, categories, oldParents, parents));
     }
 
-    public void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
-        removeCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
+    public void deleteCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
+        deleteCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
     }
 
-    public void removeCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
-        removeCategories(parents, names, invokeLaterRunnable, true);
+    public void deleteCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
+        deleteCategories(parents, names, invokeLaterRunnable, true);
     }
 
-    void removeCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
-        delegate.removeCategories(categories, names, invokeLaterRunnable);
+    void deleteCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
+        delegate.deleteCategories(categories, names, invokeLaterRunnable);
         if (trackUndo)
-            undoManager.addEdit(new RemoveCategories(this, categories, names));
+            undoManager.addEdit(new DeleteCategories(this, categories, names));
     }
 
     public void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback) {
@@ -126,13 +124,13 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new AddRoute(this, category, description, file, url, callback));
     }
 
-    public void renameRoute(RouteModel route, String name) {
-        renameRoute(route, name, true);
+    public void renameRoute(RouteModel route, String name, Runnable invokeLaterRunnable) {
+        renameRoute(route, name, invokeLaterRunnable, true);
     }
 
-    void renameRoute(RouteModel route, String newName, boolean trackUndo) {
+    void renameRoute(RouteModel route, String newName, Runnable invokeLaterRunnable, boolean trackUndo) {
         String oldName = route.getName();
-        delegate.renameRoute(route, newName);
+        delegate.renameRoute(route, newName, invokeLaterRunnable);
         if (trackUndo)
             undoManager.addEdit(new RenameRoute(this, route, oldName, newName));
 
@@ -153,13 +151,13 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new MoveRoutes(this, routes, oldParents, parents));
     }
 
-    public void removeRoutes(List<RouteModel> routes) {
-        removeRoutes(routes, true);
+    public void deleteRoutes(List<RouteModel> routes) {
+        deleteRoutes(routes, true);
     }
 
-    void removeRoutes(List<RouteModel> routes, boolean trackUndo) {
-        delegate.removeRoutes(routes);
+    void deleteRoutes(List<RouteModel> routes, boolean trackUndo) {
+        delegate.deleteRoutes(routes);
         if (trackUndo)
-            undoManager.addEdit(new RemoveRoutes(this, routes));
+            undoManager.addEdit(new DeleteRoutes(this, routes));
     }
 }

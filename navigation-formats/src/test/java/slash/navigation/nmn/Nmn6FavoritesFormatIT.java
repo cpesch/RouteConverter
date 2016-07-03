@@ -21,6 +21,7 @@
 package slash.navigation.nmn;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class Nmn6FavoritesFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
     public void testIsNmn6FavoritesWithValidPositions() throws IOException {

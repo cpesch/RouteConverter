@@ -116,7 +116,7 @@ public class UpdateType {
      */
     public List<Object> getCreateOrDeleteOrChange() {
         if (createOrDeleteOrChange == null) {
-            createOrDeleteOrChange = new ArrayList<Object>();
+            createOrDeleteOrChange = new ArrayList<>();
         }
         return this.createOrDeleteOrChange;
     }
@@ -145,7 +145,7 @@ public class UpdateType {
      */
     public List<Object> getUpdateExtensionGroup() {
         if (updateExtensionGroup == null) {
-            updateExtensionGroup = new ArrayList<Object>();
+            updateExtensionGroup = new ArrayList<>();
         }
         return this.updateExtensionGroup;
     }

@@ -214,7 +214,7 @@ public class GeocodeResponse {
      */
     public List<GeocodeResponse.Result> getResult() {
         if (result == null) {
-            result = new ArrayList<GeocodeResponse.Result>();
+            result = new ArrayList<>();
         }
         return this.result;
     }
@@ -386,7 +386,7 @@ public class GeocodeResponse {
          */
         public List<String> getType() {
             if (type == null) {
-                type = new ArrayList<String>();
+                type = new ArrayList<>();
             }
             return this.type;
         }
@@ -439,7 +439,7 @@ public class GeocodeResponse {
          */
         public List<GeocodeResponse.Result.AddressComponent> getAddressComponent() {
             if (addressComponent == null) {
-                addressComponent = new ArrayList<GeocodeResponse.Result.AddressComponent>();
+                addressComponent = new ArrayList<>();
             }
             return this.addressComponent;
         }
@@ -577,7 +577,7 @@ public class GeocodeResponse {
              */
             public List<String> getType() {
                 if (type == null) {
-                    type = new ArrayList<String>();
+                    type = new ArrayList<>();
                 }
                 return this.type;
             }

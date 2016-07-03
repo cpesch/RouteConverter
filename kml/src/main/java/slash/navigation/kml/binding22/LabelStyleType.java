@@ -105,7 +105,7 @@ public class LabelStyleType
      */
     public List<Object> getLabelStyleSimpleExtensionGroup() {
         if (labelStyleSimpleExtensionGroup == null) {
-            labelStyleSimpleExtensionGroup = new ArrayList<Object>();
+            labelStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.labelStyleSimpleExtensionGroup;
     }
@@ -134,7 +134,7 @@ public class LabelStyleType
      */
     public List<AbstractObjectType> getLabelStyleObjectExtensionGroup() {
         if (labelStyleObjectExtensionGroup == null) {
-            labelStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            labelStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.labelStyleObjectExtensionGroup;
     }

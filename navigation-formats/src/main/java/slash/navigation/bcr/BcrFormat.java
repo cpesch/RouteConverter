@@ -20,11 +20,10 @@
 
 package slash.navigation.bcr;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.IniFileFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,9 +35,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.parseLong;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 
 /**
@@ -90,9 +87,9 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<BcrRoute> context) throws IOException {
-        List<BcrSection> sections = new ArrayList<BcrSection>();
-        List<BcrPosition> positions = new ArrayList<BcrPosition>();
+    public void read(BufferedReader reader, String encoding, ParserContext<BcrRoute> context) throws IOException {
+        List<BcrSection> sections = new ArrayList<>();
+        List<BcrPosition> positions = new ArrayList<>();
         BcrSection current = null;
 
         while (true) {
@@ -158,6 +155,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
             BcrSection description = findSection(sections, DESCRIPTION_TITLE);
             return isValidDescription(description) &&
+                    client != null && coordinates != null && description != null &&
                     client.getStationCount() == coordinates.getStationCount() &&
                     coordinates.getStationCount() == description.getStationCount();
         }
@@ -168,6 +166,9 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         BcrSection client = findSection(sections, CLIENT_TITLE);
         BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
         BcrSection description = findSection(sections, DESCRIPTION_TITLE);
+        if(client == null || coordinates == null || description == null)
+            return;
+
         for (int i = 1; i < client.getStationCount(); i++) {
             String clientStr = client.getStation(i);
             String coordinatesStr = coordinates.getStation(i);
@@ -191,11 +192,16 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (!clientMatcher.matches())
             log.info("'" + client + "' does not match client station pattern; ignoring it");
         else {
-            String altitudeString = trim(clientMatcher.group(2));
-            if (altitudeString != null)
-                altitude = parseLong(altitudeString);
+            String string = clientMatcher.group(2);
+            try {
+                Long aLong = parseLong(string);
+                if (aLong != null)
+                    altitude = aLong;
+            }
+            catch (NumberFormatException e) {
+                log.info("'" + string + "' is not a valid altitude; ignoring it");
+            }
         }
-
         return new BcrPosition(parseInt(x), parseInt(y), altitude, trim(description));
     }
 

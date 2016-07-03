@@ -21,25 +21,20 @@
 package slash.navigation.nmea;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Locale.US;
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
 import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
@@ -53,9 +48,6 @@ import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
  */
 
 public class NmeaFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(NmeaFormat.class.getName());
-    }
     private static final Preferences preferences = Preferences.userNodeForPackage(NmeaFormat.class);
 
     private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
@@ -109,12 +101,13 @@ public class NmeaFormat extends BaseNmeaFormat {
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
+    // $GPWPL,3018.000,S,15309.000,E,Coffs Harbor (Sidney)
     private static final Pattern WPL_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "WPL" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "(.*)" +
-                    END_OF_LINE);
+                    "([^\\*]*)" +
+                    "(\\*[0-9A-Fa-f][0-9A-Fa-f])?$");
 
     // $GPZDA,032910.542,07,08,2004,00,00*48
     private static final Pattern ZDA_PATTERN = Pattern.
@@ -188,7 +181,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
-            return hasValidChecksum(line);
+            return wplMatcher.group(6) == null || hasValidChecksum(line);
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
         if (zdaMatcher.matches())
@@ -233,7 +226,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String altitude = ggaMatcher.group(8);
             NmeaPosition position = new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
                     parseDouble(altitude), null, null, parseTime(time), null);
-            position.setSatellites(parseInt(satellites));
+            position.setSatellites(parseInteger(satellites));
             return position;
         }
 

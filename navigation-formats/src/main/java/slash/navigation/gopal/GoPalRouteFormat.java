@@ -23,6 +23,8 @@ package slash.navigation.gopal;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.XmlNavigationFormat;
 
+import java.util.prefs.Preferences;
+
 /**
  * The base of all GoPal Route formats.
  *
@@ -30,10 +32,17 @@ import slash.navigation.base.XmlNavigationFormat;
  */
 
 public abstract class GoPalRouteFormat<R extends BaseRoute> extends XmlNavigationFormat<R> {
+    protected static final Preferences preferences = Preferences.userNodeForPackage(GoPalRouteFormat.class);
 
     public String getExtension() {
         return ".xml";
     }
+
+    public int getMaximumPositionCount() {
+        return preferences.getInt(getVersion() + "MaximumPositionCount", UNLIMITED_MAXIMUM_POSITION_COUNT);
+    }
+
+    protected abstract String getVersion();
 
     public boolean isSupportsMultipleRoutes() {
         return false;

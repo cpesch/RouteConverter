@@ -38,7 +38,7 @@ import java.util.Set;
 public class TourPosition extends MercatorPosition {
     private boolean home = false;
     private String name, zipCode, street, houseNo; // description = city
-    private Map<String, String> nameValues = new HashMap<String, String>();
+    private Map<String, String> nameValues = new HashMap<>();
 
     public TourPosition(Double longitude, Double latitude,  Double elevation, Double speed, CompactCalendar time, String description) {
         super(longitude, latitude, elevation, speed, time, description);

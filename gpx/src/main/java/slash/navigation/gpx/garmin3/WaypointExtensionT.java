@@ -245,7 +245,7 @@ public class WaypointExtensionT {
      */
     public List<PhoneNumberT> getPhoneNumber() {
         if (phoneNumber == null) {
-            phoneNumber = new ArrayList<PhoneNumberT>();
+            phoneNumber = new ArrayList<>();
         }
         return this.phoneNumber;
     }

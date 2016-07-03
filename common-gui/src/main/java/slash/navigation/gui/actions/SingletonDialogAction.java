@@ -22,6 +22,13 @@ package slash.navigation.gui.actions;
 
 import slash.navigation.gui.SimpleDialog;
 
+import java.util.logging.Logger;
+
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.log.LoggingHelper.logException;
+
 /**
  * Show a dialog at most once.
  *
@@ -29,19 +36,27 @@ import slash.navigation.gui.SimpleDialog;
  */
 
 public abstract class SingletonDialogAction extends FrameAction {
+    private static final Logger log = Logger.getLogger(SingletonDialogAction.class.getName());
     private SimpleDialog dialog = null;
 
     protected abstract SimpleDialog createDialog();
 
     public void run() {
-        if (dialog == null) {
-            dialog = createDialog();
-            dialog.pack();
-            dialog.restoreLocation();
-        }
-        if (!dialog.isVisible()) {
-            dialog.toFront();
-            dialog.setVisible(true);
+        try {
+            if (dialog == null) {
+                dialog = createDialog();
+                dialog.pack();
+                dialog.restoreLocation();
+            }
+            if (!dialog.isVisible()) {
+                dialog.toFront();
+                dialog.setVisible(true);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.severe("Could not open dialog: " + e);
+            logException(log, e);
+            showMessageDialog(null, "Could not open dialog: " + getLocalizedMessage(e), "Error", ERROR_MESSAGE);
         }
     }
 }

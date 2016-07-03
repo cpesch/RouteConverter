@@ -21,14 +21,16 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
+import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
+import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GpsTunerFormat;
 
 import java.io.IOException;
@@ -40,34 +42,41 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 public class AccurracyConvertIT {
 
     @Test
-    public void testConvertColumbusV900ToGoPalTrack() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new GoPalTrackFormat());
+    public void testConvertColumbusGpsProfessionalToGoPalTrack() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new GoPalTrackFormat());
     }
 
     @Test
-    public void testConvertColumbusV900ToGpsTuner() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new GpsTunerFormat());
+    public void testConvertColumbusGpsProfessionalToGpsTuner() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new GpsTunerFormat());
     }
 
     @Test
-    public void testConvertColumbusV900ToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new Gpx11Format());
+    public void testConvertColumbusGpsToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new Gpx11Format());
     }
 
     @Test
-    public void testConvertColumbusV900ToNmea() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new NmeaFormat());
+    public void testConvertColumbusGpsProfessionalToNmea() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new NmeaFormat());
     }
 
     @Test
-    public void testConvertColumbusV900ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new TomTom8RouteFormat());
+    public void testConvertColumbusGpBinaryToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new Gpx11Format());
     }
 
     @Test
-    public void testConvertGoPalTrackToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new ColumbusV900ProfessionalFormat());
+    public void testConvertColumbusGpsProfessionalToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new TomTom95RouteFormat());
+    }
+
+    @Test
+    public void testConvertGoPalTrackToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -88,12 +97,13 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertGoPalTrackToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new TomTom95RouteFormat());
     }
 
     @Test
-    public void testConvertGpsTunerToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusV900ProfessionalFormat());
+    public void testConvertGpsTunerToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -114,13 +124,13 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertGpsTunerToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new TomTom95RouteFormat());
     }
 
     @Test
-    public void testConvertGpxToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertGpxToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -141,12 +151,13 @@ public class AccurracyConvertIT {
     @Test
     public void testConvertGpxToTomTomRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom5RouteFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom95RouteFormat());
     }
 
     @Test
-    public void testConvertNmeaToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusV900ProfessionalFormat());
+    public void testConvertNmeaToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -167,12 +178,12 @@ public class AccurracyConvertIT {
 
     @Test
     public void testConvertNmeaToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new TomTom95RouteFormat());
     }
 
     @Test
-    public void testConvertLogposTrackToColumbusV900() throws IOException {
-        convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusV900StandardFormat());
+    public void testConvertLogposTrackToColumbusGps() throws IOException {
+        convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusGpsStandardFormat());
     }
 
     @Test

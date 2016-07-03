@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import static java.util.Locale.ROOT;
 
@@ -36,19 +37,18 @@ import static java.util.Locale.ROOT;
 
 public class LocaleListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Locale locale = (Locale) value;
+        JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
+        Locale locale = Locale.class.cast(value);
 
         String text;
         if (ROOT.equals(locale))
             text = RouteConverter.getBundle().getString("locale-default");
         else {
-            String language = locale.getLanguage();
-            String localizedText = RouteConverter.getBundle().getString("locale-" + language);
-            if (localizedText != null)
-                text = localizedText;
-            else
-                text = locale.toString();
+            try {
+                text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage());
+            } catch (MissingResourceException e) {
+                text = locale.getDisplayName();
+            }
         }
         label.setText(text);
         return label;

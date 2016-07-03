@@ -21,8 +21,9 @@
 package slash.navigation.base;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 /**
  * Encapsulates a {@link BaseNavigationFormat} and a {@link List} of {@link BaseRoute}s.
@@ -36,12 +37,12 @@ public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,
 
     public FormatAndRoutes(NavigationFormat<R> format, List<BaseRoute<P,F>> routes) {
         this.format = format;
-        this.routes = new ArrayList<BaseRoute<P,F>>(routes);
+        this.routes = new ArrayList<>(routes);
     }
 
     @SuppressWarnings("unchecked")
     public FormatAndRoutes(NavigationFormat<R> format, BaseRoute<P,F> route) {
-        this(format, Arrays.<BaseRoute<P,F>>asList(route));
+        this(format, singletonList(route));
     }
 
     public NavigationFormat<R> getFormat() {

@@ -116,7 +116,7 @@ public class ListStyleType
      *     
      */
     public void setBgColor(byte[] value) {
-        this.bgColor = ((byte[]) value);
+        this.bgColor = value;
     }
 
     /**
@@ -143,7 +143,7 @@ public class ListStyleType
      */
     public List<ItemIconType> getItemIcon() {
         if (itemIcon == null) {
-            itemIcon = new ArrayList<ItemIconType>();
+            itemIcon = new ArrayList<>();
         }
         return this.itemIcon;
     }
@@ -196,7 +196,7 @@ public class ListStyleType
      */
     public List<Object> getListStyleSimpleExtensionGroup() {
         if (listStyleSimpleExtensionGroup == null) {
-            listStyleSimpleExtensionGroup = new ArrayList<Object>();
+            listStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.listStyleSimpleExtensionGroup;
     }
@@ -225,7 +225,7 @@ public class ListStyleType
      */
     public List<AbstractObjectType> getListStyleObjectExtensionGroup() {
         if (listStyleObjectExtensionGroup == null) {
-            listStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            listStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.listStyleObjectExtensionGroup;
     }

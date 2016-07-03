@@ -121,7 +121,7 @@ public class ElevationResponse {
      */
     public List<ElevationResponse.Result> getResult() {
         if (result == null) {
-            result = new ArrayList<ElevationResponse.Result>();
+            result = new ArrayList<>();
         }
         return this.result;
     }

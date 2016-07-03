@@ -100,7 +100,7 @@ public class MultiTrackType
      */
     public List<TrackType> getTrack() {
         if (track == null) {
-            track = new ArrayList<TrackType>();
+            track = new ArrayList<>();
         }
         return this.track;
     }

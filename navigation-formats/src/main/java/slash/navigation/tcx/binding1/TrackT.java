@@ -68,7 +68,7 @@ public class TrackT {
      */
     public List<TrackpointT> getTrackpoint() {
         if (trackpoint == null) {
-            trackpoint = new ArrayList<TrackpointT>();
+            trackpoint = new ArrayList<>();
         }
         return this.trackpoint;
     }

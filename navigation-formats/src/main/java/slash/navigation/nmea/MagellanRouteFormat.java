@@ -20,8 +20,8 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.ValueAndOrientation;
 
 import java.io.PrintWriter;
@@ -29,17 +29,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.toMixedCase;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -53,9 +47,6 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 
 public class MagellanRouteFormat extends BaseNmeaFormat {
-    static {
-        log = Logger.getLogger(MagellanRouteFormat.class.getName());
-    }
     private static final Preferences preferences = Preferences.userNodeForPackage(MagellanRouteFormat.class);
 
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);

@@ -20,13 +20,13 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.net.URL;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 /**
  * {@link Action} that reopens an URL.
@@ -35,15 +35,13 @@ import static java.util.Arrays.asList;
  */
 
 public class ReopenAction extends FrameAction {
-    private ConvertPanel convertPanel;
     private URL url;
 
-    public ReopenAction(ConvertPanel convertPanel, URL url) {
-        this.convertPanel = convertPanel;
+    public ReopenAction(URL url) {
         this.url = url;
     }
 
     public void run() {
-        convertPanel.openPositionList(asList(url));
+        RouteConverter.getInstance().openPositionList(singletonList(url), true);
     }
 }

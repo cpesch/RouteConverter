@@ -20,20 +20,10 @@
 
 package slash.navigation.wbt;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,16 +32,8 @@ import java.util.List;
 import static java.lang.Long.parseLong;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MILLISECOND;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromCalendar;
+import static java.util.Calendar.*;
+import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -91,7 +73,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -101,12 +83,11 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
+    protected abstract boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException;
 
-    protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
+    protected abstract List<Wgs84Route> internalRead(ByteBuffer buffer);
 
-    protected abstract List<Wgs84Route> internalRead(ByteBuffer source);
-
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[getHeaderSize()];
         if (source.read(header) == getHeaderSize()) {
 
@@ -117,17 +98,17 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
             if (checkFormatDescriptor(headerBuffer)) {
                 // read whole file in ByteBuffer with a size limit of about 2 MB
-                ByteBuffer sourceData = allocate(header.length + source.available());
                 int available = source.available();
+                ByteBuffer sourceBuffer = allocate(header.length + available);
                 byte[] data = new byte[available];
                 if (source.read(data) != available)
                     throw new IOException("Could not read " + available + " bytes");
 
-                sourceData.position(0);
-                sourceData.put(header);
-                sourceData.put(data);
+                sourceBuffer.position(0);
+                sourceBuffer.put(header);
+                sourceBuffer.put(data);
 
-                context.appendRoutes(internalRead(sourceData));
+                context.appendRoutes(internalRead(sourceBuffer));
             }
         }
     }
@@ -163,7 +144,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         source.position(startDataAddress);
         source.order(LITTLE_ENDIAN);
 
-        List<Wgs84Route> result = new ArrayList<Wgs84Route>();
+        List<Wgs84Route> result = new ArrayList<>();
 
         List<NavigationPosition> trackPoints = null;
         List<NavigationPosition> pushPoints = null;
@@ -183,7 +164,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
             if ((trackFlag & 1) == 1) {
                 // new track
-                trackPoints = new ArrayList<NavigationPosition>();
+                trackPoints = new ArrayList<>();
                 Wgs84Route track = createRoute(Track, null, trackPoints);
                 result.add(track);
                 trackPointNo = 1;
@@ -196,7 +177,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             if ((trackFlag & 2) == 2) {
                 // track pushpoint
                 if (pushPoints == null) {
-                    pushPoints = new ArrayList<NavigationPosition>();
+                    pushPoints = new ArrayList<>();
                     Wgs84Route points = createRoute(Waypoints, "Pushpoints", pushPoints);
                     result.add(points);
                 }

@@ -101,7 +101,7 @@ public class AddressT {
      */
     public List<String> getStreetAddress() {
         if (streetAddress == null) {
-            streetAddress = new ArrayList<String>();
+            streetAddress = new ArrayList<>();
         }
         return this.streetAddress;
     }

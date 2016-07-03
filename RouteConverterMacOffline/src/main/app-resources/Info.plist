@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleExecutable</key>
+        <string>JavaAppLauncher</string>
+        <key>CFBundleGetInfoString</key>
+        <string>RouteConverterOffline for Mac OS X</string>
+        <key>CFBundleIconFile</key>
+        <string>RouteConverter.icns</string>
+        <key>CFBundleIdentifier</key>
+        <string>slash.navigation.converter.gui.RouteConverter</string>
+        <key>CFBundleName</key>
+        <string>RouteConverterOffline</string>
+        <key>CFBundleDisplayName</key>
+        <string>RouteConverterOffline</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleSignature</key>
+        <string>RTCO</string>
+        <key>CFBundleShortVersionString</key>
+        <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</string>
+        <key>CFBundleVersion</key>
+        <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
+        <key>JVMMainClassName</key>
+        <string>slash.navigation.converter.gui.RouteConverterOffline</string>
+        <key>JVMClassPaths</key>
+        <array><string>RouteConverterMacOffline.jar</string></array>
+        <key>JVMVersion</key>
+        <string>1.7+</string>
+        <key>JVMOptions</key>
+        <array><string>-Xmx512m</string><string>-Dapple.laf.useScreenMenuBar=true</string>
+               <string>-Xdock:name=RouteConverterOffline</string><string>-Xdock:icon=RouteConverter.icns</string></array>
+        <key>JVMArguments</key>
+        <array/>
+    </dict>
+</plist>

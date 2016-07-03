@@ -71,10 +71,13 @@ public class LazyToolTipChartPanel extends ChartPanel {
         popupMenu.remove(6);
         popupMenu.remove(5);
         popupMenu.remove(4);
-        JMenu menu = createMenu("show-profile");
-        new ProfileModeMenu(menu, profileModeModel);
-        popupMenu.add(menu, 0);
-        popupMenu.add(new JPopupMenu.Separator(), 1);
+        JMenu xAxisMenu = createMenu("show-profile-x-axis");
+        new XAxisModeMenu(xAxisMenu, profileModeModel);
+        popupMenu.add(xAxisMenu, 0);
+        JMenu yAxisMenu = createMenu("show-profile-y-axis");
+        new YAxisModeMenu(yAxisMenu, profileModeModel);
+        popupMenu.add(yAxisMenu, 1);
+        popupMenu.add(new JPopupMenu.Separator(), 2);
         return popupMenu;
     }
 

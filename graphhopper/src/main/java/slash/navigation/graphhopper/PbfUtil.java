@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
 
 import static java.lang.String.format;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
  * Provides PBF functionality.
@@ -38,13 +37,20 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
  */
 public class PbfUtil {
     private static final Logger log = Logger.getLogger(PbfUtil.class.getName());
+    private static final String OSM_HEADER = "OSMHeader";
+    public static final String DOT_OSM = ".osm";
+    public static final String DOT_PBF = ".pbf";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
-    public static BoundingBox extractBoundingBox(File file) {
-        FileInputStream fileInputStream = null;
+    public static BoundingBox extractBoundingBox(File file) throws IOException {
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return extractBoundingBox(inputStream);
+        }
+    }
+
+    public static BoundingBox extractBoundingBox(InputStream inputStream) {
         try {
-            fileInputStream = new FileInputStream(file);
-            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
             boolean foundOsmHeader = false;
 
             while (!foundOsmHeader) {
@@ -52,15 +58,19 @@ public class PbfUtil {
                     break;
 
                 byte[] blobHeaderBytes = new byte[dataInputStream.readInt()];
-                int readHeader = dataInputStream.read(blobHeaderBytes);
-                if (readHeader != blobHeaderBytes.length)
-                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobHeaderBytes.length, readHeader));
+                int readBlobHeader = dataInputStream.read(blobHeaderBytes);
+                if (readBlobHeader != blobHeaderBytes.length) {
+                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobHeaderBytes.length, readBlobHeader));
+                    return null;
+                }
                 Fileformat.BlobHeader blobHeader = Fileformat.BlobHeader.parseFrom(blobHeaderBytes);
 
                 byte[] blobBytes = new byte[blobHeader.getDatasize()];
                 int readBlob = dataInputStream.read(blobBytes);
-                if (readBlob != blobBytes.length)
-                    log.warning(format("Wanted to read %d blob header bytes, but got only %d bytes", blobBytes.length, readBlob));
+                if (readBlob != blobBytes.length) {
+                    log.warning(format("Wanted to read %d blob bytes, but got only %d bytes", blobBytes.length, readBlob));
+                    return null;
+                }
                 Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobBytes);
 
                 InputStream blobData;
@@ -70,20 +80,17 @@ public class PbfUtil {
                     blobData = blob.getRaw().newInput();
                 }
 
-                if (blobHeader.getType().equals("OSMHeader")) {
-                    Osmformat.HeaderBlock hb = Osmformat.HeaderBlock.parseFrom(blobData);
-                    if (hb.hasBbox())
-                        return toBoundingBox(hb.getBbox());
+                if (blobHeader.getType().equals(OSM_HEADER)) {
+                    Osmformat.HeaderBlock headerBlock = Osmformat.HeaderBlock.parseFrom(blobData);
+                    if (headerBlock.hasBbox())
+                        return toBoundingBox(headerBlock.getBbox());
 
                     foundOsmHeader = true;
                 } else
                     log.info("Skipped block " + blobHeader.getType() + " with " + blobBytes.length + " bytes");
             }
         } catch (IOException e) {
-            log.warning(format("Could not pbf file '%s': %s", file, e.getMessage()));
-        } finally {
-            if (fileInputStream != null)
-                closeQuietly(fileInputStream);
+            log.warning(format("Could not extract pbf bounding box: %s", e));
         }
         return null;
     }

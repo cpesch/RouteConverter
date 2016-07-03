@@ -116,7 +116,7 @@ public class PointType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -143,7 +143,7 @@ public class PointType
      */
     public List<String> getCoordinates() {
         if (coordinates == null) {
-            coordinates = new ArrayList<String>();
+            coordinates = new ArrayList<>();
         }
         return this.coordinates;
     }
@@ -172,7 +172,7 @@ public class PointType
      */
     public List<Object> getPointSimpleExtensionGroup() {
         if (pointSimpleExtensionGroup == null) {
-            pointSimpleExtensionGroup = new ArrayList<Object>();
+            pointSimpleExtensionGroup = new ArrayList<>();
         }
         return this.pointSimpleExtensionGroup;
     }
@@ -201,7 +201,7 @@ public class PointType
      */
     public List<AbstractObjectType> getPointObjectExtensionGroup() {
         if (pointObjectExtensionGroup == null) {
-            pointObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            pointObjectExtensionGroup = new ArrayList<>();
         }
         return this.pointObjectExtensionGroup;
     }

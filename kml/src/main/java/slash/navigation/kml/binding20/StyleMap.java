@@ -79,7 +79,7 @@ public class StyleMap {
      */
     public List<Pair> getPair() {
         if (pair == null) {
-            pair = new ArrayList<Pair>();
+            pair = new ArrayList<>();
         }
         return this.pair;
     }

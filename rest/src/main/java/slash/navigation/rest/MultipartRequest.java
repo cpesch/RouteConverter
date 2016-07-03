@@ -22,15 +22,18 @@ package slash.navigation.rest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static org.apache.http.Consts.UTF_8;
+import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
-import static slash.common.io.Transfer.encodeUri;
+import static slash.common.io.Transfer.encodeUriButKeepSlashes;
 
 /**
  * Wrapper for a HTTP Multipart Request.
@@ -39,6 +42,7 @@ import static slash.common.io.Transfer.encodeUri;
  */
 
 abstract class MultipartRequest extends HttpRequest {
+    private static final ContentType TEXT_PLAIN_UTF8 = ContentType.create("text/plain", UTF_8);
     private MultipartEntityBuilder builder;
     private boolean containsFileLargerThan4k = false;
 
@@ -57,28 +61,38 @@ abstract class MultipartRequest extends HttpRequest {
     }
 
     public void addString(String name, String value) throws UnsupportedEncodingException {
-        getBuilder().addTextBody(name, value);
+        getBuilder().addTextBody(name, value, TEXT_PLAIN_UTF8);
     }
 
     public void addFile(String name, File value) throws IOException {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
-        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUri(value.getName()));
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(value.getName()));
+    }
+
+    public void addFile(String name, byte[] value) throws IOException {
+        if (value.length > 4096)
+            containsFileLargerThan4k = true;
+        getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(name + ".xml"));
     }
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return containsFileLargerThan4k;
     }
 
-    protected HttpResponse doExecute() throws IOException {
+    protected HttpResponse execute() throws IOException {
         if (builder != null) {
             HttpEntity entity = builder.build();
             getHttpEntityEnclosingRequestBase().setEntity(entity);
         }
-        return super.doExecute();
+        return super.execute();
     }
 
     public String getLocation() throws IOException {
         return getHeader(LOCATION);
+    }
+
+    public void setAccept(String accept) {
+        setHeader(ACCEPT, accept);
     }
 }

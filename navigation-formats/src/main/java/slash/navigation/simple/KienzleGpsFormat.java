@@ -21,12 +21,8 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -102,7 +98,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(time, TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -123,7 +119,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, null, calendar, description);
-        position.setStartDate(startDate);
+        position.setStartDate(context.getStartDate());
         return position;
     }
 

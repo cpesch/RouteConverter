@@ -28,6 +28,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
@@ -142,18 +143,19 @@ public class DeletePositionsDialog extends SimpleDialog {
         threshold = new DoubleDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(threshold);
 
-        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+        r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                if (r.getPositionsModel().isContinousRange())
+                if (positionsModel.isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
         });
-        r.getPositionsModel().addTableModelListener(new TableModelListener() {
+        positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                if (r.getPositionsModel().isContinousRange())
+                if (positionsModel.isContinousRange())
                     return;
                 handlePositionsUpdate();
             }
@@ -163,7 +165,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void handlePositionsUpdate() {
-        int selectedRowCount = RouteConverter.getInstance().getPositionsView().getSelectedRowCount();
+        int selectedRowCount = RouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRowCount();
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
 
         boolean existsSelectedPosition = selectedRowCount > 0;
@@ -204,7 +206,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        Application.getInstance().getContext().getActionManager().run("delete");
+        Application.getInstance().getContext().getActionManager().run("delete-position");
         handlePositionsUpdate();
     }
 

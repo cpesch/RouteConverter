@@ -37,7 +37,7 @@ import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 public abstract class ReadWriteBase {
     @SuppressWarnings("unchecked")
     public static void readWriteRoundtrip(String testFileName, ReadWriteTestCallback parserCallback) throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File source = new File(testFileName);
         ParserResult result = parser.read(source);

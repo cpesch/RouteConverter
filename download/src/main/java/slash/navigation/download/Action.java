@@ -21,7 +21,7 @@
 package slash.navigation.download;
 
 /**
- * The action after a successful {@link Download}
+ * The {@link Download} action
  *
  * @author Christian Pesch
  */
@@ -29,5 +29,8 @@ package slash.navigation.download;
 public enum Action {
     Copy,
     Flatten,
-    Extract
+    Extract,
+
+    Head,
+    GetRange
 }

@@ -117,7 +117,7 @@ public class Locality {
     @XmlSchemaType(name = "anySimpleType")
     protected String indicator;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -143,7 +143,7 @@ public class Locality {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -172,7 +172,7 @@ public class Locality {
      */
     public List<Locality.LocalityName> getLocalityName() {
         if (localityName == null) {
-            localityName = new ArrayList<Locality.LocalityName>();
+            localityName = new ArrayList<>();
         }
         return this.localityName;
     }
@@ -393,7 +393,7 @@ public class Locality {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -522,7 +522,7 @@ public class Locality {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.

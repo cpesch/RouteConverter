@@ -86,7 +86,7 @@ public class MailStopType {
     @XmlSchemaType(name = "anySimpleType")
     protected String type;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -112,7 +112,7 @@ public class MailStopType {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -189,7 +189,7 @@ public class MailStopType {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -270,7 +270,7 @@ public class MailStopType {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -398,7 +398,7 @@ public class MailStopType {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.

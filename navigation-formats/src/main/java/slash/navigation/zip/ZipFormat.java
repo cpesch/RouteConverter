@@ -22,13 +22,11 @@ package slash.navigation.zip;
 
 import slash.common.io.Files;
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -38,8 +36,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 
 /**
  * Reads routes from ZIP Archive (.zip) files.
@@ -53,12 +49,12 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         System.setProperty("sun.zip.encoding", "default");
     }
 
-    public String getExtension() {
-        return ".zip";
-    }
-
     public String getName() {
         return "ZIP Archive (" + getExtension() + ")";
+    }
+
+    public String getExtension() {
+        return ".zip";
     }
 
     public int getMaximumPositionCount() {
@@ -81,26 +77,21 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<BaseRoute> parserContext) throws Exception {
-        ZipInputStream zip = new ZipInputStream(source);
-        try {
+    public void read(InputStream source, ParserContext<BaseRoute> context) throws Exception {
+        try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
+                if(entry.isDirectory())
+                    continue;
+
+                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
                 int size = (int) entry.getSize() + 1;
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, size));
                 buffer.mark(size);
-                List<NavigationFormat> formats = getReadFormatsPreferredByExtension(Files.getExtension(entry.getName()));
-                parserContext.parse(buffer, size, startDate, formats);
+                context.parse(buffer, context.getStartDate(), Files.getExtension(entry.getName()));
                 zip.closeEntry();
             }
         } catch (IOException e) {
-            log.fine("Error reading invalid zip entry from " + source + ": " + e.getMessage());
-        } finally {
-            try {
-                zip.close();
-            } catch (IOException e) {
-                log.fine("Error closing zip from " + source + ": " + e.getMessage());
-            }
+            log.fine("Error reading invalid zip entry from " + source + ": " + e);
         }
     }
 

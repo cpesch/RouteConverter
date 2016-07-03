@@ -59,7 +59,7 @@ public class MotoPlanerUrlFormatTest {
 
     @Test
     public void testCreateURL() {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         positions.add(asWgs84Position(10.02571156, 53.57497745));
         positions.add(asWgs84Position(10.20026067, 53.57662034));
         positions.add(asWgs84Position(10.35735078, 53.59171021));

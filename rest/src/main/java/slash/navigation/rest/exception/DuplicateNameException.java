@@ -29,6 +29,6 @@ package slash.navigation.rest.exception;
 
 public class DuplicateNameException extends RuntimeException {
     public DuplicateNameException(String message, String url) {
-        super(message + ":" + url);
+        super(message + "\n" + url);
     }
 }

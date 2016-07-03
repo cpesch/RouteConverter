@@ -2,11 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterBase</artifactId>
     <packaging>jar</packaging>
-    <name>The platform independent part of the RouteConverter UI tool</name>
+    <name>The platform independent part of RouteConverter</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
@@ -58,6 +58,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>route-converter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx7-mapview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx8-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

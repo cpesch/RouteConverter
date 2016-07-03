@@ -58,7 +58,7 @@ public class Version {
     public String getMinor() {
         int dot = version.indexOf('.');
         if (dot != -1)
-            version = version.substring(dot + 1);
+            return version.substring(dot + 1);
         return version;
     }
 
@@ -119,16 +119,10 @@ public class Version {
     }
 
     public String getOperationSystem() {
-        if (name != null) {
-            return name.substring(0, name.length() - 2);
-        }
-        return "?";
-    }
-
-    public String getBits() {
-        if (name != null) {
-            return name.substring(name.length() - 2, name.length());
-        }
+        if (name != null)
+            return name;
+        if (System.getProperty("javawebstart.version") != null)
+            return "Webstart";
         return "?";
     }
 

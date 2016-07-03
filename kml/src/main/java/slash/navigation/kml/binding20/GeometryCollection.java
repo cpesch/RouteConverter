@@ -79,7 +79,7 @@ public class GeometryCollection {
      */
     public List<LineString> getLineString() {
         if (lineString == null) {
-            lineString = new ArrayList<LineString>();
+            lineString = new ArrayList<>();
         }
         return this.lineString;
     }

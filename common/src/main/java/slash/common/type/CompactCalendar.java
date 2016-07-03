@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static java.util.Calendar.DATE;
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
 import static java.util.Collections.emptyMap;
@@ -98,14 +97,12 @@ public class CompactCalendar {
         return fromDate(new Date());
     }
 
-    public static CompactCalendar oneWeekAgo() {
-        Calendar calendar = Calendar.getInstance(UTC);
-        calendar.add(DATE, -7);
-        return fromCalendar(calendar);
-    }
-
     public static CompactCalendar getInstance(String timeZoneId) {
         return fromCalendar(Calendar.getInstance(TimeZone.getTimeZone(timeZoneId)));
+    }
+
+    public CompactCalendar asUTCTimeInTimeZone(TimeZone timeZone) {
+        return new CompactCalendar(timeInMillis - timeZone.getOffset(timeInMillis), "UTC");
     }
 
     public long getTimeInMillis() {
@@ -149,7 +146,7 @@ public class CompactCalendar {
             // add new timezone to new version of global map.
             // The following call is allegedly expensive (that's why we go through all this trouble)
             result = TimeZone.getTimeZone(getTimeZoneId());
-            Map<String, TimeZone> newTimeZones = new HashMap<String, TimeZone>(timeZones);
+            Map<String, TimeZone> newTimeZones = new HashMap<>(timeZones);
             newTimeZones.put(getTimeZoneId(), result);
             newTimeZones = unmodifiableMap(newTimeZones); // paranoia
             timeZones = newTimeZones;
@@ -185,6 +182,8 @@ public class CompactCalendar {
     }
 
     public String toString() {
-        return DateFormat.getDateTimeInstance(SHORT, MEDIUM).format(getTime());
+        DateFormat format = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+        format.setTimeZone(getTimeZone());
+        return format.format(getTime()) + " " + format.getTimeZone().getID();
     }
 }

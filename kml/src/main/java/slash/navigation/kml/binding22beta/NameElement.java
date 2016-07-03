@@ -18,7 +18,7 @@ public class NameElement
     protected final static QName NAME = new QName("http://earth.google.com/kml/2.2", "name");
 
     public NameElement(String value) {
-        super(NAME, ((Class) String.class), null, value);
+        super(NAME, String.class, null, value);
     }
 
 }

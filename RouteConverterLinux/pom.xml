@@ -6,12 +6,47 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>eclipse.swt</groupId>
+                                    <artifactId>gtk.linux.x86</artifactId>
+                                    <version>4.5</version>
+                                    <classifier>stripped</classifier>
+                                    <overWrite>false</overWrite>
+                                    <destFileName>swt-linux-32.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>eclipse.swt</groupId>
+                                    <artifactId>gtk.linux.x86_64</artifactId>
+                                    <version>4.5</version>
+                                    <classifier>stripped</classifier>
+                                    <overWrite>false</overWrite>
+                                    <destFileName>swt-linux-64.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -30,7 +65,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Implementation-Vendor>Linux32</Implementation-Vendor>
+                                        <Implementation-Vendor>Linux</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
@@ -65,7 +100,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jarsigner-plugin</artifactId>
-                <version>1.2</version>
                 <executions>
                     <execution>
                         <id>sign</id>
@@ -79,6 +113,7 @@
                     <keystore>${keystorePath}</keystore>
                     <alias>${keystoreAlias}</alias>
                     <storepass>${keystorePassword}</storepass>
+                    <keypass>${keyPassword}</keypass>
                     <removeExistingSignatures>true</removeExistingSignatures>
                 </configuration>
             </plugin>
@@ -90,6 +125,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>route-converter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx7-mapview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx8-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -109,10 +154,9 @@
             <version>3.2.4</version>
         </dependency>
         <dependency>
-            <groupId>eclipse.swt</groupId>
-            <artifactId>gtk.linux.x86</artifactId>
-            <version>3.8M4</version>
-            <classifier>stripped</classifier>
+            <groupId>com.sun.jna</groupId>
+            <artifactId>linux.unknown.x86_64</artifactId>
+            <version>3.2.4</version>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>

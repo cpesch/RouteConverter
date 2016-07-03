@@ -20,33 +20,29 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.navigation.jaxb.JaxbUtils.newContext;
 
 class Nmn7Util {
     private static final String NMN7_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        Marshaller marshaller = JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_ENCODING, ISO_LATIN1_ENCODING);
         } catch (PropertyException e) {
@@ -60,7 +56,7 @@ class Nmn7Util {
         try {
             result = (Route) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -68,14 +64,14 @@ class Nmn7Util {
     public static void marshal(Route route, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<Route>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), out);
             }
             finally {
                 out.flush();
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

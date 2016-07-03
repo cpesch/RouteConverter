@@ -1,8 +1,8 @@
 What is RouteConverter?
 =======================
 
-RouteConverter is a popular open source tool to display, edit, enrich and convert routes,
-tracks and waypoints licensed under the GNU Public License.
+RouteConverter is a popular open source tool to display, edit, enrich and convert
+routes, tracks and waypoints licensed under the GNU Public License.
 See http://www.routeconverter.com/about/ for details about features, supported formats
 and languages, screenshots, frequently asked questions and how you can help.
 
@@ -15,19 +15,19 @@ Prereleases are frequently offered at http://www.routeconverter.com/prereleases/
 If you want to contribute
 =========================
 
-Patches and pull requests are always welcome. If you minimize your diff, it's more likely
-that your contribution will be applied to the code base. Please stick to the code
-standards and formatting that you run across. And don't forget to add tests for your
-changes ;-)
+Patches and pull requests are always welcome. If you minimize your diff, it's more
+likely that your contribution will be applied to the code base. Please stick to the
+code standards and formatting that you run across. And don't forget to add tests for
+your changes ;-)
 
 CONTRIBUTORS.txt provides a list of the people who helped developing RouteConverter.
 
 How to develop for RouteConverter
 =================================
 
-1. Install a recent Java 6 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
+1. Install a recent Java 8 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
 
-2. Install Maven 3 from http://maven.apache.org/download.html
+2. Install a recent Maven 3 from http://maven.apache.org/download.html
 
 3. Clone RouteConverter from github:
    > git clone git://github.com/cpesch/RouteConverter.git
@@ -47,10 +47,10 @@ How to develop for RouteConverter
 
 5. Build RouteConverter
 
-   Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.6.0_45
+   Let JAVA_HOME refer to the Java 8 SDK
+   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_60
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.0.5
+   > set M2_HOME=c:\Program Files\apache-maven-3.3.3
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
    Call
@@ -59,11 +59,11 @@ How to develop for RouteConverter
 6. Run RouteConverter
    > java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
    > java -jar RouteConverterLinux/target/RouteConverterLinux.jar
-   > java -jar RouteConverterLinux64/target/RouteConverterLinux64.jar
+   > java -jar RouteConverterLinuxOffline/target/RouteConverterLinuxOffline.jar
    > java -jar RouteConverterMac/target/RouteConverterMac.jar
-   > java -jar RouteConverterMac64/target/RouteConverterMac64.jar
+   > java -jar RouteConverterMacOffline/target/RouteConverterMacOffline.jar
    > java -jar RouteConverterWindows/target/RouteConverterWindows.jar
-   > java -jar RouteConverterWindows64/target/RouteConverterWindows64.jar
+   > java -jar RouteConverterWindowsOffline/target/RouteConverterWindowsOffline.jar
 
 Have fun!
 Christian

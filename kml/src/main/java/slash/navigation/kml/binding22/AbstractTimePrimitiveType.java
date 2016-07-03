@@ -81,7 +81,7 @@ public abstract class AbstractTimePrimitiveType
      */
     public List<Object> getAbstractTimePrimitiveSimpleExtensionGroup() {
         if (abstractTimePrimitiveSimpleExtensionGroup == null) {
-            abstractTimePrimitiveSimpleExtensionGroup = new ArrayList<Object>();
+            abstractTimePrimitiveSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractTimePrimitiveSimpleExtensionGroup;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractTimePrimitiveType
      */
     public List<AbstractObjectType> getAbstractTimePrimitiveObjectExtensionGroup() {
         if (abstractTimePrimitiveObjectExtensionGroup == null) {
-            abstractTimePrimitiveObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractTimePrimitiveObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractTimePrimitiveObjectExtensionGroup;
     }

@@ -132,7 +132,7 @@ public class AliasType
      */
     public List<Object> getAliasSimpleExtensionGroup() {
         if (aliasSimpleExtensionGroup == null) {
-            aliasSimpleExtensionGroup = new ArrayList<Object>();
+            aliasSimpleExtensionGroup = new ArrayList<>();
         }
         return this.aliasSimpleExtensionGroup;
     }
@@ -161,7 +161,7 @@ public class AliasType
      */
     public List<AbstractObjectType> getAliasObjectExtensionGroup() {
         if (aliasObjectExtensionGroup == null) {
-            aliasObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            aliasObjectExtensionGroup = new ArrayList<>();
         }
         return this.aliasObjectExtensionGroup;
     }

@@ -90,7 +90,7 @@ public class SchemaType {
      */
     public List<SimpleFieldType> getSimpleField() {
         if (simpleField == null) {
-            simpleField = new ArrayList<SimpleFieldType>();
+            simpleField = new ArrayList<>();
         }
         return this.simpleField;
     }
@@ -120,7 +120,7 @@ public class SchemaType {
      */
     public List<JAXBElement<?>> getSchemaExtension() {
         if (schemaExtension == null) {
-            schemaExtension = new ArrayList<JAXBElement<?>>();
+            schemaExtension = new ArrayList<>();
         }
         return this.schemaExtension;
     }

@@ -131,7 +131,7 @@ public class KmlType {
      *     
      */
     public void setAbstractFeatureGroup(JAXBElement<? extends AbstractFeatureType> value) {
-        this.abstractFeatureGroup = ((JAXBElement<? extends AbstractFeatureType> ) value);
+        this.abstractFeatureGroup = value;
     }
 
     /**
@@ -158,7 +158,7 @@ public class KmlType {
      */
     public List<Object> getKmlSimpleExtensionGroup() {
         if (kmlSimpleExtensionGroup == null) {
-            kmlSimpleExtensionGroup = new ArrayList<Object>();
+            kmlSimpleExtensionGroup = new ArrayList<>();
         }
         return this.kmlSimpleExtensionGroup;
     }
@@ -187,7 +187,7 @@ public class KmlType {
      */
     public List<AbstractObjectType> getKmlObjectExtensionGroup() {
         if (kmlObjectExtensionGroup == null) {
-            kmlObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            kmlObjectExtensionGroup = new ArrayList<>();
         }
         return this.kmlObjectExtensionGroup;
     }

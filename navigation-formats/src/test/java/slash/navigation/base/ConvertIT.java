@@ -42,17 +42,22 @@ import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.columbus.ColumbusGpsBinaryFormat;
+import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
+import slash.navigation.columbus.ColumbusGpsStandardFormat;
+import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
+import slash.navigation.gopal.GoPal7RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.Kml20Format;
 import slash.navigation.kml.Kml21Format;
@@ -75,9 +80,8 @@ import slash.navigation.nmn.Nmn6Format;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.simple.ApeMapFormat;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.GpsTunerFormat;
@@ -121,7 +125,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertGpxToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -146,11 +150,13 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertColumbusV900ToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900StandardFormat(), new CoPilot6Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot8Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot9Format());
+    public void testConvertColumbusGpsToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusGpsStandardFormat(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot7Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
     }
 
     @Test
@@ -170,9 +176,9 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertQstarzQ1000ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertQstarzQ1000ToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -186,9 +192,9 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertiBlue747ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertiBlue747ToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -225,15 +231,15 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertCoPilotToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900ProfessionalFormat());
+    public void testConvertCoPilotToColumbusGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsProfessionalFormat());
     }
 
     @Test
@@ -256,7 +262,7 @@ public class ConvertIT {
     public void testConvertTomTomRouteToTomTomRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new TomTom5RouteFormat());
         convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new TomTom5RouteFormat());
-        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom95RouteFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -402,8 +408,8 @@ public class ConvertIT {
 
     @Test
     public void testConvertGpx10ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom8RouteFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom95RouteFormat());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -419,9 +425,15 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertGpx11ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom8RouteFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom8RouteFormat());
+    public void testConvertGpx11ToTomTom5Route() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom5RouteFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom5RouteFormat());
+    }
+
+    @Test
+    public void testConvertGpx11ToTomTom95Route() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom95RouteFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -454,7 +466,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertKml20ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -469,7 +481,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertKml21ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -484,7 +496,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertKml22BetaToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -504,7 +516,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertKml22ToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new TomTom95RouteFormat());
     }
 
     @Test
@@ -526,7 +538,7 @@ public class ConvertIT {
     public void testConvertTomTomRouteToMagicMapsPth() throws IOException {
         convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MagicMapsPthFormat());
         convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom95RouteFormat(), new MagicMapsPthFormat());
     }
 
     @Test
@@ -558,7 +570,7 @@ public class ConvertIT {
     public void testConvertTomTomRouteToMagicMapsIkt() throws IOException {
         convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MagicMapsIktFormat());
         convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom95RouteFormat(), new MagicMapsIktFormat());
     }
 
     @Test
@@ -575,17 +587,21 @@ public class ConvertIT {
     public void testConvertGoPalRouteToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new Gpx11Format());
         convertRoundtrip(TEST_PATH + "from-gopal5.xml", new GoPal5RouteFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-gopal7.xml", new GoPal7RouteFormat(), new Gpx11Format());
     }
 
     @Test
     public void testConvertGoPalRouteToGoPalRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new GoPal3RouteFormat());
-        convertRoundtrip(TEST_PATH + "from-gopal5.xml", new GoPal5RouteFormat(), new GoPal3RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new GoPal7RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal5.xml", new GoPal5RouteFormat(), new GoPal5RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal7.xml", new GoPal7RouteFormat(), new GoPal3RouteFormat());
     }
 
     @Test
     public void testConvertTourExchangeToGoPalRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPal3RouteFormat());
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPal5RouteFormat());
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPal7RouteFormat());
     }
 
     @Test
@@ -865,6 +881,11 @@ public class ConvertIT {
     public void testConvertGpx11ToGarminPcx5() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminPcx5Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminPcx5Format());
+    }
+
+    @Test
+    public void testConvertImageToNokiaLandmarkExchange() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gps.jpg", new PhotoFormat(), new NokiaLandmarkExchangeFormat());
     }
 
     @Test

@@ -54,11 +54,11 @@ public class CutAction extends FrameAction {
                     positionsModel.getRoute().getFormat()));
 
             positionsModel.remove(selectedRows);
-            final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
+            final int cutRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
             if (table.getRowCount() > 0) {
                 invokeLater(new Runnable() {
                     public void run() {
-                        selectAndScrollToPosition(table, removeRow, removeRow);
+                        selectAndScrollToPosition(table, cutRow, cutRow);
                     }
                 });
             }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>download</artifactId>
+            <artifactId>datasource</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

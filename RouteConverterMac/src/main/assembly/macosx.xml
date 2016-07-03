@@ -7,22 +7,37 @@
     </formats>
     <files>
         <file>
-            <source>src/main/app-resources/JavaApplicationStub</source>
+            <source>src/main/app-resources/Java/RouteConverter.cfg</source>
+            <outputDirectory>/Contents/Java/</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
+        </file>
+        <file>
+            <source>src/main/app-resources/Java/RouteConverterStart.jar</source>
+            <outputDirectory>/Contents/Java/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/MacOS/RouteConverter</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/app-resources/RouteConverter.icns</source>
+            <source>src/main/app-resources/MacOS/libpackager.dylib</source>
+            <outputDirectory>/Contents/MacOS/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/Resources/RouteConverter.icns</source>
             <outputDirectory>/Contents/Resources/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>
             <outputDirectory>/Contents/</outputDirectory>
             <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>target/RouteConverterMac.jar</source>
-            <outputDirectory>/Contents/Resources/Java</outputDirectory>
+            <outputDirectory>/Contents/Java/</outputDirectory>
         </file>
     </files>
 </assembly>

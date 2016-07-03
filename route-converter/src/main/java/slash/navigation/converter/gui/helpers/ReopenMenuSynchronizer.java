@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.actions.ReopenAction;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -45,11 +44,10 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 public class ReopenMenuSynchronizer {
     private static final String MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE = "maximumReopenUrlMenuTextLength";
     private static final Preferences preferences = Preferences.userNodeForPackage(ReopenMenuSynchronizer.class);
-    private final ConvertPanel convertPanel;
+
     private final RecentUrlsModel recentUrlsModel;
 
-    public ReopenMenuSynchronizer(JMenuBar menuBar, ConvertPanel convertPanel, RecentUrlsModel recentUrlsModel) {
-        this.convertPanel = convertPanel;
+    public ReopenMenuSynchronizer(JMenuBar menuBar, RecentUrlsModel recentUrlsModel) {
         this.recentUrlsModel = recentUrlsModel;
         initializeMenu(findMenu(menuBar, "file", "reopen"));
     }
@@ -73,7 +71,7 @@ public class ReopenMenuSynchronizer {
         for (URL url : urls) {
             File file = toFile(url);
             JMenuItem menuItem = new JMenuItem();
-            menuItem.setAction(new ReopenAction(convertPanel, url));
+            menuItem.setAction(new ReopenAction(url));
             String text = file != null ? file.getAbsolutePath() : url.toExternalForm();
             menuItem.setText(shortenPath(text, preferences.getInt(MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE, 80)));
             menuItem.setToolTipText(text);

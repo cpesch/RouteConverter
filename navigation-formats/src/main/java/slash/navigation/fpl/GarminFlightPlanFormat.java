@@ -20,11 +20,11 @@
 
 package slash.navigation.fpl;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.WaypointType;
 import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.binding.FlightPlan;
 import slash.navigation.fpl.binding.ObjectFactory;
 
@@ -36,11 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
-import static slash.navigation.fpl.WaypointType.UserWaypoint;
 
 /**
  * Reads and writes Garmin Flight Plan (.fpl) files.
@@ -80,21 +80,21 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return null;
     }
 
-    private WaypointType asWaypointType(String string) {
+    private WaypointType parseWaypointType(String string) {
         WaypointType type = WaypointType.fromValue(string);
         return type != null ? type : UserWaypoint;
     }
 
-    private CountryCode asCountryCode(String string) {
+    private CountryCode parseCountryCode(String string) {
         CountryCode code = CountryCode.fromValue(string);
         return code != null ? code : null;
     }
 
     private GarminFlightPlanPosition process(FlightPlan.Route.RoutePoint routePoint, FlightPlan.WaypointTable.Waypoint waypoint) {
         if (waypoint == null) {
-            WaypointType type = asWaypointType(routePoint.getWaypointType());
+            WaypointType type = parseWaypointType(routePoint.getWaypointType());
             String identifier = trim(routePoint.getWaypointIdentifier());
-            CountryCode countryCode = asCountryCode(routePoint.getWaypointCountryCode());
+            CountryCode countryCode = parseCountryCode(routePoint.getWaypointCountryCode());
             return new GarminFlightPlanPosition(null, null, null, null,
                     type,
                     identifier,
@@ -107,14 +107,14 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
                 waypoint.getLat(),
                 waypoint.getElevation(),
                 trim(waypoint.getComment()),
-                asWaypointType(waypoint.getType()),
+                parseWaypointType(waypoint.getType()),
                 trim(waypoint.getIdentifier()),
-                asCountryCode(waypoint.getCountryCode())
+                parseCountryCode(waypoint.getCountryCode())
         );
     }
 
     private GarminFlightPlanRoute process(FlightPlan flightPlan) {
-        List<GarminFlightPlanPosition> positions = new ArrayList<GarminFlightPlanPosition>();
+        List<GarminFlightPlanPosition> positions = new ArrayList<>();
 
         List<FlightPlan.Route.RoutePoint> routePoints = flightPlan.getRoute().getRoutePoint();
         for (FlightPlan.Route.RoutePoint routePoint : routePoints) {
@@ -125,7 +125,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return new GarminFlightPlanRoute(flightPlan.getRoute().getRouteName(), asDescription(flightPlan.getRoute().getRouteDescription()), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GarminFlightPlanRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GarminFlightPlanRoute> context) throws Exception {
         FlightPlan flightPlan = unmarshal(source);
         context.appendRoute(process(flightPlan));
     }

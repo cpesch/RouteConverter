@@ -21,12 +21,8 @@
 package slash.navigation.mm;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -34,9 +30,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -92,7 +86,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

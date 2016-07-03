@@ -22,14 +22,7 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.*;
 
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
@@ -46,23 +39,18 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         return startDate != null && startDate.hasDateDefined();
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception {
-        read(source, startDate, ISO_LATIN1_ENCODING, context);
+    public void read(InputStream source, ParserContext<R> context) throws Exception {
+        read(source, ISO_LATIN1_ENCODING, context);
     }
 
-    protected void read(InputStream source, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
-        Reader reader = new InputStreamReader(source, encoding);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        try {
-            read(bufferedReader, startDate, encoding, context);
-        }
-        finally {
-            reader.close();
+    protected void read(InputStream source, String encoding, ParserContext<R> context) throws IOException {
+        try (Reader reader = new InputStreamReader(source, encoding)) {
+            read(new BufferedReader(reader), encoding, context);
         }
     }
 
     // encoding currently only used in GoogleMapsUrlFormat
-    public abstract void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException;
+    public abstract void read(BufferedReader reader, String encoding, ParserContext<R> context) throws IOException;
 
     protected void write(R route, OutputStream target, String encoding, int startIndex, int endIndex) throws IOException {
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, encoding));

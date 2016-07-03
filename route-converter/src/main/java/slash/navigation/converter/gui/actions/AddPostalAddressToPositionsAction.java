@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.helpers.BatchPositionAugmenter;
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -29,26 +29,14 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds postal addresses from Google Maps as descriptions to
- * the selected rows of a {@link JTable} with the help of a {@link BatchPositionAugmenter}.
+ * the selected rows of a {@link JTable} with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
 public class AddPostalAddressToPositionsAction extends FrameAction {
-    private final JTable table;
-    private final PositionsModel positionsModel;
-    private final BatchPositionAugmenter augmenter;
-
-    public AddPostalAddressToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
-        this.table = table;
-        this.positionsModel = positionsModel;
-        this.augmenter = augmenter;
-    }
-
     public void run() {
-        int[] selectedRows = table.getSelectedRows();
-        if (selectedRows.length > 0) {
-            augmenter.addPostalAddresses(table, positionsModel, selectedRows);
-        }
+        RouteConverter r = RouteConverter.getInstance();
+        r.getPositionAugmenter().addPostalAddresses();
     }
 }

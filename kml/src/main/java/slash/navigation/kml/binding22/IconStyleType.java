@@ -188,7 +188,7 @@ public class IconStyleType
      */
     public List<Object> getIconStyleSimpleExtensionGroup() {
         if (iconStyleSimpleExtensionGroup == null) {
-            iconStyleSimpleExtensionGroup = new ArrayList<Object>();
+            iconStyleSimpleExtensionGroup = new ArrayList<>();
         }
         return this.iconStyleSimpleExtensionGroup;
     }
@@ -217,7 +217,7 @@ public class IconStyleType
      */
     public List<AbstractObjectType> getIconStyleObjectExtensionGroup() {
         if (iconStyleObjectExtensionGroup == null) {
-            iconStyleObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            iconStyleObjectExtensionGroup = new ArrayList<>();
         }
         return this.iconStyleObjectExtensionGroup;
     }

@@ -117,7 +117,7 @@ public class GroundOverlayType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -168,7 +168,7 @@ public class GroundOverlayType
      */
     public List<Object> getGroundOverlaySimpleExtensionGroup() {
         if (groundOverlaySimpleExtensionGroup == null) {
-            groundOverlaySimpleExtensionGroup = new ArrayList<Object>();
+            groundOverlaySimpleExtensionGroup = new ArrayList<>();
         }
         return this.groundOverlaySimpleExtensionGroup;
     }
@@ -198,7 +198,7 @@ public class GroundOverlayType
      */
     public List<JAXBElement<? extends AbstractObjectType>> getGroundOverlayObjectExtensionGroup() {
         if (groundOverlayObjectExtensionGroup == null) {
-            groundOverlayObjectExtensionGroup = new ArrayList<JAXBElement<? extends AbstractObjectType>>();
+            groundOverlayObjectExtensionGroup = new ArrayList<>();
         }
         return this.groundOverlayObjectExtensionGroup;
     }

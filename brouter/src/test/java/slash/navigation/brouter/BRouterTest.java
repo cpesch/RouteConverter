@@ -22,32 +22,31 @@ package slash.navigation.brouter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.assertDoubleEquals;
 
 public class BRouterTest {
     private BRouter router = new BRouter(null);
 
     @Test
     public void testLongitude() {
-        assertEquals(190032100, router.asLongitude(10.0321));
-        assertEquals(10.0321, router.asLongitude(190032100), 0.00001);
+        assertEquals(190032145, router.asLongitude(10.032145));
+        assertEquals(10.032145, router.asLongitude(190032145), 0.000001);
     }
 
     @Test
     public void testLatitude() {
-        assertEquals(143569480, router.asLatitude(53.56948));
-        assertDoubleEquals(53.56948, router.asLatitude(143569480));
+        assertEquals(143569481, router.asLatitude(53.569481));
+        assertEquals(53.569481, router.asLatitude(143569481), 0.000001);
     }
 
     @Test
     public void createFileKey() {
-        assertEquals("E0_N0", router.createFileKey(0.1, 4.9));
-        assertEquals("E5_N5", router.createFileKey(5.1, 9.9));
-        assertEquals("E50_N50", router.createFileKey(50.1, 54.9));
-        assertEquals("E175_N85", router.createFileKey(179.9, 89.9));
-        assertEquals("W0_S0", router.createFileKey(-0.1, -4.9));
-        assertEquals("W5_S5", router.createFileKey(-5.1, -9.9));
-        assertEquals("W50_S50", router.createFileKey(-50.1, -54.9));
-        assertEquals("W175_S85", router.createFileKey(-179.9, -89.9));
+        assertEquals("E0_N0.rd5", router.createFileKey(0.1, 4.9));
+        assertEquals("E5_N5.rd5", router.createFileKey(5.1, 9.9));
+        assertEquals("E50_N50.rd5", router.createFileKey(50.1, 54.9));
+        assertEquals("E175_N85.rd5", router.createFileKey(179.9, 89.9));
+        assertEquals("W0_S0.rd5", router.createFileKey(-0.1, -4.9));
+        assertEquals("W5_S5.rd5", router.createFileKey(-5.1, -9.9));
+        assertEquals("W50_S50.rd5", router.createFileKey(-50.1, -54.9));
+        assertEquals("W175_S85.rd5", router.createFileKey(-179.9, -89.9));
     }
 }

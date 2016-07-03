@@ -119,7 +119,7 @@ public class ActivityT {
      */
     public List<ActivityLapT> getLap() {
         if (lap == null) {
-            lap = new ArrayList<ActivityLapT>();
+            lap = new ArrayList<>();
         }
         return this.lap;
     }

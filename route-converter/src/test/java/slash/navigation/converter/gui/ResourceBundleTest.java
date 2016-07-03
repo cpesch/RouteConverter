@@ -22,38 +22,22 @@ package slash.navigation.converter.gui;
 
 import org.junit.Test;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
+import static java.util.Collections.singletonList;
+import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.gui.helpers.UIHelper.ARABIA;
-import static slash.navigation.gui.helpers.UIHelper.CROATIA;
-import static slash.navigation.gui.helpers.UIHelper.CZECH;
-import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
-import static slash.navigation.gui.helpers.UIHelper.SERBIA;
-import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
-import static slash.navigation.gui.helpers.UIHelper.SPAIN;
+import static slash.common.helpers.LocaleHelper.*;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
-            SERBIA, SLOVAKIA, SPAIN, US);
+    private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
+    private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY, NEDERLANDS,
+            POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-            return asList(new Locale(locale.getLanguage()));
+            return singletonList(new Locale(locale.getLanguage()));
         }
 
         public Locale getFallbackLocale(String baseName, Locale locale) {
@@ -63,18 +47,20 @@ public class ResourceBundleTest {
 
     @Test
     public void englishAgainstOtherBundles() {
-        compareEnglishAgainstOtherBundles(true);
+        compareEnglishAgainstOtherBundles(false);
     }
 
     private void compareEnglishAgainstOtherBundles(boolean throwException) {
         ResourceBundle root = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", ROOT);
-        Enumeration<String> keys = root.getKeys();
+        ResourceBundle english = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", US);
+
+        Enumeration<String> keys = english.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             // skip keys which are only present in the default bundle
-            if (key.startsWith("locale-") || key.endsWith("-icon") ||
-                    key.endsWith("-mnemonic") || key.endsWith("-keystroke") ||
-                    key.equals("help-set") || key.equals("translator-missing") ||
+            if (key.startsWith("locale-") || key.startsWith("map-view-") || key.endsWith("-icon") ||
+                    key.endsWith("-mnemonic") || key.endsWith("-keystroke") || key.endsWith("-keystroke-mac") ||
+                    key.equals("help-set") || key.equals("translator-missing") || key.startsWith("waypoint-type-") ||
                     key.equals("FileChooser.acceptAllFileFilterText"))
                 continue;
 
@@ -87,32 +73,36 @@ public class ResourceBundleTest {
                 try {
                     value = bundle.getString(key);
                 } catch (MissingResourceException e) {
-                    System.out.println("key " + key + " does not exist in " + locale);
+                    log.fine("key " + key + " does not exist in locale " + locale);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
 
-                String rootValue = root.getString(key);
-                if (rootValue.equals(value))
-                    System.out.println("key " + key + " is not translated in " + locale);
+                try {
+                    value = root.getString(key);
+                } catch (MissingResourceException e) {
+                    log.fine("key " + key + " does not exist in root " + root);
+                    if (throwException)
+                        assertTrue("key " + key + " does not exist in root " + root, false);
+                }
+
+                String englishValue = english.getString(key);
+                if (englishValue.equals(value))
+                    log.fine("key " + key + " is not translated in " + locale);
             }
         }
     }
 
     @Test
     public void mnemonicsAreUnique() {
-        for (Locale locale : LOCALES) {
-            if (locale.equals(US))
-                continue;
+        for (Locale locale : LOCALES)
             checkMnemonicsAreUnique(locale);
-        }
-        checkMnemonicsAreUnique(ROOT);
     }
 
     private void checkMnemonicsAreUnique(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, NO_FALLBACK_CONTROL);
+        ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale);
         Enumeration<String> keys = bundle.getKeys();
-        Map<String, Set<String>> mnemonics = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mnemonics = new HashMap<>();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             if (!key.endsWith("mnemonic"))
@@ -121,7 +111,7 @@ public class ResourceBundleTest {
             String mnemonic = bundle.getString(key);
             Set<String> existing = mnemonics.get(mnemonic);
             if (existing == null) {
-                existing = new HashSet<String>();
+                existing = new HashSet<>();
                 mnemonics.put(mnemonic, existing);
             }
             existing.add(key);
@@ -130,7 +120,7 @@ public class ResourceBundleTest {
         for (String mnemonic : mnemonics.keySet()) {
             Set<String> duplicates = mnemonics.get(mnemonic);
             if (duplicates.size() > 1)
-                System.out.println("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
+                log.fine("mnemonic " + mnemonic + " is used for " + duplicates + " in " + locale);
         }
     }
 }

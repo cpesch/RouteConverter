@@ -21,12 +21,7 @@
 package slash.navigation.babel;
 
 import org.junit.Test;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,18 +30,16 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.common.io.Files.getExtension;
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 public class CompeGPSDataFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     private void checkFile(String testFileName, RouteCharacteristics characteristics, int positionCount) throws IOException {
         File source = new File(TEST_PATH + testFileName);
-        ParserResult result = parser.read(source, getReadFormatsPreferredByExtension(getExtension(testFileName)));
+        ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().
+                getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull(result);
         List<BaseRoute> routes = result.getAllRoutes();
         assertEquals(1, routes.size());

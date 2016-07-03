@@ -35,8 +35,8 @@ public class TourFormatIT {
 
     @Test
     public void testPositionInListOrder() throws Exception {
-        ParserContext<TourRoute> context = new ParserContextImpl<TourRoute>();
-        format.read(new FileInputStream(TEST_PATH + "from.tour"), null, context);
+        ParserContext<TourRoute> context = new ParserContextImpl<>();
+        format.read(new FileInputStream(TEST_PATH + "from.tour"), context);
         List<TourRoute> routeList = context.getRoutes();
         assertEquals(1, routeList.size());
         TourRoute route = routeList.get(0);

@@ -193,7 +193,7 @@ public abstract class AbstractLatLonBoxType
      */
     public List<Object> getAbstractLatLonBoxSimpleExtensionGroup() {
         if (abstractLatLonBoxSimpleExtensionGroup == null) {
-            abstractLatLonBoxSimpleExtensionGroup = new ArrayList<Object>();
+            abstractLatLonBoxSimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractLatLonBoxSimpleExtensionGroup;
     }
@@ -222,7 +222,7 @@ public abstract class AbstractLatLonBoxType
      */
     public List<AbstractObjectType> getAbstractLatLonBoxObjectExtensionGroup() {
         if (abstractLatLonBoxObjectExtensionGroup == null) {
-            abstractLatLonBoxObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractLatLonBoxObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractLatLonBoxObjectExtensionGroup;
     }

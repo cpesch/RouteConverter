@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

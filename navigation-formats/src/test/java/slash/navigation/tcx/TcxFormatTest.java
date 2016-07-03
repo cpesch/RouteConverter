@@ -35,7 +35,7 @@ public class TcxFormatTest {
         assertEquals("a", format.createUniqueRouteName("a", Collections.<String>emptySet()));
         assertEquals("abcdefghijklmno", format.createUniqueRouteName("abcdefghijklmnopqrstuvwxyz", Collections.<String>emptySet()));
 
-        Set<String> routeNames = new HashSet<String>();
+        Set<String> routeNames = new HashSet<>();
         routeNames.add("abcdefghijklmno");
         assertEquals("abcdefghijk (2)", format.createUniqueRouteName("abcdefghijklmnopqrstuvwxyz", routeNames));
 

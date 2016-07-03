@@ -21,16 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
-import slash.navigation.babel.GarminMapSource5Format;
-import slash.navigation.babel.GarminPoiDbFormat;
-import slash.navigation.babel.GarminPoiFormat;
-import slash.navigation.babel.MagellanMapSendFormat;
-import slash.navigation.babel.MicrosoftAutoRouteFormat;
-import slash.navigation.babel.OziExplorerRouteFormat;
-import slash.navigation.babel.OziExplorerTrackFormat;
-import slash.navigation.babel.OziExplorerWaypointFormat;
-import slash.navigation.babel.TourExchangeFormat;
+import slash.navigation.babel.*;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktFormat;

@@ -25,9 +25,7 @@ package slash.navigation.common;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static slash.navigation.common.DegreeFormat.Degrees;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
+import static slash.navigation.common.DegreeFormat.*;
 
 public class DegreeFormatTest {
     @Test

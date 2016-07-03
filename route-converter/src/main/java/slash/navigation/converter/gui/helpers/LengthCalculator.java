@@ -21,10 +21,8 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 
@@ -35,10 +33,13 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
@@ -80,7 +81,7 @@ public class LengthCalculator {
                                 e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS))
                     return;
-                if (LengthCalculator.this.positionsModel.isContinousRange())
+                if (getPositionsModel().isContinousRange())
                     return;
 
                 calculateDistance();
@@ -95,21 +96,19 @@ public class LengthCalculator {
                 calculateDistance();
             }
         });
-
-        RouteConverter.getInstance().addMapViewListener(new AbstractMapViewListener() {
-            public void calculatedDistance(int meters, int seconds) {
-                fireCalculatedDistance(meters, seconds);
-            }
-        });
     }
 
-    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<LengthCalculatorListener>();
+    private PositionsModel getPositionsModel() {
+        return positionsModel;
+    }
+
+    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<>();
 
     public void addLengthCalculatorListener(LengthCalculatorListener listener) {
         lengthCalculatorListeners.add(listener);
     }
 
-    private void fireCalculatedDistance(int meters, int seconds) {
+    public void fireCalculatedDistance(double meters, long seconds) {
         for (LengthCalculatorListener listener : lengthCalculatorListeners) {
             listener.calculatedDistance(meters, seconds);
         }
@@ -120,8 +119,7 @@ public class LengthCalculator {
             fireCalculatedDistance(0, 0);
             return;
         }
-
-        if (getCharacteristics().equals(Route) && RouteConverter.getInstance().isMapViewInitialized())
+        if (getCharacteristics().equals(Route))
             return;
 
         synchronized (notificationMutex) {
@@ -141,7 +139,7 @@ public class LengthCalculator {
             NavigationPosition next = positionsModel.getPosition(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
-                if (distance != null)
+                if (!isEmpty(distance))
                     distanceMeters += distance;
                 Long time = previous.calculateTime(next);
                 if (time != null && time > 0)
@@ -157,14 +155,14 @@ public class LengthCalculator {
             }
 
             if (i > 0 && i % 100 == 0)
-                fireCalculatedDistance((int) distanceMeters, totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
+                fireCalculatedDistance(distanceMeters, totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0);
 
             previous = next;
         }
 
-        int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
-        int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance((int) distanceMeters, Math.max(maxMinusMin, summedUp));
+        long summedUp = totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0;
+        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000 : 0;
+        fireCalculatedDistance(distanceMeters, max(maxMinusMin, summedUp));
     }
 
     private void initialize() {
@@ -192,7 +190,7 @@ public class LengthCalculator {
     }
 
     public void dispose() {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
         synchronized (notificationMutex) {
             running = false;
             notificationMutex.notifyAll();
@@ -204,7 +202,7 @@ public class LengthCalculator {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("LengthCalculator stopped after " + (end - start) + " ms");
         }
     }

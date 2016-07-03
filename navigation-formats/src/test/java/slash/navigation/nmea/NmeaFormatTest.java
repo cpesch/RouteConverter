@@ -26,19 +26,11 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.SimpleRoute;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
@@ -122,6 +114,7 @@ public class NmeaFormatTest {
         assertTrue(format.isPosition("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
         assertTrue(format.isPosition("$GPRMC,171624,A,5341.1395,N, 951.2163,E,1.285115,0.000000,150711,,*34"));
         assertTrue(format.isPosition("$GPGGA,171624,5341.1395,N, 951.2163,E,1,00,0.0,173.773102,M,0.0,M,,*66"));
+        assertTrue(format.isPosition("$GPWPL,1924.823,N,08728.572,W,P28298_240104_0715*32"));
 
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
@@ -133,6 +126,17 @@ public class NmeaFormatTest {
         assertFalse(format.isPosition("$GPRMC,123613.957,V,,,,,,,170807,,*29"));
         assertFalse(format.isPosition("$GPGGA,145524.054,,,,,0,00,,,M,0.0,M,,0000*54"));
         assertFalse(format.isPosition("$GPRMC,145524.054,V,,,,,,,300807,,*21"));
+    }
+
+    @Test
+    public void testIsPositionWithoutChecksum() {
+        assertTrue(format.isPosition("$GPWPL,1924.823,N,08728.572,W,P28298_240104_0715"));
+        assertTrue(format.isPosition("$GPWPL,3018.000,S,15309.000,E,Coffs Harbor (Sidney)"));
+    }
+
+    @Test
+    public void testIsPositionWithWrongChecksum() {
+        assertFalse(format.isPosition("$GPWPL,1924.823,N,08728.572,W,P28298_240104_0715*00"));
     }
 
     @Test
@@ -254,6 +258,16 @@ public class NmeaFormatTest {
     }
 
     @Test
+    public void testParseWPLWithoutChecksum() {
+        NmeaPosition position = format.parsePosition("$GPWPL,1924.823,N,08728.572,W,P28298_240104_0715");
+        assertDoubleEquals(-87.4762, position.getLongitude());
+        assertDoubleEquals(19.4137166667, position.getLatitude());
+        assertNull(position.getTime());
+        assertNull(position.getElevation());
+        assertEquals("P28298_240104_0715", position.getDescription());
+    }
+
+    @Test
     public void testParseZDA() {
         NmeaPosition position = format.parsePosition("$GPZDA,032910.542,07,08,2004,00,00*48");
         assertNull(position.getLongitude());
@@ -294,8 +308,8 @@ public class NmeaFormatTest {
                         "$GPZDA,130441,29,07,2013,00,00*47\n" +
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
@@ -322,8 +336,8 @@ public class NmeaFormatTest {
                         "$GPWPL,4300.898329,N,00948.227878,E,Position 3*62\n" +
                         "$GPVTG,,T,,M,0.0000,N,19.3175,K,A*1B"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
@@ -347,8 +361,8 @@ public class NmeaFormatTest {
                 "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.7654,M,00.0,M,,*47\n" +
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
-        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(reader), null, ISO_LATIN1_ENCODING, context);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
@@ -375,8 +389,8 @@ public class NmeaFormatTest {
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
-        ParserContext<NmeaRoute> context2 = new ParserContextImpl<NmeaRoute>();
-        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, ISO_LATIN1_ENCODING, context2);
+        ParserContext<NmeaRoute> context2 = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), ISO_LATIN1_ENCODING, context2);
         List<NmeaRoute> routes2 = context2.getRoutes();
         assertEquals(1, routes2.size());
         NmeaRoute route2 = routes2.get(0);

@@ -20,10 +20,9 @@
 
 package slash.navigation.gopal;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.binding3.ObjectFactory;
 import slash.navigation.gopal.binding3.Tour;
 
@@ -33,7 +32,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import static slash.navigation.gopal.GoPalUtil.marshal3;
 import static slash.navigation.gopal.GoPalUtil.unmarshal3;
@@ -45,15 +43,14 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal3;
  */
 
 public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
-    private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
     private static final String VERSION_PREFIX = "v3";
 
     public String getName() {
         return "GoPal 3 Route (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return preferences.getInt(VERSION_PREFIX + "MaximumPositionCount", UNLIMITED_MAXIMUM_POSITION_COUNT);
+    protected String getVersion() {
+        return VERSION_PREFIX;
     }
 
     @SuppressWarnings("unchecked")
@@ -62,7 +59,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     }
 
     private GoPalRoute process(Tour tour) {
-        List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
+        List<GoPalPosition> positions = new ArrayList<>();
         for (Tour.Dest dest : tour.getDest()) {
             Short country = dest.getCountry() != 0 ? dest.getCountry() : null;
             positions.add(new GoPalPosition(dest.getLongitude(), dest.getLatitude(), country, null, dest.getZip(), dest.getCity(), null, dest.getStreet(), null, dest.getHouse()));
@@ -70,7 +67,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         return new GoPalRoute(this, null, tour.getOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPalRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GoPalRoute> context) throws Exception {
         Tour tour = unmarshal3(source);
         context.appendRoute(process(tour));
     }

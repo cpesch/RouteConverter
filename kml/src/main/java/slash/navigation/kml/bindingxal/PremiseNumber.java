@@ -94,7 +94,7 @@ public class PremiseNumber {
     @XmlSchemaType(name = "anySimpleType")
     protected String code;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the content property.

@@ -21,10 +21,9 @@
 package slash.navigation.nmn;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContextImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn4FormatTest {
@@ -87,7 +86,7 @@ public class Nmn4FormatTest {
 
     @Test
     public void testParseMN42Position() {
-        NmnPosition position = format.parsePosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|", null);
+        NmnPosition position = format.parsePosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|", new ParserContextImpl());
         assertDoubleEquals(7.05143, position.getLongitude());
         assertDoubleEquals(51.59682, position.getLatitude());
         assertEquals("45896 Gelsenkirchen, Polsumer Straße", position.getDescription());

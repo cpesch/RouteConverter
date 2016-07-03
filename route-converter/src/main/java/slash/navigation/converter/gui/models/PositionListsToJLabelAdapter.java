@@ -27,9 +27,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import javax.swing.*;
 import java.text.MessageFormat;
 
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * A bidirectional adapter that extracts the number of position lists
@@ -41,8 +39,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
     private final JLabel label;
 
-    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
-                                        JLabel label) {
+    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel, JLabel label) {
         super(formatAndRoutesModel);
         this.label = label;
     }

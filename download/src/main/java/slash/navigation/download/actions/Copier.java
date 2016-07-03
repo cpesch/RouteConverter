@@ -19,11 +19,10 @@
 */
 package slash.navigation.download.actions;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 
 /**
@@ -38,20 +37,33 @@ public class Copier {
         this.listener = listener;
     }
 
+    public long copyAndClose(File from, File to) throws IOException {
+        ensureDirectory(to.getParent());
+        try(InputStream inputStream = new FileInputStream(from); OutputStream outputStream = new FileOutputStream(to)) {
+            return copyAndClose(inputStream, outputStream, 0, from.length());
+        }
+    }
+
     public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(input);
+        BufferedOutputStream bos = new BufferedOutputStream(output);
         try {
-            return copy(input, output, startByte, expectingBytes);
+            return copy(bis, bos, startByte, expectingBytes);
         } finally {
             try {
-                closeQuietly(input);
+                closeQuietly(bis);
             } finally {
-                closeQuietly(output);
+                closeQuietly(bos);
             }
         }
     }
 
-    public long copy(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
-        listener.expectingBytes(expectingBytes != null ? expectingBytes : input.available());
+    public long copy(InputStream input, OutputStream output, long startByte, Long bytes) throws IOException {
+        Long expectingBytes = bytes != null && bytes > 10 ? bytes : null;
+        if (expectingBytes == null)
+            expectingBytes = input.available() > 10 ? (long) input.available() : null;
+        if (expectingBytes != null)
+            listener.expectingBytes(expectingBytes);
 
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long totalBytes = startByte;

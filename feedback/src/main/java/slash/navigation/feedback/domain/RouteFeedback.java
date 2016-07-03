@@ -20,28 +20,46 @@
 
 package slash.navigation.feedback.domain;
 
-import slash.navigation.gpx.GpxUtil;
-import slash.navigation.gpx.binding11.ExtensionsType;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.routecatalog10.UserextensionType;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Fragment;
+import slash.navigation.datasources.Theme;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.datasources.helpers.DataSourcesUtil;
+import slash.navigation.download.FileAndChecksum;
 import slash.navigation.rest.Credentials;
-import slash.navigation.rest.Get;
+import slash.navigation.rest.Delete;
 import slash.navigation.rest.Post;
-import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.Put;
+import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
-import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.common.io.Files.writeToTempFile;
-import static slash.common.io.Transfer.asUtf8;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
+import static slash.navigation.datasources.DataSourceManager.V1;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksums;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.asMetaDataComparablePath;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
+import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
  * Encapsulates REST access to the RouteFeedback service of RouteConverter.
@@ -52,134 +70,78 @@ import static slash.common.io.Transfer.asUtf8;
 public class RouteFeedback {
     private static final Logger log = Logger.getLogger(RouteFeedback.class.getName());
 
-    private static final String USERS_URI = "users/";
     private static final String ERROR_REPORT_URI = "error-report/";
     private static final String UPDATE_CHECK_URI = "update-check/";
+    static final String USER_URI = V1 + "users/";
 
     private final String rootUrl;
+    private final String apiUrl;
     private final Credentials credentials;
 
-    public RouteFeedback(String rootUrl, Credentials credentials) {
+    public RouteFeedback(String rootUrl, String apiUrl, Credentials credentials) {
         this.rootUrl = rootUrl;
+        this.apiUrl = apiUrl;
         this.credentials = credentials;
     }
 
-    private static final ObjectFactory gpxFactory = new ObjectFactory();
-    private static final slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
-
-    private static GpxType createGpxType() {
-        GpxType gpxType = gpxFactory.createGpxType();
-        gpxType.setCreator("RouteFeedback Client");
-        gpxType.setVersion("1.1");
-        return gpxType;
-    }
-
-    private static String toXml(GpxType gpxType) {
-        StringWriter writer = new StringWriter();
-        try {
-            GpxUtil.marshal11(gpxType, writer);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Cannot marshall " + gpxType + ": " + e.getMessage(), e);
-        }
-        return writer.toString();
-    }
-
-    GpxType fetchGpx(String url) throws IOException {
-        log.fine("Fetching gpx from " + url);
-        Get get = new Get(url);
-        String result = get.execute();
-        if (get.isSuccessful())
-            try {
-                return GpxUtil.unmarshal11(result);
-            } catch (JAXBException e) {
-                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
-                io.setStackTrace(e.getStackTrace());
-                throw io;
-            }
-        else
-            return null;
-    }
-
-    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) {
-        MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setName(asUtf8(userName));
-
-        UserextensionType userextensionType = rcFactory.createUserextensionType();
-        userextensionType.setEmail(asUtf8(email));
-        userextensionType.setFirstname(asUtf8(firstName));
-        userextensionType.setLastname(asUtf8(lastName));
-        userextensionType.setPassword(asUtf8(password));
-
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(userextensionType);
-        metadataType.setExtensions(extensionsType);
-
-        GpxType gpxType = createGpxType();
-        gpxType.setMetadata(metadataType);
-
-        return toXml(gpxType);
-    }
-
-    private String getUsersUrl() {
-        return rootUrl + USERS_URI;
-    }
-
-    private Post prepareAddUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
-        String xml = createUserXml(userName, password, firstName, lastName, email);
-        Post request = new Post(getUsersUrl(), credentials);
-        request.addFile("file", writeToTempFile(xml));
-        return request;
-    }
-
     public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        Post request = prepareAddUser(userName, password, firstName, lastName, email);
-        String result = request.execute();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add user " + userName, getUsersUrl());
+        log.info("Adding user " + userName + "," + firstName + "," + lastName + "," + email);
+        Post request = new Post(apiUrl + USER_URI);
+        request.setAccept(APPLICATION_JSON);
+        request.addString("username", userName);
+        request.addString("password", password);
+        request.addString("first_name", firstName);
+        request.addString("last_name", lastName);
+        request.addString("email", email);
+        String result = request.executeAsString();
+        if (request.isBadRequest())
+            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
         if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add user " + userName, getUsersUrl());
+            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getUsersUrl() + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
+            throw new IOException("POST on " + (apiUrl + USER_URI) + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
         return request.getLocation();
+    }
+
+    void deleteUser(String userUrl) throws IOException {
+        log.info("Deleting user " + userUrl);
+        Delete request = new Delete(userUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
+        String result = request.executeAsString();
+        if (request.isBadRequest())
+            throw new ForbiddenException("Not authorized to delete user", userUrl);
+        if (!request.isSuccessful())
+            throw new IOException("DELETE on " + userUrl + " not successful: " + result);
     }
 
     private String getErrorReportUrl() {
         return rootUrl + ERROR_REPORT_URI;
     }
 
-    private Post prepareSendErrorReport(String logOutput, String description, File file) throws IOException {
-        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description +
-                "\"" + (file != null ? ", file " + file.getAbsolutePath() : ""));
+    public String sendErrorReport(String logOutput, String description, java.io.File file) throws IOException {
+        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description + "\"" +
+                (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(getErrorReportUrl(), credentials);
         request.addString("log", logOutput);
         request.addString("description", description);
         if (file != null)
             request.addFile("file", file);
-        return request;
-    }
 
-    public String sendErrorReport(String log, String description, File file) throws IOException {
-        Post request = prepareSendErrorReport(log, description, file);
-        String result = request.execute();
+        String result = request.executeAsString();
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), getErrorReportUrl());
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getErrorReportUrl() + " with log " + log.length() + " characters" +
+            throw new IOException("POST on " + getErrorReportUrl() + " with log " + logOutput.length() + " characters" +
                     ", description \"" + description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
-    }
-
-    private String getUpdateCheckUrl() {
-        return rootUrl + UPDATE_CHECK_URI;
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
                                  String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
                                  String webstartVersion, long startTime) throws IOException {
-        log.fine("Checking for update for version \"" + routeConverterVersion + "\"");
-        Post request = new Post(getUpdateCheckUrl(), credentials);
+        log.fine("Checking for update for version " + routeConverterVersion);
+        Post request = new Post(rootUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
@@ -192,6 +154,99 @@ public class RouteFeedback {
         request.addString("rcBits", routeConverterBits);
         if (webstartVersion != null)
             request.addString("webstartVersion", webstartVersion);
-        return request.execute().replace("\"", "");
+        return request.executeAsString().replace("\"", "");
+    }
+
+    private boolean contains(String[] array, String name) {
+        for (String anArray : array) {
+            if (name.equals(anArray))
+                return true;
+
+        }
+        return false;
+    }
+
+    private Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) throws IOException {
+        Set<FileAndChecksum> result = new HashSet<>();
+        for (List<FileAndChecksum> fileAndChecksums : fileAndChecksumMap.values()) {
+            for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
+
+                String filePath = asMetaDataComparablePath(fileAndChecksum.getFile());
+                if (filePath.contains(fragment.getKey()))
+                    result.add(fileAndChecksum);
+            }
+        }
+        return result;
+    }
+
+    private List<FragmentType> createFragmentTypes(List<Fragment<Downloadable>> fragments, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksums) throws IOException {
+        if (fragments == null)
+            return null;
+
+        List<FragmentType> fragmentTypes = new ArrayList<>();
+        for (Fragment fragment : fragments)
+            fragmentTypes.add(createFragmentType(fragment, findFile(fragment, fileAndChecksums)));
+        return fragmentTypes;
+    }
+
+    private String toXml(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String... filterUrls) throws IOException {
+        DatasourceType datasourceType = asDatasourceType(dataSource);
+
+        for (File aFile : dataSource.getFiles()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + aFile.getUri()))
+                continue;
+
+            FileType fileType = createFileType(aFile.getUri(), asChecksums(fileToFragments.keySet()), aFile.getBoundingBox());
+            List<FragmentType> fragmentTypes = createFragmentTypes(aFile.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                fileType.getFragment().addAll(fragmentTypes);
+            datasourceType.getFile().add(fileType);
+        }
+
+        for (slash.navigation.datasources.Map map : dataSource.getMaps()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + map.getUri()))
+                continue;
+
+            MapType mapType = createMapType(map.getUri(), asChecksums(fileToFragments.keySet()), map.getBoundingBox());
+            List<FragmentType> fragmentTypes = createFragmentTypes(map.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                mapType.getFragment().addAll(fragmentTypes);
+            datasourceType.getMap().add(mapType);
+        }
+
+        for (Theme theme : dataSource.getThemes()) {
+            if (!contains(filterUrls, dataSource.getBaseUrl() + theme.getUri()))
+                continue;
+
+            ThemeType themeType = createThemeType(theme.getUri(), asChecksums(fileToFragments.keySet()), theme.getImageUrl());
+            List<FragmentType> fragmentTypes = createFragmentTypes(theme.getFragments(), fileToFragments);
+            if (fragmentTypes != null)
+                themeType.getFragment().addAll(fragmentTypes);
+            datasourceType.getTheme().add(themeType);
+        }
+
+        return DataSourcesUtil.toXml(datasourceType);
+    }
+
+    private String getDataSourcesUrl(String dataSourceId) {
+        return apiUrl + DATASOURCES_URI + dataSourceId + "/";
+    }
+
+    public String sendChecksums(DataSource dataSource, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileToFragments, String filterUrl) throws IOException {
+        String xml = toXml(dataSource, fileToFragments, filterUrl);
+        log.info(format("Sending checksums for %s filtered with %s:%n%s", fileToFragments, filterUrl, xml));
+        String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
+        Put request = new Put(dataSourcesUrl, credentials);
+        request.setAccept(APPLICATION_JSON);
+        request.addFile("file", xml.getBytes(UTF8_ENCODING));
+
+        String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Cannot send checksums", dataSourcesUrl);
+        if (!request.isSuccessful())
+            throw new IOException("PUT on " + dataSourcesUrl + " for data source " + dataSource + " not successful: " + result);
+
+        log.info(format("Sent checksum for %s filtered with %s with result:%n%s", fileToFragments, filterUrl, result));
+        return result;
     }
 }

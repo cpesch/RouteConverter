@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.domain.Category;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.routes.Category;
 
 import javax.swing.*;
 import java.net.URL;
@@ -37,6 +37,6 @@ import java.net.URL;
 public class AddUrlAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        r.addUrlToCatalog("");
+        r.getBrowsePanel().addUrlToCatalog("");
     }
 }

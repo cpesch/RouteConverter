@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
 
-import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -32,7 +31,9 @@ import static java.awt.Desktop.getDesktop;
 import static java.awt.Desktop.isDesktopSupported;
 import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -49,8 +50,12 @@ public class ExternalPrograms {
         return getDefault().getLanguage().equals(GERMAN.getLanguage());
     }
 
-    public static void startBrowserForHomepage(Window window) {
+    public static void startBrowserForRouteConverter(Window window) {
         startBrowser(window, isGerman() ? "http://www.routeconverter.de/" : "http://www.routeconverter.com/");
+    }
+
+    public static void startBrowserForTimeAlbumProDownload(Window window) {
+        startBrowser(window, "http://cbgps.com/download_en.htm");
     }
 
     public static void startBrowserForUpdateCheck(Window window, String version, long startTime) {
@@ -59,11 +64,20 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForTerms(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/routecatalog_terms/" + getDefault().getLanguage());
+        startBrowser(window, "http://www.routeconverter.com/routecatalog-terms/" + getDefault().getLanguage());
     }
 
-    public static void startBrowserForForum(Window window) {
-        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/" : "http://forum.routeconverter.com/");
+    public static void startBrowserForTranslation(Window window) {
+        startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
+    }
+
+    public static void startBrowserForTimeAlbumProSupport(Window window) {
+        startMail(window, "mailto:columbusservice@hotmail.com");
+    }
+
+    public static void startBrowserForRouteConverterForum(Window window) {
+        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/forum-4.html" :
+                "http://forum.routeconverter.com/forum-12.html");
     }
 
     public static void startBrowserForGeonames(Window window) {
@@ -81,17 +95,18 @@ public class ExternalPrograms {
         startBrowser(window, "http://java.com/download/");
     }
 
-    private static void startBrowser(Window window, String uri) {
-        if (isDesktopSupported()) {
-            try {
-                getDesktop().browse(new URI(uri));
-            } catch (Exception e) {
-                log.severe("Start browser error: " + e.getMessage());
+    public static void startBrowser(Window window, String uri) {
+        try {
+            if (!isDesktopSupported())
+                throw new UnsupportedOperationException("No desktop support available");
 
-                showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
-                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
-            }
+            getDesktop().browse(new URI(uri));
+        } catch (Exception e) {
+            log.severe("Start browser error: " + e);
+
+            showMessageDialog(window,
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), getLocalizedMessage(e)),
+                    RouteConverter.getTitle(), ERROR_MESSAGE);
         }
     }
 
@@ -100,16 +115,17 @@ public class ExternalPrograms {
     }
 
     private static void startMail(Window window, String uri) {
-        if (isDesktopSupported()) {
-            try {
-                getDesktop().mail(new URI(uri));
-            } catch (Exception e) {
-                log.severe("Start mail error: " + e.getMessage());
+        try {
+            if (!isDesktopSupported())
+                throw new UnsupportedOperationException("No desktop support available");
 
-                showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
-                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
-            }
+            getDesktop().mail(new URI(uri));
+        } catch (Exception e) {
+            log.severe("Start mail error: " + e);
+
+            showMessageDialog(window,
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), getLocalizedMessage(e)),
+                    RouteConverter.getTitle(), ERROR_MESSAGE);
         }
     }
 }

@@ -27,15 +27,7 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.assertNearBy;
-import static slash.navigation.common.NavigationConversion.bcrAltitudeToElevationMeters;
-import static slash.navigation.common.NavigationConversion.elevationMetersToBcrAltitude;
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
-import static slash.navigation.common.NavigationConversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
-import static slash.navigation.common.NavigationConversion.mercatorXToWgs84Longitude;
-import static slash.navigation.common.NavigationConversion.mercatorYToWgs84Latitude;
-import static slash.navigation.common.NavigationConversion.wgs84LatitudeToMercatorY;
-import static slash.navigation.common.NavigationConversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
-import static slash.navigation.common.NavigationConversion.wgs84LongitudeToMercatorX;
+import static slash.navigation.common.NavigationConversion.*;
 
 public class NavigationConversionTest {
     @Test

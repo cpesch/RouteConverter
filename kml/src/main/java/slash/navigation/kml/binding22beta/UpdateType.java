@@ -107,7 +107,7 @@ public class UpdateType {
      */
     public List<Object> getCreateOrDeleteOrChange() {
         if (createOrDeleteOrChange == null) {
-            createOrDeleteOrChange = new ArrayList<Object>();
+            createOrDeleteOrChange = new ArrayList<>();
         }
         return this.createOrDeleteOrChange;
     }

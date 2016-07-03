@@ -94,7 +94,7 @@ public abstract class AbstractOverlayType
      *     
      */
     public void setColor(byte[] value) {
-        this.color = ((byte[]) value);
+        this.color = value;
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class AbstractOverlayType
      */
     public List<Object> getAbstractOverlaySimpleExtensionGroup() {
         if (abstractOverlaySimpleExtensionGroup == null) {
-            abstractOverlaySimpleExtensionGroup = new ArrayList<Object>();
+            abstractOverlaySimpleExtensionGroup = new ArrayList<>();
         }
         return this.abstractOverlaySimpleExtensionGroup;
     }
@@ -198,7 +198,7 @@ public abstract class AbstractOverlayType
      */
     public List<AbstractObjectType> getAbstractOverlayObjectExtensionGroup() {
         if (abstractOverlayObjectExtensionGroup == null) {
-            abstractOverlayObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            abstractOverlayObjectExtensionGroup = new ArrayList<>();
         }
         return this.abstractOverlayObjectExtensionGroup;
     }

@@ -21,26 +21,18 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
@@ -100,7 +92,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return fromMillis(milliseconds * 1000);
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

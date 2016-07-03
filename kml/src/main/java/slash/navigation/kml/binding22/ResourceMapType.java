@@ -80,7 +80,7 @@ public class ResourceMapType
      */
     public List<AliasType> getAlias() {
         if (alias == null) {
-            alias = new ArrayList<AliasType>();
+            alias = new ArrayList<>();
         }
         return this.alias;
     }
@@ -109,7 +109,7 @@ public class ResourceMapType
      */
     public List<Object> getResourceMapSimpleExtensionGroup() {
         if (resourceMapSimpleExtensionGroup == null) {
-            resourceMapSimpleExtensionGroup = new ArrayList<Object>();
+            resourceMapSimpleExtensionGroup = new ArrayList<>();
         }
         return this.resourceMapSimpleExtensionGroup;
     }
@@ -138,7 +138,7 @@ public class ResourceMapType
      */
     public List<AbstractObjectType> getResourceMapObjectExtensionGroup() {
         if (resourceMapObjectExtensionGroup == null) {
-            resourceMapObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            resourceMapObjectExtensionGroup = new ArrayList<>();
         }
         return this.resourceMapObjectExtensionGroup;
     }

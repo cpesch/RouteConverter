@@ -100,7 +100,7 @@ public class MultiSportSessionT {
      */
     public List<NextSportT> getNextSport() {
         if (nextSport == null) {
-            nextSport = new ArrayList<NextSportT>();
+            nextSport = new ArrayList<>();
         }
         return this.nextSport;
     }

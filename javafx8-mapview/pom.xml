@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>javafx8-mapview</artifactId>
+    <packaging>jar</packaging>
+    <name>MapView based on the JavaFX WebView for Java 8</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>RouteConverter</artifactId>
+        <version>2.19-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx7-mapview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>javafx</artifactId>
+            <version>jdk8</version>
+            <scope>provided</scope>
+            <classifier>stripped</classifier>
+        </dependency>
+    </dependencies>
+</project>

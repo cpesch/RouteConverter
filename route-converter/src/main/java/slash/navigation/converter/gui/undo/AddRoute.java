@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.models.AddRouteCallback;
+import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -30,7 +30,7 @@ import javax.swing.undo.UndoableEdit;
 import java.io.File;
 import java.net.URL;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 /**
  * Acts as a {@link UndoableEdit} for adding a {@link File} or {@link URL} to a {@link CategoryTreeNode} of a {@link UndoCatalogModel}.
@@ -65,7 +65,7 @@ class AddRoute extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.removeRoutes(asList(callback.getRoute()), false);
+        catalogModel.deleteRoutes(singletonList(callback.getRoute()), false);
     }
 
     public void redo() throws CannotRedoException {

@@ -144,7 +144,7 @@ public class LinearRingType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -171,7 +171,7 @@ public class LinearRingType
      */
     public List<String> getCoordinates() {
         if (coordinates == null) {
-            coordinates = new ArrayList<String>();
+            coordinates = new ArrayList<>();
         }
         return this.coordinates;
     }
@@ -200,7 +200,7 @@ public class LinearRingType
      */
     public List<Object> getLinearRingSimpleExtensionGroup() {
         if (linearRingSimpleExtensionGroup == null) {
-            linearRingSimpleExtensionGroup = new ArrayList<Object>();
+            linearRingSimpleExtensionGroup = new ArrayList<>();
         }
         return this.linearRingSimpleExtensionGroup;
     }
@@ -229,7 +229,7 @@ public class LinearRingType
      */
     public List<AbstractObjectType> getLinearRingObjectExtensionGroup() {
         if (linearRingObjectExtensionGroup == null) {
-            linearRingObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            linearRingObjectExtensionGroup = new ArrayList<>();
         }
         return this.linearRingObjectExtensionGroup;
     }

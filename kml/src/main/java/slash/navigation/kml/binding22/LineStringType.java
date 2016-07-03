@@ -144,7 +144,7 @@ public class LineStringType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -171,7 +171,7 @@ public class LineStringType
      */
     public List<String> getCoordinates() {
         if (coordinates == null) {
-            coordinates = new ArrayList<String>();
+            coordinates = new ArrayList<>();
         }
         return this.coordinates;
     }
@@ -200,7 +200,7 @@ public class LineStringType
      */
     public List<Object> getLineStringSimpleExtensionGroup() {
         if (lineStringSimpleExtensionGroup == null) {
-            lineStringSimpleExtensionGroup = new ArrayList<Object>();
+            lineStringSimpleExtensionGroup = new ArrayList<>();
         }
         return this.lineStringSimpleExtensionGroup;
     }
@@ -229,7 +229,7 @@ public class LineStringType
      */
     public List<AbstractObjectType> getLineStringObjectExtensionGroup() {
         if (lineStringObjectExtensionGroup == null) {
-            lineStringObjectExtensionGroup = new ArrayList<AbstractObjectType>();
+            lineStringObjectExtensionGroup = new ArrayList<>();
         }
         return this.lineStringObjectExtensionGroup;
     }

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -30,9 +31,7 @@ import java.awt.event.MouseMotionAdapter;
 
 import static java.awt.event.InputEvent.BUTTON1_MASK;
 import static java.awt.event.KeyEvent.VK_CONTEXT_MENU;
-import static java.awt.event.MouseEvent.MOUSE_CLICKED;
-import static java.awt.event.MouseEvent.MOUSE_PRESSED;
-import static java.awt.event.MouseEvent.MOUSE_RELEASED;
+import static java.awt.event.MouseEvent.*;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -45,11 +44,13 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 public abstract class AbstractTablePopupMenu {
     private final JTable table;
+    private final String localName;
     private JPopupMenu popupMenu;
     private MouseEvent lastMouseEvent;
 
-    public AbstractTablePopupMenu(JTable table) {
+    public AbstractTablePopupMenu(JTable table, String localName) {
         this.table = table;
+        this.localName = localName;
     }
 
     protected abstract JPopupMenu doCreatePopupMenu();
@@ -101,6 +102,8 @@ public abstract class AbstractTablePopupMenu {
 
     private class MouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
+            Application.getInstance().getContext().getActionManager().setLocalName(localName);
+
             if (e.isPopupTrigger()) {
                 ensureSelection(e, 2);
                 showPopup(e);

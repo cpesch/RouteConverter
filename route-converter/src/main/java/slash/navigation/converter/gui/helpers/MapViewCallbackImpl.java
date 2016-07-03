@@ -20,19 +20,18 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.MapView;
-import slash.navigation.converter.gui.mapview.MapViewCallback;
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
 
-import java.util.Calendar;
-import java.util.logging.Logger;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.File;
 
-import static slash.common.type.CompactCalendar.UTC;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.RouteCalculations.extrapolateTime;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services.
@@ -41,37 +40,52 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
  */
 
 public class MapViewCallbackImpl implements MapViewCallback {
-    private static final Logger log = Logger.getLogger(MapViewCallbackImpl.class.getName());
-    private PositionsModel positionsModel;
-
-    public MapViewCallbackImpl(PositionsModel positionsModel) {
-        this.positionsModel = positionsModel;
-    }
 
     public String createDescription(int index, String description) {
-        return RouteConverter.getInstance().getBatchPositionAugmenter().createDescription(index, description);
+        return RouteConverter.getInstance().getPositionAugmenter().createDescription(index, description);
     }
 
-    public void complementElevation(final int row, final Double longitude, final Double latitude) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addElevations(RouteConverter.getInstance().getPositionsView(), positionsModel, new int[]{row});
+    public String createCoordinates(Double longitude, Double latitude) {
+        return formatLongitude(longitude) + "," + formatLatitude(latitude);
     }
 
-    public void complementDescription(final int row, final Double longitude, final Double latitude) {
-        RouteConverter.getInstance().getBatchPositionAugmenter().addDescriptions(RouteConverter.getInstance().getPositionsView(), positionsModel, new int[]{row});
+    public void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
+        RouteConverter.getInstance().getPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }
 
-    public void complementTime(int row, CompactCalendar time, boolean allowCurrentTime) { // TODO check with BatchPositionAugmenter
-        if (time != null)
-            return;
+    public void startBrowser(String url) {
+        ExternalPrograms.startBrowser(RouteConverter.getInstance().getFrame(), url);
+    }
 
-        // do not put this in executorService since when called in batches, the edit() must happen before the
-        // next time can be complemented
-        CompactCalendar interpolated = row - 2 >= 0 ? extrapolateTime(positionsModel.getPosition(row),
-                positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
-        // since interpolation is just between the previous positions this leads to errors when inserting
-        // more than one position for which no time can be interpolated from the previous positions
-        if (interpolated == null && allowCurrentTime)
-            interpolated = fromCalendar(Calendar.getInstance(UTC));
-        positionsModel.edit(row, TIME_COLUMN_INDEX, interpolated, -1, null, true, false);
+    public RoutingService getRoutingService() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
+    }
+
+    public TravelMode getTravelMode() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().getTravelMode();
+    }
+
+    public boolean isAvoidFerries() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidFerries();
+    }
+
+    public boolean isAvoidHighways() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidHighways();
+    }
+
+    public boolean isAvoidTolls() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidTolls();
+    }
+
+    public File getTileServersDirectory() {
+        return RouteConverter.getInstance().getTileServersDirectory();
+    }
+
+    public void addRoutingServiceChangeListener(ChangeListener l) {
+        RouteConverter.getInstance().getRoutingServiceFacade().addChangeListener(l);
+    }
+
+    public void removeRoutingServiceChangeListener(ChangeListener l) {
+        RouteConverter.getInstance().getRoutingServiceFacade().removeChangeListener(l);
     }
 }

@@ -20,23 +20,15 @@
 
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 
 
 /**
@@ -89,7 +81,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return simpleMatcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
+    protected Wgs84Position parsePosition(String line, ParserContext context) {
         Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
         if (commentMatcher.matches()) {
             String latitude = commentMatcher.group(1);

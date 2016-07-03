@@ -455,7 +455,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "state", scope = ItemIconType.class)
     public JAXBElement<List<ItemIconStateEnum>> createItemIconTypeState(List<ItemIconStateEnum> value) {
-        return new JAXBElement<List<ItemIconStateEnum>>(_ItemIconTypeState_QNAME, ((Class) List.class), ItemIconType.class, ((List<ItemIconStateEnum> ) value));
+        return new JAXBElement<>(_ItemIconTypeState_QNAME, ((Class) List.class), ItemIconType.class, value);
     }
 
     /**
@@ -464,7 +464,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "TimeStamp", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "TimePrimitive")
     public JAXBElement<TimeStampType> createTimeStamp(TimeStampType value) {
-        return new JAXBElement<TimeStampType>(_TimeStamp_QNAME, TimeStampType.class, null, value);
+        return new JAXBElement<>(_TimeStamp_QNAME, TimeStampType.class, null, value);
     }
 
     /**
@@ -473,7 +473,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "MultiGeometry", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<MultiGeometryType> createMultiGeometry(MultiGeometryType value) {
-        return new JAXBElement<MultiGeometryType>(_MultiGeometry_QNAME, MultiGeometryType.class, null, value);
+        return new JAXBElement<>(_MultiGeometry_QNAME, MultiGeometryType.class, null, value);
     }
 
     /**
@@ -482,7 +482,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LinearRing", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<LinearRingType> createLinearRing(LinearRingType value) {
-        return new JAXBElement<LinearRingType>(_LinearRing_QNAME, LinearRingType.class, null, value);
+        return new JAXBElement<>(_LinearRing_QNAME, LinearRingType.class, null, value);
     }
 
     /**
@@ -491,7 +491,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Placemark", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<PlacemarkType> createPlacemark(PlacemarkType value) {
-        return new JAXBElement<PlacemarkType>(_Placemark_QNAME, PlacemarkType.class, null, value);
+        return new JAXBElement<>(_Placemark_QNAME, PlacemarkType.class, null, value);
     }
 
     /**
@@ -500,7 +500,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "NetworkLink", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<NetworkLinkType> createNetworkLink(NetworkLinkType value) {
-        return new JAXBElement<NetworkLinkType>(_NetworkLink_QNAME, NetworkLinkType.class, null, value);
+        return new JAXBElement<>(_NetworkLink_QNAME, NetworkLinkType.class, null, value);
     }
 
     /**
@@ -509,7 +509,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Link", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LinkType> createLink(LinkType value) {
-        return new JAXBElement<LinkType>(_Link_QNAME, LinkType.class, null, value);
+        return new JAXBElement<>(_Link_QNAME, LinkType.class, null, value);
     }
 
     /**
@@ -518,7 +518,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Model", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<ModelType> createModel(ModelType value) {
-        return new JAXBElement<ModelType>(_Model_QNAME, ModelType.class, null, value);
+        return new JAXBElement<>(_Model_QNAME, ModelType.class, null, value);
     }
 
     /**
@@ -527,7 +527,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Feature")
     public JAXBElement<FeatureType> createFeature(FeatureType value) {
-        return new JAXBElement<FeatureType>(_Feature_QNAME, FeatureType.class, null, value);
+        return new JAXBElement<>(_Feature_QNAME, FeatureType.class, null, value);
     }
 
     /**
@@ -536,7 +536,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "TimeSpan", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "TimePrimitive")
     public JAXBElement<TimeSpanType> createTimeSpan(TimeSpanType value) {
-        return new JAXBElement<TimeSpanType>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
+        return new JAXBElement<>(_TimeSpan_QNAME, TimeSpanType.class, null, value);
     }
 
     /**
@@ -545,7 +545,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Lod", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LodType> createLod(LodType value) {
-        return new JAXBElement<LodType>(_Lod_QNAME, LodType.class, null, value);
+        return new JAXBElement<>(_Lod_QNAME, LodType.class, null, value);
     }
 
     /**
@@ -554,7 +554,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Scale", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<ScaleType> createScale(ScaleType value) {
-        return new JAXBElement<ScaleType>(_Scale_QNAME, ScaleType.class, null, value);
+        return new JAXBElement<>(_Scale_QNAME, ScaleType.class, null, value);
     }
 
     /**
@@ -563,7 +563,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Object")
     public JAXBElement<ObjectType> createObject(ObjectType value) {
-        return new JAXBElement<ObjectType>(_Object_QNAME, ObjectType.class, null, value);
+        return new JAXBElement<>(_Object_QNAME, ObjectType.class, null, value);
     }
 
     /**
@@ -572,7 +572,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "ListStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<ListStyleType> createListStyle(ListStyleType value) {
-        return new JAXBElement<ListStyleType>(_ListStyle_QNAME, ListStyleType.class, null, value);
+        return new JAXBElement<>(_ListStyle_QNAME, ListStyleType.class, null, value);
     }
 
     /**
@@ -581,7 +581,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LineStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LineStyleType> createLineStyle(LineStyleType value) {
-        return new JAXBElement<LineStyleType>(_LineStyle_QNAME, LineStyleType.class, null, value);
+        return new JAXBElement<>(_LineStyle_QNAME, LineStyleType.class, null, value);
     }
 
     /**
@@ -590,7 +590,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LineString", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<LineStringType> createLineString(LineStringType value) {
-        return new JAXBElement<LineStringType>(_LineString_QNAME, LineStringType.class, null, value);
+        return new JAXBElement<>(_LineString_QNAME, LineStringType.class, null, value);
     }
 
     /**
@@ -599,7 +599,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Point", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<PointType> createPoint(PointType value) {
-        return new JAXBElement<PointType>(_Point_QNAME, PointType.class, null, value);
+        return new JAXBElement<>(_Point_QNAME, PointType.class, null, value);
     }
 
     /**
@@ -608,7 +608,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "styleUrl")
     public JAXBElement<String> createStyleUrl(String value) {
-        return new JAXBElement<String>(_StyleUrl_QNAME, String.class, null, value);
+        return new JAXBElement<>(_StyleUrl_QNAME, String.class, null, value);
     }
 
     /**
@@ -617,7 +617,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Geometry")
     public JAXBElement<GeometryType> createGeometry(GeometryType value) {
-        return new JAXBElement<GeometryType>(_Geometry_QNAME, GeometryType.class, null, value);
+        return new JAXBElement<>(_Geometry_QNAME, GeometryType.class, null, value);
     }
 
     /**
@@ -626,7 +626,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "coordinates")
     public JAXBElement<List<String>> createCoordinates(List<String> value) {
-        return new JAXBElement<List<String>>(_Coordinates_QNAME, ((Class) List.class), null, ((List<String> ) value));
+        return new JAXBElement<>(_Coordinates_QNAME, ((Class) List.class), null, value);
     }
 
     /**
@@ -635,7 +635,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Polygon", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Geometry")
     public JAXBElement<PolygonType> createPolygon(PolygonType value) {
-        return new JAXBElement<PolygonType>(_Polygon_QNAME, PolygonType.class, null, value);
+        return new JAXBElement<>(_Polygon_QNAME, PolygonType.class, null, value);
     }
 
     /**
@@ -644,7 +644,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LatLonBox", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LatLonBoxType> createLatLonBox(LatLonBoxType value) {
-        return new JAXBElement<LatLonBoxType>(_LatLonBox_QNAME, LatLonBoxType.class, null, value);
+        return new JAXBElement<>(_LatLonBox_QNAME, LatLonBoxType.class, null, value);
     }
 
     /**
@@ -653,7 +653,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "TimePrimitive")
     public JAXBElement<TimePrimitiveType> createTimePrimitive(TimePrimitiveType value) {
-        return new JAXBElement<TimePrimitiveType>(_TimePrimitive_QNAME, TimePrimitiveType.class, null, value);
+        return new JAXBElement<>(_TimePrimitive_QNAME, TimePrimitiveType.class, null, value);
     }
 
     /**
@@ -662,7 +662,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Style", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "StyleSelector")
     public JAXBElement<StyleType> createStyle(StyleType value) {
-        return new JAXBElement<StyleType>(_Style_QNAME, StyleType.class, null, value);
+        return new JAXBElement<>(_Style_QNAME, StyleType.class, null, value);
     }
 
     /**
@@ -671,7 +671,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Location", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LocationType> createLocation(LocationType value) {
-        return new JAXBElement<LocationType>(_Location_QNAME, LocationType.class, null, value);
+        return new JAXBElement<>(_Location_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -680,7 +680,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "GroundOverlay", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<GroundOverlayType> createGroundOverlay(GroundOverlayType value) {
-        return new JAXBElement<GroundOverlayType>(_GroundOverlay_QNAME, GroundOverlayType.class, null, value);
+        return new JAXBElement<>(_GroundOverlay_QNAME, GroundOverlayType.class, null, value);
     }
 
     /**
@@ -689,7 +689,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "StyleMap", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "StyleSelector")
     public JAXBElement<StyleMapType> createStyleMap(StyleMapType value) {
-        return new JAXBElement<StyleMapType>(_StyleMap_QNAME, StyleMapType.class, null, value);
+        return new JAXBElement<>(_StyleMap_QNAME, StyleMapType.class, null, value);
     }
 
     /**
@@ -698,7 +698,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Document", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<DocumentType> createDocument(DocumentType value) {
-        return new JAXBElement<DocumentType>(_Document_QNAME, DocumentType.class, null, value);
+        return new JAXBElement<>(_Document_QNAME, DocumentType.class, null, value);
     }
 
     /**
@@ -707,7 +707,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "PolyStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<PolyStyleType> createPolyStyle(PolyStyleType value) {
-        return new JAXBElement<PolyStyleType>(_PolyStyle_QNAME, PolyStyleType.class, null, value);
+        return new JAXBElement<>(_PolyStyle_QNAME, PolyStyleType.class, null, value);
     }
 
     /**
@@ -716,7 +716,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Folder", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<FolderType> createFolder(FolderType value) {
-        return new JAXBElement<FolderType>(_Folder_QNAME, FolderType.class, null, value);
+        return new JAXBElement<>(_Folder_QNAME, FolderType.class, null, value);
     }
 
     /**
@@ -725,7 +725,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Icon", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LinkType> createIcon(LinkType value) {
-        return new JAXBElement<LinkType>(_Icon_QNAME, LinkType.class, null, value);
+        return new JAXBElement<>(_Icon_QNAME, LinkType.class, null, value);
     }
 
     /**
@@ -734,7 +734,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Region", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<RegionType> createRegion(RegionType value) {
-        return new JAXBElement<RegionType>(_Region_QNAME, RegionType.class, null, value);
+        return new JAXBElement<>(_Region_QNAME, RegionType.class, null, value);
     }
 
     /**
@@ -743,7 +743,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LatLonAltBox")
     public JAXBElement<LatLonAltBoxType> createLatLonAltBox(LatLonAltBoxType value) {
-        return new JAXBElement<LatLonAltBoxType>(_LatLonAltBox_QNAME, LatLonAltBoxType.class, null, value);
+        return new JAXBElement<>(_LatLonAltBox_QNAME, LatLonAltBoxType.class, null, value);
     }
 
     /**
@@ -752,7 +752,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "BalloonStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<BalloonStyleType> createBalloonStyle(BalloonStyleType value) {
-        return new JAXBElement<BalloonStyleType>(_BalloonStyle_QNAME, BalloonStyleType.class, null, value);
+        return new JAXBElement<>(_BalloonStyle_QNAME, BalloonStyleType.class, null, value);
     }
 
     /**
@@ -761,7 +761,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "IconStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<IconStyleType> createIconStyle(IconStyleType value) {
-        return new JAXBElement<IconStyleType>(_IconStyle_QNAME, IconStyleType.class, null, value);
+        return new JAXBElement<>(_IconStyle_QNAME, IconStyleType.class, null, value);
     }
 
     /**
@@ -770,7 +770,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LookAt", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LookAtType> createLookAt(LookAtType value) {
-        return new JAXBElement<LookAtType>(_LookAt_QNAME, LookAtType.class, null, value);
+        return new JAXBElement<>(_LookAt_QNAME, LookAtType.class, null, value);
     }
 
     /**
@@ -779,7 +779,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "ScreenOverlay", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Feature")
     public JAXBElement<ScreenOverlayType> createScreenOverlay(ScreenOverlayType value) {
-        return new JAXBElement<ScreenOverlayType>(_ScreenOverlay_QNAME, ScreenOverlayType.class, null, value);
+        return new JAXBElement<>(_ScreenOverlay_QNAME, ScreenOverlayType.class, null, value);
     }
 
     /**
@@ -788,7 +788,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "StyleSelector")
     public JAXBElement<StyleSelectorType> createStyleSelector(StyleSelectorType value) {
-        return new JAXBElement<StyleSelectorType>(_StyleSelector_QNAME, StyleSelectorType.class, null, value);
+        return new JAXBElement<>(_StyleSelector_QNAME, StyleSelectorType.class, null, value);
     }
 
     /**
@@ -797,7 +797,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "Orientation", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<OrientationType> createOrientation(OrientationType value) {
-        return new JAXBElement<OrientationType>(_Orientation_QNAME, OrientationType.class, null, value);
+        return new JAXBElement<>(_Orientation_QNAME, OrientationType.class, null, value);
     }
 
     /**
@@ -806,7 +806,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "kml")
     public JAXBElement<KmlType> createKml(KmlType value) {
-        return new JAXBElement<KmlType>(_Kml_QNAME, KmlType.class, null, value);
+        return new JAXBElement<>(_Kml_QNAME, KmlType.class, null, value);
     }
 
     /**
@@ -815,7 +815,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "LabelStyle", substitutionHeadNamespace = "http://earth.google.com/kml/2.1", substitutionHeadName = "Object")
     public JAXBElement<LabelStyleType> createLabelStyle(LabelStyleType value) {
-        return new JAXBElement<LabelStyleType>(_LabelStyle_QNAME, LabelStyleType.class, null, value);
+        return new JAXBElement<>(_LabelStyle_QNAME, LabelStyleType.class, null, value);
     }
 
 }

@@ -20,34 +20,20 @@
 
 package slash.navigation.mm;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.*;
+import javax.xml.stream.events.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static java.util.Collections.singletonList;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
@@ -85,10 +71,6 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return "MagicMaps Project (*" + getExtension() + ")";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
@@ -119,13 +101,13 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE));
+        return asWgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE), null);
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {
         boolean hasValidRoot = false, nextIsProjectName = false, nextIsDescription = false, nextIsName = false;
         String projectName = null, description = null, name = null;
-        List<MagicMapsIktRoute> routes = new ArrayList<MagicMapsIktRoute>();
+        List<MagicMapsIktRoute> routes = new ArrayList<>();
         List<Wgs84Position> positions = null;
 
         while (eventReader.hasNext()) {
@@ -156,7 +138,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
                 } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
                     name = null;
-                    positions = new ArrayList<Wgs84Position>();
+                    positions = new ArrayList<>();
                 } else if (elementName.startsWith(GEO_POSITION_ELEMENT)) {
                     positions.add(processPosition(startElement));
                 }
@@ -183,7 +165,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return null;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<MagicMapsIktRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<MagicMapsIktRoute> context) throws Exception {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
         context.appendRoutes(process(eventReader));
@@ -191,7 +173,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
         writer.add(eventFactory.createStartDocument(UTF8_ENCODING, "1.0", true));
-        List<Attribute> rootAttributes = new ArrayList<Attribute>();
+        List<Attribute> rootAttributes = new ArrayList<>();
         rootAttributes.add(eventFactory.createAttribute(FILE_FORMAT_ATTRIBUTE, FILE_FORMAT));
         writer.add(eventFactory.createStartElement(new QName(ROOT_ELEMENT), rootAttributes.iterator(), null));
 
@@ -211,7 +193,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     private void writePosition(Wgs84Position position, int index, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
         writer.add(eventFactory.createStartElement(new QName(POINT_ELEMENT + "_" + index), null, null));
 
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        List<Attribute> attributes = new ArrayList<>();
         attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, formatPositionAsString(position.getLongitude())));
         attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, formatPositionAsString(position.getLatitude())));
         writer.add(eventFactory.createStartElement(new QName(GEO_POSITION_ELEMENT), attributes.iterator(), null));
@@ -258,7 +240,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void write(MagicMapsIktRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        write(asList(route), target);
+        write(singletonList(route), target);
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {
@@ -316,7 +298,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 target.close();
             }
         } catch (XMLStreamException e) {
-            throw new IOException("Error while marshalling: " + e.getMessage());
+            throw new IOException("Error while marshalling: " + e, e);
         }
     }
 }

@@ -193,7 +193,7 @@ public class RteType {
      */
     public List<LinkType> getLink() {
         if (link == null) {
-            link = new ArrayList<LinkType>();
+            link = new ArrayList<>();
         }
         return this.link;
     }
@@ -294,7 +294,7 @@ public class RteType {
      */
     public List<WptType> getRtept() {
         if (rtept == null) {
-            rtept = new ArrayList<WptType>();
+            rtept = new ArrayList<>();
         }
         return this.rtept;
     }

@@ -70,7 +70,7 @@ public class StyleMapType
      */
     public List<StyleMapPairType> getPair() {
         if (pair == null) {
-            pair = new ArrayList<StyleMapPairType>();
+            pair = new ArrayList<>();
         }
         return this.pair;
     }

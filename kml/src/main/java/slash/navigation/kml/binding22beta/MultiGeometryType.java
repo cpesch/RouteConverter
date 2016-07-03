@@ -77,7 +77,7 @@ public class MultiGeometryType
      */
     public List<JAXBElement<? extends AbstractGeometryType>> getAbstractGeometryGroup() {
         if (abstractGeometryGroup == null) {
-            abstractGeometryGroup = new ArrayList<JAXBElement<? extends AbstractGeometryType>>();
+            abstractGeometryGroup = new ArrayList<>();
         }
         return this.abstractGeometryGroup;
     }

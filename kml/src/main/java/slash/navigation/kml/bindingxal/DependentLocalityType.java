@@ -141,7 +141,7 @@ public class DependentLocalityType {
     @XmlSchemaType(name = "anySimpleType")
     protected String indicator;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -167,7 +167,7 @@ public class DependentLocalityType {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -196,7 +196,7 @@ public class DependentLocalityType {
      */
     public List<DependentLocalityType.DependentLocalityName> getDependentLocalityName() {
         if (dependentLocalityName == null) {
-            dependentLocalityName = new ArrayList<DependentLocalityType.DependentLocalityName>();
+            dependentLocalityName = new ArrayList<>();
         }
         return this.dependentLocalityName;
     }
@@ -441,7 +441,7 @@ public class DependentLocalityType {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -594,7 +594,7 @@ public class DependentLocalityType {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -729,7 +729,7 @@ public class DependentLocalityType {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.

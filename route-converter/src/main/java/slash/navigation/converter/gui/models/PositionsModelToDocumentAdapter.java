@@ -67,8 +67,8 @@ public abstract class PositionsModelToDocumentAdapter extends PlainDocument {
             remove(0, getLength());
             insertString(0, delegateContent, null);
         }
-        catch (BadLocationException exception) {
-            log.severe("Error updating adapter:" + exception.getMessage());
+        catch (BadLocationException e) {
+            log.severe("Error updating adapter: " + e);
         }
     }
 }

@@ -2,11 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jnlp</artifactId>
     <packaging>jar</packaging>
-    <name>Encapsulate Java Network Launching Protocol (JNLP) access</name>
+    <name>Access to Java Network Launching Protocol (JNLP)</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

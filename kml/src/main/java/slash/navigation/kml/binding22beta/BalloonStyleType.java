@@ -87,7 +87,7 @@ public class BalloonStyleType
      *     
      */
     public void setColor(byte[] value) {
-        this.color = ((byte[]) value);
+        this.color = value;
     }
 
     /**
@@ -111,7 +111,7 @@ public class BalloonStyleType
      *     
      */
     public void setBgColor(byte[] value) {
-        this.bgColor = ((byte[]) value);
+        this.bgColor = value;
     }
 
     /**
@@ -135,7 +135,7 @@ public class BalloonStyleType
      *     
      */
     public void setTextColor(byte[] value) {
-        this.textColor = ((byte[]) value);
+        this.textColor = value;
     }
 
     /**

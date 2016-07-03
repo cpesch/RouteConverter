@@ -19,14 +19,12 @@
 */
 package slash.navigation.maps;
 
-import slash.navigation.download.datasources.DataSourceService;
-import slash.navigation.download.datasources.binding.DatasourceType;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.helpers.DataSourceService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import static java.lang.String.format;
 
 /**
  * Encapsulates access to all services providing map and theme files.
@@ -35,42 +33,37 @@ import static java.lang.String.format;
  */
 
 public class MapFilesService {
-    private static final Logger log = Logger.getLogger(MapFilesService.class.getName());
-    private final List<MapFiles> mapFiles = new ArrayList<MapFiles>();
-    private static final String[] DATASOURCE_URLS = new String[]{
-            "freizeitkarte-maps-datasources.xml",
-            "freizeitkarte-themes-datasources.xml",
-            "android-maps-datasources.xml",
-            "mapsforge-maps-datasources.xml",
-            "openandromaps-maps-datasources.xml",
-            "openandromaps-themes-datasources.xml"
-    };
+    private final List<MapFiles> mapFiles = new ArrayList<>();
+    private DataSourceManager dataSourceManager;
 
-    public MapFilesService() {
-        DataSourceService service = new DataSourceService();
-        for (String datasourceUrl : DATASOURCE_URLS) {
-            try {
-                service.load(getClass().getResourceAsStream(datasourceUrl));
-            } catch (Exception e) {
-                log.severe(format("Cannot load '%s': %s", datasourceUrl, e.getMessage()));
-            }
-        }
+    public MapFilesService(DataSourceManager dataSourceManager) {
+        this.dataSourceManager = dataSourceManager;
+    }
 
-        for (DatasourceType datasourceType : service.getDatasourceTypes()) {
-            String name = datasourceType.getName();
-            mapFiles.add(new MapFiles(name, datasourceType.getBaseUrl(), datasourceType.getDirectory(),
-                    service.getFiles(name), service.getMaps(name)));
+    public void initialize() {
+        DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
+
+        for (DataSource dataSource : dataSourceService.getDataSources()) {
+            mapFiles.add(new MapFiles(dataSource));
         }
     }
 
-    public List<MapFiles> getMapFiles() {
+    private List<MapFiles> getMapFiles() {
         return mapFiles;
     }
 
-    public List<RemoteResource> getResources() {
-        List<RemoteResource> result = new ArrayList<RemoteResource>();
+    public List<RemoteMap> getMaps() {
+        List<RemoteMap> result = new ArrayList<>();
         for (MapFiles files : getMapFiles()) {
-            result.addAll(files.getResources());
+            result.addAll(files.getMaps());
+        }
+        return result;
+    }
+
+    public List<RemoteTheme> getThemes() {
+        List<RemoteTheme> result = new ArrayList<>();
+        for (MapFiles files : getMapFiles()) {
+            result.addAll(files.getThemes());
         }
         return result;
     }

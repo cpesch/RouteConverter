@@ -28,9 +28,7 @@ import slash.navigation.common.ValueAndOrientation;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 
-import static slash.navigation.common.UnitConversion.latitude2nmea;
-import static slash.navigation.common.UnitConversion.longitude2nmea;
-import static slash.navigation.common.UnitConversion.nmea2degrees;
+import static slash.navigation.common.UnitConversion.*;
 
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.

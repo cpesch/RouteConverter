@@ -23,10 +23,10 @@ package slash.navigation.tcx;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.tcx.binding2.HeartRateInBeatsPerMinuteT;
 

@@ -20,24 +20,25 @@
 
 package slash.navigation.download;
 
-import slash.common.type.CompactCalendar;
+import slash.navigation.download.actions.Validator;
+import slash.navigation.download.executor.DownloadExecutor;
+import slash.navigation.download.executor.DownloadExecutorComparator;
 import slash.navigation.download.queue.QueuePersister;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static slash.navigation.download.Action.Extract;
-import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;
 
 /**
@@ -48,51 +49,111 @@ import static slash.navigation.download.State.*;
 
 public class DownloadManager {
     private static final Logger log = Logger.getLogger(DownloadManager.class.getName());
-    static final int WAIT_TIMEOUT = 15 * 1000;
-    private static final long QUEUE_FILE_SAVE_INTERVAL = 1000;
+    static final int WAIT_TIMEOUT = 60 * 1000;
     private static final int PARALLEL_DOWNLOAD_COUNT = 4;
+
+    private final File queueFile;
+
+    private final List<DownloadListener> downloadListeners = new CopyOnWriteArrayList<>();
     private final DownloadTableModel model = new DownloadTableModel();
+    private final Map<Download,Future> downloadToFutures = new HashMap<>();
+    private final Map<Download,DownloadExecutor> downloadToExecutors = new HashMap<>();
     private final ThreadPoolExecutor pool;
-    private File queueFile;
 
     public DownloadManager(File queueFile) {
         this.queueFile = queueFile;
-        BlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>(1, new DownloadExecutorComparator());
+        BlockingQueue<Runnable> queue = new PriorityBlockingQueue<>(1, new DownloadExecutorComparator());
         pool = new ThreadPoolExecutor(PARALLEL_DOWNLOAD_COUNT, PARALLEL_DOWNLOAD_COUNT * 2, 60, SECONDS, queue);
         pool.allowCoreThreadTimeOut(true);
+        addDownloadListener(new DownloadListener() {
+            public void initialized(Download download) {
+                saveQueue();
+            }
+
+            public void progressed(Download download) {
+            }
+
+            public void failed(Download download) {
+                saveQueue();
+            }
+
+            public void succeeded(Download download) {
+                saveQueue();
+            }
+        });
     }
 
     public void loadQueue() {
         try {
-            List<Download> downloads = new QueuePersister(queueFile).load();
+            log.info(format("Loading download queue from '%s'", queueFile));
+            QueuePersister.Result result = new QueuePersister().load(queueFile);
+            if (result == null)
+                return;
+
+            List<Download> downloads = result.getDownloads();
             if (downloads != null)
                 model.setDownloads(downloads);
         } catch (Exception e) {
-            log.severe(format("Could not load download queue from '%s': %s", queueFile, e.getMessage()));
+            e.printStackTrace();
+            log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
-        restartDownloadsWithState(Resuming);
-        restartDownloadsWithState(Downloading);
-        restartDownloadsWithState(Processing);
-        restartDownloadsWithState(Queued);
+        restartDownloadsWithState(Running, Resuming, Downloading, Processing, Queued);
     }
 
-    private void restartDownloadsWithState(State state) {
+    private void restartDownloadsWithState(State... states) {
+        List<State> restartStates = asList(states);
         for (Download download : model.getDownloads()) {
-            if (state.equals(download.getState()))
+            if (restartStates.contains(download.getState())) {
+                log.info("Restarting download " + download + " from state " + download.getState());
                 startExecutor(download);
+            }
         }
+    }
+
+
+    public void restartDownloads(List<Download> downloads) {
+        for (Download download : downloads) {
+            if(!COMPLETED.contains(download.getState()))
+                continue;
+
+            log.info("Restarting download " + download);
+            startExecutor(download);
+        }
+    }
+
+    public void stopDownloads(List<Download> downloads) {
+        for (Download download : downloads) {
+            if(COMPLETED.contains(download.getState()))
+                continue;
+
+            log.info("Stopping download " + download);
+            Future future = downloadToFutures.get(download);
+            if(future != null)
+                future.cancel(true);
+
+            DownloadExecutor executor = downloadToExecutors.get(download);
+            if(executor != null)
+                executor.stopped();
+        }
+
+        pool.purge();
     }
 
     public void saveQueue() {
-        if(currentTimeMillis() - queueFile.lastModified() < QUEUE_FILE_SAVE_INTERVAL)
-            return;
         try {
-            new QueuePersister(queueFile).save(model.getDownloads());
+            new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e.getMessage()));
+            e.printStackTrace();
+            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
         }
     }
+
+    public void clearQueue() {
+        for (Download download : model.getDownloads())
+            model.removeDownload(download);
+    }
+
     public void dispose() {
         pool.shutdownNow();
     }
@@ -101,42 +162,141 @@ public class DownloadManager {
         return model;
     }
 
+    public void addDownloadListener(DownloadListener listener) {
+        downloadListeners.add(listener);
+    }
+
+    public void updateDownload(Download download) {
+        model.updateDownload(download);
+    }
+
+    public void fireDownloadInitialized(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.initialized(download);
+        }
+    }
+
+    public void fireDownloadProgressed(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.progressed(download);
+        }
+    }
+
+    public void fireDownloadFailed(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.failed(download);
+        }
+    }
+
+    public void fireDownloadSucceeded(Download download) {
+        for (DownloadListener listener : downloadListeners) {
+            listener.succeeded(download);
+        }
+    }
+
     private void startExecutor(Download download) {
-        DownloadExecutor executor = new DownloadExecutor(download, model);
+        DownloadExecutor executor = new DownloadExecutor(download, this);
         model.addOrUpdateDownload(download);
-        pool.execute(executor);
-        saveQueue();
+        Future<?> future = pool.submit(executor);
+        downloadToFutures.put(download, future);
+        downloadToExecutors.put(download, executor);
+        fireDownloadInitialized(download);
     }
 
-    public CompactCalendar getLastSync(String url) {
-        Download queued = getModel().getDownload(url);
-        return queued != null ? queued.getLastSync() : null;
+
+    public void finishedExecutor(DownloadExecutor executor) {
+        Download download = executor.getDownload();
+        downloadToFutures.remove(download);
+        downloadToExecutors.remove(download);
     }
 
-    public Download queueForDownload(Download download) {
-        Download queued = getModel().getDownload(download.getUrl());
-        if (queued != null) {
-            if (!(Queued.equals(queued.getState()) ||
-                    Running.equals(queued.getState()) ||
-                    Resuming.equals(queued.getState()) ||
-                    Downloading.equals(queued.getState()) ||
-                    Processing.equals(queued.getState())))
-                startExecutor(queued);
-            return queued;
+    private static final Set<State> COMPLETED = new HashSet<>(asList(NotModified, Outdated, Succeeded, Stopped, NoFileError, ChecksumError, Failed));
+
+    Download queue(Download download, boolean startExecutor) {
+        if (download.getFile().getFile() == null)
+            throw new IllegalArgumentException("No file given for " + download);
+        if (download.getAction().equals(Extract) || download.getAction().equals(Flatten)) {
+            if (!download.getFile().getFile().isDirectory())
+                throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getFile().getFile()));
+
+            List<FileAndChecksum> fragments = download.getFragments();
+            if (fragments == null || fragments.size() == 0)
+                throw new IllegalArgumentException("No fragments given for " + download);
+            for (FileAndChecksum fragmentTarget : fragments) {
+                if (fragmentTarget == null)
+                    throw new IllegalArgumentException("No fragment target given for " + download);
+            }
         }
 
-        if((Flatten.equals(download.getAction()) || Extract.equals(download.getAction())) && !download.getTarget().isDirectory())
-            throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getTarget()));
-        startExecutor(download);
+        Download queued = model.getDownload(download.getUrl());
+        if (queued != null) {
+            // let a GET replace a HEAD
+            if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
+                model.removeDownload(queued);
+            else {
+                if (COMPLETED.contains(queued.getState()) && startExecutor) {
+                    log.info("Restarting completed download " + download);
+                    startExecutor(queued);
+                }
+                return queued;
+            }
+        }
+
+        if(startExecutor) {
+            log.info("Starting new download " + download);
+            startExecutor(download);
+        } else {
+            log.info("Adding to queue " + download);
+            model.addOrUpdateDownload(download);
+        }
         return download;
     }
 
-    public Download queueForDownload(String description, String url, Long size, String checksum,
-                                     CompactCalendar timestamp, Action action, File target) {
-        return queueForDownload(new Download(description, url, size, checksum, timestamp, action, target));
+    public Download queueForDownload(String description, String url, Action action, FileAndChecksum file,
+                                     List<FileAndChecksum> fragments) {
+        return queue(new Download(description, url, action, file, fragments), true);
     }
 
-    private static final Object LOCK = new Object();
+    public Download addOrUpdateInQueue(String description, String url, Action action, FileAndChecksum file,
+                                       List<FileAndChecksum> fragments) {
+        Download queued = model.getDownload(url);
+        if(queued != null) {
+            queued.setAction(action);
+            queued.setFile(file);
+            queued.setFragments(fragments);
+            model.updateDownload(queued);
+            return queued;
+        } else {
+            Download download = new Download(description, url, action, file, fragments);
+            download.setState(Succeeded);
+            return queue(download, false);
+        }
+    }
+
+    public void scanForOutdatedFilesInQueue() throws IOException {
+        for(Download download : model.getDownloads()) {
+            if (COMPLETED.contains(download.getState())) {
+
+                Validator validator = new Validator(download);
+                if (!validator.isChecksumsValid()) {
+                    log.info("Found outdated download " + download);
+
+                    download.setState(Outdated);
+                    getModel().updateDownload(download);
+                }
+            }
+        }
+    }
+
+    private boolean isCompleted(Collection<Download> downloads) {
+        for (Download download : downloads) {
+            if (!COMPLETED.contains(download.getState()))
+                return false;
+        }
+        return true;
+    }
+
+    private static final Object notificationMutex = new Object();
 
     public void waitForCompletion(final Collection<Download> downloads) {
         final boolean[] found = new boolean[1];
@@ -146,27 +306,27 @@ public class DownloadManager {
 
         TableModelListener l = new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                synchronized (LOCK) {
+                synchronized (notificationMutex) {
                     lastEvent[0] = currentTimeMillis();
 
-                    for (Download download : downloads) {
-                        if (!(Succeeded.equals(download.getState()) || Failed.equals(download.getState())))
-                            return;
-                    }
+                    if (!isCompleted(downloads))
+                        return;
+
                     found[0] = true;
-                    LOCK.notifyAll();
+                    notificationMutex.notifyAll();
                 }
             }
         };
 
         model.addTableModelListener(l);
         try {
-            while (true) {
-                synchronized (LOCK) {
-                    if (found[0] || currentTimeMillis() - lastEvent[0] > WAIT_TIMEOUT)
+            while (!isCompleted(downloads)) {
+                synchronized (notificationMutex) {
+                    if (found[0] || currentTimeMillis() - lastEvent[0] > WAIT_TIMEOUT) {
                         break;
+                    }
                     try {
-                        LOCK.wait(1000);
+                        notificationMutex.wait(1000);
                     } catch (InterruptedException e) {
                         // intentionally left empty
                     }
@@ -175,5 +335,21 @@ public class DownloadManager {
         } finally {
             model.removeTableModelListener(l);
         }
+
+        if (!isCompleted(downloads))
+            throw new IllegalStateException(format("Waited %d seconds without all downloads to finish", WAIT_TIMEOUT / 1000));
+    }
+
+    private static final Set<State> SUCCESSFUL = new HashSet<>(asList(NotModified, Succeeded));
+
+    public void executeDownload(String description, String url, Action action, File file, Runnable invokeAfterSuccessfulDownloadRunnable) {
+        Download download = queueForDownload(description, url, action, new FileAndChecksum(file, null), null);
+        if(!file.exists()) {
+            waitForCompletion(singletonList(download));
+
+            if (!SUCCESSFUL.contains(download.getState()))
+                return;
+        }
+        invokeAfterSuccessfulDownloadRunnable.run();
     }
 }

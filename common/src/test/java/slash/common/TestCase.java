@@ -100,9 +100,9 @@ public abstract class TestCase extends junit.framework.TestCase {
         return calendar(year, month, day, hour, minute, second, millisecond, TimeZone.getTimeZone(timeZone));
     }
 
+    @SuppressWarnings("MagicConstant")
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond, TimeZone timeZone) {
         Calendar result = Calendar.getInstance(timeZone);
-        //noinspection MagicConstant
         result.set(year, month - 1, day, hour, minute, second);
         result.set(Calendar.MILLISECOND, millisecond);
         return CompactCalendar.fromCalendar(result);

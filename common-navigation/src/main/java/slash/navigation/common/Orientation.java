@@ -36,7 +36,7 @@ public enum Orientation {
 
     private String value;
 
-    private Orientation(String value) {
+    Orientation(String value) {
         this.value = value;
     }
 

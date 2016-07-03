@@ -1,9 +1,6 @@
 <jaxb:bindings
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-        xmlns:kml="http://www.opengis.net/kml/2.2"
-        xmlns:atom="http://www.w3.org/2005/Atom"
-        xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0"
         version="2.0">
     <jaxb:bindings schemaLocation="kml22gx.xsd" node="/xsd:schema">
         <jaxb:schemaBindings>

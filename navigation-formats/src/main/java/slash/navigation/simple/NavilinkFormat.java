@@ -22,13 +22,8 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,12 +36,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -101,7 +91,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return newRoute;
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -213,7 +203,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return position;
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[HEADER_SIZE];
         if ((source.read(header) == HEADER_SIZE) && checkHeader(header)) {
             ByteBuffer sbpRecordByteBuffer = ByteBuffer.allocate(SBP_RECORD_LENGTH);

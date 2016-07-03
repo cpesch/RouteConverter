@@ -19,7 +19,6 @@
 */
 package slash.navigation.simple;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -29,9 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import static slash.common.io.Transfer.UTF16LE_ENCODING;
-import static slash.common.io.Transfer.UTF16_ENCODING;
-import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Sygic POI Unicode (.txt) files.
@@ -51,8 +48,8 @@ public class SygicUnicodeFormat extends SygicFormat {
         return "Sygic POI Unicode (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<SimpleRoute> context) throws Exception {
-        read(source, startDate, UTF16_ENCODING, context);
+    public void read(InputStream source, ParserContext<SimpleRoute> context) throws Exception {
+        read(source, UTF16_ENCODING, context);
     }
 
     public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

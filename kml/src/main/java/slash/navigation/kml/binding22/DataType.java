@@ -129,7 +129,7 @@ public class DataType
      */
     public List<Object> getDataExtension() {
         if (dataExtension == null) {
-            dataExtension = new ArrayList<Object>();
+            dataExtension = new ArrayList<>();
         }
         return this.dataExtension;
     }

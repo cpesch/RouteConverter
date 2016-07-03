@@ -126,7 +126,7 @@ public class AdministrativeArea {
     @XmlAttribute(name = "UsageType")
     protected String usageType;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressLine property.
@@ -152,7 +152,7 @@ public class AdministrativeArea {
      */
     public List<AddressLine> getAddressLine() {
         if (addressLine == null) {
-            addressLine = new ArrayList<AddressLine>();
+            addressLine = new ArrayList<>();
         }
         return this.addressLine;
     }
@@ -181,7 +181,7 @@ public class AdministrativeArea {
      */
     public List<AdministrativeArea.AdministrativeAreaName> getAdministrativeAreaName() {
         if (administrativeAreaName == null) {
-            administrativeAreaName = new ArrayList<AdministrativeArea.AdministrativeAreaName>();
+            administrativeAreaName = new ArrayList<>();
         }
         return this.administrativeAreaName;
     }
@@ -306,7 +306,7 @@ public class AdministrativeArea {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -433,7 +433,7 @@ public class AdministrativeArea {
         @XmlAttribute(name = "Code")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -596,7 +596,7 @@ public class AdministrativeArea {
         @XmlAttribute(name = "UsageType")
         protected String usageType;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the addressLine property.
@@ -622,7 +622,7 @@ public class AdministrativeArea {
          */
         public List<AddressLine> getAddressLine() {
             if (addressLine == null) {
-                addressLine = new ArrayList<AddressLine>();
+                addressLine = new ArrayList<>();
             }
             return this.addressLine;
         }
@@ -651,7 +651,7 @@ public class AdministrativeArea {
          */
         public List<AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName> getSubAdministrativeAreaName() {
             if (subAdministrativeAreaName == null) {
-                subAdministrativeAreaName = new ArrayList<AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName>();
+                subAdministrativeAreaName = new ArrayList<>();
             }
             return this.subAdministrativeAreaName;
         }
@@ -752,7 +752,7 @@ public class AdministrativeArea {
          */
         public List<Object> getAny() {
             if (any == null) {
-                any = new ArrayList<Object>();
+                any = new ArrayList<>();
             }
             return this.any;
         }
@@ -879,7 +879,7 @@ public class AdministrativeArea {
             @XmlAttribute(name = "Code")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+            private Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.

@@ -20,12 +20,11 @@
 
 package slash.navigation.klicktel;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
@@ -36,9 +35,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.klicktel.KlickTelUtil.unmarshal;
 
@@ -72,7 +69,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
     }
 
     private KlickTelRoute process(KDRoute route) {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        List<Wgs84Position> positions = new ArrayList<>();
         for (KDRoute.Stations.Station station : route.getStations().getStation()) {
             KDRoute.Stations.Station.Point point = station.getPoint();
             String description = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
@@ -85,7 +82,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
-    public void read(InputStream source, CompactCalendar startDate, ParserContext<KlickTelRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KlickTelRoute> context) throws Exception {
         KDRoute KDRoute = unmarshal(source);
         context.appendRoute(process(KDRoute));
     }

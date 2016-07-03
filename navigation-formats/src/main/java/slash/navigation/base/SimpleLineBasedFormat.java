@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -46,8 +47,8 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return (R)new Wgs84Route(this, characteristics, positions);
     }
 
-    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
-        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+    public void read(BufferedReader reader, String encoding, ParserContext<R> context) throws IOException {
+        List<Wgs84Position> positions = new ArrayList<>();
 
         int lineCount = 0;
         while (true) {
@@ -59,12 +60,12 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
             if (isValidLine(line)) {
                 if (isPosition(line)) {
-                    Wgs84Position position = parsePosition(line, startDate);
+                    Wgs84Position position = parsePosition(line, context);
                     positions.add(position);
                 }
             } else {
                 if (lineCount++ > getGarbleCount())
-                    return;
+                    throw new IOException(format("Too much garble for %s: %d > %d lines", getName(), lineCount, getGarbleCount()));
             }
         }
 
@@ -84,7 +85,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return isPosition(line);
     }
     protected abstract boolean isPosition(String line);
-    protected abstract Wgs84Position parsePosition(String line, CompactCalendar startDate);
+    protected abstract Wgs84Position parsePosition(String line, ParserContext context);
 
 
     @SuppressWarnings("unchecked")

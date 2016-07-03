@@ -24,6 +24,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -38,40 +39,37 @@ import java.awt.event.ActionListener;
  */
 
 public class MergePositionListAction extends FrameAction {
-    private JTable table;
+    private final ConvertPanel convertPanel;
     private BaseRoute sourceRoute;
-    private FormatAndRoutesModel formatAndRoutesModel;
     private ActionEnabler actionEnabler = new ActionEnabler();
 
-    public MergePositionListAction(JTable table, BaseRoute sourceRoute, FormatAndRoutesModel formatAndRoutesModel) {
-        this.table = table;
+    public MergePositionListAction(ConvertPanel convertPanel, BaseRoute sourceRoute) {
+        this.convertPanel = convertPanel;
         this.sourceRoute = sourceRoute;
-        this.formatAndRoutesModel = formatAndRoutesModel;
         initialize();
     }
 
     protected void initialize() {
         setEnabled();
-        formatAndRoutesModel.addListDataListener(actionEnabler);
+        convertPanel.getFormatAndRoutesModel().addListDataListener(actionEnabler);
     }
 
     private void setEnabled() {
-        setEnabled(!sourceRoute.equals(formatAndRoutesModel.getSelectedRoute()));
+        setEnabled(!sourceRoute.equals(convertPanel.getFormatAndRoutesModel().getSelectedRoute()));
     }
 
     public void dispose() {
-        formatAndRoutesModel.removeListDataListener(actionEnabler);
+        convertPanel.getFormatAndRoutesModel().removeListDataListener(actionEnabler);
         this.actionEnabler = null;
-        this.table = null;
         this.sourceRoute = null;
-        this.formatAndRoutesModel = null;
     }
 
     @SuppressWarnings("unchecked")
     public void run() {
+        JTable table = convertPanel.getPositionsView();
         int selectedRow = Math.min(table.getSelectedRow() + 1, table.getRowCount());
-        formatAndRoutesModel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
-        formatAndRoutesModel.removePositionList(sourceRoute);
+        convertPanel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
+        convertPanel.getFormatAndRoutesModel().removePositionList(sourceRoute);
     }
 
     private class ActionEnabler extends AbstractListDataListener {

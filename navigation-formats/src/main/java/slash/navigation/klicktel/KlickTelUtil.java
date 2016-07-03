@@ -20,33 +20,29 @@
 
 package slash.navigation.klicktel;
 
-import slash.navigation.jaxb.JaxbUtils;
+import slash.common.helpers.JAXBHelper;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static slash.common.helpers.JAXBHelper.JAXB_IMPL_HEADER;
+import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.navigation.base.XmlNavigationFormat.HEADER_LINE;
-import static slash.navigation.jaxb.JaxbUtils.JAXB_IMPL_HEADER;
-import static slash.navigation.jaxb.JaxbUtils.newContext;
 
 class KlickTelUtil {
     private static final String KLICKTEL_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
+        Marshaller marshaller = JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_IMPL_HEADER, HEADER_LINE);
         } catch (PropertyException e) {
@@ -61,7 +57,7 @@ class KlickTelUtil {
         try {
             result = (KDRoute) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {
-            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+            throw new JAXBException("Parse error: " + e, e);
         }
         return result;
     }
@@ -70,14 +66,14 @@ class KlickTelUtil {
     public static void marshal(KDRoute route, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<KDRoute>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), out);
             }
             finally {
                 out.flush();
                 out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 }

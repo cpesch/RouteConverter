@@ -133,7 +133,7 @@ public class PolygonType
      *     
      */
     public void setAltitudeModeGroup(JAXBElement<?> value) {
-        this.altitudeModeGroup = ((JAXBElement<?> ) value);
+        this.altitudeModeGroup = value;
     }
 
     /**
@@ -184,7 +184,7 @@ public class PolygonType
      */
     public List<BoundaryType> getInnerBoundaryIs() {
         if (innerBoundaryIs == null) {
-            innerBoundaryIs = new ArrayList<BoundaryType>();
+            innerBoundaryIs = new ArrayList<>();
         }
         return this.innerBoundaryIs;
     }

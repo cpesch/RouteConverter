@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>2.13-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,7 @@
                             <keystore>${keystorePath}</keystore>
                             <alias>${keystoreAlias}</alias>
                             <storepass>${keystorePassword}</storepass>
+                            <keypass>${keyPassword}</keypass>
                             <keystoreConfig>
                                 <delete>false</delete>
                                 <gen>false</gen>
@@ -87,37 +88,25 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86</artifactId>
-            <version>3.8M4</version>
+            <version>4.5</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
-            <version>3.8M4</version>
-            <classifier>stripped</classifier>
-        </dependency>
-        <dependency>
-            <groupId>eclipse.swt</groupId>
-            <artifactId>cocoa.macosx.x86</artifactId>
-            <version>3.8M4</version>
-            <classifier>stripped</classifier>
-        </dependency>
-        <dependency>
-            <groupId>eclipse.swt</groupId>
-            <artifactId>cocoa.macosx.x86_64</artifactId>
-            <version>3.8M4</version>
+            <version>4.5</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>win32.win32.x86</artifactId>
-            <version>3.8M4</version>
+            <version>4.5</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>win32.win32.x86_64</artifactId>
-            <version>3.8M4</version>
+            <version>4.5</version>
             <classifier>stripped</classifier>
         </dependency>
 
@@ -134,11 +123,6 @@
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>
             <artifactId>win32.win32.x86</artifactId>
-            <version>1.4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>gpsbabel.gpsbabel</groupId>
-            <artifactId>win32.win32.x86_64</artifactId>
             <version>1.4.4</version>
         </dependency>
     </dependencies>
