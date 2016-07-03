@@ -39,6 +39,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.currentTimeMillis;
@@ -59,6 +60,7 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class JavaFX7WebViewMapView extends BrowserMapView {
     private static final Logger log = Logger.getLogger(JavaFX7WebViewMapView.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(BrowserMapView.class);
 
     private JFXPanel panel;
     private WebView webView;
@@ -83,7 +85,11 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
     private WebView createWebView() {
         try {
+            final int scale = preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, 100);
+
             final WebView webView = new WebView();
+            webView.setZoom((double) scale/100.);
+
             Group group = new Group();
             group.getChildren().add(webView);
             panel.setScene(new Scene(group));
@@ -205,6 +211,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
         Dimension size = panel.getSize();
         if (webView != null)
             webView.setMinSize(size.getWidth(), size.getHeight());
+            webView.setMaxSize(size.getWidth(), size.getHeight());
     }
 
     // bounds and center
