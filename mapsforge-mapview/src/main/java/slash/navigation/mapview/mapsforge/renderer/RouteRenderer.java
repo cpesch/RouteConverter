@@ -25,6 +25,7 @@ import org.mapsforge.core.model.LatLong;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Line;
@@ -43,6 +44,7 @@ import java.util.prefs.Preferences;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static slash.common.helpers.ThreadHelper.safeJoin;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
@@ -195,8 +197,9 @@ public class RouteRenderer {
             pairWithLayer.setLayer(line);
             mapView.addLayer(line);
 
-            pairWithLayer.setDistance(pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond()));
-            pairWithLayer.setTime(pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond()));
+            Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
+            Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
+            pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, !isEmpty(time) ? time / 1000 : null));
         }
     }
 
@@ -224,8 +227,7 @@ public class RouteRenderer {
         RoutingResult result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
         if (result.isValid())
             latLongs.addAll(asLatLong(result.getPositions()));
-        pairWithLayer.setDistance(result.getDistance());
-        pairWithLayer.setTime(result.getTime());
+        pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
         latLongs.add(asLatLong(pairWithLayer.getSecond()));
         return new IntermediateRoute(latLongs, result.isValid());
     }

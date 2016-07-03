@@ -75,6 +75,7 @@ import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
 import slash.navigation.converter.gui.helpers.PositionsTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PositionsTablePopupMenu;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
@@ -138,6 +139,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -520,8 +522,8 @@ public class ConvertPanel implements PanelInTab {
         });
     }
 
-    public void fireCalculatedDistance(double meters, long seconds) {
-        lengthCalculator.fireCalculatedDistance(meters, seconds);
+    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        lengthCalculator.calculateDistanceFromRouting(indexToDistanceAndTime);
     }
 
     public void dispose() {

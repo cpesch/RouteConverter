@@ -24,12 +24,14 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
@@ -108,11 +110,22 @@ public class LengthCalculator {
         lengthCalculatorListeners.add(listener);
     }
 
-    public void fireCalculatedDistance(double meters, long seconds) {
+    private void fireCalculatedDistance(double meters, long seconds) {
         for (LengthCalculatorListener listener : lengthCalculatorListeners) {
             listener.calculatedDistance(meters, seconds);
         }
     }
+
+    public void calculateDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        int meters = 0;
+        int seconds = 0;
+        for(DistanceAndTime distanceAndTime : indexToDistanceAndTime.values()) {
+            meters += distanceAndTime.getDistance();
+            seconds += distanceAndTime.getTime();
+        }
+        fireCalculatedDistance(meters, seconds);
+    }
+
 
     private void calculateDistance() {
         if (getCharacteristics().equals(Waypoints)) {

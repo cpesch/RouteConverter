@@ -87,7 +87,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private CompactCalendar parseTime(String time) {
         Long milliseconds = parseLong(time);
-        if (milliseconds == null || milliseconds == 0)
+        if (isEmpty(milliseconds))
             return null;
         return fromMillis(milliseconds * 1000);
     }

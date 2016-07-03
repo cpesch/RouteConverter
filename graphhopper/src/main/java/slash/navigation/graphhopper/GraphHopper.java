@@ -25,6 +25,7 @@ import com.graphhopper.PathWrapper;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -35,6 +36,7 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -55,7 +57,6 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.recursiveDelete;
-import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 
@@ -166,11 +167,11 @@ public class GraphHopper implements RoutingService {
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
             PathWrapper best = response.getBest();
-            return new RoutingResult(asPositions(best.getPoints()), best.getDistance(), best.getTime(), true);
+            return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), true);
         } catch (Exception e) {
             e.printStackTrace();
             log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
-            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+            return BeelineService.getRouteBetween(from, to);
         } finally {
             long end = currentTimeMillis();
             log.info("GraphHopper: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");

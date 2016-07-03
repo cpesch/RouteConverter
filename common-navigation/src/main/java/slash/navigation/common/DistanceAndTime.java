@@ -17,20 +17,27 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.mapview;
-
-import slash.navigation.common.DistanceAndTime;
-
-import java.util.Map;
+package slash.navigation.common;
 
 /**
- * Interface for events from a {@link MapView}
+ * Combines distance in meters and time in seconds between two {@link NavigationPosition}s.
  *
  * @author Christian Pesch
  */
+public class DistanceAndTime {
+    private final Double distance;
+    private final Long time;
 
-public interface MapViewListener {
-    void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime);
-    void receivedCallback(int port);
+    public DistanceAndTime(Double distance, Long time) {
+        this.distance = distance;
+        this.time = time;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public Long getTime() {
+        return time;
+    }
 }

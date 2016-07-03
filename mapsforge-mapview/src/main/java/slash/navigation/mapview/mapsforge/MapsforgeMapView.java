@@ -47,6 +47,7 @@ import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.BooleanModel;
@@ -257,8 +258,6 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private List<PairWithLayer> pairs = new ArrayList<>();
-
             public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
             }
@@ -275,19 +274,14 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
-                pairs.addAll(pairWithLayers);
                 routeRenderer.renderRoute(pairWithLayers);
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                pairs.removeAll(pairWithLayers);
-
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     removeLayer(pairWithLayer);
-                    pairWithLayer.setDistance(null);
-                    pairWithLayer.setTime(null);
+                    pairWithLayer.setDistanceAndTime(null);
                 }
-                fireDistanceAndTime(pairs);
             }
         });
 
@@ -1055,24 +1049,19 @@ public class MapsforgeMapView implements MapView {
         mapViewListeners.remove(listener);
     }
 
-    private void fireCalculatedDistance(int meters, int seconds) {
+    private void fireCalculatedDistance(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         for (MapViewListener listener : mapViewListeners) {
-            listener.calculatedDistance(meters, seconds);
+            listener.calculatedDistances(indexToDistanceAndTime);
         }
     }
 
     public void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
-        double totalDistance = 0.0;
-        long totalTime = 0;
-        for (PairWithLayer pairWithLayer : pairWithLayers) {
-            Double distance = pairWithLayer.getDistance();
-            if (distance != null)
-                totalDistance += distance;
-            Long time = pairWithLayer.getTime();
-            if (time != null)
-                totalTime += time;
+        Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
+        for (int i = 0; i < pairWithLayers.size(); i++) {
+            PairWithLayer pairWithLayer = pairWithLayers.get(i);
+            indexToDistanceAndTime.put(i, pairWithLayer.getDistanceAndTime());
         }
-        fireCalculatedDistance((int) totalDistance, (int) (totalTime > 0 ? totalTime / 1000 : 0));
+        fireCalculatedDistance(indexToDistanceAndTime);
     }
 
     private class MapViewCallbackListener implements ChangeListener {

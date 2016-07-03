@@ -21,6 +21,7 @@ package slash.navigation.brouter;
 
 import btools.router.*;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -30,6 +31,7 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -198,7 +200,7 @@ public class BRouter implements RoutingService {
                 List<TravelMode> availableTravelModes = getAvailableTravelModes();
                 if (availableTravelModes.size() == 0) {
                     log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
-                    return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+                    return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), false);
                 }
 
                 TravelMode firstTravelMode = availableTravelModes.get(0);
@@ -213,15 +215,15 @@ public class BRouter implements RoutingService {
             if (routingEngine.getErrorMessage() != null) {
                 // TODO handle routing timeouts differently
                 log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
-                return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+                return BeelineService.getRouteBetween(from, to);
             }
 
             OsmTrack track = routingEngine.getFoundTrack();
-            int distance = routingEngine.getDistance();
-            return new RoutingResult(asPositions(track), distance, 0L, true);
+            double distance = routingEngine.getDistance();
+            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), true);
         } catch (Exception e) {
             log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
-            return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+            return BeelineService.getRouteBetween(from, to);
         } finally {
             long end = currentTimeMillis();
             log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");

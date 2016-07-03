@@ -65,7 +65,6 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         });
     }
 
-
     protected String getDelegateValue() {
         throw new UnsupportedOperationException();
     }

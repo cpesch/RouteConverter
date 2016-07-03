@@ -165,6 +165,7 @@ import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.ProfileModeModel;
@@ -1292,8 +1293,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private class CalculatedDistanceNotifier extends AbstractMapViewListener {
-        public void calculatedDistance(double meters, long seconds) {
-            getConvertPanel().fireCalculatedDistance(meters, seconds);
+        public void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+            getConvertPanel().calculatedDistanceFromRouting(indexToDistanceAndTime);
         }
     }
 

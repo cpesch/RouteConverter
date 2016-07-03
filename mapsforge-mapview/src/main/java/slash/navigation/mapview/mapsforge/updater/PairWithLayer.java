@@ -21,6 +21,7 @@ package slash.navigation.mapview.mapsforge.updater;
 
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.DistanceAndTime;
 
 /**
  * A pair of {@link NavigationPosition}s with a {@link Layer}, a distance and a time.
@@ -32,8 +33,7 @@ public class PairWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
     private Layer layer;
-    private Double distance;
-    private Long time;
+    private DistanceAndTime distanceAndTime;
 
     public PairWithLayer(NavigationPosition first, NavigationPosition second) {
         this.first = first;
@@ -60,20 +60,12 @@ public class PairWithLayer {
         this.layer = layer;
     }
 
-    public Double getDistance() {
-        return distance;
+    public DistanceAndTime getDistanceAndTime() {
+        return distanceAndTime;
     }
 
-    public void setDistance(Double distance) {
-        this.distance = distance;
-    }
-
-    public Long getTime() {
-        return time;
-    }
-
-    public void setTime(Long time) {
-        this.time = time;
+    public void setDistanceAndTime(DistanceAndTime distanceAndTime) {
+        this.distanceAndTime = distanceAndTime;
     }
 
     public boolean equals(Object o) {

@@ -22,14 +22,29 @@ package slash.navigation.mapview.browser;
 
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.WaypointType;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.converter.gui.models.FixMapMode;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.converter.gui.models.PositionColumnValues;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
@@ -40,18 +55,41 @@ import slash.navigation.mapview.tileserver.binding.CopyrightType;
 import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.xml.bind.JAXBException;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -67,7 +105,6 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.sort;
 import static java.util.Calendar.SECOND;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -75,23 +112,45 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.toDouble;
+import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.trimLineFeeds;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.HexadecimalNumber.encodeByte;
-import static slash.navigation.base.RouteCharacteristics.*;
-import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.WaypointType.End;
+import static slash.navigation.base.WaypointType.Start;
+import static slash.navigation.base.WaypointType.Waypoint;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.googlemaps.GoogleMapsAPIKey.getAPIKey;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.mapview.MapViewConstants.*;
+import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
+import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.browser.TransformUtil.delta;
 import static slash.navigation.mapview.browser.TransformUtil.isPositionInChina;
 
@@ -1680,7 +1739,7 @@ public abstract class BrowserMapView implements MapView {
             String distance = trim(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
                 String time = trim(tokenizer.nextToken());
-                result.add(new DistanceAndTime(parseInt(distance), parseInt(time)));
+                result.add(new DistanceAndTime(parseDouble(distance), parseLong(time)));
             }
         }
         return result;
@@ -1850,43 +1909,9 @@ public abstract class BrowserMapView implements MapView {
             public void run() {
                 for (int i = 0; i < distanceAndTimes.size(); i++)
                     indexToDistanceAndTime.put(startIndex + i, distanceAndTimes.get(i));
-
-                Integer[] sorted = indexToDistanceAndTime.keySet().toArray(new Integer[indexToDistanceAndTime.size()]);
-                sort(sorted, new Comparator<Integer>() {
-                    public int compare(Integer i1, Integer i2) {
-                        return i1 - i2;
-                    }
-                });
-
-                int meters = 0;
-                int seconds = 0;
-                for(int index : sorted) {
-                    DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
-                    meters += distanceAndTime.getDistance();
-                    seconds += distanceAndTime.getTime();
-                }
-
-                fireCalculatedDistance(meters, seconds);
+                fireCalculatedDistance(indexToDistanceAndTime);
             }
         });
-    }
-
-    private static class DistanceAndTime {
-        private final int distance;
-        private final int time;
-
-        public DistanceAndTime(int distance, int time) {
-            this.distance = distance;
-            this.time = time;
-        }
-
-        public int getDistance() {
-            return distance;
-        }
-
-        public int getTime() {
-            return time;
-        }
     }
 
     // listeners
@@ -1901,9 +1926,9 @@ public abstract class BrowserMapView implements MapView {
         mapViewListeners.remove(listener);
     }
 
-    private void fireCalculatedDistance(int meters, int seconds) {
+    private void fireCalculatedDistance(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         for (MapViewListener listener : mapViewListeners) {
-            listener.calculatedDistance(meters, seconds);
+            listener.calculatedDistances(indexToDistanceAndTime);
         }
     }
 

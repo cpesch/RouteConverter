@@ -21,6 +21,7 @@
 package slash.navigation.routing;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 
@@ -83,8 +84,13 @@ public class BeelineService implements RoutingService {
         throw new UnsupportedOperationException();
     }
 
+    public static RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+        double distance = calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance();
+        return new RoutingResult(asList(from, to), new DistanceAndTime(distance, null), false);
+    }
+
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        return new RoutingResult(asList(from, to), calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), 0L, false);
+        return getRouteBetween(from, to);
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {

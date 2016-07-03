@@ -20,6 +20,7 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
@@ -32,14 +33,12 @@ import java.util.List;
 
 public class RoutingResult   {
     private final List<NavigationPosition> positions;
-    private final double distance;
-    private final long time;
+    private final DistanceAndTime distanceAndTime;
     private final boolean valid;
 
-    public RoutingResult(List<NavigationPosition> positions, double distance, long time, boolean valid) {
+    public RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, boolean valid) {
         this.positions = positions;
-        this.distance = distance;
-        this.time = time;
+        this.distanceAndTime = distanceAndTime;
         this.valid = valid;
     }
 
@@ -47,20 +46,8 @@ public class RoutingResult   {
         return positions;
     }
 
-    /**
-     * Return the distance in meters for the positions.
-     * @return the distance in meters for the positions
-     */
-    public double getDistance() {
-        return distance;
-    }
-
-    /**
-     * Return the time in seconds for the positions.
-     * @return the time in seconds for the positions
-     */
-    public long getTime() {
-        return time;
+    public DistanceAndTime getDistanceAndTime() {
+        return distanceAndTime;
     }
 
     /**
