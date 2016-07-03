@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.panels.ConvertPanel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 

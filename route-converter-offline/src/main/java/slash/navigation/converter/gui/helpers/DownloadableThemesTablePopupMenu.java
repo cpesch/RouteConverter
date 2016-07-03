@@ -19,13 +19,11 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.models.LocalNames;
 import slash.navigation.maps.impl.RemoteThemesTableModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.CATEGORIES;
-import static slash.navigation.converter.gui.models.LocalNames.DOWNLOADABLE_THEMES;
+import static slash.navigation.converter.gui.models.LocalActionConstants.DOWNLOADABLE_THEMES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

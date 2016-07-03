@@ -23,7 +23,7 @@ import slash.navigation.maps.impl.LocalMapsTableModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.MAPS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.MAPS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

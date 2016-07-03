@@ -40,7 +40,7 @@ import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.table.TableColumnModel;
 
-import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;

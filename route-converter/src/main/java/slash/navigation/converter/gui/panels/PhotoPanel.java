@@ -75,7 +75,7 @@ import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
-import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;

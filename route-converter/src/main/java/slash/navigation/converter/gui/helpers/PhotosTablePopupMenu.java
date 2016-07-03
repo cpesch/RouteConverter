@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.panels.PhotoPanel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

@@ -77,7 +77,7 @@ import static slash.navigation.converter.gui.helpers.MapViewImplementation.Eclip
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX7;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
-import static slash.navigation.converter.gui.models.LocalNames.POSITIONS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;

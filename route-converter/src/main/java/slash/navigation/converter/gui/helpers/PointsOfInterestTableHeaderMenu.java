@@ -25,7 +25,7 @@ import slash.navigation.gui.actions.ActionManager;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
-import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_OF_INTEREST;
 
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PointsOfInterestTableColumnModel}.

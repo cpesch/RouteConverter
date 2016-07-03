@@ -25,7 +25,7 @@ import slash.navigation.gui.actions.ActionManager;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
-import static slash.navigation.converter.gui.models.LocalNames.PHOTOS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PhotosTableColumnModel}.

@@ -24,7 +24,7 @@ import slash.navigation.download.DownloadTableModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.DOWNLOADS;
+import static slash.navigation.converter.gui.models.LocalActionConstants.DOWNLOADS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

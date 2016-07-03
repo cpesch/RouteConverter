@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.ROUTES;
+import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

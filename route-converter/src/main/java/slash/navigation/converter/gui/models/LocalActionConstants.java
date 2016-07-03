@@ -17,28 +17,30 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.impl.RemoteMapsTableModel;
+package slash.navigation.converter.gui.models;
 
-import javax.swing.*;
-
-import static slash.navigation.converter.gui.models.LocalActionConstants.DOWNLOADABLE_MAPS;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import slash.navigation.gui.actions.ActionManager;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link RemoteMapsTableModel}.
+ * Contains constants for all {@link ActionManager#registerLocal(String, String, String) local names}
+ * of the {@link ActionManager}.
  *
  * @author Christian Pesch
  */
 
-public class DownloadableMapsTablePopupMenu extends AbstractTablePopupMenu {
-    public DownloadableMapsTablePopupMenu(JTable table) {
-        super(table, DOWNLOADABLE_MAPS);
-    }
+public interface LocalActionConstants {
+    String POSITIONS = "positions";
+    String POINTS_OF_INTEREST = "points-of-interest";
+    String PHOTOS = "photos";
 
-    protected JPopupMenu doCreatePopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("download-maps"));
-        return menu;
-    }}
+    String CATEGORIES = "categories";
+    String ROUTES = "routes";
+
+    String MAPS = "maps";
+    String THEMES = "themes";
+
+    String DOWNLOADS = "downloads";
+    String DOWNLOADABLE_MAPS = "downloadable-maps";
+    String DOWNLOADABLE_THEMES = "downloadable-themes";
+}

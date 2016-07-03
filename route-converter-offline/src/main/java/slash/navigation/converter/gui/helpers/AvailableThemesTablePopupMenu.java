@@ -23,7 +23,7 @@ import slash.navigation.maps.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.THEMES;
+import static slash.navigation.converter.gui.models.LocalActionConstants.THEMES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

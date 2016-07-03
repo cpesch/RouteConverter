@@ -24,7 +24,7 @@ import slash.navigation.converter.gui.panels.PointOfInterestPanel;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_OF_INTEREST;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**

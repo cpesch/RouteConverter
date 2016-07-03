@@ -32,7 +32,7 @@ import slash.navigation.converter.gui.renderer.WaypointTypeColumnTableCellEditor
 
 import javax.swing.table.TableColumnModel;
 
-import static slash.navigation.converter.gui.models.LocalNames.POINTS_OF_INTEREST;
+import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_OF_INTEREST;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;

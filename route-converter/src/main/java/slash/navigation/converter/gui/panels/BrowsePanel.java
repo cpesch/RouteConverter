@@ -113,8 +113,8 @@ import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelecte
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategoryTreePath;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectRoute;
-import static slash.navigation.converter.gui.models.LocalNames.CATEGORIES;
-import static slash.navigation.converter.gui.models.LocalNames.ROUTES;
+import static slash.navigation.converter.gui.models.LocalActionConstants.CATEGORIES;
+import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
