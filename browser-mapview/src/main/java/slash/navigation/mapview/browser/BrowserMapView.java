@@ -117,6 +117,8 @@ public abstract class BrowserMapView implements MapView {
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
 
+    protected static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
+
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
@@ -767,8 +769,10 @@ public abstract class BrowserMapView implements MapView {
 
     private void resizeMap() {
         synchronized (notificationMutex) {
-            int width = max(getComponent().getWidth(), 0);
-            int height = max(getComponent().getHeight(), 0);
+            final double scale = (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, 100) / 100.;
+
+            int width = max((int) (getComponent().getWidth()/scale), 0);
+            int height = max((int) (getComponent().getHeight()/scale), 0);
             if (width != lastWidth || height != lastHeight) {
                 executeScript("resize(" + width + "," + height + ");");
             }
