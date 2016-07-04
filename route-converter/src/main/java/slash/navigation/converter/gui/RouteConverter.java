@@ -1406,7 +1406,13 @@ public class RouteConverter extends SingleFrameApplication {
         initializeRoutingServices();
 
         // make sure the queue is loaded before any components uses it
-        getDownloadManager().loadQueue();
+        try {
+            getDownloadManager().loadQueue();
+        } catch (Exception e) {
+            log.warning("Could not load download manager queue: " + e);
+            getContext().getNotificationManager().showNotification(MessageFormat.format(
+                    getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
+        }
 
         new Thread(new Runnable() {
             public void run() {
