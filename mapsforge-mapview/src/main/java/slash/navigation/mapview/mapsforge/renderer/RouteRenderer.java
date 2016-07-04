@@ -105,7 +105,7 @@ public class RouteRenderer {
         }
     }
 
-    public void renderRoute(final List<PairWithLayer> pairWithLayers) {
+    public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
         dispose();
 
         renderThread = new Thread(new Runnable() {
@@ -115,7 +115,7 @@ public class RouteRenderer {
                 }
 
                 try {
-                    internalRenderRoute(pairWithLayers);
+                    internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
                 } catch (Exception e) {
                     mapViewCallback.showRoutingException(e);
                 }
@@ -131,9 +131,8 @@ public class RouteRenderer {
         }
     }
 
-    private void internalRenderRoute(List<PairWithLayer> pairWithLayers) {
+    private void internalRenderRoute(List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
         drawBeeline(pairWithLayers);
-        mapView.fireDistanceAndTime(pairWithLayers);
         checkForInterruption();
 
         RoutingService service = mapViewCallback.getRoutingService();
@@ -142,7 +141,7 @@ public class RouteRenderer {
         checkForInterruption();
 
         drawRoute(pairWithLayers);
-        mapView.fireDistanceAndTime(pairWithLayers);
+        invokeAfterRenderingRunnable.run();
         checkForInterruption();
     }
 

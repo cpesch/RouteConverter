@@ -17,14 +17,12 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.models;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
@@ -35,20 +33,15 @@ import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
 
-import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -71,17 +64,11 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongit
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
-import static slash.navigation.gui.helpers.ImageHelper.resize;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -90,7 +77,6 @@ import static slash.navigation.gui.helpers.ImageHelper.resize;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
-    private static final int IMAGE_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private BaseRoute route;
 
     public BaseRoute getRoute() {
@@ -131,39 +117,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
     }
 
-    private Map<Integer,ImageAndFile> photoCache = new HashMap<>();
-    private double[] distanceCache = null;
-
     public Object getValueAt(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case PHOTO_COLUMN_INDEX:
-                ImageAndFile imageAndFile = photoCache.get(rowIndex);
-                if (imageAndFile == null) {
-                    NavigationPosition position = getPosition(rowIndex);
-                    if (position instanceof Wgs84Position) {
-                        Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
-                        File file = wgs84Position.getOrigin(File.class);
-                        if (file != null && file.exists()) {
-                            BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
-                            if(resize != null) {
-                                imageAndFile = new ImageAndFile(new ImageIcon(resize), file);
-                                photoCache.put(rowIndex, imageAndFile);
-                            }
-                        }
-                    }
-                }
-                return imageAndFile;
-            case DISTANCE_COLUMN_INDEX:
-                if (distanceCache == null)
-                    distanceCache = getRoute().getDistancesFromStart(0, getRowCount() - 1);
-                return distanceCache[rowIndex];
-            case ELEVATION_ASCEND_COLUMN_INDEX:
-                return getRoute().getElevationAscend(0, rowIndex);
-            case ELEVATION_DESCEND_COLUMN_INDEX:
-                return getRoute().getElevationDescend(0, rowIndex);
-            case ELEVATION_DIFFERENCE_COLUMN_INDEX:
-                return getRoute().getElevationDelta(rowIndex);
-        }
         return getPosition(rowIndex);
     }
 
@@ -513,8 +467,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void fireTableChanged(TableModelEvent e) {
         this.currentEvent = e;
-        photoCache.clear();
-        distanceCache = null;
         super.fireTableChanged(e);
         this.currentEvent = null;
     }

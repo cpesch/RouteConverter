@@ -117,11 +117,19 @@ public class LengthCalculator {
     }
 
     public void calculateDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        int meters = 0;
-        int seconds = 0;
-        for(DistanceAndTime distanceAndTime : indexToDistanceAndTime.values()) {
-            meters += distanceAndTime.getDistance();
-            seconds += distanceAndTime.getTime();
+        double meters = 0;
+        long seconds = 0;
+        for (DistanceAndTime distanceAndTime : indexToDistanceAndTime.values()) {
+            if(distanceAndTime == null)
+                continue;
+
+            Double distance = distanceAndTime.getDistance();
+            if (!isEmpty(distance) && distance > meters)
+                meters = distance;
+
+            Long time = distanceAndTime.getTime();
+            if (!isEmpty(time) && time > seconds)
+                seconds = time;
         }
         fireCalculatedDistance(meters, seconds);
     }

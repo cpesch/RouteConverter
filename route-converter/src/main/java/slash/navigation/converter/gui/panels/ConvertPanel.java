@@ -81,6 +81,7 @@ import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
 import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
 import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
+import slash.navigation.converter.gui.models.OverlayPositionsModel;
 import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
@@ -226,7 +227,7 @@ public class ConvertPanel implements PanelInTab {
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
     private RecentFormatsModel recentFormatsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
-    private PositionsModel positionsModel;
+    private OverlayPositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
     private LengthCalculator lengthCalculator;
@@ -274,7 +275,7 @@ public class ConvertPanel implements PanelInTab {
             }
         });
 
-        positionsModel = new UndoPositionsModel(undoManager);
+        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager));
         characteristicsModel = new CharacteristicsModel();
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, characteristicsModel));
         positionsSelectionModel = new PositionsSelectionModel() {
@@ -524,6 +525,7 @@ public class ConvertPanel implements PanelInTab {
 
     public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         lengthCalculator.calculateDistanceFromRouting(indexToDistanceAndTime);
+        positionsModel.calculatedDistanceFromRouting(indexToDistanceAndTime);
     }
 
     public void dispose() {

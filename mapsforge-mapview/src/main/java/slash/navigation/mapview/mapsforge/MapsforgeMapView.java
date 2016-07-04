@@ -133,6 +133,7 @@ import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
@@ -258,6 +259,8 @@ public class MapsforgeMapView implements MapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
+            private List<PairWithLayer> pairs = new ArrayList<>();
+
             public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
             }
@@ -270,18 +273,45 @@ public class MapsforgeMapView implements MapView {
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
+                fireDistanceAndTime();
                 updateSelectionAfterRemove(pairWithLayers);
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
-                routeRenderer.renderRoute(pairWithLayers);
+                pairs.addAll(pairWithLayers);
+                routeRenderer.renderRoute(pairWithLayers, new Runnable() {
+                    public void run() {
+                        fireDistanceAndTime();
+                    }
+                });
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
+                pairs.removeAll(pairWithLayers);
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
                     removeLayer(pairWithLayer);
                     pairWithLayer.setDistanceAndTime(null);
                 }
+            }
+
+            private void fireDistanceAndTime() {
+                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairs.size());
+                double aggregatedDistance = 0.0;
+                long aggregatedTime = 0L;
+                for (int i = 0; i < pairs.size(); i++) {
+                    PairWithLayer pairWithLayer = pairs.get(i);
+                    DistanceAndTime distanceAndTime = pairWithLayer.getDistanceAndTime();
+                    if(distanceAndTime != null) {
+                        Double distance = distanceAndTime.getDistance();
+                        if (!isEmpty(distance))
+                            aggregatedDistance += distance;
+                        Long time = distanceAndTime.getTime();
+                        if (!isEmpty(time))
+                            aggregatedTime += time;
+                    }
+                    indexToDistanceAndTime.put(i + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+                }
+                fireCalculatedDistance(indexToDistanceAndTime);
             }
         });
 
@@ -1053,15 +1083,6 @@ public class MapsforgeMapView implements MapView {
         for (MapViewListener listener : mapViewListeners) {
             listener.calculatedDistances(indexToDistanceAndTime);
         }
-    }
-
-    public void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
-        Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
-        for (int i = 0; i < pairWithLayers.size(); i++) {
-            PairWithLayer pairWithLayer = pairWithLayers.get(i);
-            indexToDistanceAndTime.put(i, pairWithLayer.getDistanceAndTime());
-        }
-        fireCalculatedDistance(indexToDistanceAndTime);
     }
 
     private class MapViewCallbackListener implements ChangeListener {
