@@ -20,6 +20,7 @@
 
 package slash.navigation.mapview.browser;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
@@ -116,6 +117,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
@@ -787,7 +789,7 @@ public abstract class BrowserMapView implements MapView {
         ResourceBundle bundle = Application.getInstance().getContext().getBundle();
         for (String menuItemKey : MENU_ITEM_KEYS)
             buffer.append("menuItems[\"").append(menuItemKey).append("\"] = ").
-                    append("\"").append(bundle.getString(menuItemKey)).append("\";\n");
+                    append("\"").append(escapeHtml(bundle.getString(menuItemKey))).append("\";\n");
 
         return buffer.toString();
    }
