@@ -81,9 +81,20 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
     // initialization
 
-    private WebView createWebView() {
+    protected WebView createWebView() {
         try {
             final WebView webView = new WebView();
+            double browserScaleFactor = getBrowserScaleFactor();
+            if (browserScaleFactor != 1.0) {
+                // allow to compile code with Java 7; with Java 8 this would simply be
+                // webView.setZoom(browserScaleFactor);
+                try {
+                    Method method = WebView.class.getDeclaredMethod("setZoom", double.class);
+                    method.invoke(webView, browserScaleFactor);
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    // intentionally do nothing
+                }
+            }
             Group group = new Group();
             group.getChildren().add(webView);
             panel.setScene(new Scene(group));
@@ -203,8 +214,10 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
 
     private void setWebViewSizeToPanelSize() {
         Dimension size = panel.getSize();
-        if (webView != null)
+        if (webView != null) {
             webView.setMinSize(size.getWidth(), size.getHeight());
+            webView.setMaxSize(size.getWidth(), size.getHeight());
+        }
     }
 
     // bounds and center
@@ -212,7 +225,6 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
     protected NavigationPosition getNorthEastBounds() {
         return parsePosition("getNorthEastBounds();");
     }
-
     protected NavigationPosition getSouthWestBounds() {
         return parsePosition("getSouthWestBounds();");
     }

@@ -168,6 +168,7 @@ public abstract class BrowserMapView implements MapView {
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     protected static final String DEBUG_PREFERENCE = "debug";
+    protected static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
@@ -280,6 +281,10 @@ public abstract class BrowserMapView implements MapView {
 
     protected abstract void initializeBrowser();
     protected abstract void initializeWebPage();
+
+    protected double getBrowserScaleFactor() {
+        return (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, 100) / 100.0;
+    }
 
     protected String getGoogleMapsServerApiUrl() {
         return googleMapsServerModel.getGoogleMapsServer().getApiUrl();
@@ -827,8 +832,9 @@ public abstract class BrowserMapView implements MapView {
 
     private void resizeMap() {
         synchronized (notificationMutex) {
-            int width = max(getComponent().getWidth(), 0);
-            int height = max(getComponent().getHeight(), 0);
+            double browserScaleFactor = getBrowserScaleFactor();
+            int width = (int) max(getComponent().getWidth() / browserScaleFactor, 0.0);
+            int height = (int) max(getComponent().getHeight() / browserScaleFactor, 0.0);
             if (width != lastWidth || height != lastHeight) {
                 executeScript("resize(" + width + "," + height + ");");
             }
