@@ -105,10 +105,6 @@ public class OverlayPositionsModel implements PositionsModel {
         return delegate.isContinousRange();
     }
 
-    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
-    }
-
     // PositionsModel
 
     public BaseRoute getRoute() {
@@ -252,22 +248,23 @@ public class OverlayPositionsModel implements PositionsModel {
         return null;
     }
 
-    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        this.indexToDistanceAndTime.putAll(indexToDistanceAndTime);
+    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToRoutedDistanceAndTime) {
+        this.indexToDistanceAndTime.putAll(indexToRoutedDistanceAndTime);
         int firstIndex = getRowCount() - 1;
         int lastIndex = 0;
-        for (Integer index : indexToDistanceAndTime.keySet()) {
+        for (Integer index : this.indexToDistanceAndTime.keySet()) {
             if (index < firstIndex)
                 firstIndex = index;
             else if (index > lastIndex)
                 lastIndex = index;
         }
-        fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+        delegate.fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
     }
 
-    public void clear() {
-        indexToImageAndFile.clear();
+    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
         indexToDistanceAndTime.clear();
         distancesFromStart = null;
+        indexToImageAndFile.clear();
+        delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }
