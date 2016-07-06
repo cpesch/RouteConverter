@@ -50,6 +50,8 @@ public class JavaFX8WebViewMapView extends JavaFX7WebViewMapView {
         return false;
     }
 
+
+
     public void print(final String title, boolean withDirections) {
         if(withDirections)
             throw new UnsupportedOperationException("Printing with directions not supported");
@@ -82,5 +84,9 @@ public class JavaFX8WebViewMapView extends JavaFX7WebViewMapView {
                 }
             }
         });
+    }
+
+    protected void setBrowserScale(WebView webView, double scale) {
+        webView.setZoom(scale);
     }
 }
