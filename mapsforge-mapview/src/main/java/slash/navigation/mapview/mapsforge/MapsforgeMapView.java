@@ -295,7 +295,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void fireDistanceAndTime() {
-                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairs.size());
+                Map<Integer, DistanceAndTime> result = new HashMap<>(pairs.size());
                 double aggregatedDistance = 0.0;
                 long aggregatedTime = 0L;
                 for (int i = 0; i < pairs.size(); i++) {
@@ -309,9 +309,9 @@ public class MapsforgeMapView implements MapView {
                         if (!isEmpty(time))
                             aggregatedTime += time;
                     }
-                    indexToDistanceAndTime.put(i + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+                    result.put(i + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
                 }
-                fireCalculatedDistance(indexToDistanceAndTime);
+                fireCalculatedDistance(result);
             }
         });
 

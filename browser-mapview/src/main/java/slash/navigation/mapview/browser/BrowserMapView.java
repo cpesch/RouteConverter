@@ -20,7 +20,6 @@
 
 package slash.navigation.mapview.browser;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
@@ -32,13 +31,13 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.PositionPair;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.FixMapMode;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
@@ -1911,7 +1910,23 @@ public abstract class BrowserMapView implements MapView {
             public void run() {
                 for (int i = 0; i < distanceAndTimes.size(); i++)
                     indexToDistanceAndTime.put(startIndex + i, distanceAndTimes.get(i));
-                fireCalculatedDistance(indexToDistanceAndTime);
+
+                Map<Integer, DistanceAndTime> result = new HashMap<>(indexToDistanceAndTime.size());
+                double aggregatedDistance = 0.0;
+                long aggregatedTime = 0L;
+                for(Integer index : indexToDistanceAndTime.keySet()) {
+                    DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
+                    if(distanceAndTime != null) {
+                        Double distance = distanceAndTime.getDistance();
+                        if (!isEmpty(distance))
+                            aggregatedDistance += distance;
+                        Long time = distanceAndTime.getTime();
+                        if (!isEmpty(time))
+                            aggregatedTime += time;
+                    }
+                    result.put(index + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+                }
+                fireCalculatedDistance(result);
             }
         });
     }
