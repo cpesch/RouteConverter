@@ -265,7 +265,7 @@ class PositionReducer {
         for (int i = firstIndex; i < lastIndex; i += 1) {
             NavigationPosition position = positions.get(i);
             if(!position.hasCoordinates())
-                continue;;
+                continue;
 
             boolean visible = boundingBox.contains(position);
             if (visible) {
