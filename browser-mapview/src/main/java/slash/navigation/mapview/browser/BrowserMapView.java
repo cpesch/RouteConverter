@@ -20,7 +20,6 @@
 
 package slash.navigation.mapview.browser;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
