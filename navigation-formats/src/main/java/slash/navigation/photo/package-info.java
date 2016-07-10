@@ -1,4 +1,4 @@
 /**
- * The Photo with embedded EXIF metadata format.
+ * The Photo format which reads embedded EXIF metadata.
  */
 package slash.navigation.photo;

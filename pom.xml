@@ -202,7 +202,7 @@
                     <bottom>Created by Christian Pesch</bottom>
                     <detectLinks>true</detectLinks>
                     <excludePackageNames>
-                        slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.maps*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
+                        slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.map*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
                     </excludePackageNames>
                 </configuration>
                 <reportSets>
@@ -221,7 +221,7 @@
                                 <group>
                                     <title>Formats</title>
                                     <packages>
-                                        slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.fpl:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.url:slash.navigation.viamichelin:slash.navigation.wbt:slash.navigation.zip
+                                        slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.columbus:slash.navigation.fpl:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.photo:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.url:slash.navigation.viamichelin:slash.navigation.wbt:slash.navigation.zip
                                     </packages>
                                 </group>
                                 <group>
