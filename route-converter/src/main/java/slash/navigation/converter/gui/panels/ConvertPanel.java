@@ -110,6 +110,7 @@ import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
+import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
@@ -358,7 +359,9 @@ public class ConvertPanel implements PanelInTab {
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
 
-        defaultTableRowHeight = tablePositions.getRowHeight();
+        defaultTableRowHeight = getDefaultRowHeight();
+        tablePositions.setRowHeight(defaultTableRowHeight);
+
         tableColumnModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 handleColumnVisibilityUpdate((PositionTableColumn) e.getSource());
@@ -521,6 +524,13 @@ public class ConvertPanel implements PanelInTab {
                 convertPanel.requestFocus();
             }
         });
+    }
+
+    private int getDefaultRowHeight() {
+        final Component cellComponent = tablePositions.getColumnModel().getColumn(0).getCellEditor().getTableCellEditorComponent(tablePositions,
+                new TomTomPosition(0,0, ""), true, 0, 0);
+        // die 4 ist "magic", aber ist auch unter "normalen" Systemen drin
+        return Math.max(cellComponent.getPreferredSize().height - 4, 0);
     }
 
     public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
