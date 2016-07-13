@@ -19,6 +19,9 @@
 */
 package slash.navigation.googlemaps;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -56,12 +59,28 @@ public class GoogleMapsAPIKey {
         log.info("Google Maps API usage:" + builder.toString());
     }
 
+    private static final String REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE = "removedGoogleMapsApiKey";
+
     public static String getAPIKey(String action) {
         count(preferences, GOOGLE_MAPS_API_USAGES + "-" + action);
-        return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, "AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw");
+        if(!preferences.getBoolean(REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE, false)) {
+            preferences.remove(GOOGLE_MAPS_API_KEY_PREFERENCE);
+            preferences.putBoolean(REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE, true);
+        }
+        return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, readAPIKey());
     }
 
-    public static void setAPIKey(String apiKey) {
-        preferences.put(GOOGLE_MAPS_API_KEY_PREFERENCE, apiKey);
+    private static String readAPIKey() {
+        try (InputStream inputStream = GoogleMapsAPIKey.class.getResourceAsStream("googlemaps.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String property = properties.getProperty(GOOGLE_MAPS_API_KEY_PREFERENCE);
+            if(property != null && !property.contains(GOOGLE_MAPS_API_KEY_PREFERENCE))
+                return property;
+        }
+        catch (IOException e) {
+            log.severe("Could not read GoogleMaps API Key: " + getLocalizedMessage(e));
+        }
+        return "AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw";
     }
 }

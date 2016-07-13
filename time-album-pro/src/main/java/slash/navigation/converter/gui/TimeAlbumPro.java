@@ -26,7 +26,6 @@ import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
-import static slash.navigation.googlemaps.GoogleMapsAPIKey.setAPIKey;
 
 /**
  * A graphical user interface for Columbus devices.
@@ -38,7 +37,6 @@ public class TimeAlbumPro extends RouteConverter {
     private NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
 
     public static void main(String[] args) {
-        setAPIKey("AIzaSyBg4u8WTKZFBSIM2G8ECXBRxdvhrEKWM7Y");
         launch(TimeAlbumPro.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
