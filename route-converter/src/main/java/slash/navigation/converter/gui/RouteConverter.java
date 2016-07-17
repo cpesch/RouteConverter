@@ -1372,7 +1372,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public String getApiUrl() {
-        return System.getProperty("api", "http://api.routeconverter.com/");
+        return System.getProperty("api", "https://api.routeconverter.com/");
     }
 
     public File getTileServersDirectory() {

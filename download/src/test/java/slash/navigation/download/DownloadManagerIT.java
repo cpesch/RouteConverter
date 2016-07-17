@@ -367,6 +367,14 @@ public class DownloadManagerIT {
     }
 
     @Test
+    public void testDownloadWithHTTPS() throws IOException {
+        writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
+
+        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD.replaceAll("http", "https") + "447bytes.txt", Copy, new FileAndChecksum(target, null), null);
+        waitFor(download, Succeeded);
+    }
+
+    @Test
     public void testDownloadAndFlatten() throws IOException {
         FileAndChecksum extracted = new FileAndChecksum(new File(target.getParentFile(), "447bytes.txt"), null);
 

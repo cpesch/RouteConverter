@@ -30,12 +30,14 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpResponse;
+import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -57,6 +59,7 @@ import static org.apache.http.HttpStatus.SC_PARTIAL_CONTENT;
 import static org.apache.http.HttpStatus.SC_PRECONDITION_FAILED;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.apache.http.HttpVersion.HTTP_1_1;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 
@@ -84,6 +87,12 @@ public abstract class HttpRequest {
         requestConfigBuilder.setConnectTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(90 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+        try {
+            HttpClientConnectionManager connectionManager = new SSLConnectionManagerFactory().createConnectionManager();
+            clientBuilder.setConnectionManager(connectionManager);
+        } catch (Exception e) {
+            log.severe("Cannot create SSL connection manager that supports letsencrypt root certificate: " + getLocalizedMessage(e));
+        }
         setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.8"));
         this.method = method;
     }
@@ -97,6 +106,8 @@ public abstract class HttpRequest {
     HttpRequestBase getMethod() {
         return method;
     }
+
+
 
     private void setAuthentication(String userName, String password, AuthScope authScope) {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
