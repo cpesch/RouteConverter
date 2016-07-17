@@ -60,6 +60,8 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatSpeed;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
@@ -160,7 +162,7 @@ public class PositionAugmenter {
         executor.execute(new Runnable() {
             public void run() {
                 final int[] count = new int[1];
-                count[0] = 1;
+                count[0] = 0;
 
                 try {
                     invokeLater(new Runnable() {
@@ -286,8 +288,8 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        Double previousElevation = position.getElevation();
-                        Double nextElevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
+                        String previousElevation = formatElevation(position.getElevation());
+                        String nextElevation = getElevationFor(position);
                         boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                         if (changed)
                             positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, nextElevation), false, true);
@@ -299,6 +301,17 @@ public class PositionAugmenter {
                     }
                 }
         );
+    }
+
+    private String getElevationFor(NavigationPosition position) throws IOException {
+        if(!position.hasCoordinates())
+            return null;
+
+        Double elevation = elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude());
+        if(elevation == null)
+            return null;
+
+        return formatElevation(elevation);
     }
 
     private void downloadElevationData(int[] rows, boolean waitForDownload) {
@@ -418,8 +431,8 @@ public class PositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         NavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
                         if (predecessor != null) {
-                            Double previousSpeed = position.getSpeed();
-                            Double nextSpeed = position.calculateSpeed(predecessor);
+                            String previousSpeed = formatSpeed(position.getSpeed());
+                            String nextSpeed = formatSpeed(position.calculateSpeed(predecessor));
                             boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
                                 positionsModel.edit(index, new PositionColumnValues(SPEED_COLUMN_INDEX, nextSpeed), false, true);
@@ -625,9 +638,9 @@ public class PositionAugmenter {
                         }
 
                         if (complementElevation) {
-                            Double previousElevation = position.getElevation();
-                            Double nextElevation = waitForDownload || elevationServiceFacade.isDownload() ?
-                                    elevationServiceFacade.getElevationFor(position.getLongitude(), position.getLatitude()) : null;
+                            String previousElevation = formatElevation(position.getElevation());
+                            String nextElevation = waitForDownload || elevationServiceFacade.isDownload() ?
+                                    getElevationFor(position) : null;
                             boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                             if (changed) {
                                 columnIndices.add(ELEVATION_COLUMN_INDEX);

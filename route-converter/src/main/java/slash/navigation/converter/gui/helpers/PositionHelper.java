@@ -79,8 +79,8 @@ public class PositionHelper {
         if (elevation == null)
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        double distanceInUnit = unitSystem.valueToUnit(elevation);
-        return format("%d %s", round(distanceInUnit), unitSystem.getElevationName());
+        double elevationInUnit = unitSystem.valueToUnit(elevation);
+        return format("%d %s", round(elevationInUnit), unitSystem.getElevationName());
     }
 
     public static String extractElevation(NavigationPosition position) {

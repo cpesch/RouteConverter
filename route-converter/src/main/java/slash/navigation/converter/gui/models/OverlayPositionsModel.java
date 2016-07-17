@@ -237,7 +237,8 @@ public class OverlayPositionsModel implements PositionsModel {
         if(getRoute().getCharacteristics().equals(Track)) {
             if (distancesFromStart == null)
                 distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-            return distancesFromStart[rowIndex];
+            if (rowIndex < distancesFromStart.length)
+                return distancesFromStart[rowIndex];
         }
 
         if (getRoute().getCharacteristics().equals(Route)) {
