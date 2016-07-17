@@ -116,6 +116,7 @@ import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectRout
 import static slash.navigation.converter.gui.models.LocalActionConstants.CATEGORIES;
 import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -216,7 +217,6 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
-        tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
                 actionManager.run("delete-route");
@@ -254,6 +254,7 @@ public class BrowsePanel implements PanelInTab {
             }
         });
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
+        TableCellRenderer cellRenderer = new RoutesTableCellRenderer();
         TableColumnModel columns = tableRoutes.getColumnModel();
         for (int i = 0; i < columns.getColumnCount(); i++) {
             TableColumn column = columns.getColumn(i);
@@ -262,7 +263,10 @@ public class BrowsePanel implements PanelInTab {
                 column.setPreferredWidth(80);
                 column.setMaxWidth(100);
             }
+            column.setCellRenderer(cellRenderer);
         }
+        tableRoutes.setRowHeight(getDefaultRowHeight());
+
         browsePanel.setTransferHandler(new PanelDropHandler());
 
         new RoutesTablePopupMenu(tableRoutes).createPopupMenu();
@@ -291,6 +295,10 @@ public class BrowsePanel implements PanelInTab {
                 });
             }
         }, "CategoryTreeInitializer").start();
+    }
+
+    private int getDefaultRowHeight() {
+        return calculateRowHeight(tableRoutes, new RouteModel(null, null));
     }
 
     private String createRootFolder() {

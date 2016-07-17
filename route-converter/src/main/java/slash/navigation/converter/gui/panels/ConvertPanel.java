@@ -34,7 +34,9 @@ import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserCallback;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
 import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
@@ -75,7 +77,6 @@ import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
 import slash.navigation.converter.gui.helpers.PositionsTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PositionsTablePopupMenu;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
@@ -110,7 +111,6 @@ import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
-import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
@@ -155,6 +155,7 @@ import static java.awt.event.KeyEvent.VK_END;
 import static java.awt.event.KeyEvent.VK_HOME;
 import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
@@ -173,6 +174,7 @@ import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.PreferencesHelper.count;
 import static slash.common.io.Files.calculateConvertFileName;
 import static slash.common.io.Files.createGoPalFileName;
 import static slash.common.io.Files.createReadablePath;
@@ -198,10 +200,10 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
+import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
-import static slash.common.helpers.PreferencesHelper.count;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -223,6 +225,8 @@ public class ConvertPanel implements PanelInTab {
     private static final String WRITE_FORMAT_PREFERENCE = "writeFormat";
     private static final String WRITE_PATH_PREFERENCE = "writePath";
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
+
+    private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
 
     private UrlDocument urlModel = new UrlDocument();
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
@@ -254,9 +258,6 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
     private PositionsTableHeaderMenu tableHeaderMenu;
-
-    private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
-    private int defaultTableRowHeight;
 
     public ConvertPanel() {
         $$$setupUI$$$();
@@ -358,9 +359,6 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.setModel(positionsModel);
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
-
-        defaultTableRowHeight = getDefaultRowHeight();
-        tablePositions.setRowHeight(defaultTableRowHeight);
 
         tableColumnModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -527,10 +525,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private int getDefaultRowHeight() {
-        final Component cellComponent = tablePositions.getColumnModel().getColumn(0).getCellEditor().getTableCellEditorComponent(tablePositions,
-                new TomTomPosition(0,0, ""), true, 0, 0);
-        // die 4 ist "magic", aber ist auch unter "normalen" Systemen drin
-        return Math.max(cellComponent.getPreferredSize().height - 4, 0);
+        return calculateRowHeight(tablePositions, new SimpleNavigationPosition(null, null));
     }
 
     public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
@@ -908,12 +903,12 @@ public class ConvertPanel implements PanelInTab {
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);
             countWrite(format);
-            log.info(String.format("Saved: %s", targetsAsString));
+            log.info(format("Saved: %s", targetsAsString));
 
             if (!exportSelectedRoute && format.isSupportsReading()) {
                 if (openAfterSave) {
                     openPositionList(toUrls(files), getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(format));
-                    log.info(String.format("Open after save: %s", files[0]));
+                    log.info(format("Open after save: %s", files[0]));
                 }
                 if (confirmOverwrite) {
                     URL url = files[0].toURI().toURL();
@@ -924,7 +919,7 @@ public class ConvertPanel implements PanelInTab {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t));
+            log.severe(format("Error saving %s in %s: %s", files[0], format, t));
 
             showMessageDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, getLocalizedMessage(t)),
@@ -1124,7 +1119,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
         if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
-            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : defaultTableRowHeight);
+            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : getDefaultRowHeight());
     }
 
     // helpers
@@ -1201,7 +1196,7 @@ public class ConvertPanel implements PanelInTab {
             int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
             int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0)
-                builder.append(String.format("%n%s, reads: %d, writes: %d", format.getName(), reads, writes));
+                builder.append(format("%n%s, reads: %d, writes: %d", format.getName(), reads, writes));
         }
         log.info("Format usage:" + builder.toString());
     }

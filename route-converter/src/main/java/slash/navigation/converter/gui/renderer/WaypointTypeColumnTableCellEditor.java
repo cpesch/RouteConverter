@@ -21,7 +21,6 @@
 package slash.navigation.converter.gui.renderer;
 
 import com.bulenkov.iconloader.IconLoader;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
@@ -46,7 +45,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        NavigationPosition position = BaseNavigationPosition.class.cast(value);
+        NavigationPosition position = NavigationPosition.class.cast(value);
 
         String key = null;
         if (rowIndex == table.getRowCount() - 1)

@@ -81,12 +81,13 @@ public class RouteModel {
 
         RouteModel that = (RouteModel) o;
 
-        return category.equals(that.category) && route.equals(that.route);
+        return category != null ? category.equals(that.category) : that.category == null &&
+                (route != null ? route.equals(that.route) : that.route == null);
     }
 
     public int hashCode() {
-        int result = category.hashCode();
-        result = 31 * result + route.hashCode();
+        int result = category != null ? category.hashCode() : 0;
+        result = 31 * result + (route != null ? route.hashCode() : 0);
         return result;
     }
 }
