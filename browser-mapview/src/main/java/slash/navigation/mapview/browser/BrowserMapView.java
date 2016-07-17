@@ -1932,7 +1932,7 @@ public abstract class BrowserMapView implements MapView {
                     }
                     result.put(index + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
                 }
-                fireCalculatedDistance(result);
+                fireCalculatedDistances(result);
             }
         });
     }
@@ -1949,7 +1949,7 @@ public abstract class BrowserMapView implements MapView {
         mapViewListeners.remove(listener);
     }
 
-    private void fireCalculatedDistance(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+    private void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         for (MapViewListener listener : mapViewListeners) {
             listener.calculatedDistances(indexToDistanceAndTime);
         }

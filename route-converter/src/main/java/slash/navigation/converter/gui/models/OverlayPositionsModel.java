@@ -29,6 +29,9 @@ import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -38,12 +41,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.ImageHelper.resize;
 
@@ -55,12 +61,45 @@ import static slash.navigation.gui.helpers.ImageHelper.resize;
 public class OverlayPositionsModel implements PositionsModel {
     private static final int IMAGE_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private final PositionsModel delegate;
-    private Map<Integer,ImageAndFile> indexToImageAndFile = new HashMap<>();
-    private final Map<Integer,DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
+    private Map<Integer, ImageAndFile> indexToImageAndFile = new HashMap<>();
+    private final Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
     private double[] distancesFromStart = null;
 
     public OverlayPositionsModel(PositionsModel delegate) {
         this.delegate = delegate;
+        delegate.addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                // clear overlay for updates on columns that have an effect on the distance
+                if (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                        e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                        e.getColumn() == ALL_COLUMNS)
+                    clearOverlay();
+            }
+        });
+    }
+
+    public OverlayPositionsModel(PositionsModel delegate, CharacteristicsModel characteristicsModel) {
+        this(delegate);
+
+        characteristicsModel.addListDataListener(new ListDataListener() {
+            public void intervalAdded(ListDataEvent e) {
+            }
+
+            public void intervalRemoved(ListDataEvent e) {
+            }
+
+            public void contentsChanged(ListDataEvent e) {
+                // clear overlay when route characteristics is changed
+                clearOverlay();
+            }
+        });
+    }
+
+    private void clearOverlay() {
+        indexToDistanceAndTime.clear();
+        distancesFromStart = null;
+        indexToImageAndFile.clear();
+        delegate.fireTableRowsUpdated(0, getRoute().getPositionCount() - 1, DISTANCE_COLUMN_INDEX);
     }
 
     // TableModel
@@ -203,7 +242,6 @@ public class OverlayPositionsModel implements PositionsModel {
                 return getImageAndFile(rowIndex);
             case DISTANCE_COLUMN_INDEX:
                 return getDistance(rowIndex);
-            // TODO add overlay for time columns
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
@@ -237,8 +275,7 @@ public class OverlayPositionsModel implements PositionsModel {
         if(getRoute().getCharacteristics().equals(Track)) {
             if (distancesFromStart == null)
                 distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-            if (rowIndex < distancesFromStart.length)
-                return distancesFromStart[rowIndex];
+            return distancesFromStart[rowIndex];
         }
 
         if (getRoute().getCharacteristics().equals(Route)) {
@@ -263,9 +300,6 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        indexToDistanceAndTime.clear();
-        distancesFromStart = null;
-        indexToImageAndFile.clear();
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }

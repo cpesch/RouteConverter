@@ -29,6 +29,7 @@ import java.util.List;
 
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -51,6 +52,9 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
+                    return;
+                // ignore distance column updates from the overlay position model
+                if (e.getColumn() == DISTANCE_COLUMN_INDEX)
                     return;
                 setModified(true);
             }

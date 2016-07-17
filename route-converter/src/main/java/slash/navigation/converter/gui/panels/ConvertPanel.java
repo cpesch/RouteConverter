@@ -277,8 +277,8 @@ public class ConvertPanel implements PanelInTab {
             }
         });
 
-        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager));
         characteristicsModel = new CharacteristicsModel();
+        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), characteristicsModel);
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, characteristicsModel));
         positionsSelectionModel = new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {

@@ -311,7 +311,7 @@ public class MapsforgeMapView implements MapView {
                     }
                     result.put(i + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
                 }
-                fireCalculatedDistance(result);
+                fireCalculatedDistances(result);
             }
         });
 
@@ -1079,7 +1079,7 @@ public class MapsforgeMapView implements MapView {
         mapViewListeners.remove(listener);
     }
 
-    private void fireCalculatedDistance(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+    private void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         for (MapViewListener listener : mapViewListeners) {
             listener.calculatedDistances(indexToDistanceAndTime);
         }
