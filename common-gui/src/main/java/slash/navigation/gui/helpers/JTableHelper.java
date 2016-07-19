@@ -22,6 +22,7 @@ package slash.navigation.gui.helpers;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.util.logging.Logger;
 
@@ -43,8 +44,13 @@ public class JTableHelper {
     private static final int ROW_HEIGHT_MAGIC_CONSTANT = 4;
 
     public static int calculateRowHeight(JTable table, Object value) {
-        Component component = table.getColumnModel().getColumn(0).getCellRenderer().
-                getTableCellRendererComponent(table, value, true, true, 0, 0);
+        TableCellEditor cellEditor = table.getColumnModel().getColumn(0).getCellEditor();
+        Component component;
+        if (cellEditor != null)
+            component = cellEditor.getTableCellEditorComponent(table, value, true, 0, 0);
+        else
+            component = table.getColumnModel().getColumn(0).getCellRenderer().
+                    getTableCellRendererComponent(table, value, true, true, 0, 0);
         int rowHeight = max(component.getPreferredSize().height - ROW_HEIGHT_MAGIC_CONSTANT, MINIMUM_ROW_HEIGHT);
         log.info(format("Using row height %d for table %s", rowHeight, table));
         return rowHeight;
