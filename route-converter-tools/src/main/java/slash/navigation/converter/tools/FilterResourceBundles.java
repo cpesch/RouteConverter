@@ -19,7 +19,13 @@
 */
 package slash.navigation.converter.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,7 +33,6 @@ import java.io.IOException;
 import java.util.MissingResourceException;
 
 import static java.lang.System.exit;
-import static org.apache.commons.cli.OptionBuilder.withArgName;
 
 /**
  * Filters resource bundles.
@@ -71,10 +76,10 @@ public class FilterResourceBundles {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption(withArgName(DEFAULT_ARGUMENT).hasArgs(1).isRequired().withLongOpt("default").
-                withDescription("Default resource bundle").create());
-        options.addOption(withArgName(FILTER_ARGUMENT).hasArgs(1).isRequired().withLongOpt("filter").
-                withDescription("Resource bundle to filter").create());
+        options.addOption(Option.builder().argName(DEFAULT_ARGUMENT).hasArgs().numberOfArgs(1).required().
+                longOpt("default").desc("Default resource bundle").build());
+        options.addOption(Option.builder().argName(FILTER_ARGUMENT).hasArgs().numberOfArgs(1).required().
+                longOpt("filter").desc("Resource bundle to filter").build());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
