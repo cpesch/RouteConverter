@@ -377,7 +377,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
+                        String description = getLocationFor(position);
                         if (description != null)
                             positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
                         return description != null;
@@ -644,9 +644,9 @@ public class PositionAugmenter {
     }
 
     private String getDescriptionFor(NavigationPosition position) {
-        String description = getLocationFor(position);
+        String description = getNearByFor(position);
         if (description == null)
-            description = getNearByFor(position);
+            description = getLocationFor(position);
         return trim(description);
     }
 
