@@ -23,6 +23,7 @@ package slash.common.system;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Scanner;
 
 import static java.text.DateFormat.LONG;
 import static slash.common.type.CompactCalendar.UTC;
@@ -48,47 +49,49 @@ public class Version {
         this(version, null, null);
     }
 
-    public String getMajor() {
-        int dot = version.indexOf('.');
-        if (dot != -1)
-            return version.substring(0, dot);
-        return version;
-    }
-
-    public String getMinor() {
-        int dot = version.indexOf('.');
-        if (dot != -1)
-            return version.substring(dot + 1);
-        return version;
-    }
-
-    private String sameLength(String reference, String hasToHaveSameLength) {
-        while (hasToHaveSameLength.length() < reference.length())
-            hasToHaveSameLength = "0" + hasToHaveSameLength;
-        return hasToHaveSameLength;
-    }
-
     private String removeSnapshot(String string) {
-        int index = string.indexOf("-");
-        if (index != -1)
-            string = string.substring(0, index);
-        int dot = string.indexOf(".");
-        if (dot != -1)
-            string = string.substring(0, dot);
-        return string;
+        return string.replaceAll("-SNAPSHOT", "").replaceAll("\\?", "9");
     }
 
     public boolean isLaterVersionThan(Version other) {
-        String major = getMajor();
-        String otherMajor = sameLength(major, other.getMajor());
-        int result = otherMajor.compareTo(major);
-        if (result != 0)
-            return result <= 0;
+        return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) > 0;
+    }
 
-        String minor = removeSnapshot(getMinor());
-        String otherMinor = sameLength(minor, removeSnapshot(other.getMinor()));
-        result = otherMinor.compareTo(minor);
-        return result <= 0;
+    private static Scanner createScanner(String string) {
+        Scanner result = new Scanner(string);
+        result.useDelimiter("\\D");
+        return result;
+    }
+
+    /**
+     * Compares two version strings.
+     *
+     * Use this instead of String.compareTo() for a non-lexicographical
+     * comparison that works for version strings. e.g. "1.10".compareTo("1.6").
+     *
+     * @param string1 a string of ordinal numbers separated by decimal points or underscores
+     * @param string2 a string of ordinal numbers separated by decimal points or underscores
+     * @return The result is a negative integer if str1 is _numerically_ less than str2.
+     *         The result is a positive integer if str1 is _numerically_ greater than str2.
+     *         The result is zero if the strings are _numerically_ equal.
+     */
+    static int compareVersion(String string1, String string2) {
+        Scanner s1 = createScanner(string1);
+        Scanner s2 = createScanner(string2);
+
+        while(s1.hasNextInt() && s2.hasNextInt()) {
+            int v1 = s1.nextInt();
+            int v2 = s2.nextInt();
+            if(v1 < v2) {
+                return -1;
+            } else if(v1 > v2) {
+                return 1;
+            }
+        }
+
+        if(s1.hasNextInt())
+            return 1; //string1 has an additional lower-level version number
+        return 0;
     }
 
     public String getVersion() {
