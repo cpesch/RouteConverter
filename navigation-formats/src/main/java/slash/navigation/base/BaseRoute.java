@@ -80,7 +80,6 @@ import static java.lang.Double.MAX_VALUE;
 import static java.lang.Math.*;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.base.RouteCalculations.getSignificantPositions;
@@ -172,8 +171,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         int index = 0;
         while (index < positions.size()) {
             P next = positions.get(index);
-            Double nextDistance = next.calculateDistance(previous);
-            if (previous != null && (!next.hasCoordinates() || isEmpty(nextDistance) || nextDistance <= 0.0)) {
+            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= 0.0)) {
                 positions.remove(index);
             } else
                 index++;
