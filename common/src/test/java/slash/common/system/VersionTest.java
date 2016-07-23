@@ -27,6 +27,7 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
+import static slash.common.system.Version.compareVersion;
 
 public class VersionTest {
 
@@ -35,24 +36,7 @@ public class VersionTest {
         assertEquals("1.2.3", new Version("1.2.3").getVersion());
         assertEquals("1.2", new Version("1.2-3").getVersion());
         assertEquals("1.2-SNAPSHOT-3", new Version("1.2-SNAPSHOT-3").getVersion());
-    }
-
-    @Test
-    public void testGetMajor() {
-        assertEquals("1", new Version("1").getMajor());
-        assertEquals("1", new Version("1.2").getMajor());
-        assertEquals("1", new Version("1.2.3").getMajor());
-        assertEquals("1", new Version("1.2-SNAPSHOT-3").getMajor());
-    }
-
-    @Test
-    public void testGetMinor() {
-        assertEquals("1", new Version("1").getMinor());
-        assertEquals("2", new Version("1.2").getMinor());
-        assertEquals("2-3", new Version("1.2-3").getMinor());
-        assertEquals("2.3-4", new Version("1.2.3-4").getMinor());
-        assertEquals("2-SNAPSHOT-3", new Version("1.2-SNAPSHOT-3").getMinor());
-        assertEquals("2.3-SNAPSHOT-4", new Version("1.2.3-SNAPSHOT-4").getMinor());
+        assertEquals("1.2_3", new Version("1.2_3").getVersion());
     }
 
     @Test
@@ -78,14 +62,37 @@ public class VersionTest {
     }
 
     @Test
-    public void testIsLatestVersion() {
-        assertTrue(new Version("1").isLaterVersionThan(new Version("1")));
+    public void testCompareVersion() {
+        assertEquals(-1, compareVersion("1", "2"));
+        assertEquals(0, compareVersion("2", "2"));
+        assertEquals(1, compareVersion("2", "1"));
+
+        assertEquals(-1, compareVersion("9", "10"));
+        assertEquals(0, compareVersion("10", "10"));
+        assertEquals(1, compareVersion("10", "9"));
+
+        assertEquals(-1, compareVersion("1.9", "2.0"));
+        assertEquals(-1, compareVersion("1", "2.0"));
+        assertEquals(-1, compareVersion("1.9", "2"));
+
+        assertEquals(1, compareVersion("2.0.1", "2.0.0"));
+        assertEquals(1, compareVersion("2.1.0", "2.0.0.1"));
+        assertEquals(1, compareVersion("2.2", "2.0.99"));
+
+        assertEquals(1, compareVersion("1.8.0_92", "1.8.0_6"));
+        assertEquals(1, compareVersion("1.8.0_92", "1.8.0_91"));
+        assertEquals(1, compareVersion("1.8.0_101", "1.8.0_91"));
+    }
+
+    @Test
+    public void testIsLaterVersionThan() {
+        assertFalse(new Version("1").isLaterVersionThan(new Version("1")));
         assertTrue(new Version("2").isLaterVersionThan(new Version("1.3")));
         assertTrue(new Version("10").isLaterVersionThan(new Version("9")));
         assertTrue(new Version("11").isLaterVersionThan(new Version("10")));
 
         assertTrue(new Version("1.3").isLaterVersionThan(new Version("1")));
-        assertTrue(new Version("1.3").isLaterVersionThan(new Version("1.3")));
+        assertFalse(new Version("1.3").isLaterVersionThan(new Version("1.3")));
         assertTrue(new Version("1.10").isLaterVersionThan(new Version("1.9")));
         assertTrue(new Version("1.100").isLaterVersionThan(new Version("1.99")));
 
@@ -94,6 +101,7 @@ public class VersionTest {
 
         assertTrue(new Version("1.3-SNAPSHOT-1").isLaterVersionThan(new Version("1.3")));
         assertTrue(new Version("1.3-SNAPSHOT-2").isLaterVersionThan(new Version("1.3-SNAPSHOT-1")));
+        assertTrue(new Version("?.?.?").isLaterVersionThan(new Version("2.18.4")));
 
         assertTrue(new Version("0.3").isLaterVersionThan(new Version("0.2")));
         assertTrue(new Version("1.3").isLaterVersionThan(new Version("1.2")));
@@ -101,8 +109,14 @@ public class VersionTest {
 
         assertTrue(new Version("1.1").isLaterVersionThan(new Version("0.9")));
         assertTrue(new Version("1.30.1").isLaterVersionThan(new Version("1.29.2")));
+    }
 
-        assertTrue(new Version("1.30.1").isLaterVersionThan(new Version("1.29.2")));
+    @Test
+    public void testIsLaterJavaVersion() {
+        assertTrue(new Version("1.8.0_92").isLaterVersionThan(new Version("1.8.0_91")));
+        assertTrue(new Version("1.8.0_101").isLaterVersionThan(new Version("1.8.0_91")));
+        assertTrue(new Version("1.8.0_102").isLaterVersionThan(new Version("1.8.0_101")));
+        assertFalse(new Version("1.8.0_101").isLaterVersionThan(new Version("1.8.0_102")));
     }
 
     @Test
