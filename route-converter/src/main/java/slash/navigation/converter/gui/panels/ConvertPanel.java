@@ -92,6 +92,7 @@ import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.converter.gui.models.RecentFormatsModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UrlDocument;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
@@ -525,7 +526,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private int getDefaultRowHeight() {
-        return calculateRowHeight(tablePositions, new SimpleNavigationPosition(null, null));
+        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
     }
 
     public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {

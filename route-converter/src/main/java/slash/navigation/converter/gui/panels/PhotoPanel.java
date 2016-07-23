@@ -44,6 +44,7 @@ import slash.navigation.converter.gui.models.PositionsModelImpl;
 import slash.navigation.converter.gui.predicates.FilterPredicate;
 import slash.navigation.converter.gui.predicates.TagStatePhotoPredicate;
 import slash.navigation.converter.gui.predicates.TautologyPredicate;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.FilterPredicateListCellRenderer;
 import slash.navigation.converter.gui.renderer.TagStrategyListCellRenderer;
 import slash.navigation.gui.actions.ActionManager;
@@ -236,7 +237,7 @@ public class PhotoPanel implements PanelInTab {
     }
 
     private int getDefaultRowHeight() {
-        return calculateRowHeight(tablePhotos, new SimpleNavigationPosition(null, null));
+        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
     }
 
     public Component getRootComponent() {

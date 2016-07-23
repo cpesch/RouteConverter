@@ -36,6 +36,7 @@ import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.predicates.PointOfInterestPositionPredicate;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
@@ -158,7 +159,7 @@ public class PointOfInterestPanel implements PanelInTab {
     }
 
     private int getDefaultRowHeight() {
-        return calculateRowHeight(tablePointsOfInterest, new SimpleNavigationPosition(null, null));
+        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
     }
 
     public Component getRootComponent() {

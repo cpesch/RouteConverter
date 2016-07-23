@@ -43,16 +43,10 @@ public class JTableHelper {
     private static final int MINIMUM_ROW_HEIGHT = 16;
     private static final int ROW_HEIGHT_MAGIC_CONSTANT = 4;
 
-    public static int calculateRowHeight(JTable table, Object value) {
-        TableCellEditor cellEditor = table.getColumnModel().getColumn(0).getCellEditor();
-        Component component;
-        if (cellEditor != null)
-            component = cellEditor.getTableCellEditorComponent(table, value, true, 0, 0);
-        else
-            component = table.getColumnModel().getColumn(0).getCellRenderer().
-                    getTableCellRendererComponent(table, value, true, true, 0, 0);
+    public static int calculateRowHeight(Object objectWithTable, TableCellEditor cellEditor, Object cellValue) {
+        Component component = cellEditor.getTableCellEditorComponent(null, cellValue, true, 0, 0);
         int rowHeight = max(component.getPreferredSize().height - ROW_HEIGHT_MAGIC_CONSTANT, MINIMUM_ROW_HEIGHT);
-        log.info(format("Using row height %d for table %s", rowHeight, table));
+        log.info(format("Using row height %d for table %s", rowHeight, objectWithTable));
         return rowHeight;
     }
 

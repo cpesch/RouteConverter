@@ -298,7 +298,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private int getDefaultRowHeight() {
-        return calculateRowHeight(tableRoutes, new RouteModel(null, null));
+        return calculateRowHeight(this, new DefaultCellEditor(new JTextField()), "Value");
     }
 
     private String createRootFolder() {
