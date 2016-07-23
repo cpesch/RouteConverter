@@ -75,7 +75,7 @@ public class GoogleMapsAPIKey {
             Properties properties = new Properties();
             properties.load(inputStream);
             String property = properties.getProperty(GOOGLE_MAPS_API_KEY_PREFERENCE);
-            if(property != null && !property.contains(GOOGLE_MAPS_API_KEY_PREFERENCE))
+            if(property != null && !property.toLowerCase().contains(GOOGLE_MAPS_API_KEY_PREFERENCE.toLowerCase()))
                 return property;
         }
         catch (IOException e) {
