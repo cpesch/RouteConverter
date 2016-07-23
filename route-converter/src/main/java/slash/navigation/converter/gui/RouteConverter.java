@@ -151,6 +151,7 @@ import slash.navigation.converter.gui.helpers.DownloadNotifier;
 import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
 import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.GeoTagger;
+import slash.navigation.converter.gui.helpers.GeocodingServiceFacade;
 import slash.navigation.converter.gui.helpers.GoogleDirectionsService;
 import slash.navigation.converter.gui.helpers.InsertPositionFacade;
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
@@ -281,6 +282,7 @@ public class RouteConverter extends SingleFrameApplication {
     private DataSourceManager dataSourceManager;
     private HgtFilesService hgtFilesService;
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
+    private GeocodingServiceFacade geocodingServiceFacade = new GeocodingServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
@@ -871,6 +873,10 @@ public class RouteConverter extends SingleFrameApplication {
         return elevationServiceFacade;
     }
 
+    public GeocodingServiceFacade getGeocodingServiceFacade() {
+        return geocodingServiceFacade;
+    }
+
     public InsertPositionFacade getInsertPositionFacade() {
         return insertPositionFacade;
     }
@@ -1402,6 +1408,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         initializeElevationServices();
+        initializeGeocodingServices();
         initializeRoutingServices();
 
         // make sure the queue is loaded before any components uses it
@@ -1455,6 +1462,12 @@ public class RouteConverter extends SingleFrameApplication {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
+    }
+
+    protected void initializeGeocodingServices() {
+        GoogleMapsService service = new GoogleMapsService();
+        getGeocodingServiceFacade().addGeocodingService(service);
+        getGeocodingServiceFacade().setPreferredGeocodingService(service);
     }
 
     protected void initializeRoutingServices() {

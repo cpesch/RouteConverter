@@ -298,6 +298,7 @@
         <module>download-tools</module>
         <module>elevation-service</module>
         <module>feedback</module>
+        <module>geocoding-service</module>
         <module>geonames</module>
         <module>googlemaps</module>
         <module>graphhopper</module>

@@ -25,6 +25,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.elevation.ElevationService;
+import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -48,12 +49,12 @@ import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
 import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 /**
- * Encapsulates REST access to the Google Maps API Geocoding Service.
+ * Encapsulates REST access to the Google Maps API Elevation and Geocoding Services.
  *
  * @author Christian Pesch
  */
 
-public class GoogleMapsService implements ElevationService {
+public class GoogleMapsService implements ElevationService, GeocodingService {
     private static final Logger log = Logger.getLogger(GoogleMapsService.class.getName());
 
     public String getName() {

@@ -29,7 +29,6 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
-import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
@@ -138,16 +137,17 @@ public class FindPlaceDialog extends SimpleDialog {
 
     @SuppressWarnings("unchecked")
     private void searchPositions() {
+        RouteConverter r = RouteConverter.getInstance();
+
         DefaultListModel listModel = new DefaultListModel();
         listResult.setModel(listModel);
-        GoogleMapsService service = new GoogleMapsService();
         String address = textFieldSearch.getText();
         try {
-            List<NavigationPosition> positions = service.getPositionsFor(address);
+            List<NavigationPosition> positions = r.getGeocodingServiceFacade().getPositionsFor(address);
             if (positions != null) {
-                for (NavigationPosition position : positions) {
+                for (NavigationPosition position : positions)
                     listModel.addElement(position);
-                }
+
                 if (listModel.getSize() > 0) {
                     listResult.setSelectedIndex(0);
                     listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
