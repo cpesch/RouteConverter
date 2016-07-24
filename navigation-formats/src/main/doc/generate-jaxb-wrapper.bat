@@ -17,7 +17,8 @@ bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\kml\src\
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding3 c:\Development\RouteConverter\navigation-formats\src\main\doc\gopal\gopal3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding5 c:\Development\RouteConverter\navigation-formats\src\main\doc\gopal\gopal5.xsd
 bin\xjc -verbose -dtd -d generated -p slash.navigation.viamichelin.binding c:\Development\RouteConverter\navigation-formats\src\main\doc\viamichelin\export.dtd
-bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\Development\RouteConverter-git\geonames\src\main\doc\geonames.xsd
+bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\Development\RouteConverter\geonames\src\main\doc\geonames.xsd
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\nominatim\src\main\java -p slash.navigation.nominatim.binding c:\Development\RouteConverter\nominatim\src\main\doc\nominatim.xsd
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\Development\RouteConverter\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\Development\RouteConverter\navigation-formats\src\main\doc\klicktel\klicktel.xsd
 bin\xjc -verbose -d generated -p slash.navigation.googlemaps.elevation c:\Development\RouteConverter\googlemaps\src\main\doc\elevation.xsd

@@ -247,7 +247,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        NavigationPosition coordinates = googleMapsService.getPositionFor(position.getDescription());
+                        NavigationPosition coordinates = RouteConverter.getInstance().getGeocodingServiceFacade().getPositionFor(position.getDescription());
                         if (coordinates != null)
                             positionsModel.edit(index,
                                     new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),

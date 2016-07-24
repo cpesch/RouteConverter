@@ -201,6 +201,7 @@ import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.nominatim.NominatimService;
 import slash.navigation.rest.Credentials;
 import slash.navigation.routing.RoutingService;
 
@@ -1465,9 +1466,10 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeGeocodingServices() {
-        GoogleMapsService service = new GoogleMapsService();
-        getGeocodingServiceFacade().addGeocodingService(service);
-        getGeocodingServiceFacade().setPreferredGeocodingService(service);
+        NominatimService nominatimService = new NominatimService();
+        getGeocodingServiceFacade().addGeocodingService(new GoogleMapsService());
+        getGeocodingServiceFacade().addGeocodingService(nominatimService);
+        getGeocodingServiceFacade().setPreferredGeocodingService(nominatimService);
     }
 
     protected void initializeRoutingServices() {

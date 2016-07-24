@@ -312,6 +312,7 @@
         <module>mapsforge-mapview</module>
         <module>mapview</module>
         <module>navigation-formats</module>
+        <module>nominatim</module>
         <module>profileview</module>
         <module>rest</module>
         <module>route</module>

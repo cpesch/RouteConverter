@@ -120,11 +120,6 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
         return resultsArray[0].getFormattedAddress();
     }
 
-    public NavigationPosition getPositionFor(String address) throws IOException {
-        List<NavigationPosition> positions = getPositionsFor(address);
-        return positions != null && positions.size() > 0 ? positions.get(0) : null;
-    }
-
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
@@ -149,7 +144,7 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
         for (GeocodeResponse.Result response : responses) {
             GeocodeResponse.Result.Geometry.Location location = response.getGeometry().getLocation();
             result.add(new SimpleNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
-                    0.0d, response.getFormattedAddress()));
+                    null, response.getFormattedAddress()));
         }
         return result;
     }

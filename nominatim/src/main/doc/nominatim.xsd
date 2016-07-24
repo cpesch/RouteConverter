@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="searchresults" type="searchresultsType"/>
+  <xs:complexType name="placeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:decimal" name="place_id"/>
+        <xs:attribute type="xs:string" name="osm_type"/>
+        <xs:attribute type="xs:decimal" name="osm_id"/>
+        <xs:attribute type="xs:decimal" name="place_rank"/>
+        <xs:attribute type="xs:string" name="boundingbox"/>
+        <xs:attribute type="xs:decimal" name="lat"/>
+        <xs:attribute type="xs:decimal" name="lon"/>
+        <xs:attribute type="xs:string" name="display_name"/>
+        <xs:attribute type="xs:string" name="class"/>
+        <xs:attribute type="xs:string" name="type"/>
+        <xs:attribute type="xs:decimal" name="importance"/>
+        <xs:attribute type="xs:string" name="icon"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="searchresultsType">
+    <xs:sequence>
+      <xs:element type="placeType" name="place" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="timestamp"/>
+    <xs:attribute type="xs:string" name="attribution"/>
+    <xs:attribute type="xs:string" name="querystring"/>
+    <xs:attribute type="xs:string" name="polygon"/>
+    <xs:attribute type="xs:string" name="exclude_place_ids"/>
+    <xs:attribute type="xs:string" name="more_url"/>
+  </xs:complexType>
+</xs:schema>

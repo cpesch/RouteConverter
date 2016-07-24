@@ -50,7 +50,7 @@ public class GeoNamesService implements ElevationService {
         return "GeoNames";
     }
 
-    private String getGeoNamesNamesUrl() {
+    private String getGeoNamesApiUrl() {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
     }
 
@@ -59,7 +59,7 @@ public class GeoNamesService implements ElevationService {
     }
 
     private String execute(String uri) throws IOException {
-        String url = getGeoNamesNamesUrl() + uri + "&username=" + getGeoNamesUserName();
+        String url = getGeoNamesApiUrl() + uri + "&username=" + getGeoNamesUserName();
         Get get = new Get(url);
         String result = get.executeAsString();
         if (get.isSuccessful()) {

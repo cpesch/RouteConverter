@@ -55,23 +55,18 @@ public class GoogleMapsServiceIT {
     }
 
     @Test
-    public void getPositionFor() throws IOException {
-        NavigationPosition expected = new SimpleNavigationPosition(10.2004684, 50.0010183, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        NavigationPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void getPositionsFor() throws IOException {
-        NavigationPosition expected = new SimpleNavigationPosition(10.2004684, 50.0010183, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        List<SimpleNavigationPosition> expected = singletonList(
+                new SimpleNavigationPosition(10.2004684, 50.0010183, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany")
+        );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        assertEquals(singletonList(expected), actual);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void getElevationFor() throws IOException {
         assertEquals(39.3, service.getElevationFor(11.2, 59.0), 0.5);
-        assertEquals(185.6, service.getElevationFor(11.2, 60.0), 0.5);
+        assertEquals(179.4086151, service.getElevationFor(11.2, 60.0), 0.5);
         assertEquals(650.1, service.getElevationFor(11.2, 61.0), 0.5);
 
         assertEquals(77.2, service.getElevationFor(-68.0, -54.0), 0.5);

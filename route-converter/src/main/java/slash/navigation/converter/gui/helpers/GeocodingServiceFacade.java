@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.GeocodingService;
 
@@ -93,5 +92,10 @@ public class GeocodingServiceFacade {
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         return getGeocodingService().getPositionsFor(address);
+    }
+
+    public NavigationPosition getPositionFor(String address) throws IOException {
+        List<NavigationPosition> positions = getPositionsFor(address);
+        return positions != null && positions.size() > 0 ? positions.get(0) : null;
     }
 }
