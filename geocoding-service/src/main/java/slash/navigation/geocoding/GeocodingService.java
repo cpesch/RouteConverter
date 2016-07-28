@@ -33,5 +33,6 @@ import java.util.List;
 
 public interface GeocodingService {
     String getName();
+
     List<NavigationPosition> getPositionsFor(String address) throws IOException;
 }

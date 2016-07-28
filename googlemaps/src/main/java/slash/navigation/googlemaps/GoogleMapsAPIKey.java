@@ -81,6 +81,6 @@ public class GoogleMapsAPIKey {
         catch (IOException e) {
             log.severe("Could not read GoogleMaps API Key: " + getLocalizedMessage(e));
         }
-        return "AIzaSyBa8PNFRv02fg1Dv_G64SfoRxfytBFKxJw";
+        return "AIzaSyDblGeu0knpG6CPeBzDE3ueawMpD_VXAdk";
     }
 }
