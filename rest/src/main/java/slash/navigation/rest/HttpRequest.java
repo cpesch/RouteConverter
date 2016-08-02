@@ -75,6 +75,7 @@ public abstract class HttpRequest {
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36";
 
     private final Logger log;
+    private boolean loggedProxyInformation = false;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpRequestBase method;
     private HttpResponse response;
@@ -106,8 +107,6 @@ public abstract class HttpRequest {
     HttpRequestBase getMethod() {
         return method;
     }
-
-
 
     private void setAuthentication(String userName, String password, AuthScope authScope) {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -147,7 +146,12 @@ public abstract class HttpRequest {
     }
 
     protected HttpResponse execute() throws IOException {
-        clientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
+        RequestConfig requestConfig = requestConfigBuilder.build();
+        if(!loggedProxyInformation) {
+            log.info("Using proxy for HTTP requests: " + requestConfig.getProxy());
+            loggedProxyInformation = true;
+        }
+        clientBuilder.setDefaultRequestConfig(requestConfig);
         try {
             return clientBuilder.build().execute(method, context);
         } catch (SocketException e) {
