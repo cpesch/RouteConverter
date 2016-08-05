@@ -106,6 +106,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
+import static java.util.Collections.sort;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -1120,6 +1121,8 @@ public abstract class BrowserMapView implements MapView {
             return;
         }
 
+        generationId++;
+        directionsPositions.addAll(positions);
         executeScript("removeOverlays();");
 
         String color = asColor(routeColorModel.getColor());
@@ -1148,6 +1151,8 @@ public abstract class BrowserMapView implements MapView {
             buffer.append("avoidHighways: ").append(mapViewCallback.isAvoidHighways()).append(",");
             buffer.append("avoidTolls: ").append(mapViewCallback.isAvoidTolls()).append(",");
             buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"},");
+            buffer.append(generationId).append(",");
+            buffer.append(start).append(",");
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(",");
             boolean lastSegment = (j == directionsCount - 1);
@@ -1506,7 +1511,7 @@ public abstract class BrowserMapView implements MapView {
     private static final Pattern OVER_QUERY_LIMIT_PATTERN = Pattern.compile("^over-query-limit$");
     private static final Pattern ZERO_RESULTS_PATTERN = Pattern.compile("^zero-results$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
-    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(-?\\d+)/(.*)$");
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(\\d+)/(\\d+)/(.*)$");
 
     boolean processCallback(String callback) {
         Matcher insertPositionAtMatcher = ADD_POSITION_AT_PATTERN.matcher(callback);
@@ -1631,9 +1636,14 @@ public abstract class BrowserMapView implements MapView {
 
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
         if (directionsLoadMatcher.matches()) {
-            Integer startIndex = parseInt(directionsLoadMatcher.group(1));
-            List<DistanceAndTime> distanceAndTimes = parseDistanceAndTimeParameters(directionsLoadMatcher.group(2));
-            directionsLoadCallback(startIndex, distanceAndTimes);
+            Integer generation = parseInt(directionsLoadMatcher.group(1));
+            if (generation != generationId) {
+                log.warning("Got directions load from generation id: " + generation + ", current: " + generationId);
+            } else {
+                Integer generationIndex = parseInt(directionsLoadMatcher.group(2));
+                List<DistanceAndTime> distanceAndTimes = parseDistanceAndTimeParameters(directionsLoadMatcher.group(3));
+                directionsLoadCallback(generationIndex, distanceAndTimes);
+            }
             return true;
         }
 
@@ -1905,22 +1915,31 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
+    private int generationId = 0;
+    private List<NavigationPosition> directionsPositions = new ArrayList<>();
     private Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
 
     private void resetDirections() {
+        directionsPositions.clear();
         indexToDistanceAndTime.clear();
     }
 
-    private void directionsLoadCallback(final int startIndex, final List<DistanceAndTime> distanceAndTimes) {
+    private void directionsLoadCallback(final int generationIndex, final List<DistanceAndTime> distanceAndTimes) {
         executor.execute(new Runnable() {
             public void run() {
-                for (int i = 0; i < distanceAndTimes.size(); i++)
-                    indexToDistanceAndTime.put(startIndex + i, distanceAndTimes.get(i));
+                for (int i = 0; i < distanceAndTimes.size(); i++) {
+                    // find successor of start position from directions for first DistanceAndTime
+                    NavigationPosition position = directionsPositions.get(generationIndex + i + 1);
+                    int index = positionsModel.getIndex(position);
+                    indexToDistanceAndTime.put(index, distanceAndTimes.get(i));
+                }
 
                 Map<Integer, DistanceAndTime> result = new HashMap<>(indexToDistanceAndTime.size());
                 double aggregatedDistance = 0.0;
                 long aggregatedTime = 0L;
-                for(Integer index : indexToDistanceAndTime.keySet()) {
+                List<Integer> indices = new ArrayList<>(indexToDistanceAndTime.keySet());
+                sort(indices);
+                for(Integer index : indices) {
                     DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
                     if(distanceAndTime != null) {
                         Double distance = distanceAndTime.getDistance();
@@ -1930,7 +1949,7 @@ public abstract class BrowserMapView implements MapView {
                         if (!isEmpty(time))
                             aggregatedTime += time;
                     }
-                    result.put(index + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+                    result.put(index, new DistanceAndTime(aggregatedDistance, aggregatedTime));
                 }
                 fireCalculatedDistances(result);
             }
