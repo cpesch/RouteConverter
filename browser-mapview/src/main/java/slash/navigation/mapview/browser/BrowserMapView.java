@@ -1679,10 +1679,9 @@ public abstract class BrowserMapView implements MapView {
             // since setCenter() leads to a callback and thus paints the track twice
             if (ignoreNextZoomCallback)
                 ignoreNextZoomCallback = false;
-            else if (recenterAfterZooming.getBoolean() ||
-                    // directions are automatically scaled by the Google Maps API when zooming
-                    !positionsModel.getRoute().getCharacteristics().equals(Route) ||
-                    positionReducer.hasFilteredVisibleArea()) {
+            else if (// directions are automatically scaled by the Google Maps API when zooming
+                    !positionsModel.getRoute().getCharacteristics().equals(Route) &&
+                            (recenterAfterZooming.getBoolean() || positionReducer.hasFilteredVisibleArea())) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
                 if (recenterAfterZooming.getBoolean())
