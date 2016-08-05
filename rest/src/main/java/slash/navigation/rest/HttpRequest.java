@@ -39,15 +39,22 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpResponse;
 import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 
+import javax.swing.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.net.Proxy.NO_PROXY;
+import static java.net.Proxy.Type.DIRECT;
 import static java.util.Arrays.asList;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -75,7 +82,6 @@ public abstract class HttpRequest {
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36";
 
     private final Logger log;
-    private boolean loggedProxyInformation = false;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpRequestBase method;
     private HttpResponse response;
@@ -145,12 +151,31 @@ public abstract class HttpRequest {
         return false;
     }
 
-    protected HttpResponse execute() throws IOException {
-        RequestConfig requestConfig = requestConfigBuilder.build();
-        if(!loggedProxyInformation) {
-            log.info("Using proxy for HTTP requests: " + requestConfig.getProxy());
-            loggedProxyInformation = true;
+    private Proxy findProxy(URI uri) {
+        try {
+            ProxySelector selector = ProxySelector.getDefault();
+            List<Proxy> proxyList = selector.select(uri);
+            if (proxyList.size() > 0)
+                return proxyList.get(0);
+        } catch (IllegalArgumentException e) {
+            log.severe("Exception while finding proxy for " + uri + ": " + getLocalizedMessage(e));
         }
+        return NO_PROXY;
+    }
+
+    protected HttpResponse execute() throws IOException {
+        Proxy proxy = findProxy(method.getURI());
+        if(proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
+            SocketAddress address = proxy.address();
+            if(address instanceof InetSocketAddress) {
+                InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
+                requestConfigBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
+                log.info(format("Using proxy %s for %s", proxy.toString(), method.getURI()));
+                JOptionPane.showMessageDialog(null, format("Using proxy %s for %s", proxy.toString(), method.getURI()));
+            }
+        }
+
+        RequestConfig requestConfig = requestConfigBuilder.build();
         clientBuilder.setDefaultRequestConfig(requestConfig);
         try {
             return clientBuilder.build().execute(method, context);

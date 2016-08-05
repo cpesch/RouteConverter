@@ -373,7 +373,7 @@
        return path;
    }
 
-   function renderDirections(directionsRequest, startIndex, lastSegment, color, opacity, weight) {
+   function renderDirections(directionsRequest, generationId, generationIndex, startIndex, lastSegment, color, opacity, weight) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
                var panel = document.createElement("div");
@@ -392,17 +392,8 @@
                        waypoints.push(legs[j].distance.value);
                        waypoints.push(legs[j].duration.value);
                    }
-
-                   // add distance and duration for last waypoint
-                   if(legs.length > 0) {
-                       var steps = legs[legs.length - 1].steps;
-                       if (steps.length > 0) {
-                           waypoints.push(steps[steps.length - 1].distance.value);
-                           waypoints.push(steps[steps.length - 1].duration.value);
-                       }
-                   }
                }
-               callJavaWithUri("directions-load/" + startIndex + "/" + waypoints.join("/"));
+               callJavaWithUri("directions-load/" + generationId + "/" + generationIndex + "/" + waypoints.join("/"));
 
            } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
                var path = extractPath(directionsRequest);
