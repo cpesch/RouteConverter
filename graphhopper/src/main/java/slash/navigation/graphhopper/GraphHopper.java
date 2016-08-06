@@ -31,7 +31,6 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
-import slash.navigation.datasources.File;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -45,7 +44,6 @@ import slash.navigation.routing.TravelMode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -78,6 +76,7 @@ public class GraphHopper implements RoutingService {
     private final DownloadManager downloadManager;
     private DataSource dataSource;
 
+    private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile = null;
 
@@ -99,6 +98,7 @@ public class GraphHopper implements RoutingService {
 
     public synchronized void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+        finder = new DownloadableFinder(dataSource, getDirectory());
     }
 
     public boolean isDownload() {
@@ -247,32 +247,9 @@ public class GraphHopper implements RoutingService {
         return result;
     }
 
-    private Downloadable getSmallestBoundingBoxFor(BoundingBox routeBoundingBox) {
-        BoundingBox smallestBoundingBox = null;
-        Downloadable result = null;
-
-        for (File file : getDataSource().getFiles()) {
-            BoundingBox fileBoundingBox = file.getBoundingBox();
-            if (fileBoundingBox != null && fileBoundingBox.contains(routeBoundingBox)) {
-                if (smallestBoundingBox == null || smallestBoundingBox.contains(fileBoundingBox)) {
-                    result = file;
-                    smallestBoundingBox = fileBoundingBox;
-                }
-            }
-        }
-        return result;
-    }
-
-    private Collection<Downloadable> getSmallestBoundingBoxesFor(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> result = new HashSet<>();
-        for (BoundingBox boundingBox : boundingBoxes)
-            result.add(getSmallestBoundingBoxFor(boundingBox));
-        return result;
-    }
-
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
-        final Downloadable downloadable = getSmallestBoundingBoxFor(routeBoundingBox);
+        final Downloadable downloadable = finder.getDownloadableFor(routeBoundingBox);
         final java.io.File file = downloadable != null ? createFile(downloadable.getUri()) : null;
         setOsmPbfFile(file);
 
@@ -313,7 +290,7 @@ public class GraphHopper implements RoutingService {
     }
 
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = getSmallestBoundingBoxesFor(boundingBoxes);
+        Collection<Downloadable> downloadables = finder.getDownloadableFor(boundingBoxes);
         long notExists = 0L;
         for(Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
@@ -328,7 +305,7 @@ public class GraphHopper implements RoutingService {
     }
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = getSmallestBoundingBoxesFor(boundingBoxes);
+        Collection<Downloadable> downloadables = finder.getDownloadableFor(boundingBoxes);
         for (Downloadable downloadable : downloadables) {
             download(downloadable);
         }
