@@ -44,13 +44,16 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/jb/</exclude>
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
                                         <exclude>META-INF/maven/</exclude>
                                         <exclude>COPYING*</exclude>
                                         <exclude>builddate</exclude>
                                         <exclude>external.xpt</exclude>
+                                        <exclude>help/</exclude>
                                         <exclude>log4j.properties</exclude>
+                                        <exclude>mozilla/</exclude>
                                         <exclude>version*</exclude>
                                     </excludes>
                                 </filter>
