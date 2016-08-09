@@ -21,8 +21,8 @@
 package slash.navigation.nominatim;
 
 import slash.common.helpers.JAXBHelper;
-import slash.navigation.nominatim.binding.ObjectFactory;
-import slash.navigation.nominatim.binding.SearchresultsType;
+import slash.navigation.nominatim.reverse.ReversegeocodeType;
+import slash.navigation.nominatim.search.SearchresultsType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -32,13 +32,26 @@ import java.io.StringReader;
 import static slash.common.helpers.JAXBHelper.newContext;
 
 class NominatimUtil {
-    private static Unmarshaller newUnmarshaller() {
-        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
+    private static Unmarshaller newUnmarshallerSearch() {
+        return JAXBHelper.newUnmarshaller(newContext(slash.navigation.nominatim.search.ObjectFactory.class));
     }
 
-    public static SearchresultsType unmarshal(String string) throws JAXBException {
+    private static Unmarshaller newUnmarshallerReverse() {
+        return JAXBHelper.newUnmarshaller(newContext(slash.navigation.nominatim.reverse.ObjectFactory.class));
+    }
+
+    public static SearchresultsType unmarshalSearch(String string) throws JAXBException {
         try (StringReader reader = new StringReader(string)){
-            JAXBElement<SearchresultsType> unmarshal = (JAXBElement<SearchresultsType>) newUnmarshaller().unmarshal(reader);
+            JAXBElement<SearchresultsType> unmarshal = (JAXBElement<SearchresultsType>) newUnmarshallerSearch().unmarshal(reader);
+            return unmarshal.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error: " + e, e);
+        }
+    }
+
+    public static ReversegeocodeType unmarshalReverse(String string) throws JAXBException {
+        try (StringReader reader = new StringReader(string)){
+            JAXBElement<ReversegeocodeType> unmarshal = (JAXBElement<ReversegeocodeType>) newUnmarshallerReverse().unmarshal(reader);
             return unmarshal.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);

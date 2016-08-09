@@ -22,21 +22,22 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.PositionAugmenter;
+import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that adds populated places from geonames.org as descriptions to
+ * {@link ActionListener} that adds addresses from {@link GeocodingService} as descriptions to
  * the selected rows of a {@link JTable} with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddPopulatedPlaceToPositionsAction extends FrameAction {
+public class AddAddressToPositionsAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-        r.getPositionAugmenter().addPopulatedPlaces();
+        r.getPositionAugmenter().addAddresses();
     }
 }

@@ -51,8 +51,7 @@ public class PositionsTablePopupMenu extends AbstractTablePopupMenu {
         JMenu completeMenu = createMenu("complete");
         completeMenu.add(createItem("add-coordinates"));
         completeMenu.add(createItem("add-elevation"));
-        completeMenu.add(createItem("add-postal-address"));
-        completeMenu.add(createItem("add-populated-place"));
+        completeMenu.add(createItem("add-address"));
         completeMenu.add(createItem("add-speed"));
         completeMenu.add(createItem("add-time"));
         completeMenu.add(createItem("add-number"));

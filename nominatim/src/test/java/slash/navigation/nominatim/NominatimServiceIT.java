@@ -42,4 +42,17 @@ public class NominatimServiceIT {
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void getAddressFor() throws IOException {
+        assertEquals("Chammstrasse, 8733 Eschenbach (SG), Schweiz, Suisse, Svizzera, Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("97506 Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("82467 Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
+        assertEquals("Parroquia Bella Vista, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
+    }
 }

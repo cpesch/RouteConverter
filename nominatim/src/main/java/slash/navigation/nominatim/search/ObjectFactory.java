@@ -6,7 +6,7 @@
 //
 
 
-package slash.navigation.nominatim.binding;
+package slash.navigation.nominatim.search;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;

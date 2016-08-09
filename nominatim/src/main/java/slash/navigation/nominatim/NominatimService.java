@@ -23,8 +23,10 @@ package slash.navigation.nominatim;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingService;
-import slash.navigation.nominatim.binding.PlaceType;
-import slash.navigation.nominatim.binding.SearchresultsType;
+import slash.navigation.nominatim.reverse.AddresspartsType;
+import slash.navigation.nominatim.reverse.ReversegeocodeType;
+import slash.navigation.nominatim.search.PlaceType;
+import slash.navigation.nominatim.search.SearchresultsType;
 import slash.navigation.rest.Get;
 
 import javax.xml.bind.JAXBException;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.encodeUri;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Encapsulates REST access to the OSM Nominatim service.
@@ -66,23 +69,16 @@ public class NominatimService implements GeocodingService {
         return null;
     }
 
-    private SearchresultsType getSearchResultsFor(String uri) throws IOException {
+    private SearchresultsType getSearchFor(String uri) throws IOException {
         String result = execute(uri);
         if (result != null) {
             try {
-                return NominatimUtil.unmarshal(result);
+                return NominatimUtil.unmarshalSearch(result);
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
             }
         }
         return null;
-    }
-
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
-        SearchresultsType result = getSearchResultsFor("search/?q=" + encodeUri(address) + "&limit=10&format=xml");
-        if(result == null)
-            return null;
-        return extractAdresses(result.getPlace());
     }
 
     private List<NavigationPosition> extractAdresses(List<PlaceType> placeTypes) {
@@ -92,5 +88,43 @@ public class NominatimService implements GeocodingService {
                     null, placeType.getDisplayName() + " (" + placeType.getType() + ")"));
         }
         return result;
+    }
+
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+        SearchresultsType result = getSearchFor("search/?q=" + encodeUri(address) + "&limit=10&format=xml");
+        if (result == null)
+            return null;
+        return extractAdresses(result.getPlace());
+    }
+
+    private ReversegeocodeType getReverseFor(String uri) throws IOException {
+        String result = execute(uri);
+        if (result != null) {
+            try {
+                return NominatimUtil.unmarshalReverse(result);
+            } catch (JAXBException e) {
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
+            }
+        }
+        return null;
+    }
+
+    public String getAddressFor(NavigationPosition position) throws IOException {
+        ReversegeocodeType type = getReverseFor("reverse?lat=" + position.getLatitude() +
+                "&lon=" + position.getLongitude() + "&zoom=18&addressdetails=1&format=xml");
+        if (type == null)
+            return null;
+        AddresspartsType parts = type.getAddressparts();
+        if (parts == null)
+            return null;
+
+        String result = (parts.getRoad() != null ? parts.getRoad() : "") +
+                (parts.getHouseNumber() != null ? " " + parts.getHouseNumber() : "");
+        if (result.length() > 0)
+            result += ", ";
+        result += (parts.getPostcode() != null ? parts.getPostcode() : "") + " " +
+                        (parts.getCity() != null ? parts.getCity() + ", " : "") +
+                        (parts.getCountry() != null ? parts.getCountry() : "");
+        return trim(result);
     }
 }

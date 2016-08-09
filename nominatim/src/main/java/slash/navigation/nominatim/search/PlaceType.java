@@ -6,7 +6,7 @@
 //
 
 
-package slash.navigation.nominatim.binding;
+package slash.navigation.nominatim.search;
 
 import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;

@@ -64,8 +64,31 @@ public class AutomaticGeocodingService implements GeocodingService {
 
                 List<NavigationPosition> positions = service.getPositionsFor(address);
                 if (positions != null) {
-                    log.info("Used " + service.getName() + " to retrieve geocoding for " + address);
+                    log.info("Used " + service.getName() + " to retrieve position for " + address);
                     return positions;
+                }
+
+            } catch (IOException e) {
+                lastException = e;
+            }
+        }
+
+        if(lastException != null)
+            throw lastException;
+        else
+            return null;
+    }
+
+    public String getAddressFor(NavigationPosition position) throws IOException {
+        IOException lastException = null;
+
+        for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
+            try {
+
+                String address = service.getAddressFor(position);
+                if (address != null) {
+                    log.info("Used " + service.getName() + " to retrieve address for " + address);
+                    return address;
                 }
 
             } catch (IOException e) {
