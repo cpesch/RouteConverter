@@ -27,8 +27,6 @@ import slash.navigation.common.NumberingStrategy;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
@@ -54,7 +52,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
@@ -86,8 +83,7 @@ public class PositionAugmenter {
 
     private final ExecutorService executor = newSingleThreadExecutor();
     private final ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
-    private final GeoNamesService geonamesService = new GeoNamesService();
-    private final GoogleMapsService googleMapsService = new GoogleMapsService();
+    private final GeocodingServiceFacade geocodingServiceFacade = RouteConverter.getInstance().getGeocodingServiceFacade();
     private static final Object notificationMutex = new Object();
     private boolean running = true;
 
@@ -332,15 +328,14 @@ public class PositionAugmenter {
             processElevations(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
-
-    private void addPopulatedPlaces(final JTable positionsTable,
-                                    final PositionsModel positionsModel,
-                                    final int[] rows,
-                                    final OverwritePredicate predicate) {
+    private void addAddresses(final JTable positionsTable,
+                              final PositionsModel positionsModel,
+                              final int[] rows,
+                              final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     public String getName() {
-                        return "PopulatedPlacePositionAugmenter";
+                        return "AddressPositionAugmenter";
                     }
 
                     public int getColumnIndex() {
@@ -351,61 +346,23 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = getNearByFor(position);
+                        String description = geocodingServiceFacade.getAddressFor(position);
                         if (description != null)
                             positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
                         return description != null;
                     }
 
                     public String getMessagePrefix() {
-                        return "add-populated-place-";
+                        return "add-address-";
                     }
                 }
         );
     }
 
-    public void addPopulatedPlaces() {
+    public void addAddresses() {
         int[] rows = positionsView.getSelectedRows();
         if (rows.length > 0)
-            addPopulatedPlaces(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
-    }
-
-
-    private void addPostalAddresses(final JTable positionsTable,
-                                    final PositionsModel positionsModel,
-                                    final int[] rows,
-                                    final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, true, predicate,
-                new Operation() {
-                    public String getName() {
-                        return "PostalAddressPositionAugmenter";
-                    }
-
-                    public int getColumnIndex() {
-                        return DESCRIPTION_COLUMN_INDEX;
-                    }
-
-                    public void performOnStart() {
-                    }
-
-                    public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = getLocationFor(position);
-                        if (description != null)
-                            positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
-                        return description != null;
-                    }
-
-                    public String getMessagePrefix() {
-                        return "add-postal-address-";
-                    }
-                }
-        );
-    }
-
-    public void addPostalAddresses() {
-        int[] rows = positionsView.getSelectedRows();
-        if (rows.length > 0)
-            addPostalAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+            addAddresses(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
 
@@ -624,7 +581,7 @@ public class PositionAugmenter {
                         List<Object> columnValues = new ArrayList<>(3);
 
                         if (complementDescription) {
-                            String nextDescription = waitForDownload ? getDescriptionFor(position) : null;
+                            String nextDescription = waitForDownload ? geocodingServiceFacade.getAddressFor(position) : null;
                             if (nextDescription != null)
                                 nextDescription = createDescription(index + 1, nextDescription);
                             String previousDescription = position.getDescription();
@@ -676,29 +633,6 @@ public class PositionAugmenter {
                     }
                 }
         );
-    }
-
-    private String getDescriptionFor(NavigationPosition position) {
-        String description = getNearByFor(position);
-        if (description == null)
-            description = getLocationFor(position);
-        return trim(description);
-    }
-
-    private String getLocationFor(NavigationPosition position) {
-        try {
-            return googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private String getNearByFor(NavigationPosition position) {
-        try {
-            return geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     public void addData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {

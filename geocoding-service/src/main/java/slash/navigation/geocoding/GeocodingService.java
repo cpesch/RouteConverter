@@ -22,11 +22,13 @@ package slash.navigation.geocoding;
 
 import slash.navigation.common.NavigationPosition;
 
+import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Interface for a service that converts addresses into geographic coordinates.
+ * Interface for a service that translates addresses into geographic coordinates
+ * and a geographic coordinate to an address.
  *
  * @author Christian Pesch
  */
@@ -35,5 +37,21 @@ public interface GeocodingService {
     String getName();
     boolean isDownload();
 
+    /**
+     * Retrieves a list of {@link NavigationPosition}s for a given address.
+     * @param address the address to geocode
+     * @return a list of {@link NavigationPosition}s for the given address
+     * @throws ServiceUnavailableException if the service is overloaded
+     * @throws IOException if the request fails
+     */
     List<NavigationPosition> getPositionsFor(String address) throws IOException;
+
+    /**
+     * Retrieves an address for a given {@link NavigationPosition}.
+     * @param position the {@link NavigationPosition} to reverse geocode the address
+     * @return an address for the given {@link NavigationPosition}
+     * @throws ServiceUnavailableException if the service is overloaded
+     * @throws IOException if the request fails
+     */
+    String getAddressFor(NavigationPosition position) throws IOException;
 }

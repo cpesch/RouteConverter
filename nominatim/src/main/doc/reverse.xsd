@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="reversegeocode" type="reversegeocodeType"/>
+  <xs:complexType name="addresspartsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="house_number"/>
+      <xs:element type="xs:string" name="road"/>
+      <xs:element type="xs:string" name="suburb"/>
+      <xs:element type="xs:string" name="hamlet"/>
+      <xs:element type="xs:string" name="city"/>
+      <xs:element type="xs:string" name="state_district"/>
+      <xs:element type="xs:string" name="state"/>
+      <xs:element type="xs:string" name="postcode"/>
+      <xs:element type="xs:string" name="country"/>
+      <xs:element type="xs:string" name="country_code"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="reversegeocodeType">
+    <xs:sequence>
+      <xs:element type="resultType" name="result"/>
+      <xs:element type="addresspartsType" name="addressparts"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="timestamp"/>
+    <xs:attribute type="xs:string" name="attribution"/>
+    <xs:attribute type="xs:string" name="querystring"/>
+  </xs:complexType>
+  <xs:complexType name="resultType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:decimal" name="place_id"/>
+        <xs:attribute type="xs:string" name="osm_type"/>
+        <xs:attribute type="xs:decimal" name="osm_id"/>
+        <xs:attribute type="xs:decimal" name="lat"/>
+        <xs:attribute type="xs:decimal" name="lon"/>
+        <xs:attribute type="xs:string" name="boundingbox"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

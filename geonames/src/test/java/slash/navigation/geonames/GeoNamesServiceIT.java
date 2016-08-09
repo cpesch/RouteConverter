@@ -20,6 +20,7 @@
 package slash.navigation.geonames;
 
 import org.junit.Test;
+import slash.navigation.common.SimpleNavigationPosition;
 
 import java.io.IOException;
 
@@ -95,14 +96,14 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByFor() throws IOException {
-        assertEquals("St. Margarethen", service.getNearByFor(9.0, 47.5));
-        assertEquals("Grafenrheinfeld", service.getNearByFor(10.2, 50.001));
-        assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
-        assertEquals("Earth", service.getNearByFor(0.0, 0.0));
-        assertNotNull(service.getNearByFor(0.0, -90.0));
-        assertEquals("North Pole", service.getNearByFor(0.0, 90.0));
-        assertEquals(null, service.getNearByFor(90.0, 90.0));
-        assertEquals(null, service.getNearByFor(-90.0, -90.0));
+        assertEquals("St. Margarethen", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.5)));
+        assertEquals("Grafenrheinfeld", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("Hammersbach", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals("Earth", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
+        assertNotNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
+        assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
     }
 
     @Test

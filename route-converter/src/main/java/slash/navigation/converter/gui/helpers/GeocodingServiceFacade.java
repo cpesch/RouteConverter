@@ -94,6 +94,10 @@ public class GeocodingServiceFacade {
         return getGeocodingService().getPositionsFor(address);
     }
 
+    public String getAddressFor(NavigationPosition position) throws IOException {
+        return getGeocodingService().getAddressFor(position);
+    }
+
     public NavigationPosition getPositionFor(String address) throws IOException {
         List<NavigationPosition> positions = getPositionsFor(address);
         return positions != null && positions.size() > 0 ? positions.get(0) : null;

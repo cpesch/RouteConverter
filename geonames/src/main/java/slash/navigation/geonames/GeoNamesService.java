@@ -22,7 +22,9 @@ package slash.navigation.geonames;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.elevation.ElevationService;
+import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
@@ -42,7 +44,7 @@ import static slash.common.io.Transfer.parseInteger;
  * @author Christian Pesch
  */
 
-public class GeoNamesService implements ElevationService {
+public class GeoNamesService implements ElevationService, GeocodingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
@@ -121,6 +123,10 @@ public class GeoNamesService implements ElevationService {
         return elevation != null ? elevation.doubleValue() : null;
     }
 
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+        return null; // not supported
+    }
+
     private Geonames getGeonamesFor(String uri) throws IOException {
         String result = execute(uri);
         if (result != null) {
@@ -158,10 +164,10 @@ public class GeoNamesService implements ElevationService {
         return getNearByFor("findNearbyPlaceName", longitude, latitude);
     }
 
-    public String getNearByFor(double longitude, double latitude) throws IOException {
-        String description = getNearByPlaceNameFor(longitude, latitude);
+    public String getAddressFor(NavigationPosition position) throws IOException {
+        String description = getNearByPlaceNameFor(position.getLongitude(), position.getLatitude());
         if (description == null)
-            description = getNearByToponymFor(longitude, latitude);
+            description = getNearByToponymFor(position.getLongitude(), position.getLatitude());
         return description;
     }
 

@@ -90,10 +90,10 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
         }
     }
 
-    public String getLocationFor(double longitude, double latitude) throws IOException {
-        String url = getGeocodingUrl("latlng=" + latitude + "," + longitude);
+    public String getAddressFor(NavigationPosition position) throws IOException {
+        String url = getGeocodingUrl("latlng=" + position.getLatitude() + "," + position.getLongitude());
         Get get = get(url);
-        log.info("Getting location for " + longitude + "," + latitude);
+        log.info("Getting location for " + position.getLongitude() + "," + position.getLatitude());
         String result = get.executeAsString();
         if (get.isSuccessful())
             try {
@@ -101,7 +101,7 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
                     checkForError(url, status);
-                    return extractClosestLocation(geocodeResponse.getResult(), longitude, latitude);
+                    return extractClosestLocation(geocodeResponse.getResult(), position.getLongitude(), position.getLatitude());
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);

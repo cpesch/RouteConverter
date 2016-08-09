@@ -42,16 +42,16 @@ public class GoogleMapsServiceIT {
     }
 
     @Test
-    public void getLocationFor() throws IOException {
-        assertEquals("Chammstrasse 28, 8638 Goldingen, Switzerland", service.getLocationFor(9.0, 47.3));
-        assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Germany", service.getLocationFor(10.2, 50.001));
-        assertTrue(service.getLocationFor(11.06561, 47.42428).endsWith("82467 Garmisch-Partenkirchen, Germany"));
-        assertEquals(null, service.getLocationFor(0.0, 0.0));
-        assertEquals(null, service.getLocationFor(0.0, 90.0));
-        assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarctica"));
-        assertEquals("Ecuador", service.getLocationFor(-90.0, 0.0));
-        assertTrue(service.getLocationFor(-90.0, -90.0).contains("Antarctica"));
-        assertEquals(null, service.getLocationFor(90.0, 90.0));
+    public void getAddressFor() throws IOException {
+        assertEquals("Chammstrasse 28, 8638 Goldingen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)).endsWith("82467 Garmisch-Partenkirchen, Germany"));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)).contains("Antarctica"));
+        assertEquals("Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)).contains("Antarctica"));
+        assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 
     @Test

@@ -6,7 +6,7 @@
 //
 
 
-package slash.navigation.nominatim.binding;
+package slash.navigation.nominatim.search;
 
 import java.util.ArrayList;
 import java.util.List;
