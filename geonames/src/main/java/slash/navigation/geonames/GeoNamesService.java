@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInteger;
@@ -43,8 +44,10 @@ import static slash.common.io.Transfer.parseInteger;
 
 public class GeoNamesService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
+    private static final Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
     private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";
+    private int overQueryLimitCount = 0;
 
     public String getName() {
         return "GeoNames";
@@ -84,8 +87,11 @@ public class GeoNamesService implements ElevationService {
     }
 
     private void checkCurrentlyOverloaded(String url, String result) throws ServiceUnavailableException {
-        if (result.contains("limit") && (result.contains("overloaded") || result.contains("exceeded")))
+        if (result.contains("limit") && (result.contains("overloaded") || result.contains("exceeded"))) {
+            overQueryLimitCount++;
+            log.warning("geonames API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
+        }
     }
 
     Integer getAsterGDEMElevationFor(double longitude, double latitude) throws IOException {
@@ -157,48 +163,6 @@ public class GeoNamesService implements ElevationService {
         if (description == null)
             description = getNearByToponymFor(longitude, latitude);
         return description;
-    }
-
-    public PostalCode getNearByPostalCodeFor(double longitude, double latitude) throws IOException {
-        Geonames geonames = getGeonamesFor("findNearbyPostalCodes", longitude, latitude);
-        if (geonames == null || geonames.getCode() == null)
-            return null;
-        List<PostalCode> result = new ArrayList<>();
-        for (Geonames.Code code : geonames.getCode()) {
-            result.add(new PostalCode(code.getCountryCode(), code.getPostalcode(), code.getName()));
-        }
-        return result.size() > 0 ? result.get(0) : null;
-    }
-
-    public String getPlaceNameFor(String countryCode, String postalCode) throws IOException {
-        Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode=" + postalCode + "&country=" + countryCode);
-        if (geonames == null || geonames.getCode() == null)
-            return null;
-        List<PostalCode> result = new ArrayList<>();
-        for (Geonames.Code code : geonames.getCode()) {
-            result.add(new PostalCode(code.getCountryCode(), code.getPostalcode(), code.getName()));
-        }
-        return result.size() > 0 ? result.get(0).placeName : null;
-    }
-
-    /**
-     * Return longitude and latitude for the given country and postal code.
-     *
-     * @param countryCode the country code to search a position for
-     * @param postalCode  the postal code to search a position for
-     * @return the longitude and latitude for the given country and postal code
-     * @throws IOException if an error occurs while accessing geonames.org
-     */
-    public double[] getPositionFor(String countryCode, String postalCode) throws IOException {
-        Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode=" + postalCode + "&country=" + countryCode);
-        if (geonames == null || geonames.getCode() == null)
-            return null;
-        List<Double> result = new ArrayList<>();
-        for (Geonames.Code code : geonames.getCode()) {
-            result.add(code.getLng().doubleValue());
-            result.add(code.getLat().doubleValue());
-        }
-        return result.size() > 1 ? new double[]{result.get(0), result.get(1)} : null;
     }
 
     public boolean isDownload() {

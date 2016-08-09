@@ -339,8 +339,6 @@ public class PositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GeoNamesService geonamesService = new GeoNamesService();
-
                     public String getName() {
                         return "PopulatedPlacePositionAugmenter";
                     }
@@ -353,7 +351,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        String description = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
+                        String description = getNearByFor(position);
                         if (description != null)
                             positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, description), false, true);
                         return description != null;

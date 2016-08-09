@@ -67,14 +67,26 @@ public class AutomaticElevationService implements ElevationService {
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
+        IOException lastException = null;
+
         for (ElevationService service : sortByBestEffort(elevationServiceFacade.getElevationServices())) {
-            Double elevation = service.getElevationFor(longitude, latitude);
-            if (elevation != null) {
-                log.fine("Used " + service.getName() + " to retrieve elevation for " + longitude + "/" + latitude);
-                return elevation;
+            try {
+
+                Double elevation = service.getElevationFor(longitude, latitude);
+                if (elevation != null) {
+                    log.info("Used " + service.getName() + " to retrieve elevation for " + longitude + "/" + latitude);
+                    return elevation;
+                }
+
+            } catch (IOException e) {
+                lastException = e;
             }
         }
-        return null;
+
+        if(lastException != null)
+            throw lastException;
+        else
+            return null;
     }
 
     private ElevationService[] sortByBestEffort(List<ElevationService> elevationServices) {

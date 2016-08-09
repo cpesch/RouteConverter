@@ -146,6 +146,7 @@ import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.ApplicationMenu;
 import slash.navigation.converter.gui.helpers.AudioPlayer;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
+import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.ChecksumSender;
 import slash.navigation.converter.gui.helpers.DownloadNotifier;
 import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
@@ -1466,10 +1467,12 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeGeocodingServices() {
-        NominatimService nominatimService = new NominatimService();
+        AutomaticGeocodingService automaticGeocodingService = new AutomaticGeocodingService(getGeocodingServiceFacade());
+        getGeocodingServiceFacade().addGeocodingService(automaticGeocodingService);
+        getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
+
         getGeocodingServiceFacade().addGeocodingService(new GoogleMapsService());
-        getGeocodingServiceFacade().addGeocodingService(nominatimService);
-        getGeocodingServiceFacade().setPreferredGeocodingService(nominatimService);
+        getGeocodingServiceFacade().addGeocodingService(new NominatimService());
     }
 
     protected void initializeRoutingServices() {
