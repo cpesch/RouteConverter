@@ -206,7 +206,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             }
 
             List<NavigationPosition> positions = new ArrayList<>();
-            int readedPositions = 0;
+            int readPositions = 0;
             //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
             //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.
             //Daher nicht am Ende positions.size() == expectedPositionCount testen
@@ -214,10 +214,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 Wgs84Position position = readPosition(fileContent);
                 if (position != null)
                     positions.add(position);
-                readedPositions++;
+                readPositions++;
             }
 
-            if (readedPositions == expectedPositionCount)
+            if (readPositions == expectedPositionCount)
                 context.appendRoute(createRoute(Route, null, positions));
         }
     }
