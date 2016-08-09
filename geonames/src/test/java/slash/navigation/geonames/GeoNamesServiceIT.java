@@ -23,8 +23,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-import static slash.common.TestCase.assertDoubleArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class GeoNamesServiceIT {
     private GeoNamesService service = new GeoNamesService();
@@ -115,39 +115,5 @@ public class GeoNamesServiceIT {
         assertEquals(null, service.getNearByPlaceNameFor(0.0, 90.0));
         assertEquals(null, service.getNearByPlaceNameFor(90.0, 90.0));
         assertEquals(null, service.getNearByPlaceNameFor(-90.0, -90.0));
-    }
-
-    @Test
-    public void testNearByPostalCodeFor() throws IOException {
-        PostalCode code1 = service.getNearByPostalCodeFor(9.0, 47.3);
-        assertTrue(new PostalCode("CH", "9622", "Krinau").equals(code1) || new PostalCode("CH", "8638", "Goldingen").equals(code1));
-        assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
-        assertEquals(new PostalCode("AT", "6105", "Leutasch"), service.getNearByPostalCodeFor(11.1603, 47.3694));
-        assertEquals(null, service.getNearByPostalCodeFor(0.0, -90.0));
-        PostalCode code2 = service.getNearByPostalCodeFor(0.0, 90.0);
-        if (code2 != null)
-            assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), code2);
-        PostalCode code3 = service.getNearByPostalCodeFor(90.0, 90.0);
-        if (code3 != null)
-            assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), code3);
-        assertEquals(null, service.getNearByPostalCodeFor(-90.0, -90.0));
-    }
-
-    @Test
-    public void testPlaceNameFor() throws IOException {
-        assertEquals("Krinau", service.getPlaceNameFor("CH", "9622"));
-        assertEquals("Grafenrheinfeld", service.getPlaceNameFor("DE", "97506"));
-        assertEquals("Leutasch", service.getPlaceNameFor("AT", "6105"));
-        assertEquals("Walldorf", service.getPlaceNameFor("DE", "69190"));
-        assertEquals("Walldorf", service.getPlaceNameFor("de", "69190"));
-    }
-
-    @Test
-    public void testPositionFor() throws IOException {
-        assertDoubleArrayEquals(new double[]{9.05033, 47.31507}, service.getPositionFor("CH", "9622"));
-        assertDoubleArrayEquals(new double[]{10.1982, 50.0002}, service.getPositionFor("DE", "97506"));
-        assertDoubleArrayEquals(new double[]{11.14404, 47.3689}, service.getPositionFor("AT", "6105"));
-        assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("DE", "69190"));
-        assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("de", "69190"));
     }
 }

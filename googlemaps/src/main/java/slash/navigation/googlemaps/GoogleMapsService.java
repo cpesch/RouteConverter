@@ -56,6 +56,7 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class GoogleMapsService implements ElevationService, GeocodingService {
     private static final Logger log = Logger.getLogger(GoogleMapsService.class.getName());
+    private int overQueryLimitCount = 0;
 
     public String getName() {
         return "Google Maps";
@@ -82,8 +83,11 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
     }
 
     private void checkForError(String url, String status) throws ServiceUnavailableException {
-        if (!status.equals("OK"))
+        if (!status.equals("OK")) {
+            overQueryLimitCount++;
+            log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
+        }
     }
 
     public String getLocationFor(double longitude, double latitude) throws IOException {

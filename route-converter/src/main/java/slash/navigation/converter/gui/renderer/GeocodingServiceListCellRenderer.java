@@ -40,7 +40,8 @@ public class GeocodingServiceListCellRenderer extends DefaultListCellRenderer {
         GeocodingService service = GeocodingService.class.cast(value);
 
         String text = service.getName();
-        text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
+        if (!service.isDownload())
+            text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
         label.setText(text);
         return label;
     }
