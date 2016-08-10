@@ -1471,6 +1471,7 @@ public class RouteConverter extends SingleFrameApplication {
         getGeocodingServiceFacade().addGeocodingService(automaticGeocodingService);
         getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
 
+        getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new GoogleMapsService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
     }

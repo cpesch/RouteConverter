@@ -36,6 +36,7 @@ import java.util.List;
 public interface GeocodingService {
     String getName();
     boolean isDownload();
+    boolean isOverQueryLimit();
 
     /**
      * Retrieves a list of {@link NavigationPosition}s for a given address.

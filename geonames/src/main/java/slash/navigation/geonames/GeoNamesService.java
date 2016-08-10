@@ -55,6 +55,10 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return "GeoNames";
     }
 
+    public boolean isOverQueryLimit() {
+        return overQueryLimitCount > 0;
+    }
+
     private String getGeoNamesApiUrl() {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
     }

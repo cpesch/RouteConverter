@@ -56,11 +56,17 @@ public class AutomaticGeocodingService implements GeocodingService {
         return true;
     }
 
+    public boolean isOverQueryLimit() {
+        return false;
+    }
+
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
         IOException lastException = null;
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
             try {
+                if(service.isOverQueryLimit())
+                    continue;
 
                 List<NavigationPosition> positions = service.getPositionsFor(address);
                 if (positions != null) {
@@ -116,6 +122,7 @@ public class AutomaticGeocodingService implements GeocodingService {
         static {
             PRIORITY.put("Google Maps", 1);
             PRIORITY.put("Nominatim", 2);
+            PRIORITY.put("GeoNames", 3);
         }
 
         private int getPriority(GeocodingService geocodingService) {
