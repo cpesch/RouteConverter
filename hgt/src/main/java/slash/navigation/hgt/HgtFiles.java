@@ -73,6 +73,10 @@ public class HgtFiles implements ElevationService {
         return true;
     }
 
+    public boolean isOverQueryLimit() {
+        return false;
+    }
+
     public boolean isSupportsPath() {
         return true;
     }

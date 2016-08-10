@@ -56,6 +56,10 @@ public class NominatimService implements GeocodingService {
         return false;
     }
 
+    public boolean isOverQueryLimit() {
+        return false;
+    }
+
     private String getNominatimUrl() {
         return preferences.get(NOMINATIM_URL_PREFERENCE, "https://nominatim.openstreetmap.org/");
     }

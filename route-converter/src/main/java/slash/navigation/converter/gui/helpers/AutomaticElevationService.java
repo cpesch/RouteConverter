@@ -54,6 +54,10 @@ public class AutomaticElevationService implements ElevationService {
         return true;
     }
 
+    public boolean isOverQueryLimit() {
+        return false;
+    }
+
     public boolean isSupportsPath() {
         return false;
     }
@@ -71,6 +75,8 @@ public class AutomaticElevationService implements ElevationService {
 
         for (ElevationService service : sortByBestEffort(elevationServiceFacade.getElevationServices())) {
             try {
+                if(service.isOverQueryLimit())
+                    continue;
 
                 Double elevation = service.getElevationFor(longitude, latitude);
                 if (elevation != null) {

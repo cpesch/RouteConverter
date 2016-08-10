@@ -62,6 +62,10 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
         return "Google Maps";
     }
 
+    public boolean isOverQueryLimit() {
+        return overQueryLimitCount > 0;
+    }
+
     private String getGoogleMapsApiUrl(String api, String payload) {
         String language = Locale.getDefault().getLanguage();
         return getGoogleMapsServer().getApiUrl() + "/maps/api/" + api + "/xml?" + payload +
