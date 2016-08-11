@@ -457,8 +457,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                     }
                     break;
                 case 0x2:
-                    //8 byte ??
-                    byteBuffer.getLong();
+                    getText(byteBuffer); //firstname??
                     break;
                 case 0x5:
                     // unknown 5 bytes
