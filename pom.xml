@@ -313,6 +313,7 @@
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>nominatim</module>
+        <module>photon</module>
         <module>profileview</module>
         <module>rest</module>
         <module>route</module>

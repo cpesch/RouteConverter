@@ -1,0 +1,372 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          13.3888599,
+          52.5170365
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 240109189,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "place",
+        "city": "Berlin",
+        "osm_value": "city",
+        "name": "Berlin",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4385964,
+          52.5198535
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 62422,
+        "osm_type": "R",
+        "extent": [
+          13.0883476,
+          52.6754755,
+          13.7611541,
+          52.3382449
+        ],
+        "country": "Germany",
+        "osm_key": "place",
+        "osm_value": "state",
+        "name": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.239514674078611,
+          52.51467945
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 38862723,
+        "osm_type": "W",
+        "extent": [
+          13.23727,
+          52.5157151,
+          13.241757,
+          52.5135972
+        ],
+        "country": "Germany",
+        "osm_key": "leisure",
+        "housenumber": "3",
+        "city": "Berlin",
+        "street": "Olympischer Platz",
+        "osm_value": "stadium",
+        "postcode": "14053",
+        "name": "Berlin Olympic Stadium",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.392906167698161,
+          52.51859135
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 15976893,
+        "osm_type": "W",
+        "extent": [
+          13.3924667,
+          52.5191828,
+          13.3948806,
+          52.5175351
+        ],
+        "country": "Germany",
+        "osm_key": "building",
+        "housenumber": "6",
+        "city": "Berlin",
+        "street": "Unter den Linden",
+        "osm_value": "yes",
+        "postcode": "10117",
+        "name": "Humboldt University in Berlin Mitte Campus",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.393584328202255,
+          52.5185223
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 120456814,
+        "osm_type": "W",
+        "extent": [
+          13.3906703,
+          52.5200851,
+          13.3948782,
+          52.5174944
+        ],
+        "country": "Germany",
+        "osm_key": "amenity",
+        "city": "Berlin",
+        "street": "Dorotheenstraﬂe",
+        "osm_value": "university",
+        "postcode": "10117",
+        "name": "Humboldt University in Berlin Mitte Campus",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3696614,
+          52.5249451
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3856100103,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "railway",
+        "city": "Berlin",
+        "street": "Eingangsebene",
+        "osm_value": "station",
+        "postcode": "10557",
+        "name": "Berlin Hauptbahnhof",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -88.1090391,
+          42.976453
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 244737,
+        "osm_type": "R",
+        "extent": [
+          -88.1889939,
+          43.017325,
+          -88.0672519,
+          42.922858
+        ],
+        "country": "United States of America",
+        "osm_key": "place",
+        "osm_value": "city",
+        "name": "New Berlin",
+        "state": "Wisconsin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3869884,
+          52.5201744
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 530812080,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "railway",
+        "housenumber": "142",
+        "city": "Berlin",
+        "street": "Friedrichstraﬂe",
+        "osm_value": "station",
+        "postcode": "10117",
+        "name": "Berlin Friedrichstraﬂe",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4349112,
+          52.5103817
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3419894993,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "railway",
+        "city": "Berlin",
+        "street": "Mitteltunnel",
+        "osm_value": "station",
+        "postcode": "10243",
+        "name": "Berlin Ostbahnhof",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3814829449991,
+          52.507998549999996
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 74577540,
+        "osm_type": "W",
+        "extent": [
+          13.3807495,
+          52.5083344,
+          13.3822459,
+          52.5074359
+        ],
+        "country": "Germany",
+        "osm_key": "office",
+        "housenumber": "5",
+        "city": "Berlin",
+        "street": "Niederkirchnerstraﬂe",
+        "osm_value": "government",
+        "postcode": "10117",
+        "name": "Berlin House of Delegates",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3902169,
+          52.5486453
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 459277140,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "railway",
+        "city": "Berlin",
+        "street": "Hanne-Sobek-Platz",
+        "osm_value": "station",
+        "postcode": "13357",
+        "name": "Berlin Gesundbrunnen",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.339141071376059,
+          52.50844715
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9393789,
+        "osm_type": "W",
+        "extent": [
+          13.3327142,
+          52.5114457,
+          13.3461866,
+          52.5054269
+        ],
+        "country": "Germany",
+        "osm_key": "tourism",
+        "housenumber": "8",
+        "city": "Berlin",
+        "street": "Hardenbergplatz",
+        "osm_value": "zoo",
+        "postcode": "10787",
+        "name": "Berlin Zoological Garden",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4082985,
+          52.519961
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 539358887,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "place",
+        "city": "Berlin",
+        "osm_value": "district",
+        "name": "Alt-Berlin",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.1956287,
+          52.5347694
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3101920259,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "railway",
+        "city": "Berlin",
+        "street": "Am Bahnhof Spandau",
+        "osm_value": "station",
+        "postcode": "13597",
+        "name": "Berlin-Spandau",
+        "state": "Berlin"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3083771,
+          52.5121441
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 289404068,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "amenity",
+        "housenumber": "35",
+        "city": "Berlin",
+        "street": "Bismarckstraﬂe",
+        "osm_value": "theatre",
+        "postcode": "10627",
+        "name": "Deutsche Oper Berlin",
+        "state": "Berlin"
+      }
+    }
+  ],
+  "type": "FeatureCollection"
+}
