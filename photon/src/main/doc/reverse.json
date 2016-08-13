@@ -1,0 +1,27 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          9.998645,
+          51.9982968
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "osm_id": 693697564,
+        "osm_type": "N",
+        "country": "Germany",
+        "osm_key": "tourism",
+        "city": "Sehlem",
+        "street": "Evensener Dorfstraﬂe",
+        "osm_value": "information",
+        "postcode": "31196",
+        "name": "Geographischer Punkt",
+        "state": "Lower Saxony"
+      }
+    }
+  ],
+  "type": "FeatureCollection"
+}

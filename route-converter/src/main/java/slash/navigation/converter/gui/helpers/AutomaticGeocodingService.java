@@ -122,7 +122,8 @@ public class AutomaticGeocodingService implements GeocodingService {
         static {
             PRIORITY.put("Google Maps", 1);
             PRIORITY.put("Nominatim", 2);
-            PRIORITY.put("GeoNames", 3);
+            PRIORITY.put("Photon", 3);
+            PRIORITY.put("GeoNames", 4);
         }
 
         private int getPriority(GeocodingService geocodingService) {

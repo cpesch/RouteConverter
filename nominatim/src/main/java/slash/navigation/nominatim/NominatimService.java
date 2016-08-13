@@ -85,7 +85,7 @@ public class NominatimService implements GeocodingService {
         return null;
     }
 
-    private List<NavigationPosition> extractAdresses(List<PlaceType> placeTypes) {
+    private List<NavigationPosition> extractPositions(List<PlaceType> placeTypes) {
         List<NavigationPosition> result = new ArrayList<>(placeTypes.size());
         for (PlaceType placeType : placeTypes) {
             result.add(new SimpleNavigationPosition(placeType.getLon().doubleValue(), placeType.getLat().doubleValue(),
@@ -98,7 +98,7 @@ public class NominatimService implements GeocodingService {
         SearchresultsType result = getSearchFor("search/?q=" + encodeUri(address) + "&limit=10&format=xml");
         if (result == null)
             return null;
-        return extractAdresses(result.getPlace());
+        return extractPositions(result.getPlace());
     }
 
     private ReversegeocodeType getReverseFor(String uri) throws IOException {
