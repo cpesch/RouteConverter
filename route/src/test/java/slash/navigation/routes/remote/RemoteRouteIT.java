@@ -23,6 +23,7 @@ import org.junit.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.NotFoundException;
 import slash.navigation.routes.NotOwnerException;
@@ -85,7 +86,7 @@ public class RemoteRouteIT extends BaseRemoteCatalogTest {
         createAndDeleteRoute("/Slashes/Route/" + currentTimeMillis() + "/");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void testCreateRouteForbidden() throws IOException {
         RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
         wrong.addRoute(API, "egal", null, REMOTE_URL);

@@ -23,6 +23,7 @@ import org.junit.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.NotFoundException;
 import slash.navigation.routes.NotOwnerException;
@@ -100,7 +101,7 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
         createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test(expected = UnAuthorizedException.class)
     public void testCreateCategoryForbidden() throws IOException {
         RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
         wrong.addCategory(API, "egal");

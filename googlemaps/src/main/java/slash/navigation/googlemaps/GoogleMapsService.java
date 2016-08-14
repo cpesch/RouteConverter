@@ -87,7 +87,7 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
     }
 
     private void checkForError(String url, String status) throws ServiceUnavailableException {
-        if (!status.equals("OK")) {
+        if (status.equals("OVER_QUERY_LIMIT")) {
             overQueryLimitCount++;
             log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
@@ -125,7 +125,7 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
                 return (int) (distance1 - distance2);
             }
         });
-        return resultsArray[0].getFormattedAddress();
+        return resultsArray.length > 0 ? resultsArray[0].getFormattedAddress() : null;
     }
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
