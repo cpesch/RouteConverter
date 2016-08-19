@@ -30,6 +30,7 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
+import slash.navigation.rest.Get;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.url.MotoPlanerUrlFormat;
@@ -215,7 +216,7 @@ public class NavigationFormatParser {
             URL url = new URL(urlString);
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream()));
+            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(openStream(url)));
             buffer.mark(readBufferSize + 1);
             try {
                 CompactCalendar startDate = extractStartDate(url);
@@ -312,7 +313,17 @@ public class NavigationFormatParser {
 
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(url.openStream(), readBufferSize, extractStartDate(url), extractFile(url), formats);
+        return read(openStream(url), readBufferSize, extractStartDate(url), extractFile(url), formats);
+    }
+
+    private InputStream openStream(URL url) throws IOException {
+        String urlString = url.toExternalForm();
+        // make sure HTTPS requests use HTTP Client with it's SSL tweaks
+        if(urlString.contains("https://")) {
+            Get get = new Get(urlString);
+            return get.executeAsStream();
+        }
+        return url.openStream();
     }
 
     public ParserResult read(URL url) throws IOException {
