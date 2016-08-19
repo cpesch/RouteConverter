@@ -926,7 +926,7 @@ public class ConvertPanel implements PanelInTab {
 
             String source = urlModel.getShortUrl();
             // if there is no source a new file is saved
-            if(source == null)
+            if (source == null)
                 source = route.getName();
 
             showMessageDialog(r.getFrame(),
