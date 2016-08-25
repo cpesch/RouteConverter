@@ -191,6 +191,8 @@ public class Wgs84Position extends BaseNavigationPosition {
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
         position.setHeading(getHeading());
+        position.setPressure(getPressure());
+        position.setTemperature(getTemperature());
         position.setHdop(getHdop());
         position.setPdop(getPdop());
         position.setVdop(getVdop());
