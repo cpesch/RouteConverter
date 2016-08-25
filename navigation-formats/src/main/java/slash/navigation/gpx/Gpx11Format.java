@@ -330,12 +330,13 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement<String> element = asJABElement(any);
-                if ("course".equals(element.getName().getLocalPart())) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof TrackPointExtensionT) {
                     if (foundHeading || heading == null)
                         iterator.remove();
                     else {
-                        element.setValue(formatHeadingAsString(heading));
+                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                        trackPoint.setCourse(formatHeading(heading));
                         foundHeading = true;
                     }
                 }
@@ -407,12 +408,13 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement<String> element = asJABElement(any);
-                if ("atemp".equals(element.getName().getLocalPart())) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof TrackPointExtensionT) {
                     if (foundTemperature || temperature == null)
                         iterator.remove();
                     else {
-                        element.setValue(formatTemperatureAsString(temperature));
+                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                        trackPoint.setAtemp(temperature);
                         foundTemperature = true;
                     }
                 }

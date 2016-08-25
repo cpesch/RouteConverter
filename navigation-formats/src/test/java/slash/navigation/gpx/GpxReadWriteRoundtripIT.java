@@ -21,7 +21,6 @@
 package slash.navigation.gpx;
 
 import org.junit.Test;
-import org.w3c.dom.Element;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.Wgs84Position;
@@ -275,25 +274,6 @@ public class GpxReadWriteRoundtripIT {
         assertEquals("http://wpt", wptType.getLink().get(0).getHref());
     }
 
-    private void checkSpeedExtension(WptType wptType) {
-        assertNotNull(wptType.getExtensions().getAny());
-        assertEquals(2, wptType.getExtensions().getAny().size());
-        Element course = (Element) wptType.getExtensions().getAny().get(0);
-        assertEquals("course", course.getLocalName());
-        assertEquals("86.8", course.getTextContent());
-        Element speed = (Element) wptType.getExtensions().getAny().get(1);
-        assertEquals("speed", speed.getLocalName());
-        assertEquals("22.75", speed.getTextContent());
-    }
-
-    private void checkTemperatureExtension(WptType wptType) {
-        assertNotNull(wptType.getExtensions().getAny());
-        assertEquals(2, wptType.getExtensions().getAny().size());
-        Element course = (Element) wptType.getExtensions().getAny().get(0);
-        assertEquals("atemp", course.getLocalName());
-        assertEquals("26.0", course.getTextContent());
-    }
-
     @Test
     public void testGpx11Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx", new ReadWriteTestCallback() {
@@ -353,8 +333,6 @@ public class GpxReadWriteRoundtripIT {
                 GpxPosition sourceWaypoint = sourceWaypoints.getPosition(0);
                 assertNotNull(sourceWaypoint.getOrigin());
                 checkUnprocessed(sourceWaypoint.getOrigin(WptType.class));
-                checkSpeedExtension(sourceWaypoint.getOrigin(WptType.class));
-                checkTemperatureExtension(sourceWaypoint.getOrigin(WptType.class));
 
                 GpxRoute sourceTrack = (GpxRoute) source.getAllRoutes().get(1);
                 assertNotNull(sourceTrack.getOrigins());
@@ -364,8 +342,6 @@ public class GpxReadWriteRoundtripIT {
                 GpxPosition sourceTrackPoint = sourceTrack.getPosition(0);
                 assertNotNull(sourceTrackPoint.getOrigin());
                 checkUnprocessed(sourceTrackPoint.getOrigin(WptType.class));
-                checkSpeedExtension(sourceTrackPoint.getOrigin(WptType.class));
-                checkTemperatureExtension(sourceTrackPoint.getOrigin(WptType.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(targetWaypoints.getOrigins());
@@ -374,8 +350,6 @@ public class GpxReadWriteRoundtripIT {
                 GpxPosition targetWaypoint = targetWaypoints.getPosition(0);
                 assertNotNull(targetWaypoint.getOrigin());
                 checkUnprocessed(targetWaypoint.getOrigin(WptType.class));
-                checkSpeedExtension(targetWaypoint.getOrigin(WptType.class));
-                checkTemperatureExtension(sourceTrackPoint.getOrigin(WptType.class));
 
                 GpxRoute targetTrack = (GpxRoute) target.getAllRoutes().get(1);
                 assertNotNull(targetTrack.getOrigins());
@@ -385,8 +359,6 @@ public class GpxReadWriteRoundtripIT {
                 GpxPosition targetTrackPoint = targetTrack.getPosition(0);
                 assertNotNull(targetTrackPoint.getOrigin());
                 checkUnprocessed(targetTrackPoint.getOrigin(WptType.class));
-                checkSpeedExtension(targetTrackPoint.getOrigin(WptType.class));
-                checkTemperatureExtension(sourceTrackPoint.getOrigin(WptType.class));
 
                 checkHeadingAndAccuracy(sourceTrack, targetTrack);
                 checkHeadingAndAccuracy(sourceWaypoints, targetWaypoints);
