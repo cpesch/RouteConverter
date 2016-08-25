@@ -166,6 +166,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
+                    Double t = getTemperature(wptType);
                     positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), getHeading(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
                 }
             }
@@ -201,7 +202,7 @@ public class Gpx11Format extends GpxFormat {
                                 result = asKmh(result);
                         }
 
-                        // generic reading of speed elements
+                    // generic reading of speed elements
                     } else if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // everything is converted from m/s to Km/h except for the exceptional case
@@ -339,6 +340,34 @@ public class Gpx11Format extends GpxFormat {
 
         if (anys.size() == 0)
             wptType.setExtensions(null);
+    }
+
+    private Double getTemperature(WptType wptType) {
+        Double result = null;
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof TrackPointExtensionT) {
+                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                        result = trackPoint.getAtemp();
+                    }
+
+                } else if (any instanceof Element) {
+                    Element element = (Element) any;
+
+                    // TrackPointExtension v1
+                    if ("TrackPointExtension".equals(element.getLocalName())) {
+                        Node firstChild = element.getFirstChild();
+                        if (firstChild != null && "atemp".equals(firstChild.getLocalName())) {
+                            result = parseDouble(element.getTextContent());
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private void setExtension(WptType wptType, String extensionNameToRemove, String extensionNameToAdd, Object extensionToAdd) {
