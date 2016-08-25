@@ -54,14 +54,15 @@ public class GpxPosition extends Wgs84Position {
         super(longitude, latitude, elevation, speed, time, description, origin);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
-                       Double heading, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, Double heading,
+                       Double temperature, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
                        BigDecimal vdop, BigInteger satellites, Object origin) {
         this(formatDouble(longitude), formatDouble(latitude),
                 formatDouble(elevation), speed, time, description, origin);
         // avoid overwriting values determined by setDescription() with a null value
         if (heading != null)
             setHeading(heading);
+        setTemperature(temperature);
         setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
         setVdop(formatDouble(vdop));
@@ -138,6 +139,7 @@ public class GpxPosition extends Wgs84Position {
         return !(description != null ? !description.equals(that.description) : that.description != null) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
+                !(temperature != null ? !temperature.equals(that.temperature) : that.temperature != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&

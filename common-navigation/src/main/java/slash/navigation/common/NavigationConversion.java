@@ -338,6 +338,11 @@ public class NavigationConversion {
         return formatDoubleAsString(speed, maximumFractionDigits);
     }
 
+    public static String formatTemperatureAsString(Double temperature) {
+        int maximumFractionDigits = preferences.getInt("temperatureAsStringMaximumFractionDigits", 1);
+        return formatDoubleAsString(temperature, maximumFractionDigits);
+    }
+
     public static BigDecimal formatPosition(Double longitudeOrLatitude) {
         int maximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 7);
         return formatBigDecimal(longitudeOrLatitude, maximumFractionDigits);

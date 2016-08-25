@@ -119,8 +119,8 @@ public class GpxFormatIT {
     }
 
     @Test
-    public void testGarminTrackPointExtensionv1() throws Exception {
-        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v1.gpx");
+    public void testGarminTrackPointExtensionv1Speed() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v1-speed.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute track = routes.get(0);
@@ -128,6 +128,17 @@ public class GpxFormatIT {
         assertDoubleEquals(0.444479976, track.getPosition(1).getSpeed());
         assertNull(track.getPosition(1).getHeading());
         assertDoubleEquals(6.6301596, track.getPosition(1000).getSpeed());
+    }
+
+    @Test
+    public void testGarminTrackPointExtensionv1Temperature() throws Exception {
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "extensions-garmin-track-v1-temperature.gpx");
+        assertNotNull(routes);
+        assertEquals(1, routes.size());
+        GpxRoute track = routes.get(0);
+        assertEquals(1974, track.getPositionCount());
+        assertDoubleEquals(25.7, track.getPosition(1).getTemperature());
+        assertDoubleEquals(25.6, track.getPosition(1000).getTemperature());
     }
 
     @Test
