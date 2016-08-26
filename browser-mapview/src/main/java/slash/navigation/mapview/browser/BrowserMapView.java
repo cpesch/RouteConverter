@@ -332,7 +332,7 @@ public abstract class BrowserMapView implements MapView {
 
     protected void tryToInitialize(int count, long start) {
         boolean initialized = getComponent() != null && isMapInitialized();
-        synchronized (this) {
+        synchronized (INITIALIZED_LOCK) {
             this.initialized = initialized;
         }
         log.fine("Initialized map: " + initialized);
@@ -386,8 +386,10 @@ public abstract class BrowserMapView implements MapView {
         this.initializationCause = initializationCause;
     }
 
+    private static final Object INITIALIZED_LOCK = new Object();
+
     public boolean isInitialized() {
-        synchronized (this) {
+        synchronized (INITIALIZED_LOCK) {
             return initialized;
         }
     }
