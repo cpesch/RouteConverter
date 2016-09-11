@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>English</string>
+        <key>CFBundleAllowMixedLocalizations</key>
+        <true/>
+        <key>CFBundleExecutable</key>
+        <string>TimeAlbumPro</string>
+        <key>CFBundleGetInfoString</key>
+        <string>TimeAlbumPro for Mac OS X</string>
+        <key>CFBundleIconFile</key>
+        <string>TimeAlbumPro.icns</string>
+        <key>CFBundleIdentifier</key>
+        <string>slash.navigation.converter.gui.TimeAlbumPro</string>
+        <key>CFBundleName</key>
+        <string>TimeAlbumPro</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleSignature</key>
+        <string>RTCV</string>
+        <key>CFBundleShortVersionString</key>
+        <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}</string>
+        <key>CFBundleVersion</key>
+        <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
+        <key>NSHumanReadableCopyright</key>
+        <string>Created by Christian Pesch</string>
+        <key>LSMinimumSystemVersion</key>
+        <string>10.7.4</string>
+        <key>LSApplicationCategoryType</key>
+        <string>Navigation</string>
+    </dict>
+</plist>

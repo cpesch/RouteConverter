@@ -335,6 +335,8 @@
         <module>RouteConverterWindowsOffline</module>
         <module>RouteConverterWebstart</module>
         <module>time-album-pro</module>
+        <module>TimeAlbumProLinux</module>
+        <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
     </modules>
 </project>
