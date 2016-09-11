@@ -25,6 +25,9 @@ import slash.navigation.converter.gui.actions.ShowAboutTimeAlbumProAction;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.system.Platform.isWindows;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 
 /**
@@ -38,6 +41,14 @@ public class TimeAlbumPro extends RouteConverter {
 
     public static void main(String[] args) {
         launch(TimeAlbumPro.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+    }
+
+    protected void startup() {
+        if(!isWindows()) {
+            showMessageDialog(null, "TimeAlbum Pro is only supported on Windows", "Error", ERROR_MESSAGE);
+            System.exit(5);
+        }
+        super.startup();
     }
 
     protected String getProduct() {
