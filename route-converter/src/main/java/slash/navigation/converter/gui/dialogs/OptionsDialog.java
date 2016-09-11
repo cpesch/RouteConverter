@@ -479,9 +479,8 @@ public class OptionsDialog extends SimpleDialog {
         comboBoxTimeZone.setModel(timeZoneModel);
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
+                if (e.getStateChange() != SELECTED)
                     return;
-                }
                 String timeZoneId = String.valueOf(e.getItem());
                 r.getTimeZone().setString(timeZoneId);
             }

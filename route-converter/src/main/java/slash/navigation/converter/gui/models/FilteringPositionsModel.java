@@ -207,6 +207,6 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        throw new UnsupportedOperationException();
+        delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }
