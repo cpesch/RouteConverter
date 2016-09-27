@@ -17,10 +17,18 @@ public class UrlFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
-    public void readRouteCatalogUrl() throws IOException {
-        ParserResult result = parser.read("http://www.routeconverter.de/catalog/files/63/");
+    public void readRouteCatalogHTTPUrl() throws IOException {
+        ParserResult result = parser.read("http://static.routeconverter.com/routes/2ce409b0-06b3-424e-9556-5e0765714f6b");
         assertNotNull(result);
-        assertEquals(3, result.getAllRoutes().size());
+        assertEquals(1, result.getAllRoutes().size());
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
+    }
+
+    @Test
+    public void readRouteCatalogHTTPSUrl() throws IOException {
+        ParserResult result = parser.read("https://static.routeconverter.com/routes/2ce409b0-06b3-424e-9556-5e0765714f6b");
+        assertNotNull(result);
+        assertEquals(1, result.getAllRoutes().size());
         assertEquals(Gpx11Format.class, result.getFormat().getClass());
     }
 

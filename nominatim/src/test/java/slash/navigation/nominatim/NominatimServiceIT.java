@@ -51,7 +51,7 @@ public class NominatimServiceIT {
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
-        assertEquals("Parroquia Bella Vista, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertEquals("Parroquia Isla Santa María (Floreana) (Cab. en Pto. Velasco Ibarra), Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
