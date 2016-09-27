@@ -75,7 +75,7 @@ public class Download {
             File temp = createTempFile("download", ".tmp", getTemporaryDirectory());
             if (!temp.delete())
                 throw new IllegalArgumentException("Cannot delete temp file");
-            return temp;
+            return temp.getCanonicalFile();
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot create temp file", e);
         }

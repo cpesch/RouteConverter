@@ -357,7 +357,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
 
         // 4. look for unqualified "gpsbabel"
-        return babelFile != null ? babelFile.getAbsolutePath() : "gpsbabel";
+        return babelFile != null ? babelFile.getCanonicalPath() : "gpsbabel";
     }
 
     private List<String> considerShellScriptForBabel(String babel, List<String> args) throws IOException {
