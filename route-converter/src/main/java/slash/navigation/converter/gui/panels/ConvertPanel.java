@@ -157,6 +157,7 @@ import slash.navigation.converter.gui.actions.RenamePositionListAction;
 import slash.navigation.converter.gui.actions.SaveAction;
 import slash.navigation.converter.gui.actions.SaveAsAction;
 import slash.navigation.converter.gui.actions.SelectAllAction;
+import slash.navigation.converter.gui.actions.ClearSelectionAction;
 import slash.navigation.converter.gui.actions.SplitPositionListAction;
 import slash.navigation.converter.gui.actions.TopAction;
 import slash.navigation.converter.gui.actions.UpAction;
@@ -449,6 +450,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("save", new SaveAction(this));
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
+        actionManager.register("clear-selection", new ClearSelectionAction(getPositionsView()));
         actionManager.register("new-positionlist", new AddPositionListAction(this));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
@@ -1100,6 +1102,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("delete-position", existsASelectedPosition);
         actionManager.enableLocal("delete", POSITIONS, existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
+        actionManager.enable("clear-selection", existsASelectedPosition);
         findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
         actionManager.enable("top", existsASelectedPosition && existsMoreThanOnePosition);
         actionManager.enable("up", existsASelectedPosition && existsMoreThanOnePosition);
@@ -1282,7 +1285,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public void clearSelection() {
-        tablePositions.getSelectionModel().clearSelection();
+        tablePositions.clearSelection();
     }
 
     public void renamePositionList(String name) {

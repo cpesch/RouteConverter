@@ -189,7 +189,7 @@
                   <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="clear-selection"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="clear-selection-action"/>
                 </properties>
               </component>
               <component id="39d95" class="javax.swing.JButton" binding="buttonDeletePositions">

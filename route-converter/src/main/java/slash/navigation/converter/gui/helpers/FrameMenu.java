@@ -60,6 +60,7 @@ public class FrameMenu {
         editMenu.add(createItem("delete"));
         editMenu.addSeparator();
         editMenu.add(createItem("select-all"));
+        editMenu.add(createItem("clear-selection"));
 
         JMenu positionMenu = createMenu("position");
         positionMenu.add(createItem("new-position"));
