@@ -219,11 +219,6 @@ public class DataSourceManager {
         scanForFilesMissingInQueue(getApplicationDirectory());
     }
 
-    private boolean isAddDotHgt(DataSource dataSource) {
-        // fallback as long as .hgt is not part of the keys
-        return dataSource.getId().contains("srtm") || dataSource.getId().contains("ferranti");
-    }
-
     private void addOrUpdateInQueue(DataSource dataSource, Downloadable downloadable)  {
         Action action = Action.valueOf(dataSource.getAction());
         File directory = getApplicationDirectory(dataSource.getDirectory());
@@ -237,7 +232,7 @@ public class DataSourceManager {
         downloadManager.addOrUpdateInQueue(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
                 new FileAndChecksum(target, downloadable.getLatestChecksum()),
-                asFragments(directory, downloadable.getFragments(), action.equals(Extract), isAddDotHgt(dataSource)));
+                asFragments(directory, downloadable.getFragments(), action.equals(Extract)));
     }
 
     public Download queueForDownload(DataSource dataSource, Downloadable downloadable) {
@@ -250,20 +245,17 @@ public class DataSourceManager {
         return downloadManager.queueForDownload(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
                 new FileAndChecksum(target, downloadable.getLatestChecksum()),
-                asFragments(directory, downloadable.getFragments(), action.equals(Extract) || action.equals(Flatten), isAddDotHgt(dataSource)));
+                asFragments(target, downloadable.getFragments(), false));
     }
 
     private List<FileAndChecksum> asFragments(File directory, List<Fragment<Downloadable>> fragments,
-                                              boolean useDirectoryParent, boolean addDotHgt) {
+                                              boolean useDirectoryParent) {
         if(fragments == null)
             return null;
 
         List<FileAndChecksum> result = new ArrayList<>();
         for (Fragment<Downloadable> fragment : fragments) {
             String key = fragment.getKey();
-            // fallback as long as .hgt is not part of the keys
-            if (addDotHgt)
-                key += ".hgt";
             File target = new File(useDirectoryParent ? directory.getParentFile() : directory, key);
             result.add(new FileAndChecksum(target, fragment.getLatestChecksum()));
         }
