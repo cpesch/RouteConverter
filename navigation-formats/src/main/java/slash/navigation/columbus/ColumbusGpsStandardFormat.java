@@ -58,7 +58,7 @@ public class ColumbusGpsStandardFormat extends ColumbusGpsFormat {
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d" + SPACE_OR_ZERO + "]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
@@ -99,7 +99,7 @@ public class ColumbusGpsStandardFormat extends ColumbusGpsFormat {
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
         String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10);
+        String speed = removeZeros(lineMatcher.group(10));
         String heading = lineMatcher.group(11);
         String description = parseDescription(removeZeros(lineMatcher.group(12)), removeZeros(lineMatcher.group(1)), waypointType);
 

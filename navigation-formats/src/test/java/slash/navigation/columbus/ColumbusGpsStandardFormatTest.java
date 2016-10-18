@@ -53,6 +53,7 @@ public class ColumbusGpsStandardFormatTest {
         assertTrue(format.isPosition("5     ,T,090421,061057,47.797281N,013.049743E,504  ,0   ,206,         "));
         assertTrue(format.isPosition("3434  ,T,121126,083100,09.941796N,076.267059E,0    ,14  ,0  ,         "));
         assertTrue(format.isPosition("3434  ,G,121126,083100,09.941796N,076.267059E,0    ,14  ,0  ,         "));
+        assertTrue(format.isPosition("13699 ,T,160809,175228,37.120038N,097.401658W,288  ,0 2 ,359,         "));
 
         assertFalse(format.isPosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971"));
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
