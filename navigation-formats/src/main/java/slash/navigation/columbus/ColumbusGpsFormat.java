@@ -113,7 +113,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
     }
 
     protected String removeZeros(String string) {
-        return string != null ? string.replace('\u0000', ' ') : "";
+        return string != null ? string.replace("\u0000", "") : "";
     }
 
     protected void writeHeader(PrintWriter writer, SimpleRoute route) {
