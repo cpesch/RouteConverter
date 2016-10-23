@@ -105,6 +105,8 @@ import java.io.IOException;
 import static slash.navigation.base.ConvertBase.convertRoundtrip;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ConvertIT {
 
@@ -157,6 +159,24 @@ public class ConvertIT {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
         convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
         convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
+    }
+
+    @Test
+    public void testConvertGpxToColumbusGps() throws IOException {
+        boolean useLocalTimeZone = getUseLocalTimeZone();
+        try {
+            setUseLocalTimeZone(false);
+            convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsStandardFormat());
+            convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsProfessionalFormat());
+            convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsType2Format());
+        } finally {
+            setUseLocalTimeZone(useLocalTimeZone);
+        }
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testConvertGpxToColumbusGpsBinary() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsBinaryFormat());
     }
 
     @Test
