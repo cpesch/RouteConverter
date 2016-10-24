@@ -133,6 +133,7 @@ public class ProfileView implements PositionsSelectionModel {
         plot.setRangeGridlinesVisible(preferences.getBoolean(Y_GRID_PREFERENCE, true));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setAutoRangeIncludesZero(false);
         rangeAxis.setStandardTickUnits(createIntegerTickUnits());
         Font font = new JLabel().getFont();
         rangeAxis.setLabelFont(font);
