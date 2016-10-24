@@ -148,7 +148,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public Wgs84Position asColumbusGpsType2Position() {
+    public Wgs84Position asColumbusGpsTypePosition() {
         return asWgs84Position();
     }
 
