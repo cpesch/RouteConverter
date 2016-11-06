@@ -281,17 +281,17 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private Double parseAltitude(TiffDirectory directory) throws ImageReadException {
-        RationalNumber altitudeNumber = (RationalNumber) directory.getFieldValue(GPS_TAG_GPS_ALTITUDE);
+        RationalNumber altitudeNumber = directory.getFieldValue(GPS_TAG_GPS_ALTITUDE);
         if (altitudeNumber == null)
             return null;
 
         double altitude = altitudeNumber.doubleValue();
-        Byte altitudeRef = (Byte) directory.getFieldValue(GPS_TAG_GPS_ALTITUDE_REF);
-        return altitudeRef != null && altitudeRef == 1 ? -altitude : altitude;
+        Byte altitudeRef = directory.getFieldValue(GPS_TAG_GPS_ALTITUDE_REF);
+        return altitudeRef == 1 ? -altitude : altitude;
     }
 
     private Double parseSpeed(TiffDirectory directory) throws ImageReadException {
-        RationalNumber speedNumber = (RationalNumber) directory.getFieldValue(GPS_TAG_GPS_SPEED);
+        RationalNumber speedNumber = directory.getFieldValue(GPS_TAG_GPS_SPEED);
         if (speedNumber == null)
             return null;
 
@@ -321,7 +321,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private Double parseDirection(TiffDirectory directory) throws ImageReadException {
-        RationalNumber direction = (RationalNumber) directory.getFieldValue(GPS_TAG_GPS_IMG_DIRECTION);
+        RationalNumber direction = directory.getFieldValue(GPS_TAG_GPS_IMG_DIRECTION);
         return direction != null ? direction.doubleValue() : null;
     }
 
@@ -336,7 +336,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private Double parseDOP(TiffDirectory directory) throws ImageReadException {
-        RationalNumber dop = (RationalNumber) directory.getFieldValue(GPS_TAG_GPS_DOP);
+        RationalNumber dop = directory.getFieldValue(GPS_TAG_GPS_DOP);
         return dop != null ? dop.doubleValue() : null;
     }
 

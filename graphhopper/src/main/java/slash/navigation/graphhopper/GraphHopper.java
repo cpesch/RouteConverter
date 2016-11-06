@@ -218,7 +218,7 @@ public class GraphHopper implements RoutingService {
                         setCHEnabled(false).
                         setEnableInstructions(false).
                         setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                        setOSMFile(file.getAbsolutePath()).
+                        setDataReaderFile(file.getAbsolutePath()).
                         importOrLoad();
             } catch (IllegalStateException e) {
                 log.warning("Could not initialize GraphHopper: " + e);

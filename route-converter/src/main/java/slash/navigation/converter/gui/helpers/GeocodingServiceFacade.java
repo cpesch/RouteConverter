@@ -40,7 +40,7 @@ import static java.lang.String.format;
 public class GeocodingServiceFacade {
     private static final Logger log = Logger.getLogger(GeocodingServiceFacade.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GeocodingServiceFacade.class);
-    private static final String GEOCODING_SERVICE = "geocodingService-2.18";
+    private static final String GEOCODING_SERVICE = "geocodingService-2.18"; // versioned preference
 
     private final List<GeocodingService> geocodingServices = new ArrayList<>();
     private GeocodingService preferredGeocodingService;
