@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>com.graphhopper</groupId>
-            <artifactId>graphhopper</artifactId>
+            <artifactId>graphhopper-core</artifactId>
             <version>${graphhopper.version}</version>
             <exclusions>
                 <exclusion>

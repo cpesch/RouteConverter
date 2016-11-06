@@ -276,7 +276,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
     private static final String DEBUG_PREFERENCE = "debug";
-    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.18";
+    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.18"; // versioned preference
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.18";
 
     private NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
