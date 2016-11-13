@@ -41,11 +41,11 @@ public class ColorModel {
 
     private EventListenerList listenerList = new EventListenerList();
     private final String preferencesPrefix;
-    private final String preferencesDefault;
+    private final String defaultValue;
 
-    public ColorModel(String preferencesPrefix, String preferencesDefault) {
+    public ColorModel(String preferencesPrefix, String defaultValue) {
         this.preferencesPrefix = preferencesPrefix;
-        this.preferencesDefault = preferencesDefault;
+        this.defaultValue = defaultValue;
     }
 
     private Color fromString(String color) {
@@ -58,9 +58,9 @@ public class ColorModel {
 
     public Color getColor() {
         try {
-            return fromString(preferences.get(preferencesPrefix + COLOR_SUFFIX, preferencesDefault));
+            return fromString(preferences.get(preferencesPrefix + COLOR_SUFFIX, defaultValue));
         } catch (IllegalArgumentException e) {
-            return new Color(decodeInt(preferencesDefault), true);
+            return new Color(decodeInt(defaultValue), true);
         }
     }
 
