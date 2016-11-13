@@ -208,7 +208,7 @@ public class Gpx11Format extends GpxFormat {
                     if ("TrackPointExtension".equals(element.getLocalName())) {
                         Node firstChild = element.getFirstChild();
                         if (firstChild != null && "speed".equals(firstChild.getLocalName()))
-                            result = asKmh(parseDouble(element.getTextContent()));
+                            result = asKmh(parseDouble(firstChild.getTextContent()));
 
                     // generic reading of speed elements
                     } else if ("speed".equals(element.getLocalName()))
@@ -373,7 +373,7 @@ public class Gpx11Format extends GpxFormat {
                     if ("TrackPointExtension".equals(element.getLocalName())) {
                         Node firstChild = element.getFirstChild();
                         if (firstChild != null && "atemp".equals(firstChild.getLocalName())) {
-                            result = parseDouble(element.getTextContent());
+                            result = parseDouble(firstChild.getTextContent());
                         }
                     }
                 }
