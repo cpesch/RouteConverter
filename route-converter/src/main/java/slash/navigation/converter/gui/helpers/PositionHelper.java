@@ -135,8 +135,8 @@ public class PositionHelper {
     }
 
     private static String formatDateTime(CompactCalendar time) {
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return getDateTimeFormat(timeZone.getString()).format(time.getTime());
+        String timeZoneId = RouteConverter.getInstance().getTimeZone().getTimeZoneId();
+        return getDateTimeFormat(timeZoneId).format(time.getTime());
     }
 
     public static String extractDateTime(NavigationPosition position) {
@@ -151,7 +151,7 @@ public class PositionHelper {
     }
 
     public static String formatDate(CompactCalendar time) {
-        return formatDate(time, RouteConverter.getInstance().getTimeZone().getString());
+        return formatDate(time, RouteConverter.getInstance().getTimeZone().getTimeZoneId());
     }
 
     public static String extractDate(NavigationPosition position) {
@@ -166,7 +166,7 @@ public class PositionHelper {
     }
 
     public static String formatTime(CompactCalendar time) {
-        return formatTime(time, RouteConverter.getInstance().getTimeZone().getString());
+        return formatTime(time, RouteConverter.getInstance().getTimeZone().getTimeZoneId());
     }
 
     public static String extractTime(NavigationPosition position) {
@@ -180,8 +180,8 @@ public class PositionHelper {
     }
 
     public static CompactCalendar parseDateTime(String stringValue) throws ParseException {
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return parseDateTime(stringValue, timeZone.getString());
+        String timeZoneId = RouteConverter.getInstance().getTimeZone().getTimeZoneId();
+        return parseDateTime(stringValue, timeZoneId);
     }
 
     private static CompactCalendar parseDate(String stringValue, String timeZonePreference) throws ParseException {
@@ -190,8 +190,8 @@ public class PositionHelper {
     }
 
     public static CompactCalendar parseDate(String stringValue) throws ParseException {
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return parseDate(stringValue, timeZone.getString());
+        String timeZoneId = RouteConverter.getInstance().getTimeZone().getTimeZoneId();
+        return parseDate(stringValue, timeZoneId);
     }
 
     private static CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
@@ -200,8 +200,8 @@ public class PositionHelper {
     }
 
     public static CompactCalendar parseTime(String stringValue) throws ParseException {
-        StringModel timeZone = RouteConverter.getInstance().getTimeZone();
-        return parseTime(stringValue, timeZone.getString());
+        String timeZoneId = RouteConverter.getInstance().getTimeZone().getTimeZoneId();
+        return parseTime(stringValue, timeZoneId);
     }
 
     private static long toNextUnit(Long size, long nextUnit) {

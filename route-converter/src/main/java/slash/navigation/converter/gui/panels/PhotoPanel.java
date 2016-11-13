@@ -47,6 +47,7 @@ import slash.navigation.converter.gui.predicates.TautologyPredicate;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.FilterPredicateListCellRenderer;
 import slash.navigation.converter.gui.renderer.TagStrategyListCellRenderer;
+import slash.navigation.converter.gui.renderer.TimeZoneListCellRenderer;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.photo.PhotoFormat;
@@ -64,6 +65,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
@@ -74,7 +76,7 @@ import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
+import static slash.common.helpers.TimeZoneHelper.getTimeZones;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
@@ -106,7 +108,7 @@ public class PhotoPanel implements PanelInTab {
     private JLabel labelPhotos;
     private JComboBox<FilterPredicate> comboBoxFilterPhotoPredicate;
     private JButton buttonAddPhotos;
-    private JComboBox<String> comboBoxPhotoTimeZone;
+    private JComboBox<TimeZone> comboBoxPhotoTimeZone;
     private JComboBox<TagStrategy> comboBoxTagStrategy;
     private JButton buttonTagPhotos;
 
@@ -199,16 +201,21 @@ public class PhotoPanel implements PanelInTab {
             }
         });
 
-        ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
-        timeZoneModel.setSelectedItem(r.getPhotoTimeZone());
+        ComboBoxModel<TimeZone> timeZoneModel = new DefaultComboBoxModel<>(getTimeZones());
+        timeZoneModel.setSelectedItem(r.getPhotoTimeZone().getTimeZone());
         comboBoxPhotoTimeZone.setModel(timeZoneModel);
+        comboBoxPhotoTimeZone.setRenderer(new TimeZoneListCellRenderer());
         comboBoxPhotoTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
+                if (e.getStateChange() != SELECTED)
                     return;
-                }
-                String timeZoneId = String.valueOf(e.getItem());
-                r.setPhotoTimeZone(timeZoneId);
+                TimeZone timeZone = TimeZone.class.cast(e.getItem());
+                r.getPhotoTimeZone().setTimeZone(timeZone);
+            }
+        });
+
+        r.getPhotoTimeZone().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
                 r.getGeoTagger().updateClosestPositionsForTagging();
             }
         });

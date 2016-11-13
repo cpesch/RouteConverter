@@ -25,7 +25,6 @@ import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
-import slash.navigation.photo.PhotoNavigationFormatRegistry;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -34,6 +33,7 @@ import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.photo.PhotoFormat;
+import slash.navigation.photo.PhotoNavigationFormatRegistry;
 import slash.navigation.photo.PhotoPosition;
 
 import javax.swing.*;
@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -223,8 +222,8 @@ public class GeoTagger {
         RouteConverter r = RouteConverter.getInstance();
         PositionsModel originalPositionsModel = r.getConvertPanel().getPositionsModel();
         CompactCalendar time = position.getTime();
-        if (!time.getTimeZoneId().equals(r.getPhotoTimeZone()))
-            time = time.asUTCTimeInTimeZone(TimeZone.getTimeZone(r.getPhotoTimeZone()));
+        if (!time.getTimeZoneId().equals(r.getPhotoTimeZone().getTimeZoneId()))
+            time = time.asUTCTimeInTimeZone(r.getPhotoTimeZone().getTimeZone());
         long threshold = preferences.getLong(CLOSEST_POSITION_BY_TIME_THRESHOLD_PREFERENCE, 5 * 1000);
         return originalPositionsModel.getClosestPosition(time, threshold);
     }

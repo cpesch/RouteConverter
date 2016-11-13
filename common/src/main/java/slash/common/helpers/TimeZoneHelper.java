@@ -30,9 +30,12 @@ import static java.util.Arrays.sort;
  */
 
 public class TimeZoneHelper {
-    public static String[] getTimeZoneIds() {
+    public static TimeZone[] getTimeZones() {
         String[] ids = TimeZone.getAvailableIDs();
         sort(ids);
-        return ids;
+        TimeZone[] timeZones = new TimeZone[ids.length];
+        for (int i = 0; i < timeZones.length; i++)
+            timeZones[i] = TimeZone.getTimeZone(ids[i]);
+        return timeZones;
     }
 }

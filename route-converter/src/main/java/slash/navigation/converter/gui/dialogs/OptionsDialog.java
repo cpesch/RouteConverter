@@ -44,6 +44,7 @@ import slash.navigation.converter.gui.renderer.MapViewListCellRenderer;
 import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
 import slash.navigation.converter.gui.renderer.NumberingStrategyListCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutingServiceListCellRenderer;
+import slash.navigation.converter.gui.renderer.TimeZoneListCellRenderer;
 import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.elevation.ElevationService;
@@ -73,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TimeZone;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -99,7 +101,7 @@ import static slash.common.helpers.LocaleHelper.RUSSIA;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.helpers.LocaleHelper.SLOVAKIA;
 import static slash.common.helpers.LocaleHelper.SPAIN;
-import static slash.common.helpers.TimeZoneHelper.getTimeZoneIds;
+import static slash.common.helpers.TimeZoneHelper.getTimeZones;
 import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
@@ -156,7 +158,7 @@ public class OptionsDialog extends SimpleDialog {
     private JComboBox<NumberPattern> comboboxNumberPattern;
     private JComboBox<NumberingStrategy> comboBoxNumberingStrategy;
     private JComboBox<UnitSystem> comboBoxUnitSystem;
-    private JComboBox<String> comboBoxTimeZone;
+    private JComboBox<TimeZone> comboBoxTimeZone;
     private JComboBox<DegreeFormat> comboBoxDegreeFormat;
     private JRadioButton radioButtonV1000LocalTime;
     private JRadioButton radioButtonV1000UTC;
@@ -474,15 +476,16 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        ComboBoxModel<String> timeZoneModel = new DefaultComboBoxModel<>(getTimeZoneIds());
-        timeZoneModel.setSelectedItem(r.getTimeZone().getString());
+        ComboBoxModel<TimeZone> timeZoneModel = new DefaultComboBoxModel<>(getTimeZones());
+        timeZoneModel.setSelectedItem(r.getTimeZone().getTimeZone());
         comboBoxTimeZone.setModel(timeZoneModel);
+        comboBoxTimeZone.setRenderer(new TimeZoneListCellRenderer());
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                String timeZoneId = String.valueOf(e.getItem());
-                r.getTimeZone().setString(timeZoneId);
+                TimeZone timeZone = TimeZone.class.cast(e.getItem());
+                r.getTimeZone().setTimeZone(timeZone);
             }
         });
 
