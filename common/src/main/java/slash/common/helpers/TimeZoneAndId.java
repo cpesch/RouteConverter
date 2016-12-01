@@ -21,21 +21,25 @@ package slash.common.helpers;
 
 import java.util.TimeZone;
 
-import static java.util.Arrays.sort;
-
 /**
- * Provides {@link TimeZone} helpers.
+ * A {@link TimeZone} with an id used for sorting and filtering.
  *
  * @author Christian Pesch
  */
+public class TimeZoneAndId {
+    private String id;
+    private TimeZone timeZone;
 
-public class TimeZoneHelper {
-    public static TimeZone[] getTimeZones() {
-        String[] ids = TimeZone.getAvailableIDs();
-        sort(ids);
-        TimeZone[] timeZones = new TimeZone[ids.length];
-        for (int i = 0; i < timeZones.length; i++)
-            timeZones[i] = TimeZone.getTimeZone(ids[i]);
-        return timeZones;
+    public TimeZoneAndId(String id, TimeZone timeZone) {
+        this.id = id;
+        this.timeZone = timeZone;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public TimeZone getTimeZone() {
+        return timeZone;
     }
 }
