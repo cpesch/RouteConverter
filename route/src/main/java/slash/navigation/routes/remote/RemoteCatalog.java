@@ -20,12 +20,20 @@
 
 package slash.navigation.routes.remote;
 
-import slash.navigation.rest.*;
+import slash.navigation.rest.Credentials;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.Put;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 import slash.navigation.rest.exception.UnAuthorizedException;
-import slash.navigation.routes.*;
+import slash.navigation.routes.Catalog;
+import slash.navigation.routes.Category;
+import slash.navigation.routes.NotFoundException;
+import slash.navigation.routes.NotOwnerException;
+import slash.navigation.routes.Route;
 import slash.navigation.routes.remote.binding.CatalogType;
 import slash.navigation.routes.remote.binding.CategoryType;
 import slash.navigation.routes.remote.binding.FileType;
@@ -69,16 +77,22 @@ public class RemoteCatalog implements Catalog {
     }
 
     CatalogType fetch(String url) throws IOException {
+        long start = System.currentTimeMillis();
         String urlWithXml = url + FORMAT_XML;
-        log.info("Fetching from " + urlWithXml);
-        Get get = new Get(urlWithXml);
-        String result = get.executeAsString();
-        if (get.isSuccessful())
-            try {
-                return unmarshal(result);
-            } catch (JAXBException e) {
-                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
-            }
+        try {
+            Get get = new Get(urlWithXml);
+            String result = get.executeAsString();
+            if (get.isSuccessful())
+                try {
+                    return unmarshal(result);
+                } catch (JAXBException e) {
+                    throw new IOException("Cannot unmarshall " + result + ": " + e, e);
+                }
+        }
+        finally {
+            long end = System.currentTimeMillis();
+            log.info("Fetching from " + urlWithXml + " took " + (end - start) + " milliseconds");
+        }
         return null;
     }
 
