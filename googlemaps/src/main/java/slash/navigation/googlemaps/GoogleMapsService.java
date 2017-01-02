@@ -92,6 +92,11 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
             log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
         }
+
+        if (status.equals("REQUEST_DENIED")) {
+            log.warning("Google API access is denied, url: " + url);
+            throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
+        }
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException {
