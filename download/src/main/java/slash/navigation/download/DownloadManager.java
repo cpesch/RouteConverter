@@ -275,7 +275,7 @@ public class DownloadManager {
 
     public void scanForOutdatedFilesInQueue() throws IOException {
         for(Download download : model.getDownloads()) {
-            if (COMPLETED.contains(download.getState())) {
+            if (COMPLETED.contains(download.getState()) && !Outdated.equals(download.getState())) {
 
                 Validator validator = new Validator(download);
                 if (!validator.isChecksumsValid()) {
