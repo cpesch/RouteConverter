@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import static java.lang.Math.min;
 import static slash.common.io.Files.setExtension;
 import static slash.common.io.Transfer.isEmpty;
 
@@ -76,16 +77,27 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
 
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    private void prepareForWriting(GpxRoute route) {
         // otherwise the ozi gpsbabel module would write .rte for Routes, .plt for Tracks and .wpt for Waypoints
         route.setCharacteristics(getRouteCharacteristics());
+
+        // reduce description to 40 chars and replace comma by space (character 209 aka \u00D1 didn't work)
+        for(GpxPosition position : route.getPositions()) {
+            String description = position.getDescription();
+            description = description.substring(0, min(description.length(), 40));
+            description = description.replaceAll(",", " ");
+            position.setDescription(description);
+        }
+    }
+
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        prepareForWriting(route);
         super.write(route, target, startIndex, endIndex);
     }
 
     public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
         for (GpxRoute route : routes)
-            // otherwise the ozi gpsbabel module would write .rte for Routes, .plt for Tracks and .wpt for Waypoints
-            route.setCharacteristics(getRouteCharacteristics());
+            prepareForWriting(route);
         super.write(routes, target);
     }
 
