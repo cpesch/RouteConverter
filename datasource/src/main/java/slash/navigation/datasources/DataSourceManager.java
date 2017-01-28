@@ -225,7 +225,7 @@ public class DataSourceManager {
 
         File target = directory; // Flatten
         if (action.equals(Copy))
-            target = new File(directory, downloadable.getUri().toLowerCase());
+            target = new File(directory, downloadable.getUri());
         else if (action.equals(Extract))
             target = target.getParentFile();
 
@@ -238,7 +238,7 @@ public class DataSourceManager {
     public Download queueForDownload(DataSource dataSource, Downloadable downloadable) {
         Action action = Action.valueOf(dataSource.getAction());
         File directory = getApplicationDirectory(dataSource.getDirectory());
-        File target = new File(directory, downloadable.getUri().toLowerCase());
+        File target = new File(directory, downloadable.getUri());
         if (action.equals(Extract) || action.equals(Flatten))
             target = ensureDirectory(target.getParentFile());
 
