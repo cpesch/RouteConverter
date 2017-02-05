@@ -69,7 +69,7 @@
                                         <Main-Class>slash.navigation.converter.gui.TimeAlbumPro</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/TimeAlbumProSplashScreen.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
-                                        <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
+                                        <Codebase>www.routeconverter.com</Codebase>
                                         <Application-Name>TimeAlbumPro</Application-Name>
                                     </manifestEntries>
                                 </transformer>

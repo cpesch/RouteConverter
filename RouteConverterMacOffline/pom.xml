@@ -34,7 +34,7 @@
                                         <Main-Class>slash.navigation.converter.gui.RouteConverterOffline</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
-                                        <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
+                                        <Codebase>www.routeconverter.com</Codebase>
                                         <Application-Name>RouteConverter</Application-Name>
                                     </manifestEntries>
                                 </transformer>

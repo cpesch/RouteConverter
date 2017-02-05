@@ -167,7 +167,7 @@
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
                     <artifactId>launch4j-maven-plugin</artifactId>
-                    <version>1.7.10</version>
+                    <version>1.7.15</version>
                 </plugin>
                 <plugin>
                     <groupId>com.coderplus.maven.plugins</groupId>
