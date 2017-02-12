@@ -76,8 +76,8 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForRouteConverterForum(Window window) {
-        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/forum-4.html" :
-                "http://forum.routeconverter.com/forum-12.html");
+        startBrowser(window, isGerman() ? "https://forum.routeconverter.de/forum-4.html" :
+                "https://forum.routeconverter.com/forum-12.html");
     }
 
     public static void startBrowserForGeonames(Window window) {
