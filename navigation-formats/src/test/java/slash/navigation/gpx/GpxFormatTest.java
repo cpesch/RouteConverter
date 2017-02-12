@@ -23,11 +23,15 @@ package slash.navigation.gpx;
 import org.junit.Test;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.NavigationConversion.formatBigDecimal;
 import static slash.navigation.gpx.GpxUtil.toXml;
@@ -46,6 +50,22 @@ public class GpxFormatTest {
         assertNotNull(gpx);
         String string = toXml(gpx);
         assertTrue(string.contains("<nmea:speed>123.45</nmea:speed>"));
+    }
+
+    @Test
+    public void testWritingGarminTrackPointExtensions() throws IOException, JAXBException {
+        slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
+        slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+        TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setSpeed(123.456);
+        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+        GpxType gpx = gpxFactory.createGpxType();
+        assertNotNull(gpx);
+        gpx.setExtensions(extensionsType);
+        assertNotNull(gpx);
+        String string = toXml(gpx);
+        assertTrue(string.contains("<gpxtpx:speed>123.456</gpxtpx:speed>"));
     }
 
     @Test
