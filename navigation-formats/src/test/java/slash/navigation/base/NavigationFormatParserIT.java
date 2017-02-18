@@ -164,7 +164,7 @@ public class NavigationFormatParserIT {
 
         readWaypoints(TEST_PATH + "from11trk.gpx", 3);
         readRoute(TEST_PATH + "from11trk.gpx", 0);
-        readTrack(TEST_PATH + "from11trk.gpx", 4, 1, 2, 3, 4);
+        readTrack(TEST_PATH + "from11trk.gpx", 4, 2, 2, 3, 4);
 
         read(TEST_PATH + "large11.gpx");
     }

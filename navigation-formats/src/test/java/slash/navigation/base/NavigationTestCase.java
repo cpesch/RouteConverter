@@ -792,10 +792,6 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
     }
 
-    private static String trim(String str, int maximum) {
-        return str != null && str.length() > maximum ? str.substring(0, maximum).trim() : str;
-    }
-
     private static String trimSuffix(String str, String suffix) {
         if (str == null)
             return null;
