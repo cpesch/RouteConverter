@@ -48,6 +48,7 @@ import java.util.List;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.formatXMLTime;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -230,6 +231,10 @@ public class Gpx11Format extends GpxFormat {
         return (JAXBElement<String>) any;
     }
 
+    private boolean isRemoveEmptyTrackPointExtension(TrackPointExtensionT trackPoint) {
+        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getSpeed());
+    }
+
     private void setSpeed(WptType wptType, Double speed) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -258,13 +263,12 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
-                    if (foundSpeed || speed == null)
+                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    trackPoint.setSpeed(asMs(speed));
+
+                    if (foundSpeed || isRemoveEmptyTrackPointExtension(trackPoint))
                         iterator.remove();
-                    else {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                        trackPoint.setSpeed(asMs(speed));
-                        foundSpeed = true;
-                    }
+                    foundSpeed = true;
                 }
             }
         }
@@ -275,9 +279,6 @@ public class Gpx11Format extends GpxFormat {
             trackPointExtensionT.setSpeed(asMs(speed));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
-
-        if (anys.size() == 0)
-            wptType.setExtensions(null);
     }
 
     private Double getHeading(WptType wptType) {
@@ -332,13 +333,12 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
-                    if (foundHeading || heading == null)
+                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    trackPoint.setCourse(formatHeading(heading));
+
+                    if (foundHeading || isRemoveEmptyTrackPointExtension(trackPoint))
                         iterator.remove();
-                    else {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                        trackPoint.setCourse(formatHeading(heading));
-                        foundHeading = true;
-                    }
+                    foundHeading = true;
                 }
             }
         }
@@ -349,9 +349,6 @@ public class Gpx11Format extends GpxFormat {
             trackPointExtensionT.setCourse(formatHeading(heading));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
-
-        if (anys.size() == 0)
-            wptType.setExtensions(null);
     }
 
     private Double getTemperature(WptType wptType) {
@@ -410,13 +407,12 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
-                    if (foundTemperature || temperature == null)
+                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    trackPoint.setAtemp(temperature);
+
+                    if (foundTemperature || isRemoveEmptyTrackPointExtension(trackPoint))
                         iterator.remove();
-                    else {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                        trackPoint.setAtemp(temperature);
-                        foundTemperature = true;
-                    }
+                    foundTemperature = true;
                 }
             }
         }
@@ -427,9 +423,6 @@ public class Gpx11Format extends GpxFormat {
             trackPointExtensionT.setAtemp(temperature);
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
-
-        if (anys.size() == 0)
-            wptType.setExtensions(null);
     }
 
     private void setExtension(WptType wptType, String extensionNameToRemove, String extensionNameToAdd, Object extensionToAdd) {
@@ -455,9 +448,6 @@ public class Gpx11Format extends GpxFormat {
 
         if (!foundElement)
             anys.add(extensionToAdd);
-
-        if (anys.size() == 0)
-            wptType.setExtensions(null);
     }
 
     private void setViaPoint(WptType wptType) {
@@ -497,6 +487,8 @@ public class Gpx11Format extends GpxFormat {
         wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
         wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
         wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
+        if (wptType.getExtensions() != null && wptType.getExtensions().getAny().size() == 0)
+            wptType.setExtensions(null);
         return wptType;
     }
 

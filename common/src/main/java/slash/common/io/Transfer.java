@@ -273,6 +273,10 @@ public class Transfer {
         return aDouble == null || aDouble == 0.0;
     }
 
+    public static boolean isEmpty(BigDecimal bigDecimal) {
+        return bigDecimal == null || isEmpty(bigDecimal.doubleValue());
+    }
+
     public static double toDouble(Double aDouble) {
         return aDouble == null ? 0.0 : aDouble;
     }

@@ -36,6 +36,7 @@ import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
@@ -261,9 +262,15 @@ public class GpxReadWriteRoundtripIT {
         assertEquals(new BigInteger("1"), trkType.getNumber());
     }
 
-    private void checkSpeed(GpxPosition position) {
+    private void checkHeading(GpxPosition position) {
         assertDoubleEquals(89.9, position.getHeading());
+    }
+
+    private void checkSpeed(GpxPosition position) {
         assertDoubleEquals(44.28, position.getSpeed());
+    }
+
+    private void checkTemperature(GpxPosition position) {
         assertDoubleEquals(26.0, position.getTemperature());
     }
 
@@ -346,14 +353,37 @@ public class GpxReadWriteRoundtripIT {
                 assertEquals(2, sourceTrack.getOrigins().size());
                 checkUnprocessed(sourceTrack.getOrigin(GpxType.class));
                 checkUnprocessed(sourceTrack.getOrigin(TrkType.class));
-                GpxPosition sourceTrackPoint = sourceTrack.getPosition(0);
-                assertNotNull(sourceTrackPoint.getOrigin());
-                checkUnprocessed(sourceTrackPoint.getOrigin(WptType.class));
-                checkSpeed(sourceTrackPoint);
+
+                GpxPosition sourceTrackPoint1 = sourceTrack.getPosition(0);
+                assertNotNull(sourceTrackPoint1.getOrigin());
+                checkUnprocessed(sourceTrackPoint1.getOrigin(WptType.class));
+                checkHeading(sourceTrackPoint1);
+                checkSpeed(sourceTrackPoint1);
+                checkTemperature(sourceTrackPoint1);
 
                 GpxPosition sourceTrackPoint2 = sourceTrack.getPosition(1);
                 assertNotNull(sourceTrackPoint2.getOrigin());
+                checkHeading(sourceTrackPoint2);
                 checkSpeed(sourceTrackPoint2);
+                checkTemperature(sourceTrackPoint2);
+
+                GpxPosition sourceTrackPoint3 = sourceTrack.getPosition(2);
+                assertNotNull(sourceTrackPoint3.getOrigin());
+                assertNull(sourceTrackPoint3.getHeading());
+                assertNull(sourceTrackPoint3.getSpeed());
+                checkTemperature(sourceTrackPoint3);
+
+                GpxPosition sourceTrackPoint4 = sourceTrack.getPosition(3);
+                assertNotNull(sourceTrackPoint4.getOrigin());
+                assertNull(sourceTrackPoint4.getHeading());
+                checkSpeed(sourceTrackPoint4);
+                assertNull(sourceTrackPoint4.getTemperature());
+
+                GpxPosition sourceTrackPoint5 = sourceTrack.getPosition(4);
+                assertNotNull(sourceTrackPoint5.getOrigin());
+                checkHeading(sourceTrackPoint5);
+                assertNull(sourceTrackPoint5.getSpeed());
+                assertNull(sourceTrackPoint5.getTemperature());
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(targetWaypoints.getOrigins());
