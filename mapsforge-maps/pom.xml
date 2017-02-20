@@ -54,5 +54,10 @@
             <artifactId>mapsforge-map-reader</artifactId>
             <version>${mapsforge.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapsforge</groupId>
+            <artifactId>mapsforge-themes</artifactId>
+            <version>${mapsforge.version}</version>
+        </dependency>
     </dependencies>
 </project>
