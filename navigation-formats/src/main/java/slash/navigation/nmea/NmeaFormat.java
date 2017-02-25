@@ -85,6 +85,7 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
     // $GPRMC,140403.000,A,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
     // $GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A
+    // $GNRMC,162622.00,A,4857.29112,N,00850.57680,E,0.813,251.19,160217,,,D,V*0D
     private static final Pattern RMC_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time
@@ -92,12 +93,12 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
-                    "[\\d\\.]*" + SEPARATOR +
+                    "([\\d\\.]*)" + SEPARATOR +     // Course over ground, degrees
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
                     "[\\d\\.]*" + SEPARATOR +
                     "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation
-                    "[AEW]?" + SEPARATOR + "?" +    // E=East, W=West
-                    "([ADEMNS])?" +                 // Signal integrity, N=not valid
+                    "[ADEW]?" + SEPARATOR + "?" +   // E=East, W=West
+                    "([ADEMNSV])?" +                // Signal integrity, N=not valid
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
@@ -110,6 +111,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "(\\*[0-9A-Fa-f][0-9A-Fa-f])?$");
 
     // $GPZDA,032910.542,07,08,2004,00,00*48
+    // $GNZDA,184113.00,23,02,2017,00,00*71
     private static final Pattern ZDA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "ZDA" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR + // UTC Time
@@ -122,6 +124,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
     // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
     // $GPVTG,138.7,T,,M,014.2,N,026.3,K,A*00
+    // $GNVTG,251.19,T,,M,0.813,N,1.506,K,D*20
     private static final Pattern VTG_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "VTG" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +   // true course
@@ -132,7 +135,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "N" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +
                     "K" + SEPARATOR +
-                    "A" +
+                    "([ADEN])" +                  // Mode indicator, N=not valid
                     END_OF_LINE);
 
     // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
@@ -173,7 +176,7 @@ public class NmeaFormat extends BaseNmeaFormat {
     protected boolean isPosition(String line) {
         Matcher rmcMatcher = RMC_PATTERN.matcher(line);
         if (rmcMatcher.matches())
-            return hasValidChecksum(line) && hasValidFix(line, rmcMatcher.group(8), "N");
+            return hasValidChecksum(line) && hasValidFix(line, rmcMatcher.group(9), "N");
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);
         if (ggaMatcher.matches())
@@ -189,7 +192,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
         Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches())
-            return hasValidChecksum(line);
+            return hasValidChecksum(line) && hasValidFix(line, vtgMatcher.group(4), "N");
 
         Matcher gsaMatcher = GSA_PATTERN.matcher(line);
         return gsaMatcher.matches() && hasValidChecksum(line) && hasValidFix(line, gsaMatcher.group(1), "1");
@@ -210,9 +213,10 @@ public class NmeaFormat extends BaseNmeaFormat {
                 if (miles != null)
                     speed = nauticMilesToKiloMeter(miles);
             }
-            String date = rmcMatcher.group(7);
+            Double heading = parseDouble(rmcMatcher.group(7));
+            String date = rmcMatcher.group(8);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    null, speed, null, parseDateAndTime(date, time), null);
+                    null, speed, heading, parseDateAndTime(date, time), null);
         }
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);

@@ -59,7 +59,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected final Logger log;
 
     static final char SEPARATOR = ',';
-    static final String BEGIN_OF_LINE = "^\\$GP";
+    static final String BEGIN_OF_LINE = "^\\$G[NP]";
     static final String END_OF_LINE = "\\*[0-9A-Fa-f][0-9A-Fa-f]$";
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
