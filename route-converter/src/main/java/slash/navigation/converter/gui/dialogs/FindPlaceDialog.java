@@ -153,7 +153,7 @@ public class FindPlaceDialog extends SimpleDialog {
                     listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.severe(format("Could find place %s: %s", address, e));
             showMessageDialog(this,
                     MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), getLocalizedMessage(e)),

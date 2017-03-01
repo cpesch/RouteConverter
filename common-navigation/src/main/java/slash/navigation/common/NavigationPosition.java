@@ -96,7 +96,7 @@ public interface NavigationPosition {
      * Calculate the orthogonal distance of this position to the line from pointA to pointB,
      * supposed you are proceeding on a great circle route from A to B and end up at D, perhaps
      * ending off course.
-     * <p/>
+     *
      * http://williams.best.vwh.net/avform.htm#XTE
      * http://www.movable-type.co.uk/scripts/latlong.html
      *

@@ -34,7 +34,7 @@ import static slash.common.io.Directories.getTemporaryDirectory;
 
 /**
  * Fallback implementation of a FileSystemView.
- * <p/>
+ *
  * Based on http://jython.svn.sourceforge.net/viewvc/jython/branches/Release_2_2maint/installer/src/java/org/python/util/install/RestrictedFileSystemView.java?view=markup&pathrev=4161
  *
  * @author Christian Pesch
@@ -45,11 +45,11 @@ class RestrictedFileSystemView extends FileSystemView {
 
     private File defaultDirectory;
 
-    public RestrictedFileSystemView() {
+    RestrictedFileSystemView() {
         this(null);
     }
 
-    public RestrictedFileSystemView(File defaultDirectory) {
+    RestrictedFileSystemView(File defaultDirectory) {
         this.defaultDirectory = defaultDirectory;
     }
 

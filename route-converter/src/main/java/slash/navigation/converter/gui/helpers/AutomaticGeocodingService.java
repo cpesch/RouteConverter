@@ -32,6 +32,8 @@ import java.util.logging.Logger;
 
 import static java.util.Arrays.sort;
 
+import javax.naming.ServiceUnavailableException;
+
 /**
  * A geocoding service that tries to find the best available geocoding service.
  *
@@ -60,7 +62,7 @@ public class AutomaticGeocodingService implements GeocodingService {
         return false;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
         IOException lastException = null;
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
@@ -85,7 +87,7 @@ public class AutomaticGeocodingService implements GeocodingService {
             return null;
     }
 
-    public String getAddressFor(NavigationPosition position) throws IOException {
+    public String getAddressFor(NavigationPosition position) throws IOException, ServiceUnavailableException {
         IOException lastException = null;
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {

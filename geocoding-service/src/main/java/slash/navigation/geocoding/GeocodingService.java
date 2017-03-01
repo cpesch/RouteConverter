@@ -45,7 +45,7 @@ public interface GeocodingService {
      * @throws ServiceUnavailableException if the service is overloaded
      * @throws IOException if the request fails
      */
-    List<NavigationPosition> getPositionsFor(String address) throws IOException;
+    List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException;
 
     /**
      * Retrieves an address for a given {@link NavigationPosition}.
@@ -54,5 +54,5 @@ public interface GeocodingService {
      * @throws ServiceUnavailableException if the service is overloaded
      * @throws IOException if the request fails
      */
-    String getAddressFor(NavigationPosition position) throws IOException;
+    String getAddressFor(NavigationPosition position) throws IOException, ServiceUnavailableException;
 }

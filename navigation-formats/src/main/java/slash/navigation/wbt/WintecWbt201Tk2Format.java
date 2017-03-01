@@ -31,7 +31,7 @@ import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 /**
  * Reads and writes Wintec WBT-201 (.tk2) files.
- * <p/>
+ *
  * Format is documented at:
  * http://forum.pocketnavigation.de/attachment.php?attachmentid=1082952
  * http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953

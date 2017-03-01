@@ -21,7 +21,7 @@
 package slash.navigation.babel;
 
 /**
- * Reads Map&Guide Tour Exchange Format (.tef) files.
+ * Reads Map & Guide Tour Exchange Format (.tef) files.
  *
  * @author Christian Pesch
  */
