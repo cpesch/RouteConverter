@@ -37,7 +37,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes MagicMaps2Go (.txt) files.
- * <p/>
+ *
  * Format: 52.4135141 13.3115464 40.8000000 31.05.09 07:05:58
  *
  * @author Christian Pesch

@@ -26,10 +26,10 @@ import static slash.common.io.Files.getExtension;
 
 /**
  * Represents a Windows shortcut (typically visible to Java only as a '.lnk' file).
- * <p/>
+ *
  * Retrieved 2011-09-23 from http://stackoverflow.com/questions/309495/windows-shortcut-lnk-parser-in-java/672775#672775
  * Originally called LnkParser
- * <p/>
+ *
  * Written by: (the stack overflow users, obviously!)
  * Headerified, refactored and commented by Code Bling http://stackoverflow.com/users/675721/code-bling
  * Network file support added by Stefan Cordes http://stackoverflow.com/users/81330/stefan-cordes

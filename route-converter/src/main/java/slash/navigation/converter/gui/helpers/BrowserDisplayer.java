@@ -71,7 +71,7 @@ import static javax.swing.text.StyleConstants.*;
  * JHContentViewer. It invokes default IDE html browser to show external URL.
  * (Default browser should be external browser to show external URL properly.
  * Component is displayed as a mouse enabled Label. Only text is supported.
- * <p/>
+ *
  * To use this class within HTML content use the &ltobject&gt tag. Below is an
  * example usage:
  * <p><pre>

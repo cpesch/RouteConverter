@@ -28,18 +28,19 @@ import java.nio.CharBuffer;
 /**
  * A reader that replaces tokens.
  *
+ * Based on http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
+ *
  * @author Jakob Jenkov
- * @link http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
  */
 
-public class TokenReplacingReader extends Reader {
+class TokenReplacingReader extends Reader {
     private PushbackReader pushbackReader;
     private TokenResolver tokenResolver;
     private StringBuilder tokenNameBuffer = new StringBuilder();
     private String tokenValue = null;
     private int tokenValueIndex = 0;
 
-    public TokenReplacingReader(Reader source, TokenResolver resolver) {
+    TokenReplacingReader(Reader source, TokenResolver resolver) {
         this.pushbackReader = new PushbackReader(source, 2);
         this.tokenResolver = resolver;
     }

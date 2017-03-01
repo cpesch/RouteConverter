@@ -33,7 +33,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.
- * <p/>
+ *
  * Format: 11.107167,49.375783,"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5"
  *
  * @author Christian Pesch

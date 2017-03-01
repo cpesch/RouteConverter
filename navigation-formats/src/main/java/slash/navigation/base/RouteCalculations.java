@@ -73,7 +73,7 @@ public class RouteCalculations {
 
     /**
      * Search the significant positions with the Douglas-Peucker-Algorithm.
-     * <p/>
+     *
      * http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus
      *
      * @param positions the original list of positions

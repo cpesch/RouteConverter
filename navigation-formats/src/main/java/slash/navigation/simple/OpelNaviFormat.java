@@ -38,7 +38,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
 /**
  * Reads and writes Opel Navi 600/900 (.poi) files.
- * <p/>
+ *
  * Format: 9.614394,52.769282,"Zoo Hodenhagen","Serengeti Safaripark","+(49) 5164531"
  *
  * @author Christian Pesch

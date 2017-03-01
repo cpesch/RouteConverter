@@ -36,7 +36,7 @@ import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
- * <p/>
+ *
  * Header: Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)<br/>
  * Format: 50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279
  *

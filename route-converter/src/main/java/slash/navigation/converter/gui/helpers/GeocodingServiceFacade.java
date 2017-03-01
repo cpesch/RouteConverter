@@ -31,6 +31,8 @@ import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 
+import javax.naming.ServiceUnavailableException;
+
 /**
  * Helps to convert addresses into geographic coordinates.
  *
@@ -90,15 +92,15 @@ public class GeocodingServiceFacade {
         preferences.put(GEOCODING_SERVICE, service.getName());
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+    public List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
         return getGeocodingService().getPositionsFor(address);
     }
 
-    public String getAddressFor(NavigationPosition position) throws IOException {
+    public String getAddressFor(NavigationPosition position) throws IOException, ServiceUnavailableException {
         return getGeocodingService().getAddressFor(position);
     }
 
-    public NavigationPosition getPositionFor(String address) throws IOException {
+    public NavigationPosition getPositionFor(String address) throws IOException, ServiceUnavailableException {
         List<NavigationPosition> positions = getPositionsFor(address);
         return positions != null && positions.size() > 0 ? positions.get(0) : null;
     }

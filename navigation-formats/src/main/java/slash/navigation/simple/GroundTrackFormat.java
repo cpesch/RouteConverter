@@ -42,7 +42,7 @@ import static slash.navigation.common.NavigationConversion.formatElevationAsStri
 
 /**
  * Reads and writes groundtrack vom SondenMonitor (.txt) files.
- * <p/>
+ *
 *  Header:    Trackpunkt Nord     Ost     Hoehe  Aufstiegs-/Abstieg m/sek Zeit
  * Format:    57         52.73846 9.88738 -0.416 0.04850                  17:01:17.780
  *

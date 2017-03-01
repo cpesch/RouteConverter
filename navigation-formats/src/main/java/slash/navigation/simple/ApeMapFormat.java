@@ -36,7 +36,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads ape@map (.trk) files.
- * <p/>
+ *
  * [track]
  * (47.14454650878906,15.500686645507813)
  * (47.13923645019531,15.501678466796875)
