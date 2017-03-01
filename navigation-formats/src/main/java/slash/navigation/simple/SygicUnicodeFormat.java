@@ -32,7 +32,7 @@ import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Sygic POI Unicode (.txt) files.
- * <p/>
+ *
  * Standard Header:
  * ; unicode<br/>
  * ; Created from User Poi file sample.upi<br/>

@@ -130,7 +130,7 @@ public class Bearing {
      * </P>
      * Reference ellipsoid is the WGS-84 ellipsoid.
      * <br>See http://www.colorado.edu/geography/gcraft/notes/datum/elist.html
-     * <p/>
+     *
      * Requires close to 1.4 E-5 seconds wall clock time per call
      * on a 550 MHz Pentium with Linux 7.2.
      *

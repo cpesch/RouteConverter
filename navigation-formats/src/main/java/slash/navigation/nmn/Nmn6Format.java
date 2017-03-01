@@ -33,7 +33,7 @@ import static slash.navigation.common.NavigationConversion.formatPositionAsStrin
 
 /**
  * Reads and writes Navigon Mobile Navigator 6 (.rte) files.
- * <p/>
+ *
  * Format: [D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949
  *
  * @author Christian Pesch

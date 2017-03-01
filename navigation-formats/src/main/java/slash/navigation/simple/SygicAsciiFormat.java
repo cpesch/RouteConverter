@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 
 /**
  * Reads Sygic POI ASCII (.txt) files.
- * <p/>
+ *
  * Standard Header:
  * ; Created from User Poi file sample.upi<br/>
  * ; longitude    latitude    name    phone<br/>

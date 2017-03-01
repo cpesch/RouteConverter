@@ -33,7 +33,7 @@ import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Glopus (.tk) files.
- * <p/>
+ *
  * Format: 51.0450383,7.0508300,Comment
  * 51.04503,7.05083
  *

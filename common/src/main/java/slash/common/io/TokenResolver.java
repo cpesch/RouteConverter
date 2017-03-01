@@ -23,8 +23,9 @@ package slash.common.io;
 /**
  * An interface to replace tokens from the {@link TokenReplacingReader}
  *
+ * Based on http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
+ *
  * @author Jakob Jenkov
- * @link http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
  */
 
 public interface TokenResolver {

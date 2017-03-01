@@ -32,7 +32,7 @@ import static slash.navigation.common.NavigationConversion.formatPositionAsStrin
 
 /**
  * Reads and writes Navigon Mobile Navigator 5 (.rte) files.
- * <p/>
+ *
  * Format: -|-|17|4353|72574|BAD URACH|72574|SHELL|-|-|-|9.38107|48.49711|617|-|9.39698|48.49193|
  *
  * @author Christian Pesch

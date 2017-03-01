@@ -43,12 +43,12 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads Navilink (.sbp) files.
- * <p/>
+ *
  * Format is documented at:
  * http://notes.splitbrain.org/navilink
  * http://www.SteffenSiebert.de/soft/python/locosys_tools.html
  * gpsbabel source navilink.c, sbp.c
- * <p/>
+ *
  * Devices are:
  * Locosys BGT-31 http://www.locosystech.com/product.php?zln=en&id=30
  *
