@@ -42,6 +42,7 @@ class NominatimUtil {
 
     public static SearchresultsType unmarshalSearch(String string) throws JAXBException {
         try (StringReader reader = new StringReader(string)){
+            @SuppressWarnings("unchecked")
             JAXBElement<SearchresultsType> unmarshal = (JAXBElement<SearchresultsType>) newUnmarshallerSearch().unmarshal(reader);
             return unmarshal.getValue();
         } catch (ClassCastException e) {
@@ -51,6 +52,7 @@ class NominatimUtil {
 
     public static ReversegeocodeType unmarshalReverse(String string) throws JAXBException {
         try (StringReader reader = new StringReader(string)){
+            @SuppressWarnings("unchecked")
             JAXBElement<ReversegeocodeType> unmarshal = (JAXBElement<ReversegeocodeType>) newUnmarshallerReverse().unmarshal(reader);
             return unmarshal.getValue();
         } catch (ClassCastException e) {
