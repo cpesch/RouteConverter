@@ -55,7 +55,7 @@
     </scm>
 
     <prerequisites>
-        <maven>3.1</maven>
+        <maven>3.3</maven>
     </prerequisites>
 
     <properties>
@@ -129,7 +129,9 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <!-- 3.0.x fails with and found no workaround yet
+                         You have to use a classifier to attach supplemental artifacts to the project instead of replacing them -->
+                    <version>2.6</version>
                     <configuration>
                         <archive>
                             <addMavenDescriptor>false</addMavenDescriptor>
@@ -255,7 +257,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>third-party-report</report>
+                            <report>aggregate-third-party-report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -350,7 +352,6 @@
         <module>route-converter-license</module>
         <module>route-converter-offline</module>
         <module>route-converter-tools</module>
-        <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
         <module>RouteConverterLinuxOffline</module>
