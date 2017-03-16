@@ -53,6 +53,8 @@ public class NmeaFormatTest {
         assertTrue(format.isValidLine("$GPGGA,180114,4808.9490,N,00928.9610,E,1,05,12.6,00616.6,M,048.0,M,,*49"));
         assertTrue(format.isValidLine("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
         assertTrue(format.isValidLine("$GNGGA,162622.00,4857.29112,N,00850.57680,E,2,12,0.65,265.2,M,47.5,M,,0000*41"));
+        assertTrue(format.isValidLine("$GPGLL,4916.45,N,12311.12,W,225444,A"));
+        assertTrue(format.isValidLine("$GNGLL,4857.29146,N,00850.57722,E,162621.00,A,D*7C"));
         assertTrue(format.isValidLine("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
         assertTrue(format.isValidLine("$GNGSA,A,3,12,15,17,19,24,06,25,,,,,,1.24,0.65,1.06,1*0C"));
         assertTrue(format.isValidLine("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
@@ -92,6 +94,8 @@ public class NmeaFormatTest {
     public void testIsPosition() {
         assertTrue(format.isPosition("$GPGGA,134012,4837.4374,N,903.4036,E,1,,,-48.0,M,,M,,*61"));
         assertTrue(format.isPosition("$GNGGA,162622.00,4857.29112,N,00850.57680,E,2,12,0.65,265.2,M,47.5,M,,0000*41"));
+        assertTrue(format.isPosition("$GPGLL,4916.45,N,12311.12,W,220433.11,A*1A"));
+        assertTrue(format.isPosition("$GNGLL,4857.29146,N,00850.57722,E,162621.00,A,D*7C"));
         assertTrue(format.isPosition("$GPWPL,4837.4374,N,903.4036,E,*4C"));
         assertTrue(format.isPosition("$GPRMC,134012,A,4837.4374,N,903.4036,E,,,260707,,A*5A"));
         assertTrue(format.isPosition("$GPZDA,032910,07,08,2004,00,00*48"));
@@ -155,10 +159,12 @@ public class NmeaFormatTest {
     public void testIsPositionRespectingFixQuality() {
         assertTrue(format.isPosition("$GPRMC,061013.64,A,5119.8979,N,01219.1497,E,0,0,160709,0,W,A*34"));
         assertTrue(format.isPosition("$GPGGA,061014.64,5119.8979,N,01219.1497,E,1,5,1.892,144.426,M,42.396,M,0,*63"));
+        assertTrue(format.isValidLine("$GPGLL,4916.45,N,12311.12,W,225444,A"));
         assertFalse(format.isPosition("$GPRMC,060900.64,V,0000.0000,N,00000.0000,E,0,0,160709,0,W,N*25"));
         assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,,2,60.000,0,M,0,M,0,*55"));
         assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,0,2,60.000,0,M,0,M,0,*65"));
         assertTrue(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,1,2,60.000,0,M,0,M,0,*64"));
+        assertFalse(format.isPosition("$GPGLL,4916.45,N,12311.12,W,220433.11,V*1A"));
         assertFalse(format.isPosition("$GPRMC,060914.64,V,4508.3662,N,01543.0320,E,0,0,160709,0,W,N*2A"));
         assertFalse(format.isPosition("$GPGGA,060915.64,4512.4901,N,01541.0840,E,,3,60.000,-0.000,M,0,M,0,*61"));
         assertFalse(format.isPosition("$GPGSA,A,1,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*09"));
@@ -257,6 +263,23 @@ public class NmeaFormatTest {
         assertDoubleEquals(2300.3, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 26, 11);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, position.getTime());
+        assertNull(position.getDescription());
+    }
+
+    @Test
+    public void testParseGPGLL() {
+        NmeaPosition position = format.parsePosition("$GPGLL,4916.45,N,12311.12,W,220433.11,A*6D");
+        assertDoubleEquals(12311.12, position.getLongitudeAsValueAndOrientation().getValue());
+        assertDoubleEquals(4916.45, position.getLatitudeAsValueAndOrientation().getValue());
+        assertEquals("W", position.getLongitudeAsValueAndOrientation().getOrientation().value());
+        assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
+        assertDoubleEquals(-123.1853333333, position.getLongitude());
+        assertDoubleEquals(49.2741666667, position.getLatitude());
+        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 22, 4, 33, 11);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
