@@ -64,6 +64,25 @@ public class NmeaFormat extends BaseNmeaFormat {
     private static final String MONTH_FORMAT = "MM";
     private static final String YEAR_FORMAT = "yyyy";
 
+    // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
+    // $GPRMC,140403.000,A,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
+    // $GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A
+    // $GNRMC,162622.00,A,4857.29112,N,00850.57680,E,0.813,251.19,160217,,,D,V*0D
+    private static final Pattern RMC_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
+                    "([\\d\\.]*)" + SEPARATOR +     // UTC Time
+                    "[AV]" + SEPARATOR +            // Status, A=active, V=void
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
+                    "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
+                    "([\\d\\.]*)" + SEPARATOR +     // Course over ground, degrees
+                    "(\\d*)" + SEPARATOR +          // Date, ddmmyy
+                    "[\\d\\.]*" + SEPARATOR +
+                    "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation
+                    "[ADEW]?" + SEPARATOR + "?" +   // E=East, W=West
+                    "([ADEMNSV])?" +                // Signal integrity, N=not valid
+                    END_OF_LINE);
+
     // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
     // $GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F
     // $GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d
@@ -82,23 +101,14 @@ public class NmeaFormat extends BaseNmeaFormat {
                     ".*" +                           // Differential reference station ID, 0000-1023
                     END_OF_LINE);
 
-    // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
-    // $GPRMC,140403.000,A,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
-    // $GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A
-    // $GNRMC,162622.00,A,4857.29112,N,00850.57680,E,0.813,251.19,160217,,,D,V*0D
-    private static final Pattern RMC_PATTERN = Pattern.
-            compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
-                    "([\\d\\.]*)" + SEPARATOR +     // UTC Time
-                    "[AV]" + SEPARATOR +            // Status, A=active, V=void
+    // $GPGLL,4916.45,N,12311.12,W,220433.11,A*6D
+    private static final Pattern GLL_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE + "GLL" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
-                    "([\\s\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
-                    "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
-                    "([\\d\\.]*)" + SEPARATOR +     // Course over ground, degrees
-                    "(\\d*)" + SEPARATOR +          // Date, ddmmyy
-                    "[\\d\\.]*" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation
-                    "[ADEW]?" + SEPARATOR + "?" +   // E=East, W=West
-                    "([ADEMNSV])?" +                // Signal integrity, N=not valid
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
+                    "([\\d\\.]+)" + SEPARATOR +      // UTC Time
+                    "([AVP])" +                      // Status
+                    ".*" +
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
@@ -182,6 +192,10 @@ public class NmeaFormat extends BaseNmeaFormat {
         if (ggaMatcher.matches())
             return hasValidChecksum(line) && hasValidFix(line, ggaMatcher.group(6), "0");
 
+        Matcher gllMatcher = GLL_PATTERN.matcher(line);
+        if (gllMatcher.matches())
+            return hasValidChecksum(line) && hasValidFix(line, gllMatcher.group(6), "V");
+
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
             return wplMatcher.group(6) == null || hasValidChecksum(line);
@@ -232,6 +246,17 @@ public class NmeaFormat extends BaseNmeaFormat {
                     parseDouble(altitude), null, null, parseTime(time), null);
             position.setSatellites(parseInteger(satellites));
             return position;
+        }
+
+        Matcher gllMatcher = GLL_PATTERN.matcher(line);
+        if (gllMatcher.matches()) {
+            String latitude = gllMatcher.group(1);
+            String northOrSouth = gllMatcher.group(2);
+            String longitude = gllMatcher.group(3);
+            String westOrEast = gllMatcher.group(4);
+            String time = gllMatcher.group(5);
+            return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
+                    null, null, null, parseTime(time), null);
         }
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
