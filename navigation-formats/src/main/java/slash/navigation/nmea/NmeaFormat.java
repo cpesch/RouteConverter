@@ -111,6 +111,23 @@ public class NmeaFormat extends BaseNmeaFormat {
                     ".*" +
                     END_OF_LINE);
 
+    // $GNGNS,184113.00,5215.46773,N,01021.80963,E,AAAN,17,0.73,73.9,45.8,,,V*21
+    private static final Pattern GNS_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE + "GNS" + SEPARATOR +
+                    "([\\d\\.]+)" + SEPARATOR +     // UTC Time
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
+                    "([NADPRFEMS]+)" + SEPARATOR +  // Mode indicator, N=no fix
+                    "(\\d*)" + SEPARATOR +          // Number of SVs in use, range 00?99
+                    "([\\d\\.]*)" + SEPARATOR +     // HDOP
+                    "([\\d\\.]*)" + SEPARATOR +     // Orthometric height in meters
+                    "[\\d\\.]*" + SEPARATOR +       // Geoidal separation in meters
+                    "\\d*" + SEPARATOR +            // Age of differential data
+                    "\\d*" + SEPARATOR +            // Reference station ID
+                    ".*" +
+                    END_OF_LINE);
+
+
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
     // $GPWPL,3018.000,S,15309.000,E,Coffs Harbor (Sidney)
     private static final Pattern WPL_PATTERN = Pattern.
@@ -196,6 +213,10 @@ public class NmeaFormat extends BaseNmeaFormat {
         if (gllMatcher.matches())
             return hasValidChecksum(line) && hasValidFix(line, gllMatcher.group(6), "V");
 
+        Matcher gnsMatcher = GNS_PATTERN.matcher(line);
+        if (gnsMatcher.matches())
+            return hasValidChecksum(line) && hasValidFix(line, gnsMatcher.group(6), "X");
+
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
             return wplMatcher.group(6) == null || hasValidChecksum(line);
@@ -257,6 +278,23 @@ public class NmeaFormat extends BaseNmeaFormat {
             String time = gllMatcher.group(5);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
                     null, null, null, parseTime(time), null);
+        }
+
+        Matcher gnsMatcher = GNS_PATTERN.matcher(line);
+        if (gnsMatcher.matches()) {
+            String time = gnsMatcher.group(1);
+            String latitude = gnsMatcher.group(2);
+            String northOrSouth = gnsMatcher.group(3);
+            String longitude = gnsMatcher.group(4);
+            String westOrEast = gnsMatcher.group(5);
+            String svs = gnsMatcher.group(7);
+            String hdop = gnsMatcher.group(8);
+            String orthometricHeight = gnsMatcher.group(9);
+            NmeaPosition position = new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
+                    parseDouble(orthometricHeight), null, null, parseTime(time), null);
+            position.setHdop(parseDouble(hdop));
+            position.setSatellites(parseInt(svs));
+            return position;
         }
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);

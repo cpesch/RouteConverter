@@ -103,7 +103,7 @@ public class NmeaFormatTest {
         assertTrue(format.isPosition("$GNZDA,184113.00,23,02,2017,00,00*71"));
         assertTrue(format.isPosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F"));
         assertTrue(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
-
+        assertTrue(format.isPosition("$GNGNS,184113.00,5215.46773,N,01021.80963,E,AAAN,17,0.73,73.9,45.8,,,V*21"));
         assertTrue(format.isPosition("$GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F"));
         assertTrue(format.isPosition("$GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D"));
         assertTrue(format.isPosition("$GPGGA,130441,5239,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6F"));
@@ -135,7 +135,6 @@ public class NmeaFormatTest {
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
         assertFalse(format.isPosition("$GPRMC,132713,A,5509.7861,N,00140.5854,W,2.1,278.3,010110,,*e"));
-
         assertFalse(format.isPosition("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
         assertFalse(format.isPosition("@Sonygps/ver1.0/wgs-84"));
         assertFalse(format.isPosition("$GPGGA,123613.957,,,,,0,00,,,M,0.0,M,,0000*59"));
@@ -158,17 +157,23 @@ public class NmeaFormatTest {
     @Test
     public void testIsPositionRespectingFixQuality() {
         assertTrue(format.isPosition("$GPRMC,061013.64,A,5119.8979,N,01219.1497,E,0,0,160709,0,W,A*34"));
-        assertTrue(format.isPosition("$GPGGA,061014.64,5119.8979,N,01219.1497,E,1,5,1.892,144.426,M,42.396,M,0,*63"));
-        assertTrue(format.isValidLine("$GPGLL,4916.45,N,12311.12,W,225444,A"));
         assertFalse(format.isPosition("$GPRMC,060900.64,V,0000.0000,N,00000.0000,E,0,0,160709,0,W,N*25"));
+        assertFalse(format.isPosition("$GPRMC,060914.64,V,4508.3662,N,01543.0320,E,0,0,160709,0,W,N*2A"));
+
+        assertTrue(format.isPosition("$GPGGA,061014.64,5119.8979,N,01219.1497,E,1,5,1.892,144.426,M,42.396,M,0,*63"));
+        assertTrue(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,1,2,60.000,0,M,0,M,0,*64"));
         assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,,2,60.000,0,M,0,M,0,*55"));
         assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,0,2,60.000,0,M,0,M,0,*65"));
-        assertTrue(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,1,2,60.000,0,M,0,M,0,*64"));
-        assertFalse(format.isPosition("$GPGLL,4916.45,N,12311.12,W,220433.11,V*1A"));
-        assertFalse(format.isPosition("$GPRMC,060914.64,V,4508.3662,N,01543.0320,E,0,0,160709,0,W,N*2A"));
         assertFalse(format.isPosition("$GPGGA,060915.64,4512.4901,N,01541.0840,E,,3,60.000,-0.000,M,0,M,0,*61"));
-        assertFalse(format.isPosition("$GPGSA,A,1,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*09"));
+
+        assertTrue(format.isPosition("$GPGLL,4916.45,N,12311.12,W,220433.11,A*1A"));
+        assertFalse(format.isPosition("$GPGLL,4916.45,N,12311.12,W,220433.11,V*OD"));
+
         assertTrue(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
+        assertFalse(format.isPosition("$GPGSA,A,1,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*09"));
+
+        assertTrue(format.isPosition("$GNGNS,184113.00,5215.46773,N,01021.80963,E,AAAN,17,0.73,73.9,45.8,,,V*21"));
+        assertFalse(format.isPosition("$GNGNS,184113.00,5215.46773,N,01021.80963,N,AAAN,17,0.73,73.9,45.8,,,V*21"));
     }
 
     @Test
@@ -284,6 +289,26 @@ public class NmeaFormatTest {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getDescription());
+    }
+
+    @Test
+    public void testParseGNGNS() {
+        NmeaPosition position = format.parsePosition("$GNGNS,184113.00,5215.46773,N,01021.80963,E,AAAN,17,0.73,73.9,45.8,,,V*21");
+        assertDoubleEquals(1021.80963, position.getLongitudeAsValueAndOrientation().getValue());
+        assertDoubleEquals(5215.46773, position.getLatitudeAsValueAndOrientation().getValue());
+        assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
+        assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
+        assertDoubleEquals(10.3634938333, position.getLongitude());
+        assertDoubleEquals(52.2577955, position.getLatitude());
+        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 18, 41, 13, 0);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, position.getTime());
+        assertNull(position.getDescription());
+        assertDoubleEquals(0.73, position.getHdop());
+        assertDoubleEquals(73.9, position.getElevation());
+        assertEquals(new Integer(17), position.getSatellites());
     }
 
     @Test
