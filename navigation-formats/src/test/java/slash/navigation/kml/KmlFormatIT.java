@@ -20,6 +20,7 @@
 
 package slash.navigation.kml;
 
+import junit.framework.TestCase;
 import org.junit.Test;
 import slash.navigation.kml.binding20.Kml;
 
@@ -167,6 +168,20 @@ public class KmlFormatIT {
         List<KmlRoute> directRoute = readKmlFile(new Kml22Format(), TEST_PATH + "from22.kml");
         List<KmlRoute> networkLinkRoute = readKmlFile(new Kml22Format(), TEST_PATH + "from22nwlink.kml");
         assertRoutesEquals(directRoute, networkLinkRoute);
+    }
+
+    @Test
+    public void testGoogleEarthNetworkLink() throws Exception {
+        List<KmlRoute> routes = readKmlFile(new Kml22Format(), SAMPLE_PATH + "network_link_google_earth.kml");
+        assertNotNull(routes);
+        TestCase.assertEquals(2, routes.size());
+    }
+
+    @Test
+    public void testGoogleMapsNetworkLink() throws Exception {
+        List<KmlRoute> routes = readKmlFile(new Kml21Format(), SAMPLE_PATH + "network_link_google_maps.kml");
+        assertNotNull(routes);
+        TestCase.assertEquals(2, routes.size());
     }
 
     @Test
