@@ -1009,7 +1009,8 @@ public class RouteConverter extends SingleFrameApplication {
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
-        return preferred;
+        // really want the first available map view
+        return RouteConverter.this.getPreferredMapView();
     }
 
     private void setMapViewPreference(MapViewImplementation mapView) {
