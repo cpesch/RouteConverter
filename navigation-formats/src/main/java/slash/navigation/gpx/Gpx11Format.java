@@ -466,6 +466,31 @@ public class Gpx11Format extends GpxFormat {
         setExtension(wptType, "ViaPoint", "ShapingPoint", tripFactory.createShapingPoint(tripFactory.createShapingPointExtensionT()));
     }
 
+    private void clearDistance(TrkType trkType) {
+        if (trkType.getExtensions() == null)
+            return;
+
+        @SuppressWarnings("ConstantConditions")
+        List<Object> anys = trkType.getExtensions().getAny();
+        if (anys == null)
+            return;
+
+        Iterator<Object> iterator = anys.iterator();
+        while (iterator.hasNext()) {
+            Object any = iterator.next();
+
+            if (any instanceof Element) {
+                Element element = (Element) any;
+
+                // TrackStatsExtension contains Distance element which BaseCamp uses if it's present
+                // but which might be inaccurate due to changes to the positions that affect the distance
+                if ("TrackStatsExtension".equals(element.getLocalName())) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
     private WptType createWptType(GpxPosition position) {
         BigDecimal latitude = formatPosition(position.getLatitude());
         BigDecimal longitude = formatPosition(position.getLongitude());
@@ -546,6 +571,7 @@ public class Gpx11Format extends GpxFormat {
         if (isWriteMetaData()) {
             trkType.setName(asRouteName(route.getName()));
             trkType.setDesc(asDescription(route.getDescription()));
+            clearDistance(trkType);
         }
         trkTypes.add(trkType);
         TrksegType trksegType = objectFactory.createTrksegType();

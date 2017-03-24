@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1"
+    elementFormDefault="qualified"
+    xmlns="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+    <xsd:annotation><xsd:documentation>
+        This schema defines Stats-related metadata for a track to be used with the GPX 1.1 schema.
+        The root element defined by this schema is intended to be used as a child
+        element of the "extensions" elements in the trk element in the GPX 1.1 schema. 
+        The GPX 1.1 schema is available at http://www.topografix.com/GPX/1/1/gpx.xsd.
+    </xsd:documentation></xsd:annotation>
+    
+    <xsd:element name="TrackStatsExtension" type="TrackStatsExtension_t" />
+    
+    <xsd:complexType name="TrackStatsExtension_t">
+        <xsd:annotation><xsd:documentation>
+            This type contains data fields for the statistics for a track.
+        </xsd:documentation></xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Distance" type="Meters_t" minOccurs="0" />
+            <xsd:element name="TimerTime" type="Seconds_t" minOccurs="0" />
+            <xsd:element name="TotalElapsedTime" type="Seconds_t" minOccurs="0" />
+            <xsd:element name="MovingTime" type="Seconds_t" minOccurs="0" />
+            <xsd:element name="StoppedTime" type="Seconds_t" minOccurs="0" />
+            <xsd:element name="MovingSpeed" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="MaxSpeed" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="MaxElevation" type="Meters_t" minOccurs="0" />
+            <xsd:element name="MinElevation" type="Meters_t" minOccurs="0" />
+            <xsd:element name="Ascent" type="Meters_t" minOccurs="0"/>
+            <xsd:element name="Descent" type="Meters_t" minOccurs="0"/>
+            <xsd:element name="AvgAscentRate" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="MaxAscentRate" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="AvgDescentRate" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="MaxDescentRate" type="MetersPerSec_t" minOccurs="0"/>
+            <xsd:element name="Calories" type="xsd:unsignedInt" minOccurs="0"/>
+            <xsd:element name="AvgHeartRate" type="PerMinute_t" minOccurs="0"/>
+            <xsd:element name="AvgCadence" type="PerMinute_t" minOccurs="0"/>
+            
+            <xsd:element name="Extensions" type="Extensions_t" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+ 
+    <xsd:complexType name="Extensions_t">
+        <xsd:annotation>
+            <xsd:documentation>This type provides the ability to extend any data type that includes it.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="Meters_t">
+        <xsd:annotation><xsd:documentation>
+            This type contains a distance value measured in meters.
+        </xsd:documentation></xsd:annotation>
+        <xsd:restriction base="xsd:double"/>
+    </xsd:simpleType>
+ 
+    <xsd:simpleType name="Seconds_t">
+        <xsd:annotation><xsd:documentation>
+            This type contains a duration in seconds.
+        </xsd:documentation></xsd:annotation>
+        <xsd:restriction base="xsd:unsignedInt"/>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="MetersPerSec_t">
+        <xsd:annotation><xsd:documentation>
+            This type contains a rate of change in distance or height.
+        </xsd:documentation></xsd:annotation>
+        <xsd:restriction base="xsd:double"/>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PerMinute_t">
+        <xsd:annotation><xsd:documentation>
+            This type contains a number of events (hr beats, rotations or steps) per minute.
+        </xsd:documentation></xsd:annotation>
+        <xsd:restriction base="xsd:double"/>
+    </xsd:simpleType>
+ </xsd:schema>
