@@ -288,6 +288,8 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
           n byte Text
          */
         long blockLength = byteBuffer.getLong();
+        if ((byteBuffer.remaining() == 0) || (blockLength == 0))
+            return positionPoint;
         int startPosition = byteBuffer.position();
         String waypointDescription = getText(byteBuffer);
 
