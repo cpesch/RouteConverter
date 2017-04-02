@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.actions.ShowAboutTimeAlbumProAction;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
+import static slash.common.system.Platform.isMac;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
 
 /**
@@ -57,7 +58,9 @@ public class TimeAlbumPro extends RouteConverter {
     }
 
     protected MapViewImplementation getPreferredMapView() {
-        return EclipseSWT;
+        // on Windows the JavaFX map view didn't display all icons
+        // on Mac OS X with Java 7+ there is no Eclipse SWT
+        return isMac() ? super.getPreferredMapView() : EclipseSWT;
     }
 
     protected boolean isPointsOfInterestEnabled() {
