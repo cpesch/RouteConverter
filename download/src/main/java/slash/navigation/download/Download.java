@@ -134,7 +134,11 @@ public class Download {
     }
 
     public Integer getPercentage() {
-        return expectedBytes != null ? (int) (processedBytes / (double) expectedBytes * 100.0) : null;
+        if (expectedBytes == null)
+            return null;
+        if (processedBytes < expectedBytes)
+            return null;
+        return (int) (processedBytes / (double) expectedBytes * 100.0);
     }
 
     public long getProcessedBytes() {
