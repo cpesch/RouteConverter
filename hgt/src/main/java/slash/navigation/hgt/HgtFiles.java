@@ -162,7 +162,9 @@ public class HgtFiles implements ElevationService {
         List<FileAndChecksum> fragments = new ArrayList<>();
         for (Fragment otherFragments : downloadable.getFragments()) {
             String key = otherFragments.getKey();
-            fragments.add(new FileAndChecksum(createFile(key), otherFragments.getLatestChecksum()));
+            // ignore fragment keys without extension which are reported by old RouteConverter releases
+            if (key.endsWith(DOT_HGT))
+                fragments.add(new FileAndChecksum(createFile(key), otherFragments.getLatestChecksum()));
         }
 
         String uri = downloadable.getUri();
