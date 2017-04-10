@@ -32,8 +32,8 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testAsterGDEMElevationFor() throws IOException {
-        assertEquals(210, service.getAsterGDEMElevationFor(10.2, 50.001).intValue());
-        assertEquals(2060, service.getAsterGDEMElevationFor(11.06561, 47.42428).intValue());
+        assertEquals(205, service.getAsterGDEMElevationFor(10.2, 50.001).intValue());
+        assertEquals(2066, service.getAsterGDEMElevationFor(11.06561, 47.42428).intValue());
         assertEquals(null, service.getAsterGDEMElevationFor(0.0, 0.0));
 
         assertEquals(null, service.getAsterGDEMElevationFor(18.0, 82.0));
@@ -83,19 +83,19 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testElevationFor() throws IOException {
-        assertEquals(37, service.getElevationFor(11.2, 59.0).intValue());
-        assertEquals(165, service.getElevationFor(11.2, 60.0).intValue());
-        assertEquals(651, service.getElevationFor(11.2, 61.0).intValue());
+        assertEquals(23, service.getElevationFor(11.2, 59.0).intValue());
+        assertEquals(162, service.getElevationFor(11.2, 60.0).intValue());
+        assertEquals(656, service.getElevationFor(11.2, 61.0).intValue());
 
-        assertEquals(63, service.getElevationFor(-68.0, -54.0).intValue());
-        assertEquals(460, service.getElevationFor(-68.0, -55.0).intValue());
+        assertEquals(69, service.getElevationFor(-68.0, -54.0).intValue());
+        assertEquals(454, service.getElevationFor(-68.0, -55.0).intValue());
         assertEquals(0, service.getElevationFor(-68.0, -56.0).intValue());
         assertEquals(null, service.getElevationFor(-68.0, -56.1));
         assertEquals(null, service.getElevationFor(-68.0, -57.0));
     }
 
     @Test
-    public void testNearByFor() throws IOException {
+    public void testAddressFor() throws IOException {
         assertEquals("St. Margarethen", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.5)));
         assertEquals("Grafenrheinfeld", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
         assertEquals("Hammersbach", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
@@ -104,6 +104,18 @@ public class GeoNamesServiceIT {
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
+    }
+
+    @Test
+    public void testNearByToponymFor() throws IOException {
+        assertEquals("St. Margarethen", service.getNearByToponymFor(9.0, 47.5));
+        assertEquals("Grafenrheinfeld", service.getNearByToponymFor(10.2, 50.001));
+        assertEquals("Hoher Gaif", service.getNearByToponymFor(11.06561, 47.42428));
+        assertEquals("Earth", service.getNearByToponymFor(0.0, 0.0));
+        assertEquals("Antarctic, The", service.getNearByToponymFor(0.0, -90.0));
+        assertEquals("North Pole", service.getNearByToponymFor(0.0, 90.0));
+        assertEquals(null, service.getNearByToponymFor(90.0, 90.0));
+        assertEquals(null, service.getNearByToponymFor(-90.0, -90.0));
     }
 
     @Test
