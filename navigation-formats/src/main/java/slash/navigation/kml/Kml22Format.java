@@ -324,16 +324,14 @@ public class Kml22Format extends KmlFormat {
         return positions;
     }
 
-    private FolderType createWayPoints(KmlRoute route, int startIndex, int endIndex) {
+    private List<PlacemarkType> createWayPoints(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        FolderType folderType = objectFactory.createFolderType();
-        folderType.setName(WAYPOINTS);
-        folderType.setDescription(asDescription(route.getDescription()));
+        List<PlacemarkType> result = new ArrayList<>();
         List<KmlPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-            folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
+            result.add(placemarkType);
             placemarkType.setName(asName(isWriteName() ? position.getDescription() : null));
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             if (position.hasTime()) {
@@ -345,7 +343,7 @@ public class Kml22Format extends KmlFormat {
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
             pointType.getCoordinates().add(createCoordinates(position, false));
         }
-        return folderType;
+        return result;
     }
 
     private PlacemarkType createRoute(KmlRoute route) {
@@ -651,7 +649,7 @@ public class Kml22Format extends KmlFormat {
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
         kmlType.setAbstractFeatureGroup(objectFactory.createDocument(documentType));
-        documentType.setName(createDocumentName(route));
+        documentType.setName(asRouteName(route.getName()));
         documentType.setDescription(asDescription(route.getDescription()));
         documentType.setOpen(TRUE);
 
@@ -664,11 +662,12 @@ public class Kml22Format extends KmlFormat {
                     documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(style));
         }
 
-        FolderType folderType = createWayPoints(route, startIndex, endIndex);
-        documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(folderType));
+        List<PlacemarkType> wayPoints = createWayPoints(route, startIndex, endIndex);
+        for (PlacemarkType wayPoint : wayPoints)
+            documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(wayPoint));
 
-        PlacemarkType placemarkTrack = createTrack(route, startIndex, endIndex);
-        documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkTrack));
+        PlacemarkType track = createTrack(route, startIndex, endIndex);
+        documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(track));
 
         if (hasCharacteristics(singletonList(route), Track)) {
             FolderType speed = createSpeed(route, startIndex, endIndex);
@@ -708,8 +707,14 @@ public class Kml22Format extends KmlFormat {
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
-                    FolderType wayPoints = createWayPoints(route, 0, route.getPositionCount());
-                    documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(wayPoints));
+                    FolderType wayPointsFolder = objectFactory.createFolderType();
+                    wayPointsFolder.setName(createPlacemarkName(WAYPOINTS, route));
+                    wayPointsFolder.setDescription(asDescription(route.getDescription()));
+                    documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(wayPointsFolder));
+
+                    List<PlacemarkType> wayPoints = createWayPoints(route, 0, route.getPositionCount());
+                    for (PlacemarkType wayPoint : wayPoints)
+                        wayPointsFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(wayPoint));
                     break;
                 case Route:
                     FolderType routeFolder = objectFactory.createFolderType();

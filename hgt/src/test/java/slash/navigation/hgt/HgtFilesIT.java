@@ -51,14 +51,14 @@ public class HgtFilesIT {
         FileType fileType1 = new FileType();
         fileType1.setUri("Eurasia/N59E011.hgt.zip");
         FragmentType fragmentType1 = new FragmentType();
-        fragmentType1.setKey("N59E011");
+        fragmentType1.setKey("N59E011.hgt");
         fileType1.getFragment().add(fragmentType1);
         datasourceType.getFile().add(fileType1);
 
         FileType fileType2 = new FileType();
         fileType2.setUri("Eurasia/N60E012.hgt.zip");
         FragmentType fragmentType2 = new FragmentType();
-        fragmentType2.setKey("N60E012");
+        fragmentType2.setKey("N60E012.hgt");
         fragmentType2.getChecksum().add(createChecksumType(calendar(2009, 1, 15, 11, 6, 16), 2884802L, "395C9F5202BC8ECF0CCAAE567772FA7955774FEA"));
         fileType2.getFragment().add(fragmentType2);
         datasourceType.getFile().add(fileType2);
@@ -67,16 +67,19 @@ public class HgtFilesIT {
         fileType3.setUri("I36.zip");
         fileType3.getChecksum().add(createChecksumType(calendar(2013, 1, 20, 17, 42, 36), 4987465L, "99982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
         FragmentType fragmentType3 = new FragmentType();
-        fragmentType3.setKey("N32E034");
+        fragmentType3.setKey("N32E034.hgt");
         fragmentType3.getChecksum().add(createChecksumType(calendar(2012, 5, 14, 20, 51, 32), 2884802L, "AD36AA9709ECAE64718308EBB1659C5BB4327A74"));
         fileType3.getFragment().add(fragmentType3);
         FragmentType fragmentType4 = new FragmentType();
-        fragmentType4.setKey("N32E035");
+        fragmentType4.setKey("N32E035.hgt");
         fragmentType4.getChecksum().add(createChecksumType(calendar(2011, 1, 20, 17, 42, 36), 287465L, "B9982D1554A9F2B9CA49642E78BCD8192FC9DEF3"));
         fileType3.getFragment().add(fragmentType4);
         datasourceType.getFile().add(fileType3);
 
-        return new DataSourceImpl(datasourceType);
+        DataSourceImpl dataSource = new DataSourceImpl(datasourceType);
+        // make sure to initialize
+        dataSource.getDownloadable(fileType1.getUri());
+        return dataSource;
     }
 
     @Test

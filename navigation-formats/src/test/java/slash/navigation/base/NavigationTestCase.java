@@ -210,6 +210,8 @@ public abstract class NavigationTestCase extends TestCase {
                 !targetRoute.getName().endsWith("/Route") &&
                 !targetRoute.getName().equals("MapLage") && !targetRoute.getName().contains("Track: ") &&
                 !targetRoute.getName().endsWith("/Track") &&
+                !targetRoute.getName().startsWith("Waypoints") &&
+                !targetRoute.getName().startsWith("/Waypoints") &&
                 !targetRoute.getName().endsWith("/Waypoints"))
             // Test only if this is not the multiple routes per file case & the route has not been named by us
             assertRouteNameEquals(sourceRoute.getName(), targetRoute.getName());
