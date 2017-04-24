@@ -22,6 +22,7 @@ package slash.navigation.graphhopper;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.PathWrapper;
+import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
 import slash.navigation.common.BoundingBox;
@@ -213,12 +214,13 @@ public class GraphHopper implements RoutingService {
                 hopper.close();
 
             try {
-                hopper = new com.graphhopper.GraphHopper().forDesktop().
+                hopper = new GraphHopperOSM().
+                        setOSMFile(file.getAbsolutePath()).
+                        forDesktop().
                         setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
                         setCHEnabled(false).
                         setEnableInstructions(false).
                         setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                        setDataReaderFile(file.getAbsolutePath()).
                         importOrLoad();
             } catch (IllegalStateException e) {
                 log.warning("Could not initialize GraphHopper: " + e);
