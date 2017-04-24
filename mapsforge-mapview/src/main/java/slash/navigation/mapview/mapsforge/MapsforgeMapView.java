@@ -24,6 +24,8 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
+import org.mapsforge.map.controller.FrameBufferController;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -34,11 +36,15 @@ import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
+import org.mapsforge.map.layer.hills.HillsRenderConfig;
+import org.mapsforge.map.layer.hills.SimpleShadingAlgortithm;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.renderer.MapWorkerPool;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
@@ -544,7 +550,14 @@ public class MapsforgeMapView implements MapView {
     }
 
     private AwtGraphicMapView createMapView() {
-        final AwtGraphicMapView mapView = new AwtGraphicMapView();
+        // Multithreaded map rendering
+        MapWorkerPool.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
+        // Triple map buffer size
+        ReadBuffer.MAXIMUM_BUFFER_SIZE = 7500000;
+        // No square frame buffer since the device orientation hardly changes
+        FrameBufferController.SQUARE_FRAME_BUFFER = false;
+
+        AwtGraphicMapView mapView = new AwtGraphicMapView();
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
