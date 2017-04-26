@@ -26,5 +26,5 @@ package slash.navigation.photo;
  */
 
 public enum TagState {
-    Tagged, Taggable, NotTaggable;
+    Tagged, Taggable, NotTaggable
 }

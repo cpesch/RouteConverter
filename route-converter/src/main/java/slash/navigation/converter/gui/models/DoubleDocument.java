@@ -47,9 +47,7 @@ public class DoubleDocument extends PlainDocument {
     public double getDouble() {
         try {
             return parseDouble(getText(0, getLength()));
-        } catch (BadLocationException e) {
-            return 0;
-        } catch (NumberFormatException e) {
+        } catch (BadLocationException | NumberFormatException e) {
             return 0;
         }
     }

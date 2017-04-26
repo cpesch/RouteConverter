@@ -189,14 +189,12 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
 
         for (OvlSection section : sectionsWithoutGroup) {
             OvlRoute route = extractRoute(section, overlay, mapLage);
-            if (route != null)
-                result.add(route);
+            result.add(route);
         }
 
         for (List<OvlSection> sectionList : sectionsByGroup.values()) {
             OvlRoute route = extractRoute(sectionList, overlay, mapLage);
-            if (route != null)
-                result.add(route);
+            result.add(route);
         }
         return result;
     }

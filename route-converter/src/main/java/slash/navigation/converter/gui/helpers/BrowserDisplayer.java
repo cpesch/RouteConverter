@@ -137,9 +137,9 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
         textAttribs.removeAttribute(Bold);
         textAttribs.removeAttribute(Italic);
         textAttribs.addAttribute(FontFamily, font.getName());
-        textAttribs.addAttribute(FontSize, new Integer(font.getSize()));
-        textAttribs.addAttribute(Bold, Boolean.valueOf(font.isBold()));
-        textAttribs.addAttribute(Italic, Boolean.valueOf(font.isItalic()));
+        textAttribs.addAttribute(FontSize, font.getSize());
+        textAttribs.addAttribute(Bold, font.isBold());
+        textAttribs.addAttribute(Italic, font.isItalic());
     }
 
     public String getContent() {
@@ -221,8 +221,7 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
             return;
         }
         textAttribs.removeAttribute(FontSize);
-        textAttribs.addAttribute(FontSize,
-                new Integer(newsize));
+        textAttribs.addAttribute(FontSize, newsize);
         setFont(getAttributeSetFont(textAttribs));
         Font font = getFont();
     }
@@ -234,7 +233,7 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
     public void setTextFontWeight(String weight) {
         boolean isBold = "bold".equals(weight);
         textAttribs.removeAttribute(Bold);
-        textAttribs.addAttribute(Bold, Boolean.valueOf(isBold));
+        textAttribs.addAttribute(Bold, isBold);
         setFont(getAttributeSetFont(textAttribs));
         Font font = getFont();
     }
@@ -249,7 +248,7 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
     public void setTextFontStyle(String style) {
         boolean isItalic = "italic".equals(style);
         textAttribs.removeAttribute(Italic);
-        textAttribs.addAttribute(Italic, Boolean.valueOf(isItalic));
+        textAttribs.addAttribute(Italic, isItalic);
         setFont(getAttributeSetFont(textAttribs));
         Font font = getFont();
     }

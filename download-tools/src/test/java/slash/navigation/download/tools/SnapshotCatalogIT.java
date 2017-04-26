@@ -34,11 +34,10 @@ public class SnapshotCatalogIT {
         return new File(snapshotCatalog.getRootDirectory(), "editions.xml");
     }
 
-    @Test
-    public void snapshotEditions() throws IOException, JAXBException {
+    private void snapshotEditions(boolean reset) throws IOException, JAXBException {
         SnapshotCatalog snapshot1 = new SnapshotCatalog();
         snapshot1.setDataSourcesServer(API);
-        snapshot1.setReset(true);
+        snapshot1.setReset(reset);
 
         File before = createEditionsXml(snapshot1);
         if (before.exists())
@@ -60,5 +59,15 @@ public class SnapshotCatalogIT {
         assertTrue(second.exists());
         assertEquals(length, after.length());
         assertEquals(lastModified, second.lastModified());
+    }
+
+    @Test
+    public void snapshotEditionsWithoutReset() throws IOException, JAXBException {
+        snapshotEditions(false);
+    }
+
+    @Test
+    public void snapshotEditionsWithReset() throws IOException, JAXBException {
+        snapshotEditions(true);
     }
 }

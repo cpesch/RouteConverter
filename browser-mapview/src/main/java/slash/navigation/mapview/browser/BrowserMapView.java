@@ -1783,9 +1783,7 @@ public abstract class BrowserMapView implements MapView {
                 calendar.add(SECOND, -seconds.intValue());
                 time = fromCalendar(calendar);
             }
-            String description = instructions != null ? instructions : null;
-
-            BaseNavigationPosition position = route.createPosition(coordinates.getLongitude(), coordinates.getLatitude(), null, null, seconds != null ? time : null, description);
+            BaseNavigationPosition position = route.createPosition(coordinates.getLongitude(), coordinates.getLatitude(), null, null, seconds != null ? time : null, instructions);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }

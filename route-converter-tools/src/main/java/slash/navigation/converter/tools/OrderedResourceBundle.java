@@ -57,21 +57,19 @@ public class OrderedResourceBundle extends ResourceBundle {
     public void store(OutputStream stream) throws IOException {
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(stream, "8859_1"));
         for (String key : getOrderedKeys()) {
-            String value = saveConvert(handleGetObject(key).toString(), false, false);
+            String value = saveConvert(handleGetObject(key).toString());
             writer.println(key + "=" + value);
         }
         writer.close();
     }
 
-    private String saveConvert(String theString,
-                               boolean escapeSpace,
-                               boolean escapeUnicode) {
+    private String saveConvert(String theString) {
         int len = theString.length();
         int bufLen = len * 2;
         if (bufLen < 0) {
             bufLen = Integer.MAX_VALUE;
         }
-        StringBuffer outBuffer = new StringBuffer(bufLen);
+        StringBuilder result = new StringBuilder(bufLen);
 
         for(int x=0; x<len; x++) {
             char aChar = theString.charAt(x);
@@ -79,48 +77,30 @@ public class OrderedResourceBundle extends ResourceBundle {
             // avoids the specials below
             if ((aChar > 61) && (aChar < 127)) {
                 if (aChar == '\\') {
-                    outBuffer.append('\\'); outBuffer.append('\\');
+                    result.append('\\'); result.append('\\');
                     continue;
                 }
-                outBuffer.append(aChar);
+                result.append(aChar);
                 continue;
             }
             switch(aChar) {
                 case ' ':
-                    if (x == 0 || escapeSpace)
-                        outBuffer.append('\\');
-                    outBuffer.append(' ');
+                    if (x == 0)
+                        result.append('\\');
+                    result.append(' ');
                     break;
-                case '\t':outBuffer.append('\\'); outBuffer.append('t');
+                case '\t':result.append('\\'); result.append('t');
                     break;
-                case '\n':outBuffer.append('\\'); outBuffer.append('n');
+                case '\n':result.append('\\'); result.append('n');
                     break;
-                case '\r':outBuffer.append('\\'); outBuffer.append('r');
+                case '\r':result.append('\\'); result.append('r');
                     break;
-                case '\f':outBuffer.append('\\'); outBuffer.append('f');
+                case '\f':result.append('\\'); result.append('f');
                     break;
                 default:
-                    if (((aChar < 0x0020) || (aChar > 0x007e)) & escapeUnicode ) {
-                        outBuffer.append('\\');
-                        outBuffer.append('u');
-                        outBuffer.append(toHex((aChar >> 12) & 0xF));
-                        outBuffer.append(toHex((aChar >>  8) & 0xF));
-                        outBuffer.append(toHex((aChar >>  4) & 0xF));
-                        outBuffer.append(toHex( aChar        & 0xF));
-                    } else {
-                        outBuffer.append(aChar);
-                    }
+                    result.append(aChar);
             }
         }
-        return outBuffer.toString();
+        return result.toString();
     }
-
-    private static char toHex(int nibble) {
-        return hexDigit[(nibble & 0xF)];
-    }
-
-    /** A table of hex digits */
-    private static final char[] hexDigit = {
-            '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
-    };
 }

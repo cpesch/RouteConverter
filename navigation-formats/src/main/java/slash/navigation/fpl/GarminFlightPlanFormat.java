@@ -86,8 +86,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     private CountryCode parseCountryCode(String string) {
-        CountryCode code = CountryCode.fromValue(string);
-        return code != null ? code : null;
+        return CountryCode.fromValue(string);
     }
 
     private GarminFlightPlanPosition process(FlightPlan.Route.RoutePoint routePoint, FlightPlan.WaypointTable.Waypoint waypoint) {

@@ -25,12 +25,12 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType name="resultType">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *       &lt;attribute name="place_id" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="osm_type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="osm_id" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="lat" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="lon" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="boundingbox" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="place_id" type="{http://www.w3.org/2001/XMLSchema}decimal"/>
+ *       &lt;attribute name="osm_type" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       &lt;attribute name="osm_id" type="{http://www.w3.org/2001/XMLSchema}decimal"/>
+ *       &lt;attribute name="lat" type="{http://www.w3.org/2001/XMLSchema}decimal"/>
+ *       &lt;attribute name="lon" type="{http://www.w3.org/2001/XMLSchema}decimal"/>
+ *       &lt;attribute name="boundingbox" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>

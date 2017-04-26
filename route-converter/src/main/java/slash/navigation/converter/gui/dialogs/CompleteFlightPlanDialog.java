@@ -169,10 +169,9 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
 
     private void validateModel() {
         boolean noCountryCode = getPosition().getCountryCode() == null || None.equals(getPosition().getCountryCode());
-        boolean validCountryCode = UserWaypoint.equals(getPosition().getWaypointType()) ? noCountryCode : !noCountryCode;
+        boolean validCountryCode = UserWaypoint.equals(getPosition().getWaypointType()) == noCountryCode;
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
-        boolean modifiableCountryCode = (UserWaypoint.equals(getPosition().getWaypointType()) && !noCountryCode) ||
-                !UserWaypoint.equals(getPosition().getWaypointType());
+        boolean modifiableCountryCode = !UserWaypoint.equals(getPosition().getWaypointType()) || !noCountryCode;
         comboBoxCountryCode.setEnabled(modifiableCountryCode);
 
         String identifier = trim(getPosition().getIdentifier());

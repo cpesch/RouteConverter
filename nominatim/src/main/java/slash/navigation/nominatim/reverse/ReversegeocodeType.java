@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="result" type="{}resultType"/>
  *         &lt;element name="addressparts" type="{}addresspartsType"/>
  *       &lt;/sequence>
- *       &lt;attribute name="timestamp" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="attribution" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="querystring" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="timestamp" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       &lt;attribute name="attribution" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       &lt;attribute name="querystring" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

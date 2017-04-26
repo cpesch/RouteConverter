@@ -41,7 +41,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  */
 
 public class GarbleNavilinkFormat extends NavilinkFormat implements GarbleNavigationFormat {
-    private static final long MINIMUM_TIME_MILLISECONDS = 949427965809l; // 01.01.2000
+    private static final long MINIMUM_TIME_MILLISECONDS = 949427965809L; // 01.01.2000
 
     public String getName() {
         return "Navilink Garble (*" + getExtension() + ")";

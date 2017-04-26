@@ -162,7 +162,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public Point getLastMousePoint() {
-        return lastMousePressPoint != null ? lastMousePressPoint : null;
+        return lastMousePressPoint;
     }
 
     public boolean isMousePressedOnMarker() {

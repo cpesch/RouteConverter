@@ -91,7 +91,7 @@ public final class ISO8601 {
             start = 0;
         }
 
-        /**
+        /*
          * the expected format of the remainder of the string is:
          * YYYY-MM-DDThh:mm:ss
          *
@@ -174,9 +174,7 @@ public final class ISO8601 {
                 timeZone = getTimeZone("GMT" + delimiter + tzString);
             } else
                 return null;
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        } catch (NumberFormatException e) {
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
             return null;
         }
 
@@ -206,7 +204,7 @@ public final class ISO8601 {
         calendar.set(MILLISECOND, milliseconds);
 
         try {
-            /**
+            /*
              * the following call will trigger an IllegalArgumentException
              * if any of the set values are illegal or out of range
              */
@@ -248,14 +246,14 @@ public final class ISO8601 {
         // determine era and adjust year if necessary
         int year = calendar.get(YEAR);
         if (calendar.isSet(ERA) && calendar.get(ERA) == BC) {
-            /**
+            /*
              * calculate year using astronomical system:
              * year n BCE => astronomical year -n + 1
              */
             year = 0 - year + 1;
         }
 
-        /**
+        /*
          * the format of the date/time string is:
          * YYYY-MM-DDThh:mm:ss
          *
