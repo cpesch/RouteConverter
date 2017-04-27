@@ -95,10 +95,10 @@ public class BoundingBox {
     }
 
     public boolean contains(NavigationPosition position) {
-        boolean result = position.getLongitude() > southWest.getLongitude();
-        result = result && (position.getLongitude() < northEast.getLongitude());
-        result = result && (position.getLatitude() > southWest.getLatitude());
-        result = result && (position.getLatitude() < northEast.getLatitude());
+        boolean result = position.getLongitude() >= southWest.getLongitude();
+        result = result && (position.getLongitude() <= northEast.getLongitude());
+        result = result && (position.getLatitude() >= southWest.getLatitude());
+        result = result && (position.getLatitude() <= northEast.getLatitude());
         return result;
     }
 

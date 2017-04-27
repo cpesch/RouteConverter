@@ -34,6 +34,9 @@ public class BoundingBoxTest {
 
     @Test
     public void testContainsPosition() {
+        assertTrue(new BoundingBox(0.0, 0.0, 0.0, 0.0).contains(asPosition(0.0, 0.0)));
+        assertTrue(new BoundingBox(0.0, 0.0, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
+        assertTrue(new BoundingBox(0.0, 0.0, -0.1, -0.1).contains(asPosition(-0.1, -0.1)));
         assertTrue(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
         assertTrue(new BoundingBox(-1.0, -1.0, -2.0, -2.0).contains(asPosition(-1.5, -1.5)));
         assertTrue(new BoundingBox(-1.0, 2.0, -2.0, 1.0).contains(asPosition(-1.5, 1.5)));
@@ -43,20 +46,19 @@ public class BoundingBoxTest {
 
     @Test
     public void testNotContainsPosition() {
-        assertFalse(new BoundingBox(0.0, 0.0, 0.0, 0.0).contains(asPosition(0.0, 0.0)));
         assertFalse(new BoundingBox(-0.1, -0.1, 0.0, 0.0).contains(asPosition(0.0, 0.0)));
-        assertFalse(new BoundingBox(0.0, 0.0, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
         assertFalse(new BoundingBox(-0.1, -0.1, -0.1, -0.1).contains(asPosition(0.0, 0.0)));
     }
 
     @Test
     public void testContainsBoundingBox() {
+        assertTrue(new BoundingBox(0.0, 0.0, 0.0, 0.0).contains(new BoundingBox(0.0, 0.0, 0.0, 0.0)));
         assertTrue(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(new BoundingBox(0.0, 0.0, 0.0, 0.0)));
+        assertTrue(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(new BoundingBox(0.1, 0.1, -0.1, -0.1)));
     }
 
     @Test
     public void testNotContainsBoundingBox() {
-        assertFalse(new BoundingBox(0.0, 0.0, 0.0, 0.0).contains(new BoundingBox(0.0, 0.0, 0.0, 0.0)));
         assertFalse(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(new BoundingBox(0.2, 0.0, 0.0, 0.0)));
     }
 }
