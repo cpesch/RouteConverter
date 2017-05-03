@@ -170,6 +170,9 @@ public class UpdateCatalog extends BaseDownloadTool {
                     entry = zipInputStream.getNextEntry();
                 }
             }
+            catch(Exception e) {
+                log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
+            }
             fileType.getFragment().addAll(fragmentTypes);
 
         } else if (file.getUri().endsWith(DOT_PBF)) {
@@ -244,6 +247,9 @@ public class UpdateCatalog extends BaseDownloadTool {
                     }
                 }
             }
+            catch(Exception e) {
+                log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
+            }
 
         } else if (map.getUri().endsWith(DOT_MAP)) {
             log.info(format("Found map %s", map.getUri()));
@@ -288,6 +294,9 @@ public class UpdateCatalog extends BaseDownloadTool {
 
                     entry = zipInputStream.getNextEntry();
                 }
+            }
+            catch(Exception e) {
+                log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
             }
             themeType.getFragment().addAll(fragmentTypes);
         } else
