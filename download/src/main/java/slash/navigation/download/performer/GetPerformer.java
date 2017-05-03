@@ -101,7 +101,7 @@ public class GetPerformer implements ActionPerformer {
             get.setIfNoneMatch(getDownload().getETag());
 
         InputStream inputStream = get.executeAsStream();
-        log.info(format("Download from %s returned with status code %s and %d bytes", getDownload().getUrl(), get.getStatusCode(), get.getContentLength()));
+        log.info(format("Download from %s returned with status code %s and content length %d", getDownload().getUrl(), get.getStatusCode(), get.getContentLength()));
         if (get.isSuccessful() && inputStream != null) {
             if(contentLength == null)
                 contentLength = get.getContentLength();

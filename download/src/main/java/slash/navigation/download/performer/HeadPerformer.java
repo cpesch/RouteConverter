@@ -54,8 +54,8 @@ public class HeadPerformer implements ActionPerformer {
         if (getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
-        String result = request.executeAsString();
-        log.info(format("HEAD for %s returned with status code %s and result %s", getDownload().getUrl(), request.getStatusCode(), result));
+        String body = request.executeAsString();
+        log.info(format("HEAD for %s returned with status code %s and body %s", getDownload().getUrl(), request.getStatusCode(), body));
 
         if (request.isNotModified()) {
             ensureChecksum(request);

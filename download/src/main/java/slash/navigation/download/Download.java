@@ -176,7 +176,7 @@ public class Download {
     }
 
     public String toString() {
-        return super.toString() + "[url=" + getUrl() + "]";
+        return super.toString() + "[action=" + getAction() + ", url=" + getUrl() + "]";
     }
 
     public boolean equals(Object o) {
