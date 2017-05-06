@@ -447,16 +447,20 @@ public class RouteConverter extends SingleFrameApplication {
     private void openMapView() {
         mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
 
-        File file = new File(getApplicationDirectory("tileservers"), "default.xml");
-        getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
-            public void run() {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        setMapView(getMapViewPreference());
-                    }
-                });
-            }
-        });
+        try {
+            File file = new File(getApplicationDirectory("tileservers"), "default.xml");
+            getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
+                public void run() {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            setMapView(getMapViewPreference());
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            log.warning("Could not download tile servers: " + e);
+        }
     }
 
     public synchronized void setMapView(MapViewImplementation mapViewImplementation) {

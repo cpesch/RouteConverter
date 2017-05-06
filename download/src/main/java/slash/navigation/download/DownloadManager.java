@@ -94,7 +94,6 @@ public class DownloadManager {
             if (downloads != null)
                 model.setDownloads(downloads);
         } catch (Exception e) {
-            e.printStackTrace();
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 

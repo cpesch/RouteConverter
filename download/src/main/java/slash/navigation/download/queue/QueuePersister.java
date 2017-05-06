@@ -105,8 +105,12 @@ public class QueuePersister {
 
     private QueueType asQueueType(List<Download> downloads) {
         QueueType queueType = new ObjectFactory().createQueueType();
-        for (Download download : downloads)
+        for (Download download : downloads) {
+            // make more robust against strange effects seen on chinese Macs
+            if(download == null)
+                continue;
             queueType.getDownload().add(asDownloadType(download));
+        }
         return queueType;
     }
 
