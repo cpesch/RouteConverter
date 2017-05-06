@@ -170,7 +170,6 @@ public abstract class HttpRequest {
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
                 requestConfigBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
                 log.info(format("Using proxy %s for %s", proxy.toString(), method.getURI()));
-                JOptionPane.showMessageDialog(null, format("Using proxy %s for %s", proxy.toString(), method.getURI()));
             }
         }
 
