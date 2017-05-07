@@ -24,7 +24,6 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
 import org.mapsforge.map.controller.FrameBufferController;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
@@ -36,8 +35,6 @@ import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
-import org.mapsforge.map.layer.hills.HillsRenderConfig;
-import org.mapsforge.map.layer.hills.SimpleShadingAlgortithm;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.MapWorkerPool;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
@@ -552,8 +549,8 @@ public class MapsforgeMapView implements MapView {
     private AwtGraphicMapView createMapView() {
         // Multithreaded map rendering
         MapWorkerPool.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
-        // Triple map buffer size
-        ReadBuffer.MAXIMUM_BUFFER_SIZE = 7500000;
+        // Triple map buffer size: horionzontal * vertical resolution * 3
+        ReadBuffer.MAXIMUM_BUFFER_SIZE = 4000 * 2500 * 3;
         // No square frame buffer since the device orientation hardly changes
         FrameBufferController.SQUARE_FRAME_BUFFER = false;
 
