@@ -726,22 +726,6 @@ public class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public void handleOutOfMemoryError() {
-        // get some air to breath
-        System.gc();
-        System.runFinalization();
-
-        final long limitBefore = getMaximumMemory();
-        final long limitAfter = limitBefore * 2;
-        invokeLater(new Runnable() {
-            public void run() {
-                showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter),
-                        frame.getTitle(), ERROR_MESSAGE);
-            }
-        });
-    }
-
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(new Runnable() {
             public void run() {

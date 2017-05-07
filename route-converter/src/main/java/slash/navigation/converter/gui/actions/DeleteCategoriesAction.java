@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
@@ -56,8 +57,8 @@ public class DeleteCategoriesAction extends FrameAction {
             CategoryTreeNode category = categories.get(i);
 
             if(category.isLocalRoot() || category.isRemoteRoot()) {
-                showMessageDialog(getFrame(),
-                        getBundle().getString("delete-category-cannot-delete-root"), getFrame().getTitle(),
+                showMessageDialog(WindowHelper.getFrame(),
+                        getBundle().getString("delete-category-cannot-delete-root"), WindowHelper.getFrame().getTitle(),
                         ERROR_MESSAGE);
                 return;
             }
@@ -69,9 +70,9 @@ public class DeleteCategoriesAction extends FrameAction {
 
         final List<CategoryTreeNode> parents = asParents(categories);
 
-        int confirm = showConfirmDialog(getFrame(),
+        int confirm = showConfirmDialog(WindowHelper.getFrame(),
                 format(getBundle().getString("confirm-delete-category"), categoryNames),
-                getFrame().getTitle(), YES_NO_OPTION);
+                WindowHelper.getFrame().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
 

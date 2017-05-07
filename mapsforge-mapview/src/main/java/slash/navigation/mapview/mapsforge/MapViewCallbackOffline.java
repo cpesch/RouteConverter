@@ -36,6 +36,6 @@ public interface MapViewCallbackOffline extends MapViewCallback {
     void showDownloadNotification();
     void showProcessNotification();
 
-    void showRoutingException(Exception e);
+    void handleRoutingException(Throwable t);
     void showMapException(String mapName, Exception e);
 }

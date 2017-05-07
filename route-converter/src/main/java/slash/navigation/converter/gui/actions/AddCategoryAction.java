@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.impl.CategoryTreeNode;
 
@@ -55,9 +56,9 @@ public class AddCategoryAction extends FrameAction {
         if (category == null)
             return;
 
-        final String name = showInputDialog(getFrame(),
+        final String name = showInputDialog(WindowHelper.getFrame(),
                 format(getBundle().getString("add-category-label"), category.getName()),
-                getFrame().getTitle(), QUESTION_MESSAGE);
+                WindowHelper.getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 

@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
@@ -52,15 +53,15 @@ public class RenameCategoryAction extends FrameAction {
             return;
 
         if(category.isLocalRoot() || category.isRemoteRoot()) {
-            showMessageDialog(getFrame(),
-                    getBundle().getString("rename-category-cannot-rename-root"), getFrame().getTitle(),
+            showMessageDialog(WindowHelper.getFrame(),
+                    getBundle().getString("rename-category-cannot-rename-root"), WindowHelper.getFrame().getTitle(),
                     ERROR_MESSAGE);
             return;
         }
 
-        String name = (String) showInputDialog(getFrame(),
+        String name = (String) showInputDialog(WindowHelper.getFrame(),
                 format(getBundle().getString("rename-category-label"), category.getName()),
-                getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
+                WindowHelper.getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
         if (trim(name) == null)
             return;
 

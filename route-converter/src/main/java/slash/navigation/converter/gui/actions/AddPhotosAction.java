@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.panels.PhotoPanel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 
 import javax.swing.*;
 import java.io.File;
@@ -47,7 +48,7 @@ public class AddPhotosAction extends FrameAction {
         chooser.setSelectedFile(r.getAddPhotoPreference());
         chooser.setFileSelectionMode(FILES_AND_DIRECTORIES);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(getFrame());
+        int open = chooser.showOpenDialog(WindowHelper.getFrame());
         if (open != APPROVE_OPTION)
             return;
 

@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 import slash.navigation.routes.Category;
 
 import javax.swing.*;
@@ -48,7 +49,7 @@ public class AddFileAction extends FrameAction {
         chooser.setSelectedFile(r.getUploadRoutePreference());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(getFrame());
+        int open = chooser.showOpenDialog(WindowHelper.getFrame());
         if (open != APPROVE_OPTION)
             return;
 

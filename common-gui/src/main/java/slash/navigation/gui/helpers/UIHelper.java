@@ -20,9 +20,6 @@
 
 package slash.navigation.gui.helpers;
 
-import slash.navigation.gui.Application;
-import slash.navigation.gui.SingleFrameApplication;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.MissingResourceException;
@@ -132,12 +129,5 @@ public class UIHelper {
         }
         int width = fontMetrics.stringWidth(string);
         return width + extraWidth;
-    }
-
-    public static JFrame getFrame() {
-        Application application = Application.getInstance();
-        if (!(application instanceof SingleFrameApplication))
-            return null;
-        return ((SingleFrameApplication) application).getFrame();
     }
 }

@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helpers.UpdateChecker;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 
 /**
  * Check for {@link UpdateChecker updates}.
@@ -37,6 +38,6 @@ public class CheckForUpdateAction extends FrameAction {
     }
 
     public void run() {
-        updateChecker.explicitCheck(getFrame());
+        updateChecker.explicitCheck(WindowHelper.getFrame());
     }
 }

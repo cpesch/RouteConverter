@@ -33,7 +33,7 @@ import static java.lang.System.currentTimeMillis;
 import static javax.swing.BorderFactory.createEtchedBorder;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
-import static slash.navigation.gui.helpers.UIHelper.getFrame;
+import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 
 /**
  * Manages the notifications of an {@link Application}.

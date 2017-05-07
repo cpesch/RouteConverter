@@ -21,7 +21,6 @@
 package slash.navigation.gui.actions;
 
 import slash.navigation.gui.Application;
-import slash.navigation.gui.SingleFrameApplication;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -30,6 +29,9 @@ import java.util.ResourceBundle;
 
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.WindowHelper.getFrame;
+import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
+import static slash.navigation.gui.helpers.WindowHelper.handleThrowable;
 
 /**
  * An {@link Action} and {@link ActionListener} that starts and stops the wait cursor on the application frame.
@@ -40,13 +42,6 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 public abstract class FrameAction extends AbstractAction implements ActionListener {
     private static ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<>();
 
-    protected JFrame getFrame() {
-        Application application = Application.getInstance();
-        if (application instanceof SingleFrameApplication)
-            return ((SingleFrameApplication) application).getFrame();
-        throw new UnsupportedOperationException("FrameAction only works on SingleFrameApplication");
-    }
-
     protected ActionEvent getEvent() {
         return ACTION_EVENT.get();
     }
@@ -56,12 +51,16 @@ public abstract class FrameAction extends AbstractAction implements ActionListen
         startWaitCursor(getFrame().getRootPane());
         try {
             run();
+        } catch (OutOfMemoryError ooem) {
+            handleOutOfMemoryError(ooem);
+        } catch(Throwable t) {
+            handleThrowable(getClass(), t);
         } finally {
             stopWaitCursor(getFrame().getRootPane());
         }
     }
 
-    public abstract void run();
+    public abstract void run() throws Exception;
 
     protected static ResourceBundle getBundle() {
         return Application.getInstance().getContext().getBundle();

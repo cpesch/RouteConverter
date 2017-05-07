@@ -116,8 +116,8 @@ public class RouteRenderer {
 
                 try {
                     internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
-                } catch (Exception e) {
-                    mapViewCallback.showRoutingException(e);
+                } catch (Throwable t) {
+                    mapViewCallback.handleRoutingException(t);
                 }
             }
         }, "RouteRenderer");

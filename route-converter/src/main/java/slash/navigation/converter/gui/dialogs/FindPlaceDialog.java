@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRendere
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
+import javax.naming.ServiceUnavailableException;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -41,20 +42,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.lang.String.format;
-import static java.util.logging.Logger.getLogger;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -64,8 +58,6 @@ import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
  */
 
 public class FindPlaceDialog extends SimpleDialog {
-    private static final Logger log = getLogger(FindPlaceDialog.class.getName());
-
     private JPanel contentPane;
     private JTextField textFieldSearch;
     private JButton buttonSearchPositions;
@@ -79,7 +71,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
         setMnemonic(buttonSearchPositions, "search-position-mnemonic");
         buttonSearchPositions.addActionListener(new DialogAction(this) {
-            public void run() {
+            public void run() throws IOException, ServiceUnavailableException {
                 searchPositions();
             }
         });
@@ -108,7 +100,7 @@ public class FindPlaceDialog extends SimpleDialog {
 
         textFieldSearch.setText(r.getFindPlacePreference());
         textFieldSearch.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
+            public void run() throws IOException, ServiceUnavailableException {
                 searchPositions();
             }
         }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -136,29 +128,24 @@ public class FindPlaceDialog extends SimpleDialog {
     }
 
     @SuppressWarnings("unchecked")
-    private void searchPositions() {
+    private void searchPositions() throws IOException, ServiceUnavailableException {
         RouteConverter r = RouteConverter.getInstance();
 
         DefaultListModel listModel = new DefaultListModel();
         listResult.setModel(listModel);
         String address = textFieldSearch.getText();
-        try {
-            List<NavigationPosition> positions = r.getGeocodingServiceFacade().getPositionsFor(address);
-            if (positions != null) {
-                for (NavigationPosition position : positions)
-                    listModel.addElement(position);
 
-                if (listModel.getSize() > 0) {
-                    listResult.setSelectedIndex(0);
-                    listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
-                }
+        List<NavigationPosition> positions = r.getGeocodingServiceFacade().getPositionsFor(address);
+        if (positions != null) {
+            for (NavigationPosition position : positions)
+                listModel.addElement(position);
+
+            if (listModel.getSize() > 0) {
+                listResult.setSelectedIndex(0);
+                listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
             }
-        } catch (Exception e) {
-            log.severe(format("Could find place %s: %s", address, e));
-            showMessageDialog(this,
-                    MessageFormat.format(RouteConverter.getBundle().getString("find-place-error"), getLocalizedMessage(e)),
-                    getTitle(), ERROR_MESSAGE);
         }
+
         savePreferences();
     }
 

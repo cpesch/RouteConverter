@@ -120,6 +120,7 @@ import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 /**
  * The browse panel of the route converter user interface.
@@ -427,7 +428,7 @@ public class BrowsePanel implements PanelInTab {
         } catch (BabelException e) {
             r.handleBabelError(e);
         } catch (OutOfMemoryError e) {
-            r.handleOutOfMemoryError();
+            handleOutOfMemoryError(e);
         } catch (FileNotFoundException e) {
             r.handleFileNotFound(path);
         } catch (Throwable t) {

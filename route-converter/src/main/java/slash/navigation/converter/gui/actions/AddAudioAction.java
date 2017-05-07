@@ -25,6 +25,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
 
 import javax.swing.*;
 import java.io.File;
@@ -86,7 +87,7 @@ public class AddAudioAction extends FrameAction {
         chooser.setDialogTitle(getBundle().getString("add-audio"));
         chooser.setSelectedFile(file != null ? file.getParentFile() : r.getAddAudioPreference());
         chooser.setFileSelectionMode(FILES_ONLY);
-        int open = chooser.showOpenDialog(getFrame());
+        int open = chooser.showOpenDialog(WindowHelper.getFrame());
         if (open != APPROVE_OPTION)
             return;
 

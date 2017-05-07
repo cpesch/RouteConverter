@@ -82,6 +82,7 @@ import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPositio
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -205,6 +206,7 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.helpers.JTableHelper;
+import slash.navigation.gui.helpers.WindowHelper;
 import slash.navigation.gui.undo.RedoAction;
 import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
@@ -700,7 +702,7 @@ public class ConvertPanel implements PanelInTab {
                 } catch (BabelException e) {
                     r.handleBabelError(e);
                 } catch (OutOfMemoryError e) {
-                    r.handleOutOfMemoryError();
+                    handleOutOfMemoryError(e);
                 } catch (FileNotFoundException e) {
                     r.handleFileNotFound(path);
                 } catch (Throwable t) {
@@ -767,7 +769,7 @@ public class ConvertPanel implements PanelInTab {
                 } catch (BabelException e) {
                     r.handleBabelError(e);
                 } catch (OutOfMemoryError e) {
-                    r.handleOutOfMemoryError();
+                    handleOutOfMemoryError(e);
                 } catch (Throwable t) {
                     log.severe("Append error: " + t);
                     r.handleOpenError(t, urls);

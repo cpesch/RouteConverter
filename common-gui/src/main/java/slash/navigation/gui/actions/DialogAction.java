@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
+import static slash.navigation.gui.helpers.WindowHelper.handleThrowable;
 
 /**
  * An {@link ActionListener} that starts and stops the wait cursor on the dialog.
@@ -48,10 +50,14 @@ public abstract class DialogAction implements ActionListener {
         startWaitCursor(getDialog().getRootPane());
         try {
             run();
+        } catch (OutOfMemoryError ooem) {
+            handleOutOfMemoryError(ooem);
+        } catch(Throwable t) {
+            handleThrowable(getClass(), t);
         } finally {
             stopWaitCursor(getDialog().getRootPane());
         }
     }
 
-    public abstract void run();
+    public abstract void run() throws Exception;
 }
