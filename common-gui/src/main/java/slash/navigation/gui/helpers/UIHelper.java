@@ -35,6 +35,7 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
+import static slash.common.system.Platform.isWindows;
 
 /**
  * Helpers used throughout the UI
@@ -89,6 +90,12 @@ public class UIHelper {
     }
 
     public static JFileChooser createJFileChooser() {
+        if(isWindows()) {
+            // workaround
+            // https://bugs.openjdk.java.net/browse/JDK-8179014
+            UIManager.put("FileChooser.useSystemExtensionHiding", false);
+        }
+
         JFileChooser chooser;
         try {
             try {
