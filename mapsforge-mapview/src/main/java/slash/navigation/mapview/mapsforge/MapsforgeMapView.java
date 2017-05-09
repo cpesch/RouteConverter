@@ -166,6 +166,9 @@ public class MapsforgeMapView implements MapView {
     private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
     private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
+    private static final String READ_BUFFER_SIZE_PREFERENCE = "readBufferSize";
+    private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
+    private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
     private static final int SCROLL_DIFF = 100;
 
     private PositionsModel positionsModel;
@@ -549,8 +552,8 @@ public class MapsforgeMapView implements MapView {
     private AwtGraphicMapView createMapView() {
         // Multithreaded map rendering
         MapWorkerPool.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
-        // Triple map buffer size: horionzontal * vertical resolution * 3
-        ReadBuffer.MAXIMUM_BUFFER_SIZE = 4000 * 2500 * 3;
+        // Maximum read buffer size
+        ReadBuffer.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE,2500000);
         // No square frame buffer since the device orientation hardly changes
         FrameBufferController.SQUARE_FRAME_BUFFER = false;
 
@@ -601,9 +604,9 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileCache createTileCache(String cacheId) {
-        TileCache firstLevelTileCache = new InMemoryTileCache(64);
+        TileCache firstLevelTileCache = new InMemoryTileCache(preferences.getInt(FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE,256));
         File cacheDirectory = new File(getTemporaryDirectory(), encodeUri(cacheId));
-        TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, GRAPHIC_FACTORY);
+        TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE,2048), cacheDirectory, GRAPHIC_FACTORY);
         return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
     }
 
