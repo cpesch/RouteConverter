@@ -36,26 +36,22 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 
@@ -169,10 +165,6 @@ public class GraphHopper implements RoutingService {
             GHResponse response = hopper.route(request);
             PathWrapper best = response.getBest();
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
-            return BeelineService.getRouteBetween(from, to);
         } finally {
             long end = currentTimeMillis();
             log.info("GraphHopper: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
@@ -213,29 +205,14 @@ public class GraphHopper implements RoutingService {
             if (hopper != null)
                 hopper.close();
 
-            try {
-                hopper = new GraphHopperOSM().
-                        setOSMFile(file.getAbsolutePath()).
-                        forDesktop().
-                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                        setCHEnabled(false).
-                        setEnableInstructions(false).
-                        setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                        importOrLoad();
-            } catch (IllegalStateException e) {
-                log.warning("Could not initialize GraphHopper: " + e);
-
-                if (e.getMessage().contains("Version of shortcuts unsupported")) {
-                    log.info("Deleting old GraphHopper indexes");
-                    try {
-                        recursiveDelete(createPath(file));
-                    } catch (IOException e2) {
-                        log.warning("Could not delete GraphHopper indexes: " + e2);
-                    }
-                }
-
-                throw e;
-            }
+            hopper = new GraphHopperOSM().
+                    setOSMFile(file.getAbsolutePath()).
+                    forDesktop().
+                    setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                    setCHEnabled(false).
+                    setEnableInstructions(false).
+                    setGraphHopperLocation(createPath(file).getAbsolutePath()).
+                    importOrLoad();
 
             setOsmPbfFile(null);
         }

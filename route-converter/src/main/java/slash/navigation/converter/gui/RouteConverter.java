@@ -353,7 +353,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeLogging() {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFile();
-        if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
+        if (preferences.getBoolean(DEBUG_PREFERENCE, true)) {
             loggingHelper.logToConsole();
         }
         log.info("Started " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
