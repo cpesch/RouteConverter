@@ -19,7 +19,12 @@
 */
 package slash.navigation.brouter;
 
-import btools.router.*;
+import btools.router.OsmNodeNamed;
+import btools.router.OsmPathElement;
+import btools.router.OsmTrack;
+import btools.router.RoutingContext;
+import btools.router.RoutingEngine;
+import slash.navigation.common.Bearing;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
@@ -31,7 +36,6 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.routing.BeelineService;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
@@ -209,21 +213,20 @@ public class BRouter implements RoutingService {
             }
             routingContext.localFunction = profile.getPath();
 
+            double bearing = Bearing.calculateBearing(from.getLongitude(), from.getLatitude(),
+                    to.getLongitude(), to.getLatitude()).getDistance();
+            long routingTimeout = (long) (1000L + bearing / 20.0);
+            log.info(format("Distance %f results to default routing timeout %d", bearing, routingTimeout));
+
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
-            routingEngine.doRun(preferences.getLong("routingTimeout", 5000L));
-            if (routingEngine.getErrorMessage() != null) {
-                // TODO handle routing timeouts differently
-                log.warning(format("Cannot route between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
-                return BeelineService.getRouteBetween(from, to);
-            }
+            routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
+            if (routingEngine.getErrorMessage() != null)
+                throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
 
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
             return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), true);
-        } catch (Exception e) {
-            log.warning(format("Exception while routing between %s and %s: %s", from, to, e));
-            return BeelineService.getRouteBetween(from, to);
         } finally {
             long end = currentTimeMillis();
             log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
