@@ -50,7 +50,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  * gpsbabel source navilink.c, sbp.c
  *
  * Devices are:
- * Locosys BGT-31 http://www.locosystech.com/product.php?zln=en&id=30
+ * Locosys BGT-31 http://www.locosystech.com/product.php?zln=en&amp;id=30
  *
  * @author Malte Neumann
  */

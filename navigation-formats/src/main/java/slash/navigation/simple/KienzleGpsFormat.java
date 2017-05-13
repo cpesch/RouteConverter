@@ -37,7 +37,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 /**
  * Reads Kienzle GPS (.txt) files.
  *
- * Head: Position;X;Y;Empf&auml;nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
+ * Head: Position;X;Y;Empf&auml;nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos
  * Format: 118;7.0591660000;50.7527770000;PHE II;;53117;Bonn;Christian-Lassen-Str.;9;17:02;
  *
  * @author Christian Pesch

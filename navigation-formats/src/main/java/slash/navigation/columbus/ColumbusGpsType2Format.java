@@ -44,7 +44,7 @@ import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 /**
  * Reads and writes Columbus GPS Type 2 (.csv) files.
  *
- * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP<br/>
+ * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP
  * Format: 7,T,160325,151927,26.097885N,119.265160E,-25,39.3,83,1020.2,17
  *
  * @author Christian Pesch

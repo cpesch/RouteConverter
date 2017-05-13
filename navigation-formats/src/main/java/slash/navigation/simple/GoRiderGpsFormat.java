@@ -35,7 +35,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 /**
  * Reads and writes GoRider GPS (.rt) files.
  *
- * Header: #CREATED="75" MODIFIED="76" NAME="Groningen - Noorderrondrit" <br/>
+ * Header: #CREATED="75" MODIFIED="76" NAME="Groningen - Noorderrondrit"
  * Format: STREET="Tjardaweg" PT="6.53616 53.24917"
  *
  * @author Christian Pesch

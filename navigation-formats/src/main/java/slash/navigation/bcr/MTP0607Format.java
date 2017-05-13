@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 import static slash.navigation.bcr.BcrSection.STATION_PREFIX;
 
 /**
- * Reads and writes Map&Guide Tourenplaner 2006/2007 (.bcr) files.
+ * Reads and writes Map &amp; Guide Tourenplaner 2006/2007 (.bcr) files.
  *
  * @author Christian Pesch
  */

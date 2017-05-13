@@ -214,7 +214,7 @@
                     <bottom>Created by Christian Pesch</bottom>
                     <detectLinks>true</detectLinks>
                     <excludePackageNames>
-                        slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.map*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
+                        slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.jnlp*:slash.navigation.map*:slash.navigation.nominatim*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
                     </excludePackageNames>
                 </configuration>
                 <reportSets>

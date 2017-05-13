@@ -33,10 +33,10 @@ import static slash.navigation.common.NavigationConversion.formatPositionAsStrin
 /**
  * Reads and writes Navigon Mobile Navigator 4 (.rte) files.
  *
- * Format: -|-|-|-|-|-|-|-|-|-|-|6.42323|51.84617|-|-|<br/>
- *         -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|<br/>
- *         -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|<br/>
- *         -|-|-|45128|S&uuml;dviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|<br/>
+ * Format: -|-|-|-|-|-|-|-|-|-|-|6.42323|51.84617|-|-|
+ *         -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|
+ *         -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|
+ *         -|-|-|45128|S&uuml;dviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|
  *         -|-|17|-|-|Gelsenkirchen|45896|Polsumer Strasse|-|-|-|7.05143|51.59682|-|-|
  *
  * @author Christian Pesch

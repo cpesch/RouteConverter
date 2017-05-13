@@ -39,7 +39,7 @@ import static slash.common.io.Transfer.*;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 
 /**
- * The base of all Map & Guide Tourenplaner Route formats.
+ * The base of all Map &amp; Guide Tourenplaner Route formats.
  *
  * @author Christian Pesch
  */

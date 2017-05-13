@@ -17,7 +17,7 @@ import static slash.common.io.Transfer.*;
 /**
  * Reads and writes Magellan Explorist (.log) files.
  *
- * Header: $PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII<br/>
+ * Header: $PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII
  * Format: $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
  *
  * @author Christian Pesch
