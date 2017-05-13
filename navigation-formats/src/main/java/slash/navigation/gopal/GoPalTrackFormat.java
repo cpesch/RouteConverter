@@ -21,36 +21,46 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Calendar.*;
-import static slash.common.io.Transfer.*;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.SECOND;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.*;
+import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 
 /**
  * Reads and writes GoPal Track (.trk) files.
  *
- * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, L&auml;nge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten, [Datum (yyyymmdd), ?, ?]<br/>
- * Format: 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3<br/>
- *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0<br/>
+ * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, L&auml;nge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten, [Datum (yyyymmdd), ?, ?]
+ * Format: 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3
+ *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0
  *         31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14
  *
  * @author Christian Pesch
  */
 
 public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final Logger log = Logger.getLogger(GoPalTrackFormat.class.getName());
-
     private static final char SEPARATOR = ',';
     private static final String DATE_AND_TIME_FORMAT = "yyyyMMdd HHmmss";
     private static final String TIME_FORMAT = "HHmmss";

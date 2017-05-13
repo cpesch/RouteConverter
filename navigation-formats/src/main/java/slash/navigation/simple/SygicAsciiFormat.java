@@ -27,8 +27,8 @@ import java.io.PrintWriter;
  * Reads Sygic POI ASCII (.txt) files.
  *
  * Standard Header:
- * ; Created from User Poi file sample.upi<br/>
- * ; longitude    latitude    name    phone<br/>
+ * ; Created from User Poi file sample.upi
+ * ; longitude    latitude    name    phone
  * Standard Format: 2.324360	48.826760	Rue Antoine Chantin(14eme Arrondissement Paris), Paris	+123456789
  *
  * @author Christian Pesch

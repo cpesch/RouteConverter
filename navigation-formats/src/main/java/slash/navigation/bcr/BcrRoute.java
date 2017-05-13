@@ -63,7 +63,7 @@ import static slash.navigation.bcr.BcrFormat.ROUTE_NAME;
 import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
 
 /**
- * A Map&Guide Tourenplaner Route (.bcr) route.
+ * A Map &amp; Guide Tourenplaner Route (.bcr) route.
  *
  * @author Christian Pesch
  */

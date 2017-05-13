@@ -40,7 +40,7 @@ import static slash.navigation.base.RouteComments.isPositionDescription;
 /**
  * Reads and writes Columbus GPS Standard (.csv) files.
  *
- * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX<br/>
+ * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX
  * Format: 1     ,T,090421,061051,47.797120N,013.049595E,524  ,33  ,0  ,
  *
  * @author Christian Pesch

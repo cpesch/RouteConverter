@@ -1,4 +1,4 @@
 /**
- * The Map&Guide Tourenplaner formats.
+ * The Map &amp; Guide Tourenplaner formats.
  */
 package slash.navigation.bcr;

@@ -44,9 +44,9 @@ import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
 /**
  * Reads and writes Haicom Logger (.csv) files.
  *
- * Format: 1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h<br/>
- *         1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,,0km/h<br/>
- *         1,T,,,36.87722,N,111.51194,W,0m,0km/h<br/>
+ * Format: 1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h
+ *         1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,,0km/h
+ *         1,T,,,36.87722,N,111.51194,W,0m,0km/h
  *
  * @author Christian Pesch
  */

@@ -35,7 +35,7 @@ import static slash.navigation.common.NavigationConversion.bcrAltitudeToElevatio
 import static slash.navigation.common.NavigationConversion.elevationMetersToBcrAltitude;
 
 /**
- * Represents a position in a Map&Guide Tourenplaner Route (.bcr) file.
+ * Represents a position in a Map &amp; Guide Tourenplaner Route (.bcr) file.
  * <p>Currently, the metrics of the altitude field is unclear.
  * Numbers range in the area of 210 billion plus something.
  *

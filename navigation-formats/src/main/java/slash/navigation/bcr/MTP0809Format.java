@@ -29,7 +29,7 @@ import static slash.navigation.bcr.BcrPosition.*;
 import static slash.navigation.bcr.BcrSection.STATION_PREFIX;
 
 /**
- * Reads and writes Map&Guide Tourenplaner 2008/2009 (.bcr) files.
+ * Reads and writes Map &amp; Guide Tourenplaner 2008/2009 (.bcr) files.
  *
  * @author Christian Pesch
  */
