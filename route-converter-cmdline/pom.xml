@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>route-converter-cmdline</artifactId>
     <packaging>jar</packaging>
-    <name>The command line you can use to start the program</name>
+    <name>Platform-independent command line tool</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

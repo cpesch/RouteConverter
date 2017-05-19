@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>download</artifactId>
     <packaging>jar</packaging>
-    <name>Download manager</name>
+    <name>Manage reliable Downloads</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

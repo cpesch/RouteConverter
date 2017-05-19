@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>route</artifactId>
     <packaging>jar</packaging>
-    <name>Access to the RouteCatalog service</name>
+    <name>Access the RouteCatalog service</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

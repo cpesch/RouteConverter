@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>nominatim</artifactId>
     <packaging>jar</packaging>
-    <name>Access to the OSM Nominatim service</name>
+    <name>Access the OSM Nominatim service</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
