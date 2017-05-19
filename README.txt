@@ -27,7 +27,7 @@ How to develop for RouteConverter
 
 1. Install a recent Java 8 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
 
-2. Install a recent Maven 3 from http://maven.apache.org/download.html
+2. Install a recent Maven 3.3 from http://maven.apache.org/download.html
 
 3. Clone RouteConverter from github:
    > git clone git://github.com/cpesch/RouteConverter.git
@@ -48,9 +48,9 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 8 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_60
+   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_131
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.3.3
+   > set M2_HOME=c:\Program Files\apache-maven-3.3.9
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
    Call

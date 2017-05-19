@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>download-tools</artifactId>
     <packaging>jar</packaging>
-    <name>Tools to generate datasources for download files</name>
+    <name>Tools to generate DataSources for Downloads</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

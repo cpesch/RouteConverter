@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mapsforge-maps</artifactId>
     <packaging>jar</packaging>
-    <name>Access to mapsforge maps and themes files</name>
+    <name>Read mapsforge maps and themes</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

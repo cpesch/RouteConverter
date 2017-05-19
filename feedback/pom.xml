@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>feedback</artifactId>
     <packaging>jar</packaging>
-    <name>Access to the Feedback service</name>
+    <name>Access the Feedback service</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

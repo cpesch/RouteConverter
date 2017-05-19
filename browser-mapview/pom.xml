@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>browser-mapview</artifactId>
     <packaging>jar</packaging>
-    <name>Code shared by all browser based MapView implementations</name>
+    <name>Code shared by all browser based MapViews</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

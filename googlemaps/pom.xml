@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>googlemaps</artifactId>
     <packaging>jar</packaging>
-    <name>Access to the Google Maps API Geocoding service</name>
+    <name>Access the Google Maps API services</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

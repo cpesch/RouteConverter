@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>rest</artifactId>
     <packaging>jar</packaging>
-    <name>REST webservice client</name>
+    <name>Simple REST webservices client</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
