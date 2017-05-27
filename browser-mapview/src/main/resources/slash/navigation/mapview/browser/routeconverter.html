@@ -611,6 +611,22 @@ ${tileservers1}
 
 ${tileservers2}
 
+           var stravaheatmapCyclingType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://globalheat.strava.com/tiles/cycling/color1/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               isPng: true,
+               name: "Cycling database of Strava Heatmap data"
+           });
+           var stravaheatmapRunningType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://globalheat.strava.com/tiles/running/color1/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               isPng: true,
+               name: "Running database of Strava Heatmap data"
+           });
            var hillshadingMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hillshading/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
@@ -674,7 +690,11 @@ ${tileservers2}
                    copyrightControl.innerHTML = 'Missing copyright';
                }
 
-               if (mapTypeId == "OSM Hike"){
+               if (mapTypeId == "Strava Cycling over OSM Cycle"){
+                   map.overlayMapTypes.setAt(0, stravaheatmapCyclingType);
+               } else if (mapTypeId == "Strava Running over OSM Cycle"){
+                   map.overlayMapTypes.setAt(0, stravaheatmapRunningType);
+               } else if (mapTypeId == "OSM Hike"){
                    map.overlayMapTypes.setAt(0, hillshadingMapType);
                } else if (mapTypeId == "Hike Symbols"){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
