@@ -103,9 +103,9 @@ public class Transfer {
     }
 
     public static String trim(String string, int length) {
+        string = trim(string);
         if (string == null)
             return null;
-        string = trim(string);
         return string.substring(0, min(string.length(), length));
     }
 
