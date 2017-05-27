@@ -426,7 +426,7 @@ public class NavigationFormatParser {
 
     @SuppressWarnings("unchecked")
     public void write(List<BaseRoute> routes, MultipleRoutesFormat format, File target) throws IOException {
-        log.info("Writing '" + format.getName() + "' with with " + routes.size() + " routes and " +
+        log.info("Writing '" + format.getName() + "' with " + routes.size() + " routes and " +
                 getPositionCounts(routes) + " positions");
 
         List<BaseRoute> routesToWrite = new ArrayList<>(routes.size());
