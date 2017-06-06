@@ -167,14 +167,11 @@ class PositionReducer {
 
     private List<NavigationPosition> reducePositions(List<NavigationPosition> positions, int zoom, RouteCharacteristics characteristics, boolean showWaypointDescription) {
         int maximumPositionCount = getMaximumPositionCount(characteristics, showWaypointDescription);
+        int positionCountBeforeReduction = positions.size();
 
         // reduce the number of result to those that are visible for tracks and waypoint lists
-        if (positions.size() > maximumPositionCount && !characteristics.equals(Route)) {
+        if (positions.size() > maximumPositionCount && !characteristics.equals(Route))
             positions = filterVisiblePositions(positions, zoom);
-            visible = new BoundingBox(positions);
-        } else {
-            visible = null;
-        }
 
         // reduce the number of result by selecting every Nth to limit significance computation time
         int maximumSignificantPositionCount = preferences.getInt("maximumSignificantPositionCount", 50000);
@@ -188,6 +185,13 @@ class PositionReducer {
         // reduce the number of result to ensure browser stability
         if (positions.size() > maximumPositionCount)
             positions = filterEveryNthPosition(positions, maximumPositionCount);
+
+        int positionCountAfterReduction = positions.size();
+        if (positionCountAfterReduction < positionCountBeforeReduction) {
+            visible = new BoundingBox(positions);
+        } else {
+            visible = null;
+        }
 
         return positions;
     }
