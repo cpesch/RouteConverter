@@ -353,7 +353,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void initializeLogging() {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFile();
-        if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
+        if (preferences.getBoolean(DEBUG_PREFERENCE, true)) {
             loggingHelper.logToConsole();
         }
         log.info("Started " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
@@ -884,7 +884,7 @@ public class RouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private PositionAugmenter positionAugmenter = null;
+    private PositionAugmenter positionAugmenter;
 
     public synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
@@ -893,7 +893,7 @@ public class RouteConverter extends SingleFrameApplication {
         return positionAugmenter;
     }
 
-    private AudioPlayer audioPlayer = null;
+    private AudioPlayer audioPlayer;
 
     public synchronized AudioPlayer getAudioPlayer() {
         if (audioPlayer == null) {
@@ -902,7 +902,7 @@ public class RouteConverter extends SingleFrameApplication {
         return audioPlayer;
     }
 
-    private GeoTagger geoTagger = null;
+    private GeoTagger geoTagger;
 
     public GeoTagger getGeoTagger() {
         if (geoTagger == null) {

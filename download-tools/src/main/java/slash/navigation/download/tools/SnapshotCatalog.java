@@ -57,7 +57,7 @@ public class SnapshotCatalog extends BaseDownloadTool {
     private static final String RESET_ARGUMENT = "reset";
 
     private DataSourceManager dataSourceManager;
-    private boolean reset = false;
+    private boolean reset;
 
     public void setReset(boolean reset) {
         this.reset = reset;

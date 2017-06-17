@@ -148,7 +148,7 @@ public class LoginDialog extends SimpleDialog {
             getRootPane().setDefaultButton(buttonRegister);
     }
 
-    private boolean successful = false;
+    private boolean successful;
 
     public boolean isSuccessful() {
         return successful;

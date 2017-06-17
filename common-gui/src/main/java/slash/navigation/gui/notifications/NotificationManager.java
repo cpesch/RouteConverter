@@ -49,9 +49,9 @@ public class NotificationManager {
 
     private static final Object notificationMutex = new Object();
     private boolean running = true;
-    private long lastEvent = 0;
-    private String nextMessage = null;
-    private Action nextAction = null;
+    private long lastEvent;
+    private String nextMessage;
+    private Action nextAction;
     private Thread notificationUpdater;
 
     public NotificationManager() {

@@ -39,7 +39,7 @@ public class RouteFeedbackIT {
     private static final String SPECIAL_CHARACTERS = "@!§$%&()=";
 
     private RouteFeedback routeFeedback;
-    private String url = null;
+    private String url;
 
     @Before
     public void setUp() {

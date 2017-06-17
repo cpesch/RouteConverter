@@ -155,7 +155,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         return createDateFormat(DATE_FORMAT).format(date.getTime());
     }
 
-    private Wgs84Position previousPosition = null;
+    private Wgs84Position previousPosition;
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = formatDate(position.getTime());

@@ -29,7 +29,7 @@ import slash.navigation.gui.SimpleDialog;
  */
 
 public abstract class SingletonDialogAction extends FrameAction {
-    private SimpleDialog dialog = null;
+    private SimpleDialog dialog;
 
     protected abstract SimpleDialog createDialog();
 

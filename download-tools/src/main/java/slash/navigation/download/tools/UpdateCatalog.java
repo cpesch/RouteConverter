@@ -92,7 +92,7 @@ public class UpdateCatalog extends BaseDownloadTool {
 
     private DataSourceManager dataSourceManager;
     private java.io.File mirror;
-    private int updateCount = 0;
+    private int updateCount;
 
     private void open() throws IOException {
         dataSourceManager = new DataSourceManager(new DownloadManager(new java.io.File(getSnapshotDirectory(), "update-queue.xml")));

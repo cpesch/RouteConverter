@@ -191,11 +191,11 @@ public abstract class BrowserMapView implements MapView {
     private Thread positionListUpdater, selectionUpdater, callbackListener, callbackPoller;
 
     protected final Object notificationMutex = new Object();
-    protected boolean initialized = false;
-    private boolean running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
-            haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
-            haveToUpdateRoute = false, haveToReplaceRoute = false,
-            haveToRepaintSelection = false, ignoreNextZoomCallback = false;
+    protected boolean initialized;
+    private boolean running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately,
+            haveToRepaintRouteImmediately, haveToRecenterMap,
+            haveToUpdateRoute, haveToReplaceRoute,
+            haveToRepaintSelection, ignoreNextZoomCallback;
 
     private BooleanModel showAllPositionsAfterLoading;
     private BooleanModel recenterAfterZooming;
@@ -220,7 +220,7 @@ public abstract class BrowserMapView implements MapView {
     protected MapViewCallback mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
-    private int overQueryLimitCount = 0, zeroResultsCount = 0;
+    private int overQueryLimitCount, zeroResultsCount;
 
     // initialization
 
@@ -376,7 +376,7 @@ public abstract class BrowserMapView implements MapView {
         update(true, false);
     }
 
-    private Throwable initializationCause = null;
+    private Throwable initializationCause;
 
     public Throwable getInitializationCause() {
         return initializationCause;
@@ -808,7 +808,7 @@ public abstract class BrowserMapView implements MapView {
 
     // resizing
 
-    private boolean hasBeenResizedToInvisible = false;
+    private boolean hasBeenResizedToInvisible;
 
     public void resize() {
         if (!isInitialized() || !getComponent().isShowing())
@@ -1914,7 +1914,7 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private int generationId = 0;
+    private int generationId;
     private List<NavigationPosition> directionsPositions = new ArrayList<>();
     private Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
 

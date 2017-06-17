@@ -120,7 +120,7 @@ public class UIHelper {
         }
     }
 
-    private static FontMetrics fontMetrics = null;
+    private static FontMetrics fontMetrics;
 
     public static int getMaxWidth(String string, int extraWidth) {
         if (fontMetrics == null) {

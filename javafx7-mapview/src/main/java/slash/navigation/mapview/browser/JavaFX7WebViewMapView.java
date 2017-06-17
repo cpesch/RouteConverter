@@ -127,7 +127,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
                 }
             });
             webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
-                private int startCount = 0;
+                private int startCount;
 
                 public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
                     log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());

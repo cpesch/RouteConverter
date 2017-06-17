@@ -43,7 +43,7 @@ public class JAXBHelper {
     public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders";
 
     private static Map<List<Class<?>>, JAXBContext> classesToContext = new HashMap<>();
-    private static boolean cacheContexts = false;
+    private static boolean cacheContexts;
 
     public static void setCacheContexts(boolean cacheContexts) {
         JAXBHelper.cacheContexts = cacheContexts;

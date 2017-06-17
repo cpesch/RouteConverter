@@ -54,7 +54,7 @@ import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
 
 public abstract class Application {
     private static final Logger log = getLogger(SingleFrameApplication.class.getName());
-    private static Application application = null;
+    private static Application application;
     private final List<ExitListener> exitListeners;
     private final ApplicationContext context;
     private Preferences preferences = userNodeForPackage(getClass());

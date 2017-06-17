@@ -61,7 +61,7 @@ public class LengthCalculator {
     private PositionsModel positionsModel;
     private Thread lengthCalculator;
     private final Object notificationMutex = new Object();
-    private boolean running = true, recalculate = false;
+    private boolean running = true, recalculate;
 
     public LengthCalculator() {
         initialize();

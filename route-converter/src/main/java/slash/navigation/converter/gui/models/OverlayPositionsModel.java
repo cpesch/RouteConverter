@@ -63,7 +63,7 @@ public class OverlayPositionsModel implements PositionsModel {
     private final PositionsModel delegate;
     private Map<Integer, ImageAndFile> indexToImageAndFile = new HashMap<>();
     private final Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
-    private double[] distancesFromStart = null;
+    private double[] distancesFromStart;
 
     public OverlayPositionsModel(PositionsModel delegate) {
         this.delegate = delegate;

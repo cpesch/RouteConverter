@@ -147,7 +147,7 @@ public class ActionManager {
     }
 
     private static class ProxyAction implements Action, PropertyChangeListener {
-        private Action delegate = null;
+        private Action delegate;
         private SwingPropertyChangeSupport changeSupport = new SwingPropertyChangeSupport(this);
 
         private ProxyAction() {

@@ -368,7 +368,7 @@ public class Transfer {
         return fromMillis(gregorianCalendar.getTimeInMillis());
     }
 
-    private static DatatypeFactory datatypeFactory = null;
+    private static DatatypeFactory datatypeFactory;
 
     private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
         if (datatypeFactory == null) {

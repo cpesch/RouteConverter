@@ -56,7 +56,7 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class GoogleMapsService implements ElevationService, GeocodingService {
     private static final Logger log = Logger.getLogger(GoogleMapsService.class.getName());
-    private int overQueryLimitCount = 0;
+    private int overQueryLimitCount;
 
     public String getName() {
         return "Google Maps";

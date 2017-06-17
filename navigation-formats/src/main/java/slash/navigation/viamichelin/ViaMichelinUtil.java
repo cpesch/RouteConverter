@@ -89,7 +89,7 @@ class ViaMichelinUtil {
     }
 
     public static PoiList unmarshal(Reader reader) throws JAXBException {
-        PoiList result = null;
+        PoiList result;
         try {
             result = (PoiList) newUnmarshaller().unmarshal(new SAXSource(createXMLReader(), new InputSource(reader)));
         } catch (ClassCastException e) {
@@ -98,17 +98,17 @@ class ViaMichelinUtil {
         return result;
     }
 
-    public static void marshal(PoiList poiList, OutputStream fos) throws JAXBException {
+    public static void marshal(PoiList poiList, OutputStream out) throws JAXBException {
         try {
             try {
                 String header = XML_PREAMBLE + "\n" +
                         "<!DOCTYPE poi_list SYSTEM \"" + VIAMICHELIN_NAMESPACE_URI + "\">";
-                fos.write(header.getBytes());
-                newMarshaller().marshal(new JAXBElement<>(new QName("poi_list"), PoiList.class, poiList), fos);
+                out.write(header.getBytes());
+                newMarshaller().marshal(new JAXBElement<>(new QName("poi_list"), PoiList.class, poiList), out);
             }
             finally {
-                fos.flush();
-                fos.close();
+                out.flush();
+                out.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);
