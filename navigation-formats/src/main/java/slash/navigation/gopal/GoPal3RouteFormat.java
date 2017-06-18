@@ -121,7 +121,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         try {
             marshal3(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

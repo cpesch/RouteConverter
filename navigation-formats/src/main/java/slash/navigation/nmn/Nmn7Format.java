@@ -105,7 +105,7 @@ public class Nmn7Format extends NmnFormat {
         try {
             Nmn7Util.marshal(createNmn(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

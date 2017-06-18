@@ -127,7 +127,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         try {
             KlickTelUtil.marshal(createKlicktel(route), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

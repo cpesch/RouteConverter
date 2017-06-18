@@ -366,7 +366,7 @@ public class Kml20Format extends KmlFormat {
         try {
             marshal20(createKml(route), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 
@@ -374,7 +374,7 @@ public class Kml20Format extends KmlFormat {
         try {
             marshal20(createKml(routes), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + routes + ": " + e, e);
         }
     }
 }

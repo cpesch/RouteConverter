@@ -153,7 +153,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
         try {
             marshal(createLmx(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

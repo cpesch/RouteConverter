@@ -39,6 +39,7 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
+import static slash.navigation.viamichelin.ViaMichelinUtil.marshal;
 import static slash.navigation.viamichelin.ViaMichelinUtil.unmarshal;
 
 /**
@@ -133,9 +134,9 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
 
     public void write(ViaMichelinRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            ViaMichelinUtil.marshal(createPoiList(route), target);
+            marshal(createPoiList(route), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

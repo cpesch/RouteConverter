@@ -329,11 +329,11 @@ public class Kml22BetaFormat extends KmlFormat {
         return kmlType;
     }
 
-    public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) {
+    public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             marshal22Beta(createKmlType(route), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 
@@ -341,7 +341,7 @@ public class Kml22BetaFormat extends KmlFormat {
         try {
             marshal22Beta(createKmlType(routes), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + routes + ": " + e, e);
         }
     }
 }
