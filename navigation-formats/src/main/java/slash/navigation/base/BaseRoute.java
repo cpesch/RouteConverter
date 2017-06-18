@@ -48,10 +48,9 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.TomTom95RouteFormat;
-import slash.navigation.photo.PhotoFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -80,6 +79,8 @@ import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.NavigonCruiserFormat;
+import slash.navigation.nmn.NavigonCruiserRoute;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6FavoritesFormat;
@@ -91,6 +92,7 @@ import slash.navigation.nmn.NmnRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.simple.ApeMapFormat;
 import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
@@ -923,6 +925,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof MTP0809Format)
             return (BcrRoute) this;
         return asBcrFormat(new MTP0809Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public NavigonCruiserRoute asNavigonCruiserFormat() {
+        if (getFormat() instanceof NavigonCruiserFormat)
+            return (NavigonCruiserRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new NavigonCruiserRoute(getName(), wgs84Positions);
     }
 
     @SuppressWarnings("UnusedDeclaration")

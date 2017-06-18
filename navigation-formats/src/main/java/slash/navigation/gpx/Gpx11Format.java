@@ -38,6 +38,7 @@ import slash.navigation.gpx.trip1.ViaPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -661,19 +662,19 @@ public class Gpx11Format extends GpxFormat {
         return gpxType;
     }
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             marshal11(createGpxType(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 
-    public void write(List<GpxRoute> routes, OutputStream target) {
+    public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
         try {
             marshal11(createGpxType(routes), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + routes + ": " + e, e);
         }
     }
 }

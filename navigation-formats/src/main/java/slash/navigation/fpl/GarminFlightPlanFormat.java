@@ -174,7 +174,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         try {
             marshal(createFpl(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 

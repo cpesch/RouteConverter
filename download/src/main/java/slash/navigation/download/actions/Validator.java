@@ -42,7 +42,7 @@ import static slash.navigation.download.Checksum.createChecksum;
 public class Validator {
     private static final Logger log = getLogger(Validator.class.getName());
     private final Download download;
-    private boolean calculatedChecksums = false;
+    private boolean calculatedChecksums;
     private Boolean existsTargets, checksumsValid;
 
     public Validator(Download download) {

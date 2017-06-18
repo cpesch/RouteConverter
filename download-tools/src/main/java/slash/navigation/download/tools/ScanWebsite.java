@@ -81,7 +81,7 @@ public class ScanWebsite extends BaseDownloadTool {
     private String baseUrl;
     private DownloadableType type;
     private Set<String> extensions, includes, excludes;
-    private int addCount = 0, removeCount = 0;
+    private int addCount, removeCount;
 
     private String appendURIs(String uri, String anchor) {
         int index = uri.lastIndexOf('/');

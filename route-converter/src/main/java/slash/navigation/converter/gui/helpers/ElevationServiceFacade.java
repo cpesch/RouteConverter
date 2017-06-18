@@ -45,7 +45,7 @@ public class ElevationServiceFacade {
 
     private final List<ElevationService> elevationServices = new ArrayList<>();
     private ElevationService preferredElevationService;
-    private boolean loggedFailedWarning = false;
+    private boolean loggedFailedWarning;
 
     public void addElevationService(ElevationService elevationService) {
         ElevationService previous = findElevationService(elevationService.getName());

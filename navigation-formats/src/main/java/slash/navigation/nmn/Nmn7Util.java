@@ -52,7 +52,7 @@ class Nmn7Util {
     }
 
     public static Route unmarshal(InputStream in) throws JAXBException {
-        Route result = null;
+        Route result;
         try {
             result = (Route) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {

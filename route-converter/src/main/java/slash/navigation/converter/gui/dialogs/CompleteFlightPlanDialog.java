@@ -69,7 +69,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private JButton buttonNextOrFinish;
 
     private GarminFlightPlanRoute route;
-    private int index = 0;
+    private int index;
 
     public CompleteFlightPlanDialog(GarminFlightPlanRoute routeToComplete) {
         super(RouteConverter.getInstance().getFrame(), "complete-flightplan");

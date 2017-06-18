@@ -204,7 +204,7 @@ public class MapsforgeMapView implements MapView {
     private Thread routeReplacer;
     private final Object notificationMutex = new Object();
     private final Object eventMapUpdaterLock = new Object();
-    private boolean running = true, haveToReplaceRoute = false;
+    private boolean running = true, haveToReplaceRoute;
 
     // initialization
 
@@ -525,7 +525,7 @@ public class MapsforgeMapView implements MapView {
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
 
         mapView.getModel().mapViewDimension.addObserver(new Observer() {
-            private boolean initialized = false;
+            private boolean initialized;
 
             public void onChange() {
                 if (!initialized) {
@@ -692,7 +692,7 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private BaseRoute lastRoute = null;
+    private BaseRoute lastRoute;
     private RouteCharacteristics lastCharacteristics = Waypoints; // corresponds to default eventMapUpdater
 
     private void updateRouteButDontRecenter() {

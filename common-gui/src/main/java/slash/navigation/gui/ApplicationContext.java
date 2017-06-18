@@ -43,9 +43,9 @@ public class ApplicationContext {
     private ActionManager actionManager = new ActionManager();
     private UndoManager undoManager = new UndoManager();
     private NotificationManager notificationManager;
-    private JMenuBar menuBar = null;
-    private HelpBroker broker = null;
-    private String helpBrokerUrl = null;
+    private JMenuBar menuBar;
+    private HelpBroker broker;
+    private String helpBrokerUrl;
 
     public ResourceBundle getBundle() {
         return bundle;

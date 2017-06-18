@@ -37,8 +37,8 @@ class TokenReplacingReader extends Reader {
     private PushbackReader pushbackReader;
     private TokenResolver tokenResolver;
     private StringBuilder tokenNameBuffer = new StringBuilder();
-    private String tokenValue = null;
-    private int tokenValueIndex = 0;
+    private String tokenValue;
+    private int tokenValueIndex;
 
     TokenReplacingReader(Reader source, TokenResolver resolver) {
         this.pushbackReader = new PushbackReader(source, 2);

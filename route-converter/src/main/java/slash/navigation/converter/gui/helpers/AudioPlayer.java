@@ -52,7 +52,7 @@ public class AudioPlayer {
     private Thread worker;
     private final Queue<File> queue = new ArrayDeque<>();
     private static final Object notificationMutex = new Object();
-    private boolean running = true, playing = false;
+    private boolean running = true, playing;
 
     public AudioPlayer(final JFrame frame) {
         clipListener = new LineListener() {

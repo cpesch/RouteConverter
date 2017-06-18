@@ -41,7 +41,7 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 public class FormatAndRoutesModelImpl extends AbstractListModel implements FormatAndRoutesModel {
     private final PositionsModel positionsModel;
     private final CharacteristicsModel characteristicsModel;
-    private boolean modified = false;
+    private boolean modified;
     private FormatAndRoutes formatAndRoutes;
 
     public FormatAndRoutesModelImpl(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {

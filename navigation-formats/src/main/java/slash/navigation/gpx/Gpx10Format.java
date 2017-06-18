@@ -26,6 +26,7 @@ import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -379,15 +380,15 @@ public class Gpx10Format extends GpxFormat {
         return gpx;
     }
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, startIndex, endIndex, asList(Route, Track, Waypoints));
     }
 
-    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) throws IOException {
         try {
             marshal10(createGpx(route, startIndex, endIndex, characteristics), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 
@@ -395,7 +396,7 @@ public class Gpx10Format extends GpxFormat {
         try {
             marshal10(createGpx(routes), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException("Cannot marshall " + routes + ": " + e, e);
         }
     }
 }

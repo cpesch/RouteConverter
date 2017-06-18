@@ -73,6 +73,7 @@ import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.NavigonCruiserFormat;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6FavoritesFormat;
@@ -752,6 +753,17 @@ public class ConvertIT {
     public void testConvertGpx11ToNmn7() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Nmn7Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn7Format());
+    }
+
+    @Test
+    public void testConvertGpx11ToNavigonCruiser() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new NavigonCruiserFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new NavigonCruiserFormat());
+    }
+
+    @Test
+    public void testConvertNavigonCruiserToGpx11() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.cruiser", new NavigonCruiserFormat(), new Gpx11Format());
     }
 
     @Test

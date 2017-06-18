@@ -75,7 +75,7 @@ public class GraphHopper implements RoutingService {
 
     private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
-    private java.io.File osmPbfFile = null;
+    private java.io.File osmPbfFile;
 
     public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;

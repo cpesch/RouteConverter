@@ -316,6 +316,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asNavigonCruiserPosition() {
+        return asWgs84Position();
+    }
+
     public NmeaPosition asNmeaPosition() {
         return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }

@@ -341,7 +341,7 @@ public class Tcx1Format extends TcxFormat {
         try {
             marshal1(createTrainingCenterDatabase(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 
@@ -349,7 +349,7 @@ public class Tcx1Format extends TcxFormat {
         try {
             marshal1(createTrainingCenterDatabase(routes), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + routes + ": " + e, e);
         }
     }
 }

@@ -46,7 +46,7 @@ public class GeocodingServiceFacade {
 
     private final List<GeocodingService> geocodingServices = new ArrayList<>();
     private GeocodingService preferredGeocodingService;
-    private boolean loggedFailedWarning = false;
+    private boolean loggedFailedWarning;
 
     public void addGeocodingService(GeocodingService geocodingService) {
         GeocodingService previous = findGeocodingService(geocodingService.getName());

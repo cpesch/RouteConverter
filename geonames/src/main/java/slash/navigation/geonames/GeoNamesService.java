@@ -49,7 +49,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
     private static final Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
     private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";
-    private int overQueryLimitCount = 0;
+    private int overQueryLimitCount;
 
     public String getName() {
         return "GeoNames";

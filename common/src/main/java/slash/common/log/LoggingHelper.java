@@ -20,10 +20,23 @@
 
 package slash.common.log;
 
-import java.io.*;
-import java.util.logging.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Filter;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.ALL;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Allows to control log output
@@ -45,21 +58,52 @@ public class LoggingHelper {
         return instance;
     }
 
+    private FileHandler createFileHandler() throws IOException {
+        FileHandler fileHandler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
+        fileHandler.setLevel(ALL);
+        fileHandler.setFilter(FILTER);
+        fileHandler.setFormatter(new SimpleFormatter());
+        return fileHandler;
+    }
+
+    private Handler createConsoleHandler() {
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(ALL);
+        consoleHandler.setFilter(FILTER);
+        consoleHandler.setFormatter(new SimpleFormatter());
+        return consoleHandler;
+    }
+
+    private void addFileHandler(Logger logger) {
+        try {
+            FileHandler fileHandler = createFileHandler();
+            logger.addHandler(fileHandler);
+        } catch (IOException e) {
+            System.err.println("Cannot configure file logging");
+            e.printStackTrace();
+        }
+    }
+
+    private void addConsoleHandler(Logger logger) {
+        Handler consoleHandler = createConsoleHandler();
+        logger.addHandler(consoleHandler);
+    }
+
+    public void logToFileAndConsole() {
+        System.out.println("Logging to console and " + getLogFile().getAbsolutePath());
+        logAsDefault();
+
+        Logger logger = Logger.getLogger("");
+        addFileHandler(logger);
+        addConsoleHandler(logger);
+    }
+
     public void logToFile() {
         System.out.println("Logging to " + getLogFile().getAbsolutePath());
         logAsDefault();
 
         Logger logger = Logger.getLogger("");
-        try {
-            FileHandler handler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
-            handler.setLevel(ALL);
-            handler.setFilter(FILTER);
-            handler.setFormatter(new SimpleFormatter());
-            logger.addHandler(handler);
-        } catch (IOException e) {
-            System.err.println("Cannot configure file logging");
-            e.printStackTrace();
-        }
+        addFileHandler(logger);
         // using ALL brings up a colored JavaFX WebView
         // logger.setLevel(ALL);
         redirectStdOutAndErrToLog();
@@ -70,14 +114,8 @@ public class LoggingHelper {
         resetStdOutAndErr();
         logAsDefault();
 
-        Handler handler = new ConsoleHandler();
-        handler.setLevel(ALL);
-        handler.setFilter(FILTER);
-        handler.setFormatter(new SimpleFormatter());
         Logger logger = Logger.getLogger("");
-        logger.addHandler(handler);
-        // using ALL brings up a colored JavaFX WebView
-        // logger.setLevel(ALL);
+        addConsoleHandler(logger);
     }
 
     public void logAsDefault() {
@@ -138,11 +176,5 @@ public class LoggingHelper {
     private void resetStdOutAndErr() {
         System.setOut(stdout);
         System.setErr(stderr);
-    }
-
-    public static void logException(Logger log, Throwable t) {
-        StringWriter writer = new StringWriter();
-        t.printStackTrace(new PrintWriter(writer));
-        log.severe(writer.toString());
     }
 }

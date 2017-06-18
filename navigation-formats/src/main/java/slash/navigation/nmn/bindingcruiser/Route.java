@@ -17,32 +17,27 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.nmn.bindingcruiser;
 
-package slash.navigation.gui.actions;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
-import slash.navigation.gui.SimpleDialog;
+import static javax.xml.bind.annotation.XmlAccessType.FIELD;
 
-/**
- * Show a dialog at most once.
- *
- * @author Christian Pesch
- */
+@XmlRootElement
+@XmlAccessorType(FIELD)
+public class Route {
+    public List<String> coords = new ArrayList<>();
 
-public abstract class SingletonDialogAction extends FrameAction {
-    private SimpleDialog dialog;
+    @SuppressWarnings("unused")
+    private String binary = null;
+    @SuppressWarnings("unused")
+    private int v = 1;
+    @SuppressWarnings("unused")
+    private Settings settings = new Settings();
 
-    protected abstract SimpleDialog createDialog();
-
-    public void run() {
-        if (dialog == null) {
-            dialog = createDialog();
-            dialog.pack();
-            dialog.restoreLocation();
-        }
-
-        if (!dialog.isVisible()) {
-            dialog.toFront();
-            dialog.setVisible(true);
-        }
-    }
+    public String name = null;
+    public String creator = null;
 }

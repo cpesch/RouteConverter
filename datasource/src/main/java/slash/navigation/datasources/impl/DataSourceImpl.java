@@ -38,7 +38,7 @@ import java.util.List;
 
 public class DataSourceImpl implements DataSource {
     private final DatasourceType datasourceType;
-    private boolean initialized = false;
+    private boolean initialized;
     private final java.util.Map<String, Downloadable> downloadableMap = new HashMap<>();
     private final java.util.Map<String, Fragment<Downloadable>> fragmentMap = new HashMap<>();
 

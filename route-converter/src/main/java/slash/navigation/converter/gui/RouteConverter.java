@@ -270,7 +270,6 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String ADD_AUDIO_PREFERENCE = "addAudio";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
-    private static final String DEBUG_PREFERENCE = "debug";
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.20"; // versioned preference
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.20";
 
@@ -352,10 +351,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void initializeLogging() {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
-        loggingHelper.logToFile();
-        if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
-            loggingHelper.logToConsole();
-        }
+        loggingHelper.logToFileAndConsole();
         log.info("Started " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
     }
@@ -884,7 +880,7 @@ public class RouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private PositionAugmenter positionAugmenter = null;
+    private PositionAugmenter positionAugmenter;
 
     public synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
@@ -893,7 +889,7 @@ public class RouteConverter extends SingleFrameApplication {
         return positionAugmenter;
     }
 
-    private AudioPlayer audioPlayer = null;
+    private AudioPlayer audioPlayer;
 
     public synchronized AudioPlayer getAudioPlayer() {
         if (audioPlayer == null) {
@@ -902,7 +898,7 @@ public class RouteConverter extends SingleFrameApplication {
         return audioPlayer;
     }
 
-    private GeoTagger geoTagger = null;
+    private GeoTagger geoTagger;
 
     public GeoTagger getGeoTagger() {
         if (geoTagger == null) {

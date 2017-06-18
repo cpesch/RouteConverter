@@ -133,7 +133,7 @@ public class PositionAugmenter {
     }
 
     private static class CancelAction extends AbstractAction {
-        private boolean canceled = false;
+        private boolean canceled;
 
         public boolean isCanceled() {
             return canceled;

@@ -102,7 +102,7 @@ public class EclipseSWTMapView extends BrowserMapView {
                     log.fine("WebBrowser locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
                 }
 
-                private int startCount = 0;
+                private int startCount;
 
                 public void loadingProgressChanged(WebBrowserEvent e) {
                     log.fine("WebBrowser loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());

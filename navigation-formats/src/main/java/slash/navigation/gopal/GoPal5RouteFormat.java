@@ -290,7 +290,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         try {
             marshal5(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IOException("Cannot marshall " + route + ": " + e, e);
         }
     }
 }

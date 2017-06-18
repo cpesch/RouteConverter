@@ -48,9 +48,9 @@ public class RoutingServiceFacade {
     private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
     private final List<RoutingService> routingServices = new ArrayList<>();
-    private RoutingService preferredRoutingService = null;
+    private RoutingService preferredRoutingService;
     private final EventListenerList listenerList = new EventListenerList();
-    private boolean loggedFailedRoutingServiceWarning = false, loggedFailedTravelModeWarning = false;
+    private boolean loggedFailedRoutingServiceWarning, loggedFailedTravelModeWarning;
 
     public void addRoutingService(RoutingService routingService) {
         routingServices.add(routingService);

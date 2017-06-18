@@ -18,31 +18,28 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui.actions;
+package slash.navigation.nmn;
 
-import slash.navigation.gui.SimpleDialog;
+import slash.common.type.CompactCalendar;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+
+import java.util.List;
+
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
- * Show a dialog at most once.
+ * A Navigon Cruiser (.cruiser) route.
  *
  * @author Christian Pesch
  */
 
-public abstract class SingletonDialogAction extends FrameAction {
-    private SimpleDialog dialog;
+public class NavigonCruiserRoute extends SimpleRoute<Wgs84Position, NavigonCruiserFormat> {
+    public NavigonCruiserRoute(String name, List<Wgs84Position> positions) {
+        super(new NavigonCruiserFormat(), Route, name, positions);
+    }
 
-    protected abstract SimpleDialog createDialog();
-
-    public void run() {
-        if (dialog == null) {
-            dialog = createDialog();
-            dialog.pack();
-            dialog.restoreLocation();
-        }
-
-        if (!dialog.isVisible()) {
-            dialog.toFront();
-            dialog.setVisible(true);
-        }
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        return new Wgs84Position(longitude, latitude, elevation, speed, time, description);
     }
 }

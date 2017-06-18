@@ -60,9 +60,9 @@ public class RouteRenderer {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
 
-    private Thread renderThread = null;
+    private Thread renderThread;
     private final Object notificationMutex = new Object();
-    private boolean drawingRoute = false;
+    private boolean drawingRoute;
 
     private MapsforgeMapView mapView;
     private MapViewCallbackOffline mapViewCallback;

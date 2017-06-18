@@ -39,7 +39,7 @@ public class RemoteRoute implements Route {
     private final String href;
     private String creator, description, url;
     private RouteType routeType;
-    private boolean fromCategory = false;
+    private boolean fromCategory;
 
     public RemoteRoute(RemoteCategory category, String href) {
         this.category = category;
