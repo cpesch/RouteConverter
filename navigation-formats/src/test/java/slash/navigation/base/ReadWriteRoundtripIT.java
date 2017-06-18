@@ -202,6 +202,11 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
+    public void testNavigonCruiserReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.cruiser");
+    }
+
+    @Test
     public void testNmeaReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "fromgga.nmea");
         readWriteRoundtrip(TEST_PATH + "fromrmc.nmea");

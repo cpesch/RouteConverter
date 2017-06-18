@@ -609,6 +609,7 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof Igo8RouteFormat ||
                     targetFormat instanceof KompassFormat ||
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
+                    targetFormat instanceof NavigonCruiserFormat ||
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !descriptionPositionNames))
@@ -650,7 +651,7 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetName = getColumbusGpsDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
-            assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
+                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
                 assertEquals("Description " + index + " does not match", escapeNmn4and5(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (targetFormat instanceof Nmn6Format)
