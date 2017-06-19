@@ -90,6 +90,7 @@ import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.NavigonCruiserFormat;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6FavoritesFormat;
@@ -206,6 +207,7 @@ public class NavigationFormatRegistry {
         addFormat(WintecWbt201Tk2Format.class);
         addFormat(ColumbusGpsBinaryFormat.class);
         addFormat(NavilinkFormat.class);
+        addFormat(NavigonCruiserFormat.class);
         addFormat(GoRiderGpsFormat.class);
         addFormat(KienzleGpsFormat.class);
         addFormat(GroundTrackFormat.class);
