@@ -22,7 +22,6 @@ package slash.navigation.graphhopper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import slash.common.io.Files;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
@@ -72,7 +71,7 @@ public class DownloadableFinderIT {
     }
 
     @Test
-    public void testSelectSmallestBoundingBox() {
+    public void testSameCenterSelectSmallestBoundingBox() {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
         when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
@@ -92,7 +91,7 @@ public class DownloadableFinderIT {
     }
 
     @Test
-    public void testSelectMediumBoundingBoxThatExists() throws IOException {
+    public void testSelectLargeBoundingBoxThatExists() throws IOException {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
         when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
@@ -101,7 +100,7 @@ public class DownloadableFinderIT {
         when(medium.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
         when(medium.getUri()).thenReturn(MEDIUM_URI);
         slash.navigation.datasources.File large = mock(slash.navigation.datasources.File.class);
-        when(large.getBoundingBox()).thenReturn(new BoundingBox(2.0, 2.0, -2.0, -2.0));
+        when(large.getBoundingBox()).thenReturn(new BoundingBox(3.0, 3.0, -2.0, -2.0));
         when(large.getUri()).thenReturn(LARGE_URI);
         when(dataSource.getFiles()).thenReturn(asList(medium, small, large));
         assertTrue(new File(temporaryDirectory, LARGE_URI).createNewFile());

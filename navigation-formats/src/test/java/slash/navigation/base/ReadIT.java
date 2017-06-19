@@ -111,6 +111,10 @@ public class ReadIT {
     }
 
     @Test
+    public void testNavigionCruiserFilesAreValid() throws IOException {
+        readFiles(".cruiser");
+    }
+    @Test
     public void testCsvFilesAreValid() throws IOException {
         // Columbus Gps
         // iBlue 747

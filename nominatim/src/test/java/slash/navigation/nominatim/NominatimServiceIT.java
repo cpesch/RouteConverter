@@ -35,7 +35,7 @@ public class NominatimServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2004439, 50.0010543, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (residential)"),
+                new SimpleNavigationPosition(10.2014032, 50.0002123, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (residential)"),
                 new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (living_street)"),
                 new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (service)")
         );
@@ -45,7 +45,7 @@ public class NominatimServiceIT {
 
     @Test
     public void getAddressFor() throws IOException {
-        assertEquals("Chammstrasse, 8733 Eschenbach (SG), Schweiz, Suisse, Svizzera, Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Schweiz, Suisse, Svizzera, Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
         assertEquals("97506 Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
         assertEquals("82467 Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));

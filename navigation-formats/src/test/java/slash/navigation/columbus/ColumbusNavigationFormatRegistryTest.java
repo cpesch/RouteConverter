@@ -23,6 +23,9 @@ import org.junit.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.Kmz22Format;
+import slash.navigation.nmea.NmeaFormat;
 
 import java.util.List;
 
@@ -34,7 +37,10 @@ public class ColumbusNavigationFormatRegistryTest {
     @Test
     public void testNotExistingExtension() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".ov2");
-        assertEquals(Gpx11Format.class, formats.get(0).getClass());
+        assertEquals(NmeaFormat.class, formats.get(0).getClass());
+        assertEquals(Kml22Format.class, formats.get(1).getClass());
+        assertEquals(Kmz22Format.class, formats.get(2).getClass());
+        assertEquals(Gpx11Format.class, formats.get(9).getClass());
     }
 
     @Test
