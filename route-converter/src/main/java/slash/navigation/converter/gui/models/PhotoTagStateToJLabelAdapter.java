@@ -28,9 +28,6 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.text.MessageFormat;
 
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.photo.TagState.NotTaggable;
 import static slash.navigation.photo.TagState.Taggable;
 import static slash.navigation.photo.TagState.Tagged;

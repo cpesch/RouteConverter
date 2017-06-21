@@ -34,7 +34,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.*;

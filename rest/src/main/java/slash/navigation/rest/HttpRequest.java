@@ -39,7 +39,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpResponse;
 import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 
-import javax.swing.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;

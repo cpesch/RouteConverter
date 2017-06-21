@@ -38,7 +38,6 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
-import static slash.common.TestCase.assertNotEquals;
 import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.NavigationTestCase.*;
 

@@ -24,7 +24,6 @@ import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTemperature;
 
 /**

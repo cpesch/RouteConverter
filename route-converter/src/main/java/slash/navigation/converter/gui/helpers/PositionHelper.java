@@ -28,7 +28,6 @@ import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.models.StringModel;
 
 import java.io.File;
 import java.text.ParseException;

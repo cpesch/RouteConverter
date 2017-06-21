@@ -29,7 +29,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
-import static java.awt.event.InputEvent.BUTTON1_MASK;
 import static java.awt.event.KeyEvent.VK_CONTEXT_MENU;
 import static java.awt.event.MouseEvent.*;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;

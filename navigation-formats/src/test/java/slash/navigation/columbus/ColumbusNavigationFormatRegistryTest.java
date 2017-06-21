@@ -21,7 +21,6 @@ package slash.navigation.columbus;
 
 import org.junit.Test;
 
-import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
