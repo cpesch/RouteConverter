@@ -126,6 +126,10 @@ public class GraphHopper implements RoutingService {
         return CAR;
     }
 
+    public boolean isSupportsPath() {
+        return false;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }

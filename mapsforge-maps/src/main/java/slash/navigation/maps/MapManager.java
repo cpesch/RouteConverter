@@ -122,12 +122,36 @@ public class MapManager {
         return appliedThemeModel;
     }
 
+    public String getMapsPath() {
+        return preferences.get(MAP_DIRECTORY_PREFERENCE, "");
+    }
+
+    public void setMapsPath(String path) {
+        preferences.put(MAP_DIRECTORY_PREFERENCE, path);
+    }
+
+    public String getThemePath() {
+        return preferences.get(THEME_DIRECTORY_PREFERENCE, "");
+    }
+
+    public void setThemePath(String path) {
+        preferences.put(THEME_DIRECTORY_PREFERENCE, path);
+    }
+
+    private File getDirectory(String preferencesPath, String directoryName) {
+        String path = preferencesPath + "/" + directoryName;
+        java.io.File f = new java.io.File(path);
+        if (!f.exists())
+            directoryName = getApplicationDirectory(directoryName).getAbsolutePath();
+        return ensureDirectory(directoryName);
+    }
+
     public File getMapsDirectory() {
-        return new File(preferences.get(MAP_DIRECTORY_PREFERENCE, getApplicationDirectory("maps").getAbsolutePath()));
+        return getDirectory(getMapsPath(), "maps");
     }
 
     public File getThemesDirectory() {
-        return new File(preferences.get(THEME_DIRECTORY_PREFERENCE, getApplicationDirectory("themes").getAbsolutePath()));
+        return getDirectory(getMapsPath(), "themes");
     }
 
     private void initializeOnlineMaps() {
@@ -146,7 +170,7 @@ public class MapManager {
 
         long start = currentTimeMillis();
 
-        File mapsDirectory = ensureDirectory(getMapsDirectory());
+        File mapsDirectory = getMapsDirectory();
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         for (File file : mapFilesArray) {
@@ -166,7 +190,7 @@ public class MapManager {
 
         long start = currentTimeMillis();
 
-        File themesDirectory = ensureDirectory(getThemesDirectory());
+        File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
         for (File file : themeFilesArray)

@@ -971,6 +971,26 @@ public class MapsforgeMapView implements MapView {
         throw new UnsupportedOperationException("Printing not supported");
     }
 
+    public boolean isSupportsPath() {
+        return true;
+    }
+
+    public String getMapsPath() {
+        return getMapManager().getMapsPath();
+    }
+
+    public void setMapsPath(String path) {
+        getMapManager().setMapsPath(path);
+    }
+
+    public String getThemesPath() {
+        return getMapManager().getThemePath();
+    }
+
+    public void setThemesPath(String path) {
+        getMapManager().setThemePath(path);
+    }
+
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         if (selectionUpdater == null)
             return;

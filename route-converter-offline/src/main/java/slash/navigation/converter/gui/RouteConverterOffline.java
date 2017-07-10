@@ -34,7 +34,7 @@ import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
-import slash.navigation.routing.BeelineService;
+import slash.navigation.routing.Beeline;
 
 import javax.swing.*;
 import java.io.File;
@@ -105,7 +105,7 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeRoutingServices() {
-        BeelineService beeline = new BeelineService();
+        Beeline beeline = new Beeline();
         getRoutingServiceFacade().addRoutingService(beeline);
         getRoutingServiceFacade().setPreferredRoutingService(beeline);
 

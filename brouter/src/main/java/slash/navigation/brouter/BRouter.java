@@ -142,6 +142,10 @@ public class BRouter implements RoutingService {
         return MOPED;
     }
 
+    public boolean isSupportsPath() {
+        return true;
+    }
+
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }
@@ -216,7 +220,7 @@ public class BRouter implements RoutingService {
             double bearing = Bearing.calculateBearing(from.getLongitude(), from.getLatitude(),
                     to.getLongitude(), to.getLatitude()).getDistance();
             long routingTimeout = (long) (1000L + bearing / 20.0);
-            log.info(format("Distance %f results to default routing timeout %d", bearing, routingTimeout));
+            log.info(format("Distance %f results to default routing timeout %d milliseconds", bearing, routingTimeout));
 
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;

@@ -44,8 +44,8 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirectionsService) {
-            ((GoogleDirectionsService)service).insertAllWaypoints(selectedRows);
+        if (service instanceof GoogleDirections) {
+            ((GoogleDirections)service).insertAllWaypoints(selectedRows);
         } else
             insertWithRoutingService(service, selectedRows);
     }
@@ -56,8 +56,8 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirectionsService) {
-            ((GoogleDirectionsService)service).insertOnlyTurnpoints(selectedRows);
+        if (service instanceof GoogleDirections) {
+            ((GoogleDirections)service).insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }

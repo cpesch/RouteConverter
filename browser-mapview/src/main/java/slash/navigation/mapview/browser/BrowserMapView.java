@@ -398,6 +398,26 @@ public abstract class BrowserMapView implements MapView {
         return false;
     }
 
+    public boolean isSupportsPath() {
+        return false;
+    }
+
+    public String getMapsPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setMapsPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getThemesPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setThemesPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
     protected void initializeBrowserInteraction() {
         getComponent().addComponentListener(new ComponentListener() {
             public void componentResized(ComponentEvent e) {

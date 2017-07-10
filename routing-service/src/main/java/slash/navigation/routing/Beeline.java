@@ -17,39 +17,31 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.helpers;
+
+package slash.navigation.routing;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.mapview.MapView;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static java.util.Collections.singletonList;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
- * Encapsulates access to Google Directions service.
+ * A routing service that does no routing, i.e. returns beelines.
  *
  * @author Christian Pesch
  */
 
-public class GoogleDirectionsService implements RoutingService {
-    private static final Logger log = Logger.getLogger(GoogleDirectionsService.class.getName());
-    private static final TravelMode DRIVING = new TravelMode("Driving");
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));
+public class Beeline implements RoutingService {
+    private static final TravelMode BEELINE = new TravelMode("Beeline");
 
     public String getName() {
-        return "Google Directions";
+        return "Beeline";
     }
 
     public boolean isInitialized() {
@@ -61,27 +53,31 @@ public class GoogleDirectionsService implements RoutingService {
     }
 
     public boolean isSupportTurnpoints() {
-        return true;
+        return false;
     }
 
     public boolean isSupportAvoidFerries() {
-        return true;
+        return false;
     }
 
     public boolean isSupportAvoidHighways() {
-        return true;
+        return false;
     }
 
     public boolean isSupportAvoidTolls() {
-        return true;
+        return false;
     }
 
     public List<TravelMode> getAvailableTravelModes() {
-        return TRAVEL_MODES;
+        return singletonList(BEELINE);
     }
 
     public TravelMode getPreferredTravelMode() {
-        return DRIVING;
+        return BEELINE;
+    }
+
+    public boolean isSupportsPath() {
+        return false;
     }
 
     public String getPath() {
@@ -92,8 +88,13 @@ public class GoogleDirectionsService implements RoutingService {
         throw new UnsupportedOperationException();
     }
 
+    public static RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
+        double distance = calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance();
+        return new RoutingResult(asList(from, to), new DistanceAndTime(distance, null), false);
+    }
+
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
-        throw new UnsupportedOperationException();
+        return getRouteBetween(from, to);
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
@@ -106,35 +107,5 @@ public class GoogleDirectionsService implements RoutingService {
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         throw new UnsupportedOperationException();
-    }
-
-    private Method findMethod(Class<?> clazz, String name) {
-        try {
-            return clazz.getDeclaredMethod(name, int[].class);
-        } catch (NoSuchMethodException e) {
-            Class<?> superclass = clazz.getSuperclass();
-            if(superclass != null)
-                return findMethod(superclass, name);
-        }
-        return null;
-    }
-
-    private void insertWaypoints(String mode, int[] selectedRows) {
-        MapView mapView = RouteConverter.getInstance().getMapView();
-        try {
-            Method method = findMethod(mapView.getClass(), mode);
-            if (method != null)
-                method.invoke(mapView, new Object[]{selectedRows});
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            log.severe("Failed to " + mode + ": " + getLocalizedMessage(e));
-        }
-    }
-
-    public void insertAllWaypoints(int[] selectedRows) {
-        insertWaypoints("insertAllWaypoints", selectedRows);
-    }
-
-    public void insertOnlyTurnpoints(int[] selectedRows) {
-        insertWaypoints("insertOnlyTurnpoints", selectedRows);
     }
 }

@@ -56,6 +56,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.mapview.MapView;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
@@ -137,7 +138,11 @@ public class OptionsDialog extends SimpleDialog {
     private JComboBox<Locale> comboBoxLocale;
     private JComboBox<GoogleMapsServer> comboBoxGoogleMapsServer;
     private JComboBox<FixMapMode> comboBoxFixMapMode;
-    private JComboBox<MapViewImplementation> comboBoxMapView;
+    private JComboBox<MapViewImplementation> comboBoxMapService;
+    private JTextField textFieldMapsPath;
+    private JButton buttonChooseMapsPath;
+    private JTextField textFieldThemesPath;
+    private JButton buttonChooseThemesPath;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseBabelPath;
     private JCheckBox checkBoxAutomaticUpdateCheck;
@@ -167,6 +172,7 @@ public class OptionsDialog extends SimpleDialog {
     private JColorChooser colorChooserTrack;
     private JComboBox<GeocodingService> comboBoxGeocodingService;
 
+
     public OptionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "options");
         setTitle(RouteConverter.getBundle().getString("options-title"));
@@ -195,17 +201,59 @@ public class OptionsDialog extends SimpleDialog {
         List<MapViewImplementation> mapViews = r.getAvailableMapViews();
         ComboBoxModel<MapViewImplementation> mapViewModel = new DefaultComboBoxModel<>(mapViews.toArray(new MapViewImplementation[mapViews.size()]));
         mapViewModel.setSelectedItem(r.getMapViewPreference());
-        comboBoxMapView.setModel(mapViewModel);
-        comboBoxMapView.setRenderer(new MapViewListCellRenderer());
-        comboBoxMapView.addItemListener(new ItemListener() {
+        comboBoxMapService.setModel(mapViewModel);
+        comboBoxMapService.setRenderer(new MapViewListCellRenderer());
+        comboBoxMapService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
                 MapViewImplementation mapView = MapViewImplementation.class.cast(e.getItem());
                 r.setMapView(mapView);
+                handleMapServiceUpdate();
             }
         });
+        textFieldMapsPath.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                MapView service = r.getMapView();
+                if (service.isSupportsPath())
+                    service.setMapsPath(textFieldMapsPath.getText());
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+        });
+        buttonChooseMapsPath.addActionListener(new FrameAction() {
+            public void run() {
+                chooseMapPath();
+            }
+        });
+        textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                MapView service = r.getMapView();
+                if (service.isSupportsPath())
+                    service.setThemesPath(textFieldThemesPath.getText());
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+        });
+        buttonChooseThemesPath.addActionListener(new FrameAction() {
+            public void run() {
+                chooseThemePath();
+            }
+        });
+        handleMapServiceUpdate();
 
         ComboBoxModel<GoogleMapsServer> googleMapsServerModel = new DefaultComboBoxModel<>(new GoogleMapsServer[]{
                 International, China, Ditu, Uzbekistan
@@ -310,7 +358,9 @@ public class OptionsDialog extends SimpleDialog {
 
         textFieldRoutingServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                r.getRoutingServiceFacade().getRoutingService().setPath(textFieldRoutingServicePath.getText());
+                RoutingService service = r.getRoutingServiceFacade().getRoutingService();
+                if (service.isSupportsPath())
+                    service.setPath(textFieldRoutingServicePath.getText());
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -407,9 +457,8 @@ public class OptionsDialog extends SimpleDialog {
         textFieldElevationServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 ElevationService service = r.getElevationServiceFacade().getElevationService();
-                if (service.isSupportsPath()) {
+                if (service.isSupportsPath())
                     service.setPath(textFieldElevationServicePath.getText());
-                }
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -556,11 +605,23 @@ public class OptionsDialog extends SimpleDialog {
         }
     }
 
+    private void handleMapServiceUpdate() {
+        MapView service = RouteConverter.getInstance().getMapView();
+        textFieldMapsPath.setEnabled(service.isSupportsPath());
+        textFieldMapsPath.setText(service.isSupportsPath() ? service.getMapsPath() : "");
+        buttonChooseMapsPath.setEnabled(service.isSupportsPath());
+        textFieldThemesPath.setEnabled(service.isSupportsPath());
+        textFieldThemesPath.setText(service.isSupportsPath() ? service.getThemesPath() : "");
+        buttonChooseThemesPath.setEnabled(service.isSupportsPath());
+        comboBoxFixMapMode.setEnabled(!service.isDownload());
+        comboBoxGoogleMapsServer.setEnabled(!service.isDownload());
+    }
+
     private void handleRoutingServiceUpdate() {
         RoutingServiceFacade routingServiceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = routingServiceFacade.getRoutingService();
-        textFieldRoutingServicePath.setEnabled(service.isDownload());
-        textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
+        textFieldRoutingServicePath.setEnabled(service.isSupportsPath());
+        textFieldRoutingServicePath.setText(service.isSupportsPath() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
         checkBoxAvoidFerries.setEnabled(service.isSupportAvoidFerries());
         checkBoxAvoidFerries.setSelected(routingServiceFacade.isAvoidFerries());
@@ -587,6 +648,46 @@ public class OptionsDialog extends SimpleDialog {
         textFieldElevationServicePath.setEnabled(service.isSupportsPath());
         textFieldElevationServicePath.setText(service.isSupportsPath() ? service.getPath() : "");
         buttonChooseElevationServicePath.setEnabled(service.isSupportsPath());
+    }
+
+    private void chooseMapPath() {
+        RouteConverter r = RouteConverter.getInstance();
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-map-path"));
+        chooser.setSelectedFile(new File(r.getMapView().getMapsPath()));
+        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        int open = chooser.showOpenDialog(r.getFrame());
+        if (open != APPROVE_OPTION) {
+            return;
+        }
+
+        File selected = chooser.getSelectedFile();
+        if (selected == null || selected.getName().length() == 0) {
+            return;
+        }
+
+        textFieldMapsPath.setText(selected.getAbsolutePath());
+    }
+
+    private void chooseThemePath() {
+        RouteConverter r = RouteConverter.getInstance();
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-theme-path"));
+        chooser.setSelectedFile(new File(r.getMapView().getThemesPath()));
+        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        int open = chooser.showOpenDialog(r.getFrame());
+        if (open != APPROVE_OPTION) {
+            return;
+        }
+
+        File selected = chooser.getSelectedFile();
+        if (selected == null || selected.getName().length() == 0) {
+            return;
+        }
+
+        textFieldThemesPath.setText(selected.getAbsolutePath());
     }
 
     private void chooseBabelPath() {
@@ -785,202 +886,230 @@ public class OptionsDialog extends SimpleDialog {
         panel12.setLayout(new GridLayoutManager(3, 1, new Insets(5, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("map-options-tab"), panel12);
         final JPanel panel13 = new JPanel();
-        panel13.setLayout(new GridLayoutManager(13, 2, new Insets(3, 3, 3, 3), -1, -1));
-        panel12.add(panel13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel13.setLayout(new GridLayoutManager(7, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel12.add(panel13, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label13 = new JLabel();
-        this.$$$loadLabelText$$$(label13, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("server-options"));
-        panel13.add(label13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label14 = new JLabel();
-        this.$$$loadLabelText$$$(label14, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("recenter-after-zooming"));
-        panel13.add(label14, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label13, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("recenter-after-zooming"));
+        panel13.add(label13, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxRecenterAfterZooming = new JCheckBox();
-        panel13.add(checkBoxRecenterAfterZooming, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label15 = new JLabel();
-        this.$$$loadLabelText$$$(label15, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-coordinates"));
-        panel13.add(label15, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel13.add(checkBoxRecenterAfterZooming, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label14 = new JLabel();
+        this.$$$loadLabelText$$$(label14, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-coordinates"));
+        panel13.add(label14, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxShowCoordinates = new JCheckBox();
-        panel13.add(checkBoxShowCoordinates, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label16 = new JLabel();
-        this.$$$loadLabelText$$$(label16, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-waypoint-description"));
-        panel13.add(label16, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel13.add(checkBoxShowCoordinates, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label15 = new JLabel();
+        this.$$$loadLabelText$$$(label15, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-waypoint-description"));
+        panel13.add(label15, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxShowWaypointDescription = new JCheckBox();
-        panel13.add(checkBoxShowWaypointDescription, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel13.add(checkBoxShowWaypointDescription, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel14 = new JPanel();
         panel14.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel13.add(panel14, new GridConstraints(12, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel13.add(panel14, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         checkBoxShowAllPositionsAfterLoading = new JCheckBox();
-        panel13.add(checkBoxShowAllPositionsAfterLoading, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel13.add(checkBoxShowAllPositionsAfterLoading, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label16 = new JLabel();
+        this.$$$loadLabelText$$$(label16, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-all-positions-after-loading"));
+        panel13.add(label16, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label17 = new JLabel();
-        this.$$$loadLabelText$$$(label17, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("show-all-positions-after-loading"));
-        panel13.add(label17, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label18 = new JLabel();
-        this.$$$loadLabelText$$$(label18, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-options"));
-        panel13.add(label18, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxMapView = new JComboBox();
-        panel13.add(comboBoxMapView, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxGoogleMapsServer = new JComboBox();
-        panel13.add(comboBoxGoogleMapsServer, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label19 = new JLabel();
-        this.$$$loadLabelText$$$(label19, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("google-maps-server"));
-        panel13.add(label19, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxFixMapMode = new JComboBox();
-        panel13.add(comboBoxFixMapMode, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label20 = new JLabel();
-        this.$$$loadLabelText$$$(label20, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("fix-map-mode"));
-        panel13.add(label20, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label21 = new JLabel();
-        this.$$$loadLabelText$$$(label21, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("map-view"));
-        panel13.add(label21, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label17, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-options"));
+        panel13.add(label17, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator5 = new JSeparator();
-        panel13.add(separator5, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator6 = new JSeparator();
-        panel13.add(separator6, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel15 = new JPanel();
-        panel15.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel13.add(panel15, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel13.add(separator5, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer5 = new Spacer();
         panel12.add(spacer5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel16 = new JPanel();
-        panel16.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 3, 3), -1, -1));
-        panel12.add(panel16, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JPanel panel15 = new JPanel();
+        panel15.setLayout(new GridLayoutManager(8, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel12.add(panel15, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label18 = new JLabel();
+        this.$$$loadLabelText$$$(label18, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("map-engine"));
+        panel15.add(label18, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator6 = new JSeparator();
+        panel15.add(separator6, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label19 = new JLabel();
+        this.$$$loadLabelText$$$(label19, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("map-service"));
+        panel15.add(label19, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxMapService = new JComboBox();
+        panel15.add(comboBoxMapService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label20 = new JLabel();
+        this.$$$loadLabelText$$$(label20, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("map-path"));
+        panel15.add(label20, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textFieldMapsPath = new JTextField();
+        panel15.add(textFieldMapsPath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        buttonChooseMapsPath = new JButton();
+        buttonChooseMapsPath.setHideActionText(true);
+        buttonChooseMapsPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
+        buttonChooseMapsPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
+        panel15.add(buttonChooseMapsPath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
+        final JLabel label21 = new JLabel();
+        this.$$$loadLabelText$$$(label21, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("google-maps-server"));
+        panel15.add(label21, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxGoogleMapsServer = new JComboBox();
+        panel15.add(comboBoxGoogleMapsServer, new GridConstraints(5, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxFixMapMode = new JComboBox();
+        panel15.add(comboBoxFixMapMode, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label22 = new JLabel();
-        this.$$$loadLabelText$$$(label22, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-options"));
-        panel16.add(label22, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator7 = new JSeparator();
-        panel16.add(separator7, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label22, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("fix-map-mode"));
+        panel15.add(label22, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel16 = new JPanel();
+        panel16.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
+        panel15.add(panel16, new GridConstraints(7, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label23 = new JLabel();
-        this.$$$loadLabelText$$$(label23, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("travel-mode"));
-        panel16.add(label23, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboboxTravelMode = new JComboBox();
-        panel16.add(comboboxTravelMode, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label24 = new JLabel();
-        this.$$$loadLabelText$$$(label24, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
-        panel16.add(label24, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxAvoidHighways = new JCheckBox();
-        panel16.add(checkBoxAvoidHighways, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label25 = new JLabel();
-        this.$$$loadLabelText$$$(label25, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-tolls"));
-        panel16.add(label25, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxAvoidTolls = new JCheckBox();
-        panel16.add(checkBoxAvoidTolls, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label23, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("theme-path"));
+        panel15.add(label23, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textFieldThemesPath = new JTextField();
+        panel15.add(textFieldThemesPath, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        buttonChooseThemesPath = new JButton();
+        buttonChooseThemesPath.setHideActionText(true);
+        buttonChooseThemesPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
+        buttonChooseThemesPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
+        panel15.add(buttonChooseThemesPath, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 2, false));
         final JPanel panel17 = new JPanel();
-        panel17.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel16.add(panel17, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label26 = new JLabel();
-        this.$$$loadLabelText$$$(label26, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-ferries"));
-        panel16.add(label26, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxAvoidFerries = new JCheckBox();
-        panel16.add(checkBoxAvoidFerries, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel17.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("colors-options-tab"), panel17);
         final JPanel panel18 = new JPanel();
-        panel18.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
-        tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("colors-options-tab"), panel18);
-        final JPanel panel19 = new JPanel();
-        panel19.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
-        panel18.add(panel19, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel18.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel17.add(panel18, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final Spacer spacer6 = new Spacer();
-        panel19.add(spacer6, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel18.add(spacer6, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         colorChooserRoute = new JColorChooser();
-        panel19.add(colorChooserRoute, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label27 = new JLabel();
-        this.$$$loadLabelText$$$(label27, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("route-color"));
-        panel19.add(label27, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel18.add(colorChooserRoute, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label24 = new JLabel();
+        this.$$$loadLabelText$$$(label24, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("route-color"));
+        panel18.add(label24, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         colorChooserTrack = new JColorChooser();
-        panel19.add(colorChooserTrack, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label28 = new JLabel();
-        this.$$$loadLabelText$$$(label28, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("track-color"));
-        panel19.add(label28, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel18.add(colorChooserTrack, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label25 = new JLabel();
+        this.$$$loadLabelText$$$(label25, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("track-color"));
+        panel18.add(label25, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel19 = new JPanel();
+        panel19.setLayout(new GridLayoutManager(3, 1, new Insets(5, 0, 0, 0), -1, -1));
+        tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-services-options-tab"), panel19);
         final JPanel panel20 = new JPanel();
-        panel20.setLayout(new GridLayoutManager(5, 1, new Insets(5, 0, 0, 0), -1, -1));
-        tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("paths-services-options-tab"), panel20);
-        final JPanel panel21 = new JPanel();
-        panel21.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
-        panel20.add(panel21, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label29 = new JLabel();
-        this.$$$loadLabelText$$$(label29, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-service"));
-        panel21.add(label29, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel20.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel19.add(panel20, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label26 = new JLabel();
+        this.$$$loadLabelText$$$(label26, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-service"));
+        panel20.add(label26, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxRoutingService = new JComboBox();
-        panel21.add(comboBoxRoutingService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label30 = new JLabel();
-        this.$$$loadLabelText$$$(label30, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-service-path"));
-        panel21.add(label30, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel20.add(comboBoxRoutingService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label27 = new JLabel();
+        this.$$$loadLabelText$$$(label27, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-service-path"));
+        panel20.add(label27, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldRoutingServicePath = new JTextField();
-        panel21.add(textFieldRoutingServicePath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel20.add(textFieldRoutingServicePath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         buttonChooseRoutingServicePath = new JButton();
         buttonChooseRoutingServicePath.setHideActionText(true);
         buttonChooseRoutingServicePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
         buttonChooseRoutingServicePath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
-        panel21.add(buttonChooseRoutingServicePath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label31 = new JLabel();
-        this.$$$loadLabelText$$$(label31, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-options"));
-        panel21.add(label31, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator8 = new JSeparator();
-        panel21.add(separator8, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel20.add(buttonChooseRoutingServicePath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label28 = new JLabel();
+        this.$$$loadLabelText$$$(label28, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-engine"));
+        panel20.add(label28, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator7 = new JSeparator();
+        panel20.add(separator7, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JPanel panel21 = new JPanel();
+        panel21.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
+        panel20.add(panel21, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final Spacer spacer7 = new Spacer();
+        panel19.add(spacer7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel22 = new JPanel();
-        panel22.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel21.add(panel22, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JPanel panel23 = new JPanel();
-        panel23.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
-        panel20.add(panel23, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel22.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel19.add(panel22, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label29 = new JLabel();
+        this.$$$loadLabelText$$$(label29, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-options"));
+        panel22.add(label29, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator8 = new JSeparator();
+        panel22.add(separator8, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label30 = new JLabel();
+        this.$$$loadLabelText$$$(label30, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("travel-mode"));
+        panel22.add(label30, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboboxTravelMode = new JComboBox();
+        panel22.add(comboboxTravelMode, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label31 = new JLabel();
+        this.$$$loadLabelText$$$(label31, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
+        panel22.add(label31, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAvoidHighways = new JCheckBox();
+        panel22.add(checkBoxAvoidHighways, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label32 = new JLabel();
-        this.$$$loadLabelText$$$(label32, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-options"));
-        panel23.add(label32, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator9 = new JSeparator();
-        panel23.add(separator9, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label32, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-tolls"));
+        panel22.add(label32, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAvoidTolls = new JCheckBox();
+        panel22.add(checkBoxAvoidTolls, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel23 = new JPanel();
+        panel23.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
+        panel22.add(panel23, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label33 = new JLabel();
-        this.$$$loadLabelText$$$(label33, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-service"));
-        panel23.add(label33, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxElevationService = new JComboBox();
-        panel23.add(comboBoxElevationService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label33, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-ferries"));
+        panel22.add(label33, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAvoidFerries = new JCheckBox();
+        panel22.add(checkBoxAvoidFerries, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel24 = new JPanel();
+        panel24.setLayout(new GridLayoutManager(4, 1, new Insets(5, 0, 0, 0), -1, -1));
+        tabbedPane1.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("paths-services-options-tab"), panel24);
+        final JPanel panel25 = new JPanel();
+        panel25.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel24.add(panel25, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label34 = new JLabel();
-        this.$$$loadLabelText$$$(label34, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-service-path"));
-        panel23.add(label34, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label34, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-options"));
+        panel25.add(label34, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator9 = new JSeparator();
+        panel25.add(separator9, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label35 = new JLabel();
+        this.$$$loadLabelText$$$(label35, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-service"));
+        panel25.add(label35, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxElevationService = new JComboBox();
+        panel25.add(comboBoxElevationService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label36 = new JLabel();
+        this.$$$loadLabelText$$$(label36, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-service-path"));
+        panel25.add(label36, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldElevationServicePath = new JTextField();
-        panel23.add(textFieldElevationServicePath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel25.add(textFieldElevationServicePath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         buttonChooseElevationServicePath = new JButton();
         buttonChooseElevationServicePath.setHideActionText(true);
         buttonChooseElevationServicePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
         buttonChooseElevationServicePath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
-        panel23.add(buttonChooseElevationServicePath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
-        final JPanel panel24 = new JPanel();
-        panel24.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel23.add(panel24, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 1, false));
-        final JPanel panel25 = new JPanel();
-        panel25.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel20.add(panel25, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel25.add(buttonChooseElevationServicePath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         final JPanel panel26 = new JPanel();
-        panel26.setLayout(new GridLayoutManager(3, 3, new Insets(3, 3, 3, 3), -1, -1));
-        panel20.add(panel26, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label35 = new JLabel();
-        this.$$$loadLabelText$$$(label35, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("gpsbabel-options"));
-        panel26.add(label35, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel26.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
+        panel25.add(panel26, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 1, false));
+        final JPanel panel27 = new JPanel();
+        panel27.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel24.add(panel27, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JPanel panel28 = new JPanel();
+        panel28.setLayout(new GridLayoutManager(3, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel24.add(panel28, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label37 = new JLabel();
+        this.$$$loadLabelText$$$(label37, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("gpsbabel-options"));
+        panel28.add(label37, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator10 = new JSeparator();
-        panel26.add(separator10, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label36 = new JLabel();
-        this.$$$loadLabelText$$$(label36, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("gpsbabel-path"));
-        panel26.add(label36, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel28.add(separator10, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label38 = new JLabel();
+        this.$$$loadLabelText$$$(label38, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("gpsbabel-path"));
+        panel28.add(label38, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldBabelPath = new JTextField();
-        panel26.add(textFieldBabelPath, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel28.add(textFieldBabelPath, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         buttonChooseBabelPath = new JButton();
         buttonChooseBabelPath.setHideActionText(true);
         buttonChooseBabelPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
         buttonChooseBabelPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-gpsbabel-path"));
-        panel26.add(buttonChooseBabelPath, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel27 = new JPanel();
-        panel27.setLayout(new GridLayoutManager(4, 3, new Insets(3, 3, 3, 3), -1, -1));
-        panel20.add(panel27, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label37 = new JLabel();
-        this.$$$loadLabelText$$$(label37, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("geocoding-options"));
-        panel27.add(label37, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel28.add(buttonChooseBabelPath, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel29 = new JPanel();
+        panel29.setLayout(new GridLayoutManager(4, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel24.add(panel29, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label39 = new JLabel();
+        this.$$$loadLabelText$$$(label39, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("geocoding-options"));
+        panel29.add(label39, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator11 = new JSeparator();
-        panel27.add(separator11, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label38 = new JLabel();
-        this.$$$loadLabelText$$$(label38, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("geocoding-service"));
-        panel27.add(label38, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel29.add(separator11, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label40 = new JLabel();
+        this.$$$loadLabelText$$$(label40, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("geocoding-service"));
+        panel29.add(label40, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxGeocodingService = new JComboBox();
-        panel27.add(comboBoxGeocodingService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel28 = new JPanel();
-        panel28.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel27.add(panel28, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel29.add(comboBoxGeocodingService, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel30 = new JPanel();
+        panel30.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
+        panel29.add(panel30, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     }
 
     /**

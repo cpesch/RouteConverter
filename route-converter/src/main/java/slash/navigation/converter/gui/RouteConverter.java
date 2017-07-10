@@ -57,7 +57,7 @@ import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
 import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.GeoTagger;
 import slash.navigation.converter.gui.helpers.GeocodingServiceFacade;
-import slash.navigation.converter.gui.helpers.GoogleDirectionsService;
+import slash.navigation.converter.gui.helpers.GoogleDirections;
 import slash.navigation.converter.gui.helpers.InsertPositionFacade;
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
@@ -1455,7 +1455,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeRoutingServices() {
-        RoutingService service = new GoogleDirectionsService();
+        RoutingService service = new GoogleDirections();
         getRoutingServiceFacade().addRoutingService(service);
         getRoutingServiceFacade().setPreferredRoutingService(service);
     }
