@@ -84,10 +84,6 @@ public class GoogleDirections implements RoutingService {
         return DRIVING;
     }
 
-    public boolean isSupportsPath() {
-        return false;
-    }
-
     public String getPath() {
         throw new UnsupportedOperationException();
     }

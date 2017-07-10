@@ -142,10 +142,6 @@ public class BRouter implements RoutingService {
         return MOPED;
     }
 
-    public boolean isSupportsPath() {
-        return true;
-    }
-
     public String getPath() {
         return preferences.get(DIRECTORY_PREFERENCE, "");
     }

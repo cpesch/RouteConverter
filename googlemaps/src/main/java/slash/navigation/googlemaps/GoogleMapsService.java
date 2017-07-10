@@ -194,10 +194,6 @@ public class GoogleMapsService implements ElevationService, GeocodingService {
         return false;
     }
 
-    public boolean isSupportsPath() {
-        return false;
-    }
-
     public String getPath() {
         throw new UnsupportedOperationException();
     }

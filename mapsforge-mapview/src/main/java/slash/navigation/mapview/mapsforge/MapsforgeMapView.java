@@ -971,10 +971,6 @@ public class MapsforgeMapView implements MapView {
         throw new UnsupportedOperationException("Printing not supported");
     }
 
-    public boolean isSupportsPath() {
-        return true;
-    }
-
     public String getMapsPath() {
         return getMapManager().getMapsPath();
     }

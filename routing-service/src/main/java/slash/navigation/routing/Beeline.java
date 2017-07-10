@@ -76,10 +76,6 @@ public class Beeline implements RoutingService {
         return BEELINE;
     }
 
-    public boolean isSupportsPath() {
-        return false;
-    }
-
     public String getPath() {
         throw new UnsupportedOperationException();
     }

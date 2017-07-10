@@ -216,7 +216,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldMapsPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 MapView service = r.getMapView();
-                if (service.isSupportsPath())
+                if (service.isDownload())
                     service.setMapsPath(textFieldMapsPath.getText());
             }
 
@@ -236,7 +236,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 MapView service = r.getMapView();
-                if (service.isSupportsPath())
+                if (service.isDownload())
                     service.setThemesPath(textFieldThemesPath.getText());
             }
 
@@ -359,7 +359,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldRoutingServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-                if (service.isSupportsPath())
+                if (service.isDownload())
                     service.setPath(textFieldRoutingServicePath.getText());
             }
 
@@ -457,7 +457,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldElevationServicePath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 ElevationService service = r.getElevationServiceFacade().getElevationService();
-                if (service.isSupportsPath())
+                if (service.isDownload())
                     service.setPath(textFieldElevationServicePath.getText());
             }
 
@@ -607,12 +607,12 @@ public class OptionsDialog extends SimpleDialog {
 
     private void handleMapServiceUpdate() {
         MapView service = RouteConverter.getInstance().getMapView();
-        textFieldMapsPath.setEnabled(service.isSupportsPath());
-        textFieldMapsPath.setText(service.isSupportsPath() ? service.getMapsPath() : "");
-        buttonChooseMapsPath.setEnabled(service.isSupportsPath());
-        textFieldThemesPath.setEnabled(service.isSupportsPath());
-        textFieldThemesPath.setText(service.isSupportsPath() ? service.getThemesPath() : "");
-        buttonChooseThemesPath.setEnabled(service.isSupportsPath());
+        textFieldMapsPath.setEnabled(service.isDownload());
+        textFieldMapsPath.setText(service.isDownload() ? service.getMapsPath() : "");
+        buttonChooseMapsPath.setEnabled(service.isDownload());
+        textFieldThemesPath.setEnabled(service.isDownload());
+        textFieldThemesPath.setText(service.isDownload() ? service.getThemesPath() : "");
+        buttonChooseThemesPath.setEnabled(service.isDownload());
         comboBoxFixMapMode.setEnabled(!service.isDownload());
         comboBoxGoogleMapsServer.setEnabled(!service.isDownload());
     }
@@ -620,8 +620,8 @@ public class OptionsDialog extends SimpleDialog {
     private void handleRoutingServiceUpdate() {
         RoutingServiceFacade routingServiceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = routingServiceFacade.getRoutingService();
-        textFieldRoutingServicePath.setEnabled(service.isSupportsPath());
-        textFieldRoutingServicePath.setText(service.isSupportsPath() ? service.getPath() : "");
+        textFieldRoutingServicePath.setEnabled(service.isDownload());
+        textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
         checkBoxAvoidFerries.setEnabled(service.isSupportAvoidFerries());
         checkBoxAvoidFerries.setSelected(routingServiceFacade.isAvoidFerries());
@@ -645,9 +645,9 @@ public class OptionsDialog extends SimpleDialog {
 
     private void handleElevationServiceUpdate() {
         ElevationService service = RouteConverter.getInstance().getElevationServiceFacade().getElevationService();
-        textFieldElevationServicePath.setEnabled(service.isSupportsPath());
-        textFieldElevationServicePath.setText(service.isSupportsPath() ? service.getPath() : "");
-        buttonChooseElevationServicePath.setEnabled(service.isSupportsPath());
+        textFieldElevationServicePath.setEnabled(service.isDownload());
+        textFieldElevationServicePath.setText(service.isDownload() ? service.getPath() : "");
+        buttonChooseElevationServicePath.setEnabled(service.isDownload());
     }
 
     private void chooseMapPath() {

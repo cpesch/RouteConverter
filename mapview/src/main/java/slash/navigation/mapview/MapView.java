@@ -58,7 +58,6 @@ public interface MapView extends PositionsSelectionModel {
     boolean isDownload();
     boolean isSupportsPrinting();
     boolean isSupportsPrintingWithDirections();
-    boolean isSupportsPath();
     String getMapsPath();
     void setMapsPath(String path);
     String getThemesPath();

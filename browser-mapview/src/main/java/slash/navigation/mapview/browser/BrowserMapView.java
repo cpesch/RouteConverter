@@ -398,10 +398,6 @@ public abstract class BrowserMapView implements MapView {
         return false;
     }
 
-    public boolean isSupportsPath() {
-        return false;
-    }
-
     public String getMapsPath() {
         throw new UnsupportedOperationException();
     }

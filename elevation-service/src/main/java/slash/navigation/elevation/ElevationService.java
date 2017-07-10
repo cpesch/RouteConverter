@@ -36,7 +36,6 @@ public interface ElevationService {
     String getName();
     boolean isDownload();
     boolean isOverQueryLimit();
-    boolean isSupportsPath();
     String getPath();
     void setPath(String path);
 

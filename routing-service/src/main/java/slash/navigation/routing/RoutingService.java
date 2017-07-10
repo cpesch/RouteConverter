@@ -42,7 +42,6 @@ public interface RoutingService {
     boolean isSupportAvoidTolls();
     List<TravelMode> getAvailableTravelModes();
     TravelMode getPreferredTravelMode();
-    boolean isSupportsPath();
     String getPath();
     void setPath(String path);
 
