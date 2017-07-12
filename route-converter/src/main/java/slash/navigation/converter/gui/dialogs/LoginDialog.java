@@ -48,6 +48,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTerms;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -101,6 +102,7 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel, "cancel-mnemonic");
         buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
@@ -119,6 +121,7 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel2, "cancel-mnemonic");
         buttonCancel2.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();

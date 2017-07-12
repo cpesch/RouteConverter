@@ -41,6 +41,7 @@ import static java.awt.Color.RED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to rename position list
@@ -84,6 +85,7 @@ public class RenameDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel, "cancel-mnemonic");
         buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();

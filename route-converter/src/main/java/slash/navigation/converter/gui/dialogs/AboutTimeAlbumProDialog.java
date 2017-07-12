@@ -43,6 +43,7 @@ import static slash.feature.client.Feature.getFeature;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGeonames;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTimeAlbumProSupport;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTimeAlbumProDownload;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to show information about the program.
@@ -90,6 +91,7 @@ public class AboutTimeAlbumProDialog extends SimpleDialog {
             labelFeature.setVisible(true);
         }
 
+        setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
                 close();

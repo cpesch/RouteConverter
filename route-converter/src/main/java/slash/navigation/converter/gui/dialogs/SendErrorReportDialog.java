@@ -43,6 +43,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
@@ -81,6 +82,7 @@ public class SendErrorReportDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel, "cancel-mnemonic");
         buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();

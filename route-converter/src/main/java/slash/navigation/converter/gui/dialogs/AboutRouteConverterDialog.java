@@ -41,6 +41,7 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.feature.client.Feature.getFeature;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to show information about the program.
@@ -95,6 +96,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
             labelFeature.setVisible(true);
         }
 
+        setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
                 close();

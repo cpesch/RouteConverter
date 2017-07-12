@@ -42,6 +42,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to add an {@link URL} to a catalog
@@ -80,6 +81,7 @@ public class AddUrlDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel, "cancel-mnemonic");
         buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();

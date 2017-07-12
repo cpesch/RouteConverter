@@ -44,6 +44,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.createReadablePath;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
  * Dialog to add a {@link File} to a catalog
@@ -89,6 +90,7 @@ public class AddFileDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonCancel, "cancel-mnemonic");
         buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();

@@ -124,6 +124,7 @@ import static slash.navigation.googlemaps.GoogleMapsServer.China;
 import static slash.navigation.googlemaps.GoogleMapsServer.Ditu;
 import static slash.navigation.googlemaps.GoogleMapsServer.International;
 import static slash.navigation.googlemaps.GoogleMapsServer.Uzbekistan;
+import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
@@ -171,7 +172,6 @@ public class OptionsDialog extends SimpleDialog {
     private JColorChooser colorChooserRoute;
     private JColorChooser colorChooserTrack;
     private JComboBox<GeocodingService> comboBoxGeocodingService;
-
 
     public OptionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "options");
@@ -565,6 +565,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
                 close();
