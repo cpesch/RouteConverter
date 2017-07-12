@@ -162,6 +162,7 @@ import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.LocaleHelper.CROATIA;
 import static slash.common.helpers.LocaleHelper.CZECH;
 import static slash.common.helpers.LocaleHelper.DENMARK;
@@ -491,10 +492,8 @@ public class RouteConverter extends SingleFrameApplication {
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
         Throwable cause = getMapView().getInitializationCause();
         if (getMapView().getComponent() == null || cause != null) {
-            StringWriter stackTrace = new StringWriter();
-            cause.printStackTrace(new PrintWriter(stackTrace));
             mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                    stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                    printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
         } else {
             mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
         }
@@ -725,9 +724,7 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(new Runnable() {
             public void run() {
-                StringWriter stackTrace = new StringWriter();
-                throwable.printStackTrace(new PrintWriter(stackTrace));
-                log.severe("Open error from " + path + ": " + throwable + "\n" + stackTrace.toString());
+                log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
@@ -742,10 +739,8 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         invokeLater(new Runnable() {
             public void run() {
-                StringWriter stackTrace = new StringWriter();
-                throwable.printStackTrace(new PrintWriter(stackTrace));
                 String dialogUrls = printArrayToDialogString(urls.toArray(new URL[urls.size()]));
-                log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + stackTrace.toString());
+                log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {

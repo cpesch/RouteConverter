@@ -102,6 +102,7 @@ import static java.lang.Character.isLetterOrDigit;
 import static java.lang.Character.isWhitespace;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
@@ -119,6 +120,7 @@ import static javax.swing.event.TableModelEvent.INSERT;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.UTF8_ENCODING;
@@ -602,8 +604,7 @@ public abstract class BrowserMapView implements MapView {
                                 try {
                                     processStream(socket);
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    log.severe("Cannot process stream from callback listener socket: " + e);
+                                    log.severe(format("Cannot process stream from callback listener socket: %s, %s ", e, printStackTrace(e)));
                                 }
                             }
                         });

@@ -33,6 +33,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.system.Platform.getMaximumMemory;
 
 /**
@@ -69,11 +70,11 @@ public class WindowHelper {
         });
     }
 
-    public static void handleThrowable(Class clazz, Throwable t) {
-        log.severe(format("Unhandled throwable in action %s: %s", clazz.getSimpleName(), t));
+    public static void handleThrowable(Class clazz, Throwable throwable) {
+        log.severe(format("Unhandled throwable in action %s: %s, %s", clazz.getSimpleName(), throwable, printStackTrace(throwable)));
         showMessageDialog(getFrame(),
                 MessageFormat.format(Application.getInstance().getContext().getBundle().
-                        getString("unhandled-throwable-error"), getLocalizedMessage(t)),
+                        getString("unhandled-throwable-error"), clazz.getSimpleName(), getLocalizedMessage(throwable), printStackTrace(throwable)),
                 getFrame().getTitle(), ERROR_MESSAGE);
     }
 }

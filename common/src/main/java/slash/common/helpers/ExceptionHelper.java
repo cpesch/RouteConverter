@@ -20,6 +20,8 @@
 
 package slash.common.helpers;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.UnknownHostException;
 
 /**
@@ -34,5 +36,11 @@ public class ExceptionHelper {
             return "Your machine is not connected to the Internet and\n" +
                     "cannot access " + throwable.getMessage() + ".";
         return throwable.getLocalizedMessage() != null ? throwable.getLocalizedMessage() : throwable.toString();
+    }
+
+    public static String printStackTrace(Throwable throwable) {
+        StringWriter writer = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 }

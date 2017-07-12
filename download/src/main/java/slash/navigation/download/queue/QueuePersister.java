@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.io.Transfer.formatXMLTime;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.download.queue.QueueUtil.marshal;
@@ -98,8 +99,7 @@ public class QueuePersister {
         try {
             marshal(queueType, new FileOutputStream(file));
         } catch (JAXBException e) {
-            e.printStackTrace();
-            throw new IOException("Cannot marshall " + file + ": " + e, e);
+            throw new IOException("Cannot marshall " + file + ": " + e + "\n" + printStackTrace(e), e);
         }
     }
 

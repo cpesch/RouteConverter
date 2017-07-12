@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.navigation.download.State.*;
 
 /**
@@ -87,8 +88,7 @@ public class DownloadExecutor implements Runnable {
             performer.setDownloadExecutor(this);
             performer.run();
         } catch (Exception e) {
-            log.severe(format("Could not download content from %s: %s", download.getUrl(), e));
-            e.printStackTrace();
+            log.severe(format("Could not download content from %s: %s, %s", download.getUrl(), e, printStackTrace(e)));
             downloadFailed();
         }
 
