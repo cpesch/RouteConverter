@@ -59,11 +59,12 @@ public class AutomaticElevationService implements ElevationService {
     }
 
     public String getPath() {
-        throw new UnsupportedOperationException();
+        // do not throw UnsupportedOperationException since #isDownload is true to omit (online) suffix in rendering
+        return "";
     }
 
     public void setPath(String path) {
-        throw new UnsupportedOperationException();
+        // do not throw UnsupportedOperationException since #isDownload is true to omit (online) suffix in rendering
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
