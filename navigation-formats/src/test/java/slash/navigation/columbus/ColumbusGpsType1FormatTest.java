@@ -34,8 +34,8 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
-public class ColumbusGpsProfessionalFormatTest {
-    private ColumbusGpsProfessionalFormat format = new ColumbusGpsProfessionalFormat();
+public class ColumbusGpsType1FormatTest {
+    private ColumbusGpsType1Format format = new ColumbusGpsType1Format();
 
     @Test
     public void testIsValidLine() {
