@@ -64,8 +64,31 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>2.6.4</version>
+            <classifier>stripped</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
             <version>2.6.4</version>
+            <classifier>stripped</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>
