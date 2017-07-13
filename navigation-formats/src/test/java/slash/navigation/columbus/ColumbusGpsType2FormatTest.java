@@ -123,7 +123,7 @@ public class ColumbusGpsType2FormatTest {
             assertDoubleEquals(51.0, position.getHeading());
             assertNull(position.getPressure());
             assertNull(position.getTemperature());
-            assertNull(position.getDescription());
+            assertEquals("Waypoint 17", position.getDescription());
             String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
             CompactCalendar expectedCal = calendar(2016, 3, 25, 15, 20, 59);
             String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());

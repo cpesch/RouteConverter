@@ -120,9 +120,9 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
         boolean isTypeA = trim(lineMatcher.group(12)) != null;
-        String pressure = isTypeA ? lineMatcher.group(13) : null;
-        String temperature = isTypeA ? lineMatcher.group(14) : null;
-        String description = isTypeA ? parseDescription(removeZeros(lineMatcher.group(15)), removeZeros(lineMatcher.group(1)), waypointType) : null;
+        String pressure = lineMatcher.group(13);
+        String temperature = lineMatcher.group(14);
+        String description = parseDescription(removeZeros(lineMatcher.group(15)), removeZeros(lineMatcher.group(1)), waypointType);
 
         CompactCalendar dateAndTime = parseDateAndTime(date, time);
         if(getUseLocalTimeZone())
