@@ -44,7 +44,6 @@ import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
-import slash.navigation.columbus.ColumbusGpsStandardFormat;
 import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -154,7 +153,7 @@ public class ConvertIT {
 
     @Test
     public void testConvertColumbusGpsToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusGpsStandardFormat(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusGpsProfessionalFormat(), new CoPilot6Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot8Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsProfessionalFormat(), new CoPilot9Format());
@@ -167,7 +166,6 @@ public class ConvertIT {
         boolean useLocalTimeZone = getUseLocalTimeZone();
         try {
             setUseLocalTimeZone(false);
-            convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsStandardFormat());
             convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsProfessionalFormat());
             convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsType2Format());
         } finally {
@@ -198,8 +196,8 @@ public class ConvertIT {
 
     @Test
     public void testConvertQstarzQ1000ToColumbusGps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsStandardFormat());
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusGpsType2Format());
     }
 
     @Test
@@ -214,8 +212,8 @@ public class ConvertIT {
 
     @Test
     public void testConvertiBlue747ToColumbusGps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsStandardFormat());
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new ColumbusGpsType2Format());
     }
 
     @Test
@@ -253,14 +251,14 @@ public class ConvertIT {
 
     @Test
     public void testConvertCoPilotToColumbusGps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsStandardFormat());
         convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusGpsType2Format());
         convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusGpsType2Format());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsStandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusGpsType2Format());
         convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusGpsType2Format());
     }
 
     @Test

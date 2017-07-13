@@ -55,7 +55,7 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusGpsProfessionalFormat.class);
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
     private static final Pattern HEADER_PATTERN = Pattern.
-            compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX");
+            compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,(FIX MODE,VALID,PDOP,HDOP,VDOP,)?VOX");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -67,13 +67,13 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-
+                    "(" +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
-
                     SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    ")?" +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
     private static final Set<String> VALID_FIX_MODES = new HashSet<>(asList("2D", "3D"));
@@ -97,8 +97,8 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
     }
 
     protected boolean hasValidFix(String line, Matcher matcher) {
-        return hasValidField(line, trim(matcher.group(12)), VALID_FIX_MODES) &&
-                hasValidField(line, trim(matcher.group(13)), VALID_VALID);
+        return hasValidField(line, trim(matcher.group(13)), VALID_FIX_MODES) &&
+                hasValidField(line, trim(matcher.group(14)), VALID_VALID);
     }
 
     protected String getHeader() {
@@ -127,14 +127,15 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
-        String pdop = lineMatcher.group(14);
-        String hdop = lineMatcher.group(15);
-        String vdop = lineMatcher.group(16);
-        String description = parseDescription(removeZeros(lineMatcher.group(17)), removeZeros(lineMatcher.group(1)), waypointType);
+        boolean isTypeA = trim(lineMatcher.group(14)) != null;
+        String pdop = lineMatcher.group(15);
+        String hdop = lineMatcher.group(16);
+        String vdop = lineMatcher.group(17);
+        String description = parseDescription(removeZeros(lineMatcher.group(18)), removeZeros(lineMatcher.group(1)), waypointType);
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), description,
-                context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
+                context.getFile() != null && isTypeA ? new File(context.getFile().getParentFile(), description) : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         position.setPdop(parseDouble(pdop));
