@@ -44,15 +44,24 @@ import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 /**
  * Reads and writes Columbus GPS Type 2 (.csv) files.
  *
+ * Type A:
+ *
  * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP
  * Format: 7,T,160325,151927,26.097885N,119.265160E,-25,39.3,83,1020.2,17
+ *
+ * Type B:
+ *
+ * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING
+ * Format: 7,T,160325,151927,26.097885N,119.265160E,-25,39.3,83
  *
  * @author Christian Pesch
  */
 
 public class ColumbusGpsType2Format extends ColumbusGpsFormat {
-    private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP";
-    private static final Pattern HEADER_PATTERN = Pattern.compile(HEADER_LINE);
+    private static final String COMMON_HEADER = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING";
+    private static final String TYPE_A_HEADER = ",PRES,TEMP";
+    private static final String HEADER_LINE = COMMON_HEADER + TYPE_A_HEADER;
+    private static final Pattern HEADER_PATTERN = Pattern.compile(COMMON_HEADER + "(" + TYPE_A_HEADER + ")?");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
@@ -63,10 +72,12 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO +
+                    "(" + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR + "?" +
                     SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
+                    ")?" +
                     END_OF_LINE);
 
     public String getName() {
@@ -108,15 +119,17 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10);
         String heading = lineMatcher.group(11);
-        String pressure = lineMatcher.group(12);
-        String temperature = lineMatcher.group(13);
-        String description = parseDescription(removeZeros(lineMatcher.group(14)), removeZeros(lineMatcher.group(1)), waypointType);
+        boolean isTypeA = trim(lineMatcher.group(12)) != null;
+        String pressure = isTypeA ? lineMatcher.group(13) : null;
+        String temperature = isTypeA ? lineMatcher.group(14) : null;
+        String description = isTypeA ? parseDescription(removeZeros(lineMatcher.group(15)), removeZeros(lineMatcher.group(1)), waypointType) : null;
 
         CompactCalendar dateAndTime = parseDateAndTime(date, time);
         if(getUseLocalTimeZone())
             dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
         Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                dateAndTime, description, context.getFile() != null ? new File(context.getFile().getParentFile(), description) : null);
+                dateAndTime, description,
+                context.getFile() != null && isTypeA ? new File(context.getFile().getParentFile(), description) : null);
         position.setWaypointType(waypointType);
         position.setHeading(parseDouble(heading));
         position.setPressure(parseDouble(pressure));
