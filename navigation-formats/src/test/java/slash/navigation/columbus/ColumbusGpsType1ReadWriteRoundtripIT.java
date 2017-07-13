@@ -33,10 +33,28 @@ import static org.junit.Assert.assertNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 
-public class ColumbusGpsStandardReadWriteRoundtripIT {
+public class ColumbusGpsType1ReadWriteRoundtripIT {
 
     @Test
-    public void testRoundtrip() throws IOException {
+    public void testTypeARoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ReadWriteTestCallback() {
+            public void test(ParserResult source, ParserResult target) {
+                SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
+                SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
+                for(int i=0; i < sourceRoute.getPositionCount(); i++) {
+                    Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
+                    Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
+                    assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
+                    assertEquals(targetPosition.getHdop(), sourcePosition.getHdop());
+                    assertEquals(targetPosition.getVdop(), sourcePosition.getVdop());
+                    assertEquals(targetPosition.getPdop(), sourcePosition.getPdop());
+                }
+            }
+        });
+    }
+
+    @Test
+    public void testTypeBRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -47,6 +65,8 @@ public class ColumbusGpsStandardReadWriteRoundtripIT {
                     assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
                     assertNull(sourcePosition.getHdop());
                     assertNull(targetPosition.getHdop());
+                    assertNull(targetPosition.getVdop());
+                    assertNull(targetPosition.getPdop());
                 }
             }
         });

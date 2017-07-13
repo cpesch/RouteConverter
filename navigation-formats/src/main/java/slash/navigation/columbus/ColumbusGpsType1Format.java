@@ -43,16 +43,23 @@ import static slash.navigation.base.RouteComments.isPositionDescription;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
- * Reads and writes Columbus GPS Professional (.csv) files.
+ * Reads and writes Columbus GPS Type 1 (.csv) files.
+ *
+ * Type A:
  *
  * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX
- * Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
+ * Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX00014
+ *
+ * Type B:
+ *
+ * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX
+ * Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,VOX00014
  *
  * @author Christian Pesch
  */
 
-public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusGpsProfessionalFormat.class);
+public class ColumbusGpsType1Format extends ColumbusGpsFormat {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusGpsType1Format.class);
     private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
     private static final Pattern HEADER_PATTERN = Pattern.
             compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,(FIX MODE,VALID,PDOP,HDOP,VDOP,)?VOX");
@@ -80,7 +87,7 @@ public class ColumbusGpsProfessionalFormat extends ColumbusGpsFormat {
     private static final Set<String> VALID_VALID = new HashSet<>(asList("SPS", "DGPS"));
 
     public String getName() {
-        return "Columbus GPS Professional (*" + getExtension() + ")";
+        return "Columbus GPS Type 1 (*" + getExtension() + ")";
     }
 
     protected Pattern getLinePattern() {

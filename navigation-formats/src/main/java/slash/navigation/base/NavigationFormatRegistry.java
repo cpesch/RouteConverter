@@ -45,9 +45,9 @@ import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
-import slash.navigation.columbus.ColumbusGpsProfessionalFormat;
+import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
-import slash.navigation.columbus.GarbleColumbusGpsProfessionalFormat;
+import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -179,7 +179,7 @@ public class NavigationFormatRegistry {
         addFormat(Route66Format.class);
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
-        addFormat(ColumbusGpsProfessionalFormat.class);
+        addFormat(ColumbusGpsType1Format.class);
         addFormat(ColumbusGpsType2Format.class);
         addFormat(QstarzQ1000Format.class);
         addFormat(Iblue747Format.class);
@@ -246,7 +246,7 @@ public class NavigationFormatRegistry {
         addFormat(UrlFormat.class);
 
         // second try for broken files
-        addFormat(GarbleColumbusGpsProfessionalFormat.class);
+        addFormat(GarbleColumbusGpsType1Format.class);
         addFormat(GarbleNmeaFormat.class);
         addFormat(GarbleHaicomLoggerFormat.class);
         addFormat(GarbleGpx10Format.class);

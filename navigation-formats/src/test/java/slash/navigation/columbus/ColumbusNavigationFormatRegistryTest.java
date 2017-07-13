@@ -51,9 +51,9 @@ public class ColumbusNavigationFormatRegistryTest {
     @Test
     public void testGetReadFormatsSortedByExtensionCsv() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".csv");
-        assertEquals(ColumbusGpsProfessionalFormat.class, formats.get(0).getClass());
+        assertEquals(ColumbusGpsType1Format.class, formats.get(0).getClass());
         assertEquals(ColumbusGpsType2Format.class, formats.get(1).getClass());
-        assertEquals(GarbleColumbusGpsProfessionalFormat.class, formats.get(2).getClass());
+        assertEquals(GarbleColumbusGpsType1Format.class, formats.get(2).getClass());
     }
 
     @Test

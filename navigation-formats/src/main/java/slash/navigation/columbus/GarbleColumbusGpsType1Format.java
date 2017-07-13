@@ -28,9 +28,9 @@ import slash.navigation.base.GarbleNavigationFormat;
  * @author Christian Pesch
  */
 
-public class GarbleColumbusGpsProfessionalFormat extends ColumbusGpsProfessionalFormat implements GarbleNavigationFormat {
+public class GarbleColumbusGpsType1Format extends ColumbusGpsType1Format implements GarbleNavigationFormat {
     public String getName() {
-        return "Columbus GPS Professional Garble (*" + getExtension() + ")";
+        return "Columbus GPS Type 1 Garble (*" + getExtension() + ")";
     }
 
     protected int getGarbleCount() {
