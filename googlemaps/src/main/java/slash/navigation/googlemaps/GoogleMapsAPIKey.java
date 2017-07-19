@@ -59,14 +59,8 @@ public class GoogleMapsAPIKey {
         log.info("Google Maps API usage:" + builder.toString());
     }
 
-    private static final String REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE = "removedGoogleMapsApiKey";
-
     public static String getAPIKey(String action) {
         count(preferences, GOOGLE_MAPS_API_USAGES + "-" + action);
-        if(!preferences.getBoolean(REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE, false)) {
-            preferences.remove(GOOGLE_MAPS_API_KEY_PREFERENCE);
-            preferences.putBoolean(REMOVED_GOOGLE_MAPS_API_KEY_PREFERENCE, true);
-        }
         return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, readAPIKey());
     }
 

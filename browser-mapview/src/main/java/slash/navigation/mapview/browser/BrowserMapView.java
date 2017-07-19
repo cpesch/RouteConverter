@@ -309,7 +309,7 @@ public abstract class BrowserMapView implements MapView {
                     return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
                     return getMapType();
-                if (tokenName.equals("mapsapikey"))
+                if (tokenName.equals("googlemapsapikey"))
                     return getAPIKey("map");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
