@@ -33,6 +33,7 @@
             <xsd:enumeration value="Google"/>
             <xsd:enumeration value="OpenStreetMap"/>
             <xsd:enumeration value="OutdoorActive"/>
+            <xsd:enumeration value="Thunderforest"/>
             <xsd:enumeration value="Wanderreitkarte"/>
         </xsd:restriction>
     </xsd:simpleType>
