@@ -36,7 +36,12 @@ import slash.navigation.gui.actions.DialogAction;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
 
 import static java.awt.Color.RED;
@@ -46,9 +51,14 @@ import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.base.WaypointType.Airport;
+import static slash.navigation.base.WaypointType.Intersection;
+import static slash.navigation.base.WaypointType.NonDirectionalBeacon;
+import static slash.navigation.base.WaypointType.UserWaypoint;
+import static slash.navigation.base.WaypointType.VHFOmnidirectionalRadioRange;
 import static slash.navigation.fpl.CountryCode.None;
+import static slash.navigation.fpl.GarminFlightPlanFormat.hasValidDescription;
+import static slash.navigation.fpl.GarminFlightPlanFormat.hasValidIdentifier;
 
 /**
  * Dialog for completing information for a Garmin Flight Plan.
@@ -174,16 +184,17 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         boolean modifiableCountryCode = !UserWaypoint.equals(getPosition().getWaypointType()) || !noCountryCode;
         comboBoxCountryCode.setEnabled(modifiableCountryCode);
 
-        String identifier = trim(getPosition().getIdentifier());
-        boolean validIdentifier = identifier != null && identifier.length() <= 6 && identifier.equals(identifier.toUpperCase());
+        boolean validIdentifier = hasValidIdentifier(getPosition());
         textFieldIdentifier.setBorder(validIdentifier ? VALID_BORDER : INVALID_BORDER);
+        boolean validDescription = hasValidDescription(getPosition());
+        textFieldDescription.setBorder(validDescription ? VALID_BORDER : INVALID_BORDER);
 
         boolean validWaypointType = getPosition().getWaypointType() != null;
         comboBoxWaypointType.setBorder(validWaypointType ? VALID_BORDER : INVALID_BORDER);
 
         buttonPrevious.setEnabled(index > 0);
-        buttonNextOrFinish.setEnabled(index < route.getPositionCount() &&
-                validCountryCode && validIdentifier && validWaypointType);
+        buttonNextOrFinish.setEnabled(index < route.getPositionCount() && validCountryCode && validIdentifier &&
+                validDescription && validWaypointType);
         $$$loadButtonText$$$(buttonNextOrFinish, index == route.getPositionCount() - 1 ?
                 RouteConverter.getBundle().getString("finish") : RouteConverter.getBundle().getString("next"));
     }

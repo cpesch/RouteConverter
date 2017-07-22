@@ -49,6 +49,7 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
+    private static final int MAXIMUM_IDENTIFIER_LENGTH = 6;
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -69,6 +70,26 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> GarminFlightPlanRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GarminFlightPlanRoute(name, null, (List<GarminFlightPlanPosition>) positions);
+    }
+
+    public static boolean hasValidIdentifier(GarminFlightPlanPosition position) {
+        String identifier = trim(position.getIdentifier());
+        return identifier != null && identifier.length() <= MAXIMUM_IDENTIFIER_LENGTH && identifier.equals(identifier.toUpperCase());
+    }
+
+    private static String createValidIdentifier(GarminFlightPlanPosition position) {
+        String identifier = trim(position.getIdentifier());
+        return identifier != null ? identifier.toUpperCase().substring(0, MAXIMUM_IDENTIFIER_LENGTH - 1) : null;
+    }
+
+    public static boolean hasValidDescription(GarminFlightPlanPosition position) {
+        String description = trim(position.getDescription());
+        return description != null && description.equals(description.toUpperCase());
+    }
+
+    private static String createValidDescription(GarminFlightPlanPosition position) {
+        String description = trim(position.getDescription());
+        return description != null ? description.toUpperCase() : null;
     }
 
     private FlightPlan.WaypointTable.Waypoint find(FlightPlan.WaypointTable waypointTable, String waypointIdentifier) {
@@ -148,13 +169,13 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 countryCode = position.getCountryCode().value();
             routePoint.setWaypointCountryCode(countryCode);
-            routePoint.setWaypointIdentifier(position.getIdentifier());
+            routePoint.setWaypointIdentifier(createValidIdentifier(position));
             if (position.getWaypointType() != null)
                 routePoint.setWaypointType(position.getWaypointType().value());
             flightPlanRoute.getRoutePoint().add(routePoint);
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(position.getDescription());
+            waypoint.setComment(createValidDescription(position));
             waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());
