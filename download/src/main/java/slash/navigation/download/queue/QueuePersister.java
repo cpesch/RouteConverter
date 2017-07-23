@@ -41,7 +41,7 @@ import static slash.navigation.download.queue.QueueUtil.unmarshal;
 
 public class QueuePersister {
 
-    public Result load(File file) throws IOException {
+    public List<Download> load(File file) throws IOException {
         if (!file.exists())
             return null;
 
@@ -51,19 +51,7 @@ public class QueuePersister {
         } catch (JAXBException e) {
             throw new IOException("Cannot unmarshall " + file + ": " + e, e);
         }
-        return new Result(asDownloads(queueType));
-    }
-
-    public static class Result {
-        private final List<Download> downloads;
-
-        public Result(List<Download> downloads) {
-            this.downloads = downloads;
-        }
-
-        public List<Download> getDownloads() {
-            return downloads;
-        }
+        return asDownloads(queueType);
     }
 
     private List<Download> asDownloads(QueueType queueType) {
