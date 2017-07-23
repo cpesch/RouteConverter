@@ -112,13 +112,14 @@ public class Validator {
         if (actual == null)
             return false;
 
+        boolean hasBeenUpdatedByMe = file.getActualChecksum().laterThan(file.getExpectedChecksum());
+        if (hasBeenUpdatedByMe)
+            log.info(format("%s is more current locally than on server", file.getFile()));
+
         boolean lastModifiedEquals = expected.getLastModified() == null ||
                 expected.getLastModified().equals(actual.getLastModified());
         if (!lastModifiedEquals)
             log.warning(format("%s has last modified %s but expected %s", file.getFile(), actual.getLastModified(), expected.getLastModified()));
-        boolean hasBeenUpdatedByMe = file.getActualChecksum().laterThan(file.getExpectedChecksum());
-        if (hasBeenUpdatedByMe)
-            log.info(format("%s has been updated by me on server", file.getFile()));
         boolean contentLengthEquals = expected.getContentLength() == null ||
                 expected.getContentLength().equals(actual.getContentLength());
         if (!contentLengthEquals)
