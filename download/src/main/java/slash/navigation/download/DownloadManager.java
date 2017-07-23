@@ -87,13 +87,10 @@ public class DownloadManager {
     public void loadQueue() {
         try {
             log.info(format("Loading download queue from '%s'", queueFile));
-            QueuePersister.Result result = new QueuePersister().load(queueFile);
-            if (result == null)
+            List<Download> downloads = new QueuePersister().load(queueFile);
+            if (downloads == null)
                 return;
-
-            List<Download> downloads = result.getDownloads();
-            if (downloads != null)
-                model.setDownloads(downloads);
+            model.setDownloads(downloads);
         } catch (Exception e) {
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }

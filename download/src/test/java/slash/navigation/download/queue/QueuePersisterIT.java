@@ -52,8 +52,8 @@ public class QueuePersisterIT {
     public void testSaveAndLoadNow() throws IOException, JAXBException {
         persister.save(queueFile, new ArrayList<Download>());
 
-        QueuePersister.Result result = persister.load(queueFile);
-        assertEquals(new ArrayList<Download>(), result.getDownloads());
+        List<Download> result = persister.load(queueFile);
+        assertEquals(new ArrayList<Download>(), result);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class QueuePersisterIT {
                 "etag", Downloading, tempFile));
         persister.save(queueFile, downloads);
 
-        QueuePersister.Result result = persister.load(queueFile);
-        assertEquals(downloads, result.getDownloads());
+        List<Download> result = persister.load(queueFile);
+        assertEquals(downloads, result);
     }
 
     private Checksum createChecksum() {
