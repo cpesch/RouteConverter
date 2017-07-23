@@ -585,10 +585,7 @@ public class ConvertPanel implements PanelInTab {
         // start with a non-existent file
         if (copy.size() == 0) {
             newFile();
-            return;
-        }
-
-        if (copy.size() > 0) {
+        } else {
             openPositionList(copy);
         }
     }
