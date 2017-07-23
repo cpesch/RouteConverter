@@ -60,6 +60,7 @@ public class DataSourceService {
     }
 
     public synchronized void clear() {
+        editions.clear();
         dataSources.clear();
     }
 
