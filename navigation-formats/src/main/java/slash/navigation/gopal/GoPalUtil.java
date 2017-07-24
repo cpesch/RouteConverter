@@ -57,7 +57,7 @@ class GoPalUtil {
 
 
     public static slash.navigation.gopal.binding3.Tour unmarshal3(InputStream in) throws JAXBException {
-        slash.navigation.gopal.binding3.Tour result = null;
+        slash.navigation.gopal.binding3.Tour result;
         try {
             result = (slash.navigation.gopal.binding3.Tour) newUnmarshaller3().unmarshal(in);
         } catch (ClassCastException e) {
@@ -67,7 +67,7 @@ class GoPalUtil {
     }
 
     public static slash.navigation.gopal.binding5.Tour unmarshal5(InputStream in) throws JAXBException {
-        slash.navigation.gopal.binding5.Tour result = null;
+        slash.navigation.gopal.binding5.Tour result;
         try {
             result = (slash.navigation.gopal.binding5.Tour) newUnmarshaller5().unmarshal(in);
         } catch (ClassCastException e) {

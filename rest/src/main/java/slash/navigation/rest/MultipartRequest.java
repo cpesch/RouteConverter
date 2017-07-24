@@ -60,17 +60,17 @@ abstract class MultipartRequest extends HttpRequest {
         return (HttpEntityEnclosingRequestBase) getMethod();
     }
 
-    public void addString(String name, String value) throws UnsupportedEncodingException {
+    public void addString(String name, String value) {
         getBuilder().addTextBody(name, value, TEXT_PLAIN_UTF8);
     }
 
-    public void addFile(String name, File value) throws IOException {
+    public void addFile(String name, File value) {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
         getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(value.getName()));
     }
 
-    public void addFile(String name, byte[] value) throws IOException {
+    public void addFile(String name, byte[] value) {
         if (value.length > 4096)
             containsFileLargerThan4k = true;
         getBuilder().addBinaryBody(name, value, APPLICATION_OCTET_STREAM, encodeUriButKeepSlashes(name + ".xml"));

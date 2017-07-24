@@ -29,7 +29,6 @@ import slash.navigation.download.FileAndChecksum;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +38,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.download.Action.Copy;
@@ -150,7 +148,7 @@ public class DataSourceManager {
     }
 
     // for {@link SnapshotCatalog}
-    public void downloadEditions(List<Edition> editions, java.io.File directory) throws JAXBException, FileNotFoundException {
+    public void downloadEditions(List<Edition> editions, java.io.File directory) {
         List<Download> downloads = new ArrayList<>();
         for (Edition edition : editions) {
             String editionUrl = edition.getHref() + FORMAT_XML;
@@ -162,7 +160,7 @@ public class DataSourceManager {
         downloadManager.waitForCompletion(downloads);
     }
 
-    public void downloadDataSources(List<DataSource> dataSources, java.io.File directory) throws JAXBException, FileNotFoundException {
+    public void downloadDataSources(List<DataSource> dataSources, java.io.File directory) {
         List<Download> downloads = new ArrayList<>();
         for (DataSource dataSource : dataSources) {
             String datasourceUrl = dataSource.getHref() + FORMAT_XML;

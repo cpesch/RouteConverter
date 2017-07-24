@@ -63,10 +63,6 @@ public abstract class TestCase extends junit.framework.TestCase {
         }
     }
 
-    public static void assertEquals(long expected, Long was) {
-        assertEquals(new Long(expected), was);
-    }
-
     public static void assertNearBy(double expected, double actual) {
         assertNearBy(expected, actual, 0.000005);
     }

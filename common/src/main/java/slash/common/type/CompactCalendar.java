@@ -97,10 +97,6 @@ public class CompactCalendar {
         return fromDate(new Date());
     }
 
-    public static CompactCalendar getInstance(String timeZoneId) {
-        return fromCalendar(Calendar.getInstance(TimeZone.getTimeZone(timeZoneId)));
-    }
-
     public CompactCalendar asUTCTimeInTimeZone(TimeZone timeZone) {
         return new CompactCalendar(timeInMillis - timeZone.getOffset(timeInMillis), "UTC");
     }

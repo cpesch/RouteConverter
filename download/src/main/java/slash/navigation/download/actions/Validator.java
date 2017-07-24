@@ -100,7 +100,7 @@ public class Validator {
         calculatedChecksums = true;
     }
 
-    private boolean isChecksumValid(FileAndChecksum file) throws IOException {
+    private boolean isChecksumValid(FileAndChecksum file) {
         if (file.getFile().isDirectory())
             return true;
 
