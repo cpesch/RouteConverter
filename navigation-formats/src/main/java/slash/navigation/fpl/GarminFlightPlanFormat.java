@@ -20,6 +20,7 @@
 
 package slash.navigation.fpl;
 
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.WaypointType;
@@ -38,6 +39,7 @@ import java.util.List;
 import static java.lang.Math.min;
 import static slash.common.io.Transfer.toLettersAndNumbers;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
@@ -185,7 +187,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
         FlightPlan flightPlan = objectFactory.createFlightPlan();
         FlightPlan.Route flightPlanRoute = objectFactory.createFlightPlanRoute();
-        flightPlanRoute.setRouteName(asRouteName(toLettersAndNumbers(route.getName())));
+        flightPlanRoute.setRouteName(createValidRouteName(route));
         flightPlanRoute.setRouteDescription(asDescription(route.getDescription()));
         flightPlanRoute.setFlightPlanIndex((short) 1);
         FlightPlan.WaypointTable waypointTable = objectFactory.createFlightPlanWaypointTable();
@@ -220,6 +222,13 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         flightPlan.setRoute(flightPlanRoute);
         flightPlan.setWaypointTable(waypointTable);
         return flightPlan;
+    }
+
+    private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
+        String name = trim(route.getName());
+        if(name == null)
+            name = createRouteName(route.getPositions());
+        return asRouteName(toLettersAndNumbers(name.toUpperCase()));
     }
 
     public void write(GarminFlightPlanRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
