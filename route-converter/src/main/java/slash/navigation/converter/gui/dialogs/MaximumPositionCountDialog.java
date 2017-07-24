@@ -60,7 +60,7 @@ public class MaximumPositionCountDialog extends SimpleDialog {
 
     private Result result = Cancel;
 
-    public MaximumPositionCountDialog(File file, int positionCount, int fileCount, NavigationFormat format) {
+    public MaximumPositionCountDialog(File file, int positionCount, int fileCount, int reducedPositionCount, NavigationFormat format) {
         super(RouteConverter.getInstance().getFrame(), "maximum-position-count");
         setTitle(RouteConverter.getBundle().getString("maximum-position-count-title"));
         setContentPane(contentPane);
@@ -68,7 +68,7 @@ public class MaximumPositionCountDialog extends SimpleDialog {
 
         labelDescription.setText(format(RouteConverter.getBundle().getString("maximum-position-count-description"),
                 shortenPath(file.getPath(), 60), positionCount, format.getName(),
-                format.getMaximumPositionCount(), fileCount));
+                format.getMaximumPositionCount(), fileCount, reducedPositionCount));
 
         setMnemonic(buttonSplit, "split-mnemonic");
         buttonSplit.addActionListener(new DialogAction(this) {

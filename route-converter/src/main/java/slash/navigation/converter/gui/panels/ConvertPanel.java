@@ -846,7 +846,10 @@ public class ConvertPanel implements PanelInTab {
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
 
         if (fileCount > 1) {
-            MaximumPositionCountDialog dialog = new MaximumPositionCountDialog(file, route.getPositionCount(), fileCount, format);
+            int order = route.getPositionCount() / format.getMaximumPositionCount() + 1;
+            int reducedPositionCount = route.getPositionCount() / order;
+
+            MaximumPositionCountDialog dialog = new MaximumPositionCountDialog(file, route.getPositionCount(), fileCount, reducedPositionCount, format);
             dialog.pack();
             dialog.restoreLocation();
             dialog.setVisible(true);
@@ -855,7 +858,6 @@ public class ConvertPanel implements PanelInTab {
                 case Split:
                     break;
                 case Reduce:
-                    int order = route.getPositionCount() / format.getMaximumPositionCount() + 1;
                     r.selectAllButEveryNthPosition(order);
                     r.getContext().getActionManager().run("delete-position");
                     fileCount = 1;
