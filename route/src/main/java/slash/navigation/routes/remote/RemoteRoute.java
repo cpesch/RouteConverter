@@ -81,7 +81,7 @@ public class RemoteRoute implements Route {
         fromCategory = false;
     }
 
-    /*for tests*/Category getCategory() throws IOException {
+    /*for tests*/Category getCategory() {
         return category;
     }
 

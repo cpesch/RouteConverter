@@ -331,7 +331,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         return date;
     }
 
-    private Double parseDirection(TiffDirectory directory) throws ImageReadException {
+    private Double parseDirection(TiffDirectory directory) {
         RationalNumber direction = getFieldValue(directory, GPS_TAG_GPS_IMG_DIRECTION);
         return direction != null ? direction.doubleValue() : null;
     }
@@ -346,7 +346,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         return measurementMode != null && measurementMode.equals(Integer.toString(GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT));
     }
 
-    private Double parseDOP(TiffDirectory directory) throws ImageReadException {
+    private Double parseDOP(TiffDirectory directory) {
         RationalNumber dop = getFieldValue(directory, GPS_TAG_GPS_DOP);
         return dop != null ? dop.doubleValue() : null;
     }

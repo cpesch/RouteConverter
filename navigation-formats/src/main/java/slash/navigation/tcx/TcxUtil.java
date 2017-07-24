@@ -52,7 +52,7 @@ class TcxUtil {
 
 
     public static slash.navigation.tcx.binding1.TrainingCenterDatabaseT unmarshal1(InputStream in) throws JAXBException {
-        slash.navigation.tcx.binding1.TrainingCenterDatabaseT result = null;
+        slash.navigation.tcx.binding1.TrainingCenterDatabaseT result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller1().unmarshal(in);
             result = (slash.navigation.tcx.binding1.TrainingCenterDatabaseT) element.getValue();
@@ -78,7 +78,7 @@ class TcxUtil {
 
 
     public static slash.navigation.tcx.binding2.TrainingCenterDatabaseT unmarshal2(InputStream in) throws JAXBException {
-        slash.navigation.tcx.binding2.TrainingCenterDatabaseT result = null;
+        slash.navigation.tcx.binding2.TrainingCenterDatabaseT result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller2().unmarshal(in);
             result = (slash.navigation.tcx.binding2.TrainingCenterDatabaseT) element.getValue();

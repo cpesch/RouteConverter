@@ -365,7 +365,7 @@ public class GeoTagger {
         }
     }
 
-    private File createSubDirectory(File source, String name) throws IOException {
+    private File createSubDirectory(File source, String name) {
         File subDirectory = new File(source.getParentFile(), name);
         return ensureDirectory(subDirectory);
     }

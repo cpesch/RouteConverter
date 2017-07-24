@@ -165,7 +165,7 @@ public class MapManager {
         availableThemesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
     }
 
-    public synchronized void scanMaps() throws IOException {
+    public synchronized void scanMaps() {
         initializeOnlineMaps();
 
         long start = currentTimeMillis();

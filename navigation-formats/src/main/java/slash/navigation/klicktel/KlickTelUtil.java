@@ -53,7 +53,7 @@ class KlickTelUtil {
 
 
     public static KDRoute unmarshal(InputStream in) throws JAXBException {
-        KDRoute result = null;
+        KDRoute result;
         try {
             result = (KDRoute) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {

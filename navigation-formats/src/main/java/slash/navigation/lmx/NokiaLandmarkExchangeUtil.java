@@ -49,7 +49,7 @@ public class NokiaLandmarkExchangeUtil {
 
 
     public static Lmx unmarshal(InputStream in) throws JAXBException {
-        Lmx result = null;
+        Lmx result;
         try {
             result = (Lmx) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {

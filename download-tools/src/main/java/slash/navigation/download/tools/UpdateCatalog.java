@@ -94,7 +94,7 @@ public class UpdateCatalog extends BaseDownloadTool {
     private java.io.File mirror;
     private int updateCount;
 
-    private void open() throws IOException {
+    private void open() {
         dataSourceManager = new DataSourceManager(new DownloadManager(new java.io.File(getSnapshotDirectory(), "update-queue.xml")));
         dataSourceManager.getDownloadManager().loadQueue();
     }
@@ -262,7 +262,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         updatePartially(datasourceType);
     }
 
-    private void updateTheme(DatasourceType datasourceType, Theme theme) throws IOException {
+    private void updateTheme(DatasourceType datasourceType, Theme theme) {
         String url = datasourceType.getBaseUrl() + theme.getUri();
 
         // GET for local mirror
@@ -317,7 +317,7 @@ public class UpdateCatalog extends BaseDownloadTool {
         return download;
     }
 
-    private Download downloadPartial(String url, long fileSize) throws IOException {
+    private Download downloadPartial(String url, long fileSize) {
         Download download = dataSourceManager.getDownloadManager().queueForDownload("GET 16k for " + url, url, GetRange,
                 new FileAndChecksum(createMirrorFile(url), new Checksum(null, fileSize, null)), null);
         dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));

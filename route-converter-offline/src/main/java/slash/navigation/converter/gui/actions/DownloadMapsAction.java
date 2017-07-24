@@ -102,7 +102,7 @@ public class DownloadMapsAction extends FrameAction {
                         r.getElevationServiceFacade().getElevationService().downloadElevationData(selectedBoundingBoxes);
 
                     mapManager.scanMaps();
-                } catch (final IOException e) {
+                } catch (final Exception e) {
                     invokeLater(new Runnable() {
                         public void run() {
                             JFrame frame = r.getFrame();

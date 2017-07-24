@@ -75,7 +75,7 @@ public class KmlUtil {
 
 
     public static slash.navigation.kml.binding20.Kml unmarshal20(Reader reader) throws JAXBException {
-        slash.navigation.kml.binding20.Kml result = null;
+        slash.navigation.kml.binding20.Kml result;
         try {
             result = (slash.navigation.kml.binding20.Kml) newUnmarshaller20().unmarshal(reader);
         } catch (ClassCastException e) {
@@ -85,7 +85,7 @@ public class KmlUtil {
     }
 
     public static Object unmarshal20(InputStream in) throws JAXBException {
-        Object result = null;
+        Object result;
         try {
             result = newUnmarshaller20().unmarshal(in);
         } catch (ClassCastException e) {
@@ -95,7 +95,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(Reader reader) throws JAXBException {
-        slash.navigation.kml.binding21.KmlType result = null;
+        slash.navigation.kml.binding21.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(reader);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
@@ -106,7 +106,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(InputStream in) throws JAXBException {
-        slash.navigation.kml.binding21.KmlType result = null;
+        slash.navigation.kml.binding21.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
@@ -117,7 +117,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(Reader reader) throws JAXBException {
-        slash.navigation.kml.binding22beta.KmlType result = null;
+        slash.navigation.kml.binding22beta.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(reader);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
@@ -128,7 +128,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(InputStream in) throws JAXBException {
-        slash.navigation.kml.binding22beta.KmlType result = null;
+        slash.navigation.kml.binding22beta.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(in);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
@@ -139,7 +139,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(Reader reader) throws JAXBException {
-        slash.navigation.kml.binding22.KmlType result = null;
+        slash.navigation.kml.binding22.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(reader);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
@@ -150,7 +150,7 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(InputStream in) throws JAXBException {
-        slash.navigation.kml.binding22.KmlType result = null;
+        slash.navigation.kml.binding22.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();

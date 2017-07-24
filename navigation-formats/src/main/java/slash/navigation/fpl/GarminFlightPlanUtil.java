@@ -48,7 +48,7 @@ class GarminFlightPlanUtil {
 
 
     public static FlightPlan unmarshal(InputStream in) throws JAXBException {
-        FlightPlan result = null;
+        FlightPlan result;
         try {
             result = (FlightPlan) newUnmarshaller().unmarshal(in);
         } catch (ClassCastException e) {

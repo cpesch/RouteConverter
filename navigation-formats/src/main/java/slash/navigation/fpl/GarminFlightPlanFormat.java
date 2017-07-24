@@ -124,6 +124,13 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return position.getIdentifier();
     }
 
+    private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
+        String name = trim(route.getName());
+        if(name == null)
+            name = createRouteName(route.getPositions());
+        return asRouteName(toLettersAndNumbers(name.toUpperCase()));
+    }
+
     private FlightPlan.WaypointTable.Waypoint find(FlightPlan.WaypointTable waypointTable, String waypointIdentifier) {
         List<FlightPlan.WaypointTable.Waypoint> waypoints = waypointTable.getWaypoint();
         for (FlightPlan.WaypointTable.Waypoint waypoint : waypoints) {
@@ -222,13 +229,6 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         flightPlan.setRoute(flightPlanRoute);
         flightPlan.setWaypointTable(waypointTable);
         return flightPlan;
-    }
-
-    private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
-        String name = trim(route.getName());
-        if(name == null)
-            name = createRouteName(route.getPositions());
-        return asRouteName(toLettersAndNumbers(name.toUpperCase()));
     }
 
     public void write(GarminFlightPlanRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

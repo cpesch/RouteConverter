@@ -256,11 +256,6 @@ public class Transfer {
             return null;
     }
 
-    public static long parselong(String string) {
-        Long aLong = parseLong(string);
-        return aLong != null ? aLong : -1;
-    }
-
     public static boolean isEmpty(String string) {
         return string == null || string.length() == 0;
     }
