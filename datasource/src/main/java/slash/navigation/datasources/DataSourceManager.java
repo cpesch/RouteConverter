@@ -149,6 +149,7 @@ public class DataSourceManager {
         downloadManager.waitForCompletion(singletonList(download));
     }
 
+    // for {@link SnapshotCatalog}
     public void downloadEditions(List<Edition> editions, java.io.File directory) throws JAXBException, FileNotFoundException {
         List<Download> downloads = new ArrayList<>();
         for (Edition edition : editions) {
@@ -181,6 +182,7 @@ public class DataSourceManager {
         return result;
     }
 
+    // for {@link SnapshotCatalog}
     public static DataSourceService loadAllDataSources(java.io.File directory) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
         java.io.File[] files = directory.listFiles(new FilenameFilter() {
@@ -270,7 +272,6 @@ public class DataSourceManager {
                 addOrUpdateInQueue(dataSource, downloadable);
             } else
                 log.fine("Cannot find downloadable for " + download.getUrl());
-
         }
     }
 }
