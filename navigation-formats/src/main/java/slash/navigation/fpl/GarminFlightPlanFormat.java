@@ -35,6 +35,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.min;
+import static slash.common.io.Transfer.toLettersAndNumbers;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
@@ -49,7 +51,7 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
-    private static final int MAXIMUM_IDENTIFIER_LENGTH = 6;
+    private static final int MAXIMUM_IDENTIFIER_LENGTH = 5;
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -72,24 +74,52 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return new GarminFlightPlanRoute(name, null, (List<GarminFlightPlanPosition>) positions);
     }
 
-    public static boolean hasValidIdentifier(GarminFlightPlanPosition position) {
-        String identifier = trim(position.getIdentifier());
-        return identifier != null && identifier.length() <= MAXIMUM_IDENTIFIER_LENGTH && identifier.equals(identifier.toUpperCase());
+    public static boolean hasValidDescription(String description) {
+        return description != null &&
+                description.equals(toLettersAndNumbers(description)) &&
+                description.equals(description.toUpperCase());
     }
 
-    private static String createValidIdentifier(GarminFlightPlanPosition position) {
-        String identifier = trim(position.getIdentifier());
-        return identifier != null ? identifier.toUpperCase().substring(0, MAXIMUM_IDENTIFIER_LENGTH - 1) : null;
+    private static boolean hasValidIdentifier(String identifier) {
+        return hasValidDescription(identifier) && identifier.length() <= MAXIMUM_IDENTIFIER_LENGTH;
+
     }
 
-    public static boolean hasValidDescription(GarminFlightPlanPosition position) {
-        String description = trim(position.getDescription());
-        return description != null && description.equals(description.toUpperCase());
+    public static boolean hasValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
+        String identifier = position.getIdentifier();
+        if(!hasValidIdentifier(identifier))
+            return false;
+
+        for(GarminFlightPlanPosition p : positions) {
+            if(p.getIdentifier().equals(identifier) && !p.equals(position))
+                return false;
+        }
+
+        return true;
     }
 
-    private static String createValidDescription(GarminFlightPlanPosition position) {
-        String description = trim(position.getDescription());
-        return description != null ? description.toUpperCase() : null;
+    private static String createValidDescription(String description) {
+        return description != null ? toLettersAndNumbers(description).toUpperCase() : null;
+    }
+
+    private static String createValidIdentifier(String identifier) {
+        identifier = createValidDescription(identifier);
+        if(identifier != null)
+            identifier = identifier.substring(0, min(identifier.length(), MAXIMUM_IDENTIFIER_LENGTH - 1));
+        return identifier;
+    }
+
+    private static String createValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
+        String identifier = createValidIdentifier(position.getIdentifier());
+
+        int count = positions.indexOf(position);
+        if(count < 0)
+            count = 0;
+        while(!hasValidIdentifier(position, positions)) {
+            position.setIdentifier(createValidIdentifier(count + identifier));
+            count++;
+        }
+        return position.getIdentifier();
     }
 
     private FlightPlan.WaypointTable.Waypoint find(FlightPlan.WaypointTable waypointTable, String waypointIdentifier) {
@@ -155,7 +185,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
         FlightPlan flightPlan = objectFactory.createFlightPlan();
         FlightPlan.Route flightPlanRoute = objectFactory.createFlightPlanRoute();
-        flightPlanRoute.setRouteName(asRouteName(route.getName()));
+        flightPlanRoute.setRouteName(asRouteName(toLettersAndNumbers(route.getName())));
         flightPlanRoute.setRouteDescription(asDescription(route.getDescription()));
         flightPlanRoute.setFlightPlanIndex((short) 1);
         FlightPlan.WaypointTable waypointTable = objectFactory.createFlightPlanWaypointTable();
@@ -169,16 +199,17 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 countryCode = position.getCountryCode().value();
             routePoint.setWaypointCountryCode(countryCode);
-            routePoint.setWaypointIdentifier(createValidIdentifier(position));
+            String identifier = createValidIdentifier(position, positions);
+            routePoint.setWaypointIdentifier(identifier);
             if (position.getWaypointType() != null)
                 routePoint.setWaypointType(position.getWaypointType().value());
             flightPlanRoute.getRoutePoint().add(routePoint);
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(createValidDescription(position));
+            waypoint.setComment(createValidDescription(position.getDescription()));
             waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
-            waypoint.setIdentifier(position.getIdentifier());
+            waypoint.setIdentifier(identifier);
             waypoint.setLat(formatPosition(position.getLatitude()));
             waypoint.setLon(formatPosition(position.getLongitude()));
             if (position.getWaypointType() != null)

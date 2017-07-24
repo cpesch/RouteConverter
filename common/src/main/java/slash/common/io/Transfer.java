@@ -115,6 +115,10 @@ public class Transfer {
         return string;
     }
 
+    public static String toLettersAndNumbers(String string) {
+        return string.replaceAll("[^\\w]","");
+    }
+
     public static String toMixedCase(String string) {
         if (string != null && string.toUpperCase().equals(string)) {
             StringBuilder buffer = new StringBuilder();
