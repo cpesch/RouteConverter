@@ -82,7 +82,7 @@ public class EditionType {
      */
     public List<DatasourceType> getDatasource() {
         if (datasource == null) {
-            datasource = new ArrayList<DatasourceType>();
+            datasource = new ArrayList<>();
         }
         return this.datasource;
     }

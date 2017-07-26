@@ -53,7 +53,7 @@ public enum UnitsEnum {
                 return c;
             }
         }
-        throw new IllegalArgumentException(v.toString());
+        throw new IllegalArgumentException(v);
     }
 
 }

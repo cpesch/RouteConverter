@@ -75,7 +75,7 @@ public class CatalogType {
      */
     public List<EditionType> getEdition() {
         if (edition == null) {
-            edition = new ArrayList<EditionType>();
+            edition = new ArrayList<>();
         }
         return this.edition;
     }
@@ -104,7 +104,7 @@ public class CatalogType {
      */
     public List<DatasourceType> getDatasource() {
         if (datasource == null) {
-            datasource = new ArrayList<DatasourceType>();
+            datasource = new ArrayList<>();
         }
         return this.datasource;
     }

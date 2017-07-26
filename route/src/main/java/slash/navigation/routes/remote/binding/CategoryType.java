@@ -83,7 +83,7 @@ public class CategoryType {
      */
     public List<CategoryType> getCategory() {
         if (category == null) {
-            category = new ArrayList<CategoryType>();
+            category = new ArrayList<>();
         }
         return this.category;
     }
@@ -112,7 +112,7 @@ public class CategoryType {
      */
     public List<RouteType> getRoute() {
         if (route == null) {
-            route = new ArrayList<RouteType>();
+            route = new ArrayList<>();
         }
         return this.route;
     }

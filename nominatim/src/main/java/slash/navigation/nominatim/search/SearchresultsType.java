@@ -85,7 +85,7 @@ public class SearchresultsType {
      */
     public List<PlaceType> getPlace() {
         if (place == null) {
-            place = new ArrayList<PlaceType>();
+            place = new ArrayList<>();
         }
         return this.place;
     }
