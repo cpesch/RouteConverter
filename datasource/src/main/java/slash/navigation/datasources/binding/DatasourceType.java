@@ -95,7 +95,7 @@ public class DatasourceType {
      */
     public List<FileType> getFile() {
         if (file == null) {
-            file = new ArrayList<FileType>();
+            file = new ArrayList<>();
         }
         return this.file;
     }
@@ -124,7 +124,7 @@ public class DatasourceType {
      */
     public List<MapType> getMap() {
         if (map == null) {
-            map = new ArrayList<MapType>();
+            map = new ArrayList<>();
         }
         return this.map;
     }
@@ -153,7 +153,7 @@ public class DatasourceType {
      */
     public List<ThemeType> getTheme() {
         if (theme == null) {
-            theme = new ArrayList<ThemeType>();
+            theme = new ArrayList<>();
         }
         return this.theme;
     }

@@ -70,7 +70,7 @@ public class QueueType {
      */
     public List<DownloadType> getDownload() {
         if (download == null) {
-            download = new ArrayList<DownloadType>();
+            download = new ArrayList<>();
         }
         return this.download;
     }

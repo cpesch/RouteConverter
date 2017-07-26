@@ -70,7 +70,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "reversegeocode")
     public JAXBElement<ReversegeocodeType> createReversegeocode(ReversegeocodeType value) {
-        return new JAXBElement<ReversegeocodeType>(_Reversegeocode_QNAME, ReversegeocodeType.class, null, value);
+        return new JAXBElement<>(_Reversegeocode_QNAME, ReversegeocodeType.class, null, value);
     }
 
 }

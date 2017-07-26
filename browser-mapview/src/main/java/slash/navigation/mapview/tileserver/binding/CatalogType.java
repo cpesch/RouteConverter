@@ -70,7 +70,7 @@ public class CatalogType {
      */
     public List<TileServerType> getTileServer() {
         if (tileServer == null) {
-            tileServer = new ArrayList<TileServerType>();
+            tileServer = new ArrayList<>();
         }
         return this.tileServer;
     }

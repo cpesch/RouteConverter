@@ -101,7 +101,7 @@ public class DownloadableType {
      */
     public List<FragmentType> getFragment() {
         if (fragment == null) {
-            fragment = new ArrayList<FragmentType>();
+            fragment = new ArrayList<>();
         }
         return this.fragment;
     }

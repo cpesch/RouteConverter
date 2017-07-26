@@ -53,7 +53,7 @@ public enum RefreshModeEnum {
                 return c;
             }
         }
-        throw new IllegalArgumentException(v.toString());
+        throw new IllegalArgumentException(v);
     }
 
 }

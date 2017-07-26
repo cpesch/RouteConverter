@@ -62,7 +62,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://api.routeconverter.com/v1/schemas/tileserver-catalog", name = "catalog")
     public JAXBElement<CatalogType> createCatalog(CatalogType value) {
-        return new JAXBElement<CatalogType>(_Catalog_QNAME, CatalogType.class, null, value);
+        return new JAXBElement<>(_Catalog_QNAME, CatalogType.class, null, value);
     }
 
 }

@@ -36,6 +36,7 @@ public class ISO8601Test {
     public void testParseGMT() {
         Calendar actual = parseDate("2007-03-04T14:49:05Z");
         Calendar expected = calendar(2007, 3, 4, 14, 49, 5).getCalendar();
+        assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expected.getTime(), actual.getTime());
     }
@@ -44,6 +45,7 @@ public class ISO8601Test {
     public void testParseTimeZoneSeparatedByPlus() {
         Calendar actual = parseDate("2007-03-04T14:49:05+03:00");
         Calendar expected = calendar(2007, 3, 4, 11, 49, 5).getCalendar();
+        assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expected.getTime(), actual.getTime());
     }
@@ -52,6 +54,7 @@ public class ISO8601Test {
     public void testParseTimeZoneSeparatedByT() {
         Calendar actual = parseDate("2007-03-04T14:49:05T03:00");
         Calendar expected = calendar(2007, 3, 4, 11, 49, 5).getCalendar();
+        assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expected.getTime(), actual.getTime());
     }
@@ -60,6 +63,7 @@ public class ISO8601Test {
     public void testParseTimeZoneSeparatedByMinus() {
         Calendar actual = parseDate("2007-03-04T14:49:05-03:00");
         Calendar expected = calendar(2007, 3, 4, 17, 49, 5).getCalendar();
+        assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expected.getTime(), actual.getTime());
     }

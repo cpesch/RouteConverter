@@ -62,7 +62,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "searchresults")
     public JAXBElement<SearchresultsType> createSearchresults(SearchresultsType value) {
-        return new JAXBElement<SearchresultsType>(_Searchresults_QNAME, SearchresultsType.class, null, value);
+        return new JAXBElement<>(_Searchresults_QNAME, SearchresultsType.class, null, value);
     }
 
 }

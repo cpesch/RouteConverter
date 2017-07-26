@@ -86,7 +86,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://api.routeconverter.com/v1/schemas/download-queue", name = "queue")
     public JAXBElement<QueueType> createQueue(QueueType value) {
-        return new JAXBElement<QueueType>(_Queue_QNAME, QueueType.class, null, value);
+        return new JAXBElement<>(_Queue_QNAME, QueueType.class, null, value);
     }
 
 }
