@@ -19,7 +19,6 @@
 */
 package slash.navigation.maps;
 
-import org.mapsforge.map.layer.download.tilesource.OpenCycleMap;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.navigation.datasources.DataSource;
@@ -157,7 +156,6 @@ public class MapManager {
     private void initializeOnlineMaps() {
         availableMapsModel.clear();
         availableMapsModel.addOrUpdateMap(new OnlineMap("OpenStreetMap", OPENSTREETMAP_URL, OpenStreetMapMapnik.INSTANCE));
-        availableMapsModel.addOrUpdateMap(new OnlineMap("OpenCycleMap", "http://www.opencyclemap.org/", OpenCycleMap.INSTANCE));
     }
 
     private void initializeBuiltinThemes() {
