@@ -279,7 +279,10 @@ public class DownloadManager {
 
                     download.setState(Outdated);
                     getModel().updateDownload(download);
-                }
+
+                } else
+                    // set expected to actual checksum to avoid endless "locally later than remote"
+                    validator.expectedChecksumIsCurrentChecksum();
             }
         }
     }

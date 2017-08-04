@@ -112,9 +112,12 @@ public class Validator {
         if (actual == null)
             return false;
 
-        boolean hasBeenUpdatedByMe = file.getActualChecksum().laterThan(file.getExpectedChecksum());
-        if (hasBeenUpdatedByMe)
-            log.info(format("%s is more current locally than on server", file.getFile()));
+        boolean localLaterThanRemote = file.getActualChecksum().laterThan(file.getExpectedChecksum());
+        if (localLaterThanRemote)
+            // 2 reasons:
+            // - this was the very first download after a file update and this process updated the checksum on the server
+            // - the checksum on the server was updated but in the download queue there is still the checksum from the first download
+            log.info(format("%s is locally later than remote", file.getFile()));
 
         boolean lastModifiedEquals = expected.getLastModified() == null ||
                 expected.getLastModified().equals(actual.getLastModified());
@@ -128,7 +131,7 @@ public class Validator {
                 expected.getSHA1().equals(actual.getSHA1());
         if (!sha1Equals)
             log.warning(format("%s has SHA-1 %s but expected %s", file.getFile(), actual.getSHA1(), expected.getSHA1()));
-        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || hasBeenUpdatedByMe;
+        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || localLaterThanRemote;
         if (valid)
             log.info(format("%s has valid checksum", file.getFile()));
         return valid;
