@@ -52,6 +52,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
@@ -182,7 +183,7 @@ public class PositionAugmenter {
                                     // range operations outweights the possible optimization
                                     operation.run(index, position);
                                 } catch (Exception e) {
-                                    log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
+                                    log.warning(format("Error while running operation %s on position %d: %s, %s", operation, index, e, printStackTrace(e)));
                                     lastException[0] = e;
                                 }
                             }

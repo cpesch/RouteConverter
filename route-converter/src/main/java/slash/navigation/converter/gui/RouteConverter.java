@@ -143,6 +143,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Locale.CHINA;
 import static java.util.Locale.FRANCE;
@@ -1388,7 +1389,7 @@ public class RouteConverter extends SingleFrameApplication {
                 try {
                     getDataSourceManager().update(getEditionId(), getApiUrl(), getDataSourcesDirectory());
                 } catch (Exception e) {
-                    log.warning("Could not update datasource manager: " + e);
+                    log.warning(format("Could not update datasource manager: %s, %s", e, printStackTrace(e)));
                     getContext().getNotificationManager().showNotification(MessageFormat.format(
                             getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
                 }
