@@ -87,20 +87,23 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     }
 
-    public static boolean hasValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
-        String identifier = position.getIdentifier();
+    public static boolean hasValidIdentifier(String identifier, List<GarminFlightPlanPosition> positions) {
         if(!hasValidIdentifier(identifier))
             return false;
 
+        int count = 0;
         for(GarminFlightPlanPosition p : positions) {
-            if(p.getIdentifier().equals(identifier) && !p.equals(position))
-                return false;
+            if(p.getIdentifier().equals(identifier))
+                count++;
         }
 
-        return true;
+        // 0: completely unique
+        // 1: the positions identifier
+        // >1: not unique
+        return count < 2;
     }
 
-    private static String createValidDescription(String description) {
+    public static String createValidDescription(String description) {
         return description != null ? toLettersAndNumbers(description).toUpperCase() : null;
     }
 
@@ -111,17 +114,18 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return identifier;
     }
 
-    private static String createValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
+    public static String createValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
         String identifier = createValidIdentifier(position.getIdentifier());
-
         int count = positions.indexOf(position);
         if(count < 0)
             count = 0;
-        while(!hasValidIdentifier(position, positions)) {
-            position.setIdentifier(createValidIdentifier(count + identifier));
+        String result = identifier;
+
+        while(!hasValidIdentifier(result, positions)) {
+            result = createValidIdentifier(count + identifier);
             count++;
         }
-        return position.getIdentifier();
+        return result;
     }
 
     private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
