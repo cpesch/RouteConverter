@@ -13,8 +13,10 @@ Björn Gaworski for Mac OS X fixes
 Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
 Fredrik Teschke for dual licensing of navigation-formats module
+Hans Helmcke for testing and improvement suggestions
 Harry van der Wolf for Linux and Mac OS X fixes and the Dutch translation
 Ilmari Krebs for contributing code for position selection and zooming on the map
+Jan Madsen for the Danish translation
 Javier M.R. (jamaro) for the Spanish translation
 Iorio Ciro for the Italian translation
 Malte Neumann for contributing code for KML, Wintec, Navigon, Douglas-Peucker, Map and much more
