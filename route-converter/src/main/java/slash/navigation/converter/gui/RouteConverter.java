@@ -876,7 +876,8 @@ public class RouteConverter extends SingleFrameApplication {
 
     public synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
-            positionAugmenter = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(), getFrame());
+            positionAugmenter = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(),
+                    getFrame(), elevationServiceFacade, geocodingServiceFacade);
         }
         return positionAugmenter;
     }

@@ -44,8 +44,8 @@ public class PositionHelperTest {
 
     @Test
     public void testParseTimeUTC() throws ParseException {
-        CompactCalendar expectedCal = calendar(2010, 9, 18, 3, 13, 32, 0, "UTC");
-        CompactCalendar actualCal = parseDateTime(asDefaultLocaleTime("18.09.2010 03:13:32"), "UTC");
+        CompactCalendar expectedCal = calendar(2010, 9, 18, 3, 13, 33, 0, "UTC");
+        CompactCalendar actualCal = parseDateTime(asDefaultLocaleTime("18.09.2010 03:13:33"), "UTC");
         String expected = getDateTimeInstance().format(expectedCal.getTime());
         String actual = getDateTimeInstance().format(actualCal.getTime());
         assertEquals(expected, actual);
