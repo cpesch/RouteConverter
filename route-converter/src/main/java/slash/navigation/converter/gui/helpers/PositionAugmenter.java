@@ -83,15 +83,19 @@ public class PositionAugmenter {
     private final PositionsModel positionsModel;
 
     private final ExecutorService executor = newSingleThreadExecutor();
-    private final ElevationServiceFacade elevationServiceFacade = RouteConverter.getInstance().getElevationServiceFacade();
-    private final GeocodingServiceFacade geocodingServiceFacade = RouteConverter.getInstance().getGeocodingServiceFacade();
+    private final ElevationServiceFacade elevationServiceFacade;
+    private final GeocodingServiceFacade geocodingServiceFacade;
     private static final Object notificationMutex = new Object();
     private boolean running = true;
 
-    public PositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame) {
+    public PositionAugmenter(JTable positionsView, PositionsModel positionsModel, JFrame frame,
+                             ElevationServiceFacade elevationServiceFacade,
+                             GeocodingServiceFacade geocodingServiceFacade) {
         this.positionsView = positionsView;
         this.positionsModel = positionsModel;
         this.frame = frame;
+        this.elevationServiceFacade = elevationServiceFacade;
+        this.geocodingServiceFacade = geocodingServiceFacade;
     }
 
     public void interrupt() {
@@ -410,20 +414,22 @@ public class PositionAugmenter {
             processSpeeds(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
     }
 
-    private int findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while (index-- > 0) {
+    int findPredecessorWithTime(PositionsModel positionsModel, int index) {
+        while (index != -1) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
+            index--;
         }
         return -1;
     }
 
-    private int findSuccessorWithTime(PositionsModel positionsModel, int index) {
-        while (index++ < positionsModel.getRowCount() - 1) {
+    int findSuccessorWithTime(PositionsModel positionsModel, int index) {
+        while (index < positionsModel.getRowCount()) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
+            index++;
         }
         return -1;
     }
