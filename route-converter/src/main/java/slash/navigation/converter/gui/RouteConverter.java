@@ -1279,7 +1279,7 @@ public class RouteConverter extends SingleFrameApplication {
         RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
-        DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), "download-queue.xml"));
+        DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), getEditionId() + "-queue.xml"));
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
