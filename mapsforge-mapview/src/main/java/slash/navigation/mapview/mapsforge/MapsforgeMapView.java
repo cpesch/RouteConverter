@@ -758,7 +758,8 @@ public class MapsforgeMapView implements MapView {
             log.info("RouteReplacer stopped after " + (end - start) + " ms");
         }
 
-        routeRenderer.dispose();
+        if (routeRenderer != null)
+            routeRenderer.dispose();
 
         NavigationPosition center = getCenter();
         preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, center.getLongitude());
