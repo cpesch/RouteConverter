@@ -29,18 +29,19 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.PreferencesHelper.count;
+import static slash.common.io.Transfer.trim;
 
 /**
- * Manages the API Keys for the Google Maps API.
+ * Manages the API Keys for the Google Directions, Elevation, Geocoding, JavaScript API.
  *
  * @author Christian Pesch
  */
 
-public class GoogleMapsAPIKey {
-    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsAPIKey.class);
-    private static final Logger log = Logger.getLogger(GoogleMapsService.class.getName());
-    private static final String GOOGLE_MAPS_API_KEY_PREFERENCE = "googleMapsApiKey";
-    private static final String GOOGLE_MAPS_API_USAGES = "googleMapsApiUsages";
+public class GoogleAPIKey {
+    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleAPIKey.class);
+    private static final Logger log = Logger.getLogger(GoogleService.class.getName());
+    private static final String GOOGLE_API_KEY_PREFERENCE = "googleMapsApiKey";
+    private static final String GOOGLE_API_USAGES = "googleMapsApiUsages";
 
     public static void logUsage() {
         StringBuilder builder = new StringBuilder();
@@ -54,27 +55,38 @@ public class GoogleMapsAPIKey {
                 }
             }
         } catch (BackingStoreException e) {
-            log.severe("Could not get preferences keys: " + getLocalizedMessage(e));
+            log.severe("Could not get Google API usages: " + getLocalizedMessage(e));
         }
-        log.info("Google Maps API usage:" + builder.toString());
+        log.info("Google API key: " + useAPIKey("usage") + " usage: " + builder.toString());
     }
 
-    public static String getAPIKey(String action) {
-        count(preferences, GOOGLE_MAPS_API_USAGES + "-" + action);
-        return preferences.get(GOOGLE_MAPS_API_KEY_PREFERENCE, readAPIKey());
+    public static String getAPIKeyPreference() {
+        return preferences.get(GOOGLE_API_KEY_PREFERENCE, "");
     }
 
-    private static String readAPIKey() {
-        try (InputStream inputStream = GoogleMapsAPIKey.class.getResourceAsStream("googlemaps.properties")) {
+    public static void setAPIKeyPreference(String apiKey) {
+        preferences.put(GOOGLE_API_KEY_PREFERENCE, apiKey);
+    }
+
+    public static String useAPIKey(String apiType) {
+        count(preferences, GOOGLE_API_USAGES + "-" + apiType);
+        String apiKey = trim(getAPIKeyPreference());
+        return apiKey != null ? apiKey : getDefaultAPIKey();
+    }
+
+    private static String getDefaultAPIKey() {
+        try (InputStream inputStream = GoogleAPIKey.class.getResourceAsStream("google.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
-            String property = properties.getProperty(GOOGLE_MAPS_API_KEY_PREFERENCE);
-            if(property != null && !property.toLowerCase().contains(GOOGLE_MAPS_API_KEY_PREFERENCE.toLowerCase()))
+            String property = properties.getProperty(GOOGLE_API_KEY_PREFERENCE);
+            // for releases
+            if(property != null && !property.toLowerCase().contains(GOOGLE_API_KEY_PREFERENCE.toLowerCase()))
                 return property;
         }
         catch (IOException e) {
-            log.severe("Could not read GoogleMaps API Key: " + getLocalizedMessage(e));
+            log.severe("Could not read default Google API Key: " + getLocalizedMessage(e));
         }
+        // for tests and development
         return "AIzaSyDC-jYvmmirX_V_gAI7PUPY7Myhyri6U_Q";
     }
 }

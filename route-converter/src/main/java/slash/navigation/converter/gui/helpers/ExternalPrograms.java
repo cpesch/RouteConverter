@@ -87,6 +87,18 @@ public class ExternalPrograms {
         startBrowser(window, url);
     }
 
+    public static void startBrowserForGoogleApiKey(Window window) {
+        startBrowser(window, "https://developers.google.com/maps/documentation/javascript/get-api-key");
+    }
+
+    public static void startBrowserForThunderforestApiKey(Window window) {
+        startBrowser(window, "https://www.thunderforest.com/docs/apikeys");
+    }
+
+    public static void startBrowserForGeonamesUserName(Window window) {
+        startBrowser(window, "http://www.geonames.org/login");
+    }
+
     public static void startBrowserForJava(Window window) {
         startBrowser(window, "http://java.com/download/");
     }

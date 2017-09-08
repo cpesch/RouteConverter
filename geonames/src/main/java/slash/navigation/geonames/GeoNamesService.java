@@ -63,8 +63,12 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
     }
 
-    private String getGeoNamesUserName() {
-        return preferences.get(GEONAMES_USERNAME_PREFERENCE, "routeconverter");
+    public static String getGeoNamesUserName() {
+        return preferences.get(GEONAMES_USERNAME_PREFERENCE, "");
+    }
+
+    public static void setGeoNamesUserName(String userName) {
+        preferences.put(GEONAMES_USERNAME_PREFERENCE, userName);
     }
 
     private String execute(String uri) throws IOException {

@@ -30,7 +30,7 @@ import java.io.StringReader;
 
 import static slash.common.helpers.JAXBHelper.newContext;
 
-public class GoogleMapsUtil {
+public class GoogleUtil {
     private static Unmarshaller newUnmarshallerElevation() {
         return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.elevation.ObjectFactory.class));
     }
