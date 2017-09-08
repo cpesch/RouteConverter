@@ -91,8 +91,8 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleMapsAPIKey;
-import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.googlemaps.GoogleAPIKey;
+import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.ActionManager;
@@ -409,7 +409,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeHelp();
         getContext().getActionManager().logUsage();
-        GoogleMapsAPIKey.logUsage();
+        GoogleAPIKey.logUsage();
     }
 
     private MapView createMapView(String className) {
@@ -1411,7 +1411,7 @@ public class RouteConverter extends SingleFrameApplication {
         getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
 
         getElevationServiceFacade().addElevationService(new GeoNamesService());
-        getElevationServiceFacade().addElevationService(new GoogleMapsService());
+        getElevationServiceFacade().addElevationService(new GoogleService());
 
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
@@ -1433,7 +1433,7 @@ public class RouteConverter extends SingleFrameApplication {
         getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
 
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
-        getGeocodingServiceFacade().addGeocodingService(new GoogleMapsService());
+        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
         getGeocodingServiceFacade().addGeocodingService(new PhotonService());
     }

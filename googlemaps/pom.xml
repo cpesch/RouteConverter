@@ -11,7 +11,7 @@
     </parent>
 
     <properties>
-        <googleMapsApiKey>${routeConverterGoogleMapsApiKey}</googleMapsApiKey>
+        <googleApiKey>${routeConverterGoogleApiKey}</googleApiKey>
     </properties>
 
     <build>

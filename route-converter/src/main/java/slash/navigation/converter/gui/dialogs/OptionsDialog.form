@@ -488,7 +488,7 @@
                   </component>
                   <component id="a7fc8" class="javax.swing.JButton" binding="buttonChooseMapsPath">
                     <constraints>
-                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="1" use-parent-layout="false"/>
+                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <hideActionText value="true"/>
@@ -551,7 +551,7 @@
                   </component>
                   <component id="5971a" class="javax.swing.JButton" binding="buttonChooseThemesPath">
                     <constraints>
-                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="2" use-parent-layout="false"/>
+                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <hideActionText value="true"/>
@@ -855,7 +855,7 @@
                   </component>
                   <component id="f4b2f" class="javax.swing.JButton" binding="buttonChooseElevationServicePath">
                     <constraints>
-                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="1" use-parent-layout="false"/>
+                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <hideActionText value="true"/>
@@ -997,7 +997,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="be834" class="javax.swing.JTextField" binding="textFieldGoogleMapsApiKey">
+                  <component id="be834" class="javax.swing.JTextField" binding="textFieldGoogleApiKey">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
@@ -1013,7 +1013,7 @@
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="f9539" class="javax.swing.JLabel">
+                  <component id="f9539" class="javax.swing.JLabel" binding="labelGoogleApiKey">
                     <constraints>
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -1021,7 +1021,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="google-maps-api-key"/>
                     </properties>
                   </component>
-                  <component id="333f9" class="javax.swing.JLabel">
+                  <component id="333f9" class="javax.swing.JLabel" binding="labelThunderforestApiKey">
                     <constraints>
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -1029,7 +1029,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="thunderforest-api-key"/>
                     </properties>
                   </component>
-                  <component id="2b04a" class="javax.swing.JLabel">
+                  <component id="2b04a" class="javax.swing.JLabel" binding="labelGeonamesUserName">
                     <constraints>
                       <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>

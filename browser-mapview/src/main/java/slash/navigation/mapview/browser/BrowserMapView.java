@@ -150,7 +150,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.googlemaps.GoogleMapsAPIKey.getAPIKey;
+import static slash.navigation.googlemaps.GoogleAPIKey.useAPIKey;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -309,8 +309,8 @@ public abstract class BrowserMapView implements MapView {
                     return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
                     return getMapType();
-                if (tokenName.equals("googlemapsapikey"))
-                    return getAPIKey("map");
+                if (tokenName.equals("googleapikey"))
+                    return useAPIKey("map");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
