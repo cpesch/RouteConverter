@@ -73,7 +73,7 @@ public class SelectionUpdater {
     }
 
     private void replaceSelection(int[] selectedPositions) {
-        applyDelta(asPositionWithLayers(selectedPositions), positionWithLayers);
+        applyDelta(asPositionWithLayers(selectedPositions), new ArrayList<>(positionWithLayers));
     }
 
     private void updateSelection(int[] selectedPositions) {
