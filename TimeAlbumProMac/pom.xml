@@ -47,6 +47,7 @@
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
                                         <exclude>META-INF/maven/</exclude>
+                                        <exclude>*.html</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
                                         <exclude>**/cp.png</exclude>
