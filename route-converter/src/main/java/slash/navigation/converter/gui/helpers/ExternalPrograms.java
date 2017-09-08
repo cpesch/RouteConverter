@@ -80,10 +80,6 @@ public class ExternalPrograms {
                 "https://forum.routeconverter.com/forum-12.html");
     }
 
-    public static void startBrowserForGeonames(Window window) {
-        startBrowser(window, "http://www.geonames.org/");
-    }
-
     public static void startBrowserForDouglasPeucker(Window window) {
         String url = isGerman() ?
                 "http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
