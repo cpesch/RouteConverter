@@ -198,12 +198,14 @@ public class GeoTagger {
         PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
         int index = getClosestPositionByCoordinates(position);
         if (index != -1) {
+            log.info("Tagging with closest position " + index + " by coordinates: " + position);
             position.setTagState(Tagged);
             position.setClosestPositionForTagging(originalPositionsModel.getPosition(index));
 
         } else {
             index = getClosestPositionByTime(position);
             if (index != -1) {
+                log.info("Tagging with closest position " + index + " by time: " + position);
                 position.setTagState(Taggable);
                 position.setClosestPositionForTagging(originalPositionsModel.getPosition(index));
             }
