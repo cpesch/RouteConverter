@@ -136,7 +136,7 @@ class PositionReducer {
     int getMaximumSegmentLength(RouteCharacteristics characteristics) {
         switch (characteristics) {
             case Route:
-                return preferences.getInt("maximumRouteSegmentLength", 24);
+                return preferences.getInt("maximumRouteSegmentLength", 8);
             case Track:
                 return preferences.getInt("maximumTrackSegmentLength", 40);
             case Waypoints:
