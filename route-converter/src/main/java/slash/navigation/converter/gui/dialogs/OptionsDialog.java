@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.common.helpers.APIKeyRegistry;
 import slash.common.helpers.TimeZoneAndId;
 import slash.common.helpers.TimeZoneAndIds;
 import slash.navigation.babel.BabelFormat;
@@ -51,8 +52,6 @@ import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geocoding.GeocodingService;
-import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleAPIKey;
 import slash.navigation.googlemaps.GoogleMapsServer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SimpleDialog;
@@ -76,6 +75,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -96,6 +97,7 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.LocaleHelper.ARABIA;
 import static slash.common.helpers.LocaleHelper.CROATIA;
 import static slash.common.helpers.LocaleHelper.CZECH;
@@ -120,6 +122,7 @@ import static slash.navigation.common.UnitSystem.Metric;
 import static slash.navigation.common.UnitSystem.Nautic;
 import static slash.navigation.common.UnitSystem.Statute;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.getBundle;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGeonamesUserName;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGoogleApiKey;
@@ -188,7 +191,7 @@ public class OptionsDialog extends SimpleDialog {
 
     public OptionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "options");
-        setTitle(RouteConverter.getBundle().getString("options-title"));
+        setTitle(getBundle().getString("options-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
@@ -228,11 +231,15 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
         textFieldMapsPath.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
+            public void insertUpdate(DocumentEvent de) {
                 MapView service = r.getMapView();
-                if (service.isDownload()) {
-                    service.setMapsPath(textFieldMapsPath.getText());
-                }
+                if (service.isDownload())
+                    try {
+                        service.setMapsPath(textFieldMapsPath.getText());
+                    } catch (IOException e) {
+                        r.getContext().getNotificationManager().showNotification(MessageFormat.format(
+                                getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
+                    }
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -249,10 +256,14 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
         textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
+            public void insertUpdate(DocumentEvent de) {
                 MapView service = r.getMapView();
-                if (service.isDownload()) {
-                    service.setThemesPath(textFieldThemesPath.getText());
+                if (service.isDownload())
+                    try {
+                        service.setThemesPath(textFieldThemesPath.getText());
+                    } catch (IOException e) {
+                        r.getContext().getNotificationManager().showNotification(MessageFormat.format(
+                                getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
                 }
             }
 
@@ -330,7 +341,8 @@ public class OptionsDialog extends SimpleDialog {
         });
         textFieldGoogleApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                GoogleAPIKey.setAPIKeyPreference(textFieldGoogleApiKey.getText());
+                APIKeyRegistry.getInstance().setAPIKeyPreference("google", textFieldGoogleApiKey.getText());
+                restartMapView();
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -341,13 +353,29 @@ public class OptionsDialog extends SimpleDialog {
                 insertUpdate(e);
             }
         });
-        textFieldGoogleApiKey.setText(GoogleAPIKey.getAPIKeyPreference());
+        textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
+
         labelThunderforestApiKey.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 startBrowserForThunderforestApiKey(OptionsDialog.this);
             }
         });
-        // TODO add
+        textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", textFieldThunderforestApiKey.getText());
+                restartMapView();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+        });
+        textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
+
         labelGeonamesUserName.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 startBrowserForGeonamesUserName(OptionsDialog.this);
@@ -355,7 +383,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         textFieldGeonamesUserName.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                GeoNamesService.setGeoNamesUserName(textFieldGeonamesUserName.getText());
+                APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", textFieldGeonamesUserName.getText());
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -366,7 +394,7 @@ public class OptionsDialog extends SimpleDialog {
                 insertUpdate(e);
             }
         });
-        textFieldGeonamesUserName.setText(GeoNamesService.getGeoNamesUserName());
+        textFieldGeonamesUserName.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("geonames"));
 
         new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, getPreferences(), AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
 
@@ -650,6 +678,11 @@ public class OptionsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private void restartMapView() {
+        RouteConverter r = RouteConverter.getInstance();
+        r.setMapView(r.getMapViewPreference());
+    }
+
     private static final Set<String> REMOVEABLE_COLOR_PANELS = new HashSet<>(
             asList("Swatches", "HSV", "HSL", "CMYK",
                     // German Mac OS X has different names
@@ -719,7 +752,7 @@ public class OptionsDialog extends SimpleDialog {
     private void chooseMapPath() {
         RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-map-path"));
+        chooser.setDialogTitle(getBundle().getString("choose-map-path"));
         chooser.setSelectedFile(new File(r.getMapView().getMapsPath()));
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
@@ -739,7 +772,7 @@ public class OptionsDialog extends SimpleDialog {
     private void chooseThemePath() {
         RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-theme-path"));
+        chooser.setDialogTitle(getBundle().getString("choose-theme-path"));
         chooser.setSelectedFile(new File(r.getMapView().getThemesPath()));
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
@@ -758,7 +791,7 @@ public class OptionsDialog extends SimpleDialog {
 
     private void chooseBabelPath() {
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
+        chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
@@ -778,7 +811,7 @@ public class OptionsDialog extends SimpleDialog {
     private void chooseRoutingServicePath() {
         RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-routing-service-path"));
+        chooser.setDialogTitle(getBundle().getString("choose-routing-service-path"));
         chooser.setSelectedFile(new File(r.getRoutingServiceFacade().getRoutingService().getPath()));
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);
@@ -798,7 +831,7 @@ public class OptionsDialog extends SimpleDialog {
     private void chooseElevationServicePath() {
         RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-elevation-service-path"));
+        chooser.setDialogTitle(getBundle().getString("choose-elevation-service-path"));
         chooser.setSelectedFile(new File(r.getElevationServiceFacade().getElevationService().getPath()));
         chooser.setFileSelectionMode(DIRECTORIES_ONLY);
         chooser.setMultiSelectionEnabled(false);

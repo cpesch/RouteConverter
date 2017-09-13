@@ -29,6 +29,7 @@ import slash.navigation.maps.helpers.ThemeForMapMediator;
 import slash.navigation.maps.impl.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -163,7 +164,16 @@ public class MapManager {
         availableThemesModel.addOrUpdateTheme(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
     }
 
-    public synchronized void scanMaps() {
+    private void checkFile(File file) throws FileNotFoundException {
+        if (!file.exists())
+            throw new FileNotFoundException("file does not exist: " + file.getAbsolutePath());
+        else if (!file.isFile())
+            throw new FileNotFoundException("not a file: " + file.getAbsolutePath());
+        else if (!file.canRead())
+            throw new FileNotFoundException("cannot read file: " + file.getAbsolutePath());
+    }
+
+    public synchronized void scanMaps() throws IOException {
         initializeOnlineMaps();
 
         long start = currentTimeMillis();
@@ -172,9 +182,11 @@ public class MapManager {
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
         File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
         for (File file : mapFilesArray) {
+            // avoid directory with world.map
             if(file.getParent().endsWith("routeconverter"))
                 continue;
 
+            checkFile(file);
             availableMapsModel.addOrUpdateMap(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
         }
 
@@ -191,8 +203,10 @@ public class MapManager {
         File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
-        for (File file : themeFilesArray)
+        for (File file : themeFilesArray) {
+            checkFile(file);
             availableThemesModel.addOrUpdateTheme(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
+        }
 
         long end = currentTimeMillis();
         log.info(format("Collected %d theme files %s from %s in %d milliseconds",

@@ -20,6 +20,7 @@
 
 package slash.navigation.mapview.browser;
 
+import slash.common.helpers.APIKeyRegistry;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
@@ -150,7 +151,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.googlemaps.GoogleAPIKey.useAPIKey;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -310,7 +310,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("maptype"))
                     return getMapType();
                 if (tokenName.equals("googleapikey"))
-                    return useAPIKey("map");
+                    return APIKeyRegistry.getInstance().getAPIKey("google", "map");
                 if (tokenName.equals("tileservers1"))
                     return registerTileServers(tileServerService, true);
                 if (tokenName.equals("tileservers2"))
@@ -778,6 +778,7 @@ public abstract class BrowserMapView implements MapView {
                         append("mapCopyrights[google.maps.MapTypeId.").append(tileServerId).append("] = \"Google\";\n");
         }
 
+        String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
         for (TileServerType tileServer : tileServerService.getTileServers()) {
             if (tileServer.getActive() != null && !tileServer.getActive())
                 continue;
@@ -788,10 +789,13 @@ public abstract class BrowserMapView implements MapView {
                         append("mapCopyrights[\"").append(tileServer.getId()).append("\"] = \"").
                         append(copyrightType != null ? copyrightType.value() : "unknown").append("\";\n");
             }
-            else
+            else {
                 buffer.append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
                         append("  getTileUrl: function(coordinates, zoom) {\n").
-                        append("    return ").append(trim(trimLineFeeds(tileServer.getValue()))).append(";\n").
+                        append("    return ").append(trim(trimLineFeeds(tileServer.getValue())));
+                if (apiKey != null)
+                    buffer.append(" + \"?apikey=").append(apiKey).append("\"");
+                buffer.append(";\n").
                         append("  },\n").
                         append("  tileSize: DEFAULT_TILE_SIZE,\n").
                         append("  minZoom: ").append(tileServer.getMinZoom()).append(",\n").
@@ -799,6 +803,7 @@ public abstract class BrowserMapView implements MapView {
                         append("  alt: \"").append(tileServer.getName()).append("\",\n").
                         append("  name: \"").append(tileServer.getId()).append("\"\n").
                         append("}));\n");
+            }
         }
 
         return buffer.toString();

@@ -20,6 +20,7 @@
 
 package slash.navigation.googlemaps;
 
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
@@ -42,7 +43,6 @@ import java.util.logging.Logger;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
-import static slash.navigation.googlemaps.GoogleAPIKey.useAPIKey;
 import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
 import static slash.navigation.googlemaps.GoogleUtil.unmarshalElevation;
 import static slash.navigation.googlemaps.GoogleUtil.unmarshalGeocode;
@@ -66,10 +66,11 @@ public class GoogleService implements ElevationService, GeocodingService {
         return overQueryLimitCount > 0;
     }
 
-    private String getGoogleApiUrl(String api, String payload) {
+    private String getGoogleApiUrl(String apiType, String payload) {
         String language = Locale.getDefault().getLanguage();
-        return getGoogleMapsServer().getApiUrl() + "/maps/api/" + api + "/xml?" + payload +
-                "&sensor=false&language=" + language + "&key=" + useAPIKey(api);
+        String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", apiType);
+        return getGoogleMapsServer().getApiUrl() + "/maps/api/" + apiType + "/xml?" + payload +
+                "&sensor=false&language=" + language + "&key=" + apiKey;
     }
 
     private String getElevationUrl(String payload) {
