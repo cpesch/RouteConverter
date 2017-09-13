@@ -339,6 +339,8 @@ public class OptionsDialog extends SimpleDialog {
                 startBrowserForGoogleApiKey(OptionsDialog.this);
             }
         });
+        // first setText then adding the listener to avoid #restartMapView() on initialization
+        textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
         textFieldGoogleApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("google", textFieldGoogleApiKey.getText());
@@ -353,13 +355,14 @@ public class OptionsDialog extends SimpleDialog {
                 insertUpdate(e);
             }
         });
-        textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
 
         labelThunderforestApiKey.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 startBrowserForThunderforestApiKey(OptionsDialog.this);
             }
         });
+        // first setText then adding the listener to avoid #restartMapView() on initialization
+        textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
         textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", textFieldThunderforestApiKey.getText());
@@ -374,7 +377,6 @@ public class OptionsDialog extends SimpleDialog {
                 insertUpdate(e);
             }
         });
-        textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
 
         labelGeonamesUserName.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
