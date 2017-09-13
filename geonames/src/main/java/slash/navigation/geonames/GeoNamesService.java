@@ -20,6 +20,7 @@
 
 package slash.navigation.geonames;
 
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Encapsulates REST access to the geonames.org service.
@@ -48,7 +50,6 @@ public class GeoNamesService implements ElevationService, GeocodingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
-    private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";
     private int overQueryLimitCount;
 
     public String getName() {
@@ -63,16 +64,12 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
     }
 
-    public static String getGeoNamesUserName() {
-        return preferences.get(GEONAMES_USERNAME_PREFERENCE, "");
-    }
+    private String execute(String uri, String apiType) throws IOException {
+        String userName = trim(APIKeyRegistry.getInstance().getAPIKey("geonames", apiType));
+        if(userName == null)
+            return null;
 
-    public static void setGeoNamesUserName(String userName) {
-        preferences.put(GEONAMES_USERNAME_PREFERENCE, userName);
-    }
-
-    private String execute(String uri) throws IOException {
-        String url = getGeoNamesApiUrl() + uri + "&username=" + getGeoNamesUserName();
+        String url = getGeoNamesApiUrl() + uri + "&username=" + userName;
         Get get = new Get(url);
         String result = get.executeAsString();
         if (get.isSuccessful()) {
@@ -83,7 +80,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
     }
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
-        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude); // could be up to 20 points
+        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude, uri); // could be up to 20 points
         if (result != null) {
             try {
                 Integer elevation = parseInteger(result);
@@ -135,8 +132,8 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return null; // not supported
     }
 
-    private Geonames getGeonamesFor(String uri) throws IOException {
-        String result = execute(uri);
+    private Geonames getGeonamesFor(String uri, String apiType) throws IOException {
+        String result = execute(uri, apiType);
         if (result != null) {
             try {
                 return GeoNamesUtil.unmarshal(result);
@@ -148,7 +145,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
     }
 
     private Geonames getGeonamesFor(String uri, double longitude, double latitude) throws IOException {
-        return getGeonamesFor(uri + "?lat=" + latitude + "&lng=" + longitude);
+        return getGeonamesFor(uri + "?lat=" + latitude + "&lng=" + longitude, uri);
     }
 
     private String getNearByFor(String uri, double longitude, double latitude) throws IOException {

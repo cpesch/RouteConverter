@@ -48,6 +48,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.download.DownloadTableModel.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
+import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -123,6 +124,7 @@ public class DownloadsDialog extends SimpleDialog {
             }
         });
         tableDownloads.setRowSorter(sorter);
+        tableDownloads.setRowHeight(getDefaultRowHeight());
 
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDownloadManager()));
@@ -151,6 +153,10 @@ public class DownloadsDialog extends SimpleDialog {
                 close();
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private int getDefaultRowHeight() {
+        return calculateRowHeight(this, new DefaultCellEditor(new JTextField()), "Value");
     }
 
     private void close() {

@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -59,9 +60,9 @@ public interface MapView extends PositionsSelectionModel {
     boolean isSupportsPrinting();
     boolean isSupportsPrintingWithDirections();
     String getMapsPath();
-    void setMapsPath(String path);
+    void setMapsPath(String path) throws IOException;
     String getThemesPath();
-    void setThemesPath(String path);
+    void setThemesPath(String path) throws IOException;
 
     Throwable getInitializationCause();
     void dispose();

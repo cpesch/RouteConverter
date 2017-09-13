@@ -976,16 +976,18 @@ public class MapsforgeMapView implements MapView {
         return getMapManager().getMapsPath();
     }
 
-    public void setMapsPath(String path) {
+    public void setMapsPath(String path) throws IOException {
         getMapManager().setMapsPath(path);
+        getMapManager().scanMaps();
     }
 
     public String getThemesPath() {
         return getMapManager().getThemePath();
     }
 
-    public void setThemesPath(String path) {
+    public void setThemesPath(String path) throws IOException {
         getMapManager().setThemePath(path);
+        getMapManager().scanThemes();
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {

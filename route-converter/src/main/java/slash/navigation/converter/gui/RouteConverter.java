@@ -21,6 +21,7 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import slash.common.helpers.APIKeyRegistry;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
@@ -91,7 +92,6 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleAPIKey;
 import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
@@ -409,7 +409,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeHelp();
         getContext().getActionManager().logUsage();
-        GoogleAPIKey.logUsage();
+        APIKeyRegistry.getInstance().logUsage();
     }
 
     private MapView createMapView(String className) {

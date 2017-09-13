@@ -10,10 +10,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <properties>
-        <googleApiKey>${routeConverterGoogleApiKey}</googleApiKey>
-    </properties>
-
     <build>
         <resources>
             <resource>
