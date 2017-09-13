@@ -446,6 +446,9 @@ public class MapsforgeMapView implements MapView {
 
     private void initializeActions() {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        if(actionManager.get("select-position") != null)
+            return;
+
         actionManager.register("select-position", new SelectPositionAction());
         actionManager.register("extend-selection", new ExtendSelectionAction());
         actionManager.register("add-position", new AddPositionAction());
