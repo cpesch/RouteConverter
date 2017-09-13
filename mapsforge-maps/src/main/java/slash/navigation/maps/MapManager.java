@@ -140,9 +140,9 @@ public class MapManager {
 
     private File getDirectory(String preferencesPath, String directoryName) {
         java.io.File f = new java.io.File(preferencesPath);
-        if (!f.exists())
-            directoryName = getApplicationDirectory(directoryName).getAbsolutePath();
-        return ensureDirectory(directoryName);
+        if (f.exists())
+            return f;
+        return ensureDirectory(getApplicationDirectory(directoryName).getAbsolutePath());
     }
 
     public File getMapsDirectory() {
