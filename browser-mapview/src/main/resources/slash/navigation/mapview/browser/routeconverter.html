@@ -289,16 +289,16 @@
                            for (var l = 0; l < path.length - 1; l++) {
                                waypoints.push(path[l].lat());
                                waypoints.push(path[l].lng());
-                               waypoints.push(l == 0 ? steps[k].distance.value : 0);
-                               waypoints.push(l == 0 ? steps[k].duration.value : 0);
-                               waypoints.push(l == 0 ? removeTags(steps[k].instructions) : "-");
+                               waypoints.push(l === 0 ? steps[k].distance.value : 0);
+                               waypoints.push(l === 0 ? steps[k].duration.value : 0);
+                               waypoints.push(l === 0 ? removeTags(steps[k].instructions) : "-");
                            }
                        }
                    }
                    callJavaWithPost("Insert-All-Waypoints: " + index + "/" + waypoints.join("/") + "\n\n");
                }
 
-           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+           } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
                callJavaWithUri("over-query-limit");
 
            } else {
@@ -521,7 +521,7 @@
 
    function ignoreKeystrokes(event) {
        // ctrl F, F5
-       if (event.ctrlKey && event.keyCode == 70 || event.keyCode == 116) {
+       if (event.ctrlKey && event.keyCode === 70 || event.keyCode === 116) {
            event.preventDefault();
        }
    }
@@ -771,7 +771,7 @@ ${menuItems}
            var lastZoom = 0;
            google.maps.event.addListener(map, "zoom_changed", function() {
                var zoom = map.getZoom();
-               if (lastZoom != zoom) {
+               if (lastZoom !== zoom) {
                    lastZoom = zoom;
                    callJavaWithUri("zoom-changed/" + zoom);
                }
