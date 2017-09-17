@@ -375,7 +375,7 @@
 
    function renderDirections(directionsRequest, generationId, generationIndex, startIndex, lastSegment, color, opacity, weight) {
        directionsService.route(directionsRequest, function(result, status) {
-           if (status == google.maps.DirectionsStatus.OK) {
+           if (status === google.maps.DirectionsStatus.OK) {
                var panel = document.createElement("div");
                var renderer = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
                    polylineOptions: {strokeColor: color, strokeOpacity: opacity, strokeWeight: weight },
@@ -395,7 +395,7 @@
                }
                callJavaWithUri("directions-load/" + generationId + "/" + generationIndex + "/" + waypoints.join("/"));
 
-           } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
+           } else if (status === google.maps.DirectionsStatus.ZERO_RESULTS) {
                var path = extractPath(directionsRequest);
                var polyline = new google.maps.Polyline({path: path, strokeColor: "#FF0000", strokeWeight: 5,
                    strokeOpacity: 0.3, clickable: false, geodesic: true, map: map});
@@ -403,7 +403,7 @@
 
                callJavaWithUri("zero-results");
 
-           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+           } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
                var path = extractPath(directionsRequest);
                var polyline = new google.maps.Polyline({path: path, strokeColor: "#FF8000", strokeWeight: 5,
                    strokeOpacity: 0.3, clickable: false, geodesic: true, map: map});
@@ -428,9 +428,9 @@
    var newPanels = [];
 
    function addDirections(renderer, panel) {
-       if (renderer != undefined)
+       if (renderer !== undefined)
            newRenderer.push(renderer);
-       if (panel != undefined)
+       if (panel !== undefined)
            newPanels.push(panel);
    }
 
