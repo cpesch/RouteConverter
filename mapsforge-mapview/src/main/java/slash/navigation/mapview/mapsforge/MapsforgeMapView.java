@@ -444,9 +444,11 @@ public class MapsforgeMapView implements MapView {
         routeReplacer.start();
     }
 
+    private boolean initializedActions = false;
+
     private void initializeActions() {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-        if(actionManager.get("select-position") != null)
+        if(initializedActions)
             return;
 
         actionManager.register("select-position", new SelectPositionAction());
@@ -457,6 +459,8 @@ public class MapsforgeMapView implements MapView {
         actionManager.register("center-here", new CenterAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
+
+        initializedActions = true;
     }
 
     private MapManager getMapManager() {
