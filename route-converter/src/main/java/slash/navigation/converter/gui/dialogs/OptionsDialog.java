@@ -708,14 +708,15 @@ public class OptionsDialog extends SimpleDialog {
 
     private void handleMapServiceUpdate() {
         MapView service = RouteConverter.getInstance().getMapView();
-        textFieldMapsPath.setEnabled(service.isDownload());
-        textFieldMapsPath.setText(service.isDownload() ? service.getMapsPath() : "");
-        buttonChooseMapsPath.setEnabled(service.isDownload());
-        textFieldThemesPath.setEnabled(service.isDownload());
-        textFieldThemesPath.setText(service.isDownload() ? service.getThemesPath() : "");
-        buttonChooseThemesPath.setEnabled(service.isDownload());
-        comboBoxFixMapMode.setEnabled(!service.isDownload());
-        comboBoxGoogleMapsServer.setEnabled(!service.isDownload());
+        boolean download = service != null && service.isDownload();
+        textFieldMapsPath.setEnabled(download);
+        textFieldMapsPath.setText(download ? service.getMapsPath() : "");
+        buttonChooseMapsPath.setEnabled(download);
+        textFieldThemesPath.setEnabled(download);
+        textFieldThemesPath.setText(download ? service.getThemesPath() : "");
+        buttonChooseThemesPath.setEnabled(download);
+        comboBoxFixMapMode.setEnabled(!download);
+        comboBoxGoogleMapsServer.setEnabled(!download);
     }
 
     private void handleRoutingServiceUpdate() {
