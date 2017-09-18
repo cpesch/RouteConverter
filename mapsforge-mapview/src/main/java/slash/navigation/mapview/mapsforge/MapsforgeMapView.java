@@ -243,6 +243,11 @@ public class MapsforgeMapView implements MapView {
                     Marker marker = new DraggableMarker(latLong, markerIcon, 8, -16) {
                         public void onDrop(LatLong latLong) {
                             int index = MapsforgeMapView.this.positionsModel.getIndex(positionWithLayer.getPosition());
+                            if(index == -1) {
+                                log.warning("Marker without position " + this);
+                                return;
+                            }
+
                             MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                                     Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
                             // ensure this marker is on top of the moved waypoint marker
@@ -829,11 +834,14 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayer(Layer layer) {
-        mapView.addLayer(layer);
+        mapView.getLayerManager().getLayers().add(layer);
+        if(!mapView.getLayerManager().getLayers().contains(layer))
+            log.warning("Cannot add layer " + layer);
     }
 
     private void removeLayer(Layer layer) {
-        mapView.removeLayer(layer);
+        if(!mapView.getLayerManager().getLayers().remove(layer))
+            log.warning("Cannot remove layer " + layer);
     }
 
     private void removeLayer(PositionWithLayer positionWithLayer) {
