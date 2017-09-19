@@ -26,6 +26,8 @@ import org.mapsforge.map.layer.overlay.Marker;
 
 /**
  * A {@code Marker} that supports dragging.
+ *
+ * @author Christian Pesch
  */
 public abstract class DraggableMarker extends Marker {
     public DraggableMarker(LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
