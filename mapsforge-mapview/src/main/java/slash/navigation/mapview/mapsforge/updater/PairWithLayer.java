@@ -29,7 +29,7 @@ import slash.navigation.common.DistanceAndTime;
  * @author Christian Pesch
  */
 
-public class PairWithLayer {
+public class PairWithLayer implements ObjectWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
     private Layer layer;
