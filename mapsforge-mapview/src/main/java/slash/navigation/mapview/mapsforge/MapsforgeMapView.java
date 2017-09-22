@@ -207,9 +207,6 @@ public class MapsforgeMapView implements MapView {
 
                             MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                                     Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
-                            // ensure this marker is on top of the moved waypoint marker
-                            removeLayer(this);
-                            addLayer(this);
                         }
                     };
                     positionWithLayer.setLayer(marker);
