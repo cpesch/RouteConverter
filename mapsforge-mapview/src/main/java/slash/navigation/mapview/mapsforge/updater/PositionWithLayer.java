@@ -28,7 +28,7 @@ import slash.navigation.common.NavigationPosition;
  * @author Christian Pesch
  */
 
-public class PositionWithLayer {
+public class PositionWithLayer implements ObjectWithLayer {
     private final NavigationPosition position;
     private Layer layer;
 

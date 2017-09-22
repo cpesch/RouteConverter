@@ -74,7 +74,6 @@ public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements M
             showMessageDialog(getFrame(), format(getBundle().getString("cannot-route-position-list"), t),
                     getFrame().getTitle(), ERROR_MESSAGE);
         }
-
     }
 
     public void showMapException(String mapName, Exception e) {

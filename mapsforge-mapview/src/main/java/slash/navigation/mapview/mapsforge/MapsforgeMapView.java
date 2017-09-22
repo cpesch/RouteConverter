@@ -53,15 +53,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.models.BooleanModel;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.converter.gui.models.FixMapModeModel;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
-import slash.navigation.converter.gui.models.PositionColumnValues;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -70,64 +62,33 @@ import slash.navigation.maps.MapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
-import slash.navigation.mapview.mapsforge.helpers.ColorHelper;
-import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
-import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
+import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
-import slash.navigation.mapview.mapsforge.updater.EventMapUpdater;
-import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
-import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
-import slash.navigation.mapview.mapsforge.updater.SelectionOperation;
-import slash.navigation.mapview.mapsforge.updater.SelectionUpdater;
-import slash.navigation.mapview.mapsforge.updater.TrackOperation;
-import slash.navigation.mapview.mapsforge.updater.TrackUpdater;
-import slash.navigation.mapview.mapsforge.updater.WaypointOperation;
-import slash.navigation.mapview.mapsforge.updater.WaypointUpdater;
+import slash.navigation.mapview.mapsforge.updater.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
-import static java.awt.event.KeyEvent.VK_DOWN;
-import static java.awt.event.KeyEvent.VK_LEFT;
-import static java.awt.event.KeyEvent.VK_MINUS;
-import static java.awt.event.KeyEvent.VK_PLUS;
-import static java.awt.event.KeyEvent.VK_RIGHT;
-import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
@@ -139,15 +100,10 @@ import static slash.common.io.Transfer.encodeUri;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
-import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
-import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
-import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
+import static slash.navigation.maps.helpers.MapTransfer.*;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -235,6 +191,7 @@ public class MapsforgeMapView implements MapView {
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
+                List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (final PositionWithLayer positionWithLayer : positionWithLayers) {
                     if(!positionWithLayer.hasCoordinates())
                         continue;
@@ -250,22 +207,19 @@ public class MapsforgeMapView implements MapView {
 
                             MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                                     Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
-                            // ensure this marker is on top of the moved waypoint marker
-                            removeLayer(this);
-                            addLayer(this);
                         }
                     };
                     positionWithLayer.setLayer(marker);
-                    addLayer(marker);
+                    withLayers.add(positionWithLayer);
                     center = latLong;
                 }
+                addLayers(withLayers);
                 if (center != null)
                     setCenter(center, false);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                for (PositionWithLayer positionWithLayer : positionWithLayers)
-                    removeLayer(positionWithLayer);
+                removeLayers(positionWithLayers, true);
             }
         });
 
@@ -298,11 +252,14 @@ public class MapsforgeMapView implements MapView {
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                pairs.removeAll(pairWithLayers);
-                for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    removeLayer(pairWithLayer);
+                // speed optimization for large numbers of pairWithLayers
+                if(pairs.size() == pairWithLayers.size())
+                    pairs.clear();
+                else
+                    pairs.removeAll(pairWithLayers);
+                for (PairWithLayer pairWithLayer : pairWithLayers)
                     pairWithLayer.setDistanceAndTime(null);
-                }
+                removeLayers(pairWithLayers, true);
             }
 
             private void fireDistanceAndTime() {
@@ -347,59 +304,66 @@ public class MapsforgeMapView implements MapView {
                 paint.setColor(ColorHelper.asRGBA(trackColorModel));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = getTileSize();
+
+                List<PairWithLayer> withLayers = new ArrayList<>();
                 for (PairWithLayer pair : pairWithLayers) {
                     if(!pair.hasCoordinates())
                         continue;
 
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
-                    addLayer(line);
+                    withLayers.add(pair);
                 }
+                addLayers(withLayers);
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                for (PairWithLayer pairWithLayer : pairWithLayers)
-                    removeLayer(pairWithLayer);
+                removeLayers(pairWithLayers, true);
             }
         });
 
         this.waypointUpdater = new WaypointUpdater(positionsModel, new WaypointOperation() {
+            private Marker createMarker(PositionWithLayer positionWithLayer) {
+                return new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
+            }
+
             public void add(List<PositionWithLayer> positionWithLayers) {
+                List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    internalAdd(positionWithLayer);
+                    if(!positionWithLayer.hasCoordinates())
+                        return;
+
+                    Marker marker = createMarker(positionWithLayer);
+                    positionWithLayer.setLayer(marker);
+                    withLayers.add(positionWithLayer);
                 }
+                addLayers(withLayers);
             }
 
             public void update(List<PositionWithLayer> positionWithLayers) {
+                removeLayers(positionWithLayers, false);
+
                 List<NavigationPosition> updated = new ArrayList<>();
+                List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    internalRemove(positionWithLayer);
-                    internalAdd(positionWithLayer);
+                    if(!positionWithLayer.hasCoordinates())
+                        return;
+
+                    Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
+                    positionWithLayer.setLayer(marker);
+                    withLayers.add(positionWithLayer);
                     updated.add(positionWithLayer.getPosition());
                 }
+                addLayers(withLayers);
                 selectionUpdater.updatedPositions(new ArrayList<>(updated));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
                 List<NavigationPosition> removed = new ArrayList<>();
-                for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    internalRemove(positionWithLayer);
+                for (PositionWithLayer positionWithLayer : positionWithLayers)
                     removed.add(positionWithLayer.getPosition());
-                }
+                removeLayers(positionWithLayers, true);
                 selectionUpdater.removedPositions(removed);
-            }
-
-            private void internalAdd(PositionWithLayer positionWithLayer) {
-                if(!positionWithLayer.hasCoordinates())
-                    return;
-
-                Marker marker = new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
-                positionWithLayer.setLayer(marker);
-                addLayer(marker);
-            }
-
-            private void internalRemove(PositionWithLayer positionWithLayer) {
-                removeLayer(positionWithLayer);
             }
         });
 
@@ -833,10 +797,22 @@ public class MapsforgeMapView implements MapView {
         return polyline;
     }
 
-    public void addLayer(Layer layer) {
+    private void addLayer(Layer layer) {
         mapView.getLayerManager().getLayers().add(layer);
         if(!mapView.getLayerManager().getLayers().contains(layer))
             log.warning("Cannot add layer " + layer);
+    }
+
+    public void addLayers(List<? extends ObjectWithLayer> withLayers) {
+        for (int i = 0, c = withLayers.size(); i < c; i++) {
+            ObjectWithLayer withLayer = withLayers.get(i);
+            Layer layer = withLayer.getLayer();
+            if (layer != null)
+                // redraw only for last added layer
+                mapView.getLayerManager().getLayers().add(layer, i == c - 1);
+            else
+                log.warning("Could not find layer for " + withLayer);
+        }
     }
 
     private void removeLayer(Layer layer) {
@@ -844,22 +820,19 @@ public class MapsforgeMapView implements MapView {
             log.warning("Cannot remove layer " + layer);
     }
 
-    private void removeLayer(PositionWithLayer positionWithLayer) {
-        Layer layer = positionWithLayer.getLayer();
-        if (layer != null)
-            removeLayer(layer);
-        else
-            log.warning("Could not find layer for position " + positionWithLayer);
-        positionWithLayer.setLayer(null);
-    }
+    public void removeLayers(List<? extends ObjectWithLayer> withLayers, boolean clearLayer) {
+        for (int i = 0, c = withLayers.size(); i < c; i++) {
+            ObjectWithLayer withLayer = withLayers.get(i);
+            Layer layer = withLayer.getLayer();
+            if (layer != null)
+                // redraw only for last removed layer
+                mapView.getLayerManager().getLayers().remove(layer, i == c - 1);
+            else
+                log.warning("Could not find layer for " + withLayer);
 
-    public void removeLayer(PairWithLayer pairWithLayer) {
-        Layer layer = pairWithLayer.getLayer();
-        if (layer != null)
-            removeLayer(layer);
-        else
-            log.warning("Could not find layer for pair " + pairWithLayer);
-        pairWithLayer.setLayer(null);
+            if (clearLayer)
+                withLayer.setLayer(null);
+        }
     }
 
     private BoundingBox getMapBoundingBox() {
