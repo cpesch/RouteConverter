@@ -222,8 +222,8 @@ public class BRouter implements RoutingService {
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
             // disabled since BRouter internally throws lots of NullPointerExceptions
-            // if (routingEngine.getErrorMessage() != null)
-            //    throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
+            if (routingEngine.getErrorMessage() != null)
+                throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
 
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
