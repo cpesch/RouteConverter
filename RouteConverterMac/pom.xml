@@ -43,10 +43,14 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>META-INF/*.inf</exclude>
                                         <exclude>META-INF/*.txt</exclude>
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/jb/</exclude>
                                         <exclude>META-INF/maven/</exclude>
+                                        <exclude>META-INF/services/</exclude>
+                                        <exclude>mozilla/*</exclude>
                                         <exclude>*.html</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
@@ -129,7 +133,7 @@
                         <Codebase>www.routeconverter.com</Codebase>
                         <Application-Name>RouteConverter</Application-Name>
                     </manifestAttributes>
-                    <bundler>mac.app</bundler>   dmg
+                    <bundler>mac.app</bundler>   
                     <updateExistingJar>true</updateExistingJar>
                     <bundleArguments>
                         <runtime />
