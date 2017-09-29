@@ -41,6 +41,13 @@
                                     <overWrite>false</overWrite>
                                     <destFileName>swt-windows-64.jar</destFileName>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>gpsbabel.gpsbabel</groupId>
+                                    <artifactId>win32.win32.x86</artifactId>
+                                    <version>1.4.4</version>
+                                    <overWrite>false</overWrite>
+                                    <destFileName>gpsbabel-windows.jar</destFileName>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -202,11 +209,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>swt-mapview</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>gpsbabel.gpsbabel</groupId>
-            <artifactId>win32.win32.x86</artifactId>
-            <version>1.4.4</version>
         </dependency>
     </dependencies>
 </project>

@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.gui.jarinjar;
 
 import java.io.File;
@@ -39,6 +38,8 @@ public class ClassPathExtender {
     private final URLClassLoader classLoader = URLClassLoader.class.cast(ClassPathExtender.class.getClassLoader());
 
     public ClassLoader getClassLoader() {
+        URL.setURLStreamHandlerFactory(null);
+        URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));
         return classLoader;
     }
 
@@ -49,7 +50,6 @@ public class ClassPathExtender {
     }
 
     public void addJarInJar(String fileName) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));
         addURL(new URL(JAR_IN_JAR_PROTOCOL + fileName));
     }
 
