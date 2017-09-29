@@ -145,6 +145,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -159,6 +160,7 @@ import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -628,6 +630,8 @@ public class ConvertPanel implements PanelInTab {
         openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
+    private final ExecutorService openExecutor = newSingleThreadExecutor();
+
     @SuppressWarnings("unchecked")
     public void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
         final RouteConverter r = RouteConverter.getInstance();
@@ -637,7 +641,7 @@ public class ConvertPanel implements PanelInTab {
         preferences.put(READ_PATH_PREFERENCE, path);
 
         startWaitCursor(r.getFrame().getRootPane());
-        new Thread(new Runnable() {
+        openExecutor.execute(new Runnable() {
             public void run() {
                 NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
                 NavigationFormatParserListener listener = new NavigationFormatParserListener() {
@@ -709,13 +713,12 @@ public class ConvertPanel implements PanelInTab {
                     });
                 }
             }
-        }, "UrlOpener").start();
+        });
     }
 
     private void appendPositionList(final int row, final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
-
-        new Thread(new Runnable() {
+        openExecutor.execute(new Runnable() {
             public void run() {
                 try {
                     for (URL url : urls) {
@@ -768,7 +771,7 @@ public class ConvertPanel implements PanelInTab {
                     r.handleOpenError(t, urls);
                 }
             }
-        }, "UrlAppender").start();
+        });
     }
 
     @SuppressWarnings("unchecked")
