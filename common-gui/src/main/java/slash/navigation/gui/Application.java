@@ -133,6 +133,13 @@ public abstract class Application {
             log.info("Cannot extend classpath with SWT from " + swtJar + ": " + e);
         }
 
+        String gpsbabelJar = "gpsbabel-" + getOperationSystem() + ".jar";
+        try {
+            extender.addJarInJar(gpsbabelJar);
+        } catch (Exception e) {
+            log.info("Cannot extend classpath with GPSBabel from " + gpsbabelJar + ": " + e);
+        }
+
         File javaFxJar = new File(System.getProperty("java.home"), "lib/jfxrt.jar");
         if (javaFxJar.exists()) {
             try {
