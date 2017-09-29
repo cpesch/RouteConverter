@@ -103,7 +103,7 @@ public class BRouterIT {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
         assertTrue(result.isValid());
         assertEquals(191, result.getPositions().size());
-        assertEquals(13828.0, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(13702.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());
     }
 
@@ -112,7 +112,7 @@ public class BRouterIT {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
         assertTrue(result.isValid());
         assertEquals(123, result.getPositions().size());
-        assertEquals(13963.0, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(13858.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());
     }
 }

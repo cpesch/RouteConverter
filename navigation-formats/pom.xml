@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
-            <version>1.0-20161101</version>
+            <version>1.0-20170929</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
