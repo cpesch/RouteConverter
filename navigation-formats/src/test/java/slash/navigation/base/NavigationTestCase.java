@@ -23,9 +23,23 @@ package slash.navigation.base;
 import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
 import slash.common.helpers.JAXBHelper;
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
-import slash.navigation.babel.*;
+import slash.navigation.babel.AlanTrackLogFormat;
+import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.babel.CompeGPSDataFormat;
+import slash.navigation.babel.FlightRecorderDataFormat;
+import slash.navigation.babel.GarminFitFormat;
+import slash.navigation.babel.GarminMapSource5Format;
+import slash.navigation.babel.GarminMapSource6Format;
+import slash.navigation.babel.GarminPcx5Format;
+import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.babel.GarminPoiFormat;
+import slash.navigation.babel.GeoCachingFormat;
+import slash.navigation.babel.MagellanMapSendFormat;
+import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.babel.OziExplorerFormat;
+import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
@@ -33,6 +47,7 @@ import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
+import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
@@ -43,13 +58,39 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
-import slash.navigation.kml.*;
+import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Igo8RouteFormat;
+import slash.navigation.kml.KmlFormat;
+import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.*;
-import slash.navigation.nmn.*;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.NavigonCruiserFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.*;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.GroundTrackFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
+import slash.navigation.simple.OpelNaviFormat;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.TcxFormat;
@@ -70,7 +111,10 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Files.collectFiles;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.roundFraction;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -184,6 +228,13 @@ public abstract class NavigationTestCase extends TestCase {
         return name.substring(0, min(15 - 4 /* Suffix length */, name.length()));
     }
 
+    private static String getFlightPlaneRouteName(BaseRoute route) {
+        String name = route.getName();
+        name = name.replaceAll(";", "");
+        name = name.replaceAll(" ", "");
+        return name.toUpperCase();
+    }
+
     @SuppressWarnings("unchecked")
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
         if (sourceRoute.getName() != null && targetRoute.getName() != null &&
@@ -203,6 +254,11 @@ public abstract class NavigationTestCase extends TestCase {
             // TcxFormat makes route names unique by prefixing "Name" with "1: "
             String sourceName = getTrainingCenterRouteName(sourceRoute);
             String targetName = getTrainingCenterRouteName(targetRoute);
+            assertRouteNameEquals(sourceName, targetName);
+        } else if (targetRoute.getFormat() instanceof GarminFlightPlanFormat) {
+            // GarminFlightPlanFormat strips spaces and special characters and makes everything UPPERCASE
+            String sourceName = getFlightPlaneRouteName(sourceRoute);
+            String targetName = getFlightPlaneRouteName(targetRoute);
             assertRouteNameEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
@@ -529,13 +585,13 @@ public abstract class NavigationTestCase extends TestCase {
         if (description.startsWith("STATION")) {
             int index = description.indexOf(';');
             if (index != -1)
-                return Transfer.trim(description.substring(index + 1));
+                return trim(description.substring(index + 1));
         }
         return description;
     }
 
     private static String getGarminPcx5PositionDescription(NavigationPosition position) {
-        return nameDescription(garminUmlauts(trim(position.getDescription(), 39)), 6, 4, true);
+        return nameDescription(garminUmlauts(trim(position.getDescription(), 39)), 6, 4);
     }
 
     private static String getGarminPoiPositionDescription(NavigationPosition position) {
@@ -550,7 +606,7 @@ public abstract class NavigationTestCase extends TestCase {
         String description = position.getDescription();
         if (description == null)
             return null;
-        return trim(nameDescription(garminUmlauts(description).replaceAll(",", ""), 24, MAX_VALUE, true), 50);
+        return trim(nameDescription(garminUmlauts(description).replaceAll(",", ""), 24, MAX_VALUE), 50);
     }
 
     private static String getGoRiderGpsDescription(NavigationPosition position) {
@@ -587,8 +643,18 @@ public abstract class NavigationTestCase extends TestCase {
             return description;
         String name = description.substring(0, index);
         description = description.substring(index + 1);
-        return trimDot1Substring(name) + ";" + Transfer.trim(description);
+        return trimDot1Substring(name) + ";" + trim(description);
 
+    }
+
+    private static String getFlightPlanPositionDescription(NavigationPosition position) {
+        String description = position.getDescription();
+        if (description == null)
+            return null;
+        description = description.replaceAll(";", "");
+        description = description.replaceAll(",", "");
+        description = description.replaceAll(" ", "");
+        return description.toUpperCase();
     }
 
     private static String getNavigatingPoiWarnerDescription(NavigationPosition position) {
@@ -704,6 +770,11 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceName = getTourExchangePositionDescription(sourcePosition);
                 String targetName = getTourExchangePositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
+            } else if (targetFormat instanceof GarminFlightPlanFormat) {
+                // GarminFlightPlanFormat strips spaces and special characters and makes everything UPPERCASE
+                String sourceName = getFlightPlanPositionDescription(sourcePosition);
+                String targetName = getFlightPlanPositionDescription(targetPosition);
+                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), targetPosition.getDescription());
         }
@@ -815,19 +886,17 @@ public abstract class NavigationTestCase extends TestCase {
                 replace("ä", "a").replace("ö", "o").replace("ü", "u").replace("ß", "$").replace("Ö", "O");
     }
 
-    private static String nameDescription(String str, int nameMaximum, int descriptionMaximum, boolean trim) {
+    private static String nameDescription(String str, int nameMaximum, int descriptionMaximum) {
         if (str == null)
             return null;
         int index = str.indexOf(";");
         if (index == -1)
             return str;
         String name = str.substring(0, min(nameMaximum, index));
-        if (trim)
-            name = name.trim();
+        name = name.trim();
         String description = str.substring(index + 1);
         description = description.substring(0, min(description.length(), descriptionMaximum));
-        if (trim)
-            description = description.trim();
+        description = description.trim();
         return name + ";" + description;
     }
 

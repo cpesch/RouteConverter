@@ -19,7 +19,10 @@
 */
 package slash.navigation.geonames;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.io.IOException;
@@ -29,6 +32,16 @@ import static org.junit.Assert.assertNotNull;
 
 public class GeoNamesServiceIT {
     private GeoNamesService service = new GeoNamesService();
+
+    @Before
+    public void setUp() {
+        APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", "routeconverter");
+    }
+
+    @After
+    public void tearDown() {
+        APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", "");
+    }
 
     @Test
     public void testAsterGDEMElevationFor() throws IOException {
