@@ -131,7 +131,7 @@ public class BRouter implements RoutingService {
             }
         });
         if (files != null) {
-            for(File file : files) {
+            for (File file : files) {
                 result.add(new TravelMode(removeExtension(file.getName())));
             }
         }
@@ -221,13 +221,18 @@ public class BRouter implements RoutingService {
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
-            // disabled since BRouter internally throws lots of NullPointerExceptions
-            if (routingEngine.getErrorMessage() != null)
-                throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
 
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
-            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), true);
+
+            if (routingEngine.getErrorMessage() != null)
+                // since BRouter internally throws lots of NullPointerException which don't make sense to push to the user
+                if (routingEngine.getErrorMessage().contains("NullPointerException"))
+                    log.severe(format("Internal NullPointerException while routing between %s and %s", from, to));
+                else
+                    throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
+
+            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), routingEngine.getErrorMessage() == null);
         } finally {
             long end = currentTimeMillis();
             log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
@@ -280,7 +285,7 @@ public class BRouter implements RoutingService {
         }
 
         final Collection<Downloadable> notExistingSegments = new HashSet<>();
-        if(isInitialized()) {
+        if (isInitialized()) {
             for (String key : uris) {
                 Downloadable downloadable = getSegments().getDownloadable(key);
                 if (downloadable != null) {
@@ -302,13 +307,17 @@ public class BRouter implements RoutingService {
             public boolean isRequiresDownload() {
                 return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
             }
+
             public boolean isRequiresProcessing() {
                 return false;
             }
+
             public void download() {
                 downloadAndWait(notExistingProfiles, notExistingSegments);
             }
-            public void process() {}
+
+            public void process() {
+            }
         };
     }
 
@@ -367,13 +376,13 @@ public class BRouter implements RoutingService {
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
         Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
         long notExists = 0L;
-        for(Downloadable downloadable : downloadables) {
+        for (Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
-            if(contentLength == null)
+            if (contentLength == null)
                 continue;
 
             java.io.File file = createSegmentFile(downloadable.getUri());
-            if(!file.exists())
+            if (!file.exists())
                 notExists += contentLength;
         }
         return notExists;
@@ -381,7 +390,7 @@ public class BRouter implements RoutingService {
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
         Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
-        for(Downloadable downloadable : downloadables) {
+        for (Downloadable downloadable : downloadables) {
             downloadSegment(downloadable);
         }
     }
