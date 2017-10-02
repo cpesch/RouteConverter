@@ -37,9 +37,11 @@ import static slash.navigation.gui.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_
 public class ClassPathExtender {
     private final URLClassLoader classLoader = URLClassLoader.class.cast(ClassPathExtender.class.getClassLoader());
 
-    public ClassLoader getClassLoader() {
-        URL.setURLStreamHandlerFactory(null);
+    public ClassPathExtender() {
         URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));
+    }
+
+    public ClassLoader getClassLoader() {
         return classLoader;
     }
 
