@@ -19,17 +19,8 @@
 */
 package slash.navigation.brouter;
 
-import btools.router.OsmNodeNamed;
-import btools.router.OsmPathElement;
-import btools.router.OsmTrack;
-import btools.router.RoutingContext;
-import btools.router.RoutingEngine;
-import slash.navigation.common.Bearing;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
+import btools.router.*;
+import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Action;
@@ -90,11 +81,11 @@ public class BRouter implements RoutingService {
         return getProfiles() != null && getSegments() != null;
     }
 
-    public synchronized DataSource getProfiles() {
+    private synchronized DataSource getProfiles() {
         return profiles;
     }
 
-    public synchronized DataSource getSegments() {
+    private synchronized DataSource getSegments() {
         return segments;
     }
 
@@ -222,16 +213,11 @@ public class BRouter implements RoutingService {
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
 
+            if (routingEngine.getErrorMessage() != null)
+                log.severe(format("Error while routing between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
+
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
-
-            if (routingEngine.getErrorMessage() != null)
-                // since BRouter internally throws lots of NullPointerException which don't make sense to push to the user
-                if (routingEngine.getErrorMessage().contains("NullPointerException"))
-                    log.severe(format("Internal NullPointerException while routing between %s and %s", from, to));
-                else
-                    throw new RoutingException(format("Cannot route between %s and %s", from, to), routingEngine.getErrorMessage());
-
             return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), routingEngine.getErrorMessage() == null);
         } finally {
             long end = currentTimeMillis();
