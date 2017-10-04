@@ -202,8 +202,13 @@ public class GraphHopper implements RoutingService {
             if (file == null)
                 return;
 
-            if (hopper != null)
+            if (hopper != null) {
+                // avoid close() and importOrLoad() if the osmPbfFile stayed the same
+                if (((GraphHopperOSM)hopper).getOSMFile().equals(file.getAbsolutePath()))
+                    return;
+
                 hopper.close();
+            }
 
             hopper = new GraphHopperOSM().
                     setOSMFile(file.getAbsolutePath()).
