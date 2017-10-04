@@ -532,9 +532,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void shutdown() {
-        if (isMapViewAvailable()) {
+        if (isMapViewAvailable())
             getMapView().dispose();
-        }
         getConvertPanel().dispose();
         getHgtFilesService().dispose();
         if (positionAugmenter != null)

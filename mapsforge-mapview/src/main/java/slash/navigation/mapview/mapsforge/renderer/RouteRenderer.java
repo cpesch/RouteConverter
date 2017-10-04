@@ -90,8 +90,16 @@ public class RouteRenderer {
     }
 
     public void dispose() {
+        if(renderThread != null)
+            renderThread.stop();
+        interruptRendering();
+    }
+
+    private void interruptRendering() {
         long start = currentTimeMillis();
+        boolean isInterrupted;
         synchronized (notificationMutex) {
+            isInterrupted = drawingRoute;
             this.drawingRoute = false;
         }
 
@@ -102,12 +110,16 @@ public class RouteRenderer {
                 // intentionally left empty
             }
             long end = currentTimeMillis();
-            log.info("RouteRenderer stopped after " + (end - start) + " ms");
+
+
+            long interval = end - start;
+            if (isInterrupted)
+                log.info("RouteRenderer stopped after " + interval + " ms");
         }
     }
 
     public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
-        dispose();
+        interruptRendering();
 
         renderThread = new Thread(new Runnable() {
             public void run() {
@@ -138,11 +150,17 @@ public class RouteRenderer {
 
         RoutingService service = mapViewCallback.getRoutingService();
         waitForInitialization(service);
+        checkForInterruption();
+
         waitForDownload(service, pairWithLayers);
         checkForInterruption();
 
-        drawRoute(pairWithLayers);
-        invokeAfterRenderingRunnable.run();
+        try {
+            drawRoute(pairWithLayers);
+        }
+        finally {
+            invokeAfterRenderingRunnable.run();
+        }
         checkForInterruption();
     }
 
