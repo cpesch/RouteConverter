@@ -30,6 +30,9 @@ import slash.navigation.routing.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 
 /**
  * Helps to insert positions.
@@ -62,7 +65,17 @@ public class InsertPositionFacade {
             throw new UnsupportedOperationException();
     }
 
-    private void insertWithRoutingService(RoutingService routingService, int[] selectedRows) {
+    private final ExecutorService executor = createSingleThreadExecutor("InsertPositions");
+
+    private void insertWithRoutingService(final RoutingService routingService, final int[] selectedRows) {
+        executor.execute(new Runnable() {
+            public void run() {
+                doInsertWithRoutingService(routingService, selectedRows);
+            }
+        });
+    }
+
+    private void doInsertWithRoutingService(RoutingService routingService, int[] selectedRows) {
         RouteConverter r = RouteConverter.getInstance();
         PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 

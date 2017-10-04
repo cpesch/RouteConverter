@@ -20,11 +20,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -52,13 +48,13 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
+import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -66,9 +62,7 @@ import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.photo.TagState.NotTaggable;
-import static slash.navigation.photo.TagState.Taggable;
-import static slash.navigation.photo.TagState.Tagged;
+import static slash.navigation.photo.TagState.*;
 
 /**
  * Helps to tag photos with GPS data.
@@ -87,7 +81,7 @@ public class GeoTagger {
     private final JTable photosView;
     private final PositionsModel photosModel;
 
-    private final ExecutorService executor = newSingleThreadExecutor();
+    private final ExecutorService executor = createSingleThreadExecutor("GeoTagger");
     private static final Object notificationMutex = new Object();
     private boolean running = true;
 

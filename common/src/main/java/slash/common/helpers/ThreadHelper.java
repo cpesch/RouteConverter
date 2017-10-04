@@ -20,6 +20,11 @@
 
 package slash.common.helpers;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import static java.lang.String.format;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 
@@ -45,5 +50,22 @@ public class ThreadHelper {
             });
         else
             runnable.run();
+    }
+
+    public static ExecutorService createSingleThreadExecutor(String namePrefix) {
+        return Executors.newSingleThreadExecutor(new NamedThreadFactory(namePrefix));
+    }
+
+    private static class NamedThreadFactory implements ThreadFactory {
+        private String namePrefix;
+        private int number = 1;
+
+        private NamedThreadFactory(String namePrefix) {
+            this.namePrefix = namePrefix;
+        }
+
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, format("%s-%d", namePrefix, number++));
+        }
     }
 }
