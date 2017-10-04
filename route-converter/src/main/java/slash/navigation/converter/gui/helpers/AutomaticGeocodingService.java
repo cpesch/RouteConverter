@@ -72,7 +72,7 @@ public class AutomaticGeocodingService implements GeocodingService {
 
                 List<NavigationPosition> positions = service.getPositionsFor(address);
                 if (positions != null) {
-                    log.info("Used " + service.getName() + " to retrieve positions " + positions + "D for " + address);
+                    log.fine("Used " + service.getName() + " to retrieve positions " + positions + " for " + address);
                     return positions;
                 }
 
