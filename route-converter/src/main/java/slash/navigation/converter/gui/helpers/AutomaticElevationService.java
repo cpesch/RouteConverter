@@ -77,7 +77,7 @@ public class AutomaticElevationService implements ElevationService {
 
                 Double elevation = service.getElevationFor(longitude, latitude);
                 if (elevation != null) {
-                    log.info("Used " + service.getName() + " to retrieve elevation " + elevation + " for " + longitude + "/" + latitude);
+                    log.fine("Used " + service.getName() + " to retrieve elevation " + elevation + " for " + longitude + "/" + latitude);
                     return elevation;
                 }
 
