@@ -349,6 +349,7 @@ public class DownloadManager {
             if (!SUCCESSFUL.contains(download.getState()))
                 return;
         }
-        invokeAfterSuccessfulDownloadRunnable.run();
+        if (invokeAfterSuccessfulDownloadRunnable != null)
+            invokeAfterSuccessfulDownloadRunnable.run();
     }
 }
