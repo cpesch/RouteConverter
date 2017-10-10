@@ -40,4 +40,8 @@ public class DistanceAndTime {
     public Long getTime() {
         return time;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[distance=" + getDistance() + ", time=" + getTime() + "]";
+    }
 }
