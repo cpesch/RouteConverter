@@ -67,4 +67,7 @@ public class PositionWithLayer implements ObjectWithLayer {
         result = 31 * result + (layer != null ? layer.hashCode() : 0);
         return result;
     }
-}
+
+    public String toString() {
+        return getClass().getSimpleName() + "@" + hashCode() + "[position=" + getPosition() + ", layer=" + getLayer() + "]";
+    }}

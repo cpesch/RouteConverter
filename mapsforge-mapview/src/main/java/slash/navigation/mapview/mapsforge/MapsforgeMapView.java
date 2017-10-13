@@ -737,6 +737,8 @@ public class MapsforgeMapView implements MapView {
             log.info("RouteReplacer stopped after " + (end - start) + " ms");
         }
 
+        updateDecoupler.shutdownNow();
+
         if (routeRenderer != null)
             routeRenderer.dispose();
 
@@ -800,11 +802,11 @@ public class MapsforgeMapView implements MapView {
         return polyline;
     }
 
-    private void addLayer(final Layer layer) {
+    public void addLayer(final Layer layer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 mapView.getLayerManager().getLayers().add(layer);
-                if(!mapView.getLayerManager().getLayers().contains(layer))
+                if (!mapView.getLayerManager().getLayers().contains(layer))
                     log.warning("Cannot add layer " + layer);
             }
         });
@@ -816,17 +818,20 @@ public class MapsforgeMapView implements MapView {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
-                    if (layer != null)
+                    if (layer != null) {
                         // redraw only for last added layer
-                        mapView.getLayerManager().getLayers().add(layer, i == c - 1);
-                    else
+                        boolean redraw = i == c - 1;
+                        mapView.getLayerManager().getLayers().add(layer, redraw);
+                        if (!mapView.getLayerManager().getLayers().contains(layer))
+                            log.warning("Cannot add layer " + layer);
+                    } else
                         log.warning("Could not find layer for " + withLayer);
                 }
             }
         });
     }
 
-    private void removeLayer(final Layer layer) {
+    public void removeLayer(final Layer layer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 if (!mapView.getLayerManager().getLayers().remove(layer))
@@ -835,16 +840,18 @@ public class MapsforgeMapView implements MapView {
         });
     }
 
-    public void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
+    private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
-                    if (layer != null)
+                    if (layer != null) {
                         // redraw only for last removed layer
-                        mapView.getLayerManager().getLayers().remove(layer, i == c - 1);
-                    else
+                        boolean redraw = i == c - 1;
+                        if(!mapView.getLayerManager().getLayers().remove(layer, redraw))
+                            log.warning("Cannot remove layer " + layer);
+                    } else
                         log.warning("Could not find layer for " + withLayer);
 
                     if (clearLayer)
@@ -1131,6 +1138,8 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
+    private final ExecutorService updateDecoupler = createSingleThreadExecutor("UpdateDecoupler");
+
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
@@ -1158,10 +1167,8 @@ public class MapsforgeMapView implements MapView {
             }
         }
 
-        private final ExecutorService executor = createSingleThreadExecutor("UpdateDecoupler");
-
         private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
-            executor.execute(new Runnable() {
+            updateDecoupler.execute(new Runnable() {
                 public void run() {
                     synchronized (eventMapUpdaterLock) {
                         switch(eventType) {
