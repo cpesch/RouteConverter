@@ -74,7 +74,8 @@ public class PairWithLayer implements ObjectWithLayer {
 
         PairWithLayer that = (PairWithLayer) o;
 
-        return first.equals(that.first) && second.equals(that.second);
+        return first.equals(that.first) && second.equals(that.second) &&
+                (layer != null ? layer.equals(that.layer) : that.layer == null);
     }
 
     public int hashCode() {
@@ -85,6 +86,6 @@ public class PairWithLayer implements ObjectWithLayer {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[first=" + getFirst() + ", second=" + getSecond() + ", layer=" + getLayer() + ", distanceAndTime=" + getDistanceAndTime() + "]";
+        return getClass().getSimpleName() + "@" + hashCode() + "[first=" + getFirst() + ", second=" + getSecond() + ", layer=" + getLayer() + ", distanceAndTime=" + getDistanceAndTime() + "]";
     }
 }
