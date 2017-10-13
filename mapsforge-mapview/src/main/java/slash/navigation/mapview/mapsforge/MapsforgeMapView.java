@@ -96,6 +96,7 @@ import static org.mapsforge.core.util.MercatorProjection.calculateGroundResoluti
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
@@ -799,42 +800,58 @@ public class MapsforgeMapView implements MapView {
         return polyline;
     }
 
-    private void addLayer(Layer layer) {
-        mapView.getLayerManager().getLayers().add(layer);
-        if(!mapView.getLayerManager().getLayers().contains(layer))
-            log.warning("Cannot add layer " + layer);
+    private void addLayer(final Layer layer) {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                mapView.getLayerManager().getLayers().add(layer);
+                if(!mapView.getLayerManager().getLayers().contains(layer))
+                    log.warning("Cannot add layer " + layer);
+            }
+        });
     }
 
-    public void addLayers(List<? extends ObjectWithLayer> withLayers) {
-        for (int i = 0, c = withLayers.size(); i < c; i++) {
-            ObjectWithLayer withLayer = withLayers.get(i);
-            Layer layer = withLayer.getLayer();
-            if (layer != null)
-                // redraw only for last added layer
-                mapView.getLayerManager().getLayers().add(layer, i == c - 1);
-            else
-                log.warning("Could not find layer for " + withLayer);
-        }
+    public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                for (int i = 0, c = withLayers.size(); i < c; i++) {
+                    ObjectWithLayer withLayer = withLayers.get(i);
+                    Layer layer = withLayer.getLayer();
+                    if (layer != null)
+                        // redraw only for last added layer
+                        mapView.getLayerManager().getLayers().add(layer, i == c - 1);
+                    else
+                        log.warning("Could not find layer for " + withLayer);
+                }
+            }
+        });
     }
 
-    private void removeLayer(Layer layer) {
-        if(!mapView.getLayerManager().getLayers().remove(layer))
-            log.warning("Cannot remove layer " + layer);
+    private void removeLayer(final Layer layer) {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                if (!mapView.getLayerManager().getLayers().remove(layer))
+                    log.warning("Cannot remove layer " + layer);
+            }
+        });
     }
 
-    public void removeLayers(List<? extends ObjectWithLayer> withLayers, boolean clearLayer) {
-        for (int i = 0, c = withLayers.size(); i < c; i++) {
-            ObjectWithLayer withLayer = withLayers.get(i);
-            Layer layer = withLayer.getLayer();
-            if (layer != null)
-                // redraw only for last removed layer
-                mapView.getLayerManager().getLayers().remove(layer, i == c - 1);
-            else
-                log.warning("Could not find layer for " + withLayer);
+    public void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                for (int i = 0, c = withLayers.size(); i < c; i++) {
+                    ObjectWithLayer withLayer = withLayers.get(i);
+                    Layer layer = withLayer.getLayer();
+                    if (layer != null)
+                        // redraw only for last removed layer
+                        mapView.getLayerManager().getLayers().remove(layer, i == c - 1);
+                    else
+                        log.warning("Could not find layer for " + withLayer);
 
-            if (clearLayer)
-                withLayer.setLayer(null);
-        }
+                    if (clearLayer)
+                        withLayer.setLayer(null);
+                }
+            }
+        });
     }
 
     private BoundingBox getMapBoundingBox() {
@@ -1114,8 +1131,6 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private final ExecutorService executor = createSingleThreadExecutor("UpdateDecoupler");
-
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
@@ -1142,6 +1157,8 @@ public class MapsforgeMapView implements MapView {
                     throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
         }
+
+        private final ExecutorService executor = createSingleThreadExecutor("UpdateDecoupler");
 
         private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
             executor.execute(new Runnable() {

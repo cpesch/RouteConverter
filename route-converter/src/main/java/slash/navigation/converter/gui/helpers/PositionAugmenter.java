@@ -569,6 +569,12 @@ public class PositionAugmenter {
                     }
 
                     public int getColumnIndex() {
+                        if(complementDescription && !complementElevation && !complementTime)
+                            return DESCRIPTION_COLUMN_INDEX;
+                        if(!complementDescription && complementElevation && !complementTime)
+                            return ELEVATION_COLUMN_INDEX;
+                        if(!complementDescription && !complementElevation && !complementTime)
+                            return DATE_TIME_COLUMN_INDEX;
                         return ALL_COLUMNS; // might be DESCRIPTION_COLUMN_INDEX, ELEVATION_COLUMN_INDEX, DATE_TIME_COLUMN_INDEX
                     }
 
