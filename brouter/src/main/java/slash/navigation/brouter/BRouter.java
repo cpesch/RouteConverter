@@ -183,7 +183,8 @@ public class BRouter implements RoutingService {
                 latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+    // TODO synchronized since BRouter is not thread-safe the way I'm calling it now
+    public synchronized RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         long start = currentTimeMillis();
         try {
             File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
