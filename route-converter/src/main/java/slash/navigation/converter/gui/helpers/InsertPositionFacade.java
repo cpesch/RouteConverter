@@ -28,11 +28,14 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
+import static slash.common.io.Transfer.toArray;
 
 /**
  * Helps to insert positions.
@@ -48,7 +51,7 @@ public class InsertPositionFacade {
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
         if (service instanceof GoogleDirections) {
-            ((GoogleDirections)service).insertAllWaypoints(selectedRows);
+            ((GoogleDirections) service).insertAllWaypoints(selectedRows);
         } else
             insertWithRoutingService(service, selectedRows);
     }
@@ -60,7 +63,7 @@ public class InsertPositionFacade {
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
         if (service instanceof GoogleDirections) {
-            ((GoogleDirections)service).insertOnlyTurnpoints(selectedRows);
+            ((GoogleDirections) service).insertOnlyTurnpoints(selectedRows);
         } else
             throw new UnsupportedOperationException();
     }
@@ -76,8 +79,8 @@ public class InsertPositionFacade {
     }
 
     private void doInsertWithRoutingService(RoutingService routingService, int[] selectedRows) {
-        RouteConverter r = RouteConverter.getInstance();
-        PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+        final RouteConverter r = RouteConverter.getInstance();
+        final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
         List<NavigationPosition> selectedPositions = new ArrayList<>();
         for (int i = 0; i < selectedRows.length; i++)
@@ -91,6 +94,7 @@ public class InsertPositionFacade {
             routingService.downloadRoutingDataFor(lal);
         }
 
+        final List<Integer> augmentRows = new ArrayList<>();
         TravelMode travelMode = r.getRoutingServiceFacade().getTravelMode();
         for (int i = 0; i < selectedPositions.size(); i++) {
             // skip the very last position without successor
@@ -99,18 +103,28 @@ public class InsertPositionFacade {
 
             RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode);
             if (result.isValid()) {
-                List<BaseNavigationPosition> positions = new ArrayList<>();
+                final List<BaseNavigationPosition> positions = new ArrayList<>();
                 for (NavigationPosition position : result.getPositions()) {
-                    positions.add(r.getConvertPanel().getPositionsModel().getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
+                    positions.add(positionsModel.getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
                 }
-                int insertRow = r.getConvertPanel().getPositionsModel().getIndex(selectedPositions.get(i)) + 1;
-                r.getConvertPanel().getPositionsModel().add(insertRow, positions);
+                final int insertRow = positionsModel.getIndex(selectedPositions.get(i)) + 1;
 
-                for (int j = 0; j < positions.size(); j++) {
-                    int[] rows = new int[]{insertRow + j};
-                    r.getPositionAugmenter().addData(rows, false, true, true, false, false);
-                }
+                invokeLater(new Runnable() {
+                    public void run() {
+                        positionsModel.add(insertRow, positions);
+                    }
+                });
+
+                // collect rows to augment them in a batch
+                for (int j = 0; j < positions.size(); j++)
+                    augmentRows.add(insertRow + j);
             }
         }
+
+        invokeLater(new Runnable() {
+            public void run() {
+                r.getPositionAugmenter().addData(toArray(augmentRows), false, true, true, false, false);
+            }
+        });
     }
 }
