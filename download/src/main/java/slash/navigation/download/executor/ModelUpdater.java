@@ -24,6 +24,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.actions.CopierListener;
 
 import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Resuming;
 
 /**
  * Propagates {@link CopierListener} of a {@link Download} the {@link DownloadManager}.
@@ -46,7 +47,7 @@ public class ModelUpdater implements CopierListener {
     public void processedBytes(long byteCount) {
         download.setProcessedBytes(byteCount);
         downloadManager.updateDownload(download);
-        if (download.getState().equals(Downloading))
+        if (download.getState().equals(Downloading) || download.getState().equals(Resuming))
             downloadManager.fireDownloadProgressed(download);
     }
 }
