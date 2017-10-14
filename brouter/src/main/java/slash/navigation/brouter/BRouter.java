@@ -67,8 +67,6 @@ public class BRouter implements RoutingService {
     private final DownloadManager downloadManager;
     private DataSource profiles, segments;
 
-    private final RoutingContext routingContext = new RoutingContext();
-
     public BRouter(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
@@ -183,8 +181,7 @@ public class BRouter implements RoutingService {
                 latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
     }
 
-    // TODO synchronized since BRouter is not thread-safe the way I'm calling it now
-    public synchronized RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         long start = currentTimeMillis();
         try {
             File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
@@ -203,12 +200,14 @@ public class BRouter implements RoutingService {
                 profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
                 log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
             }
-            routingContext.localFunction = profile.getPath();
 
             double bearing = Bearing.calculateBearing(from.getLongitude(), from.getLatitude(),
                     to.getLongitude(), to.getLatitude()).getDistance();
             long routingTimeout = (long) (1000L + bearing / 20.0);
             log.info(format("Distance %f results to default routing timeout %d milliseconds", bearing, routingTimeout));
+
+            RoutingContext routingContext = new RoutingContext();
+            routingContext.localFunction = profile.getPath();
 
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
