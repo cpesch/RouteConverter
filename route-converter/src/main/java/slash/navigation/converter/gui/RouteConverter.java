@@ -145,10 +145,7 @@ import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
 import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
 import static java.util.Locale.US;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -161,16 +158,8 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
-import static slash.common.helpers.LocaleHelper.CROATIA;
-import static slash.common.helpers.LocaleHelper.CZECH;
 import static slash.common.helpers.LocaleHelper.DENMARK;
-import static slash.common.helpers.LocaleHelper.NEDERLANDS;
-import static slash.common.helpers.LocaleHelper.POLAND;
-import static slash.common.helpers.LocaleHelper.PORTUGAL;
-import static slash.common.helpers.LocaleHelper.RUSSIA;
 import static slash.common.helpers.LocaleHelper.SERBIA;
-import static slash.common.helpers.LocaleHelper.SLOVAKIA;
-import static slash.common.helpers.LocaleHelper.SPAIN;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.findExistingPath;
 import static slash.common.io.Files.printArrayToDialogString;
@@ -355,8 +344,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY,
-                NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, US);
+        List<Locale> localesOfActiveTranslators = asList(DENMARK, GERMANY, SERBIA, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());

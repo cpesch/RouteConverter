@@ -40,5 +40,6 @@ public class LocaleHelper {
     public static final Locale SERBIA = new Locale("sr", "SR");
     public static final Locale SLOVAKIA = new Locale("sk", "SK");
     public static final Locale SPAIN = new Locale("es", "ES");
+    public static final Locale UKRAINE = new Locale("uk", "UA");
     public static final Locale UZBEKISTAN = new Locale("uz", "UZ");
 }

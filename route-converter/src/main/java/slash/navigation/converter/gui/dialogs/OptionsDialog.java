@@ -109,6 +109,7 @@ import static slash.common.helpers.LocaleHelper.RUSSIA;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.helpers.LocaleHelper.SLOVAKIA;
 import static slash.common.helpers.LocaleHelper.SPAIN;
+import static slash.common.helpers.LocaleHelper.UKRAINE;
 import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
@@ -199,7 +200,7 @@ public class OptionsDialog extends SimpleDialog {
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
-                ITALY, NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, ROOT
+                ITALY, NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, UKRAINE, ROOT
         });
         localeModel.setSelectedItem(Application.getInstance().getLocale());
         comboBoxLocale.setModel(localeModel);
