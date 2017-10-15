@@ -306,7 +306,6 @@ public class NavigationConversion {
         return BigDecimal.valueOf(aDouble);
     }
 
-
     private static String formatDoubleAsString(Double aDouble, int maximumFractionCount) {
         if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
@@ -361,5 +360,15 @@ public class NavigationConversion {
     public static BigDecimal formatSpeed(Double speed) {
         int maximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 2);
         return formatBigDecimal(speed, maximumFractionDigits);
+    }
+
+    public static double formatSpeedAsDouble(Double speed) {
+        int maximumFractionDigits = preferences.getInt("speedAsDoubleMaximumFractionDigits", 2);
+        return formatDouble(speed, maximumFractionDigits);
+    }
+
+    public static double formatTemperatureAsDouble(Double temperature) {
+        int maximumFractionDigits = preferences.getInt("temperatureAsDoubleMaximumFractionDigits", 1);
+        return formatDouble(temperature, maximumFractionDigits);
     }
 }
