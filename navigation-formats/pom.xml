@@ -70,6 +70,7 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <version>${eclipselink.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.persistence</groupId>
@@ -81,6 +82,7 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
             <version>${eclipselink.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>javax.validation</groupId>
