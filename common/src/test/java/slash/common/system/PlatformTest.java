@@ -37,6 +37,8 @@ public class PlatformTest {
         assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6"));
         assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6.0"));
         assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_15", "1.6.0_14"));
+        assertTrue(isCurrentAtLeastMinimumVersion("9.0", "1.7"));
+        assertTrue(isCurrentAtLeastMinimumVersion("9.0.1", "1.7"));
 
         assertFalse(isCurrentAtLeastMinimumVersion("1.6", "1.6.0"));
         assertFalse(isCurrentAtLeastMinimumVersion("1.6", "1.6.0_14"));
