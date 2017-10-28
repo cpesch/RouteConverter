@@ -28,60 +28,12 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.columbus.ColumbusV1000Device;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.NumberPattern;
-import slash.navigation.common.NumberingStrategy;
-import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.actions.CheckForUpdateAction;
-import slash.navigation.converter.gui.actions.CompleteFlightPlanAction;
-import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
-import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
-import slash.navigation.converter.gui.actions.DeletePositionsAction;
-import slash.navigation.converter.gui.actions.FindPlaceAction;
-import slash.navigation.converter.gui.actions.InsertPositionsAction;
-import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
-import slash.navigation.converter.gui.actions.RevertPositionListAction;
-import slash.navigation.converter.gui.actions.SendErrorReportAction;
-import slash.navigation.converter.gui.actions.ShowAboutRouteConverterAction;
-import slash.navigation.converter.gui.actions.ShowDownloadsAction;
-import slash.navigation.converter.gui.actions.ShowOptionsAction;
+import slash.navigation.common.*;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.ApplicationMenu;
-import slash.navigation.converter.gui.helpers.AudioPlayer;
-import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
-import slash.navigation.converter.gui.helpers.ChecksumSender;
-import slash.navigation.converter.gui.helpers.DownloadNotifier;
-import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
-import slash.navigation.converter.gui.helpers.FrameMenu;
-import slash.navigation.converter.gui.helpers.GeoTagger;
-import slash.navigation.converter.gui.helpers.GeocodingServiceFacade;
-import slash.navigation.converter.gui.helpers.GoogleDirections;
-import slash.navigation.converter.gui.helpers.InsertPositionFacade;
-import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
-import slash.navigation.converter.gui.helpers.MapViewImplementation;
-import slash.navigation.converter.gui.helpers.PositionAugmenter;
-import slash.navigation.converter.gui.helpers.ReopenMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
-import slash.navigation.converter.gui.helpers.TagStrategy;
-import slash.navigation.converter.gui.helpers.UndoMenuSynchronizer;
-import slash.navigation.converter.gui.helpers.UpdateChecker;
-import slash.navigation.converter.gui.models.BooleanModel;
-import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.converter.gui.models.FixMapModeModel;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
-import slash.navigation.converter.gui.models.ProfileModeModel;
-import slash.navigation.converter.gui.models.TimeZoneModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
-import slash.navigation.converter.gui.models.UrlDocument;
-import slash.navigation.converter.gui.panels.BrowsePanel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.converter.gui.panels.PanelInTab;
-import slash.navigation.converter.gui.panels.PhotoPanel;
-import slash.navigation.converter.gui.panels.PointOfInterestPanel;
+import slash.navigation.converter.gui.helpers.*;
+import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.panels.*;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.converter.gui.profileview.XAxisModeMenu;
 import slash.navigation.converter.gui.profileview.YAxisModeMenu;
@@ -95,11 +47,7 @@ import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.navigation.gui.actions.ActionManager;
-import slash.navigation.gui.actions.ExitAction;
-import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.actions.HelpTopicsAction;
-import slash.navigation.gui.actions.SingletonDialogAction;
+import slash.navigation.gui.actions.*;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.mapview.AbstractMapViewListener;
@@ -124,22 +72,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
@@ -149,10 +87,7 @@ import static java.util.Locale.GERMANY;
 import static java.util.Locale.US;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -161,33 +96,21 @@ import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.LocaleHelper.DENMARK;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.findExistingPath;
-import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.shortenPath;
-import static slash.common.io.Files.toUrls;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
-import static slash.common.system.Platform.isJavaFX7;
-import static slash.common.system.Platform.isJavaFX8;
-import static slash.common.system.Platform.isMac;
+import static slash.common.io.Files.*;
+import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.EclipseSWT;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX7;
-import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
+import static slash.navigation.converter.gui.helpers.MapViewImplementation.*;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;
-import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
-import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -302,9 +225,23 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void startup() {
         initializeLogging();
+        checkForJava7to8();
         show();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
+    }
+
+    private void checkForJava7to8() {
+        String currentVersion = System.getProperty("java.version");
+        String minimumVersion = "1.7";
+        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
+            showMessageDialog(null, "Java " + currentVersion + " is not supported", "RouteConverter", ERROR_MESSAGE);
+            System.exit(6);
+        }
+        if (isJava9()) {
+            showMessageDialog(null, "Java 9 is not supported yet", "RouteConverter", ERROR_MESSAGE);
+            System.exit(9);
+        }
     }
 
     protected void parseInitialArgs(String[] args) {
