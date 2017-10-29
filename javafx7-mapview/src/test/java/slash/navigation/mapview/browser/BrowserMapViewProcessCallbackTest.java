@@ -29,7 +29,7 @@ public class BrowserMapViewProcessCallbackTest {
     private JavaFX7WebViewMapView view = new JavaFX7WebViewMapView();
     private final Object notificationMutex = new Object();
 
-    private void processCallback(final String callback, int port) throws InterruptedException {
+    private void processCallback() throws InterruptedException {
         final int[] portCallback = new int[1];
         portCallback[0] = -1;
 
@@ -43,7 +43,7 @@ public class BrowserMapViewProcessCallbackTest {
         });
         new Thread(new Runnable() {
             public void run() {
-                view.processCallback(callback);
+                view.processCallback("callback-port/49632");
             }
         }).start();
 
@@ -51,12 +51,11 @@ public class BrowserMapViewProcessCallbackTest {
             notificationMutex.wait(1000);
         }
 
-        assertEquals(port, portCallback[0]);
+        assertEquals(49632, portCallback[0]);
     }
 
     @Test
     public void testCallback() throws InterruptedException {
-        processCallback("callback-port/32089", 32089);
-        processCallback("callback-port/49632", 49632);
+        processCallback();
     }
 }
