@@ -35,7 +35,7 @@ public class PhotonServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
+                new SimpleNavigationPosition(10.1994416, 50.0002652, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
                 new SimpleNavigationPosition(10.200847241161895, 50.0011614, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
                 new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)")
         );
@@ -52,7 +52,7 @@ public class PhotonServiceIT {
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertEquals("South Pole Station Airport", service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
-        assertEquals("29147-670", service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
+        assertEquals("South Pole Station Airport", service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }
