@@ -5,6 +5,7 @@
 RouteConverter*/buildNumber.properties
 # Maven:
 target/
+dependency-reduced-pom.xml
 # Eclipse:
 .classpath
 .project
