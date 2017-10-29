@@ -395,7 +395,6 @@
         <module>rest</module>
         <module>route</module>
         <module>routing-service</module>
-        <module>swt-mapview</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>
         <module>route-converter-build</module>
