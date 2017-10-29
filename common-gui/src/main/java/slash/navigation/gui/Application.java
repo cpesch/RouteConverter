@@ -29,7 +29,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -41,7 +45,6 @@ import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.system.Platform.getBits;
 import static slash.common.system.Platform.getOperationSystem;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
@@ -126,13 +129,6 @@ public abstract class Application {
     private static ClassLoader extendClassPath() {
         ClassPathExtender extender = new ClassPathExtender();
 
-        String swtJar = "swt-" + getOperationSystem() + "-" + getBits() + ".jar";
-        try {
-            extender.addJarInJar(swtJar);
-        } catch (Exception e) {
-            log.info("Cannot extend classpath with SWT from " + swtJar + ": " + e);
-        }
-
         String gpsbabelJar = "gpsbabel-" + getOperationSystem() + ".jar";
         try {
             extender.addJarInJar(gpsbabelJar);
@@ -150,24 +146,6 @@ public abstract class Application {
         }
 
         return extender.getClassLoader();
-    }
-
-    private static void invokeNativeInterfaceMethod(String name) {
-        try {
-            Class<?> clazz = Class.forName("chrriis.dj.nativeswing.swtimpl.NativeInterface");
-            Method method = clazz.getMethod(name);
-            method.invoke(null);
-        } catch (Exception e) {
-            log.info("Cannot invoke NativeInterface#" + name + "(): " + e);
-        }
-    }
-
-    private static void openNativeInterface() {
-        invokeNativeInterfaceMethod("open");
-    }
-
-    private static void runNativeInterfaceEventPump() {
-        invokeNativeInterfaceMethod("runEventPump");
     }
 
     private SingleInstance singleInstance;
@@ -197,7 +175,6 @@ public abstract class Application {
 
                     setLookAndFeel();
                     setUseSystemProxies();
-                    openNativeInterface();
                     initializeLocale(userNodeForPackage(applicationClass));
                     ResourceBundle bundle = initializeBundles(bundleNames);
 
@@ -215,7 +192,6 @@ public abstract class Application {
             }
         };
         invokeLater(doCreateAndShowGUI);
-        runNativeInterfaceEventPump();
     }
 
     private static <T extends Application> T create(Class<T> applicationClass) throws Exception {

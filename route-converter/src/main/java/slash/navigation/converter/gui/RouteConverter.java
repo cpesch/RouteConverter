@@ -891,8 +891,6 @@ public class RouteConverter extends SingleFrameApplication {
         } else if (isJavaFX7()) {
             result.add(JavaFX7);
         }
-        if (!isMac())
-            result.add(EclipseSWT);
         return result;
     }
 
