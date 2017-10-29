@@ -20,6 +20,7 @@
 
 package slash.navigation.mapview.browser;
 
+import org.junit.Assert;
 import org.junit.Test;
 import slash.navigation.mapview.AbstractMapViewListener;
 
@@ -28,11 +29,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BrowserMapViewProcessStreamTest {
-    private EclipseSWTMapView view = new EclipseSWTMapView();
+    private JavaFX7WebViewMapView view = new JavaFX7WebViewMapView();
     private final Object notificationMutex = new Object();
 
     private void processStream(final String lines) throws InterruptedException {
@@ -65,7 +65,7 @@ public class BrowserMapViewProcessStreamTest {
             notificationMutex.wait(1000);
         }
 
-        assertEquals(view.getCallbackPort(), portCallback[0]);
+        Assert.assertEquals(view.getCallbackPort(), portCallback[0]);
     }
 
     @Test
