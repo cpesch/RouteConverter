@@ -22,7 +22,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>RouteConverterLinuxOffline</finalName>
+                            <outputFile>target/RouteConverterLinuxOffline.jar</outputFile>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>

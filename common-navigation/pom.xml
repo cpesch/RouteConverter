@@ -20,8 +20,8 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
-            <classifier>tests</classifier>
         </dependency>
     </dependencies>
 </project>

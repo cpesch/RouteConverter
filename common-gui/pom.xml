@@ -18,15 +18,15 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jnlp</artifactId>
+            <artifactId>common</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>jnlp</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-            <classifier>tests</classifier>
         </dependency>
         <dependency>
             <groupId>com.bulenkov</groupId>
