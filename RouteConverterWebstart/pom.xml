@@ -29,7 +29,7 @@
                                             <Specification-Title>${project.name}</Specification-Title>
                                             <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                             <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                            <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                            <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                             <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                             <Permissions>all-permissions</Permissions>
                                             <Codebase>www.routeconverter.com</Codebase>
@@ -60,7 +60,7 @@
                         <execution>
                             <phase>package</phase>
                             <goals>
-                                <goal>jnlp</goal>
+                                <goal>jnlp-inline</goal>
                             </goals>
                         </execution>
                     </executions>
