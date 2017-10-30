@@ -55,7 +55,7 @@
                                         <Specification-Title>${project.name}</Specification-Title>
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
@@ -156,12 +156,12 @@
                             </jre>
                             <versionInfo>
                                 <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
-                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
+                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
                                 <fileDescription>RouteConverter displays, modifies and converts GPS data between over 75 formats</fileDescription>
                                 <copyright>Christian Pesch</copyright>
                                 <productName>RouteConverter</productName>
                                 <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
-                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
+                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
                                 <internalName>RouteConverter for Windows Executable</internalName>
                                 <originalFilename>RouteConverterWindows.exe</originalFilename>
                             </versionInfo>

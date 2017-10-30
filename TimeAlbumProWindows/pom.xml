@@ -29,7 +29,7 @@
                                         <Specification-Title>${project.name}</Specification-Title>
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.TimeAlbumPro</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/TimeAlbumProSplashScreen.png</SplashScreen-Image>
@@ -133,12 +133,12 @@
                            </jre>
                            <versionInfo>
                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
-                               <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
+                               <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
                                <fileDescription>TimeAlbum Pro displays, modifies and converts Columbus GPS data</fileDescription>
                                <copyright>Christian Pesch</copyright>
                                <productName>TimeAlbumPro</productName>
                                <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
-                               <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
+                               <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
                                <internalName>TimeAlbum Pro for Windows Executable</internalName>
                                <originalFilename>TimeAlbumProWindows.exe</originalFilename>
                            </versionInfo>
