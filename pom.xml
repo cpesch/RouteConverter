@@ -372,7 +372,6 @@
         <module>common-navigation</module>
         <module>datasource</module>
         <module>download</module>
-        <module>download-tools</module>
         <module>elevation-service</module>
         <module>feedback</module>
         <module>geocoding-service</module>
@@ -395,23 +394,24 @@
         <module>rest</module>
         <module>route</module>
         <module>routing-service</module>
-        <module>route-converter</module>
-        <module>route-converter-cmdline</module>
         <module>route-converter-build</module>
         <module>route-converter-license</module>
-        <module>route-converter-offline</module>
-        <module>route-converter-tools</module>
+        <module>route-converter-cmdline</module>
         <module>RouteConverterCmdLine</module>
+        <module>route-converter</module>
         <module>RouteConverterLinux</module>
-        <module>RouteConverterLinuxOffline</module>
         <module>RouteConverterMac</module>
-        <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindows</module>
+        <module>route-converter-offline</module>
+        <module>RouteConverterLinuxOffline</module>
+        <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindowsOffline</module>
         <module>RouteConverterWebstart</module>
         <module>time-album-pro</module>
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
+        <module>download-tools</module>
+        <module>route-converter-tools</module>
     </modules>
 </project>

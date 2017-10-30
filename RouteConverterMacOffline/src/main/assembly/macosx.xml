@@ -7,18 +7,33 @@
     </formats>
     <files>
         <file>
-            <source>src/main/app-resources/JavaAppLauncher</source>
+            <source>src/main/app-resources/Java/RouteConverterOffline.cfg</source>
+            <outputDirectory>/Contents/Java/</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
+        </file>
+        <file>
+            <source>src/main/app-resources/Java/RouteConverterOfflineStart.jar</source>
+            <outputDirectory>/Contents/Java/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/MacOS/RouteConverterOffline</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/app-resources/RouteConverter.icns</source>
+            <source>src/main/app-resources/MacOS/libpackager.dylib</source>
+            <outputDirectory>/Contents/MacOS/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/Resources/RouteConverter.icns</source>
             <outputDirectory>/Contents/Resources/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>
             <outputDirectory>/Contents/</outputDirectory>
             <filtered>true</filtered>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>target/RouteConverterMacOffline.jar</source>
