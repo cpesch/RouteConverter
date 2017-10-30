@@ -39,7 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import static slash.common.io.InputOutput.closeQuietly;
 
 /**
  * A factory to create a {@link HttpClientConnectionManager} that supports the letsencrypt root certificate.

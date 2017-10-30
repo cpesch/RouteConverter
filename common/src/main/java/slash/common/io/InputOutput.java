@@ -22,7 +22,6 @@ package slash.common.io;
 
 import java.io.*;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copyLarge;
 
 /**
@@ -34,15 +33,23 @@ import static org.apache.commons.io.IOUtils.copyLarge;
 public class InputOutput {
     public static final int DEFAULT_BUFFER_SIZE = 4 * 1024;
 
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) {
+            // intentionally ignored
+        }
+    }
+
+
     public static void copyAndClose(InputStream input, OutputStream output) throws IOException {
         try {
             copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
         } finally {
-            try {
-                closeQuietly(input);
-            } finally {
-                closeQuietly(output);
-            }
+            closeQuietly(input);
+            closeQuietly(output);
         }
     }
 
@@ -50,11 +57,8 @@ public class InputOutput {
         try {
             copyLarge(reader, writer, new char[DEFAULT_BUFFER_SIZE]);
         } finally {
-            try {
-                closeQuietly(reader);
-            } finally {
-                closeQuietly(writer);
-            }
+            closeQuietly(reader);
+            closeQuietly(writer);
         }
     }
 

@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Files.setLastModified;
 import static slash.common.io.Files.writePartialFile;
+import static slash.common.io.InputOutput.closeQuietly;
 import static slash.common.io.InputOutput.copyAndClose;
 import static slash.common.type.CompactCalendar.fromMillis;
 

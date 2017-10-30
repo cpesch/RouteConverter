@@ -21,9 +21,9 @@ package slash.navigation.download.actions;
 
 import java.io.*;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
+import static slash.common.io.InputOutput.closeQuietly;
 
 /**
  * Copies an {@link InputStream} to an {@link OutputStream} and notifies about it.

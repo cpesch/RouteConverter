@@ -40,6 +40,7 @@ import java.util.List;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.generateChecksum;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.asMetaDataComparablePath;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.unmarshal;
 
 /**
  * Encapsulates access to a DataSources XML.
@@ -52,7 +53,7 @@ public class DataSourceService {
     private final List<DataSource> dataSources = new ArrayList<>(1);
 
     public synchronized void load(InputStream inputStream) throws JAXBException {
-        CatalogType catalogType = DataSourcesUtil.unmarshal(inputStream);
+        CatalogType catalogType = unmarshal(inputStream);
         for (DatasourceType datasourceType : catalogType.getDatasource())
             dataSources.add(new DataSourceImpl(datasourceType));
         for (EditionType editionType : catalogType.getEdition())

@@ -32,10 +32,10 @@ import java.util.zip.ZipInputStream;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.lastPathFragment;
 import static slash.common.io.Files.setLastModified;
+import static slash.common.io.InputOutput.closeQuietly;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
