@@ -225,22 +225,18 @@ public class RouteConverter extends SingleFrameApplication {
 
     protected void startup() {
         initializeLogging();
-        checkForJava7to8();
+        checkForJava7OrLater();
         show();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
     }
 
-    private void checkForJava7to8() {
+    private void checkForJava7OrLater() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.7";
         if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
             showMessageDialog(null, "Java " + currentVersion + " is not supported", "RouteConverter", ERROR_MESSAGE);
             System.exit(6);
-        }
-        if (isJava9()) {
-            showMessageDialog(null, "Java 9 is not supported yet", "RouteConverter", ERROR_MESSAGE);
-            System.exit(9);
         }
     }
 
