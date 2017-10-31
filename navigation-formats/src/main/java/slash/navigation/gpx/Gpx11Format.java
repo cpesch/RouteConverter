@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.lang.Double.isNaN;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.formatXMLTime;
@@ -254,7 +253,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equals(element.getLocalName())) {
-                    if (foundSpeed || speed == null || isNaN(speed))
+                    if (foundSpeed || isEmpty(speed))
                         iterator.remove();
                     else {
                         element.setTextContent(formatSpeedAsString(asMs(speed)));
@@ -268,7 +267,7 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    if (foundSpeed || speed == null || isNaN(speed)) {
+                    if (foundSpeed || isEmpty(speed)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
                     }
@@ -280,7 +279,7 @@ public class Gpx11Format extends GpxFormat {
             }
         }
 
-        if (!foundSpeed && speed != null && !isNaN(speed)) {
+        if (!foundSpeed && !isEmpty(speed)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setSpeed(formatSpeedAsDouble(asMs(speed)));
@@ -327,7 +326,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("course".equals(element.getLocalName())) {
-                    if (foundHeading || heading == null || isNaN(heading))
+                    if (foundHeading || isEmpty(heading))
                         iterator.remove();
                     else {
                         element.setTextContent(formatHeadingAsString(heading));
@@ -341,7 +340,7 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    if (foundHeading || heading == null || isNaN(heading)) {
+                    if (foundHeading || isEmpty(heading)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
                     }
@@ -353,7 +352,7 @@ public class Gpx11Format extends GpxFormat {
             }
         }
 
-        if (!foundHeading && heading != null && !isNaN(heading)) {
+        if (!foundHeading && !isEmpty(heading)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setCourse(formatHeading(heading));
@@ -404,7 +403,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("atemp".equals(element.getLocalName())) {
-                    if (foundTemperature || temperature == null || isNaN(temperature))
+                    if (foundTemperature || isEmpty(temperature))
                         iterator.remove();
                     else {
                         element.setTextContent(formatTemperatureAsString(temperature));
@@ -418,7 +417,7 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    if (foundTemperature || temperature == null || isNaN(temperature)) {
+                    if (foundTemperature || isEmpty(temperature)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
                     }
@@ -430,7 +429,7 @@ public class Gpx11Format extends GpxFormat {
             }
         }
 
-        if (!foundTemperature && temperature != null && !isNaN(temperature)) {
+        if (!foundTemperature && !isEmpty(temperature)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));

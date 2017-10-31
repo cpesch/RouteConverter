@@ -25,8 +25,18 @@ import slash.common.io.Transfer;
 import java.math.BigDecimal;
 import java.util.prefs.Preferences;
 
-import static java.lang.Double.NaN;
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan;
+import static java.lang.Math.ceil;
+import static java.lang.Math.cos;
+import static java.lang.Math.exp;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.tan;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.common.UnitConversion.feetToMeters;
@@ -290,9 +300,9 @@ public class NavigationConversion {
         return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
     }
 
-    public static double formatDouble(Double aDouble, int maximumFractionCount) {
+    public static Double formatDouble(Double aDouble, int maximumFractionCount) {
         if (aDouble == null)
-            return NaN;
+            return null;
         if (isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return aDouble;
@@ -358,17 +368,17 @@ public class NavigationConversion {
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        int maximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 2);
+        int maximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 1);
         return formatBigDecimal(speed, maximumFractionDigits);
     }
 
-    public static double formatSpeedAsDouble(Double speed) {
-        int maximumFractionDigits = preferences.getInt("speedAsDoubleMaximumFractionDigits", 2);
+    public static Double formatSpeedAsDouble(Double speed) {
+        int maximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 1);
         return formatDouble(speed, maximumFractionDigits);
     }
 
-    public static double formatTemperatureAsDouble(Double temperature) {
-        int maximumFractionDigits = preferences.getInt("temperatureAsDoubleMaximumFractionDigits", 1);
+    public static Double formatTemperatureAsDouble(Double temperature) {
+        int maximumFractionDigits = preferences.getInt("temperatureMaximumFractionDigits", 1);
         return formatDouble(temperature, maximumFractionDigits);
     }
 }
