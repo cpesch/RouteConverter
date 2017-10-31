@@ -166,7 +166,7 @@ public class Gpx10Format extends GpxFormat {
         return result;
     }
 
-    private String formatSpeedDesc(String description, Double speed) {
+    private String formatSpeedDescription(String description, Double speed) {
         if (isEmpty(speed) || parseSpeed(description) != null)
             return description;
         return (description != null ? description + " " : "") +
@@ -200,7 +200,7 @@ public class Gpx10Format extends GpxFormat {
             wpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatSpeed(kmhToMs(position.getSpeed())) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
-                wpt.setCmt(formatSpeedDesc(wpt.getCmt(), position.getSpeed()));
+                wpt.setCmt(formatSpeedDescription(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 wpt.setCmt(addHeading(wpt.getCmt(), position.getHeading()));
             wpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription()) : trim(position.getDescription()) : null);
@@ -246,7 +246,7 @@ public class Gpx10Format extends GpxFormat {
             rtept.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatSpeed(kmhToMs(position.getSpeed())) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
-                rtept.setCmt(formatSpeedDesc(rtept.getCmt(), position.getSpeed()));
+                rtept.setCmt(formatSpeedDescription(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 rtept.setCmt(addHeading(rtept.getCmt(), position.getHeading()));
             rtept.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription()) : trim(position.getDescription()) : null);
