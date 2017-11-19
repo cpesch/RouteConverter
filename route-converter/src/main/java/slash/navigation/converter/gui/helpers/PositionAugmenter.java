@@ -439,9 +439,13 @@ public class PositionAugmenter {
             return null;
 
         long timeDelta = abs(predecessor.calculateTime(successor));
+        if (timeDelta == 0)
+            return null;
 
         double distanceToPredecessor = positionsModel.getRoute().getDistance(predecessorIndex, positionIndex);
         double distanceToSuccessor = positionsModel.getRoute().getDistance(positionIndex, successorIndex);
+        if (distanceToPredecessor == 0.0)
+            return null;
         double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
 
         long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
