@@ -536,7 +536,7 @@ ${tileservers2}
 
            var stravaheatmapCyclingType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
-                   return "http://globalheat.strava.com/tiles/cycling/color1/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                   return "https://heatmap-external-a.strava.com/tiles/bike/bluered/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
@@ -544,7 +544,7 @@ ${tileservers2}
            });
            var stravaheatmapRunningType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
-                   return "http://globalheat.strava.com/tiles/running/color1/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                   return "https://heatmap-external-a.strava.com/tiles/run/bluered/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
