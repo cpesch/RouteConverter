@@ -47,7 +47,7 @@ public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
         File file = extractFile(position);
         if (file != null)
             return (file.exists() ? "" : "MISSING: ") + position.getDescription();
-        return position.getDescription();
+        return position != null ? position.getDescription() : "";
     }
 
     private String extractToolTipText(NavigationPosition position) {
