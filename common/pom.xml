@@ -34,7 +34,7 @@
     </build>
 
     <properties>
-        <eclipselink.version>2.7.0</eclipselink.version>
+        <eclipselink.version>2.6.4</eclipselink.version>
     </properties>
 
     <dependencies>
@@ -53,7 +53,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <version>${eclipselink.version}</version>
-            <!--
             <classifier>stripped</classifier>
             <exclusions>
                  <exclusion>
@@ -61,15 +60,12 @@
                      <artifactId>org.eclipse.persistence.asm</artifactId>
                  </exclusion>
             </exclusions>
-            -->
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
             <version>${eclipselink.version}</version>
-            <!--
             <classifier>stripped</classifier>
-            -->
             <exclusions>
                 <exclusion>
                     <groupId>javax.validation</groupId>
