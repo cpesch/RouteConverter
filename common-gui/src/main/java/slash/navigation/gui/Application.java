@@ -45,7 +45,6 @@ import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.system.Platform.getOperationSystem;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
 
@@ -128,13 +127,6 @@ public abstract class Application {
 
     private static ClassLoader extendClassPath() {
         ClassPathExtender extender = new ClassPathExtender();
-
-        String gpsbabelJar = "gpsbabel-" + getOperationSystem() + ".jar";
-        try {
-            extender.addJarInJar(gpsbabelJar);
-        } catch (Exception e) {
-            log.info("Cannot extend classpath with GPSBabel from " + gpsbabelJar + ": " + e);
-        }
 
         File javaFxJar = new File(System.getProperty("java.home"), "lib/jfxrt.jar");
         if (javaFxJar.exists()) {

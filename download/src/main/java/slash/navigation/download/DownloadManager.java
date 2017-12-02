@@ -217,11 +217,12 @@ public class DownloadManager {
 
             List<FileAndChecksum> fragments = download.getFragments();
             if (fragments == null || fragments.size() == 0)
-                throw new IllegalArgumentException("No fragments given for " + download);
-            for (FileAndChecksum fragmentTarget : fragments) {
-                if (fragmentTarget == null)
-                    throw new IllegalArgumentException("No fragment target given for " + download);
-            }
+                log.severe("No fragments given for " + download);
+            else
+                for (FileAndChecksum fragmentTarget : fragments) {
+                    if (fragmentTarget == null)
+                        throw new IllegalArgumentException("No fragment target given for " + download);
+                }
         }
 
         Download queued = model.getDownload(download.getUrl());

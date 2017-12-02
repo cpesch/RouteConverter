@@ -29,7 +29,15 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -38,12 +46,16 @@ import java.util.prefs.Preferences;
 import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
-import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.InputOutput.copyAndClose;
-import static slash.common.system.Platform.*;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.common.system.Platform.isLinux;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Platform.isWindows;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * The base of all GPSBabel based formats.
@@ -344,16 +356,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             babelFile = checkIfBabelExists(USR_BIN_GPSBABEL);
         }
 
-        // 5. extract from classpath into temp directrory and execute there
-        if (babelFile == null) {
-            // x86 since there is only one gpsbabel executable for 32- and 64-bit
-            String path = getOperationSystem() + "/x86/";
-            if (isWindows()) {
-                extractFile(path + "libexpat.dll");
-                babelFile = extractFile(path + "gpsbabel.exe");
-            } else if (isLinux() || isMac()) {
-                babelFile = extractFile(path + "gpsbabel");
-            }
+        // 5. look for ApplicationDirectory\\thirdparty\\gpsbabel.exe
+        if (babelFile == null && isWindows()) {
+            babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "\\gpsbabel.exe");
+        }
+
+        // 6. look for ApplicationDirectory/thirdparty/gpsbabel
+        if (babelFile == null && !isWindows()) {
+            babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "/gpsbabel");
         }
 
         // 6. look for unqualified "gpsbabel"

@@ -128,10 +128,5 @@
             <artifactId>route-converter-offline</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>gpsbabel.gpsbabel</groupId>
-            <artifactId>mac.os_x.x86</artifactId>
-            <version>1.3.6</version>
-        </dependency>
     </dependencies>
 </project>

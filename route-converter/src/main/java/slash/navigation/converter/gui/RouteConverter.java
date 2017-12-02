@@ -96,8 +96,19 @@ import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.LocaleHelper.DENMARK;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.*;
-import static slash.common.system.Platform.*;
+import static slash.common.io.Files.findExistingPath;
+import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.shortenPath;
+import static slash.common.io.Files.toUrls;
+import static slash.common.system.Platform.getJava;
+import static slash.common.system.Platform.getMaximumMemory;
+import static slash.common.system.Platform.getOperationSystem;
+import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.system.Platform.isJavaFX7;
+import static slash.common.system.Platform.isJavaFX8;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Platform.isWindows;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
@@ -110,7 +121,10 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIO
 import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;
-import static slash.navigation.gui.helpers.UIHelper.*;
+import static slash.navigation.download.Action.Extract;
+import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -1315,6 +1329,7 @@ public class RouteConverter extends SingleFrameApplication {
 
                 updateElevationServices();
                 updateRoutingServices();
+                downloadThirdparty();
 
                 scanRemoteMapsAndThemes();
                 scanForFilesMissingInQueue();
@@ -1363,6 +1378,13 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void updateRoutingServices() {
+    }
+
+    private void downloadThirdparty() {
+        if (isMac() || isWindows())
+            getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
+                    "http://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
+                    Extract, getApplicationDirectory("thirdparty/gpsbabel"), null);
     }
 
     protected void scanLocalMapsAndThemes() {

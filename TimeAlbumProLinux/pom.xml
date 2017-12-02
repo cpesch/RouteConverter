@@ -110,10 +110,5 @@
             <artifactId>javafx8-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>gpsbabel.gpsbabel</groupId>
-            <artifactId>linux.unknown.x86</artifactId>
-            <version>1.3.6</version>
-        </dependency>
     </dependencies>
 </project>

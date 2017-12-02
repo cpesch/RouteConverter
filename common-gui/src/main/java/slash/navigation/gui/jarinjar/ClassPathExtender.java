@@ -30,6 +30,7 @@ import static slash.navigation.gui.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_
 
 /**
  * Creates a {@link ClassLoader} that allows to include JARs in the classpath and in the file systems.
+ * Works fine for Java 7 and 8 but not with Java 9 due to the classpath/module changes.
  *
  * @author Christian Pesch, inspired from https://github.com/mchr3k/swtjar/blob/master/src/org/swtjar/SWTLoader.java
  *         and http://stackoverflow.com/questions/1010919/adding-files-to-java-classpath-at-runtime
