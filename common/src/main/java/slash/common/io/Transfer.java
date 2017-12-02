@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Double.isNaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Integer.toHexString;
 import static java.lang.Math.*;
@@ -166,7 +167,7 @@ public class Transfer {
     }
 
     public static String formatDoubleAsString(Double aDouble) {
-        if (aDouble == null)
+        if (aDouble == null || isNaN(aDouble))
             return "0.0";
         return DECIMAL_NUMBER_FORMAT.format(aDouble);
     }
@@ -269,7 +270,7 @@ public class Transfer {
     }
 
     public static boolean isEmpty(Double aDouble) {
-        return aDouble == null || aDouble == 0.0;
+        return aDouble == null || isNaN(aDouble) || aDouble == 0.0;
     }
 
     public static boolean isEmpty(BigDecimal bigDecimal) {
@@ -277,7 +278,7 @@ public class Transfer {
     }
 
     public static double toDouble(Double aDouble) {
-        return aDouble == null ? 0.0 : aDouble;
+        return aDouble == null || isNaN(aDouble) ? 0.0 : aDouble;
     }
 
     public static int[] toArray(List<Integer> integers) {

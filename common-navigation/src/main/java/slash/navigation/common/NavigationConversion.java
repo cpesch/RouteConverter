@@ -25,8 +25,18 @@ import slash.common.io.Transfer;
 import java.math.BigDecimal;
 import java.util.prefs.Preferences;
 
-import static java.lang.Double.NaN;
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan;
+import static java.lang.Math.ceil;
+import static java.lang.Math.cos;
+import static java.lang.Math.exp;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.tan;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.common.UnitConversion.feetToMeters;
@@ -39,6 +49,13 @@ import static slash.navigation.common.UnitConversion.meterToFeets;
  */
 
 public class NavigationConversion {
+    private static final String POSITION_MAXIMUM_FRACTION_DIGITS = "positionMaximumFractionDigits";
+    private static final String ELEVATION_MAXIMUM_FRACTION_DIGITS = "elevationMaximumFractionDigits";
+    private static final String HEADING_MAXIMUM_FRACTION_DIGITS = "headingMaximumFractionDigits";
+    private static final String SPEED_MAXIMUM_FRACTION_DIGITS = "speedMaximumFractionDigits";
+    private static final String TEMPERATURE_MAXIMUM_FRACTION_DIGITS = "temperatureMaximumFractionDigits";
+    private static final String ACCURACY_MAXIMUM_FRACTION_DIGITS = "accuracyMaximumFractionDigits";
+
     private NavigationConversion() {}
 
     private static final Preferences preferences = Preferences.userNodeForPackage(NavigationConversion.class);
@@ -290,9 +307,9 @@ public class NavigationConversion {
         return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
     }
 
-    public static double formatDouble(Double aDouble, int maximumFractionCount) {
+    public static Double formatDouble(Double aDouble, int maximumFractionCount) {
         if (aDouble == null)
-            return NaN;
+            return null;
         if (isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return aDouble;
@@ -306,7 +323,6 @@ public class NavigationConversion {
         return BigDecimal.valueOf(aDouble);
     }
 
-
     private static String formatDoubleAsString(Double aDouble, int maximumFractionCount) {
         if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
@@ -314,52 +330,67 @@ public class NavigationConversion {
     }
 
     public static String formatPositionAsString(Double longitudeOrLatitude) {
-        int maximumFractionDigits = preferences.getInt("positionAsStringMaximumFractionDigits", 7);
+        int maximumFractionDigits = preferences.getInt(POSITION_MAXIMUM_FRACTION_DIGITS, 7);
         return formatDoubleAsString(longitudeOrLatitude, maximumFractionDigits);
     }
 
     public static String formatElevationAsString(Double elevation) {
-        int maximumFractionDigits = preferences.getInt("elevationAsStringMaximumFractionDigits", 2);
+        int maximumFractionDigits = preferences.getInt(ELEVATION_MAXIMUM_FRACTION_DIGITS, 1);
         return formatDoubleAsString(elevation, maximumFractionDigits);
     }
 
-    public static String formatAccuracyAsString(Double elevation) {
-        int maximumFractionDigits = preferences.getInt("accuracyAsStringMaximumFractionDigits", 6);
-        return formatDoubleAsString(elevation, maximumFractionDigits);
+    public static String formatAccuracyAsString(Double accuracy) {
+        int maximumFractionDigits = preferences.getInt(ACCURACY_MAXIMUM_FRACTION_DIGITS, 6);
+        return formatDoubleAsString(accuracy, maximumFractionDigits);
     }
 
-    public static String formatHeadingAsString(Double elevation) {
-        int maximumFractionDigits = preferences.getInt("headingAsStringMaximumFractionDigits", 1);
-        return formatDoubleAsString(elevation, maximumFractionDigits);
+    public static String formatHeadingAsString(Double heading) {
+        int maximumFractionDigits = preferences.getInt(HEADING_MAXIMUM_FRACTION_DIGITS, 1);
+        return formatDoubleAsString(heading, maximumFractionDigits);
     }
 
     public static String formatSpeedAsString(Double speed) {
-        int maximumFractionDigits = preferences.getInt("speedAsStringMaximumFractionDigits", 2);
+        int maximumFractionDigits = preferences.getInt(SPEED_MAXIMUM_FRACTION_DIGITS, 1);
         return formatDoubleAsString(speed, maximumFractionDigits);
     }
 
     public static String formatTemperatureAsString(Double temperature) {
-        int maximumFractionDigits = preferences.getInt("temperatureAsStringMaximumFractionDigits", 1);
+        int maximumFractionDigits = preferences.getInt(TEMPERATURE_MAXIMUM_FRACTION_DIGITS, 1);
         return formatDoubleAsString(temperature, maximumFractionDigits);
     }
 
     public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        int maximumFractionDigits = preferences.getInt("positionMaximumFractionDigits", 7);
+        int maximumFractionDigits = preferences.getInt(POSITION_MAXIMUM_FRACTION_DIGITS, 7);
         return formatBigDecimal(longitudeOrLatitude, maximumFractionDigits);
     }
 
     public static BigDecimal formatElevation(Double elevation) {
-        int maximumFractionDigits = preferences.getInt("elevationMaximumFractionDigits", 1);
+        int maximumFractionDigits = preferences.getInt(ELEVATION_MAXIMUM_FRACTION_DIGITS, 1);
         return formatBigDecimal(elevation, maximumFractionDigits);
     }
 
+    public static BigDecimal formatAccuracy(Double accuracy) {
+        int maximumFractionDigits = preferences.getInt(ACCURACY_MAXIMUM_FRACTION_DIGITS, 6);
+        return formatBigDecimal(accuracy, maximumFractionDigits);
+    }
+
     public static BigDecimal formatHeading(Double heading) {
-        int maximumFractionDigits = preferences.getInt("headingMaximumFractionDigits", 1);
+        int maximumFractionDigits = preferences.getInt(HEADING_MAXIMUM_FRACTION_DIGITS, 1);
         return formatBigDecimal(heading, maximumFractionDigits);
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        int maximumFractionDigits = preferences.getInt("speedMaximumFractionDigits", 2);
+        int maximumFractionDigits = preferences.getInt(SPEED_MAXIMUM_FRACTION_DIGITS, 1);
         return formatBigDecimal(speed, maximumFractionDigits);
+    }
+
+    public static Double formatSpeedAsDouble(Double speed) {
+        int maximumFractionDigits = preferences.getInt(SPEED_MAXIMUM_FRACTION_DIGITS, 1);
+        return formatDouble(speed, maximumFractionDigits);
+    }
+
+    public static Double formatTemperatureAsDouble(Double temperature) {
+        int maximumFractionDigits = preferences.getInt(TEMPERATURE_MAXIMUM_FRACTION_DIGITS, 1);
+        return formatDouble(temperature, maximumFractionDigits);
     }
 }

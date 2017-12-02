@@ -60,7 +60,9 @@ import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatHeading;
 import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsDouble;
 import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatTemperatureAsDouble;
 import static slash.navigation.common.NavigationConversion.formatTemperatureAsString;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
@@ -251,7 +253,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equals(element.getLocalName())) {
-                    if (foundSpeed || speed == null)
+                    if (foundSpeed || isEmpty(speed))
                         iterator.remove();
                     else {
                         element.setTextContent(formatSpeedAsString(asMs(speed)));
@@ -265,19 +267,22 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    trackPoint.setSpeed(asMs(speed));
-
-                    if (foundSpeed || isRemoveEmptyTrackPointExtension(trackPoint))
-                        iterator.remove();
-                    foundSpeed = true;
+                    if (foundSpeed || isEmpty(speed)) {
+                        if (isRemoveEmptyTrackPointExtension(trackPoint))
+                            iterator.remove();
+                    }
+                    else {
+                        trackPoint.setSpeed(formatSpeedAsDouble(asMs(speed)));
+                        foundSpeed = true;
+                    }
                 }
             }
         }
 
-        if (!foundSpeed && speed != null) {
+        if (!foundSpeed && !isEmpty(speed)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setSpeed(asMs(speed));
+            trackPointExtensionT.setSpeed(formatSpeedAsDouble(asMs(speed)));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
     }
@@ -321,7 +326,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("course".equals(element.getLocalName())) {
-                    if (foundHeading || heading == null)
+                    if (foundHeading || isEmpty(heading))
                         iterator.remove();
                     else {
                         element.setTextContent(formatHeadingAsString(heading));
@@ -335,16 +340,19 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    trackPoint.setCourse(formatHeading(heading));
-
-                    if (foundHeading || isRemoveEmptyTrackPointExtension(trackPoint))
-                        iterator.remove();
-                    foundHeading = true;
+                    if (foundHeading || isEmpty(heading)) {
+                        if (isRemoveEmptyTrackPointExtension(trackPoint))
+                            iterator.remove();
+                    }
+                    else {
+                        trackPoint.setCourse(formatHeading(heading));
+                        foundHeading = true;
+                    }
                 }
             }
         }
 
-        if (!foundHeading && heading != null) {
+        if (!foundHeading && !isEmpty(heading)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setCourse(formatHeading(heading));
@@ -395,7 +403,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("atemp".equals(element.getLocalName())) {
-                    if (foundTemperature || temperature == null)
+                    if (foundTemperature || isEmpty(temperature))
                         iterator.remove();
                     else {
                         element.setTextContent(formatTemperatureAsString(temperature));
@@ -409,19 +417,22 @@ public class Gpx11Format extends GpxFormat {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof TrackPointExtensionT) {
                     TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                    trackPoint.setAtemp(temperature);
-
-                    if (foundTemperature || isRemoveEmptyTrackPointExtension(trackPoint))
-                        iterator.remove();
-                    foundTemperature = true;
+                    if (foundTemperature || isEmpty(temperature)) {
+                        if (isRemoveEmptyTrackPointExtension(trackPoint))
+                            iterator.remove();
+                    }
+                    else {
+                        trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
+                        foundTemperature = true;
+                    }
                 }
             }
         }
 
-        if (!foundTemperature && temperature != null) {
+        if (!foundTemperature && !isEmpty(temperature)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setAtemp(temperature);
+            trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
     }

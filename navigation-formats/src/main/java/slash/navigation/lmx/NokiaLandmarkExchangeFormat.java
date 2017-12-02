@@ -132,8 +132,12 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             if (coordinatesType == null)
                 coordinatesType = objectFactory.createCoordinatesType();
             coordinatesType.setAltitude(formatFloat(position.getElevation()));
-            coordinatesType.setLatitude(formatDouble(position.getLatitude(), 7));
-            coordinatesType.setLongitude(formatDouble(position.getLongitude(), 7));
+            Double latitude = formatDouble(position.getLatitude(), 7);
+            if (latitude != null)
+                coordinatesType.setLatitude(latitude);
+            Double longitude = formatDouble(position.getLongitude(), 7);
+            if (longitude != null)
+                coordinatesType.setLongitude(longitude);
             coordinatesType.setTimeStamp(formatXMLTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 
