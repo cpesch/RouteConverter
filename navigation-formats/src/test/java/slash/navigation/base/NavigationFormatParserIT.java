@@ -131,12 +131,6 @@ public class NavigationFormatParserIT {
     }
 
     @Test
-    public void testIsValidMicrosoftAutoRoute() throws IOException {
-        read(TEST_PATH + "from.axe");
-        read(TEST_PATH + "large.axe");
-    }
-
-    @Test
     public void testIsValidBcr() throws IOException {
         read(TEST_PATH + "from-mtp0607.bcr");
         read(TEST_PATH + "from-mtp0809.bcr");

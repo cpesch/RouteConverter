@@ -35,7 +35,6 @@ import slash.navigation.babel.GeoCachingFormat;
 import slash.navigation.babel.HoluxM241BinaryFormat;
 import slash.navigation.babel.Igo8TrackFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
-import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.NationalGeographicTopo3Format;
 import slash.navigation.babel.OziExplorerRouteFormat;
 import slash.navigation.babel.OziExplorerTrackFormat;
@@ -219,7 +218,6 @@ public class NavigationFormatRegistry {
         // GPSBabel-based formats
         addFormat(GarminMapSource6Format.class);
         addFormat(GarminMapSource5Format.class);
-        addFormat(MicrosoftAutoRouteFormat.class);
         addFormat(TourExchangeFormat.class);
         addFormat(NationalGeographicTopo3Format.class);
         addFormat(MagellanMapSendFormat.class);

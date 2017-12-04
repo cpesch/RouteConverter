@@ -47,7 +47,7 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
     }
 
     protected boolean isStreamingCapable() {
-        return false;
+        return true;
     }
 
     protected GpxRoute sanitizeRoute(GpxRoute route) {

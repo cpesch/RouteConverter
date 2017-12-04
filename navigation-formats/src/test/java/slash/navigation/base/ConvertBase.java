@@ -22,7 +22,6 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.babel.GarminMapSource6Format;
-import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.File;
@@ -134,7 +133,7 @@ public abstract class ConvertBase {
 
             for (int i = 0; i < targetResult.getAllRoutes().size(); i++) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetResult.getAllRoutes().get(i);
-                BaseRoute sourceRoute = sourceResult.getAllRoutes().get(sourceFormat instanceof MicrosoftAutoRouteFormat ? 0 : i);
+                BaseRoute sourceRoute = sourceResult.getAllRoutes().get(i);
                 // skip since first route is a list of all waypoints of all routes
                 if (targetFormat instanceof GarminMapSource6Format && targetRoute.getCharacteristics().equals(Waypoints))
                     continue;

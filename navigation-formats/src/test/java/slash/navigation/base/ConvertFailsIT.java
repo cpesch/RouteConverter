@@ -48,16 +48,6 @@ public class ConvertFailsIT {
     }
 
     @Test
-    public void testConvertMicrosoftAutoRouteToGarminMapSource5() throws IOException {
-        // Garmin file contains only 41 instead of expected 45 positions
-        assertTestFails(new NavigationTestCaseThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource5Format());
-            }
-        });
-    }
-
-    @Test
     public void testConvertNokiaLandmarkExchangeUtf8ToNavigatingPoiWarnerIso88591Fails() throws IOException {
         // source is UTF8 while target is only ISO8859-1
         assertTestFails(new NavigationTestCaseThrowsException() {

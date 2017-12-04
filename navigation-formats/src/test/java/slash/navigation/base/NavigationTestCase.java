@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
 import slash.common.helpers.JAXBHelper;
 import slash.common.type.CompactCalendar;
@@ -36,7 +35,6 @@ import slash.navigation.babel.GarminPoiDbFormat;
 import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.GeoCachingFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
-import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.OziExplorerFormat;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
@@ -159,7 +157,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     public static void assertTestFails(NavigationTestCaseThrowsException runner) {
-        assertException(AssertionFailedError.class, runner);
+        assertException(IndexOutOfBoundsException.class, runner);
     }
 
     static boolean isReallyUnprecise(NavigationFormat format) {
@@ -178,8 +176,6 @@ public abstract class NavigationTestCase extends TestCase {
         return (isSlightlyUnprecise(first) || isSlightlyUnprecise(second)) ||
                 ((first instanceof GpxFormat) &&
                         (second instanceof AlanTrackLogFormat || second instanceof AlanWaypointsAndRoutesFormat)) ||
-                ((first instanceof MicrosoftAutoRouteFormat) &&
-                        (second instanceof GarminPcx5Format)) ||
                 ((first instanceof KmlFormat) &&
                         (second instanceof BcrFormat)) ||
                 ((first instanceof ColumbusGpsFormat) &&
@@ -626,13 +622,6 @@ public abstract class NavigationTestCase extends TestCase {
         return trim(trimSpaces(description), 19);
     }
 
-    private static String getMicrosoftAutoroutePositionDescription(NavigationPosition position) {
-        String description = position.getDescription();
-        if (description == null)
-            return null;
-        return trimDot1Substring(trim(description, 16));
-    }
-
     private static String getTourExchangePositionDescription(NavigationPosition position) {
         String description = position.getDescription();
         if (description == null)
@@ -737,10 +726,6 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceName = getGarminPcx5PositionDescription(sourcePosition);
                 String targetName = getGarminPcx5PositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
-            } else if (sourceFormat instanceof MicrosoftAutoRouteFormat) {
-                String sourceName = getMicrosoftAutoroutePositionDescription(sourcePosition);
-                String targetName = getMicrosoftAutoroutePositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof Route66Format)
                 assertEquals("Description " + index + " does not match", toMixedCase(sourcePosition.getDescription()), targetPosition.getDescription());
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format ||
@@ -797,8 +782,8 @@ public abstract class NavigationTestCase extends TestCase {
                     sourceFormat instanceof GpsTunerFormat ||
                     sourceFormat instanceof GoPalTrackFormat ||
                     (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track)) ||
-                    targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
-                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
+                    targetFormat instanceof GoPalTrackFormat) {
+                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.1);
             } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsFormat) {
@@ -806,6 +791,10 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (sourceFormat instanceof Iblue747Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else if (sourceFormat instanceof GarminFitFormat && targetFormat instanceof GpxFormat) {
+                assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
+            } else if (sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof GpxFormat) {
+                assertNearBy(roundFraction(sourcePosition.getSpeed(), 1) + 1.0, roundFraction(targetPosition.getSpeed(), 1) + 1.0, 5.0);
+            } else if (targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
@@ -818,14 +807,15 @@ public abstract class NavigationTestCase extends TestCase {
             if (targetFormat instanceof KmlFormat && targetCharacteristics.equals(Track)) {
                 assertNotNull(sourcePosition.getTime());
                 assertNotNull(targetPosition.getTime());
-            } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
+            } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof GroundTrackFormat ||
+                    targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GroundTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
-            } else if (sourceFormat instanceof GroundTrackFormat || targetFormat instanceof GroundTrackFormat) {
-                DateFormat format = DateFormat.getTimeInstance();
+            } else if (targetFormat instanceof OziExplorerFormat) {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
@@ -933,12 +923,6 @@ public abstract class NavigationTestCase extends TestCase {
             comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
             // TomTomPoiFormat has no order of the positions except for first and second
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
-        } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
-                (targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format || targetFormat instanceof KmlFormat) &&
-                targetRoute.getCharacteristics().equals(Waypoints)) {
-            int sourcePositionCount = sourceRoute.getPositionCount() - 1;
-            assertEquals(sourcePositionCount, targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());

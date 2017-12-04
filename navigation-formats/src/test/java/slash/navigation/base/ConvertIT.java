@@ -35,7 +35,6 @@ import slash.navigation.babel.GarminPoiDbFormat;
 import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.HoluxM241BinaryFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
-import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.NationalGeographicTopo3Format;
 import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TomTomPoiFormat;
@@ -346,11 +345,6 @@ public class ConvertIT {
     public void testConvertGpx11ToGarminMapSource6() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource6Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource6Format());
-    }
-
-    @Test
-    public void testConvertMicrosoftAutoRouteToGarminMapSource6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource6Format());
     }
 
     @Test
@@ -672,11 +666,6 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertMicrosoftAutoRouteToNmn4() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn4Format());
-    }
-
-    @Test
     public void testConvertNmn4ToKml20() throws IOException {
         convertRoundtrip(TEST_PATH + "from-nmn4.rte", new Nmn4Format(), new Kml20Format());
     }
@@ -705,11 +694,6 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertMicrosoftAutoRouteToNmn5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn5Format());
-    }
-
-    @Test
     public void testConvertTourExchangeToNmn5() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new Nmn5Format());
     }
@@ -730,11 +714,6 @@ public class ConvertIT {
     public void testConvertGpx11ToNmn6() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Nmn6Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn6Format());
-    }
-
-    @Test
-    public void testConvertMicrosoftAutoRouteToNmn6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn6Format());
     }
 
     @Test
@@ -919,11 +898,6 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertMicrosoftAutoRouteToGarminPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminPcx5Format());
-    }
-
-    @Test
     public void testConvertTourExchangeToGarminPcx5() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminPcx5Format());
     }
@@ -1046,11 +1020,6 @@ public class ConvertIT {
     @Test
     public void testConvertTourToGpx10() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tour", new TourFormat(), new Gpx10Format());
-    }
-
-    @Test
-    public void testConvertMicrosoftAutoRouteToTour() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new TourFormat());
     }
 
     @Test

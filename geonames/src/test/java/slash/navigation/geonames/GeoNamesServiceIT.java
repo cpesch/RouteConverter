@@ -121,7 +121,7 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByToponymFor() throws IOException {
-        assertEquals("St. Margarethen", service.getNearByToponymFor(9.0, 47.5));
+        assertEquals("Vogelh\u00e4rd", service.getNearByToponymFor(9.0, 47.5));
         assertEquals("Grafenrheinfeld", service.getNearByToponymFor(10.2, 50.001));
         assertEquals("Hoher Gaif", service.getNearByToponymFor(11.06561, 47.42428));
         assertEquals("Earth", service.getNearByToponymFor(0.0, 0.0));

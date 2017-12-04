@@ -134,18 +134,6 @@ public class AppendIT extends NavigationTestCase {
         append(TEST_PATH + "from.mps", TEST_PATH + "from.gdb");
     }
 
-    public void testAppendMicrosoftAutoRouteToMagellanMapSend() throws IOException {
-        append(TEST_PATH + "from.axe", TEST_PATH + "from-mapsend.wpt");
-    }
-
-    public void testAppendGarminMapSource6ToMicrosoftAutoRoute() throws IOException {
-        append(TEST_PATH + "from.gdb", TEST_PATH + "from.axe");
-    }
-
-    public void testAppendMagellanMapSendToMicrosoftAutoRoute() throws IOException {
-        append(TEST_PATH + "from-mapsend.wpt", TEST_PATH + "from.axe");
-    }
-
     public void testAppendTourExchangeToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.tef");
     }
