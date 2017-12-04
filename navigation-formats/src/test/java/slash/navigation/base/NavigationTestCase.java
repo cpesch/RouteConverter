@@ -794,7 +794,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else if (sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1) + 1.0, roundFraction(targetPosition.getSpeed(), 1) + 1.0, 5.0);
-            } else if (targetFormat instanceof GpxFormat) {
+            } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
