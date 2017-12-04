@@ -351,22 +351,27 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
         }
 
-        // 4. look for "/usr/bin/gpsbabel" in path
+        // 4. look for "/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel"
+        if (babelFile == null && isMac()) {
+            babelFile = checkIfBabelExists("/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel");
+        }
+
+        // 5. look for "/usr/bin/gpsbabel" in path
         if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists(USR_BIN_GPSBABEL);
         }
 
-        // 5. look for ApplicationDirectory\\thirdparty\\gpsbabel.exe
+        // 6. look for ApplicationDirectory\\thirdparty\\gpsbabel.exe
         if (babelFile == null && isWindows()) {
             babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "\\gpsbabel.exe");
         }
 
-        // 6. look for ApplicationDirectory/thirdparty/gpsbabel
+        // 7. look for ApplicationDirectory/thirdparty/gpsbabel
         if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "/gpsbabel");
         }
 
-        // 6. look for unqualified "gpsbabel"
+        // 8. look for unqualified "gpsbabel"
         return babelFile != null ? babelFile.getCanonicalPath() : "gpsbabel";
     }
 
