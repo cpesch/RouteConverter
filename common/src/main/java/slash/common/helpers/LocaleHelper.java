@@ -34,6 +34,7 @@ public class LocaleHelper {
     public static final Locale CROATIA = new Locale("hr", "HR");
     public static final Locale DENMARK = new Locale("da", "DK");
     public static final Locale NEDERLANDS = new Locale("nl", "NL");
+    public static final Locale NORWAY_BOKMAL = new Locale("nb", "NO");
     public static final Locale POLAND = new Locale("pl", "PL");
     public static final Locale PORTUGAL = new Locale("pt", "PT");
     public static final Locale RUSSIA = new Locale("ru", "RU");

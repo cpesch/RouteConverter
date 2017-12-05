@@ -34,7 +34,7 @@ import static slash.common.helpers.LocaleHelper.*;
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY, JAPAN,
-            NEDERLANDS, POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, UKRAINE, US);
+            NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, UKRAINE, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return singletonList(new Locale(locale.getLanguage()));
@@ -50,6 +50,7 @@ public class ResourceBundleTest {
         compareEnglishAgainstOtherBundles(false);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void compareEnglishAgainstOtherBundles(boolean throwException) {
         ResourceBundle root = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", ROOT);
         ResourceBundle english = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", US);
