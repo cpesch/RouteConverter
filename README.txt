@@ -48,9 +48,9 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 8 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_144
+   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_151
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.5.0
+   > set M2_HOME=c:\Program Files\apache-maven-3.5.2
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
    Call
