@@ -51,6 +51,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>stripped</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <version>${eclipselink.version}</version>
             <classifier>stripped</classifier>
