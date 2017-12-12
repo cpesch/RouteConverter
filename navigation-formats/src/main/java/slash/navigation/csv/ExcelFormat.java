@@ -19,10 +19,7 @@
 */
 package slash.navigation.csv;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -61,21 +58,25 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
     }
 
     void parseWorkbook(Workbook workbook, ParserContext<ExcelRoute> context) {
-        if (workbook.getNumberOfSheets() == 0)
-            return;
+        for (int i = 0, c = workbook.getNumberOfSheets(); i < c; i++) {
+            Sheet sheet = workbook.getSheetAt(i);
+            parseSheet(sheet, context);
+        }
+    }
 
-        Sheet sheet = workbook.getSheetAt(0);
+    private void parseSheet(Sheet sheet, ParserContext<ExcelRoute> context) {
         if (sheet.getPhysicalNumberOfRows() < 2)
             return;
 
         Row header = sheet.getRow(0);
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
+
         List<ExcelPosition> positions = new ArrayList<>();
         for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++)
             positions.add(new ExcelPosition(mapping, sheet.getRow(i)));
 
-        context.appendRoute(new ExcelRoute(this, Waypoints, header, positions));
+        context.appendRoute(new ExcelRoute(this, Waypoints, sheet.getSheetName(), header, positions));
     }
 
     private ColumnTypeToRowIndexMapping parseHeader(Row row) {

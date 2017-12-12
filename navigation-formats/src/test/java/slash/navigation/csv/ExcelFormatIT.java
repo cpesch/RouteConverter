@@ -38,6 +38,7 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel97Format.class, result.getFormat().getClass());
+        assertEquals(1, result.getAllRoutes().size());
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
         assertEquals(2, route.getPositionCount());
         BaseNavigationPosition first = route.getPosition(0);
@@ -54,6 +55,7 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel2008Format.class, result.getFormat().getClass());
+        assertEquals(1, result.getAllRoutes().size());
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
         assertEquals(2, route.getPositionCount());
         BaseNavigationPosition first = route.getPosition(0);

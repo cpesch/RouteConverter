@@ -64,8 +64,9 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private Row header;
     private List<ExcelPosition> positions;
 
-    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, Row header, List<ExcelPosition> positions) {
+    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, String name, Row header, List<ExcelPosition> positions) {
         super(format, characteristics);
+        this.name = name;
         this.header = header;
         this.positions = positions;
     }
@@ -119,7 +120,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        return new ExcelRoute(format, getCharacteristics(), header, positions);
+        return new ExcelRoute(format, getCharacteristics(), getName(), header, positions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
