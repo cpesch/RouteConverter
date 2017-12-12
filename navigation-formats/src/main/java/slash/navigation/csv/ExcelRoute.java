@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static slash.navigation.base.RouteComments.createRouteName;
+import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * An Excel route.
@@ -58,21 +59,24 @@ import static slash.navigation.base.RouteComments.createRouteName;
  * @author Christian Pesch
  */
 
-public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
+public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private String name;
     private Row header;
-    private List<Row> rows;
+    private List<ExcelPosition> positions;
 
-    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, Row header, List<Row> rows) {
+    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, Row header, List<ExcelPosition> positions) {
         super(format, characteristics);
         this.header = header;
-        this.rows = rows;
+        this.positions = positions;
     }
 
-    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> positions) {
+    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> wgs84Positions) {
         super(format, characteristics);
         this.name = name;
-        // TODO reverse interpret positions to rows this.positions = positions;
+
+        // TODO might want to extend this simple mapping - and use it in as... methods
+        for(Wgs84Position wgs84Position : wgs84Positions)
+            positions.add(createPosition(wgs84Position.getLongitude(), wgs84Position.getLatitude(), wgs84Position.getElevation(), wgs84Position.getSpeed(), wgs84Position.getTime(), wgs84Position.getDescription()));
     }
 
 
@@ -88,38 +92,39 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
         throw new UnsupportedOperationException();
     }
 
-    public List<Wgs84Position> getPositions() {
-        // TODO interpret rows to positions
-        return new ArrayList<>();
+    public List<ExcelPosition> getPositions() {
+        return positions;
     }
 
     public int getPositionCount() {
-        return rows.size();
+        return positions.size();
     }
 
-    public void add(int index, Wgs84Position position) {
-        // TODO reverse interpret position to row rows.add(index, position);
+    public void add(int index, ExcelPosition position) {
+        // TODO each Row nows its rowIndex - adjust it?
+        positions.add(index, position);
     }
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        return new Wgs84Position(longitude, latitude, elevation, speed, time, description);
+    public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        Row row = null; // TODO longitude, latitude, elevation, speed, time, description);
+        return new ExcelPosition(DEFAULT, row);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        return new ExcelRoute(format, getCharacteristics(), header, rows);
+        return new ExcelRoute(format, getCharacteristics(), header, positions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(format, getName(), gopalPositions);
@@ -127,7 +132,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
@@ -135,7 +140,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -143,7 +148,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -151,7 +156,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
@@ -159,7 +164,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
@@ -167,7 +172,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> positions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), positions);
@@ -175,7 +180,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
@@ -183,7 +188,7 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<>();
-        for (Wgs84Position position : getPositions()) {
+        for (ExcelPosition position : getPositions()) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
@@ -197,12 +202,12 @@ public class ExcelRoute extends BaseRoute<Wgs84Position, ExcelFormat> {
         ExcelRoute that = (ExcelRoute) o;
 
         return !(header != null ? !header.equals(that.header) : that.header != null) &&
-                !(rows != null ? !rows.equals(that.rows) : that.rows != null);
+                !(positions != null ? !positions.equals(that.positions) : that.positions != null);
     }
 
     public int hashCode() {
         int result = header != null ? header.hashCode() : 0;
-        result = 31 * result + (rows != null ? rows.hashCode() : 0);
+        result = 31 * result + (positions != null ? positions.hashCode() : 0);
         return result;
     }
 }

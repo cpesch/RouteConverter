@@ -19,6 +19,7 @@
 */
 package slash.navigation.csv;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,7 +32,9 @@ import slash.navigation.common.NavigationPosition;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.csv.ColumnType.Unsupported;
 
 /**
  * The base of all Excel formats.
@@ -57,7 +60,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
         return new ExcelRoute(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    protected void parseWorkbook(Workbook workbook, ParserContext<ExcelRoute> context) {
+    void parseWorkbook(Workbook workbook, ParserContext<ExcelRoute> context) {
         if (workbook.getNumberOfSheets() == 0)
             return;
 
@@ -66,10 +69,34 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
             return;
 
         Row header = sheet.getRow(0);
-        List<Row> rows = new ArrayList<>();
-        for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-            rows.add(sheet.getRow(i));
+        ColumnTypeToRowIndexMapping mapping = parseHeader(header);
+
+        List<ExcelPosition> positions = new ArrayList<>();
+        for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++)
+            positions.add(new ExcelPosition(mapping, sheet.getRow(i)));
+
+        context.appendRoute(new ExcelRoute(this, Waypoints, header, positions));
+    }
+
+    private ColumnTypeToRowIndexMapping parseHeader(Row row) {
+        ColumnTypeToRowIndexMapping result = new ColumnTypeToRowIndexMapping();
+        for (int i = 0, c = row.getPhysicalNumberOfCells(); i < c; i++) {
+            Cell cell = row.getCell(i);
+            String cellValue = cell.getStringCellValue();
+            ColumnType columnType = parseCellValue(cellValue);
+            result.add(i, columnType);
         }
-        context.appendRoute(new ExcelRoute(this, Waypoints, header, rows));
+        return result;
+    }
+
+    private ColumnType parseCellValue(String value) {
+        value = trim(value);
+        if (value != null) {
+            for (ColumnType columnType : ColumnType.values()) {
+                if (columnType.toString().equalsIgnoreCase(value))
+                    return columnType;
+            }
+        }
+        return Unsupported;
     }
 }

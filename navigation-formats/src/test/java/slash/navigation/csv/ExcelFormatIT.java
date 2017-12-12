@@ -20,9 +20,7 @@
 package slash.navigation.csv;
 
 import org.junit.Test;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +38,14 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel97Format.class, result.getFormat().getClass());
-        assertEquals(2036, result.getTheRoute().getPositionCount());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        assertEquals(2, route.getPositionCount());
+        BaseNavigationPosition first = route.getPosition(0);
+        assertEquals(13.049595, first.getLongitude());
+        assertEquals(47.79712, first.getLatitude());
+        BaseNavigationPosition second = route.getPosition(1);
+        assertEquals(13.059595, second.getLongitude());
+        assertEquals(47.89712, second.getLatitude());
     }
 
     @Test
@@ -49,6 +54,13 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel2008Format.class, result.getFormat().getClass());
-        assertEquals(2036, result.getTheRoute().getPositionCount());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        assertEquals(2, route.getPositionCount());
+        BaseNavigationPosition first = route.getPosition(0);
+        assertEquals(13.049595, first.getLongitude());
+        assertEquals(47.79712, first.getLatitude());
+        BaseNavigationPosition second = route.getPosition(1);
+        assertEquals(13.059595, second.getLongitude());
+        assertEquals(47.89712, second.getLatitude());
     }
 }
