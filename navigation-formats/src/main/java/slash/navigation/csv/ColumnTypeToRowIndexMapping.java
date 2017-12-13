@@ -35,13 +35,18 @@ public class ColumnTypeToRowIndexMapping {
         DEFAULT.add(1, ColumnType.Latitude);
     }
 
-    private Map<ColumnType, Integer> mapping = new HashMap<>();
+    private Map<Integer, ColumnType> mapping = new HashMap<>();
 
     public void add(int index, ColumnType columnType) {
-        mapping.put(columnType, index);
+        mapping.put(index, columnType);
     }
 
-    public int getIndex(ColumnType type) {
-        return mapping.get(type);
+    public Integer getIndex(ColumnType type) {
+        for(Integer index : mapping.keySet()) {
+           ColumnType found = mapping.get(index);
+           if(type.equals(found))
+               return index;
+        }
+        return null;
     }
 }

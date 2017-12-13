@@ -20,7 +20,6 @@
 package slash.navigation.csv;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 
 import java.io.IOException;

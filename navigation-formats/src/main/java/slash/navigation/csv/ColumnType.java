@@ -19,6 +19,10 @@
 */
 package slash.navigation.csv;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 /**
  * Enumeration of supported column types.
  *
@@ -26,5 +30,21 @@ package slash.navigation.csv;
  */
 
 public enum ColumnType {
-    Latitude, Longitude, Unsupported;
+    Latitude("Breite", "Breitengrad"),
+    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
+    Elevation("Altitude", "H\u00f6he"),
+    Speed("Geschwindigkeit"),
+    Time("Timestamp", "Zeit"),
+    Description("Comment", "Beschreibung", "Kommentar"),
+    Unsupported;
+
+    private List<String> alternativeNames;
+
+    ColumnType(String... alternativeNames) {
+        this.alternativeNames = asList(alternativeNames);
+    }
+
+    public List<String> getAlternativeNames() {
+        return alternativeNames;
+    }
 }

@@ -28,7 +28,9 @@ import slash.navigation.common.NavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.csv.ColumnType.Unsupported;
@@ -40,6 +42,7 @@ import static slash.navigation.csv.ColumnType.Unsupported;
  */
 
 public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
+    private static final Logger log = Logger.getLogger(ExcelFormat.class.getName());
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
@@ -71,7 +74,6 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
         Row header = sheet.getRow(0);
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
-
         List<ExcelPosition> positions = new ArrayList<>();
         for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++)
             positions.add(new ExcelPosition(mapping, sheet.getRow(i)));
@@ -85,6 +87,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
             Cell cell = row.getCell(i);
             String cellValue = cell.getStringCellValue();
             ColumnType columnType = parseCellValue(cellValue);
+            log.info(format("Column %d with name '%s' is identified as %s", i, cellValue, columnType));
             result.add(i, columnType);
         }
         return result;
@@ -96,7 +99,9 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
             for (ColumnType columnType : ColumnType.values()) {
                 if (columnType.toString().equalsIgnoreCase(value))
                     return columnType;
-            }
+                for(String alternativeName : columnType.getAlternativeNames())
+                    if (alternativeName.equalsIgnoreCase(value))
+                        return columnType;            }
         }
         return Unsupported;
     }

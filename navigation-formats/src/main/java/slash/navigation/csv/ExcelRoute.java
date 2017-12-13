@@ -102,7 +102,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     public void add(int index, ExcelPosition position) {
-        // TODO each Row nows its rowIndex - adjust it?
+        // TODO each Row knows its rowIndex - adjust it?
         positions.add(index, position);
     }
 

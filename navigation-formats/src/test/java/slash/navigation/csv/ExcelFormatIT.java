@@ -28,9 +28,42 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.calendar;
 
 public class ExcelFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+
+    private void checkAllRoutes(ParserResult result) {
+        assertEquals(3, result.getAllRoutes().size());
+        assertEquals("Data", result.getAllRoutes().get(0).getName());
+        assertEquals("Englisch", result.getAllRoutes().get(1).getName());
+        assertEquals("Deutsch", result.getAllRoutes().get(2).getName());
+    }
+
+    private void checkRoute(BaseRoute route) {
+        assertEquals(3, route.getPositionCount());
+        BaseNavigationPosition first = route.getPosition(0);
+        assertEquals(8.485303333333333, first.getLongitude());
+        assertEquals(50.241125, first.getLatitude());
+        assertEquals(654.6, first.getElevation());
+        assertEquals(6.1, first.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 38, 12), first.getTime());
+        assertEquals("Position 1", first.getDescription());
+        BaseNavigationPosition second = route.getPosition(1);
+        assertEquals(88.4853034, second.getLongitude());
+        assertEquals(-50.2411251, second.getLatitude());
+        assertEquals(654.7, second.getElevation());
+        assertEquals(0.1, second.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 39, 42), second.getTime());
+        assertEquals("äöüßÄÖÜ", second.getDescription());
+        BaseNavigationPosition third = route.getPosition(2);
+        assertEquals(8.4853035, third.getLongitude());
+        assertEquals(50.2411252, third.getLatitude());
+        assertEquals(654.8, third.getElevation());
+        assertEquals(-2.345, third.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 40, 59), third.getTime());
+        assertEquals("#\"§$%&/", third.getDescription());
+    }
 
     @Test
     public void testReadXls() throws IOException {
@@ -38,15 +71,9 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel97Format.class, result.getFormat().getClass());
-        assertEquals(1, result.getAllRoutes().size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        assertEquals(2, route.getPositionCount());
-        BaseNavigationPosition first = route.getPosition(0);
-        assertEquals(13.049595, first.getLongitude());
-        assertEquals(47.79712, first.getLatitude());
-        BaseNavigationPosition second = route.getPosition(1);
-        assertEquals(13.059595, second.getLongitude());
-        assertEquals(47.89712, second.getLatitude());
+        checkAllRoutes(result);
+        for (BaseRoute route : result.getAllRoutes())
+            checkRoute(route);
     }
 
     @Test
@@ -55,14 +82,8 @@ public class ExcelFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Excel2008Format.class, result.getFormat().getClass());
-        assertEquals(1, result.getAllRoutes().size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        assertEquals(2, route.getPositionCount());
-        BaseNavigationPosition first = route.getPosition(0);
-        assertEquals(13.049595, first.getLongitude());
-        assertEquals(47.79712, first.getLatitude());
-        BaseNavigationPosition second = route.getPosition(1);
-        assertEquals(13.059595, second.getLongitude());
-        assertEquals(47.89712, second.getLatitude());
+        checkAllRoutes(result);
+        for (BaseRoute route : result.getAllRoutes())
+            checkRoute(route);
     }
 }

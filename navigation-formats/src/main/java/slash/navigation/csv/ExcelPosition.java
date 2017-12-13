@@ -25,8 +25,9 @@ import org.apache.poi.ss.usermodel.Row;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
-import static slash.navigation.csv.ColumnType.Latitude;
-import static slash.navigation.csv.ColumnType.Longitude;
+import static slash.common.io.Transfer.toDouble;
+import static slash.common.type.CompactCalendar.fromDate;
+import static slash.navigation.csv.ColumnType.*;
 import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
@@ -43,59 +44,88 @@ public class ExcelPosition extends BaseNavigationPosition {
     }
 
     private Cell getCell(ColumnType type) {
-        int index = mapping.getIndex(type);
-        return row.getCell(index);
+        Integer index = mapping.getIndex(type);
+        return index != null ? row.getCell(index) : null;
     }
 
+    private Double getCellAsDouble(ColumnType type) {
+        Cell cell = getCell(type);
+        return cell != null ? cell.getNumericCellValue() : null;
+    }
+
+    private String getCellAsString(ColumnType type) {
+        Cell cell = getCell(type);
+        return cell != null ? cell.getStringCellValue() : null;
+    }
+
+    private CompactCalendar getCellAsTime(ColumnType type) {
+        Cell cell = getCell(type);
+        return cell != null ? fromDate(cell.getDateCellValue()) : null;
+    }
+
+    private void setCellAsDouble(ColumnType type, Double value) {
+        Cell cell = getCell(type);
+        if (cell != null)
+            cell.setCellValue(toDouble(value));
+    }
+
+    private void setCellAsString(ColumnType type, String value) {
+        Cell cell = getCell(type);
+        if (cell != null)
+            cell.setCellValue(value);
+    }
+
+    private void setCellAsTime(ColumnType type, CompactCalendar value) {
+        Cell cell = getCell(type);
+        if (cell != null)
+            cell.setCellValue(value != null ? value.getTime() : null);
+    }
 
     public Double getLongitude() {
-        Cell cell = getCell(Longitude);
-        // TODO what about , and . ?
-        return cell.getNumericCellValue();
+        return getCellAsDouble(Longitude);
     }
 
     public void setLongitude(Double longitude) {
-        getCell(Longitude).setCellValue(longitude);
+        setCellAsDouble(Longitude, longitude);
     }
 
     public Double getLatitude() {
-        Cell cell = getCell(Latitude);
-        return cell.getNumericCellValue();
+        return getCellAsDouble(Latitude);
     }
 
     public void setLatitude(Double latitude) {
-        getCell(Latitude).setCellValue(latitude);
+        setCellAsDouble(Latitude, latitude);
     }
 
     public Double getElevation() {
-        return null;
+        return getCellAsDouble(Elevation);
     }
 
     public void setElevation(Double elevation) {
-
+        setCellAsDouble(Elevation, elevation);
     }
 
     public CompactCalendar getTime() {
-        return null;
+        return getCellAsTime(Time);
     }
 
     public void setTime(CompactCalendar time) {
-
+        setCellAsTime(Time, time);
     }
 
     public Double getSpeed() {
-        return null;
+        return getCellAsDouble(Speed);
     }
 
     public void setSpeed(Double speed) {
-
+        setCellAsDouble(Elevation, speed);
     }
 
     public String getDescription() {
-        return null;
+        return getCellAsString(Description);
     }
 
     public void setDescription(String description) {
-
+        setCellAsString(Description, description);
     }
 }
