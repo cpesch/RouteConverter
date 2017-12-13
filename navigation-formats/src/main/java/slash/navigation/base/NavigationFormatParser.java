@@ -135,7 +135,7 @@ public class NavigationFormatParser {
             buffer.close();
         }
 
-        if(context.getRoutes().size() == 0 && firstSuccessfulFormat != null)
+        if(context.getRoutes().size() == 0 && context.getFormats().size() == 0 && firstSuccessfulFormat != null)
             context.addFormat(firstSuccessfulFormat);
     }
 

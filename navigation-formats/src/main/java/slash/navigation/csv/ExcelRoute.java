@@ -90,7 +90,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     public List<String> getDescription() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     public List<ExcelPosition> getPositions() {

@@ -66,7 +66,7 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     }
 
     public void addFormat(NavigationFormat<R> format) {
-        this.formats.add(format);
+        this.formats.add(0, format);
     }
 
     public List<R> getRoutes() {

@@ -214,10 +214,12 @@ public class NavigationFormatRegistry {
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(NmnRouteFormat.class);
         addFormat(ApeMapFormat.class);
-        addFormat(ZipFormat.class);
         addFormat(PhotoFormat.class);
         addFormat(Excel97Format.class);
         addFormat(Excel2008Format.class);
+
+        // kind of meta-format
+        addFormat(ZipFormat.class);
 
         // GPSBabel-based formats
         addFormat(GarminMapSource6Format.class);

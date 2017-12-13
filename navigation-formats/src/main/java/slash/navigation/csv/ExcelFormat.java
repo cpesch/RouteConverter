@@ -72,6 +72,8 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
             return;
 
         Row header = sheet.getRow(0);
+        log.info(format("Parsing sheet '%s' with %d rows and %d columns", sheet.getSheetName(), sheet.getPhysicalNumberOfRows(), header.getPhysicalNumberOfCells()));
+
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
         List<ExcelPosition> positions = new ArrayList<>();
