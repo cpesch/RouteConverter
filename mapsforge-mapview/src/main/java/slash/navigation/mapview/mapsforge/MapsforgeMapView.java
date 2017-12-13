@@ -701,7 +701,8 @@ public class MapsforgeMapView implements MapView {
         if (centerAndZoom &&
                 ((mapBoundingBox != null && routeBoundingBox != null && !mapBoundingBox.contains(routeBoundingBox)) ||
                         routeBoundingBox == null)) {
-            centerAndZoom(mapBoundingBox, routeBoundingBox, alwaysRecenter);
+            boolean alwaysZoom = mapBoundingBox == null || !mapBoundingBox.contains(getCenter());
+            centerAndZoom(mapBoundingBox, routeBoundingBox, alwaysZoom, alwaysRecenter);
         }
         limitZoomLevel();
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
@@ -831,7 +832,7 @@ public class MapsforgeMapView implements MapView {
             if (routeBoundingBox != null)
                 routeBorder = drawBorder(routeBoundingBox);
 
-            centerAndZoom(mapBoundingBox, routeBoundingBox, true);
+            centerAndZoom(mapBoundingBox, routeBoundingBox, true,true);
         }
     }
 
@@ -926,7 +927,8 @@ public class MapsforgeMapView implements MapView {
         return route != null && route.getPositions().size() > 0 ? new BoundingBox(route.getPositions()) : null;
     }
 
-    private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox, boolean alwaysRecenter) {
+    private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox,
+                               boolean alwaysZoom, boolean alwaysRecenter) {
         List<NavigationPosition> positions = new ArrayList<>();
 
         // if there is a route and we center and zoom, then use the route bounding box
@@ -957,7 +959,8 @@ public class MapsforgeMapView implements MapView {
 
         if (positions.size() > 0) {
             BoundingBox both = new BoundingBox(positions);
-            zoomToBounds(both);
+            if (alwaysZoom)
+                zoomToBounds(both);
             setCenter(both.getCenter(), alwaysRecenter);
         }
     }
@@ -1203,7 +1206,7 @@ public class MapsforgeMapView implements MapView {
                     if (!allRowsChanged)
                         handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                     if (allRowsChanged && showAllPositionsAfterLoading.getBoolean())
-                        centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true);
+                        centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true,true);
                     break;
                 default:
                     throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
