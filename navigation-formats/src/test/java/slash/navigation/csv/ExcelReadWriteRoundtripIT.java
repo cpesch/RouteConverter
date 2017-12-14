@@ -18,72 +18,68 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.columbus;
+package slash.navigation.csv;
 
 import org.junit.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
-public class ColumbusGpsType2ReadWriteRoundtripIT {
+public class ExcelReadWriteRoundtripIT {
+
+    private void checkRoutes(SimpleRoute sourceRoute, SimpleRoute targetRoute) {
+        for (int i = 0; i < sourceRoute.getPositionCount(); i++) {
+            ExcelPosition sourcePosition = (ExcelPosition) sourceRoute.getPosition(i);
+            ExcelPosition targetPosition = (ExcelPosition) targetRoute.getPosition(i);
+            assertEquals(targetPosition.getLongitude(), sourcePosition.getLongitude());
+            assertEquals(targetPosition.getLatitude(), sourcePosition.getLatitude());
+            assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
+            assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
+            assertEquals(targetPosition.getTime(), sourcePosition.getTime());
+            assertEquals(targetPosition.getDescription(), sourcePosition.getDescription());
+        }
+    }
 
     @Test
-    public void testTypeARoundtrip() throws IOException {
+    public void testXlsRoundtrip() throws IOException {
         boolean useLocalTimeZone = getUseLocalTimeZone();
         try {
             setUseLocalTimeZone(false);
-            readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ReadWriteTestCallback() {
+            readWriteRoundtrip(TEST_PATH + "from.xls", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                     SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
-                    for (int i = 0; i < sourceRoute.getPositionCount(); i++) {
-                        Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
-                        Wgs84Position targetPosition = (Wgs84Position) targetRoute.getPosition(i);
-                        assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
-                        assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
-                        assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
-                        assertEquals(targetPosition.getPressure(), sourcePosition.getPressure());
-                        assertEquals(targetPosition.getTemperature(), sourcePosition.getTemperature());
-                    }
+                    checkRoutes(sourceRoute, targetRoute);
                 }
             });
-        } finally {
+        }
+        finally {
             setUseLocalTimeZone(useLocalTimeZone);
         }
     }
 
     @Test
-    public void testTypeBRoundtrip() throws IOException {
+    public void testXlsxRoundtrip() throws IOException {
         boolean useLocalTimeZone = getUseLocalTimeZone();
         try {
             setUseLocalTimeZone(false);
-            readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2b.csv", new ReadWriteTestCallback() {
+            readWriteRoundtrip(TEST_PATH + "from.xlsx", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                     SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
-                    for (int i = 0; i < sourceRoute.getPositionCount(); i++) {
-                        Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
-                        Wgs84Position targetPosition = (Wgs84Position) targetRoute.getPosition(i);
-                        assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
-                        assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
-                        assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
-                        // since always Type A is written and Type A always stores at least a zero
-                        assertDoubleEquals(0.0, targetPosition.getPressure());
-                        assertDoubleEquals(0.0, targetPosition.getTemperature());
-                    }
+                    checkRoutes(sourceRoute, targetRoute);
                 }
             });
-        } finally {
+        }
+        finally {
             setUseLocalTimeZone(useLocalTimeZone);
         }
     }

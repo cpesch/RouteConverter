@@ -48,11 +48,11 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false;
+        return true;
     }
 
     public boolean isWritingRouteCharacteristics() {
-        return false;
+        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -106,5 +106,10 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
                         return columnType;            }
         }
         return Unsupported;
+    }
+
+
+    void populateWorkbook(Workbook workbook, ExcelRoute route, int startIndex, int endIndex) {
+        // TODO implement me
     }
 }

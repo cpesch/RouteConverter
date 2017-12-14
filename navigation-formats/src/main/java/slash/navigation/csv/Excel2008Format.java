@@ -19,6 +19,7 @@
 */
 package slash.navigation.csv;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import slash.navigation.base.ParserContext;
 
@@ -42,12 +43,13 @@ public class Excel2008Format extends ExcelFormat {
     }
 
     public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(source)) {
+        try (Workbook workbook = new XSSFWorkbook(source)) {
             parseWorkbook(workbook, context);
         }
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        throw new UnsupportedOperationException();
-    }
+        Workbook workbook = new XSSFWorkbook();
+        populateWorkbook(workbook, route, startIndex, endIndex);
+        workbook.write(target);    }
 }

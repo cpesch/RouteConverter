@@ -20,6 +20,7 @@
 package slash.navigation.csv;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import slash.navigation.base.ParserContext;
 
 import java.io.IOException;
@@ -42,12 +43,14 @@ public class Excel97Format extends ExcelFormat {
     }
 
     public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
-        try (HSSFWorkbook workbook = new HSSFWorkbook(source, true)) {
+        try (Workbook workbook = new HSSFWorkbook(source, true)) {
             parseWorkbook(workbook, context);
         }
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        throw new UnsupportedOperationException();
+        Workbook workbook = new HSSFWorkbook();
+        populateWorkbook(workbook, route, startIndex, endIndex);
+        workbook.write(target);
     }
 }
