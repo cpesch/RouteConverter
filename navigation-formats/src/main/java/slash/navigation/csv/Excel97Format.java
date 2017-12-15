@@ -26,6 +26,7 @@ import slash.navigation.base.ParserContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Reads Excel 97-2008 (.xls) files.
@@ -51,6 +52,12 @@ public class Excel97Format extends ExcelFormat {
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         Workbook workbook = new HSSFWorkbook();
         populateWorkbook(workbook, route, startIndex, endIndex);
+        workbook.write(target);
+    }
+
+    public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
+        Workbook workbook = new HSSFWorkbook();
+        populateWorkbook(workbook, routes);
         workbook.write(target);
     }
 }

@@ -27,6 +27,9 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.csv.ExcelFormat;
+import slash.navigation.csv.ExcelPosition;
+import slash.navigation.csv.ExcelRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -68,7 +71,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
     private List<Wgs84Position> positions;
     private Lmx lmx;
 
-    public NokiaLandmarkExchangeRoute(String name, List<String> description, List<Wgs84Position> positions, Lmx lmx) {
+    NokiaLandmarkExchangeRoute(String name, List<String> description, List<Wgs84Position> positions, Lmx lmx) {
         super(new NokiaLandmarkExchangeFormat(), Waypoints);
         this.name = name;
         this.description = description;
@@ -118,6 +121,14 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected ExcelRoute asExcelFormat(ExcelFormat format) {
+        List<ExcelPosition> excelPositions = new ArrayList<>();
+        for (Wgs84Position position : getPositions()) {
+            excelPositions.add(position.asExcelPosition());
+        }
+        return new ExcelRoute(format, getName(), excelPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {

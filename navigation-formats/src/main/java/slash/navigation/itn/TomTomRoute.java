@@ -29,6 +29,9 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.csv.ExcelFormat;
+import slash.navigation.csv.ExcelPosition;
+import slash.navigation.csv.ExcelRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -114,6 +117,14 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    protected ExcelRoute asExcelFormat(ExcelFormat format) {
+        List<ExcelPosition> excelPositions = new ArrayList<>();
+        for (TomTomPosition position : getPositions()) {
+            excelPositions.add(position.asExcelPosition());
+        }
+        return new ExcelRoute(format, getName(), excelPositions);
+    }
+
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (TomTomPosition position : positions) {
@@ -124,8 +135,8 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<>();
-        for (TomTomPosition tomTomPosition : positions) {
-            gpxPositions.add(tomTomPosition.asGpxPosition());
+        for (TomTomPosition position : positions) {
+            gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
@@ -156,8 +167,8 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (TomTomPosition tomTomPosition : positions) {
-            nmnPositions.add(tomTomPosition.asNmnPosition());
+        for (TomTomPosition position : positions) {
+            nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }

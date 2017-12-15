@@ -35,10 +35,10 @@ import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ExcelReadWriteRoundtripIT {
 
-    private void checkRoutes(SimpleRoute sourceRoute, SimpleRoute targetRoute) {
+    private void checkRoutes(ExcelRoute sourceRoute, ExcelRoute targetRoute) {
         for (int i = 0; i < sourceRoute.getPositionCount(); i++) {
-            ExcelPosition sourcePosition = (ExcelPosition) sourceRoute.getPosition(i);
-            ExcelPosition targetPosition = (ExcelPosition) targetRoute.getPosition(i);
+            ExcelPosition sourcePosition = sourceRoute.getPosition(i);
+            ExcelPosition targetPosition = targetRoute.getPosition(i);
             assertEquals(targetPosition.getLongitude(), sourcePosition.getLongitude());
             assertEquals(targetPosition.getLatitude(), sourcePosition.getLatitude());
             assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
@@ -55,8 +55,8 @@ public class ExcelReadWriteRoundtripIT {
             setUseLocalTimeZone(false);
             readWriteRoundtrip(TEST_PATH + "from.xls", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
-                    SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
-                    SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
+                    ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
+                    ExcelRoute targetRoute = (ExcelRoute) target.getAllRoutes().get(0);
                     checkRoutes(sourceRoute, targetRoute);
                 }
             });
@@ -73,8 +73,8 @@ public class ExcelReadWriteRoundtripIT {
             setUseLocalTimeZone(false);
             readWriteRoundtrip(TEST_PATH + "from.xlsx", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
-                    SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
-                    SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
+                    ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
+                    ExcelRoute targetRoute = (ExcelRoute) target.getAllRoutes().get(0);
                     checkRoutes(sourceRoute, targetRoute);
                 }
             });

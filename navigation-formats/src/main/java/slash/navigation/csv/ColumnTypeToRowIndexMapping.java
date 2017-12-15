@@ -19,8 +19,7 @@
 */
 package slash.navigation.csv;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Maps column types to indexes.
@@ -32,13 +31,17 @@ public class ColumnTypeToRowIndexMapping {
     static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
     static {
         DEFAULT.add(0, ColumnType.Longitude);
-        DEFAULT.add(1, ColumnType.Latitude);
+
     }
 
-    private Map<Integer, ColumnType> mapping = new HashMap<>();
+    private Map<Integer, ColumnType> mapping = new LinkedHashMap<>();
 
     public void add(int index, ColumnType columnType) {
         mapping.put(index, columnType);
+    }
+
+    public List<Integer> getIndices() {
+        return new ArrayList<>(mapping.keySet());
     }
 
     public Integer getIndex(ColumnType type) {
@@ -48,5 +51,9 @@ public class ColumnTypeToRowIndexMapping {
                return index;
         }
         return null;
+    }
+
+    public ColumnType getColumnType(Integer index) {
+        return mapping.get(index);
     }
 }

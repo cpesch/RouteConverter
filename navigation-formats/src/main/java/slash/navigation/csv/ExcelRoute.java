@@ -50,6 +50,7 @@ import slash.navigation.tcx.TcxRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
@@ -61,25 +62,22 @@ import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private String name;
-    private Row header;
+    private ColumnTypeToRowIndexMapping mapping = DEFAULT;
     private List<ExcelPosition> positions;
 
-    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, String name, Row header, List<ExcelPosition> positions) {
-        super(format, characteristics);
+    public ExcelRoute(ExcelFormat format, String name, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
+        super(format, Waypoints);
         this.name = name;
-        this.header = header;
+        this.mapping = mapping;
         this.positions = positions;
+
+        for(ExcelPosition position : positions)
+            position.setMapping(mapping);
     }
 
-    public ExcelRoute(ExcelFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> wgs84Positions) {
-        super(format, characteristics);
-        this.name = name;
-
-        // TODO might want to extend this simple mapping - and use it in as... methods
-        for(Wgs84Position wgs84Position : wgs84Positions)
-            positions.add(createPosition(wgs84Position.getLongitude(), wgs84Position.getLatitude(), wgs84Position.getElevation(), wgs84Position.getSpeed(), wgs84Position.getTime(), wgs84Position.getDescription()));
+    public ExcelRoute(ExcelFormat format, String name, List<ExcelPosition> positions) {
+        this(format, name, DEFAULT, positions);
     }
-
 
     public String getName() {
         return name != null ? name : createRouteName(getPositions());
@@ -101,6 +99,10 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return positions.size();
     }
 
+    ColumnTypeToRowIndexMapping getMapping() {
+        return mapping;
+    }
+
     public void add(int index, ExcelPosition position) {
         // TODO each Row knows its rowIndex - adjust it?
         positions.add(index, position);
@@ -108,7 +110,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         Row row = null; // TODO longitude, latitude, elevation, speed, time, description);
-        return new ExcelPosition(DEFAULT, row);
+        return new ExcelPosition(row);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
@@ -120,7 +122,8 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        return new ExcelRoute(format, getCharacteristics(), getName(), header, positions);
+        List<ExcelPosition> excelPositions = new ArrayList<>(getPositions());
+        return new ExcelRoute(format, getName(), excelPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
@@ -202,12 +205,14 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
 
         ExcelRoute that = (ExcelRoute) o;
 
-        return !(header != null ? !header.equals(that.header) : that.header != null) &&
+        return !(name != null ? !name.equals(that.name) : that.name != null) &&
+                !(mapping != null ? !mapping.equals(that.mapping) : that.mapping != null) &&
                 !(positions != null ? !positions.equals(that.positions) : that.positions != null);
     }
 
     public int hashCode() {
-        int result = header != null ? header.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (mapping != null ? mapping.hashCode() : 0);
         result = 31 * result + (positions != null ? positions.hashCode() : 0);
         return result;
     }

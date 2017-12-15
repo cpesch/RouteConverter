@@ -25,6 +25,9 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.csv.ExcelFormat;
+import slash.navigation.csv.ExcelPosition;
+import slash.navigation.csv.ExcelRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -62,9 +65,9 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
     private OvlSection symbol, overlay, mapLage;
     private List<Wgs84Position> positions;
 
-    public OvlRoute(OvlFormat format, RouteCharacteristics characteristics, String name,
-                    OvlSection symbol, OvlSection overlay, OvlSection mapLage,
-                    List<Wgs84Position> positions) {
+    OvlRoute(OvlFormat format, RouteCharacteristics characteristics, String name,
+             OvlSection symbol, OvlSection overlay, OvlSection mapLage,
+             List<Wgs84Position> positions) {
         super(format, characteristics);
         this.symbol = symbol;
         this.overlay = overlay;
@@ -126,6 +129,14 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected ExcelRoute asExcelFormat(ExcelFormat format) {
+        List<ExcelPosition> excelPositions = new ArrayList<>();
+        for (Wgs84Position position : getPositions()) {
+            excelPositions.add(position.asExcelPosition());
+        }
+        return new ExcelRoute(format, getName(), excelPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {

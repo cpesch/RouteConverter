@@ -28,19 +28,30 @@ import slash.navigation.base.BaseNavigationPosition;
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.csv.ColumnType.*;
-import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * A position from Excel 97-2008 (.xls) and Excel 2008 (.xlsx) files.
  */
 
 public class ExcelPosition extends BaseNavigationPosition {
-    private ColumnTypeToRowIndexMapping mapping = DEFAULT;
+    private ColumnTypeToRowIndexMapping mapping;
     private Row row;
 
-    public ExcelPosition(ColumnTypeToRowIndexMapping mapping, Row row) {
-        this.mapping = mapping;
+    public ExcelPosition(Row row) {
         this.row = row;
+    }
+
+    public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        // TODO new ROW
+        throw new UnsupportedOperationException();
+    }
+
+    ColumnTypeToRowIndexMapping getMapping() {
+        return mapping;
+    }
+
+    void setMapping(ColumnTypeToRowIndexMapping mapping) {
+        this.mapping = mapping;
     }
 
     private Cell getCell(ColumnType type) {

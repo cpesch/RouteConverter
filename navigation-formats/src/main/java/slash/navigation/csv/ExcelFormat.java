@@ -19,11 +19,14 @@
 */
 package slash.navigation.csv;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.ArrayList;
@@ -32,7 +35,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.csv.ColumnType.Unsupported;
 
 /**
@@ -41,8 +43,9 @@ import static slash.navigation.csv.ColumnType.Unsupported;
  * @author Christian Pesch
  */
 
-public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
+public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> implements MultipleRoutesFormat<ExcelRoute> {
     private static final Logger log = Logger.getLogger(ExcelFormat.class.getName());
+
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
@@ -57,7 +60,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> ExcelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new ExcelRoute(this, characteristics, name, (List<Wgs84Position>) positions);
+        return new ExcelRoute(this, name, (List<ExcelPosition>) positions);
     }
 
     void parseWorkbook(Workbook workbook, ParserContext<ExcelRoute> context) {
@@ -78,9 +81,9 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
 
         List<ExcelPosition> positions = new ArrayList<>();
         for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++)
-            positions.add(new ExcelPosition(mapping, sheet.getRow(i)));
+            positions.add(new ExcelPosition(sheet.getRow(i)));
 
-        context.appendRoute(new ExcelRoute(this, Waypoints, sheet.getSheetName(), header, positions));
+        context.appendRoute(new ExcelRoute(this, sheet.getSheetName(), mapping, positions));
     }
 
     private ColumnTypeToRowIndexMapping parseHeader(Row row) {
@@ -101,15 +104,65 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> {
             for (ColumnType columnType : ColumnType.values()) {
                 if (columnType.toString().equalsIgnoreCase(value))
                     return columnType;
-                for(String alternativeName : columnType.getAlternativeNames())
+                for (String alternativeName : columnType.getAlternativeNames())
                     if (alternativeName.equalsIgnoreCase(value))
-                        return columnType;            }
+                        return columnType;
+            }
         }
         return Unsupported;
     }
 
+    private void populateHeader(Row row, ColumnTypeToRowIndexMapping mapping) {
+        for (Integer index : mapping.getIndices()) {
+            ColumnType columnType = mapping.getColumnType(index);
+            Cell cell = row.createCell(index);
+            cell.setCellValue(columnType.name());
+        }
+    }
+
+    private void populateRow(Row row, ExcelPosition position) {
+        ColumnTypeToRowIndexMapping mapping = position.getMapping();
+        for (Integer index : mapping.getIndices()) {
+            Cell cell = row.createCell(index);
+            ColumnType columnType = mapping.getColumnType(index);
+            // TODO silly conversion - the ExcelPosition already has a Row
+            switch (columnType) {
+                case Latitude:
+                    cell.setCellValue(position.getLatitude());
+                    break;
+                case Longitude:
+                    cell.setCellValue(position.getLongitude());
+                    break;
+                case Elevation:
+                    cell.setCellValue(position.getElevation());
+                    break;
+                case Speed:
+                    cell.setCellValue(position.getSpeed());
+                    break;
+                case Time:
+                    cell.setCellValue(position.getTime().getTime());
+                    break;
+                case Description:
+                    cell.setCellValue(position.getDescription());
+                    break;
+                default:
+                    cell.setCellValue("Unsupported");
+            }
+        }
+    }
 
     void populateWorkbook(Workbook workbook, ExcelRoute route, int startIndex, int endIndex) {
-        // TODO implement me
+        Sheet sheet = workbook.createSheet(route.getName());
+        populateHeader(sheet.createRow(0), route.getMapping());
+        for (int i = startIndex; i < endIndex; i++) {
+            ExcelPosition position = route.getPosition(i);
+            populateRow(sheet.createRow(i + 1), position);
+        }
+    }
+
+    void populateWorkbook(Workbook workbook, List<ExcelRoute> routes) {
+        for (ExcelRoute route : routes) {
+            populateWorkbook(workbook, route, 0, route.getPositionCount());
+        }
     }
 }

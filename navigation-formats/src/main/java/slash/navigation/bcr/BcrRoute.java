@@ -26,6 +26,9 @@ import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.csv.ExcelFormat;
+import slash.navigation.csv.ExcelPosition;
+import slash.navigation.csv.ExcelRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -169,6 +172,14 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<>(getPositions());
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected ExcelRoute asExcelFormat(ExcelFormat format) {
+        List<ExcelPosition> excelPositions = new ArrayList<>();
+        for (BcrPosition position : getPositions()) {
+            excelPositions.add(position.asExcelPosition());
+        }
+        return new ExcelRoute(format, getName(), excelPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {

@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.common.Bearing;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.csv.ExcelPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
@@ -155,6 +156,10 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
+    }
+
+    public ExcelPosition asExcelPosition() {
+        return new ExcelPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
     @SuppressWarnings("UnusedDeclaration")

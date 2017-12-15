@@ -584,11 +584,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
 
-//    protected abstract ExcelRoute asExcelFormat(ExcelFormat format);    // TODO fix me
-    @SuppressWarnings("unchecked")
-    protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        return new ExcelRoute(format, getCharacteristics(), getName(), (List<Wgs84Position>) getPositions()); // TODO fix me
-    }
+    protected abstract ExcelRoute asExcelFormat(ExcelFormat format);
 
     protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
 
