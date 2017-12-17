@@ -256,6 +256,9 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         date = trim(date);
         if (date == null)
             return parseTime(time);
+        // workaround for broken CoPilot on Samsung Galaxy S5
+        if(date.length() == 5)
+            date = "0" + date;
         String dateAndTime = date + " " + time;
         // date: 160607 time: 130441.89
         try {
