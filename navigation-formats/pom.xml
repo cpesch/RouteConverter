@@ -82,6 +82,10 @@
                     <groupId>com.github.virtuald</groupId>
                     <artifactId>curvesapi</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>stax</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
            </exclusions>
         </dependency>
     </dependencies>
