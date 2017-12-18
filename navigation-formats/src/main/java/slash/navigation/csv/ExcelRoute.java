@@ -50,7 +50,7 @@ import slash.navigation.tcx.TcxRoute;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
@@ -66,12 +66,12 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private List<ExcelPosition> positions;
 
     public ExcelRoute(ExcelFormat format, String name, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
-        super(format, Waypoints);
+        super(format, Track);
         this.name = name;
         this.mapping = mapping;
         this.positions = positions;
 
-        for(ExcelPosition position : positions)
+        for (ExcelPosition position : positions)
             position.setMapping(mapping);
     }
 

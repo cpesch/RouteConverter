@@ -48,6 +48,8 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
+import slash.navigation.csv.Excel2008Format;
+import slash.navigation.csv.Excel97Format;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
@@ -175,6 +177,24 @@ public class ConvertIT {
     @Test(expected = AssertionError.class)
     public void testConvertGpxToColumbusGpsBinary() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsBinaryFormat());
+    }
+
+    @Test
+    public void testConvertGpxToExcel() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Excel97Format());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Excel2008Format());
+    }
+
+    @Test
+    public void testConvertExcelToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.xls", new Excel97Format(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.xlsx", new Excel2008Format(), new Gpx11Format());
+    }
+
+    @Test
+    public void testConvertExcelToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.xls", new Excel97Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.xlsx", new Excel2008Format(), new Kml22Format());
     }
 
     @Test
