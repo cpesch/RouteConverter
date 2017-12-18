@@ -21,6 +21,8 @@ package slash.navigation.csv;
 
 import java.util.*;
 
+import static slash.navigation.csv.ColumnType.*;
+
 /**
  * Maps column types to indexes.
  *
@@ -30,8 +32,12 @@ import java.util.*;
 public class ColumnTypeToRowIndexMapping {
     static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
     static {
-        DEFAULT.add(0, ColumnType.Longitude);
-
+        DEFAULT.add(0, Longitude);
+        DEFAULT.add(1, Latitude);
+        DEFAULT.add(2, Elevation);
+        DEFAULT.add(3, Speed);
+        DEFAULT.add(4, Time);
+        DEFAULT.add(5, Description);
     }
 
     private Map<Integer, ColumnType> mapping = new LinkedHashMap<>();
