@@ -24,6 +24,10 @@
         </repository>
     </repositories>
 
+    <properties>
+        <poi.version>3.17</poi.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -65,7 +69,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.17</version>
+            <version>${poi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -76,7 +80,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.17</version>
+            <version>${poi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>

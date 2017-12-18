@@ -19,6 +19,10 @@
         </resources>
     </build>
 
+    <properties>
+        <httpclient.version>4.5.4</httpclient.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -40,7 +44,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.4</version>
+            <version>${httpclient.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -55,7 +59,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.5.4</version>
+            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
