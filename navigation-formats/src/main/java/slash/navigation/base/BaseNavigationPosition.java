@@ -267,7 +267,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asKmlPosition();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"})
     public KmlPosition asKmzPosition() {
         return asKmlPosition();
     }
@@ -354,7 +354,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"})
     public Wgs84Position asOvlPosition() {
         return asWgs84Position();
     }
