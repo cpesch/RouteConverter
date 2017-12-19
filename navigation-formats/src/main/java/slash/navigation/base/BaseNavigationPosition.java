@@ -158,10 +158,6 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return asWgs84Position();
     }
 
-    public ExcelPosition asExcelPosition() {
-        return new ExcelPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     public GpxPosition asGarbleGpxPosition() {
         return asGpxPosition();

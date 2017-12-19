@@ -20,6 +20,7 @@
 package slash.navigation.csv;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import slash.navigation.base.ParserContext;
 
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 
 /**
  * Reads Excel 97-2008 (.xls) files.
@@ -43,21 +46,34 @@ public class Excel97Format extends ExcelFormat {
         return ".xls";
     }
 
+    Sheet createSheet(String name) {
+        Workbook workbook = new HSSFWorkbook();
+        return workbook.createSheet(createSafeSheetName(name));
+    }
+
     public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
-        try (Workbook workbook = new HSSFWorkbook(source, true)) {
+        try (Workbook workbook = new HSSFWorkbook(source, false)) {
             parseWorkbook(workbook, context);
         }
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        Workbook workbook = new HSSFWorkbook();
-        populateWorkbook(workbook, route, startIndex, endIndex);
+        route.correctRowNumbers();
+        Workbook workbook = route.getWorkbook();
         workbook.write(target);
     }
 
     public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
-        Workbook workbook = new HSSFWorkbook();
-        populateWorkbook(workbook, routes);
+        if(routes.size() == 0)
+            return;
+
+        for(ExcelRoute route : routes)
+            route.correctRowNumbers();
+
+        Workbook workbook = routes.get(0).getWorkbook();
+        if(!(workbook instanceof HSSFWorkbook))
+            throw new IllegalArgumentException("Workbook " + workbook + " is not HSSFWorkbook");
+
         workbook.write(target);
     }
 }

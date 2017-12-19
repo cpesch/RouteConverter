@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.csv.ColumnType.Unsupported;
+import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * The base of all Excel formats.
@@ -60,8 +61,10 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> ExcelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new ExcelRoute(this, name, (List<ExcelPosition>) positions);
+        return new ExcelRoute(this, createSheet(name), DEFAULT, (List<ExcelPosition>) positions);
     }
+
+    abstract Sheet createSheet(String name);
 
     void parseWorkbook(Workbook workbook, ParserContext<ExcelRoute> context) {
         for (int i = 0, c = workbook.getNumberOfSheets(); i < c; i++) {
@@ -80,10 +83,14 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
         List<ExcelPosition> positions = new ArrayList<>();
-        for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++)
-            positions.add(new ExcelPosition(sheet.getRow(i)));
+        for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++) {
+            Row row = sheet.getRow(i);
+            // in case there is just a formatting in a line, the row is null
+            if (row != null)
+                positions.add(new ExcelPosition(row, mapping));
+        }
 
-        context.appendRoute(new ExcelRoute(this, sheet.getSheetName(), mapping, positions));
+        context.appendRoute(new ExcelRoute(this, sheet, mapping, positions));
     }
 
     private ColumnTypeToRowIndexMapping parseHeader(Row row) {
@@ -110,59 +117,5 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
             }
         }
         return Unsupported;
-    }
-
-    private void populateHeader(Row row, ColumnTypeToRowIndexMapping mapping) {
-        for (Integer index : mapping.getIndices()) {
-            ColumnType columnType = mapping.getColumnType(index);
-            Cell cell = row.createCell(index);
-            cell.setCellValue(columnType.name());
-        }
-    }
-
-    private void populateRow(Row row, ExcelPosition position) {
-        ColumnTypeToRowIndexMapping mapping = position.getMapping();
-        for (Integer index : mapping.getIndices()) {
-            Cell cell = row.createCell(index);
-            ColumnType columnType = mapping.getColumnType(index);
-            // TODO silly conversion - the ExcelPosition already has a Row
-            switch (columnType) {
-                case Latitude:
-                    cell.setCellValue(position.getLatitude());
-                    break;
-                case Longitude:
-                    cell.setCellValue(position.getLongitude());
-                    break;
-                case Elevation:
-                    cell.setCellValue(position.getElevation());
-                    break;
-                case Speed:
-                    cell.setCellValue(position.getSpeed());
-                    break;
-                case Time:
-                    cell.setCellValue(position.getTime().getTime());
-                    break;
-                case Description:
-                    cell.setCellValue(position.getDescription());
-                    break;
-                default:
-                    cell.setCellValue("Unsupported");
-            }
-        }
-    }
-
-    void populateWorkbook(Workbook workbook, ExcelRoute route, int startIndex, int endIndex) {
-        Sheet sheet = workbook.createSheet(route.getName());
-        populateHeader(sheet.createRow(0), route.getMapping());
-        for (int i = startIndex; i < endIndex; i++) {
-            ExcelPosition position = route.getPosition(i);
-            populateRow(sheet.createRow(i + 1), position);
-        }
-    }
-
-    void populateWorkbook(Workbook workbook, List<ExcelRoute> routes) {
-        for (ExcelRoute route : routes) {
-            populateWorkbook(workbook, route, 0, route.getPositionCount());
-        }
     }
 }

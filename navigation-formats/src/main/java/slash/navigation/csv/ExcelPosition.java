@@ -28,30 +28,23 @@ import slash.navigation.base.BaseNavigationPosition;
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.csv.ColumnType.*;
+import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * A position from Excel 97-2008 (.xls) and Excel 2008 (.xlsx) files.
  */
 
 public class ExcelPosition extends BaseNavigationPosition {
-    private ColumnTypeToRowIndexMapping mapping;
+    private ColumnTypeToRowIndexMapping mapping = DEFAULT;
     private Row row;
 
-    public ExcelPosition(Row row) {
+    public ExcelPosition(Row row, ColumnTypeToRowIndexMapping mapping) {
         this.row = row;
-    }
-
-    public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        // TODO new ROW
-        throw new UnsupportedOperationException();
-    }
-
-    ColumnTypeToRowIndexMapping getMapping() {
-        return mapping;
-    }
-
-    void setMapping(ColumnTypeToRowIndexMapping mapping) {
         this.mapping = mapping;
+    }
+
+    void setRowNumber(int rowNumber) {
+        row.setRowNum(rowNumber);
     }
 
     private Cell getCell(ColumnType type) {
@@ -74,22 +67,36 @@ public class ExcelPosition extends BaseNavigationPosition {
         return cell != null ? fromDate(cell.getDateCellValue()) : null;
     }
 
+    private Cell getOrCreateCell(ColumnType type) {
+        Integer index = mapping.getIndex(type);
+        if (index == null)
+            return null;
+        Cell cell = row.getCell(index);
+        if (cell == null)
+            cell = row.createCell(index, type.getCellType());
+        return cell;
+    }
+
     private void setCellAsDouble(ColumnType type, Double value) {
-        Cell cell = getCell(type);
+        Cell cell = getOrCreateCell(type);
         if (cell != null)
             cell.setCellValue(toDouble(value));
     }
 
     private void setCellAsString(ColumnType type, String value) {
-        Cell cell = getCell(type);
+        Cell cell = getOrCreateCell(type);
         if (cell != null)
             cell.setCellValue(value);
     }
 
     private void setCellAsTime(ColumnType type, CompactCalendar value) {
-        Cell cell = getCell(type);
-        if (cell != null)
-            cell.setCellValue(value != null ? value.getTime() : null);
+        Cell cell = getOrCreateCell(type);
+        if (cell != null) {
+            if (value != null)
+                cell.setCellValue(value.getCalendar());
+            else
+                cell.setCellValue(0);
+        }
     }
 
     public Double getLongitude() {
@@ -129,7 +136,7 @@ public class ExcelPosition extends BaseNavigationPosition {
     }
 
     public void setSpeed(Double speed) {
-        setCellAsDouble(Elevation, speed);
+        setCellAsDouble(Speed, speed);
     }
 
     public String getDescription() {

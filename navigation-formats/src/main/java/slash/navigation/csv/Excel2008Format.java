@@ -19,6 +19,7 @@
 */
 package slash.navigation.csv;
 
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import slash.navigation.base.ParserContext;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 
 /**
  * Reads Excel 2008 (.xlsx) files.
@@ -43,21 +46,34 @@ public class Excel2008Format extends ExcelFormat {
         return ".xlsx";
     }
 
+    Sheet createSheet(String name) {
+        Workbook workbook = new XSSFWorkbook();
+        return workbook.createSheet(createSafeSheetName(name));
+    }
+
     public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
-        try (Workbook workbook = new XSSFWorkbook(source)) {
-            parseWorkbook(workbook, context);
-        }
+        Workbook workbook = new XSSFWorkbook(source);
+        parseWorkbook(workbook, context);
+        // do not close Workbook since this would close the underlying OPCPackage which has to be open to write later
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        populateWorkbook(workbook, route, startIndex, endIndex);
+        route.correctRowNumbers();
+        Workbook workbook = route.getWorkbook();
         workbook.write(target);
     }
 
     public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        populateWorkbook(workbook, routes);
+        if(routes.size() == 0)
+            return;
+
+        for(ExcelRoute route : routes)
+            route.correctRowNumbers();
+
+        Workbook workbook = routes.get(0).getWorkbook();
+        if(!(workbook instanceof XSSFWorkbook))
+            throw new IllegalArgumentException("Workbook " + workbook + " is not XSSFWorkbook");
+
         workbook.write(target);
     }
 }

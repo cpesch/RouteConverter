@@ -19,9 +19,13 @@
 */
 package slash.navigation.csv;
 
+import org.apache.poi.ss.usermodel.CellType;
+
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 /**
  * Enumeration of supported column types.
@@ -30,18 +34,24 @@ import static java.util.Arrays.asList;
  */
 
 public enum ColumnType {
-    Latitude("Breite", "Breitengrad"),
-    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation("Altitude", "H\u00f6he"),
-    Speed("Geschwindigkeit"),
-    Time("Timestamp", "Zeit"),
-    Description("Comment", "Beschreibung", "Kommentar"),
-    Unsupported;
+    Latitude(NUMERIC, "Breite", "Breitengrad"),
+    Longitude(NUMERIC, "L\u00e4nge", "L\u00e4ngengrad"),
+    Elevation(NUMERIC, "Altitude", "H\u00f6he"),
+    Speed(NUMERIC, "Geschwindigkeit"),
+    Time(NUMERIC, "Timestamp", "Zeit"),
+    Description(STRING, "Comment", "Beschreibung", "Kommentar"),
+    Unsupported(STRING);
 
+    private CellType cellType;
     private List<String> alternativeNames;
 
-    ColumnType(String... alternativeNames) {
+    ColumnType(CellType cellType, String... alternativeNames) {
+        this.cellType = cellType;
         this.alternativeNames = asList(alternativeNames);
+    }
+
+    public CellType getCellType() {
+        return cellType;
     }
 
     public List<String> getAlternativeNames() {

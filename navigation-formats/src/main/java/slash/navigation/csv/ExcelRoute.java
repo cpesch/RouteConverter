@@ -19,7 +19,10 @@
 */
 package slash.navigation.csv;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.bcr.BcrFormat;
@@ -61,30 +64,39 @@ import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
  */
 
 public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
-    private String name;
+    private Sheet sheet;
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
     private List<ExcelPosition> positions;
 
-    public ExcelRoute(ExcelFormat format, String name, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
+    public ExcelRoute(ExcelFormat format, Sheet sheet, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
         super(format, Track);
-        this.name = name;
+        this.sheet = sheet;
         this.mapping = mapping;
         this.positions = positions;
-
-        for (ExcelPosition position : positions)
-            position.setMapping(mapping);
+        correctRowNumbers();
     }
 
     public ExcelRoute(ExcelFormat format, String name, List<ExcelPosition> positions) {
-        this(format, name, DEFAULT, positions);
+        this(format, format.createSheet(name), DEFAULT, positions);
+        populateHeader(sheet.createRow(0));
+    }
+
+    private void populateHeader(Row row) {
+        for (Integer index : mapping.getIndices()) {
+            ColumnType columnType = mapping.getColumnType(index);
+            Cell cell = row.createCell(index);
+            cell.setCellValue(columnType.name());
+        }
     }
 
     public String getName() {
+        String name = sheet.getSheetName();
         return name != null ? name : createRouteName(getPositions());
     }
 
     public void setName(String name) {
-        this.name = name;
+        Workbook workbook = sheet.getWorkbook();
+        workbook.setSheetName(workbook.getSheetIndex(sheet), name);
     }
 
     public List<String> getDescription() {
@@ -99,18 +111,42 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return positions.size();
     }
 
-    ColumnTypeToRowIndexMapping getMapping() {
-        return mapping;
+    Workbook getWorkbook() {
+        return sheet.getWorkbook();
+    }
+
+    protected void move(int index, int upOrDown) {
+        if(upOrDown == -1) {
+            // TODO replace index row with index-1 row
+        } else {
+            // TODO replace index row with index+1 row
+            ExcelPosition next = getPosition(index + 1);
+            ExcelPosition toMove = getPosition(index);
+        }
+        super.move(index, upOrDown);
     }
 
     public void add(int index, ExcelPosition position) {
-        // TODO each Row knows its rowIndex - adjust it?
+        // shift all rows from index (+1 for header) one position to the back
+        sheet.shiftRows(index + 1, getPositionCount(), 1);
         positions.add(index, position);
+        correctRowNumbers();
+    }
+
+    void correctRowNumbers() {
+        for (int i = 0, c = positions.size(); i < c; i++)
+            positions.get(i).setRowNumber(i);
     }
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        Row row = null; // TODO longitude, latitude, elevation, speed, time, description);
-        return new ExcelPosition(row);
+        ExcelPosition position = new ExcelPosition(sheet.createRow(getPositionCount() + 1), mapping);
+        position.setLongitude(longitude);
+        position.setLatitude(latitude);
+        position.setElevation(elevation);
+        position.setSpeed(speed);
+        position.setTime(time);
+        position.setDescription(description);
+        return position;
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
@@ -205,13 +241,13 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
 
         ExcelRoute that = (ExcelRoute) o;
 
-        return !(name != null ? !name.equals(that.name) : that.name != null) &&
+        return !(getName() != null ? !getName().equals(that.getName()) : that.getName() != null) &&
                 !(mapping != null ? !mapping.equals(that.mapping) : that.mapping != null) &&
                 !(positions != null ? !positions.equals(that.positions) : that.positions != null);
     }
 
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = getName() != null ? getName().hashCode() : 0;
         result = 31 * result + (mapping != null ? mapping.hashCode() : 0);
         result = 31 * result + (positions != null ? positions.hashCode() : 0);
         return result;

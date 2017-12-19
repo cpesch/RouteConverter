@@ -77,7 +77,7 @@ public abstract class TestCase extends junit.framework.TestCase {
             double expectedMinusOffset = expected * (1.0 - offset);
             if (expectedMinusOffset == 0.0)
                 expectedMinusOffset = -offset;
-            assertTrue(actual + " is not within -" + offset + " of " + expected + " to " + expectedMinusOffset,
+            assertTrue(actual + " is not within -" + offset + " of " + expectedMinusOffset + " to " + expected,
                     actual >= 0.0 ? actual > expectedMinusOffset : actual < expectedMinusOffset);
         }
     }

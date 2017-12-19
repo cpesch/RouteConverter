@@ -146,10 +146,12 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
         List<ExcelPosition> excelPositions = new ArrayList<>();
+        ExcelRoute route = new ExcelRoute(format, getName(), excelPositions);
         for (GpxPosition position : getPositions()) {
-            excelPositions.add(position.asExcelPosition());
+            ExcelPosition excelPosition = route.createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getSpeed(), position.getTime(), position.getDescription());
+            excelPositions.add(excelPosition);
         }
-        return new ExcelRoute(format, getName(), excelPositions);
+        return route;
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {

@@ -186,7 +186,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract int getPositionCount();
 
-    private void move(int index, int upOrDown) {
+    protected void move(int index, int upOrDown) {
         List<P> positions = getPositions();
         P move = positions.get(index);
         P replace = positions.get(index + upOrDown);

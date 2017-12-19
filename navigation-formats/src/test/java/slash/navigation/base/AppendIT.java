@@ -41,7 +41,7 @@ import static slash.navigation.base.NavigationFormatConverter.asFormat;
 public class AppendIT extends NavigationTestCase {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
-    static boolean isStoringRouteName(NavigationFormat format) {
+    private static boolean isStoringRouteName(NavigationFormat format) {
         return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
                 !(format instanceof GpsTunerFormat) && !(format instanceof TomTomRouteFormat) &&
                 !(format instanceof NmeaFormat) && !(format instanceof Nmn4Format) &&
@@ -49,7 +49,7 @@ public class AppendIT extends NavigationTestCase {
                 !(format instanceof MagicMapsPthFormat);
     }
 
-    void append(String testFileName, String appendFileName) throws IOException {
+    private void append(String testFileName, String appendFileName) throws IOException {
         File appendFile = new File(appendFileName);
         ParserResult appendResult = parser.read(appendFile);
         assertNotNull(appendResult);
@@ -124,6 +124,11 @@ public class AppendIT extends NavigationTestCase {
 
     public void testAppendKmlToTomTomRoute() throws IOException {
         append(TEST_PATH + "large.itn", TEST_PATH + "large20.kml");
+    }
+
+    public void testAppendGpxToExcel() throws IOException {
+        append(TEST_PATH + "from10.gpx", TEST_PATH + "from.xls");
+        append(TEST_PATH + "from11.gpx", TEST_PATH + "from.xlsx");
     }
 
     public void testAppendGarminMapSource5ToGarminMapSource6() throws IOException {
