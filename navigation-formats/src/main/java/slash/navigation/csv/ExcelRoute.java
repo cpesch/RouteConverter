@@ -118,9 +118,17 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         if(upOrDown == -1) {
             // TODO replace index row with index-1 row
         } else {
-            // TODO replace index row with index+1 row
-            ExcelPosition next = getPosition(index + 1);
-            ExcelPosition toMove = getPosition(index);
+            // shift row to the end
+            ExcelPosition next = getPosition(index + upOrDown);
+            int nextIndex = next.getRow().getRowNum();
+            sheet.shiftRows(nextIndex, nextIndex, sheet.getLastRowNum() - nextIndex + 1);
+
+            // move source row to target row
+            int rowForIndex = getPosition(index).getRow().getRowNum();
+            sheet.shiftRows(rowForIndex, rowForIndex, upOrDown);
+
+            // move target row from the end to previous source row
+            sheet.shiftRows(sheet.getLastRowNum(), sheet.getLastRowNum(), rowForIndex - sheet.getLastRowNum());
         }
         super.move(index, upOrDown);
     }

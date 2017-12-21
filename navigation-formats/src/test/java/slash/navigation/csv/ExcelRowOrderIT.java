@@ -106,6 +106,38 @@ public class ExcelRowOrderIT {
     }
 
     @Test
+    public void testMoveMiddlePositionDown() throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+
+        route.down(2, 3);
+
+        route = writeAndReadFile(route);
+
+        assertEquals("A", route.getPosition(0).getDescription());
+        assertEquals("B", route.getPosition(1).getDescription());
+        assertEquals("D", route.getPosition(2).getDescription());
+        assertEquals("C", route.getPosition(3).getDescription());
+        assertEquals("E", route.getPosition(4).getDescription());
+        assertEquals("F", route.getPosition(5).getDescription());
+    }
+
+    @Test
+    public void testMoveMiddlePositionToBottom() throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+
+        route.bottom(2, 0);
+
+        route = writeAndReadFile(route);
+
+        assertEquals("A", route.getPosition(0).getDescription());
+        assertEquals("B", route.getPosition(1).getDescription());
+        assertEquals("D", route.getPosition(2).getDescription());
+        assertEquals("E", route.getPosition(3).getDescription());
+        assertEquals("F", route.getPosition(4).getDescription());
+        assertEquals("C", route.getPosition(5).getDescription());
+    }
+
+    @Test
     public void testMoveMiddlePositionUp() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
@@ -115,9 +147,9 @@ public class ExcelRowOrderIT {
 
         assertEquals("A", route.getPosition(0).getDescription());
         assertEquals("B", route.getPosition(1).getDescription());
-        assertEquals("E", route.getPosition(2).getDescription());
+        assertEquals("D", route.getPosition(2).getDescription());
         assertEquals("C", route.getPosition(3).getDescription());
-        assertEquals("D", route.getPosition(4).getDescription());
+        assertEquals("E", route.getPosition(4).getDescription());
         assertEquals("F", route.getPosition(5).getDescription());
     }
 }
