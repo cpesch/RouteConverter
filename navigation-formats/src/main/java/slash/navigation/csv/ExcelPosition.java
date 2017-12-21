@@ -43,6 +43,10 @@ public class ExcelPosition extends BaseNavigationPosition {
         this.mapping = mapping;
     }
 
+    Row getRow() {
+        return row;
+    }
+
     private Cell getCell(ColumnType type) {
         Integer index = mapping.getIndex(type);
         return index != null ? row.getCell(index) : null;

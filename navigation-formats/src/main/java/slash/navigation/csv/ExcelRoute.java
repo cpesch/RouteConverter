@@ -126,13 +126,17 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     public void add(int index, ExcelPosition position) {
-        // shift all rows from index (+1 for header) one position to the back
-        sheet.shiftRows(index + 1, getPositionCount(), 1);
+        int rowForIndex = index < getPositionCount() ? getPosition(index).getRow().getRowNum() : position.getRow().getRowNum();
+        // shift all rows from index one position down
+        sheet.shiftRows(rowForIndex, sheet.getLastRowNum(), 1);
+        // shift row to add to the desired position (+1 for header)
+        int sourceRowIndex = position.getRow().getRowNum() + 1;
+        sheet.shiftRows(sourceRowIndex, sourceRowIndex, rowForIndex - sourceRowIndex);
         positions.add(index, position);
     }
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        ExcelPosition position = new ExcelPosition(sheet.createRow(getPositionCount() + 1), mapping);
+        ExcelPosition position = new ExcelPosition(sheet.createRow(sheet.getLastRowNum() + 1), mapping);
         position.setLongitude(longitude);
         position.setLatitude(latitude);
         position.setElevation(elevation);
