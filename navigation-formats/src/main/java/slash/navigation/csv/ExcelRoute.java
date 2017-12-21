@@ -73,7 +73,6 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         this.sheet = sheet;
         this.mapping = mapping;
         this.positions = positions;
-        correctRowNumbers();
     }
 
     public ExcelRoute(ExcelFormat format, String name, List<ExcelPosition> positions) {
@@ -130,12 +129,6 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         // shift all rows from index (+1 for header) one position to the back
         sheet.shiftRows(index + 1, getPositionCount(), 1);
         positions.add(index, position);
-        correctRowNumbers();
-    }
-
-    void correctRowNumbers() {
-        for (int i = 0, c = positions.size(); i < c; i++)
-            positions.get(i).setRowNumber(i);
     }
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

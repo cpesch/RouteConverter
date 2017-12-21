@@ -48,7 +48,7 @@ public class ExcelFormatIT {
         assertEquals(654.6, first.getElevation());
         assertEquals(6.1, first.getSpeed());
         assertEquals(calendar(2017, 12, 14, 18, 38, 12), first.getTime());
-        assertEquals("Position 1", first.getDescription());
+        assertEquals("Positionsname", first.getDescription());
         BaseNavigationPosition second = route.getPosition(1);
         assertEquals(88.4853034, second.getLongitude());
         assertEquals(-50.2411251, second.getLatitude());

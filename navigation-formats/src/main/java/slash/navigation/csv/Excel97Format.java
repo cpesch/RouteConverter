@@ -58,7 +58,6 @@ public class Excel97Format extends ExcelFormat {
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        route.correctRowNumbers();
         Workbook workbook = route.getWorkbook();
         workbook.write(target);
     }
@@ -66,9 +65,6 @@ public class Excel97Format extends ExcelFormat {
     public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
         if(routes.size() == 0)
             return;
-
-        for(ExcelRoute route : routes)
-            route.correctRowNumbers();
 
         Workbook workbook = routes.get(0).getWorkbook();
         if(!(workbook instanceof HSSFWorkbook))
