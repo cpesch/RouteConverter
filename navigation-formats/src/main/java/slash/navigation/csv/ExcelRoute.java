@@ -114,7 +114,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return sheet.getWorkbook();
     }
 
-    protected void move(int index, int upOrDown) {
+    protected void Amove(int index, int upOrDown) {
         if(upOrDown == -1) {
             // TODO replace index row with index-1 row
         } else {
@@ -124,13 +124,31 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
             sheet.shiftRows(nextIndex, nextIndex, sheet.getLastRowNum() - nextIndex + 1);
 
             // move source row to target row
-            int rowForIndex = getPosition(index).getRow().getRowNum();
+            ExcelPosition position = getPosition(index);
+            int rowForIndex = position.getRow().getRowNum();
             sheet.shiftRows(rowForIndex, rowForIndex, upOrDown);
 
             // move target row from the end to previous source row
             sheet.shiftRows(sheet.getLastRowNum(), sheet.getLastRowNum(), rowForIndex - sheet.getLastRowNum());
         }
         super.move(index, upOrDown);
+    }
+
+    public void down(int fromIndex, int toIndex) {
+        // shift to row to the end
+        ExcelPosition to = getPosition(toIndex);
+        int toPositionIndex = to.getRow().getRowNum();
+        sheet.shiftRows(toPositionIndex, toPositionIndex, sheet.getLastRowNum() - toPositionIndex + 1);
+
+        // move from row to to row
+        ExcelPosition fromPosition = getPosition(fromIndex);
+        int fromPositionIndex = fromPosition.getRow().getRowNum();
+        sheet.shiftRows(fromPositionIndex, fromPositionIndex, toIndex - fromIndex);
+
+        // move from row from the end to to row
+        sheet.shiftRows(sheet.getLastRowNum(), sheet.getLastRowNum(), fromPositionIndex - sheet.getLastRowNum());
+
+        super.down(fromIndex, toIndex);
     }
 
     public void add(int index, ExcelPosition position) {
@@ -140,7 +158,20 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         // shift row to add to the desired position (+1 for header)
         int sourceRowIndex = position.getRow().getRowNum() + 1;
         sheet.shiftRows(sourceRowIndex, sourceRowIndex, rowForIndex - sourceRowIndex);
+
         positions.add(index, position);
+    }
+
+    public ExcelPosition remove(int index) {
+        Row row = getPosition(index).getRow();
+        int rowIndex = row.getRowNum() + 1;
+        int lastRowNum = sheet.getLastRowNum();
+        // shift all rows one forward to index
+        sheet.shiftRows(rowIndex, lastRowNum, -1);
+        // remove last row
+        sheet.removeRow(sheet.getRow(lastRowNum));
+
+        return super.remove(index);
     }
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
