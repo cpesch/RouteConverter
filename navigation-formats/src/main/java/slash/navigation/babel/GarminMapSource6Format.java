@@ -42,6 +42,10 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
         return "gdb";
     }
 
+    protected String getFormatOptions(GpxRoute route) {
+        return ",ver=3";
+    }
+
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
